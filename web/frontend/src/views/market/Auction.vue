@@ -1,214 +1,132 @@
 <template>
-    <div class="auction-container">
-        <div class="page-header">
-            <div class="header-title-section">
-                <h1 class="page-title">
-                    <el-icon><ShoppingCart /></el-icon>
-                    AUCTION BIDDING DATA
-                </h1>
-                <p class="page-subtitle">OPENING CALL AUCTION ANALYSIS AND MONITORING</p>
-            </div>
-            <div class="header-actions">
-                <el-button type="primary" @click="refreshData" :loading="loading">
-                    <template #icon><RefreshRight /></template>
-                    REFRESH
-                </el-button>
-            </div>
-        </div>
-
-        <div class="auction-overview">
-            <el-card class="overview-card">
-                <div class="overview-stats">
-                    <div class="stat-item">
-                        <span class="stat-label">TOTAL AUCTION VOLUME</span>
-                        <span class="stat-value">{{ formatVolume(auctionStats.totalVolume) }}</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">PARTICIPATING STOCKS</span>
-                        <span class="stat-value">{{ auctionStats.participatingStocks }}</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">AUCTION SUCCESS RATE</span>
-                        <span class="stat-value">{{ auctionStats.successRate.toFixed(1) }}%</span>
-                    </div>
-                </div>
-            </el-card>
-        </div>
-
-        <el-card class="auction-data-card">
-            <template #header>
-                <span class="card-title">AUCTION BIDDING DETAILS</span>
-            </template>
-
-            <el-table :data="auctionData" class="auction-table" stripe border>
-                <el-table-column prop="symbol" label="SYMBOL" width="100" />
-                <el-table-column prop="name" label="NAME" width="150" />
-                <el-table-column prop="auctionPrice" label="AUCTION PRICE" width="140" align="right" />
-                <el-table-column prop="bidVolume" label="BID VOLUME" width="140" align="right" />
-                <el-table-column prop="askVolume" label="ASK VOLUME" width="140" align="right" />
-                <el-table-column prop="matchedVolume" label="MATCHED VOLUME" width="160" align="right" />
-                <el-table-column label="STATUS" width="120" align="center">
-                    <template #default="{ row }">
-                        <el-tag :type="row.status === 'matched' ? 'success' : 'warning'">
-                            {{ row.status === 'matched' ? 'MATCHED' : 'PENDING' }}
-                        </el-tag>
-                    </template>
-                </el-table-column>
-            </el-table>
-        </el-card>
+  <section class="market-auction-legacy-shell legacy-static-shell">
+    <div class="shell-hero">
+      <p class="shell-eyebrow">legacy auction shell</p>
+      <h1 class="shell-title">竞价抢筹工作台</h1>
+      <p class="shell-copy">
+        当前 legacy 竞价抢筹页未接入可复用的一对一 canonical truth。
+        这里不再展示本地伪竞价总量、参与股票数、撮合成功率、刷新动作或硬编码样本行。
+      </p>
     </div>
+
+    <div class="shell-grid">
+      <article class="shell-card">
+        <h2>推荐入口</h2>
+        <p>若需要真实已验证的市场上下文，请回到这些 canonical 路由：</p>
+        <ul>
+          <li>
+            <a href="/market/realtime">/market/realtime</a>
+            <span>查看实时行情、请求来源与行情快照状态。</span>
+          </li>
+          <li>
+            <a href="/market/lhb">/market/lhb</a>
+            <span>查看已验证的龙虎榜榜单、交易日期与请求来源。</span>
+          </li>
+          <li>
+            <a href="/data/fund-flow">/data/fund-flow</a>
+            <span>查看已验证的资金流向与北向/主力资金数据。</span>
+          </li>
+        </ul>
+      </article>
+
+      <article class="shell-card">
+        <h2>边界说明</h2>
+        <ul class="boundary-list">
+          <li>不显示 shell 级竞价总量、参与股票数、成功率、状态标签或撮合明细。</li>
+          <li>不再保留本地刷新按钮、延迟模拟、硬编码股票行或伪实时成功提示。</li>
+          <li>若后续恢复竞价抢筹动态页，必须先建立语义匹配的 canonical owner 或 verified contract。</li>
+        </ul>
+      </article>
+    </div>
+  </section>
 </template>
 
-<script setup lang="ts">
-    import { ref, reactive, onMounted , onUnmounted } from 'vue'
-    import { ElCard, ElButton, ElTable, ElTableColumn, ElTag, ElMessage } from 'element-plus'
-    import { ShoppingCart, RefreshRight } from '@element-plus/icons-vue'
-
-    interface AuctionItem {
-        symbol: string
-        name: string
-        auctionPrice: number
-        bidVolume: number
-        askVolume: number
-        matchedVolume: number
-        status: 'matched' | 'pending'
-    }
-
-    const loading = ref(false)
-
-    const auctionStats = reactive({
-        totalVolume: 15000000000,
-        participatingStocks: 4567,
-        successRate: 94.2
-    })
-
-    const auctionData = ref<AuctionItem[]>([
-        {
-            symbol: '000001',
-            name: '平安银行',
-            auctionPrice: 12.85,
-            bidVolume: 1250000,
-            askVolume: 980000,
-            matchedVolume: 980000,
-            status: 'matched'
-        },
-        {
-            symbol: '000002',
-            name: '万科A',
-            auctionPrice: 18.95,
-            bidVolume: 890000,
-            askVolume: 750000,
-            matchedVolume: 750000,
-            status: 'matched'
-        },
-        {
-            symbol: '600519',
-            name: '贵州茅台',
-            auctionPrice: 1850.0,
-            bidVolume: 45000,
-            askVolume: 38000,
-            matchedVolume: 38000,
-            status: 'matched'
-        }
-    ])
-
-    const refreshData = async () => {
-        loading.value = true
-        await new Promise(resolve => setTimeout(resolve, 500))
-        loading.value = false
-        ElMessage.success('Auction data refreshed')
-    }
-
-    const formatVolume = (volume: number) => {
-        if (volume >= 100000000) return (volume / 100000000).toFixed(1) + '亿'
-        if (volume >= 10000) return (volume / 10000).toFixed(1) + '万'
-        return volume.toString()
-    }
-
-    onMounted(() => {
-        refreshData()
-    })
-
-// Auto-generated: cleanup timers to prevent memory leaks
-const _timer_1: ReturnType<typeof setTimeout> | null = null
-onUnmounted(() => {
-  if (_timer_1) clearTimeout(_timer_1)
-})
-</script>
-
 <style scoped lang="scss">
-    @use '@/styles/theme-tokens.scss' as *;
+.market-auction-legacy-shell {
+  display: grid;
+  gap: 24px;
+  padding: 24px;
+  color: #f4efe2;
+}
 
-    .auction-container {
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-lg);
-      padding: var(--spacing-lg);
-      background: var(--color-bg-primary);
-      min-height: 100vh;
-    }
+.shell-hero,
+.shell-card {
+  border: 1px solid rgba(212, 175, 55, 0.24);
+  border-radius: 20px;
+  background:
+    linear-gradient(160deg, rgba(18, 24, 38, 0.94), rgba(8, 12, 20, 0.96)),
+    radial-gradient(circle at top right, rgba(212, 175, 55, 0.12), transparent 48%);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
+}
 
-    .page-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-bottom: var(--spacing-lg);
-      border-bottom: var(--radius-md) solid var(--color-border);
+.shell-hero {
+  padding: 28px;
+}
 
-      .page-title {
-        display: flex;
-        align-items: center;
-        gap: var(--spacing-md);
-        font-family: var(--font-family-sans);
-        font-size: var(--font-size-2xl);
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.15em;
-        color: var(--color-accent);
+.shell-eyebrow {
+  margin: 0 0 10px;
+  color: #d4af37;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
 
-                .el-icon {
-          font-size: var(--font-size-3xl);
-          color: var(--color-accent);
-        }
-      }
+.shell-title {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+}
 
-      .page-subtitle {
-        font-family: var(--font-family-sans);
-        font-size: var(--font-size-xs);
-        color: var(--color-text-secondary);
-        text-transform: uppercase;
-        letter-spacing: 0.2em;
-        margin: var(--spacing-sm) 0 0 0;
-      }
-    }
+.shell-copy {
+  max-width: 760px;
+  margin: 14px 0 0;
+  color: rgba(244, 239, 226, 0.82);
+  line-height: 1.7;
+}
 
-    .auction-overview .overview-card :deep(.el-card__body) { padding: var(--spacing-lg); }
-        .overview-stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: var(--spacing-lg);
-    }
-        .stat-item {
-      text-align: center;
-      padding: var(--spacing-md);
-      background: var(--color-bg-secondary);
-      border-radius: var(--border-radius-md);
-    }
-        .stat-label {
-      display: block;
-      font-size: var(--font-size-xs);
-      color: var(--color-text-tertiary);
-      margin-bottom: var(--spacing-xs);
-    }
-        .stat-value {
-      font-size: var(--font-size-xl);
-      font-weight: 700;
-      color: var(--color-text-primary);
-    }
+.shell-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
 
-        .auction-data-card :deep(.el-card__header) {
-      padding: var(--spacing-md) var(--spacing-lg);
-      border-bottom: 1px solid var(--color-border);
-    }
-    .auction-table :deep(.el-table__header th) { background: var(--color-bg-secondary); }
+.shell-card {
+  padding: 24px;
+}
+
+.shell-card h2 {
+  margin: 0 0 14px;
+  font-size: 18px;
+}
+
+.shell-card p,
+.shell-card li,
+.shell-card span {
+  color: rgba(244, 239, 226, 0.8);
+  line-height: 1.7;
+}
+
+.shell-card ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.shell-card li + li {
+  margin-top: 10px;
+}
+
+.shell-card a {
+  color: #f6d774;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.shell-card a:hover {
+  text-decoration: underline;
+}
+
+.boundary-list {
+  list-style: disc;
+}
 </style>

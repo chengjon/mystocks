@@ -1,368 +1,136 @@
 <template>
-  <div class="market-data-view">
-
-    <div class="card header-card">
-      <div class="header-content">
-        <button class="back-button" @click="goBack">
-          <svg class="market-data-icon back-button__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <line x1="19" y1="12" x2="5" y2="12"></line>
-            <polyline points="12,19 5,12 12,5"></polyline>
-          </svg>
-        </button>
-
-        <div class="header-title-section">
-          <div class="header-icon">
-            <svg class="market-data-icon header-icon__glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path d="M3 3v18h18"></path>
-              <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
-            </svg>
-          </div>
-          <h1 class="header-title">市场数据</h1>
-        </div>
-
-        <div class="header-info">
-          <ArtDecoBadge variant="active" size="sm">实时数据</ArtDecoBadge>
-          <span class="time-display">{{ currentTime }}</span>
-        </div>
-      </div>
+  <section class="market-data-nested-legacy-shell legacy-static-shell">
+    <div class="shell-hero">
+      <p class="shell-eyebrow">nested legacy market-data shell</p>
+      <h1 class="shell-title">市场数据聚合工作台</h1>
+      <p class="shell-copy">
+        当前 nested legacy 市场数据聚合页未接入可复用的一对一 canonical truth。
+        这里不再展示本地实时徽标、秒级时间、返回动作、Tab 聚合面板或组件级直接请求结果。
+      </p>
     </div>
 
-    <div class="card main-card">
-      <div class="tabs-container">
-        <button
-          v-for="(tab, _idx) in tabs"
-          :key="tab.name"
-          class="tab-button"
-          :class="{ active: activeTab === tab.name }"
-          @click="activeTab = tab.name"
-        >
-          <svg class="market-data-icon tab-button__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path v-if="tab.name === 'fund-flow'" d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-            <polyline v-else-if="tab.name === 'etf-data'" points="22,12 18,12 15,21 9,3 6,12 2,12"></polyline>
-            <path v-else-if="tab.name === 'chip-race'" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-            <path v-else d="M4 15s1-1 4-1 5 2 8 2 8-6 9-6-9s-4-9-4-9 5 2 8 2 8-6 9-6 9z"></path>
-          </svg>
-          <span>{{ tab.label }}</span>
-        </button>
-      </div>
+    <div class="shell-grid">
+      <article class="shell-card">
+        <h2>推荐入口</h2>
+        <p>若需要真实已验证的市场数据，请回到这些 canonical 路由：</p>
+        <ul>
+          <li>
+            <a href="/market/realtime">/market/realtime</a>
+            <span>查看实时行情、行情快照与请求来源。</span>
+          </li>
+          <li>
+            <a href="/market/lhb">/market/lhb</a>
+            <span>查看已验证的龙虎榜榜单和交易日期上下文。</span>
+          </li>
+          <li>
+            <a href="/data/fund-flow">/data/fund-flow</a>
+            <span>查看已验证的资金流向和市场资金结构。</span>
+          </li>
+          <li>
+            <a href="/data/industry">/data/industry</a>
+            <span>查看已验证的行业板块资金动向。</span>
+          </li>
+        </ul>
+      </article>
 
-      <div class="tab-content">
-        <FundFlowPanel v-if="activeTab === 'fund-flow'" />
-        <ETFDataTable v-else-if="activeTab === 'etf-data'" />
-        <ChipRaceTable v-else-if="activeTab === 'chip-race'" />
-        <LongHuBangTable v-else-if="activeTab === 'longhubang'" />
-      </div>
+      <article class="shell-card">
+        <h2>边界说明</h2>
+        <ul class="boundary-list">
+          <li>不显示 shell 级实时徽标、秒级时间、返回动作、Tab、统计卡或旧市场数据表格。</li>
+          <li>不再拉起 legacy ETF、chip-race、资金流和 LHB 组件中的直接 axios 请求。</li>
+          <li>若后续恢复嵌套市场数据页，必须先建立新的 verified aggregate contract 或一对一 canonical owner。</li>
+        </ul>
+      </article>
     </div>
-  </div>
+  </section>
 </template>
 
-<script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { useRouter } from 'vue-router'
-import { ArtDecoBadge } from '@/components/artdeco'
-
-import FundFlowPanel from '@/components/market/FundFlowPanel.vue'
-import ETFDataTable from '@/components/market/ETFDataTable.vue'
-import ChipRaceTable from '@/components/market/ChipRaceTable.vue'
-import LongHuBangTable from '@/components/market/LongHuBangTable.vue'
-
-const router = useRouter()
-const activeTab = ref('fund-flow')
-const currentTime = ref('')
-
-const goBack = () => {
-  router.back()
-}
-
-const updateTime = () => {
-  const now = new Date()
-  currentTime.value = now.toLocaleString('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit'
-  })
-}
-
-const tabs = [
-  { name: 'fund-flow', label: '资金流向' },
-  { name: 'etf-data', label: 'ETF行情' },
-  { name: 'chip-race', label: '竞价抢筹' },
-  { name: 'longhubang', label: '龙虎榜' }
-]
-
-let timeInterval = null
-
-onMounted(() => {
-  updateTime()
-  timeInterval = setInterval(updateTime, 1000)
-})
-
-onBeforeUnmount(() => {
-  if (timeInterval) {
-    clearInterval(timeInterval)
-  }
-})
-</script>
-
 <style scoped lang="scss">
-@use '@/styles/artdeco-tokens.scss' as *;
-
-.market-data-view {
-  @include artdeco-crosshatch-bg;
-  position: relative;
-  min-height: 100vh;
-  padding: var(--artdeco-spacing-5);
-  overflow: hidden;
-
-  &::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.04;
-    background-image:
-      repeating-linear-gradient(
-        45deg,
-        transparent,
-        transparent calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) * 2),
-        color-mix(in srgb, var(--artdeco-gold-primary) 2%, transparent) calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) * 2),
-        color-mix(in srgb, var(--artdeco-gold-primary) 2%, transparent) calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) * 3)
-      ),
-      repeating-linear-gradient(
-        -45deg,
-        var(--artdeco-gold-primary) 0,
-        var(--artdeco-gold-primary) var(--artdeco-spacing-px),
-        transparent var(--artdeco-spacing-px),
-        transparent calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) * 2)
-      );
-  }
+.market-data-nested-legacy-shell {
+  display: grid;
+  gap: 24px;
+  padding: 24px;
+  color: #f4efe2;
 }
 
-.market-data-icon {
-  flex-shrink: 0;
-  stroke-width: calc(var(--artdeco-spacing-px) * 2);
+.shell-hero,
+.shell-card {
+  border: 1px solid rgba(212, 175, 55, 0.24);
+  border-radius: 20px;
+  background:
+    linear-gradient(160deg, rgba(18, 24, 38, 0.94), rgba(8, 12, 20, 0.96)),
+    radial-gradient(circle at top right, rgba(212, 175, 55, 0.12), transparent 48%);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
 }
 
-.card {
-  position: relative;
-  z-index: 1;
-  background: var(--artdeco-bg-card);
-  border: var(--artdeco-spacing-px) solid var(--artdeco-gold-dim);
-  border-radius: var(--artdeco-radius-none);
-
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    width: var(--artdeco-spacing-4);
-    height: var(--artdeco-spacing-4);
-    border: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-gold-primary);
-  }
-
-  &::before {
-    top: var(--artdeco-spacing-3);
-    left: var(--artdeco-spacing-3);
-    border-right: none;
-    border-bottom: none;
-  }
-
-  &::after {
-    right: var(--artdeco-spacing-3);
-    bottom: var(--artdeco-spacing-3);
-    border-top: none;
-    border-left: none;
-  }
+.shell-hero {
+  padding: 28px;
 }
 
-.header-card {
-  margin-bottom: var(--artdeco-spacing-5);
-  padding:
-    var(--artdeco-spacing-5)
-    calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-1) + var(--artdeco-spacing-px) * 2);
-
-  .header-content {
-    display: flex;
-    align-items: center;
-    gap: var(--artdeco-spacing-5);
-  }
-
-  .back-button {
-    width: var(--artdeco-spacing-10);
-    height: var(--artdeco-spacing-10);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--artdeco-gold-primary);
-    background: var(--artdeco-gold-opacity-10);
-    border: var(--artdeco-spacing-px) solid var(--artdeco-gold-dim);
-    cursor: pointer;
-    transition: all var(--artdeco-transition-base) var(--artdeco-ease-out);
-
-    &:hover {
-      color: var(--artdeco-bg-global);
-      background: var(--artdeco-gold-primary);
-    }
-  }
-
-  .back-button__icon {
-    width: var(--artdeco-spacing-5);
-    height: var(--artdeco-spacing-5);
-  }
-
-  .header-title-section {
-    display: flex;
-    align-items: center;
-    gap: var(--artdeco-spacing-3);
-    flex: 1;
-  }
-
-  .header-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--artdeco-gold-primary);
-  }
-
-  .header-icon__glyph {
-    width: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-1));
-    height: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-1));
-  }
-
-  .header-title {
-    margin: 0;
-    color: var(--artdeco-gold-primary);
-    font-family: var(--artdeco-font-display);
-    font-size: var(--artdeco-text-xl);
-    font-weight: var(--artdeco-font-semibold);
-    letter-spacing: calc(var(--artdeco-spacing-px) * 2);
-    text-transform: uppercase;
-  }
-
-  .header-info {
-    display: flex;
-    align-items: center;
-    gap: var(--artdeco-spacing-4);
-  }
-
-  .time-display {
-    color: var(--artdeco-fg-muted);
-    font-family: var(--artdeco-font-mono);
-    font-size: calc(var(--artdeco-text-compact-xs) + var(--artdeco-spacing-px) * 2);
-  }
-}
-
-.main-card {
-  position: relative;
-}
-
-.tabs-container {
-  display: flex;
-  gap: calc(var(--artdeco-spacing-px) * 2);
-  padding: 0 var(--artdeco-spacing-5);
-  overflow-x: auto;
-  border-bottom: var(--artdeco-spacing-px) solid var(--artdeco-gold-dim);
-}
-
-.tab-button {
-  position: relative;
-  top: var(--artdeco-spacing-px);
-  display: flex;
-  align-items: center;
-  gap: var(--artdeco-spacing-2);
-  padding:
-    calc(var(--artdeco-spacing-3) + var(--artdeco-spacing-px) * 3)
-    calc(var(--artdeco-spacing-5) + var(--artdeco-spacing-1) + var(--artdeco-spacing-px));
-  color: var(--artdeco-fg-muted);
-  background: transparent;
-  border: none;
-  border-bottom: calc(var(--artdeco-spacing-px) * 3) solid transparent;
-  cursor: pointer;
-  font-family: var(--artdeco-font-display);
-  font-size: calc(var(--artdeco-text-compact-xs) + var(--artdeco-spacing-px) * 2);
-  letter-spacing: var(--artdeco-spacing-px);
+.shell-eyebrow {
+  margin: 0 0 10px;
+  color: #d4af37;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  transition: all var(--artdeco-transition-base) var(--artdeco-ease-out);
-  white-space: nowrap;
-
-  &:hover {
-    color: var(--artdeco-gold-primary);
-    background: var(--artdeco-gold-opacity-05);
-  }
-
-  &.active {
-    color: var(--artdeco-gold-primary);
-    background: var(--artdeco-gold-opacity-08);
-    border-bottom-color: var(--artdeco-gold-primary);
-  }
 }
 
-.tab-button__icon {
-  width: var(--artdeco-spacing-4);
-  height: var(--artdeco-spacing-4);
+.shell-title {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
 }
 
-.tab-content {
-  position: relative;
-  z-index: 1;
-  padding: var(--artdeco-spacing-5);
-  min-height: calc(var(--artdeco-spacing-24) * 5 + var(--artdeco-spacing-5));
+.shell-copy {
+  max-width: 760px;
+  margin: 14px 0 0;
+  color: rgba(244, 239, 226, 0.82);
+  line-height: 1.7;
 }
 
-@media (width <= calc(var(--artdeco-spacing-16) * 12)) {
-  .market-data-view {
-    padding: calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) * 2);
-  }
+.shell-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
 
-  .header-card {
-    padding: calc(var(--artdeco-spacing-3) + var(--artdeco-spacing-px) * 3);
+.shell-card {
+  padding: 24px;
+}
 
-    .header-content {
-      flex-wrap: wrap;
-      gap: var(--artdeco-spacing-3);
-    }
+.shell-card h2 {
+  margin: 0 0 14px;
+  font-size: 18px;
+}
 
-    .back-button {
-      width: calc(var(--artdeco-spacing-8) + var(--artdeco-spacing-1));
-      height: calc(var(--artdeco-spacing-8) + var(--artdeco-spacing-1));
-    }
+.shell-card p,
+.shell-card li,
+.shell-card span {
+  color: rgba(244, 239, 226, 0.8);
+  line-height: 1.7;
+}
 
-    .header-title {
-      font-size: var(--artdeco-text-compact-lg);
-      letter-spacing: var(--artdeco-spacing-px);
-    }
+.shell-card ul {
+  margin: 0;
+  padding-left: 18px;
+}
 
-    .header-info {
-      width: 100%;
-      flex-wrap: wrap;
-      gap: var(--artdeco-spacing-2);
-    }
+.shell-card li + li {
+  margin-top: 10px;
+}
 
-    .time-display {
-      font-size: var(--artdeco-text-compact-xs);
-    }
-  }
+.shell-card a {
+  color: #f6d774;
+  font-weight: 600;
+  text-decoration: none;
+}
 
-  .main-card {
-    padding: calc(var(--artdeco-spacing-3) + var(--artdeco-spacing-px) * 3);
-  }
+.shell-card a:hover {
+  text-decoration: underline;
+}
 
-  .tabs-container {
-    padding: 0 calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) * 2);
-  }
-
-  .tab-button {
-    padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
-    font-size: var(--artdeco-text-compact-xs);
-    letter-spacing: calc(var(--artdeco-spacing-px) / 2);
-  }
-
-  .tab-content {
-    padding: calc(var(--artdeco-spacing-3) + var(--artdeco-spacing-px) * 3);
-    min-height: calc(var(--artdeco-spacing-24) * 4 + var(--artdeco-spacing-4));
-  }
+.boundary-list {
+  list-style: disc;
 }
 </style>
