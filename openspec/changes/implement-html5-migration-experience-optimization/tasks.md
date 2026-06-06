@@ -39,7 +39,7 @@
 > **局部事实说明（2026-04-28）**:
 > 当前依赖统一尚未完成：
 > - `web/frontend/package.json` 仍保留 `@ant-design/icons-vue`
-> - `web/frontend/src/views/monitoring/composables/useRiskDashboard.ts`
+> - `web/frontend/src/views/monitoring/composables/useRiskDashboard.ts`（historical reference; G2.396 repo-truth recheck confirms this file no longer exists in the current tree）
 > - `web/frontend/src/components/monitoring/MonitoringAlertPanel.vue`
 > - `web/frontend/src/components/monitoring/MonitoringDataTable.vue`
 >   仍直接从 `@ant-design/icons-vue` 导入图标
@@ -47,9 +47,9 @@
 > 2026-05-07 repo-truth 更新：
 > - 审计已确认 `ant-design-vue` 本体已经不在 `web/frontend/package.json` 的 runtime `dependencies` 中，当前残留的是 icon bridge `@ant-design/icons-vue`
 > - `rg -n "@ant-design/icons-vue|ant-design-vue" web/frontend/src web/frontend/tests web/frontend/package.json` 当前命中表明，活跃源码里的残留导入集中在：
->   - `web/frontend/src/views/monitoring/composables/useRiskDashboard.ts`
 >   - `web/frontend/src/components/monitoring/MonitoringAlertPanel.vue`
 >   - `web/frontend/src/components/monitoring/MonitoringDataTable.vue`
+> - G2.396 repo-truth recheck: `web/frontend/src/views/monitoring/composables/useRiskDashboard.ts` no longer exists; current active residual imports are limited to `MonitoringAlertPanel.vue`, `MonitoringDataTable.vue`, `web/frontend/package.json`, and migration guard tests.
 > - 现有 `web/frontend/tests/unit/components/ant-design-migration.spec.ts` 已实测 `3 passed`，并直接守护：
 >   - `ant-design-vue` 运行时不可用
 >   - `element-plus` 与 `@element-plus/icons-vue` 仍在
@@ -117,9 +117,9 @@
 - [ ] 1.4.3 移除未使用的依赖和死代码
   - Repo-truth blocker（2026-05-07）: 当前还不能把这项按事实勾选。
   - 依赖层面：`ant-design-vue` 本体虽已移出 runtime `dependencies`，但 `@ant-design/icons-vue` 仍在活跃源码中使用，至少包括：
-    - `web/frontend/src/views/monitoring/composables/useRiskDashboard.ts`
     - `web/frontend/src/components/monitoring/MonitoringAlertPanel.vue`
     - `web/frontend/src/components/monitoring/MonitoringDataTable.vue`
+  - G2.396 repo-truth recheck: the previous `useRiskDashboard.ts` reference is historical; the file is not present in the current tree. This does not close `1.4.3`, because active icon-bridge imports still remain in the two monitoring components and package dependency.
   - 死代码层面：`web/frontend/src/_entry-archive/` 仍保留多份历史 `main*.js/ts` 资产；它们当前更接近 archive / retained assets，而不是已确认可删除的死代码。
   - 本次还同步修正了 `web/frontend/ENTRY-TRUTH.md`：当前唯一活跃浏览器入口是 `index.html -> src/main-standard.ts`，此前关于 `verify-mount.js -> src/main.js` 的说法已不符合当前树状态。
   - 因此 1.4.3 继续保持未完成；后续只有在 `@ant-design/icons-vue` 迁移完成、archive 资产的保留/删除边界被单独批准后，才能真正收口。
