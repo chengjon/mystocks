@@ -28,6 +28,8 @@ test("getRiskTabMeta resolves known tabs and falls back to overview", () => {
   assert.deepEqual(getRiskTabMeta("missing"), riskTabs[0])
   assert.equal(riskTabs[0]?.key, "overview")
   assert.equal(riskTabs[1]?.key, "stock")
+  assert.equal(riskTabs[1]?.description, "当前仅保留个股风险分析入口，个股级仓位、止损与波动联动待接入。")
+  assert.equal(riskTabs[1]?.description.includes("可执行的个股风控动作"), false)
 })
 
 test("initial risk fixtures preserve expected alert and sector inventory", () => {
@@ -39,6 +41,7 @@ test("initial risk fixtures preserve expected alert and sector inventory", () =>
   assert.equal(alerts.length, 4)
   assert.equal(alerts[0]?.riskLevel, "high")
   assert.equal(alerts[2]?.stopStatus, "triggered")
+  assert.equal(alerts[0]?.policyReady, true)
   assert.equal(sectorDistribution.length, 5)
   assert.equal(concentrationMetrics.length, 4)
 })
@@ -68,6 +71,7 @@ test("risk labels and currency formatting stay aligned with Chinese UI copy", ()
   assert.equal(getStopStatusLabel("triggered"), "已触发")
   assert.equal(getStopStatusLabel("approaching"), "接近")
   assert.equal(getStopStatusLabel("normal"), "正常")
+  assert.equal(getStopStatusLabel("unverified"), "未校验")
 
   assert.equal(formatRiskCurrencyNumber(1250000), "1,250,000")
 })

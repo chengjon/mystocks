@@ -8,6 +8,10 @@ import {
 defineProps<{
   riskData: RiskMetrics
 }>()
+
+function hasMetricValue(value: number | null): value is number {
+  return typeof value === 'number'
+}
 </script>
 
 <template>
@@ -15,42 +19,82 @@ defineProps<{
     <div class="stat-card">
       <div class="stat-label">总资产</div>
       <div class="stat-value gold">¥{{ formatRiskCurrencyNumber(riskData.totalAssets) }}</div>
-      <div class="stat-change" :class="riskData.totalAssetsChange >= 0 ? 'positive' : 'negative'">
-        <ArtDecoIcon :name="riskData.totalAssetsChange >= 0 ? 'trending-up' : 'trending-down'" size="xs" />
-        {{ riskData.totalAssetsChange >= 0 ? '+' : '' }}{{ riskData.totalAssetsChange }}%
-      </div>
+      <template v-if="hasMetricValue(riskData.totalAssetsChange)">
+        <div class="stat-change" :class="riskData.totalAssetsChange >= 0 ? 'positive' : 'negative'">
+          <ArtDecoIcon :name="riskData.totalAssetsChange >= 0 ? 'trending-up' : 'trending-down'" size="xs" />
+          {{ riskData.totalAssetsChange >= 0 ? '+' : '' }}{{ riskData.totalAssetsChange }}%
+        </div>
+      </template>
+      <template v-else>
+        <div class="stat-change pending">待接入</div>
+      </template>
     </div>
     <div class="stat-card">
       <div class="stat-label">今日收益</div>
       <div class="stat-value" :class="riskData.todayProfit >= 0 ? 'success' : 'danger'">
         {{ riskData.todayProfit >= 0 ? '+' : '' }}¥{{ formatRiskCurrencyNumber(riskData.todayProfit) }}
       </div>
-      <div class="stat-change" :class="riskData.todayProfitChange >= 0 ? 'positive' : 'negative'">
-        {{ riskData.todayProfitChange >= 0 ? '+' : '' }}{{ riskData.todayProfitChange }}%
-      </div>
+      <template v-if="hasMetricValue(riskData.todayProfitChange)">
+        <div class="stat-change" :class="riskData.todayProfitChange >= 0 ? 'positive' : 'negative'">
+          {{ riskData.todayProfitChange >= 0 ? '+' : '' }}{{ riskData.todayProfitChange }}%
+        </div>
+      </template>
+      <template v-else>
+        <div class="stat-change pending">待接入</div>
+      </template>
     </div>
     <div class="stat-card warning">
       <div class="stat-label">最大回撤</div>
-      <div class="stat-value danger">-{{ riskData.maxDrawdown }}%</div>
-      <div class="stat-change negative">当前周期</div>
+      <template v-if="hasMetricValue(riskData.maxDrawdown)">
+        <div class="stat-value danger">-{{ riskData.maxDrawdown }}%</div>
+        <div class="stat-change negative">当前周期</div>
+      </template>
+      <template v-else>
+        <div class="stat-value pending">未校验</div>
+        <div class="stat-change pending">待接入</div>
+      </template>
     </div>
     <div class="stat-card">
       <div class="stat-label">夏普比率</div>
-      <div class="stat-value">{{ riskData.sharpeRatio }}</div>
-      <div class="stat-change positive">超额收益</div>
+      <template v-if="hasMetricValue(riskData.sharpeRatio)">
+        <div class="stat-value">{{ riskData.sharpeRatio }}</div>
+        <div class="stat-change positive">超额收益</div>
+      </template>
+      <template v-else>
+        <div class="stat-value pending">未校验</div>
+        <div class="stat-change pending">待接入</div>
+      </template>
     </div>
     <div class="stat-card">
       <div class="stat-label">年化波动率</div>
-      <div class="stat-value">{{ riskData.volatility }}%</div>
+      <template v-if="hasMetricValue(riskData.volatility)">
+        <div class="stat-value">{{ riskData.volatility }}%</div>
+      </template>
+      <template v-else>
+        <div class="stat-value pending">未校验</div>
+        <div class="stat-change pending">待接入</div>
+      </template>
     </div>
     <div class="stat-card">
       <div class="stat-label">贝塔值</div>
-      <div class="stat-value">{{ riskData.beta }}</div>
-      <div class="stat-change negative">vs 沪深300</div>
+      <template v-if="hasMetricValue(riskData.beta)">
+        <div class="stat-value">{{ riskData.beta }}</div>
+        <div class="stat-change negative">vs 沪深300</div>
+      </template>
+      <template v-else>
+        <div class="stat-value pending">未校验</div>
+        <div class="stat-change pending">待接入</div>
+      </template>
     </div>
     <div class="stat-card">
       <div class="stat-label">索提诺比率</div>
-      <div class="stat-value">{{ riskData.sortinoRatio }}</div>
+      <template v-if="hasMetricValue(riskData.sortinoRatio)">
+        <div class="stat-value">{{ riskData.sortinoRatio }}</div>
+      </template>
+      <template v-else>
+        <div class="stat-value pending">未校验</div>
+        <div class="stat-change pending">待接入</div>
+      </template>
     </div>
     <div class="stat-card">
       <div class="stat-label">持仓市值</div>
@@ -131,6 +175,10 @@ defineProps<{
   &.success {
     color: var(--artdeco-rise);
   }
+
+  &.pending {
+    color: var(--artdeco-warning);
+  }
 }
 
 .stat-change {
@@ -145,6 +193,10 @@ defineProps<{
 
   &.negative {
     color: var(--artdeco-down);
+  }
+
+  &.pending {
+    color: var(--artdeco-fg-muted);
   }
 }
 </style>

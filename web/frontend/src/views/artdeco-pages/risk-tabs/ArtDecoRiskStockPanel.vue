@@ -20,18 +20,20 @@ const emit = defineEmits<{
         <div class="card-header-custom">
           <div class="card-title-custom">
             <span class="title-bar"></span>
-            个股风险分析
+            个股风险分析入口
           </div>
           <ArtDecoButton variant="solid" size="sm" @click="emit('openStockModal')">
             <template #icon>
               <ArtDecoIcon name="plus" />
             </template>
-            选择股票
+            查看接入说明
           </ArtDecoButton>
         </div>
       </template>
       <div class="stock-selector">
-        <p class="hint-text">选择持仓股票查看详细风险分析</p>
+        <span class="stock-pending-kicker">single-name: pending</span>
+        <p class="hint-text">当前仅保留个股风险分析入口，个股级仓位、止损与波动联动待接入。</p>
+        <p class="detail-text">当前路由仍复用组合级风险数据，不直接生成单标的风控动作。</p>
       </div>
     </ArtDecoCard>
   </div>
@@ -83,6 +85,27 @@ const emit = defineEmits<{
 
 .hint-text {
   color: var(--artdeco-fg-muted);
-  font-style: italic;
+  margin: 0;
+  line-height: 1.7;
+}
+
+.stock-selector {
+  display: flex;
+  flex-direction: column;
+  gap: var(--artdeco-spacing-3);
+}
+
+.stock-pending-kicker {
+  font-family: var(--artdeco-font-mono);
+  font-size: var(--artdeco-text-xs);
+  letter-spacing: var(--artdeco-tracking-wide);
+  text-transform: uppercase;
+  color: var(--artdeco-gold-dim);
+}
+
+.detail-text {
+  margin: 0;
+  color: var(--artdeco-fg-secondary);
+  line-height: 1.7;
 }
 </style>

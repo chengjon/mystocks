@@ -1,13 +1,13 @@
 export interface RiskMetrics {
   totalAssets: number
-  totalAssetsChange: number
+  totalAssetsChange: number | null
   todayProfit: number
-  todayProfitChange: number
-  maxDrawdown: number
-  sharpeRatio: number
-  volatility: number
-  beta: number
-  sortinoRatio: number
+  todayProfitChange: number | null
+  maxDrawdown: number | null
+  sharpeRatio: number | null
+  volatility: number | null
+  beta: number | null
+  sortinoRatio: number | null
   positionValue: number
 }
 
@@ -16,8 +16,9 @@ export interface RiskAlertItem {
   name: string
   riskLevel: 'high' | 'medium' | 'low'
   position: number
-  stopStatus: 'triggered' | 'approaching' | 'normal'
+  stopStatus: 'triggered' | 'approaching' | 'normal' | 'unverified'
   action: string
+  policyReady: boolean
 }
 
 export interface SectorDistributionItem {
@@ -28,7 +29,7 @@ export interface SectorDistributionItem {
 export interface ConcentrationMetric {
   label: string
   current: number
-  limit: number
+  limit: number | null
   variant: 'gold' | 'success' | 'warning'
 }
 
@@ -74,7 +75,7 @@ export const riskTabs: RiskTabDefinition[] = [
     label: '个股分析',
     icon: 'StockAnalysis',
     eyebrow: 'single-name lens',
-    description: '下钻单一标的的仓位、止损与波动特征，形成可执行的个股风控动作。'
+    description: '当前仅保留个股风险分析入口，个股级仓位、止损与波动联动待接入。'
   }
 ]
 
@@ -128,7 +129,8 @@ export function createInitialRiskAlerts(): RiskAlertItem[] {
       riskLevel: 'high',
       position: 12.5,
       stopStatus: 'approaching',
-      action: '减仓'
+      action: '减仓',
+      policyReady: true
     },
     {
       code: '000858.SZ',
@@ -136,7 +138,8 @@ export function createInitialRiskAlerts(): RiskAlertItem[] {
       riskLevel: 'medium',
       position: 8.3,
       stopStatus: 'normal',
-      action: '监控'
+      action: '监控',
+      policyReady: true
     },
     {
       code: '002594.SZ',
@@ -144,7 +147,8 @@ export function createInitialRiskAlerts(): RiskAlertItem[] {
       riskLevel: 'high',
       position: 15.2,
       stopStatus: 'triggered',
-      action: '止损'
+      action: '止损',
+      policyReady: true
     },
     {
       code: '600519.SH',
@@ -152,7 +156,8 @@ export function createInitialRiskAlerts(): RiskAlertItem[] {
       riskLevel: 'low',
       position: 20.1,
       stopStatus: 'normal',
-      action: '持有'
+      action: '持有',
+      policyReady: true
     }
   ]
 }
@@ -178,5 +183,6 @@ export function getRiskLevelLabel(level: RiskAlertItem['riskLevel']): string {
 export function getStopStatusLabel(status: RiskAlertItem['stopStatus']): string {
   if (status === 'triggered') return '已触发'
   if (status === 'approaching') return '接近'
+  if (status === 'unverified') return '未校验'
   return '正常'
 }

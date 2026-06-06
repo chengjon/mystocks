@@ -1,7 +1,12 @@
 import test from "node:test"
 import assert from "node:assert/strict"
 
-import { toRiskManagementAlerts, toRiskManagementMetrics } from "../riskManagementData.ts"
+import {
+  toRiskManagementAlerts,
+  toRiskManagementConcentrationMetrics,
+  toRiskManagementMetrics,
+  toRiskManagementSectorDistribution,
+} from "../riskManagementData.ts"
 
 const positionsPayload = {
   data: {
@@ -25,19 +30,19 @@ const positionsPayload = {
   },
 }
 
-test("toRiskManagementMetrics maps trade positions payload into risk header metrics", () => {
+test("toRiskManagementMetrics does not fabricate asset or daily change percentages from holdings-only payloads", () => {
   const metrics = toRiskManagementMetrics(positionsPayload)
 
   assert.deepEqual(metrics, {
     totalAssets: 1025000,
-    totalAssetsChange: 5.67,
+    totalAssetsChange: null,
     todayProfit: 55000,
-    todayProfitChange: 5.67,
-    maxDrawdown: 0,
-    sharpeRatio: 0,
-    volatility: 0,
-    beta: 1,
-    sortinoRatio: 0,
+    todayProfitChange: null,
+    maxDrawdown: null,
+    sharpeRatio: null,
+    volatility: null,
+    beta: null,
+    sortinoRatio: null,
     positionValue: 1025000,
   })
 })
@@ -51,20 +56,35 @@ test("toRiskManagementAlerts derives alert rows from live positions", () => {
       name: "贵州茅台",
       riskLevel: "high",
       position: 85.37,
-      stopStatus: "approaching",
-      action: "减仓",
+      stopStatus: "unverified",
+      action: "待复核",
+      policyReady: false,
     },
     {
       code: "000858.SZ",
       name: "五粮液",
       riskLevel: "medium",
       position: 14.63,
-      stopStatus: "normal",
-      action: "监控",
+      stopStatus: "unverified",
+      action: "待复核",
+      policyReady: false,
     },
   ])
 })
 
 test("toRiskManagementAlerts returns empty list for invalid payloads", () => {
   assert.deepEqual(toRiskManagementAlerts(null), [])
+})
+
+test("toRiskManagementConcentrationMetrics derives live concentration rows instead of static defaults", () => {
+  const metrics = toRiskManagementConcentrationMetrics(positionsPayload)
+
+  assert.deepEqual(metrics, [
+    { label: "前10大重仓股占比", current: 100, limit: null, variant: "gold" },
+    { label: "单股最大仓位", current: 85.37, limit: null, variant: "warning" },
+  ])
+})
+
+test("toRiskManagementSectorDistribution stays empty when the live positions payload has no sector fields", () => {
+  assert.deepEqual(toRiskManagementSectorDistribution(positionsPayload), [])
 })

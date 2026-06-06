@@ -2,11 +2,24 @@ import { mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 import ArtDecoRiskOverviewPanel from '../ArtDecoRiskOverviewPanel.vue'
-import { createInitialRiskAlerts, type RiskAlertItem } from '../riskManagementHelpers'
+import {
+  concentrationMetrics,
+  createInitialRiskAlerts,
+  sectorDistribution,
+  type RiskAlertItem,
+} from '../riskManagementHelpers'
 
-const mountRiskOverviewPanel = (riskAlerts: RiskAlertItem[] = createInitialRiskAlerts()) =>
+const mountRiskOverviewPanel = (
+  riskAlerts: RiskAlertItem[] = createInitialRiskAlerts(),
+  panelProps: Record<string, unknown> = {},
+) =>
   mount(ArtDecoRiskOverviewPanel as never, {
-    props: { riskAlerts },
+    props: {
+      riskAlerts,
+      sectorDistribution,
+      concentrationMetrics,
+      ...panelProps,
+    },
     global: {
       stubs: {
         ArtDecoCard: {
@@ -107,6 +120,41 @@ describe('ArtDecoRiskOverviewPanel', () => {
     expect(wrapper.emitted('action')).toEqual([[riskAlerts[0]]])
   })
 
+  it('degrades holdings-derived rows into observation mode when policy inputs are unavailable', () => {
+    const wrapper = mountRiskOverviewPanel([
+      {
+        code: '600519.SH',
+        name: '贵州茅台',
+        riskLevel: 'high',
+        position: 54.36,
+        stopStatus: 'unverified',
+        action: '待复核',
+        policyReady: false,
+      },
+      {
+        code: '300750.SZ',
+        name: '宁德时代',
+        riskLevel: 'medium',
+        position: 45.64,
+        stopStatus: 'unverified',
+        action: '待复核',
+        policyReady: false,
+      },
+    ], {
+      sectorDistribution: [],
+      concentrationMetrics: [],
+    })
+
+    expect(wrapper.text()).toContain('风险观察列表')
+    expect(wrapper.text()).toContain('2 条观察项')
+    expect(wrapper.text()).toContain('当前仅基于真实持仓暴露生成风险观察项，未接入止损/减仓策略参数。')
+    expect(wrapper.text()).toContain('策略状态')
+    expect(wrapper.text()).toContain('复核状态')
+    expect(wrapper.text()).toContain('未校验')
+    expect(wrapper.text()).toContain('待复核')
+    expect(wrapper.text()).not.toContain('风险预警列表')
+  })
+
   it('renders static sector distribution and concentration metrics sections', () => {
     const wrapper = mountRiskOverviewPanel(riskAlerts)
 
@@ -114,6 +162,20 @@ describe('ArtDecoRiskOverviewPanel', () => {
     expect(wrapper.text()).toContain('医药生物')
     expect(wrapper.text()).toContain('前10大重仓股占比')
     expect(wrapper.text()).toContain('65 / 70')
+  })
+
+  it('shows pending integration states instead of static overview placeholders when live sector and concentration data are unavailable', () => {
+    const wrapper = mountRiskOverviewPanel([], {
+      sectorDistribution: [],
+      concentrationMetrics: [],
+    })
+
+    expect(wrapper.text()).toContain('行业分布待接入')
+    expect(wrapper.text()).toContain('集中度指标待接入')
+    expect(wrapper.text()).not.toContain('科技股')
+    expect(wrapper.text()).not.toContain('医药生物')
+    expect(wrapper.text()).not.toContain('前10大重仓股占比')
+    expect(wrapper.text()).not.toContain('65 / 70')
   })
 
   it('attaches domain state classes for risk level and stop status tags', () => {

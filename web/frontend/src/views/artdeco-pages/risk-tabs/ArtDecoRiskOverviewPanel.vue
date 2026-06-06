@@ -1,23 +1,38 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import ArtDecoButton from '@/components/artdeco/base/ArtDecoButton.vue'
 import ArtDecoCard from '@/components/artdeco/base/ArtDecoCard.vue'
 import ArtDecoBadge from '@/components/artdeco/base/ArtDecoBadge.vue'
 import {
-  concentrationMetrics,
   getRiskLevelLabel,
   getStopStatusLabel,
   sectorColors,
-  sectorDistribution,
-  type RiskAlertItem
+  type ConcentrationMetric,
+  type RiskAlertItem,
+  type SectorDistributionItem,
 } from './riskManagementHelpers'
 
-defineProps<{
+const props = withDefaults(defineProps<{
   riskAlerts: RiskAlertItem[]
-}>()
+  sectorDistribution?: SectorDistributionItem[]
+  concentrationMetrics?: ConcentrationMetric[]
+}>(), {
+  sectorDistribution: () => [],
+  concentrationMetrics: () => [],
+})
 
 const emit = defineEmits<{
   action: [stock: RiskAlertItem]
 }>()
+
+const observationMode = computed(() =>
+  props.riskAlerts.length > 0 && props.riskAlerts.some((stock) => !stock.policyReady),
+)
+
+const alertTableTitle = computed(() => (observationMode.value ? '风险观察列表' : '风险预警列表'))
+const alertCountLabel = computed(() => (observationMode.value ? '条观察项' : '条预警'))
+const stopStatusColumnLabel = computed(() => (observationMode.value ? '策略状态' : '止损状态'))
+const actionColumnLabel = computed(() => (observationMode.value ? '复核状态' : '操作建议'))
 </script>
 
 <template>
@@ -37,9 +52,9 @@ const emit = defineEmits<{
             </div>
           </div>
         </template>
-        <div class="sector-list">
+        <div v-if="props.sectorDistribution.length > 0" class="sector-list">
           <div
-            v-for="(sector, index) in sectorDistribution"
+            v-for="(sector, index) in props.sectorDistribution"
             :key="sector.name"
             class="sector-item"
           >
@@ -53,6 +68,7 @@ const emit = defineEmits<{
             <span class="sector-percent">{{ sector.percent }}%</span>
           </div>
         </div>
+        <p v-else class="empty-copy">行业分布待接入，当前持仓数据未提供可验证的行业字段。</p>
       </ArtDecoCard>
 
       <ArtDecoCard class="concentration-card">
@@ -64,25 +80,29 @@ const emit = defineEmits<{
             </div>
           </div>
         </template>
-        <div class="progress-list">
+        <div v-if="props.concentrationMetrics.length > 0" class="progress-list">
           <div
-            v-for="item in concentrationMetrics"
+            v-for="item in props.concentrationMetrics"
             :key="item.label"
             class="progress-container"
           >
             <div class="progress-header">
               <span class="progress-label">{{ item.label }}</span>
-              <span class="progress-value">{{ item.current }} / {{ item.limit }}</span>
+              <span class="progress-value">
+                <template v-if="item.limit !== null">{{ item.current }} / {{ item.limit }}</template>
+                <template v-else>{{ item.current }}%</template>
+              </span>
             </div>
             <div class="progress-bar-bg">
               <div
                 class="progress-fill"
                 :class="item.variant"
-                :style="{ width: (item.current / item.limit * 100) + '%' }"
+                :style="{ width: (item.limit !== null ? item.current / item.limit * 100 : item.current) + '%' }"
               ></div>
             </div>
           </div>
         </div>
+        <p v-else class="empty-copy">集中度指标待接入，当前仅保留真实持仓告警与总览统计。</p>
       </ArtDecoCard>
     </div>
 
@@ -91,13 +111,16 @@ const emit = defineEmits<{
         <div class="card-header-custom">
           <div class="card-title-custom">
             <span class="title-bar"></span>
-            风险预警列表
+            {{ alertTableTitle }}
           </div>
           <ArtDecoBadge v-if="riskAlerts.length > 0" variant="danger">
-            {{ riskAlerts.length }} 条预警
+            {{ riskAlerts.length }} {{ alertCountLabel }}
           </ArtDecoBadge>
         </div>
       </template>
+      <p v-if="observationMode" class="observation-note">
+        当前仅基于真实持仓暴露生成风险观察项，未接入止损/减仓策略参数。
+      </p>
       <div class="table-container">
         <table class="risk-table">
           <thead>
@@ -105,8 +128,8 @@ const emit = defineEmits<{
               <th>股票名称</th>
               <th>风险等级</th>
               <th>仓位占比</th>
-              <th>止损状态</th>
-              <th>操作建议</th>
+              <th>{{ stopStatusColumnLabel }}</th>
+              <th>{{ actionColumnLabel }}</th>
             </tr>
           </thead>
           <tbody>
@@ -238,6 +261,20 @@ const emit = defineEmits<{
   font-family: var(--artdeco-font-mono);
   font-size: var(--artdeco-text-sm);
   color: var(--artdeco-fg-primary);
+}
+
+.empty-copy {
+  margin: 0;
+  color: var(--artdeco-fg-muted);
+  font-size: var(--artdeco-text-sm);
+  line-height: 1.6;
+}
+
+.observation-note {
+  margin: 0 0 var(--artdeco-spacing-4);
+  color: var(--artdeco-fg-muted);
+  font-size: var(--artdeco-text-sm);
+  line-height: 1.6;
 }
 
 .progress-list {

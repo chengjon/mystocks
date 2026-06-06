@@ -23,6 +23,8 @@ export interface StopLossRow {
   current_price: string
   stop_price: string
   distance: string
+  hasStopLossPolicy: boolean
+  distanceValue: number | null
 }
 
 function toFiniteNumber(value: unknown): number | null {
@@ -38,16 +40,20 @@ function toFiniteNumber(value: unknown): number | null {
   return null
 }
 
-function formatPrice(value: number | null): string {
-  return value === null ? "--" : value.toFixed(2)
+function formatPrice(value: number | null, fallback = "--"): string {
+  return value === null ? fallback : value.toFixed(2)
 }
 
-function formatDistance(currentPrice: number | null, stopPrice: number | null): string {
+function calculateDistance(currentPrice: number | null, stopPrice: number | null): number | null {
   if (currentPrice === null || stopPrice === null || stopPrice <= 0) {
-    return "--"
+    return null
   }
 
-  return (((currentPrice - stopPrice) / stopPrice) * 100).toFixed(2)
+  return ((currentPrice - stopPrice) / stopPrice) * 100
+}
+
+function formatDistance(value: number | null, fallback = "--"): string {
+  return value === null ? fallback : value.toFixed(2)
 }
 
 function extractRows(payload: unknown, collectionKeys: string[]): Record<string, unknown>[] {
@@ -137,6 +143,8 @@ export function buildStopLossRows(stocksPayload: unknown, quotesPayload: unknown
       ? toFiniteNumber(stock.entry_price ?? quote?.current_price ?? quote?.price)
       : toFiniteNumber(quote?.current_price ?? quote?.price ?? stock.entry_price)
     const stopPrice = toFiniteNumber(stock.stop_loss_price)
+    const hasStopLossPolicy = stopPrice !== null && stopPrice > 0
+    const distanceValue = hasStopLossPolicy ? calculateDistance(currentPrice, stopPrice) : null
 
     return {
       symbol,
@@ -145,8 +153,10 @@ export function buildStopLossRows(stocksPayload: unknown, quotesPayload: unknown
         (typeof stock.name === "string" && stock.name) ||
         symbol,
       current_price: formatPrice(currentPrice),
-      stop_price: formatPrice(stopPrice),
-      distance: formatDistance(currentPrice, stopPrice),
+      stop_price: formatPrice(stopPrice, hasStopLossPolicy ? "--" : "待接入"),
+      distance: formatDistance(distanceValue, hasStopLossPolicy ? "--" : "待接入"),
+      hasStopLossPolicy,
+      distanceValue,
     }
   })
 }

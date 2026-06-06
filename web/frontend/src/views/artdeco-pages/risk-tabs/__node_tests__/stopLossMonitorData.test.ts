@@ -93,3 +93,31 @@ test("buildStopLossRows ignores synthetic quote prices when entry price is avail
   assert.equal(rows[0]?.current_price, "1820.00")
   assert.equal(rows[0]?.distance, "4.00")
 })
+
+test("buildStopLossRows marks rows without stop-loss policy as pending instead of pretending they are actively monitored", () => {
+  const rows = buildStopLossRows(
+    [
+      {
+        stock_code: "600519",
+        stock_name: "贵州茅台",
+        entry_price: 1820,
+      },
+    ],
+    {
+      quotes: [
+        {
+          symbol: "600519",
+          name: "贵州茅台",
+          current_price: 1805,
+        },
+      ],
+    },
+  )
+
+  assert.equal(rows.length, 1)
+  assert.equal(rows[0]?.symbol, "600519")
+  assert.equal(rows[0]?.stop_price, "待接入")
+  assert.equal(rows[0]?.distance, "待接入")
+  assert.equal(rows[0]?.hasStopLossPolicy, false)
+  assert.equal(rows[0]?.distanceValue, null)
+})
