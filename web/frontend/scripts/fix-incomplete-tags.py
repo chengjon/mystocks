@@ -7,7 +7,6 @@
 2. 其他类似的自闭合标签问题
 """
 
-import os
 import re
 from pathlib import Path
 
@@ -69,7 +68,7 @@ def main():
         except Exception as e:
             print(f"❌ Error processing {vue_file}: {e}")
 
-    print(f"\n📊 Summary:")
+    print("\n📊 Summary:")
     print(f"   - Files fixed: {fixed_files}")
     print(f"   - Total tags removed: {total_fixed}")
 

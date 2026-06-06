@@ -6,7 +6,6 @@ Vue 单文件组件只能有一个 <template> 标签。
 此脚本删除第一个 <template> 块之后的所有内容。
 """
 
-import os
 import re
 from pathlib import Path
 
@@ -36,7 +35,7 @@ def fix_multiple_templates(file_path):
         next_close = content.find('</template>', pos)
 
         if next_close == -1:
-            print(f"  ERROR: No closing </template> found!")
+            print("  ERROR: No closing </template> found!")
             return 0
 
         if next_open != -1 and next_open < next_close:
@@ -50,7 +49,7 @@ def fix_multiple_templates(file_path):
             pos = next_close + len('</template>')
 
     if first_template_close == -1:
-        print(f"  ERROR: Could not find end of first template block")
+        print("  ERROR: Could not find end of first template block")
         return 0
 
     # 截断文件，保留到第一个 </template> 结束
@@ -90,7 +89,7 @@ def fix_multiple_templates(file_path):
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(new_content)
 
-    print(f"  ✅ Fixed: Removed extra templates, kept only first")
+    print("  ✅ Fixed: Removed extra templates, kept only first")
     return 1
 
 def main():
@@ -111,7 +110,7 @@ def main():
         except Exception as e:
             print(f"❌ Error processing {vue_file}: {e}")
 
-    print(f"\n📊 Summary:")
+    print("\n📊 Summary:")
     print(f"   - Files fixed: {fixed_count}")
 
 if __name__ == '__main__':

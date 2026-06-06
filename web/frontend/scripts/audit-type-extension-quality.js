@@ -104,6 +104,17 @@ function buildReferenceRegex(name) {
   return new RegExp(`\\b${name}\\b`, "g");
 }
 
+function stripComments(content) {
+  return content
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/^\s*\/\/.*$/gm, "");
+}
+
+function countReferences(content, name) {
+  const matches = stripComments(content).match(buildReferenceRegex(name));
+  return matches ? matches.length : 0;
+}
+
 async function collectFrontendSourceFiles() {
   const sourceRoot = path.join(FRONTEND_ROOT, "src");
   const files = [];
@@ -135,8 +146,17 @@ async function collectUnusedExports(declarations) {
   const unused = [];
 
   for (const declaration of declarations) {
-    const referenceRegex = buildReferenceRegex(declaration.name);
     let referenceCount = 0;
+    let declarationFileContent = fileContentCache.get(declaration.filePath);
+
+    if (!declarationFileContent) {
+      declarationFileContent = await readText(declaration.filePath);
+      fileContentCache.set(declaration.filePath, declarationFileContent);
+    }
+
+    // Ignore the declaration token itself, but keep genuine intra-file references
+    // such as exported support types used by other exported ViewModels in the same file.
+    referenceCount += Math.max(0, countReferences(declarationFileContent, declaration.name) - 1);
 
     for (const sourceFile of sourceFiles) {
       if (path.resolve(sourceFile) === path.resolve(declaration.filePath)) {
@@ -149,10 +169,7 @@ async function collectUnusedExports(declarations) {
         fileContentCache.set(sourceFile, content);
       }
 
-      const matches = content.match(referenceRegex);
-      if (matches) {
-        referenceCount += matches.length;
-      }
+      referenceCount += countReferences(content, declaration.name);
     }
 
     if (referenceCount === 0) {
