@@ -52,6 +52,38 @@ type DataSourceConfigRecord = {
   status: "active" | "maintenance"
 }
 
+type ResourceMetricRecord = {
+  metric_key: string
+  label: string
+  unit: string
+  current_value: number
+  status: "normal" | "warning" | "critical"
+  warning_threshold: number
+  critical_threshold: number
+  series: Array<{ timestamp: string; value: number }>
+  meta: Record<string, unknown>
+}
+
+type ResourceSnapshotPayload = {
+  node: {
+    node_id: string
+    scope: string
+    sampled_at: string
+    window_minutes: number
+    polling_interval_seconds: number
+    overall_status: "normal" | "warning" | "critical"
+  }
+  host: {
+    cpu: ResourceMetricRecord
+    memory: ResourceMetricRecord
+    disk: ResourceMetricRecord
+    load: ResourceMetricRecord
+  }
+  processes: Array<Record<string, unknown>>
+  dependencies: Array<Record<string, unknown>>
+  thresholds: Record<string, unknown>
+}
+
 type WatchlistRecord = {
   id: number
   name: string
@@ -189,6 +221,96 @@ const DATA_SOURCE_CONFIGS: DataSourceConfigRecord[] = [
     status: "maintenance",
   },
 ]
+
+const SYSTEM_RESOURCES_DATA: ResourceSnapshotPayload = {
+  node: {
+    node_id: "local-runtime",
+    scope: "single-node",
+    sampled_at: "2026-05-07T00:00:00+00:00",
+    window_minutes: 60,
+    polling_interval_seconds: 15,
+    overall_status: "warning",
+  },
+  host: {
+    cpu: {
+      metric_key: "cpu_percent",
+      label: "CPU",
+      unit: "%",
+      current_value: 82.5,
+      status: "warning",
+      warning_threshold: 70,
+      critical_threshold: 90,
+      series: [
+        { timestamp: "2026-05-06T23:59:45+00:00", value: 80.0 },
+        { timestamp: "2026-05-07T00:00:00+00:00", value: 82.5 },
+      ],
+      meta: { cpu_count: 8 },
+    },
+    memory: {
+      metric_key: "memory_percent",
+      label: "内存",
+      unit: "%",
+      current_value: 64.2,
+      status: "normal",
+      warning_threshold: 75,
+      critical_threshold: 90,
+      series: [{ timestamp: "2026-05-07T00:00:00+00:00", value: 64.2 }],
+      meta: { used_gb: 8, total_gb: 16 },
+    },
+    disk: {
+      metric_key: "disk_percent",
+      label: "磁盘",
+      unit: "%",
+      current_value: 91.2,
+      status: "critical",
+      warning_threshold: 80,
+      critical_threshold: 90,
+      series: [{ timestamp: "2026-05-07T00:00:00+00:00", value: 91.2 }],
+      meta: { used_gb: 910, total_gb: 1000 },
+    },
+    load: {
+      metric_key: "load_percent",
+      label: "负载",
+      unit: "%",
+      current_value: 24.0,
+      status: "normal",
+      warning_threshold: 70,
+      critical_threshold: 90,
+      series: [{ timestamp: "2026-05-07T00:00:00+00:00", value: 24.0 }],
+      meta: { load_average_1m: 1.92, cpu_count: 8 },
+    },
+  },
+  processes: [
+    {
+      process_key: "mystocks-backend",
+      display_name: "mystocks-backend",
+      status: "normal",
+      pid: 1234,
+      cpu_percent: 12.4,
+      memory_mb: 512.0,
+      memory_percent: 5.0,
+      sampled_at: "2026-05-07T00:00:00+00:00",
+      started_at: "2026-05-06T23:00:00+00:00",
+      thresholds: {},
+      summary: "cpu=12.4% memory=5.0%",
+    },
+  ],
+  dependencies: [
+    {
+      dependency_key: "postgresql",
+      display_name: "PostgreSQL",
+      status: "normal",
+      summary: "pool healthy",
+      sampled_at: "2026-05-07T00:00:00+00:00",
+      warning_threshold: 70,
+      critical_threshold: 90,
+      metrics: { active_connections: 2, usage_percentage: 20.0 },
+    },
+  ],
+  thresholds: {
+    "host.cpu_percent": { warning: 70, critical: 90, unit: "%" },
+  },
+}
 
 const WATCHLISTS = [
   { id: 101, name: "核心风控池", is_active: true },
@@ -469,6 +591,28 @@ async function stubPhase4Apis(page: Page, state: Phase4State): Promise<void> {
     })
   })
 
+  await context.route("**/api/v1/system/resources**", async (route) => {
+    await route.fulfill({
+      status: 200,
+      headers: {
+        "content-type": "application/json",
+        "x-request-id": "req-phase4-system-resources",
+      },
+      body: JSON.stringify(buildUnifiedResponse(SYSTEM_RESOURCES_DATA, { request_id: "req-phase4-system-resources" })),
+    })
+  })
+
+  await context.route("**/v1/system/resources**", async (route) => {
+    await route.fulfill({
+      status: 200,
+      headers: {
+        "content-type": "application/json",
+        "x-request-id": "req-phase4-system-resources",
+      },
+      body: JSON.stringify(buildUnifiedResponse(SYSTEM_RESOURCES_DATA, { request_id: "req-phase4-system-resources" })),
+    })
+  })
+
   await context.route(/https?:\/\/[^/]+\/(?:api\/.*|health(?:\/.*)?)/, async (route) => {
     const request = route.request()
     const normalizedPath = normalizePathname(request.url())
@@ -540,6 +684,29 @@ async function stubPhase4Apis(page: Page, state: Phase4State): Promise<void> {
               fee_rate_bps: 2.5,
             },
             { request_id: "req-phase4-general-settings" }
+          )
+        ),
+      })
+      return
+    }
+
+    if (normalizedPath === "/v1/system/settings/security" && method === "GET") {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-security-settings",
+          "x-process-time": "19ms",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(
+            {
+              session_timeout_minutes: 120,
+              mfa_required: false,
+              ip_allowlist_enabled: false,
+              password_policy_level: "standard",
+            },
+            { request_id: "req-phase4-security-settings" }
           )
         ),
       })
@@ -2308,6 +2475,43 @@ test.describe("Phase 4 Mainline Matrix", () => {
     expect(state.unhandledRequests).toEqual([])
   })
 
+  test("System-Config keeps sources-tab counts unresolved while the first source-config snapshot is still pending", async ({ page }) => {
+    const state = await setupPhase4Mock(page)
+    let releaseSourceConfig: (() => void) | null = null
+
+    await page.context().route("**/api/v1/data-sources/config/", async (route) => {
+      await new Promise<void>((resolve) => {
+        releaseSourceConfig = resolve
+      })
+
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-config-late",
+        },
+        body: JSON.stringify(buildUnifiedResponse(state.dataSourceConfigs, { request_id: "req-phase4-config-late" })),
+      })
+    })
+
+    await gotoRoute(page, "/system/config")
+
+    await expect(page.getByText("系统配置中心").first()).toBeVisible()
+    await expect(page.locator(".header-meta")).toContainText("DATA: PENDING")
+    await expect(page.locator(".header-meta")).toContainText("REQ_ID: N/A")
+    await expect(page.locator(".header-meta")).toContainText("TIME: N/A")
+    await expect(page.locator(".runtime-message")).toContainText("数据源配置同步中...")
+    await expect(page.locator(".stats-grid .artdeco-stat-value")).toHaveText(["--", "--", "ON", "N/A"])
+    await expect(page.locator(".stats-grid")).not.toContainText("0")
+
+    releaseSourceConfig?.()
+
+    await expect(page.locator(".header-meta")).toContainText("DATA: REAL")
+    await expect(page.locator(".header-meta")).toContainText("REQ_ID: req-phase4-config-late")
+    await expect(page.locator(".stats-grid .artdeco-stat-value")).toHaveText(["3", "2", "ON", "req-phase4-config-late"])
+    expect(state.unhandledRequests).toEqual([])
+  })
+
   test("System-Health renders health matrix and middleware panel", async ({ page }) => {
     const state = await setupPhase4Mock(page)
 
@@ -2321,6 +2525,54 @@ test.describe("Phase 4 Mainline Matrix", () => {
     await expect(page.locator(".stats-strip")).not.toContainText("+0%")
     await expect(page.locator(".stats-strip")).not.toContainText("3.00")
     await expect(page.locator(".stats-strip")).not.toContainText("2.00")
+    expect(state.unhandledRequests).toEqual([])
+  })
+
+  test("System-Health keeps stats-strip labels unresolved while the first health snapshot is still pending", async ({ page }) => {
+    const state = await setupPhase4Mock(page)
+    let releaseHealthProbe: (() => void) | null = null
+
+    await page.context().route("**/api/health", async (route) => {
+      await new Promise<void>((resolve) => {
+        releaseHealthProbe = resolve
+      })
+
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-health-pending-late",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(
+            HEALTH_DATA,
+            {
+              request_id: "req-phase4-health-pending-late",
+            },
+          ),
+        ),
+      })
+    })
+
+    await gotoRoute(page, "/system/health")
+
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: N/A")
+    await expect(page.locator(".hero-meta")).toContainText("STATUS: UNKNOWN")
+    await expect(page.locator(".stats-strip .artdeco-stat-value")).toHaveText(["UNKNOWN", "--", "--", "--"])
+    await expect(page.locator(".content-shell-meta")).toContainText("STATUS: UNKNOWN")
+    await expect(page.locator(".content-shell-meta")).toContainText("MIDDLEWARE: --")
+
+    releaseHealthProbe?.()
+
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: req-phase4-health-pending-late")
+    await expect(page.locator(".hero-meta")).toContainText("STATUS: HEALTHY")
+    await expect(page.locator(".stats-strip .artdeco-stat-value")).toHaveText([
+      "HEALTHY",
+      "mystocks-backend",
+      "2.0.0",
+      "3",
+    ])
+    await expect(page.locator(".content-shell-meta")).toContainText("MIDDLEWARE: 3")
     expect(state.unhandledRequests).toEqual([])
   })
 
@@ -2421,6 +2673,54 @@ test.describe("Phase 4 Mainline Matrix", () => {
     expect(state.detailedHealthFetchCount).toBeGreaterThanOrEqual(1)
     expect(blobUrls).toHaveLength(1)
     expect(blobUrls[0]).toContain("blob:phase4-export-")
+    expect(state.unhandledRequests).toEqual([])
+  })
+
+  test("System-API keeps stats-strip labels unresolved while the first system probe snapshot is still pending", async ({ page }) => {
+    const state = await setupPhase4Mock(page)
+    let releaseSystemProbe: (() => void) | null = null
+
+    await page.context().route("**/api/health", async (route) => {
+      await new Promise<void>((resolve) => {
+        releaseSystemProbe = resolve
+      })
+
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-system-api-pending-late",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(
+            HEALTH_DATA,
+            {
+              request_id: "req-phase4-system-api-pending-late",
+            },
+          ),
+        ),
+      })
+    })
+
+    await gotoRoute(page, "/system/api")
+
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: N/A")
+    await expect(page.locator(".hero-meta")).toContainText("STATUS: UNKNOWN")
+    await expect(page.locator(".stats-strip .artdeco-stat-value")).toHaveText(["UNKNOWN", "--", "--", "--"])
+    await expect(page.locator(".content-shell-meta")).toContainText("REQ_ID: N/A")
+    await expect(page.locator(".content-shell-meta")).toContainText("MIDDLEWARE: --")
+
+    releaseSystemProbe?.()
+
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: req-phase4-system-api-pending-late")
+    await expect(page.locator(".hero-meta")).toContainText("STATUS: HEALTHY")
+    await expect(page.locator(".stats-strip .artdeco-stat-value")).toHaveText([
+      "HEALTHY",
+      "mystocks-backend",
+      "2.0.0",
+      "3",
+    ])
+    await expect(page.locator(".content-shell-meta")).toContainText("MIDDLEWARE: 3")
     expect(state.unhandledRequests).toEqual([])
   })
 
@@ -2544,6 +2844,48 @@ test.describe("Phase 4 Mainline Matrix", () => {
     expect(state.unhandledRequests).toEqual([])
   })
 
+  test("System-Data keeps stats-strip counts unresolved while the first config snapshot is still pending", async ({ page }) => {
+    const state = await setupPhase4Mock(page)
+    let releaseConfigResponse: (() => void) | null = null
+
+    await page.context().route("**/api/v1/data-sources/config/", async (route) => {
+      await new Promise<void>((resolve) => {
+        releaseConfigResponse = resolve
+      })
+
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-system-data-pending-late",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(state.dataSourceConfigs, { request_id: "req-phase4-system-data-pending-late" })
+        ),
+      })
+    })
+
+    await gotoRoute(page, "/system/data")
+
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: N/A")
+    await expect(page.locator(".stats-strip")).toContainText("数据源总数")
+    await expect(page.locator(".stats-strip")).toContainText("已启用")
+    await expect(page.locator(".stats-strip")).toContainText("写回能力")
+    await expect(page.locator(".stats-strip")).toContainText("当前请求")
+    await expect(page.locator(".stats-strip .artdeco-stat-value").nth(0)).toHaveText("--")
+    await expect(page.locator(".stats-strip .artdeco-stat-value").nth(1)).toHaveText("--")
+    await expect(page.locator(".stats-strip .artdeco-stat-value").nth(2)).toHaveText("ON")
+    await expect(page.locator(".stats-strip .artdeco-stat-value").nth(3)).toHaveText("N/A")
+
+    releaseConfigResponse?.()
+
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: req-phase4-system-data-pending-late")
+    await expect(page.locator(".stats-strip .artdeco-stat-value").nth(0)).toHaveText("3")
+    await expect(page.locator(".stats-strip .artdeco-stat-value").nth(1)).toHaveText("2")
+    await expect(page.locator(".stats-strip .artdeco-stat-value").nth(3)).toHaveText("req-phase4-system-data-pending-late")
+    expect(state.unhandledRequests).toEqual([])
+  })
+
   test("System-Data does not fabricate a request id when the verified config snapshot has no request metadata", async ({ page }) => {
     const state = await setupPhase4Mock(page)
 
@@ -2614,6 +2956,65 @@ test.describe("Phase 4 Mainline Matrix", () => {
     await expect(page.locator(".runtime-message")).toContainText("当前仍显示上次成功同步的数据源配置快照。")
     await expect(page.locator(".config-table")).toContainText("AKShare 行情")
     await expect(page.locator(".config-table")).toContainText("TDX 实时深度")
+    expect(state.unhandledRequests).toEqual([])
+  })
+
+  test("System-Resources keeps stats-strip counts unresolved while the first resource snapshot is still pending", async ({ page }) => {
+    const state = await setupPhase4Mock(page)
+    let releaseResourceResponse: (() => void) | null = null
+
+    await page.context().route("**/api/v1/system/resources**", async (route) => {
+      await new Promise<void>((resolve) => {
+        releaseResourceResponse = resolve
+      })
+
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-system-resources-late",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(SYSTEM_RESOURCES_DATA, { request_id: "req-phase4-system-resources-late" })
+        ),
+      })
+    })
+
+    await page.context().route("**/v1/system/resources**", async (route) => {
+      await new Promise<void>((resolve) => {
+        releaseResourceResponse = resolve
+      })
+
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-system-resources-late",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(SYSTEM_RESOURCES_DATA, { request_id: "req-phase4-system-resources-late" })
+        ),
+      })
+    })
+
+    await gotoRoute(page, "/system/resources")
+
+    await expect(page.getByText("资源使用工作台").first()).toBeVisible()
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: N/A")
+    await expect(page.locator(".hero-meta")).toContainText("STATUS: UNKNOWN")
+    await expect(page.locator(".hero-meta")).toContainText("NODE: --")
+    await expect(page.locator(".stats-strip .artdeco-stat-value")).toHaveText(["UNKNOWN", "--", "--", "--", "--"])
+    await expect(page.locator(".resource-section").nth(0)).toContainText("-- tracked")
+    await expect(page.locator(".resource-section").nth(1)).toContainText("-- tracked")
+
+    releaseResourceResponse?.()
+
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: req-phase4-system-resources-late")
+    await expect(page.locator(".hero-meta")).toContainText("STATUS: WARNING")
+    await expect(page.locator(".hero-meta")).toContainText("NODE: local-runtime")
+    await expect(page.locator(".stats-strip .artdeco-stat-value")).toHaveText(["WARNING", "local-runtime", "1", "1", "1"])
+    await expect(page.locator(".resource-section").nth(0)).toContainText("1 tracked")
+    await expect(page.locator(".resource-section").nth(1)).toContainText("1 tracked")
     expect(state.unhandledRequests).toEqual([])
   })
 })

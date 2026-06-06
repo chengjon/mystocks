@@ -31,10 +31,10 @@
     </section>
 
     <section v-if="!isEmbedded" class="stats-strip artdeco-card-shell">
-      <ArtDecoStatCard label="服务状态" :value="systemStatusLabel" :variant="health?.status === 'healthy' ? 'rise' : 'fall'" />
-      <ArtDecoStatCard label="服务名称" :value="health?.service || 'N/A'" variant="gold" />
-      <ArtDecoStatCard label="版本" :value="health?.version || 'N/A'" variant="gold" />
-      <ArtDecoStatCard label="中间件项" :value="middlewareCount" variant="gold" />
+      <ArtDecoStatCard label="服务状态" :value="systemStatusLabel" :variant="health?.status === 'healthy' ? 'rise' : 'fall'" :show-change="false" />
+      <ArtDecoStatCard label="服务名称" :value="displayServiceLabel" variant="gold" :show-change="false" />
+      <ArtDecoStatCard label="版本" :value="displayVersionLabel" variant="gold" :show-change="false" />
+      <ArtDecoStatCard label="中间件项" :value="displayMiddlewareCount" variant="gold" :show-change="false" />
     </section>
 
     <section :class="isEmbedded ? 'embedded-shell' : 'content-shell artdeco-card-shell'">
@@ -46,7 +46,7 @@
         </div>
         <div class="content-shell-meta">
           <span>REQ_ID: {{ displayRequestId }}</span>
-          <span>MIDDLEWARE: {{ middlewareCount }}</span>
+          <span>MIDDLEWARE: {{ displayMiddlewareCount }}</span>
         </div>
       </div>
 
@@ -60,27 +60,19 @@
           </div>
           <div class="info-row">
             <span>Service:</span>
-            <span>{{ health?.service || 'N/A' }}</span>
+            <span>{{ displayServiceLabel }}</span>
           </div>
           <div class="info-row">
             <span>Version:</span>
-            <span>{{ health?.version || 'N/A' }}</span>
+            <span>{{ displayVersionLabel }}</span>
           </div>
         </ArtDecoCard>
 
         <ArtDecoCard class="status-card" title="中间件层" hoverable>
           <div class="middleware-list">
-            <div class="mw-item">
-              <span class="mw-name">性能追踪</span>
-              <span class="mw-status active">启用</span>
-            </div>
-            <div class="mw-item">
-              <span class="mw-name">统一响应</span>
-              <span class="mw-status active">启用</span>
-            </div>
-            <div class="mw-item">
-              <span class="mw-name">Redis 缓存</span>
-              <span class="mw-status active">活跃</span>
+            <div v-for="row in middlewareRows" :key="row.name" class="mw-item">
+              <span class="mw-name">{{ row.name }}</span>
+              <span :class="['mw-status', row.statusClass]">{{ row.statusLabel }}</span>
             </div>
           </div>
         </ArtDecoCard>
@@ -163,6 +155,7 @@ import { useRiskAlertsStore, useTechnicalIndicatorsStore, useTradingSignalsStore
 import { frontendStorePolicies } from '@/stores/storePolicies'
 import { ArtDecoButton, ArtDecoCard, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
 import ContractImpactPanel from './components/ContractImpactPanel.vue'
+import { normalizeSystemHealthProbeResponse } from './healthProbeContract'
 
 interface MonitoringHealthData {
   request_id?: string
@@ -181,6 +174,12 @@ interface InspectorStoreState {
   averageDurationMs?: number | null
 }
 
+interface MiddlewareRow {
+  name: string
+  activeLabel: string
+  inactiveLabel: string
+}
+
 interface Props {
   functionKey?: string
   userPermissions?: string[]
@@ -193,7 +192,7 @@ const props = withDefaults(defineProps<Props>(), {
   systemConfig: undefined
 })
 
-const { loading, error, exec } = useArtDecoApi()
+const { loading, error, exec, lastRequestId } = useArtDecoApi()
 const {
   readinessState,
   readinessMessage,
@@ -203,16 +202,39 @@ const {
   checkBackendReadiness,
 } = useBackendReadiness()
 const health = ref<MonitoringHealthData | null>(null)
-const requestId = ref('')
+const staleError = ref<string | null>(null)
+const hasVerifiedHealthSnapshot = ref(false)
+const lastVerifiedRequestId = ref('')
 const middlewareCount = 3
+const middlewareRegistry: MiddlewareRow[] = [
+  {
+    name: '性能追踪',
+    activeLabel: '启用',
+    inactiveLabel: '未校验',
+  },
+  {
+    name: '统一响应',
+    activeLabel: '启用',
+    inactiveLabel: '未校验',
+  },
+  {
+    name: 'Redis 缓存',
+    activeLabel: '活跃',
+    inactiveLabel: '未校验',
+  },
+]
 const tradingSignalsStore = useTradingSignalsStore()
 const riskAlertsStore = useRiskAlertsStore()
 const watchlistsStore = useWatchlistsStore()
 const technicalIndicatorsStore = useTechnicalIndicatorsStore()
 
 const isEmbedded = computed(() => Boolean(props.functionKey))
-const displayRequestId = computed(() => requestId.value || 'N/A')
+const displayRequestId = computed(() => (hasVerifiedHealthSnapshot.value ? (lastVerifiedRequestId.value || 'N/A') : 'N/A'))
 const systemStatusLabel = computed(() => health.value?.status?.toUpperCase() || 'UNKNOWN')
+const displayServiceLabel = computed(() => (hasVerifiedHealthSnapshot.value ? health.value?.service || 'N/A' : '--'))
+const displayVersionLabel = computed(() => (hasVerifiedHealthSnapshot.value ? health.value?.version || 'N/A' : '--'))
+const displayMiddlewareCount = computed(() => (hasVerifiedHealthSnapshot.value ? `${middlewareCount}` : '--'))
+const runtimeVerified = computed(() => health.value?.status === 'healthy')
 const showDeveloperInspector = computed(() => {
   if (import.meta.env.DEV) {
     return true
@@ -225,23 +247,34 @@ const showDeveloperInspector = computed(() => {
   return window.localStorage.getItem('mystocks:developer-mode') === 'true'
 })
 const pageStatusText = computed(() => {
-  if (error.value) return '探针异常'
-  if (loading.value) return '同步中'
+  if (staleError.value) return '刷新异常'
+  if (error.value) return hasVerifiedHealthSnapshot.value ? '刷新异常' : '探针异常'
+  if (loading.value) return hasVerifiedHealthSnapshot.value ? '刷新中' : '同步中'
   if (!health.value) return '等待探针'
   return health.value?.status === 'healthy' ? '探针在线' : '状态待确认'
 })
 const pageStatusType = computed(() => {
-  if (error.value) return 'warning'
+  if (staleError.value || error.value) return 'warning'
   if (!health.value) return 'info'
   return health.value?.status === 'healthy' ? 'success' : 'warning'
 })
 const contentShellDescription = computed(() => '查看服务健康状态、中间件链路和导出报告能力，作为系统治理链路中的可观测性节点。')
 const runtimeMessage = computed(() => {
-  if (error.value) return `${error.value}，当前遥测面板可能仅显示静态说明。`
-  if (loading.value) return '系统遥测探针同步中...'
+  if (staleError.value) return `${staleError.value}，当前仍显示上次成功同步的系统探针快照。`
+  if (error.value) {
+    return hasVerifiedHealthSnapshot.value ? `${error.value}，当前仍显示上次成功同步的系统探针快照。` : `${error.value}，当前暂无已验证系统探针快照。`
+  }
+  if (loading.value) return hasVerifiedHealthSnapshot.value ? '系统遥测探针刷新中...' : '系统遥测探针同步中...'
   if (!health.value) return '当前没有可展示的系统健康探针数据。'
   return ''
 })
+const middlewareRows = computed(() =>
+  middlewareRegistry.map((row) => ({
+    name: row.name,
+    statusLabel: runtimeVerified.value ? row.activeLabel : row.inactiveLabel,
+    statusClass: runtimeVerified.value ? 'active' : 'pending',
+  }))
+)
 const capabilityRows = computed(() => [
   {
     id: frontendStorePolicies.technicalIndicators.capability,
@@ -252,7 +285,7 @@ const capabilityRows = computed(() => [
   {
     id: frontendStorePolicies.tradingSignals.capability,
     sourceOfTruth: frontendStorePolicies.tradingSignals.sourceOfTruth,
-    endpoint: '/api/trading/signals',
+    endpoint: '/v1/trade/signals',
     cache: `${frontendStorePolicies.tradingSignals.cache.strategy}:${frontendStorePolicies.tradingSignals.cache.ttl}ms`,
   },
   {
@@ -313,12 +346,19 @@ const storeSnapshots = computed(() => [
 ])
 
 const fetchHealth = async () => {
-  const data = await exec(() => monitoringApi.getSystemHealth(), {
+  staleError.value = null
+  const data = await exec(async () => normalizeSystemHealthProbeResponse(await monitoringApi.getSystemHealth()), {
     errorMsg: '无法连接到后端服务'
   })
   if (data) {
     health.value = data as MonitoringHealthData
-    requestId.value = health.value.request_id || `sys-${Date.now()}`
+    hasVerifiedHealthSnapshot.value = true
+    lastVerifiedRequestId.value = lastRequestId.value || lastVerifiedRequestId.value
+    return
+  }
+
+  if (hasVerifiedHealthSnapshot.value && error.value) {
+    staleError.value = error.value
   }
 }
 

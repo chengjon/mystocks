@@ -30,7 +30,7 @@ const wrapperCases = [
       "import { apiClient } from '@/api/apiClient'",
       'const fetchHealth = async () => {',
       'title="系统健康矩阵"',
-      "const pageStatusType = computed(() => (health.value?.status === 'healthy' ? 'success' : 'warning'))",
+      "const runtimeVerified = computed(() => !error.value && health.value?.status === 'healthy')",
     ]
   },
   {

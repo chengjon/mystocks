@@ -245,7 +245,7 @@ describe('System resources page', () => {
     expect(wrapper.text()).toContain('资源使用工作台')
     expect(wrapper.text()).toContain('REQ_ID: N/A')
     expect(wrapper.text()).toContain('STATUS: UNKNOWN')
-    expect(wrapper.text()).toContain('NODE: N/A')
+    expect(wrapper.text()).toContain('NODE: --')
     expect(wrapper.text()).toContain('整体状态')
     expect(wrapper.text()).toContain('UNKNOWN')
     expect(wrapper.text()).toContain('监控节点')
@@ -259,7 +259,7 @@ describe('System resources page', () => {
 
     expect(wrapper.findAllComponents({ name: 'ArtDecoStatCard' }).map((card) => card.text())).toEqual([
       expect.stringContaining('整体状态UNKNOWN'),
-      expect.stringContaining('监控节点N/A'),
+      expect.stringContaining('监控节点--'),
       expect.stringContaining('运行进程--'),
       expect.stringContaining('关键告警--'),
       expect.stringContaining('依赖摘要--'),

@@ -145,6 +145,11 @@
   font-weight: bold;
 }
 
+.mw-status.pending {
+  color: var(--artdeco-fg-muted);
+  font-weight: 600;
+}
+
 .action-bar {
   display: flex;
   justify-content: flex-end;

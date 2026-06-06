@@ -8,6 +8,7 @@ const {
   criticalCount,
   dependencySnapshots,
   dependencyTrackedLabel,
+  displayNodeId,
   displayRequestId,
   formatMemoryMb,
   formatMetricValue,
@@ -43,7 +44,7 @@ const {
           <div class="hero-meta">
             <span>REQ_ID: {{ displayRequestId }}</span>
             <span>STATUS: {{ overallStatusLabel }}</span>
-            <span>NODE: {{ resourceSnapshot?.node.node_id || 'N/A' }}</span>
+            <span>NODE: {{ displayNodeId }}</span>
           </div>
         </div>
       </div>
@@ -68,7 +69,7 @@ const {
 
     <section class="stats-strip artdeco-card-shell">
       <ArtDecoStatCard label="整体状态" :value="overallStatusLabel" :variant="statusVariant(resourceSnapshot?.node.overall_status || 'warning')" :show-change="false" />
-      <ArtDecoStatCard label="监控节点" :value="resourceSnapshot?.node.node_id || 'N/A'" variant="gold" :show-change="false" />
+      <ArtDecoStatCard label="监控节点" :value="displayNodeId" variant="gold" :show-change="false" />
       <ArtDecoStatCard label="运行进程" :value="statsProcessCount" variant="gold" :show-change="false" />
       <ArtDecoStatCard label="关键告警" :value="statsCriticalCount" :variant="!hasVerifiedSnapshot ? 'gold' : criticalCount > 0 ? 'fall' : 'rise'" :show-change="false" />
       <ArtDecoStatCard label="依赖摘要" :value="statsDependencyCount" variant="gold" :show-change="false" />

@@ -31,24 +31,26 @@
     </section>
 
     <section v-if="!isEmbedded" class="stats-strip artdeco-card-shell">
-      <ArtDecoStatCard label="数据源总数" :value="configItems.length" variant="gold" />
-      <ArtDecoStatCard label="已启用" :value="enabledConfigCount" variant="rise" />
-      <ArtDecoStatCard label="写回能力" :value="writeEnabled ? 'ON' : 'OFF'" variant="gold" />
-      <ArtDecoStatCard label="当前请求" :value="displayRequestId" variant="gold" />
+      <ArtDecoStatCard label="数据源总数" :value="displayConfigCount" variant="gold" :show-change="false" />
+      <ArtDecoStatCard label="已启用" :value="displayEnabledConfigCount" variant="rise" :show-change="false" />
+      <ArtDecoStatCard label="写回能力" :value="writeEnabled ? 'ON' : 'OFF'" variant="gold" :show-change="false" />
+      <ArtDecoStatCard label="当前请求" :value="displayRequestId" variant="gold" :show-change="false" />
     </section>
 
     <section :class="isEmbedded ? 'embedded-shell' : 'content-shell artdeco-card-shell'">
       <div v-if="!isEmbedded" class="content-shell-header">
         <div class="content-shell-copy">
           <span class="content-shell-kicker">source configuration route</span>
-          <h3 class="content-shell-title">数据源配置与写回面板</h3>
+          <h2 class="content-shell-title">数据源配置与写回面板</h2>
           <p class="content-shell-subtitle">{{ contentShellDescription }}</p>
         </div>
         <div class="content-shell-meta">
-          <span>VISIBLE: {{ configItems.length }}</span>
+          <span>VISIBLE: {{ displayConfigCount }}</span>
           <span>WRITES: {{ writeEnabled ? 'ENABLED' : 'READ ONLY' }}</span>
         </div>
       </div>
+
+      <p v-if="runtimeMessage" class="runtime-message" aria-live="polite">{{ runtimeMessage }}</p>
 
       <div class="config-section" v-loading="loading">
         <ArtDecoCard title="数据源配置" hoverable>
@@ -74,6 +76,7 @@
               </div>
             </div>
           </div>
+          <div v-if="!loading && configItems.length === 0" class="empty-state">暂无可展示的数据源配置。</div>
         </ArtDecoCard>
       </div>
 
@@ -99,6 +102,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+import { ElMessage } from 'element-plus'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import { monitoringApi } from '@/api/index'
 import { ArtDecoBadge, ArtDecoButton, ArtDecoCard, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
@@ -122,35 +126,64 @@ const props = withDefaults(defineProps<Props>(), {
   userPermissions: () => [],
   systemConfig: undefined
 })
-const { loading, exec, lastRequestId } = useArtDecoApi()
+const { loading, error, exec, lastRequestId } = useArtDecoApi()
 const configItems = ref<DataSourceConfigItem[]>([])
-const requestId = ref<string>('')
 const originalConfig = ref<DataSourceConfigItem[]>([])
+const staleError = ref<string | null>(null)
+const hasStartedConfigSync = ref(false)
+const hasVerifiedConfigSnapshot = ref(false)
+const lastVerifiedRequestId = ref('')
 const writeEnabled = supportsDataSourceConfigWrite()
 const isEmbedded = computed(() => Boolean(props.functionKey))
 const enabledConfigCount = computed(() => configItems.value.filter((item) => item.enabled).length)
-const displayRequestId = computed(() => requestId.value || 'N/A')
+const displayConfigCount = computed(() => (hasVerifiedConfigSnapshot.value ? `${configItems.value.length}` : '--'))
+const displayEnabledConfigCount = computed(() => (hasVerifiedConfigSnapshot.value ? `${enabledConfigCount.value}` : '--'))
+const displayRequestId = computed(() => (hasVerifiedConfigSnapshot.value ? (lastVerifiedRequestId.value || 'N/A') : 'N/A'))
 const pageStatusText = computed(() => {
-  if (loading.value) return '同步中'
+  if (staleError.value) return '刷新异常'
+  if (error.value) return '配置异常'
+  if (loading.value) return hasVerifiedConfigSnapshot.value ? '刷新中' : '同步中'
+  if (configItems.value.length === 0) return '配置为空'
   return writeEnabled ? '支持配置写回' : '只读模式'
 })
-const pageStatusType = computed(() => (writeEnabled ? 'success' : 'warning'))
+const pageStatusType = computed(() => {
+  if (staleError.value || error.value) return 'warning'
+  if (configItems.value.length === 0) return 'info'
+  return writeEnabled ? 'success' : 'warning'
+})
 const contentShellDescription = computed(() => {
   if (writeEnabled) {
     return '查看数据源启停状态、端点配置和写回动作，作为系统治理面板中的数据源控制节点。'
   }
   return '当前环境仅允许查看数据源配置，不支持批量写回。'
 })
+const runtimeMessage = computed(() => {
+  if (staleError.value) return `${staleError.value}，当前仍显示上次成功同步的数据源配置快照。`
+  if (error.value) return `${error.value}，当前暂无已验证数据源配置快照。`
+  if (loading.value) return hasVerifiedConfigSnapshot.value ? '数据源配置刷新中...' : '数据源配置同步中...'
+  if (configItems.value.length === 0) return '当前没有可展示的数据源配置。'
+  return ''
+})
 
 const fetchConfig = async () => {
+  hasStartedConfigSync.value = true
+  staleError.value = null
+
   const data = await exec(() => monitoringApi.getDataSourceConfig(), {
     errorMsg: '获取数据源配置失败'
   })
-  if (data) {
-    configItems.value = extractDataSourceConfigItems(data)
-    originalConfig.value = JSON.parse(JSON.stringify(configItems.value))
-    requestId.value = lastRequestId.value || `cfg-${Date.now()}`
+
+  if (!data) {
+    if (hasVerifiedConfigSnapshot.value) {
+      staleError.value = error.value || '获取数据源配置失败'
+    }
+    return
   }
+
+  configItems.value = extractDataSourceConfigItems(data)
+  originalConfig.value = JSON.parse(JSON.stringify(configItems.value))
+  hasVerifiedConfigSnapshot.value = true
+  lastVerifiedRequestId.value = lastRequestId.value || ''
 }
 
 const toggleConfig = (idx: number) => {
@@ -159,10 +192,12 @@ const toggleConfig = (idx: number) => {
 
 const saveConfig = async () => {
   if (!writeEnabled) {
+    ElMessage.info('当前环境为只读模式，暂不支持配置写回。')
     return
   }
   const payload = buildDataSourceConfigBatchRequest(configItems.value, originalConfig.value)
   if (payload.operations.length === 0) {
+    ElMessage.info('没有检测到配置变更。')
     return
   }
   const result = await exec(() => monitoringApi.updateDataSourceConfig(payload as unknown as Record<string, unknown>), {
@@ -176,6 +211,7 @@ const saveConfig = async () => {
 
 const resetConfig = async () => {
   configItems.value = JSON.parse(JSON.stringify(originalConfig.value))
+  ElMessage.info('数据源配置已恢复到当前已加载版本。')
 }
 
 onMounted(fetchConfig)
@@ -333,6 +369,13 @@ onMounted(fetchConfig)
   .gold-text {
     color: var(--artdeco-gold-primary);
   }
+}
+
+.runtime-message,
+.empty-state {
+  margin: 0 0 var(--artdeco-spacing-4);
+  color: var(--artdeco-fg-muted);
+  font-size: var(--artdeco-text-sm);
 }
 
 @media (width <= 75rem) {

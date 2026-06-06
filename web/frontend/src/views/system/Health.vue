@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { ArtDecoButton, ArtDecoCard, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import { apiClient } from '@/api/apiClient'
+import { normalizeSystemHealthProbeResponse } from './healthProbeContract'
 
 interface HealthRow {
   status?: string
@@ -10,24 +11,80 @@ interface HealthRow {
   version?: string
 }
 
-const { loading, lastRequestId, exec } = useArtDecoApi()
-const health = ref<HealthRow | null>(null)
-const middlewareCount = 3
+interface MiddlewareRow {
+  name: string
+  activeLabel: string
+  inactiveLabel: string
+}
 
+const { loading, error, lastRequestId, exec } = useArtDecoApi()
+const health = ref<HealthRow | null>(null)
+const lastVerifiedRequestId = ref('')
+const middlewareCount = 3
+const middlewareRegistry: MiddlewareRow[] = [
+  {
+    name: 'Performance Tracing',
+    activeLabel: 'ENABLED',
+    inactiveLabel: 'UNVERIFIED',
+  },
+  {
+    name: 'Unified Response',
+    activeLabel: 'ENABLED',
+    inactiveLabel: 'UNVERIFIED',
+  },
+  {
+    name: 'Redis Caching',
+    activeLabel: 'ACTIVE',
+    inactiveLabel: 'UNVERIFIED',
+  },
+]
+
+const displayRequestId = computed(() => {
+  if (!health.value) {
+    return 'N/A'
+  }
+
+  return lastVerifiedRequestId.value || 'N/A'
+})
+const hasVerifiedHealthSnapshot = computed(() => Boolean(health.value))
 const systemStatusLabel = computed(() => health.value?.status?.toUpperCase() || 'UNKNOWN')
+const displayServiceLabel = computed(() => (hasVerifiedHealthSnapshot.value ? health.value?.service || 'N/A' : '--'))
+const displayVersionLabel = computed(() => (hasVerifiedHealthSnapshot.value ? health.value?.version || 'N/A' : '--'))
+const displayMiddlewareCount = computed(() => (hasVerifiedHealthSnapshot.value ? `${middlewareCount}` : '--'))
+const runtimeVerified = computed(() => !error.value && health.value?.status === 'healthy')
 const pageStatusText = computed(() => {
+  if (error.value) return '探针异常'
   if (loading.value) return '同步中'
+  if (!health.value) return '等待探针'
   return health.value?.status === 'healthy' ? '矩阵在线' : '状态待确认'
 })
-const pageStatusType = computed(() => (health.value?.status === 'healthy' ? 'success' : 'warning'))
+const pageStatusType = computed(() => {
+  if (error.value) return 'warning'
+  if (!health.value) return 'info'
+  return health.value?.status === 'healthy' ? 'success' : 'warning'
+})
 const contentShellDescription = computed(() => '校验健康探针、服务版本与中间件层状态，作为系统治理链路中的健康矩阵节点。')
+const runtimeMessage = computed(() => {
+  if (error.value) return `${error.value}，当前仅展示健康矩阵壳层。`
+  if (loading.value) return '系统健康探针同步中...'
+  if (!health.value) return '当前没有返回可展示的健康探针数据。'
+  return ''
+})
+const middlewareRows = computed(() =>
+  middlewareRegistry.map((row) => ({
+    name: row.name,
+    statusLabel: runtimeVerified.value ? row.activeLabel : row.inactiveLabel,
+    statusClass: runtimeVerified.value ? 'active' : 'pending',
+  }))
+)
 
 const fetchHealth = async () => {
-  const data = await exec(() => apiClient.get('/health'), {
+  const data = await exec(async () => normalizeSystemHealthProbeResponse(await apiClient.get('/health')), {
     errorMsg: '无法连接到后端服务'
   })
   if (data) {
     health.value = data as HealthRow
+    lastVerifiedRequestId.value = lastRequestId.value || ''
   }
 }
 
@@ -43,7 +100,7 @@ onMounted(() => {
         <div class="hero-copy">
           <span class="hero-eyebrow">health matrix deck</span>
           <div class="hero-meta">
-            <span v-if="lastRequestId">REQ_ID: {{ lastRequestId }}</span>
+            <span>REQ_ID: {{ displayRequestId }}</span>
             <span>STATUS: {{ systemStatusLabel }}</span>
             <span>FOCUS: health probes</span>
           </div>
@@ -69,24 +126,26 @@ onMounted(() => {
     </section>
 
     <section class="stats-strip artdeco-card-shell">
-      <ArtDecoStatCard label="服务状态" :value="systemStatusLabel" :variant="health?.status === 'healthy' ? 'rise' : 'fall'" />
-      <ArtDecoStatCard label="服务名称" :value="health?.service || 'N/A'" variant="gold" />
-      <ArtDecoStatCard label="版本" :value="health?.version || 'N/A'" variant="gold" />
-      <ArtDecoStatCard label="中间件项" :value="middlewareCount" variant="gold" />
+      <ArtDecoStatCard label="服务状态" :value="systemStatusLabel" :variant="health?.status === 'healthy' ? 'rise' : 'fall'" :show-change="false" />
+      <ArtDecoStatCard label="服务名称" :value="displayServiceLabel" variant="gold" :show-change="false" />
+      <ArtDecoStatCard label="版本" :value="displayVersionLabel" variant="gold" :show-change="false" />
+      <ArtDecoStatCard label="中间件项" :value="displayMiddlewareCount" variant="gold" :show-change="false" />
     </section>
 
     <section class="content-shell artdeco-card-shell">
       <div class="content-shell-header">
         <div class="content-shell-copy">
           <span class="content-shell-kicker">service viability route</span>
-          <h3 class="content-shell-title">服务状态与中间件面板</h3>
+          <h2 class="content-shell-title">服务状态与中间件面板</h2>
           <p class="content-shell-subtitle">{{ contentShellDescription }}</p>
         </div>
         <div class="content-shell-meta">
           <span>STATUS: {{ systemStatusLabel }}</span>
-          <span>MIDDLEWARE: {{ middlewareCount }}</span>
+          <span>MIDDLEWARE: {{ displayMiddlewareCount }}</span>
         </div>
       </div>
+
+      <p v-if="runtimeMessage" class="runtime-message" aria-live="polite">{{ runtimeMessage }}</p>
 
       <div class="health-grid" v-loading="loading">
         <ArtDecoCard class="status-card" title="后端服务状态" hoverable>
@@ -96,27 +155,19 @@ onMounted(() => {
           </div>
           <div class="info-row">
             <span>Service:</span>
-            <span>{{ health?.service || 'N/A' }}</span>
+            <span>{{ displayServiceLabel }}</span>
           </div>
           <div class="info-row">
             <span>Version:</span>
-            <span>{{ health?.version || 'N/A' }}</span>
+            <span>{{ displayVersionLabel }}</span>
           </div>
         </ArtDecoCard>
 
         <ArtDecoCard class="status-card" title="中间件层" hoverable>
           <div class="middleware-list">
-            <div class="mw-item">
-              <span class="mw-name">Performance Tracing</span>
-              <span class="mw-status active">ENABLED</span>
-            </div>
-            <div class="mw-item">
-              <span class="mw-name">Unified Response</span>
-              <span class="mw-status active">ENABLED</span>
-            </div>
-            <div class="mw-item">
-              <span class="mw-name">Redis Caching</span>
-              <span class="mw-status active">ACTIVE</span>
+            <div v-for="row in middlewareRows" :key="row.name" class="mw-item">
+              <span class="mw-name">{{ row.name }}</span>
+              <span :class="['mw-status', row.statusClass]">{{ row.statusLabel }}</span>
             </div>
           </div>
         </ArtDecoCard>
@@ -278,6 +329,11 @@ onMounted(() => {
   font-weight: bold;
 }
 
+.mw-status.pending {
+  color: var(--artdeco-fg-muted);
+  font-weight: 600;
+}
+
 .observability-note {
   padding: var(--artdeco-spacing-6);
   font-style: italic;
@@ -292,6 +348,12 @@ onMounted(() => {
 
 .gold-text {
   color: var(--artdeco-gold-primary);
+}
+
+.runtime-message {
+  margin: 0;
+  color: var(--artdeco-fg-muted);
+  font-size: var(--artdeco-text-sm);
 }
 
 @media (width <= 75rem) {

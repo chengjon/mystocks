@@ -101,6 +101,7 @@ export function useSystemResourcesPage() {
   const processSnapshots = computed(() => resourceSnapshot.value?.processes ?? [])
   const dependencySnapshots = computed(() => resourceSnapshot.value?.dependencies ?? [])
   const hasVerifiedSnapshot = computed(() => Boolean(resourceSnapshot.value))
+  const displayNodeId = computed(() => (hasVerifiedSnapshot.value ? (resourceSnapshot.value?.node.node_id || 'N/A') : '--'))
   const criticalCount = computed(
     () =>
       hostMetrics.value.filter((metric) => metric.status === 'critical').length +
@@ -267,6 +268,7 @@ export function useSystemResourcesPage() {
     criticalCount,
     dependencySnapshots,
     dependencyTrackedLabel,
+    displayNodeId,
     displayRequestId,
     formatMemoryMb,
     formatMetricValue,
