@@ -4,6 +4,17 @@
 > 本文件用于记录某项变更的设计思路、结构拆分、实现取舍或技术路径，属于方案设计层材料。
 > 它不是共享规则正文，也不直接代表当前仓库已落地状态；落地判断应结合 `architecture/STANDARDS.md`、对应 proposal/tasks、审批结果与实际代码验证。
 
+> **Current Repo-Truth Disposition（2026-05-11）**:
+> 本设计文档保留原始方案设计与技术目标，不应直接视为当前实现承诺。当前执行事实以 `tasks.md`、`tasks-review.md` 的 2026-05-11 disposition、实际代码和验证命令为准。
+>
+> 当前设计执行边界：
+> - 当前产品范围是 **Desktop-only**；移动端和设备 API 伸展项已从本变更当前闭合范围中移除。
+> - 菜单架构的当前 repo-truth 是 `MenuConfig.ts` 的 7 个业务域，不再按原始 6-domain 设计作为完成判定。
+> - PWA 已有 manifest / service worker / preview static asset 支撑的 repo-local 局部闭合，但 push 订阅、后端 Web Push 路由、完整离线菜单矩阵与生产部署签收仍未闭合。
+> - Storage 当前只按 Desktop Chromium `MyStocksDB` v1 bootstrap 与 close/reopen persistence 局部闭合；自动 localStorage -> IndexedDB migration、生产数据迁移、跨浏览器持久性不是当前已完成事实。
+> - Workers 当前只能按 worker files / protocol source / manager facade 描述；不能承诺完整 orchestration、真实业务数据流或同数据集性能收益。
+> - Rollout、rollback、monitoring、training 当前有模板或 runbook，但没有真实执行记录、告警闭环、回滚演练或 release owner sign-off。
+
 Based on the successful HTML5 History Mode migration completion report, we have identified critical opportunities to enhance the MyStocks frontend architecture while implementing advanced HTML5 features. The current architecture has solid foundations (HTML5 History routing, ArtDeco design system, Vue 3 + TypeScript) but requires optimization based on migration experience and modern web platform capabilities.
 
 ### HTML5 Migration Experience Insights

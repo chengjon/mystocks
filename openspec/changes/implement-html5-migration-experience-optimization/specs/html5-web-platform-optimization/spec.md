@@ -4,6 +4,15 @@
 > 本文件用于描述某一专题能力的规格边界、变更提案或专题约束，服务于 OpenSpec 的方案管理与差异追踪。
 > 它不自动等同于“当前已上线实现”或仓库共享治理规则的唯一真相源；执行时需同时核对 `architecture/STANDARDS.md`、审批状态、当前代码实现以及相关 `openspec/specs/` 正式规格。
 
+> **Current Repo-Truth Disposition（2026-05-11）**:
+> 本 delta spec 记录的是变更目标与验收期望，不等同于当前已完成状态。当前勾选和未勾选状态必须以 `tasks.md`、`tasks-review.md` 的 2026-05-11 disposition、实际代码和验证命令为准。
+>
+> 当前执行边界：
+> - 产品范围为 **Desktop-only**；移动端安装资产、移动端响应式验收和设备 API 伸展项不纳入当前闭合范围。
+> - 菜单当前 repo-truth 为 `MenuConfig.ts` 的 7 个业务域；下文历史 6-domain wording 只保留为原始目标快照，不作为当前完成判定。
+> - 60%+ coverage、≤2.5MB bundle、PWA installation/offline、Push、Accessibility、Web Worker benchmark、Web Vitals / PWA metrics 等仍需按实际任务和验证结果分别判定，不能因本 spec 存在而视为已达成。
+> - 已局部闭合的能力仅按当前任务说明的窄口径解释：Desktop-only manifest asset consistency、Desktop Chromium IndexedDB v1 bootstrap/persistence、repo-local production preview static asset support。
+
 
 ### Requirement: Frontend Architecture Optimization (Based on HTML5 Migration Experience)
 
