@@ -28,6 +28,11 @@ vi.mock('@/composables/market/useDataAnalysis', () => ({
       activeTab: ref('indicators'),
       activeCategory: ref('all'),
       loading: ref(false),
+      error: ref(null),
+      staleError: ref(''),
+      hasLoaded: ref(true),
+      hasExecutedScreening: ref(true),
+      lastUpdateTime: ref('2026/04/24 18:30:00'),
       stats: ref({
         availableIndicators: 128,
         customIndicators: 12,

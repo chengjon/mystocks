@@ -4,48 +4,62 @@
             <div class="header-content">
                 <div class="eyebrow">analysis workstation</div>
                 <h1 class="page-title">数据分析中心</h1>
-                <p class="page-subtitle">技术指标分析 · 智能选股 · 自定义指标</p>
+                <p class="page-subtitle">技术指标分析 · 智能选股 · 指标详情</p>
+                <div class="header-meta">
+                    <span>STATUS: {{ pageStatusText }}</span>
+                    <span>UPDATED: {{ displayLastUpdateTime }}</span>
+                </div>
             </div>
             <div class="header-actions">
-                <ArtDecoButton variant="outline" size="sm" @click="refreshData">刷新数据</ArtDecoButton>
-                <ArtDecoButton variant="solid" @click="runScreening">执行筛选</ArtDecoButton>
+                <ArtDecoButton variant="outline" size="sm" :loading="loading" :disabled="loading" @click="handleRefresh">刷新数据</ArtDecoButton>
+                <ArtDecoButton variant="solid" :disabled="loading" @click="handleRunScreening">执行筛选</ArtDecoButton>
             </div>
         </div>
 
         <div class="stats-overview artdeco-card-shell">
             <ArtDecoStatCard
                 label="可用指标"
-                :value="stats.availableIndicators"
+                :value="displayAvailableIndicators"
+                :show-change="false"
                 variant="gold"
             />
             <ArtDecoStatCard
-                label="自定义指标"
-                :value="stats.customIndicators"
+                label="当前分类指标"
+                :value="displayVisibleIndicatorCount"
+                :show-change="false"
                 variant="gold"
             />
             <ArtDecoStatCard
                 label="筛选股票数"
-                :value="stats.screenedStocks"
+                :value="displayScreenedStocks"
+                :show-change="false"
                 variant="rise"
             />
             <ArtDecoStatCard
                 label="今日筛选次数"
-                :value="stats.screeningTimes"
+                :value="displayScreeningTimes"
+                :show-change="false"
                 variant="gold"
             />
             <ArtDecoStatCard
                 label="符合条件"
-                :value="stats.qualifiedStocks"
-                :variant="stats.qualifiedChange >= 0 ? 'rise' : 'fall'"
+                :value="displayQualifiedStocks"
+                :show-change="false"
+                :variant="showSummaryPlaceholders ? 'gold' : stats.qualifiedChange >= 0 ? 'rise' : 'fall'"
             />
         </div>
 
-        <nav class="main-tabs artdeco-card-shell">
+        <nav class="main-tabs artdeco-card-shell" role="tablist" aria-label="数据分析主标签">
             <button
                 v-for="(tab, _idx) in mainTabs"
                 :key="tab.key"
+                type="button"
                 class="main-tab"
+                role="tab"
                 :class="{ active: activeTab === tab.key }"
+                :aria-selected="activeTab === tab.key ? 'true' : 'false'"
+                :aria-controls="`data-analysis-panel-${tab.key}`"
+                :tabindex="activeTab === tab.key ? 0 : -1"
                 @click="switchTab(tab.key)"
             >
                 <span class="tab-icon">{{ tab.icon }}</span>
@@ -53,15 +67,28 @@
             </button>
         </nav>
 
-        <div class="tab-content artdeco-card-shell">
-            <div v-if="loading" class="loading-overlay">
+        <div class="tab-content artdeco-card-shell" :data-status="pageStatusType">
+            <div v-if="loading" class="loading-overlay" role="status" aria-live="polite">
                 <div class="spinner"></div>
-                <p>处理中...</p>
+                <p>{{ loadingMessage }}</p>
+                <span class="loading-hint">{{ loadingHint }}</span>
+            </div>
+
+            <div v-else-if="showErrorState" class="state-panel artdeco-card" role="alert">
+                <p>数据分析数据加载失败</p>
+                <span>{{ error }}</span>
+                <ArtDecoButton variant="outline" size="sm" @click="handleRefresh">重新加载</ArtDecoButton>
             </div>
 
             <template v-else>
+                <div v-if="showRefreshWarning" class="state-panel warning-panel artdeco-card" role="status" aria-live="polite">
+                    <p>部分刷新失败</p>
+                    <span>{{ staleError }}</span>
+                </div>
+
                 <AnalysisIndicators
-                    v-if="activeTab === 'indicators'"
+                    v-if="activeTab === 'indicators' && !showIndicatorsEmpty"
+                    id="data-analysis-panel-indicators"
                     v-model:activeCategory="activeCategory"
                     :categories="indicatorCategories"
                     :getCount="getCategoryCount"
@@ -69,10 +96,18 @@
                     @select="selectIndicator"
                 />
 
+                <div v-if="showIndicatorsEmpty" class="state-panel artdeco-card" role="status" aria-live="polite">
+                    <p>暂无指标数据</p>
+                    <span>当前分类下暂无可展示指标，请刷新后重试。</span>
+                </div>
+
                 <AnalysisScreener
                     v-if="activeTab === 'screener'"
+                    id="data-analysis-panel-screener"
                     :availableIndicators="availableIndicatorsForFilter"
                     :filters="screeningFilters"
+                    :indicatorConditionsSupported="technicalIndicatorScreeningSupported"
+                    :indicatorSupportMessage="technicalIndicatorSupportMessage"
                     :operators="operatorOptions"
                     @add-indicator="addIndicatorFilter"
                     @remove-indicator="removeIndicatorFilter"
@@ -80,22 +115,99 @@
                     @run="runScreening"
                 />
 
+                <div v-if="activeTab === 'results' && selectedStock" class="context-panel artdeco-card">
+                    <div class="context-eyebrow">selected stock</div>
+                    <div class="context-grid">
+                        <div>
+                            <span class="context-label">名称</span>
+                            <strong>{{ selectedStock.name }}</strong>
+                        </div>
+                        <div>
+                            <span class="context-label">代码</span>
+                            <strong>{{ selectedStock.symbol }}</strong>
+                        </div>
+                        <div>
+                            <span class="context-label">最新价</span>
+                            <strong>{{ selectedStock.price }}</strong>
+                        </div>
+                        <div>
+                            <span class="context-label">涨跌幅</span>
+                            <strong>{{ selectedStock.change }}</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="showResultsIdle" class="state-panel artdeco-card" role="status" aria-live="polite">
+                    <p>尚未执行筛选</p>
+                    <span>请先配置条件并执行筛选，结果面板会展示最新命中股票。</span>
+                </div>
+
                 <AnalysisResults
-                    v-if="activeTab === 'results'"
+                    v-else-if="activeTab === 'results' && !showResultsEmpty"
+                    id="data-analysis-panel-results"
                     :columns="resultColumns"
                     :data="screeningResults"
                     @row-click="handleRowClick"
                 />
 
-                <ArtDecoCard v-if="activeTab === 'editor'" title="指标编辑器" class="editor-card">
-                    <div class="editor-placeholder">
-                        <div class="placeholder-title">公式编辑器升级中</div>
-                        <p class="placeholder-desc">正在整合可视化表达式构建、回测联动与指标发布流程。</p>
-                        <ul class="placeholder-list">
-                            <li>支持拖拽组合基础指标与自定义变量</li>
-                            <li>提供公式语法提示与实时计算预览</li>
-                            <li>一键发布至智能选股与策略回测模块</li>
-                        </ul>
+                <div v-if="showResultsEmpty" class="state-panel artdeco-card" role="status" aria-live="polite">
+                    <p>暂无筛选结果</p>
+                    <span>当前条件下没有命中股票，可调整条件后重新执行筛选。</span>
+                </div>
+
+                <ArtDecoCard v-if="activeTab === 'editor'" id="data-analysis-panel-editor" title="指标详情" class="editor-card">
+                    <div v-if="selectedIndicator" class="detail-workspace">
+                        <div class="context-panel inline-context">
+                            <div class="context-eyebrow">selected indicator</div>
+                            <div class="context-grid">
+                                <div>
+                                    <span class="context-label">名称</span>
+                                    <strong>{{ selectedIndicator.name }}</strong>
+                                </div>
+                                <div>
+                                    <span class="context-label">Key</span>
+                                    <strong>{{ selectedIndicator.key.toUpperCase() }}</strong>
+                                </div>
+                                <div>
+                                    <span class="context-label">分类</span>
+                                    <strong>{{ selectedIndicator.categoryLabel }}</strong>
+                                </div>
+                                <div>
+                                    <span class="context-label">类型</span>
+                                    <strong>{{ selectedIndicator.type }}</strong>
+                                </div>
+                            </div>
+                            <p class="context-description">{{ selectedIndicator.description }}</p>
+                        </div>
+
+                        <div class="detail-grid">
+                            <div class="detail-card">
+                                <span class="detail-label">参数</span>
+                                <strong class="detail-value">{{ selectedIndicatorParamsLabel }}</strong>
+                                <p class="detail-note">当前指标注册表声明的参数配置。</p>
+                            </div>
+                            <div class="detail-card">
+                                <span class="detail-label">筛选接入</span>
+                                <strong class="detail-value">{{ screeningCapabilityLabel }}</strong>
+                                <p class="detail-note">{{ technicalIndicatorSupportMessage }}</p>
+                            </div>
+                            <div class="detail-card">
+                                <span class="detail-label">当前分类指标数</span>
+                                <strong class="detail-value">{{ getCategoryCount(selectedIndicator.category) }}</strong>
+                                <p class="detail-note">用于对比同类趋势、动量或形态指标。</p>
+                            </div>
+                        </div>
+
+                        <div class="detail-actions">
+                            <ArtDecoButton variant="outline" size="sm" @click="switchTab('indicators')">返回指标库</ArtDecoButton>
+                            <ArtDecoButton variant="solid" size="sm" @click="switchTab('screener')">查看筛选条件</ArtDecoButton>
+                        </div>
+                    </div>
+
+                    <div v-else class="detail-empty-state">
+                        <p>从指标库选择一个指标</p>
+                        <span>选择后会在这里展示指标用途、参数和筛选接入状态。</span>
+                        <ArtDecoButton variant="outline" size="sm" @click="switchTab('indicators')">打开指标库</ArtDecoButton>
                     </div>
                 </ArtDecoCard>
             </template>
@@ -104,6 +216,7 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { ArtDecoButton, ArtDecoCard, ArtDecoStatCard } from '@/components/artdeco'
 import { useDataAnalysis } from '@/composables/market/useDataAnalysis'
 import AnalysisIndicators from '@/views/artdeco-pages/components/AnalysisIndicators.vue'
@@ -111,15 +224,17 @@ import AnalysisResults from '@/views/artdeco-pages/components/AnalysisResults.vu
 import AnalysisScreener from '@/views/artdeco-pages/components/AnalysisScreener.vue'
 
 const {
-    activeTab, activeCategory, loading, stats,
+    activeTab, activeCategory, loading, error, staleError, hasLoaded, hasExecutedScreening, lastUpdateTime, stats,
+    technicalIndicatorScreeningSupported, technicalIndicatorSupportMessage,
+    selectedIndicator, selectedStock,
     indicatorCategories, indicators, filteredIndicators,
     screeningFilters, screeningResults, availableIndicatorsForFilter,
-    switchTab, refreshData, runScreening, resetFilters
+    switchTab, refreshData, runScreening, resetFilters, setSelectedIndicator, setSelectedStock
 } = useDataAnalysis()
 
 const mainTabs = [
     { key: 'indicators', label: '指标库', icon: '📊' },
-    { key: 'editor', label: '指标编辑器', icon: '✏️' },
+    { key: 'editor', label: '指标详情', icon: '📘' },
     { key: 'screener', label: '智能选股', icon: '🔍' },
     { key: 'results', label: '筛选结果', icon: '📈' }
 ]
@@ -139,11 +254,107 @@ const resultColumns = [
     { key: 'change', label: '涨跌幅' }
 ]
 
+const pageStatusText = computed(() => {
+    if (loading.value) {
+        return '同步中'
+    }
+    if (showRefreshWarning.value) {
+        return '刷新异常'
+    }
+    if (error.value) {
+        return '同步异常'
+    }
+    if (!hasLoaded.value) {
+        return '待同步'
+    }
+    if (!hasExecutedScreening.value) {
+        return '待执行筛选'
+    }
+    return screeningResults.value.length > 0 ? '筛选已就绪' : '无匹配结果'
+})
+
+const pageStatusType = computed(() => {
+    if (showRefreshWarning.value) {
+        return 'warning'
+    }
+    if (error.value) {
+        return 'danger'
+    }
+    if (loading.value || !hasLoaded.value) {
+        return 'info'
+    }
+    if (!hasExecutedScreening.value) {
+        return 'warning'
+    }
+    return screeningResults.value.length > 0 ? 'success' : 'warning'
+})
+
+const showRefreshWarning = computed(() => !loading.value && staleError.value.length > 0)
+const showErrorState = computed(() => Boolean(error.value) && !loading.value && !showRefreshWarning.value)
+const showIndicatorsEmpty = computed(() => activeTab.value === 'indicators' && hasLoaded.value && filteredIndicators.value.length === 0 && !showErrorState.value)
+const showResultsIdle = computed(() => activeTab.value === 'results' && hasLoaded.value && !hasExecutedScreening.value && !showErrorState.value)
+const showResultsEmpty = computed(() => activeTab.value === 'results' && hasLoaded.value && hasExecutedScreening.value && screeningResults.value.length === 0 && !showErrorState.value)
+const visibleIndicatorCount = computed(() => filteredIndicators.value.length)
+const hasVerifiedSummaryEvidence = computed(() =>
+    stats.value.availableIndicators > 0 ||
+    visibleIndicatorCount.value > 0 ||
+    stats.value.screenedStocks > 0 ||
+    stats.value.screeningTimes > 0 ||
+    stats.value.qualifiedStocks > 0
+)
+const showSummaryPlaceholders = computed(() =>
+    loading.value || !hasLoaded.value || (showErrorState.value && !hasVerifiedSummaryEvidence.value)
+)
+const displayLastUpdateTime = computed(() => showSummaryPlaceholders.value ? '--' : (lastUpdateTime.value || '--'))
+const displayAvailableIndicators = computed(() => showSummaryPlaceholders.value ? '--' : String(stats.value.availableIndicators))
+const displayVisibleIndicatorCount = computed(() => showSummaryPlaceholders.value ? '--' : String(visibleIndicatorCount.value))
+const displayScreenedStocks = computed(() => showSummaryPlaceholders.value ? '--' : String(stats.value.screenedStocks))
+const displayScreeningTimes = computed(() => showSummaryPlaceholders.value ? '--' : String(stats.value.screeningTimes))
+const displayQualifiedStocks = computed(() => showSummaryPlaceholders.value ? '--' : String(stats.value.qualifiedStocks))
+const loadingMessage = computed(() => hasLoaded.value ? '正在刷新数据分析状态...' : '正在初始化数据分析工作台...')
+const loadingHint = computed(() => hasLoaded.value
+    ? '正在重新拉取指标注册表与股票池。'
+    : '正在获取指标注册表与股票池，若后端异常服务层会自动重试。'
+)
+function formatIndicatorParam(value) {
+    if (value === null || value === undefined) {
+        return '未配置'
+    }
+
+    if (typeof value !== 'object') {
+        return String(value)
+    }
+
+    const paramName = typeof value.displayName === 'string' && value.displayName
+        ? value.displayName
+        : typeof value.name === 'string' && value.name
+            ? value.name
+            : 'param'
+    const paramValue = value.default ?? value.value ?? value.initial ?? null
+
+    return paramValue === null || paramValue === undefined || paramValue === ''
+        ? paramName
+        : `${paramName}(${String(paramValue)})`
+}
+const selectedIndicatorParamsLabel = computed(() => {
+    if (!selectedIndicator.value) {
+        return '未选择'
+    }
+
+    if (!Array.isArray(selectedIndicator.value.params) || selectedIndicator.value.params.length === 0) {
+        return '默认参数'
+    }
+
+    return selectedIndicator.value.params.map((value) => formatIndicatorParam(value)).join(' / ')
+})
+const screeningCapabilityLabel = computed(() => technicalIndicatorScreeningSupported ? '已接入' : '暂未接入')
+
 function getCategoryCount(_key) {
     return indicators.value.filter((item) => item.category === _key).length
 }
 
 function selectIndicator(_ind) {
+    setSelectedIndicator(_ind)
 }
 
 function addIndicatorFilter() {
@@ -155,6 +366,15 @@ function removeIndicatorFilter(index) {
 }
 
 function handleRowClick(_row) {
+    setSelectedStock(_row)
+}
+
+function handleRefresh() {
+    void refreshData()
+}
+
+function handleRunScreening() {
+    runScreening()
 }
 </script>
 
@@ -209,6 +429,15 @@ function handleRowClick(_row) {
     margin: 0;
     color: var(--artdeco-fg-muted);
     font-size: var(--artdeco-text-sm);
+}
+
+.header-meta {
+    display: flex;
+    gap: var(--artdeco-spacing-3);
+    flex-wrap: wrap;
+    font-family: var(--artdeco-font-mono);
+    font-size: var(--artdeco-text-xs);
+    color: var(--artdeco-fg-muted);
 }
 
 .header-actions {
@@ -294,39 +523,170 @@ function handleRowClick(_row) {
     }
 }
 
+.loading-hint {
+    max-width: 32rem;
+    text-align: center;
+    font-size: var(--artdeco-text-sm);
+    line-height: var(--artdeco-leading-relaxed);
+}
+
+.state-panel {
+    display: grid;
+    gap: var(--artdeco-spacing-2);
+    padding: var(--artdeco-spacing-5);
+    border: 1px solid var(--artdeco-border-default);
+    background: linear-gradient(145deg, var(--artdeco-gold-opacity-05), transparent 65%);
+}
+
+.state-panel p {
+    margin: 0;
+    color: var(--artdeco-fg-primary);
+    font-family: var(--artdeco-font-display);
+}
+
+.state-panel span {
+    color: var(--artdeco-fg-muted);
+    font-size: var(--artdeco-text-sm);
+}
+
+.context-panel {
+    display: grid;
+    gap: var(--artdeco-spacing-3);
+    margin-bottom: var(--artdeco-spacing-4);
+    padding: var(--artdeco-spacing-4);
+    border: 1px solid var(--artdeco-border-default);
+    background: linear-gradient(145deg, var(--artdeco-gold-opacity-05), transparent 70%);
+}
+
+.inline-context {
+    margin-bottom: var(--artdeco-spacing-5);
+}
+
+.context-eyebrow {
+    color: var(--artdeco-gold-primary);
+    font-family: var(--artdeco-font-mono);
+    font-size: var(--artdeco-text-xs);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.context-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--artdeco-spacing-3);
+}
+
+.context-grid > div {
+    display: grid;
+    gap: var(--artdeco-spacing-1);
+}
+
+.context-label {
+    color: var(--artdeco-fg-muted);
+    font-size: var(--artdeco-text-xs);
+}
+
+.context-description {
+    margin: 0;
+    color: var(--artdeco-fg-muted);
+    font-size: var(--artdeco-text-sm);
+    line-height: var(--artdeco-leading-relaxed);
+}
+
 .editor-card {
     background: transparent;
 }
 
-.editor-placeholder {
+.detail-workspace,
+.detail-empty-state {
     padding: var(--artdeco-spacing-6);
-    border: 1px dashed var(--artdeco-border-accent);
-    background: var(--artdeco-gold-opacity-05);
+    border: 1px solid var(--artdeco-border-default);
+    background: linear-gradient(145deg, var(--artdeco-gold-opacity-05), transparent 70%);
+}
 
-    .placeholder-title {
-        font-size: var(--artdeco-text-xl);
-        color: var(--artdeco-gold-primary);
-        margin-bottom: var(--artdeco-spacing-2);
-    }
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--artdeco-spacing-4);
+}
 
-    .placeholder-desc {
-        margin: 0 0 var(--artdeco-spacing-4);
-        color: var(--artdeco-fg-muted);
-    }
+.detail-card {
+    display: grid;
+    gap: var(--artdeco-spacing-2);
+    padding: var(--artdeco-spacing-4);
+    border: 1px solid var(--artdeco-border-default);
+    background: color-mix(in srgb, var(--artdeco-bg-card) 92%, transparent);
+}
 
-    .placeholder-list {
-        margin: 0;
-        padding-left: var(--artdeco-spacing-5);
-        color: var(--artdeco-fg-primary);
-        display: flex;
-        flex-direction: column;
-        gap: var(--artdeco-spacing-2);
+.detail-label {
+    color: var(--artdeco-fg-muted);
+    font-size: var(--artdeco-text-xs);
+    font-family: var(--artdeco-font-mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.detail-value {
+    color: var(--artdeco-gold-primary);
+    font-size: var(--artdeco-text-lg);
+}
+
+.detail-note {
+    margin: 0;
+    color: var(--artdeco-fg-muted);
+    font-size: var(--artdeco-text-sm);
+    line-height: var(--artdeco-leading-relaxed);
+}
+
+.detail-actions {
+    display: flex;
+    gap: var(--artdeco-spacing-3);
+    justify-content: flex-end;
+    margin-top: var(--artdeco-spacing-5);
+}
+
+.detail-empty-state {
+    display: grid;
+    gap: var(--artdeco-spacing-3);
+    justify-items: start;
+}
+
+.detail-empty-state p {
+    margin: 0;
+    color: var(--artdeco-fg-primary);
+    font-size: var(--artdeco-text-xl);
+}
+
+.detail-empty-state span {
+    color: var(--artdeco-fg-muted);
+    font-size: var(--artdeco-text-sm);
+    line-height: var(--artdeco-leading-relaxed);
+}
+
+@media (max-width: 1200px) {
+    .detail-grid {
+        grid-template-columns: 1fr;
     }
 }
 
 @keyframes spin {
     to {
         transform: rotate(360deg);
+    }
+}
+
+@media (width <= 75rem) {
+    .stats-overview {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .page-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .context-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 </style>

@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 
 import { API_BASE_URL } from '@/config/runtime-endpoints'
 import { indicatorService } from '@/services/indicatorService'
@@ -7,6 +7,7 @@ import {
     buildDataAnalysisStats,
     extractDataAnalysisIndicators,
     toDataAnalysisResults,
+    type DataAnalysisResultRow,
     type DataAnalysisIndicatorItem,
     type StockScreeningResultRow,
 } from './dataAnalysisData'
@@ -16,6 +17,12 @@ import {
     resolveStocksBasicEndpoint,
     type StockScreenerRow,
 } from '@/views/stocks/stockScreenerData'
+
+interface IndicatorCondition {
+    indicator: string
+    operator: string
+    value: number | string
+}
 
 function buildAuthHeaders(): Record<string, string> {
     if (typeof localStorage === 'undefined') {
@@ -27,14 +34,21 @@ function buildAuthHeaders(): Record<string, string> {
 }
 
 export function useDataAnalysis() {
+    const technicalIndicatorScreeningSupported = false
+    const technicalIndicatorSupportMessage = '当前股票池数据未包含可执行的技术指标值，技术指标条件暂不支持参与筛选。'
     const activeTab = ref('indicators')
     const activeCategory = ref('trend')
     const activeFile = ref('main')
     const selectedIndicator = ref<DataAnalysisIndicatorItem | null>(null)
-    const selectedStock = ref<StockScreenerRow | null>(null)
+    const selectedStock = ref<DataAnalysisResultRow | null>(null)
     const selectedTemplate = ref<string | null>(null)
     const loading = ref(false)
+    const error = ref<string | null>(null)
+    const staleError = ref('')
+    const hasLoaded = ref(false)
+    const hasExecutedScreening = ref(false)
     const lastUpdateTime = ref(new Date().toLocaleString('zh-CN'))
+    const hasVerifiedSnapshot = ref(false)
 
     const screeningTimes = ref(0)
     const allStocks = ref<StockScreenerRow[]>([])
@@ -45,6 +59,7 @@ export function useDataAnalysis() {
             qualifiedStocks: 0,
             previousQualifiedStocks: 0,
             screeningTimes: 0,
+            screeningExecuted: false,
         })
     )
 
@@ -75,7 +90,7 @@ export function useDataAnalysis() {
         marketCapMax: number | null
         peMin: number | null
         peMax: number | null
-        indicators: string[]
+        indicators: IndicatorCondition[]
     }>({
         priceMin: null,
         priceMax: null,
@@ -92,7 +107,7 @@ export function useDataAnalysis() {
         indicators: []
     })
 
-    const screeningResults = ref<ReturnType<typeof toDataAnalysisResults>>([])
+    const screeningResults = ref<DataAnalysisResultRow[]>([])
 
     const metrics = ref({
         riseCount: 0,
@@ -115,8 +130,20 @@ export function useDataAnalysis() {
         }))
     )
 
+    function toErrorMessage(value: unknown): string {
+        if (axios.isAxiosError(value)) {
+            return value.response?.data?.message || value.message || '数据分析数据加载失败'
+        }
+
+        if (value instanceof Error) {
+            return value.message
+        }
+
+        return '数据分析数据加载失败'
+    }
+
     async function loadIndicatorRegistry() {
-        const registry = await indicatorService.getRegistry()
+        const registry = await indicatorService.getRegistry({ silentRetryMessages: true })
         indicators.value = extractDataAnalysisIndicators(registry)
     }
 
@@ -132,10 +159,34 @@ export function useDataAnalysis() {
         stats.value = buildDataAnalysisStats({
             indicators: indicators.value,
             stockUniverseSize: allStocks.value.length,
-            qualifiedStocks: screeningResults.value.length,
+            qualifiedStocks: hasExecutedScreening.value ? screeningResults.value.length : 0,
             previousQualifiedStocks,
             screeningTimes: screeningTimes.value,
+            screeningExecuted: hasExecutedScreening.value,
         })
+    }
+
+    function clearScreeningResults() {
+        screeningResults.value = []
+        selectedStock.value = null
+    }
+
+    function syncSelectedIndicatorContext() {
+        if (!selectedIndicator.value) {
+            return
+        }
+
+        const matchedIndicator = indicators.value.find((indicator) => indicator.key === selectedIndicator.value?.key) ?? null
+        selectedIndicator.value = matchedIndicator
+    }
+
+    function syncSelectedStockContext() {
+        if (!selectedStock.value) {
+            return
+        }
+
+        const matchedRow = screeningResults.value.find((row) => row.symbol === selectedStock.value?.symbol) ?? null
+        selectedStock.value = matchedRow
     }
 
     function applyScreening() {
@@ -154,6 +205,7 @@ export function useDataAnalysis() {
             marketCapRange: 'any',
         })
         screeningResults.value = toDataAnalysisResults(filteredRows)
+        syncSelectedStockContext()
     }
 
     // Methods
@@ -163,23 +215,59 @@ export function useDataAnalysis() {
 
     const refreshData = async () => {
         loading.value = true
+        error.value = null
+        staleError.value = ''
+        const hadExecutedScreening = hasExecutedScreening.value
+        const previousQualifiedStocks = hadExecutedScreening ? stats.value.qualifiedStocks : 0
         try {
             await Promise.all([loadIndicatorRegistry(), loadStockUniverse()])
-            applyScreening()
-            updateStats()
+            syncSelectedIndicatorContext()
+            if (hadExecutedScreening) {
+                applyScreening()
+            } else {
+                clearScreeningResults()
+            }
+            updateStats(previousQualifiedStocks)
+            hasVerifiedSnapshot.value = true
+            lastUpdateTime.value = new Date().toLocaleString('zh-CN')
+            return true
+        } catch (err: unknown) {
+            error.value = toErrorMessage(err)
+            staleError.value = hasVerifiedSnapshot.value ? '当前仍显示上次成功同步的数据分析快照。' : ''
+            return false
         } finally {
             loading.value = false
-            lastUpdateTime.value = new Date().toLocaleString('zh-CN')
+            hasLoaded.value = true
         }
     }
 
     const runScreening = () => {
-        const previousQualifiedStocks = stats.value.qualifiedStocks
+        if (loading.value) {
+            return false
+        }
+
+        // Local筛选动作不能把未验证的首屏失败态升级成已验证快照。
+        if (!hasVerifiedSnapshot.value) {
+            return false
+        }
+
+        if (!technicalIndicatorScreeningSupported && screeningFilters.value.indicators.length > 0) {
+            error.value = technicalIndicatorSupportMessage
+            staleError.value = ''
+            activeTab.value = 'screener'
+            return false
+        }
+
+        const previousQualifiedStocks = hasExecutedScreening.value ? stats.value.qualifiedStocks : 0
+        error.value = null
+        staleError.value = ''
         screeningTimes.value += 1
+        hasExecutedScreening.value = true
         applyScreening()
         updateStats(previousQualifiedStocks)
         activeTab.value = 'results'
         lastUpdateTime.value = new Date().toLocaleString('zh-CN')
+        return true
     }
 
     const resetFilters = () => {
@@ -189,9 +277,32 @@ export function useDataAnalysis() {
             marketCapMin: null, marketCapMax: null, peMin: null, peMax: null,
             indicators: []
         }
-        applyScreening()
-        updateStats()
+        error.value = null
+        staleError.value = ''
+        hasExecutedScreening.value = false
+        clearScreeningResults()
+        updateStats(0)
     }
+
+    const setSelectedIndicator = (indicator: DataAnalysisIndicatorItem | null) => {
+        selectedIndicator.value = indicator
+        if (indicator) {
+            activeTab.value = 'editor'
+        }
+    }
+
+    const setSelectedStock = (stock: DataAnalysisResultRow | null) => {
+        selectedStock.value = stock
+        if (stock) {
+            activeTab.value = 'results'
+        }
+    }
+
+    watch(activeCategory, (nextCategory) => {
+        if (selectedIndicator.value?.category !== nextCategory) {
+            selectedIndicator.value = null
+        }
+    })
 
     onMounted(() => {
         void refreshData()
@@ -201,10 +312,16 @@ export function useDataAnalysis() {
         activeTab,
         activeCategory,
         activeFile,
+        technicalIndicatorScreeningSupported,
+        technicalIndicatorSupportMessage,
         selectedIndicator,
         selectedStock,
         selectedTemplate,
         loading,
+        error,
+        staleError,
+        hasLoaded,
+        hasExecutedScreening,
         lastUpdateTime,
         stats,
         indicatorCategories,
@@ -217,6 +334,8 @@ export function useDataAnalysis() {
         switchTab,
         refreshData,
         runScreening,
-        resetFilters
+        resetFilters,
+        setSelectedIndicator,
+        setSelectedStock
     }
 }
