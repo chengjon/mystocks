@@ -107,7 +107,7 @@ Each sub-phase follows the same pattern:
 
 ### Phase 6 – Code Review (1 day)
 - Front-end Lead posts "Ready for Review".
-- Run `oh-my-claudecode:code-reviewer` and `security-reviewer` agents.
+- Run comprehensive review and security review using the currently available local tooling/runtime.
 - Address feedback; obtain final approval.
 
 ### Phase 7 – Merge & Deploy (1 day)

@@ -497,10 +497,10 @@
 > - Architecture Board 的最终审批
 
 - [ ] 14.1 Front-end Lead posts "Ready for Review" comment on PR
-- [x] 14.2 Run `oh-my-claudecode:code-reviewer` agent for comprehensive review
+- [x] 14.2 Run a comprehensive review using the currently available local tooling/runtime
   - Repo-truth closeout: the named agent is not available in the current Codex runtime, so an equivalent local comprehensive review was executed and recorded in `openspec/changes/restructure-frontend-directory/REVIEW.md`.
   - Evidence: `cd web/frontend && npm run test -- tests/unit/config/router-full-path-uniqueness.spec.ts tests/unit/views/trade-wrapper-retention.spec.ts` passed (`7/7`).
-- [x] 14.3 Run `oh-my-claudecode:security-reviewer` agent for security check
+- [x] 14.3 Run a security review using the currently available local tooling/runtime
   - Repo-truth closeout: the named agent is not available in the current Codex runtime, so an equivalent local security review was executed and recorded in `openspec/changes/restructure-frontend-directory/SECURITY-REVIEW.md`.
   - Review scope: route uniqueness, compatibility-wrapper retention, stale shared-path ownership, and dashboard / trade-terminal shadow-route risk.
 - [x] 14.4 Address all review feedback
