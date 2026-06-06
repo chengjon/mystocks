@@ -1,4 +1,5 @@
 interface DataSourceConfigItemLike {
+  description?: unknown
   endpoint_name?: unknown
   name?: unknown
   source_name?: unknown
@@ -26,12 +27,14 @@ function toItem(item: DataSourceConfigItemLike): NormalizedDataSourceConfigItem 
       "unknown.endpoint",
     name:
       (typeof item.name === "string" && item.name) ||
+      (typeof item.description === "string" && item.description) ||
       (typeof item.source_name === "string" && item.source_name) ||
       "Unknown",
     enabled: status === "active",
     endpoint:
       (typeof item.endpoint === "string" && item.endpoint) ||
       (typeof item.url === "string" && item.url) ||
+      (typeof item.endpoint_name === "string" && item.endpoint_name) ||
       "N/A",
     status,
   }

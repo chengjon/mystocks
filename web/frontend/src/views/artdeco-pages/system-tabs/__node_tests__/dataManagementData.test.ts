@@ -48,3 +48,26 @@ test('extractDataSourceConfigItems maps non-active status to disabled', () => {
     },
   ])
 })
+
+test('extractDataSourceConfigItems prefers endpoint description and endpoint name when the live payload has no url field', () => {
+  const items = extractDataSourceConfigItems({
+    endpoints: [
+      {
+        endpoint_name: 'akshare.stock_lhb_detail_em',
+        description: 'AKShare龙虎榜详情数据',
+        source_name: 'akshare',
+        status: 'active',
+      },
+    ],
+  })
+
+  assert.deepEqual(items, [
+    {
+      endpointName: 'akshare.stock_lhb_detail_em',
+      name: 'AKShare龙虎榜详情数据',
+      enabled: true,
+      endpoint: 'akshare.stock_lhb_detail_em',
+      status: 'active',
+    },
+  ])
+})

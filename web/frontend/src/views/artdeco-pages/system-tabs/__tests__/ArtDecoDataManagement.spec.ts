@@ -16,6 +16,7 @@ vi.mock('@/api/index', () => ({
 vi.mock('@/composables/artdeco/useArtDecoApi', () => ({
   useArtDecoApi: () => ({
     loading: { value: false },
+    error: { value: null },
     lastRequestId: { value: 'req-ds' },
     exec: async (apiCall: () => Promise<unknown>) => {
       const response = await apiCall()
