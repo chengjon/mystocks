@@ -46,12 +46,13 @@ The frontend SHALL provide a factory pattern for creating consistent Pinia store
 - **AND** manual cache invalidation is supported
 
 ### Requirement: Data Adapter Pattern
-The frontend SHALL implement data adapters that transform API responses into frontend-compatible data structures.
+The frontend SHALL implement data adapters that transform API responses into frontend-compatible data structures with type safety and runtime safety checks.
 
 #### Scenario: Response Transformation
 - **WHEN** API responses are received
 - **THEN** they are transformed to match frontend data models
 - **AND** field name mappings are applied consistently
+- **AND** TypeScript types are maintained throughout the process
 
 #### Scenario: Error Normalization
 - **WHEN** different APIs return errors in different formats
@@ -62,6 +63,11 @@ The frontend SHALL implement data adapters that transform API responses into fro
 - **WHEN** data is adapted
 - **THEN** TypeScript types are maintained throughout the process
 - **AND** runtime type validation is performed
+
+#### Scenario: Validation and Safety
+- **WHEN** transforming data
+- **THEN** runtime validation ensures data integrity
+- **AND** fallback values are provided for missing fields
 
 ### Requirement: Page-Level API Truth Classification
 The system SHALL classify each active ArtDeco page's API dependency as `verified` or `pending` and apply page behavior accordingly.
@@ -150,3 +156,59 @@ The frontend SHALL provide a developer-visible runtime inspection surface for ac
 - **WHEN** developer mode is enabled and the inspection surface is viewed
 - **THEN** the frontend SHALL expose fetch recency, cache staleness, realtime connection status, and readiness/request metadata for registered capabilities
 - **AND** it SHALL reuse actual store/service/realtime state rather than duplicating business logic
+
+### Requirement: Standardized Pinia Store Factory
+The frontend SHALL provide a factory pattern for creating Pinia stores that consistently manage API data with standardized state, actions, and error handling.
+
+#### Scenario: Store Creation
+- **WHEN** creating a new API data store
+- **THEN** the factory provides consistent data/loading/error states
+- **AND** standard actions for fetch, refresh, and clear operations
+
+#### Scenario: Reactive State Updates
+- **WHEN** store data changes
+- **THEN** all subscribed components update automatically
+- **AND** loading states are properly managed during API calls
+
+#### Scenario: Error State Management
+- **WHEN** API calls fail
+- **THEN** error states are consistently set
+- **AND** user-friendly error messages are provided
+- **AND** retry mechanisms are available
+
+### Requirement: Unified API Client Integration
+The frontend SHALL extend the existing unified API client to work seamlessly with Pinia stores, providing caching, retries, and error handling.
+
+#### Scenario: Store-Aware Caching
+- **WHEN** stores make API calls
+- **THEN** responses are cached with appropriate TTL
+- **AND** cache invalidation is supported
+- **AND** cache statistics are available
+
+#### Scenario: Automatic Retries
+- **WHEN** API calls fail due to network issues
+- **THEN** automatic retries are performed
+- **AND** exponential backoff is used
+
+#### Scenario: Error Normalization
+- **WHEN** different APIs return different error formats
+- **THEN** errors are normalized to consistent format
+- **AND** appropriate user messages are generated
+
+### Requirement: Performance Monitoring
+The frontend SHALL provide performance monitoring for API calls and store operations.
+
+#### Scenario: Response Time Tracking
+- **WHEN** API calls are made
+- **THEN** response times are tracked
+- **AND** performance metrics are collected
+
+#### Scenario: Cache Hit Monitoring
+- **WHEN** cache operations occur
+- **THEN** hit rates are calculated
+- **AND** cache efficiency is monitored
+
+#### Scenario: Error Rate Tracking
+- **WHEN** API calls fail
+- **THEN** error rates are tracked by endpoint
+- **AND** failure patterns are identified
