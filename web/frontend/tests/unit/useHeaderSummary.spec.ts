@@ -42,4 +42,14 @@ describe('useHeaderSummary', () => {
 
     expect(refreshSpy).toHaveBeenCalledTimes(1)
   })
+
+  it('tracks whether a refresh action is currently available', async () => {
+    const headerSummary = useHeaderSummary()
+
+    headerSummary.reset()
+    expect(headerSummary.canRefresh.value).toBe(false)
+
+    headerSummary.setRefreshFn(async () => {})
+    expect(headerSummary.canRefresh.value).toBe(true)
+  })
 })
