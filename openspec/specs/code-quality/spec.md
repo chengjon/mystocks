@@ -199,3 +199,51 @@ The project SHALL require explicit evidence artifacts before a Q2 closure wave i
 - **WHEN** reviewers inspect a closure wave
 - **THEN** they SHALL be able to identify what was verified in code, what was verified in docs, and what remains assumption or follow-up
 - **AND** the evidence SHALL be sufficient to reject narrative-only completion claims
+
+### Requirement: Static Analysis Formal Remeasure Governance
+
+The project SHALL execute `backend_static_code_analysis` baseline refreshes through a formal remeasure batch that preserves canonical field semantics and emits reviewable evidence before any baseline mutation.
+
+#### Scenario: Formal remeasure batch is executed
+- **WHEN** the project reruns `backend_static_code_analysis` for governance purposes
+- **THEN** it SHALL use the approved snapshot builder or an explicitly reviewed replacement
+- **AND** it SHALL emit a raw snapshot artifact and a delta summary against the canonical baseline
+
+#### Scenario: Raw snapshot artifact is baseline-shaped
+- **WHEN** a formal remeasure batch emits a raw static-analysis snapshot
+- **THEN** that artifact SHALL expose the same field set as the canonical `backend_static_code_analysis` block
+- **AND** any additional helper metadata SHALL be clearly separated from the canonical field payload
+
+#### Scenario: Field semantics are preserved during remeasure
+- **WHEN** a formal remeasure batch is proposed or executed
+- **THEN** it SHALL document how each baseline field is produced
+- **AND** it SHALL NOT silently redefine existing field semantics as part of the measurement run
+
+### Requirement: Static Analysis Evidence Freshness
+
+Observed static-analysis evidence SHALL be treated as expiring measurement evidence rather than as durable truth.
+
+#### Scenario: Observed snapshot becomes stale by time
+- **WHEN** an observed static-analysis snapshot is older than `7` calendar days unless explicitly overridden by governance decision
+- **THEN** it SHALL be treated as stale evidence
+- **AND** it SHALL NOT be used as the promote basis without rerunning the formal remeasure batch
+
+#### Scenario: Observed snapshot becomes stale by drift
+- **WHEN** repository drift affects the analyzed backend API paths, the snapshot builder, or the governing measurement configuration
+- **THEN** previously observed static-analysis evidence SHALL be treated as stale
+- **AND** the project SHALL require a fresh remeasure before baseline adoption is reviewed
+
+### Requirement: Static Analysis Two-Step Approval Boundary
+
+The project SHALL separate approval to execute a static-analysis remeasure from approval to adopt its results into the canonical baseline.
+
+#### Scenario: Remeasure is approved without promote
+- **WHEN** reviewers approve execution of a static-analysis remeasure batch
+- **THEN** that approval SHALL authorize evidence collection and result reporting only
+- **AND** it SHALL NOT authorize mutation of the canonical baseline or canonical exception records
+
+#### Scenario: Promote is approved after review
+- **WHEN** a static-analysis remeasure result is proposed for baseline adoption
+- **THEN** the promote approval SHALL explicitly reference the reviewed snapshot and result summary
+- **AND** it SHALL state whether the remeasure was a scheduled refresh or a drift-triggered refresh
+- **AND** it SHALL be recorded as a separate decision from the remeasure execution approval
