@@ -1,4 +1,5 @@
 import { flushPromises, mount } from '@vue/test-utils'
+import { nextTick } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const {
@@ -51,6 +52,16 @@ vi.mock('@/components/artdeco', async () => {
 
 import TradeReconciliationPage from '../Reconciliation.vue'
 
+const deferred = <T>() => {
+  let resolve!: (value: T | PromiseLike<T>) => void
+  let reject!: (reason?: unknown) => void
+  const promise = new Promise<T>((res, rej) => {
+    resolve = res
+    reject = rej
+  })
+  return { promise, resolve, reject }
+}
+
 const reconciliationAccounts = [
   { accountId: 'backtest:7', label: 'Backtest #7', accountType: 'backtest' },
   { accountId: 'backtest:8', label: 'Backtest #8', accountType: 'backtest' },
@@ -61,6 +72,8 @@ const statementsPayloadByAccount = {
     status: 'available',
     endpoint: 'trade',
     resource: 'reconciliation_statements',
+    requestId: 'req-reconciliation-statements-backtest-7',
+    verifiedAt: '2026-05-07T09:30:00Z',
     accountId: 'backtest:7',
     items: [
       {
@@ -90,6 +103,8 @@ const statementsPayloadByAccount = {
     status: 'available',
     endpoint: 'trade',
     resource: 'reconciliation_statements',
+    requestId: 'req-reconciliation-statements-backtest-8',
+    verifiedAt: '2026-05-07T09:31:00Z',
     accountId: 'backtest:8',
     items: [
       {
@@ -121,6 +136,8 @@ const resultsPayload = {
   status: 'available',
   endpoint: 'trade',
   resource: 'reconciliation_results',
+  requestId: 'req-reconciliation-results-backtest-7',
+  verifiedAt: '2026-05-07T09:32:00Z',
   accountId: 'backtest:7',
   importBatchId: 'batch-7',
   items: [
@@ -325,5 +342,70 @@ describe('Trade reconciliation statement page', () => {
         importBatchId: 'batch-7',
       }),
     )
+  })
+
+  it('clears stale statement and result rows while a newly selected account snapshot is still pending', async () => {
+    const pendingStatements = deferred<(typeof statementsPayloadByAccount)['backtest:8']>()
+    const pendingResults = deferred<typeof resultsPayload>()
+
+    getReconciliationStatementsMock.mockImplementation(({ accountId }: { accountId: 'backtest:7' | 'backtest:8' }) => {
+      if (accountId === 'backtest:8') {
+        return pendingStatements.promise
+      }
+      return Promise.resolve(statementsPayloadByAccount[accountId])
+    })
+    getReconciliationResultsMock.mockImplementation(({ accountId }: { accountId: string }) => {
+      if (accountId === 'backtest:8') {
+        return pendingResults.promise
+      }
+      return Promise.resolve(resultsPayload)
+    })
+
+    const wrapper = mount(TradeReconciliationPage as never)
+
+    await flushPromises()
+
+    const importFile = new File(['csv'], 'miniqmt.csv', { type: 'text/csv' })
+    await wrapper.get('[data-testid="reconciliation-source-select"]').setValue('miniqmt')
+    const fileInput = wrapper.get('[data-testid="reconciliation-file-input"]')
+    Object.defineProperty(fileInput.element, 'files', {
+      configurable: true,
+      value: [importFile],
+    })
+    await fileInput.trigger('change')
+    await wrapper.get('[data-testid="reconciliation-import-button"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('REQ_ID: req-reconciliation-results-backtest-7')
+    expect(wrapper.text()).toContain('UPDATED: 2026-05-07 09:32:00')
+    expect(wrapper.text()).toContain('600519.SH')
+    expect(wrapper.text()).toContain('601318.SH')
+    expect(wrapper.text()).toContain('000001.SZ')
+
+    await wrapper.get('[data-testid="reconciliation-account-select"]').setValue('backtest:8')
+    await nextTick()
+
+    expect(wrapper.text()).toContain('ACCOUNT: backtest:8')
+    expect(wrapper.text()).toContain('REQ_ID: N/A')
+    expect(wrapper.text()).toContain('UPDATED: --')
+    expect(wrapper.text()).not.toContain('REQ_ID: req-reconciliation-results-backtest-7')
+    expect(wrapper.text()).not.toContain('UPDATED: 2026-05-07 09:32:00')
+    expect(wrapper.text()).not.toContain('IMPORT_BATCH: batch-7')
+    expect(wrapper.text()).toContain('IMPORT_BATCH: 未导入')
+    expect(wrapper.text()).not.toContain('ROWS: 3')
+    expect(wrapper.text()).toContain('ROWS: 0')
+    expect(wrapper.text()).not.toContain('600519.SH')
+    expect(wrapper.text()).not.toContain('601318.SH')
+    expect(wrapper.text()).not.toContain('000001.SZ')
+    expect(wrapper.findAll('.stats-strip .artdeco-stat-value').map((node) => node.text())).toEqual([
+      '--',
+      '--',
+      '--',
+      '--',
+      '--',
+      '--',
+    ])
+    expect(wrapper.text()).toContain('暂无内部账单记录。')
+    expect(wrapper.text()).toContain('导入完成后将在这里展示只读对账结果。')
   })
 })

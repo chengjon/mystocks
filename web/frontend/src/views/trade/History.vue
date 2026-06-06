@@ -26,8 +26,13 @@
     }>()
 
     const internalHistory = ref<TradeHistory[]>([])
+    const hasLoaded = ref(false)
+    const staleError = ref<string | null>(null)
+    const hasVerifiedHistorySnapshot = ref(false)
+    const lastVerifiedRequestId = ref('')
+    const lastVerifiedProcessTime = ref('')
     const instance = getCurrentInstance()
-    const { exec, loading: apiLoading, lastRequestId, lastProcessTime } = useArtDecoApi()
+    const { exec, loading: apiLoading, error, lastRequestId, lastProcessTime } = useArtDecoApi()
 
     const isEmbedded = computed(() => {
         const rawProps = instance?.vnode.props
@@ -42,35 +47,95 @@
     })
 
     const effectiveLoading = computed(() => props.loading ?? apiLoading.value)
+    const isPendingFirstLoad = computed(() => !isEmbedded.value && !hasLoaded.value)
+    const isLoadingState = computed(() => effectiveLoading.value || isPendingFirstLoad.value)
+    const showSummaryPlaceholders = computed(() => {
+        if (isEmbedded.value) {
+            return false
+        }
+
+        if (!hasVerifiedHistorySnapshot.value) {
+            return true
+        }
+
+        return false
+    })
     const completedCount = computed(() => displayHistory.value.filter((trade) => trade.status === 'completed').length)
     const pendingCount = computed(() => displayHistory.value.filter((trade) => trade.status === 'pending').length)
     const cancelledCount = computed(() => displayHistory.value.filter((trade) => trade.status === 'cancelled').length)
     const totalAmount = computed(() => `¥${displayHistory.value.reduce((sum, trade) => sum + Number(trade.amount || 0), 0).toFixed(0)}`)
-    const displayRequestId = computed(() => lastRequestId.value || 'N/A')
-    const displayProcessTime = computed(() => {
-        if (!lastProcessTime.value) {
+    const displayRequestId = computed(() => {
+        if (showSummaryPlaceholders.value) {
             return 'N/A'
         }
 
-        const value = Number.parseFloat(lastProcessTime.value)
+        return lastVerifiedRequestId.value || 'N/A'
+    })
+    const displayProcessTime = computed(() => {
+        if (showSummaryPlaceholders.value) {
+            return 'N/A'
+        }
+
+        if (!lastVerifiedProcessTime.value) {
+            return 'N/A'
+        }
+
+        const value = Number.parseFloat(lastVerifiedProcessTime.value)
         if (Number.isNaN(value)) {
-            return lastProcessTime.value
+            return lastVerifiedProcessTime.value
         }
 
         return `${value.toFixed(2)}ms`
     })
+    const displayRowCount = computed(() => (showSummaryPlaceholders.value ? '--' : String(displayHistory.value.length)))
+    const displayCompletedCount = computed(() => (showSummaryPlaceholders.value ? '--' : String(completedCount.value)))
+    const displayPendingCount = computed(() => (showSummaryPlaceholders.value ? '--' : String(pendingCount.value)))
+    const displayCancelledCount = computed(() => (showSummaryPlaceholders.value ? '--' : String(cancelledCount.value)))
+    const displayTotalAmount = computed(() => (showSummaryPlaceholders.value ? '--' : totalAmount.value))
     const pageStatusText = computed(() => {
-        if (effectiveLoading.value) return '同步中'
+        if (staleError.value) return '刷新异常'
+        if (error.value) return displayHistory.value.length > 0 ? '刷新异常' : '拉取失败'
+        if (isLoadingState.value) return '同步中'
         return displayHistory.value.length > 0 ? '历史已加载' : '暂无历史'
     })
     const pageStatusType = computed(() => {
+        if (staleError.value || error.value) return 'warning'
         if (pendingCount.value > 0) return 'warning'
         return displayHistory.value.length > 0 ? 'success' : 'info'
     })
+    const runtimeMessage = computed(() => {
+        if (staleError.value) {
+            return `${staleError.value}，当前仍展示上次成功同步的交易历史记录。`
+        }
+        if (error.value) {
+            return displayHistory.value.length > 0
+                ? `${error.value}，当前仍展示上次成功同步的交易历史记录。`
+                : `${error.value}，当前显示空历史状态。`
+        }
+        if (isLoadingState.value) return '交易历史同步中...'
+        if (displayHistory.value.length === 0) return '暂无成交记录。'
+        return ''
+    })
 
     const loadHistory = async () => {
+        staleError.value = null
         const responseData = await exec(() => apiClient.get('/v1/trade/trades'), { silent: true })
+        if (!responseData) {
+            if (hasVerifiedHistorySnapshot.value) {
+                staleError.value = error.value || '交易历史接口失败'
+            }
+            hasLoaded.value = true
+            return
+        }
         internalHistory.value = toTradingHistoryRows(extractTradesPayload(responseData))
+        hasVerifiedHistorySnapshot.value = true
+        lastVerifiedRequestId.value = lastRequestId.value || lastVerifiedRequestId.value
+        lastVerifiedProcessTime.value = lastProcessTime.value || lastVerifiedProcessTime.value
+        hasLoaded.value = true
+    }
+
+    function formatSignedCurrency(value: number): string {
+        return `¥${value}`
     }
 
     onMounted(() => {
@@ -89,7 +154,7 @@
                     <div class="hero-meta">
                         <span>REQ_ID: {{ displayRequestId }}</span>
                         <span>TIME: {{ displayProcessTime }}</span>
-                        <span>ROWS: {{ displayHistory.length }}</span>
+                        <span>ROWS: {{ displayRowCount }}</span>
                     </div>
                 </div>
             </div>
@@ -113,70 +178,83 @@
         </section>
 
         <section v-if="!isEmbedded" class="stats-strip artdeco-card-shell">
-            <ArtDecoStatCard label="总笔数" :value="displayHistory.length" variant="gold" />
-            <ArtDecoStatCard label="已成交" :value="completedCount" variant="rise" />
-            <ArtDecoStatCard label="待成交" :value="pendingCount" variant="gold" />
-            <ArtDecoStatCard label="成交总额" :value="totalAmount" variant="gold" />
+            <ArtDecoStatCard label="总笔数" :value="displayRowCount" variant="gold" :show-change="false" />
+            <ArtDecoStatCard label="已成交" :value="displayCompletedCount" variant="rise" :show-change="false" />
+            <ArtDecoStatCard label="待成交" :value="displayPendingCount" variant="gold" :show-change="false" />
+            <ArtDecoStatCard label="成交总额" :value="displayTotalAmount" variant="gold" :show-change="false" />
         </section>
 
         <section :class="isEmbedded ? 'embedded-shell' : 'content-shell artdeco-card-shell'">
             <div v-if="!isEmbedded" class="content-shell-header">
                 <div class="content-shell-copy">
                     <span class="content-shell-kicker">historical execution route</span>
-                    <h3 class="content-shell-title">成交记录与状态面板</h3>
+                    <h2 class="content-shell-title">成交记录与状态面板</h2>
                     <p class="content-shell-subtitle">从订单状态、成交金额到个股记录，形成完整的历史复盘工作流。</p>
                 </div>
                 <div class="content-shell-meta">
-                    <span>COMPLETED: {{ completedCount }}</span>
-                    <span>CANCELLED: {{ cancelledCount }}</span>
+                    <span>COMPLETED: {{ displayCompletedCount }}</span>
+                    <span>CANCELLED: {{ displayCancelledCount }}</span>
                 </div>
             </div>
 
             <ArtDecoCard title="交易历史记录" hoverable>
-                <div class="artdeco-trading-history__table">
-                    <div class="artdeco-trading-history__header">
-                        <div class="artdeco-trading-history__col artdeco-trading-history__col--time">时间</div>
-                        <div class="artdeco-trading-history__col artdeco-trading-history__col--symbol">股票</div>
-                        <div class="artdeco-trading-history__col artdeco-trading-history__col--type">类型</div>
-                        <div class="artdeco-trading-history__col artdeco-trading-history__col--price">价格</div>
-                        <div class="artdeco-trading-history__col artdeco-trading-history__col--quantity">数量</div>
-                        <div class="artdeco-trading-history__col artdeco-trading-history__col--amount">金额</div>
-                        <div class="artdeco-trading-history__col artdeco-trading-history__col--fee">手续费</div>
-                        <div class="artdeco-trading-history__col artdeco-trading-history__col--status">状态</div>
+                <div class="artdeco-trading-history__scroll-hint">移动端可横向滚动查看更多列。</div>
+                <p v-if="runtimeMessage" class="artdeco-trading-history__status-message" aria-live="polite">{{ runtimeMessage }}</p>
+                <div class="artdeco-trading-history__table" role="table" aria-label="交易历史表" :aria-busy="isLoadingState ? 'true' : 'false'">
+                    <div class="artdeco-trading-history__header" role="rowgroup">
+                        <div class="artdeco-trading-history__col artdeco-trading-history__col--time" role="columnheader">时间</div>
+                        <div class="artdeco-trading-history__col artdeco-trading-history__col--symbol" role="columnheader">股票</div>
+                        <div class="artdeco-trading-history__col artdeco-trading-history__col--type" role="columnheader">类型</div>
+                        <div class="artdeco-trading-history__col artdeco-trading-history__col--price" role="columnheader">价格</div>
+                        <div class="artdeco-trading-history__col artdeco-trading-history__col--quantity" role="columnheader">数量</div>
+                        <div class="artdeco-trading-history__col artdeco-trading-history__col--amount" role="columnheader">金额</div>
+                        <div class="artdeco-trading-history__col artdeco-trading-history__col--fee" role="columnheader">手续费</div>
+                        <div class="artdeco-trading-history__col artdeco-trading-history__col--status" role="columnheader">状态</div>
                     </div>
-                    <div v-if="displayHistory.length === 0" class="artdeco-trading-history__empty">
-                        暂无历史成交记录
+                    <div v-if="error && displayHistory.length === 0" class="artdeco-trading-history__empty artdeco-trading-history__empty--error">
+                        <p>交易历史拉取失败，当前无法展示真实记录。</p>
+                        <ArtDecoButton variant="outline" size="sm" @click="loadHistory">
+                            <template #icon>
+                                <ArtDecoIcon name="refresh" />
+                            </template>
+                            重试
+                        </ArtDecoButton>
                     </div>
-                    <div v-else class="artdeco-trading-history__body">
-                        <div class="artdeco-trading-history__row" v-for="trade in displayHistory" :key="trade.id">
-                            <div class="artdeco-trading-history__col artdeco-trading-history__col--time">
+                    <div v-else-if="displayHistory.length === 0" class="artdeco-trading-history__empty">
+                        {{ isLoadingState ? '交易历史同步中...' : '暂无历史成交记录' }}
+                    </div>
+                    <div v-else class="artdeco-trading-history__body" role="rowgroup">
+                        <div class="artdeco-trading-history__row" v-for="trade in displayHistory" :key="trade.id" role="row">
+                            <div class="artdeco-trading-history__col artdeco-trading-history__col--time artdeco-trading-history__numeric" role="cell">
                                 {{ trade.time }}
                             </div>
-                            <div class="artdeco-trading-history__col artdeco-trading-history__col--symbol">
+                            <div class="artdeco-trading-history__col artdeco-trading-history__col--symbol" role="cell">
                                 <div class="artdeco-trading-history__symbol-name">{{ trade.symbolName }}</div>
                                 <div class="artdeco-trading-history__symbol-code">{{ trade.symbol }}</div>
                             </div>
                             <div
                                 class="artdeco-trading-history__col artdeco-trading-history__col--type"
                                 :class="`artdeco-trading-history__type--${trade.type}`"
+                                role="cell"
                             >
                                 {{ trade.typeText }}
                             </div>
-                            <div class="artdeco-trading-history__col artdeco-trading-history__col--price">
-                                ¥{{ trade.price }}
+                            <div class="artdeco-trading-history__col artdeco-trading-history__col--price artdeco-trading-history__numeric" role="cell">
+                                {{ formatSignedCurrency(trade.price) }}
                             </div>
-                            <div class="artdeco-trading-history__col artdeco-trading-history__col--quantity">
+                            <div class="artdeco-trading-history__col artdeco-trading-history__col--quantity artdeco-trading-history__numeric" role="cell">
                                 {{ trade.quantity }}
                             </div>
-                            <div class="artdeco-trading-history__col artdeco-trading-history__col--amount">
-                                ¥{{ trade.amount }}
+                            <div class="artdeco-trading-history__col artdeco-trading-history__col--amount artdeco-trading-history__numeric" role="cell">
+                                {{ formatSignedCurrency(trade.amount) }}
                             </div>
-                            <div class="artdeco-trading-history__col artdeco-trading-history__col--fee">
-                                ¥{{ trade.fee }}
+                            <div class="artdeco-trading-history__col artdeco-trading-history__col--fee artdeco-trading-history__numeric" role="cell">
+                                {{ formatSignedCurrency(trade.fee) }}
                             </div>
                             <div
                                 class="artdeco-trading-history__col artdeco-trading-history__col--status"
                                 :class="`artdeco-trading-history__status--${trade.status}`"
+                                role="cell"
                             >
                                 {{ trade.statusText }}
                             </div>
@@ -305,6 +383,17 @@
         overflow-x: auto;
     }
 
+    .artdeco-trading-history__status-message,
+    .artdeco-trading-history__scroll-hint {
+        margin: 0 0 var(--artdeco-spacing-3);
+        color: var(--artdeco-fg-muted);
+        font-size: var(--artdeco-text-sm);
+    }
+
+    .artdeco-trading-history__scroll-hint {
+        display: none;
+    }
+
     .artdeco-trading-history__header {
         display: grid;
         grid-template-columns:
@@ -339,6 +428,14 @@
         color: var(--artdeco-fg-muted);
         font-size: var(--artdeco-text-sm);
         text-align: center;
+    }
+
+    .artdeco-trading-history__empty--error {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--artdeco-spacing-3);
+        color: var(--artdeco-warning);
     }
 
     .artdeco-trading-history__row {
@@ -386,6 +483,11 @@
         font-weight: 600;
     }
 
+    .artdeco-trading-history__numeric {
+        font-family: var(--artdeco-font-mono);
+        font-variant-numeric: tabular-nums;
+    }
+
     .artdeco-trading-history__status {
         font-weight: 600;
         padding: calc(var(--artdeco-spacing-1) / 2) var(--artdeco-spacing-2);
@@ -394,8 +496,8 @@
         letter-spacing: var(--artdeco-tracking-wide);
 
         &.artdeco-trading-history__status--completed {
-            background: color-mix(in srgb, var(--artdeco-down) 10%, transparent);
-            color: var(--artdeco-down);
+            background: color-mix(in srgb, var(--artdeco-up) 10%, transparent);
+            color: var(--artdeco-up);
         }
 
         &.artdeco-trading-history__status--pending {
@@ -404,8 +506,8 @@
         }
 
         &.artdeco-trading-history__status--cancelled {
-            background: color-mix(in srgb, var(--artdeco-up) 10%, transparent);
-            color: var(--artdeco-up);
+            background: color-mix(in srgb, var(--artdeco-down) 10%, transparent);
+            color: var(--artdeco-down);
         }
     }
 
@@ -446,6 +548,10 @@
         .hero-meta,
         .content-shell-meta {
             width: 100%;
+        }
+
+        .artdeco-trading-history__scroll-hint {
+            display: block;
         }
     }
 </style>

@@ -6,6 +6,7 @@ import {
   type ReconciliationStatementsPayload,
 } from '@/api/trade'
 import {
+  formatReconciliationTimestamp,
   toReconciliationAccountOptions,
   toReconciliationResultMetrics,
   toReconciliationResultRows,
@@ -35,9 +36,36 @@ export function useTradeReconciliation() {
   const hasImportBatch = computed(() => Boolean(importBatchId.value))
   const statementSummary = computed(() => toReconciliationSummarySnapshot(statementsPayload.value))
   const resultMetrics = computed(() => toReconciliationResultMetrics(resultsPayload.value))
+  const displayMatchedCount = computed(() => (resultsPayload.value ? String(resultMetrics.value.matched) : '--'))
+  const displayMismatchedCount = computed(() => (resultsPayload.value ? String(resultMetrics.value.mismatched) : '--'))
+  const displayMissingBrokerRecordCount = computed(() => (
+    resultsPayload.value ? String(resultMetrics.value.missingBrokerRecord) : '--'
+  ))
   const resultRows = computed(() => toReconciliationResultRows(resultsPayload.value))
   const statementRows = computed(() => statementsPayload.value?.items ?? [])
   const selectedFileName = computed(() => selectedFile.value?.name || '')
+  const currentSnapshotRequestId = computed(() => {
+    if (resultsPayload.value?.requestId) {
+      return resultsPayload.value.requestId
+    }
+
+    if (statementsPayload.value?.requestId) {
+      return statementsPayload.value.requestId
+    }
+
+    return ''
+  })
+  const currentSnapshotUpdatedAt = computed(() => {
+    if (resultsPayload.value?.verifiedAt) {
+      return formatReconciliationTimestamp(resultsPayload.value.verifiedAt)
+    }
+
+    if (statementsPayload.value?.verifiedAt) {
+      return formatReconciliationTimestamp(statementsPayload.value.verifiedAt)
+    }
+
+    return '--'
+  })
   const pageStatusText = computed(() => {
     if (importing.value) {
       return '导入中'
@@ -159,7 +187,16 @@ export function useTradeReconciliation() {
   }
 
   const handleAccountChange = async (nextAccountId: string) => {
+    if (nextAccountId === selectedAccountId.value) {
+      return
+    }
+
     selectedAccountId.value = nextAccountId
+    importBatchId.value = ''
+    importRowCount.value = 0
+    statementsPayload.value = null
+    resultsPayload.value = null
+    actionMessage.value = ''
     await refresh()
   }
 
@@ -246,6 +283,11 @@ export function useTradeReconciliation() {
     importRowCount,
     importing,
     loading,
+    currentSnapshotRequestId,
+    currentSnapshotUpdatedAt,
+    displayMatchedCount,
+    displayMismatchedCount,
+    displayMissingBrokerRecordCount,
     pageStatusText,
     pageStatusType,
     refresh,

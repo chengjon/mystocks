@@ -37,6 +37,8 @@ export interface ReconciliationStatementsPayload {
   status: string
   endpoint: string
   resource: string
+  requestId: string
+  verifiedAt: string
   accountId: string
   items: ReconciliationStatementRow[]
   summary: ReconciliationStatementSummary
@@ -50,6 +52,7 @@ export interface ReconciliationImportBatchPayload {
   status: string
   endpoint: string
   resource: string
+  requestId: string
   importBatchId: string
   accountId: string | null
   sourceType: ReconciliationImportSourceType
@@ -82,6 +85,8 @@ export interface ReconciliationResultsPayload {
   status: string
   endpoint: string
   resource: string
+  requestId: string
+  verifiedAt: string
   accountId: string
   importBatchId: string
   items: ReconciliationResultRow[]
@@ -119,6 +124,19 @@ const asNumber = (value: unknown, fallback = 0): number =>
 
 const asString = (value: unknown, fallback = ''): string =>
   typeof value === 'string' ? value : value == null ? fallback : String(value)
+
+const extractEnvelopeRequestId = (raw: unknown): string => {
+  if (raw && typeof raw === 'object' && 'request_id' in (raw as Record<string, unknown>)) {
+    return asString((raw as Record<string, unknown>).request_id)
+  }
+
+  const outer = asRecord(raw)
+  if ('data' in outer && outer.data && typeof outer.data === 'object' && 'request_id' in (outer.data as Record<string, unknown>)) {
+    return asString((outer.data as Record<string, unknown>).request_id)
+  }
+
+  return ''
+}
 
 const asNullableString = (value: unknown): string | null =>
   value == null ? null : asString(value)
@@ -183,11 +201,15 @@ const normalizeReconciliationAccounts = (raw: unknown): ReconciliationAccountDes
 const normalizeReconciliationStatements = (raw: unknown): ReconciliationStatementsPayload => {
   const payload = unwrapTradeEnvelopeData<Record<string, unknown>>(raw)
   const summary = asRecord(payload.summary)
+  const requestId = extractEnvelopeRequestId(raw)
+  const verifiedAt = requestId ? new Date().toISOString() : ''
 
   return {
     status: asString(payload.status, 'available'),
     endpoint: asString(payload.endpoint, 'trade'),
     resource: asString(payload.resource, 'reconciliation_statements'),
+    requestId,
+    verifiedAt,
     accountId: asString(payload.account_id),
     items: asArray(payload.items).map(normalizeReconciliationStatementRow),
     summary: {
@@ -208,6 +230,7 @@ const normalizeReconciliationImportBatch = (raw: unknown): ReconciliationImportB
     status: asString(payload.status, 'available'),
     endpoint: asString(payload.endpoint, 'trade'),
     resource: asString(payload.resource, 'reconciliation_import_batch'),
+    requestId: extractEnvelopeRequestId(raw),
     importBatchId: asString(payload.import_batch_id),
     accountId: asNullableString(payload.account_id),
     sourceType: asString(payload.source_type, 'normalized_template') as ReconciliationImportSourceType,
@@ -217,11 +240,15 @@ const normalizeReconciliationImportBatch = (raw: unknown): ReconciliationImportB
 
 const normalizeReconciliationResults = (raw: unknown): ReconciliationResultsPayload => {
   const payload = unwrapTradeEnvelopeData<Record<string, unknown>>(raw)
+  const requestId = extractEnvelopeRequestId(raw)
+  const verifiedAt = requestId ? new Date().toISOString() : ''
 
   return {
     status: asString(payload.status, 'available'),
     endpoint: asString(payload.endpoint, 'trade'),
     resource: asString(payload.resource, 'reconciliation_results'),
+    requestId,
+    verifiedAt,
     accountId: asString(payload.account_id),
     importBatchId: asString(payload.import_batch_id),
     items: asArray(payload.items).map((item) => {

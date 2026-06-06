@@ -54,6 +54,18 @@ const wrapperCases = [
       "title=\"交易历史工作台\"",
       "apiClient.get('/v1/trade/trades')",
     ]
+  },
+  {
+    label: 'trade embedded position monitor',
+    canonicalPath: 'src/views/trade/Center.vue',
+    legacyPath: 'src/views/artdeco-pages/trading-tabs/ArtDecoPositionMonitor.vue',
+    legacyImportLine: "import TradeCenterCanonicalPage from '@/views/trade/Center.vue'",
+    legacyRenderLine: '<TradeCenterCanonicalPage v-bind="attrs" :positions="[]" />',
+    canonicalEvidence: [
+      "const isEmbedded = computed(() => {",
+      "return Boolean(rawProps && 'positions' in rawProps)",
+      "apiClient.get('/v1/trade/positions')"
+    ]
   }
 ] as const
 
@@ -108,5 +120,19 @@ describe('trade wrapper retention', () => {
     }
     expect(legacySource).toContain(wrapperCases[3].legacyImportLine)
     expect(legacySource).toContain(wrapperCases[3].legacyRenderLine)
+  })
+
+  it('keeps the embedded trade position monitor as a thin wrapper over src/views/trade/Center.vue instead of a placeholder fork', () => {
+    const canonicalSource = readSource(wrapperCases[4].canonicalPath)
+    const legacySource = readSource(wrapperCases[4].legacyPath)
+    const legacyFullPath = resolve(process.cwd(), wrapperCases[4].legacyPath)
+
+    expect(existsSync(legacyFullPath)).toBe(true)
+    for (const evidenceLine of wrapperCases[4].canonicalEvidence) {
+      expect(canonicalSource).toContain(evidenceLine)
+    }
+    expect(legacySource).toContain(wrapperCases[4].legacyImportLine)
+    expect(legacySource).toContain(wrapperCases[4].legacyRenderLine)
+    expect(legacySource).not.toContain('头寸监控主面板整理中')
   })
 })
