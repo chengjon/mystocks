@@ -7,10 +7,12 @@ function readSource(pathFromFrontendRoot: string): string {
 }
 
 describe('technical web3 style support', () => {
-  it('uses the technical page style file through @use', () => {
+  it('keeps the legacy technical page honest instead of importing stale web3 styles', () => {
     const source = readSource('src/views/technical/TechnicalAnalysis.vue')
 
-    expect(source).toContain('@use "./styles/TechnicalAnalysis.scss" as *;')
+    expect(source).toContain('legacy-static-shell')
+    expect(source).toContain('/market/technical')
+    expect(source).not.toContain('@use "./styles/TechnicalAnalysis.scss" as *;')
     expect(source).not.toContain('@import "./styles/TechnicalAnalysis"')
   })
 

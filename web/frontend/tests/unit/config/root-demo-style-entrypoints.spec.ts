@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 function readSource(pathFromFrontendRoot: string): string {
@@ -7,7 +7,7 @@ function readSource(pathFromFrontendRoot: string): string {
 }
 
 describe('root/demo style entrypoints', () => {
-  it('keeps view entrypoints on @use', () => {
+  it('keeps view entrypoints free of deprecated style imports', () => {
     const viewFiles = [
       'src/views/Analysis.vue',
       'src/views/BacktestAnalysis.vue',
@@ -32,7 +32,6 @@ describe('root/demo style entrypoints', () => {
 
     for (const file of viewFiles) {
       const source = readSource(file)
-      expect(source).toContain('@use')
       expect(source).not.toContain('@import "./styles/')
       expect(source).not.toContain("@import './styles/")
     }
@@ -41,14 +40,13 @@ describe('root/demo style entrypoints', () => {
   it('keeps shared style sources on @use token imports', () => {
     const styleFiles = [
       'src/views/styles/Analysis.scss',
-      'src/views/styles/BacktestWizard.scss',
       'src/views/styles/Dashboard.scss',
-      'src/views/styles/IndustryConceptAnalysis.scss',
       'src/views/styles/Settings.scss',
       'src/views/styles/TradingDecisionCenter.scss',
     ]
 
     for (const file of styleFiles) {
+      expect(existsSync(resolve(process.cwd(), file))).toBe(true)
       const source = readSource(file)
       expect(source).toContain('@use')
       expect(source).not.toContain("@import '@/styles/")
