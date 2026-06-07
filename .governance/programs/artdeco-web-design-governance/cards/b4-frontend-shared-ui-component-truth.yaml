@@ -40,8 +40,10 @@ acceptance:
     - "B4.008 closes only after grouped shared UI packages are source-authorized, implemented without cross-domain mixing, and validated by type-check, focused unit coverage, PM2 business smoke, GitNexus, and OPENDOG."
 
 evidence:
-  current_head: "a6c202fa53de99fd9f6584b1e05b5400376b766a"
+  current_head: "15316c9a8d2f1424411c89cd49ed35473832964c"
   notes:
     - "M1 no-source audit completed after B4.007 was frozen."
+    - "M2a source-authorized UI-1 shared shell/layout/header summary repair completed."
+    - "M2a report: docs/reports/worklogs/claude-auto/b4-008-m2a-shared-shell-layout-header-summary-2026-06-08.md"
     - "Final report: docs/reports/worklogs/claude-auto/b4-008-m1-shared-ui-component-no-source-audit-2026-06-08.md"
-    - "Next gate: source authorization for grouped M2 package, preferably UI-1 shared shell/layout/header summary."
+    - "Next gate: source authorization for B4.008-M2b UI-3 shared market chart/query component chain."

@@ -31,7 +31,7 @@
               {{ headerSummary.todayPnLValue.value }}
             </ArtDecoBadge>
           </div>
-          <div v-if="headerSummary.marketStatus.value" class="time-refresh">
+          <div v-if="headerSummary.canRefresh.value" class="time-refresh">
             <div class="time-display">
               <ArtDecoIcon name="clock" />
               <span class="time-value">{{ headerSummary.currentTime.value }}</span>

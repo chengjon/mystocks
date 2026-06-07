@@ -4493,11 +4493,11 @@
     "node_type": "evidence",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "",
-    "status": "evidence-prepared",
+    "status": "implementation-landed",
     "function_tree_ref": "B4.008-M1",
-    "current_head": "a6c202fa53de99fd9f6584b1e05b5400376b766a",
+    "current_head": "15316c9a8d2f1424411c89cd49ed35473832964c",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "baseline",
@@ -4505,6 +4505,13 @@
         "note": "B4.008-M1 no-source shared UI/component audit, grouping, risk ranking, and proposed package order",
         "current_head": "a6c202fa53de99fd9f6584b1e05b5400376b766a",
         "recorded_at": "2026-06-08T03:00:02+08:00"
+      },
+      {
+        "kind": "implementation",
+        "path": "docs/reports/worklogs/claude-auto/b4-008-m2a-shared-shell-layout-header-summary-2026-06-08.md",
+        "note": "B4.008-M2a source-authorized shared shell/layout/header summary repair and gate evidence",
+        "current_head": "15316c9a8d2f1424411c89cd49ed35473832964c",
+        "recorded_at": "2026-06-08T03:25:00+08:00"
       }
     ],
     "allowed_paths": [
@@ -4538,11 +4545,11 @@
       "Do not stage generated component registry changes unless paired with a source-authorized component package and regeneration policy.",
       "Do not edit ST-HOLD, marketKlineData, external dirty files, backend/API contracts, or unrelated frontend domains."
     ],
-    "next_gate": "B4.008-M2 source authorization for the first grouped package, preferably UI-1 shared shell/layout/header summary after explicit approval.",
+    "next_gate": "B4.008-M2b source authorization for UI-3 shared market chart/query component chain.",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-08T03:00:02+08:00",
-    "updated_at": "2026-06-08T03:00:02+08:00",
+    "updated_at": "2026-06-08T03:25:00+08:00",
     "acceptance": {
       "commit_gate": [
         "For M1, stage only the audit report and governance node/card files; run diff check, JSON parse, GitNexus staged detect, and verify-staged before commit."
@@ -4558,6 +4565,20 @@
         "note": "B4.008-M1 no-source audit prepared after B4.007 governance line was closed and frozen.",
         "current_head": "a6c202fa53de99fd9f6584b1e05b5400376b766a",
         "transitioned_at": "2026-06-08T03:00:02+08:00"
+      },
+      {
+        "from": "evidence-prepared",
+        "to": "approved-for-implementation",
+        "note": "User formally approved B4.008-M2a source-authorized UI-1 shared shell/layout/header summary repair.",
+        "current_head": "ece9ac6177013661b52966fb7a32fd91b7564aa5",
+        "transitioned_at": "2026-06-08T03:25:00+08:00"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-landed",
+        "note": "B4.008-M2a repair staged after type-check, focused unit, stable unit, PM2 business smoke, OPENDOG, and GitNexus gates.",
+        "current_head": "15316c9a8d2f1424411c89cd49ed35473832964c",
+        "transitioned_at": "2026-06-08T03:25:00+08:00"
       }
     ]
   }

@@ -147,7 +147,7 @@ const props = withDefaults(defineProps<Props>(), {
 const route = useRoute()
 
 // State
-const sidebarCollapsed = ref(false) // Sidebar collapsed state (TODO: add persistence)
+const sidebarCollapsed = ref(false) // Sidebar collapsed state (TODO owner=frontend-platform issue=techdebt-expired-markers ttl=2026-06-30: add persistence)
 const unreadCount = ref(0)
 const commandPaletteRef = ref<InstanceType<typeof CommandPalette>>()
 

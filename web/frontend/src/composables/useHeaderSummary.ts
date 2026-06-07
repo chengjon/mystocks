@@ -5,6 +5,7 @@ const activeStrategiesCount: Ref<number | null> = ref(null)
 const todayPnLValue = ref('¥0.00')
 const currentTime = ref('')
 const refreshing = ref(false)
+const canRefresh = ref(false)
 let _refreshFn: (() => Promise<void>) | null = null
 
 function resetSummaryState() {
@@ -14,6 +15,7 @@ function resetSummaryState() {
   currentTime.value = ''
   refreshing.value = false
   _refreshFn = null
+  canRefresh.value = false
 }
 
 export function useHeaderSummary() {
@@ -33,6 +35,7 @@ export function useHeaderSummary() {
 
   function setRefreshFn(fn: () => Promise<void>) {
     _refreshFn = fn
+    canRefresh.value = true
   }
 
   async function refresh() {
@@ -49,6 +52,7 @@ export function useHeaderSummary() {
     todayPnLValue,
     currentTime,
     refreshing,
+    canRefresh,
     update,
     setRefreshFn,
     refresh,
