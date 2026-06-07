@@ -1,9 +1,10 @@
 import type { StrategyConfig } from '@/api/types/common'
 import type { StrategySnapshot } from '@/composables/strategy/useStrategyCrossTabContext'
 import { createMockStrategyManagementList } from '@/mock/strategyTabsMock'
+import type { OptimizationDataSource } from './strategyOptimizationSourcePolicy'
 
 export type OptimizationStatusLabel = 'RUNNING' | 'PAUSED' | 'STOPPED' | 'ERROR'
-export type OptimizationDataSource = 'real' | 'mock'
+export type { OptimizationDataSource } from './strategyOptimizationSourcePolicy'
 
 export interface StrategyOptimizationRow {
   strategyId: string

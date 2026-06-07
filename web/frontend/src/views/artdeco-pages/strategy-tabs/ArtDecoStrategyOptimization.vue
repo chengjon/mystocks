@@ -31,20 +31,20 @@
     </section>
 
     <section v-if="!isEmbedded" class="stats-strip artdeco-card-shell">
-      <ArtDecoStatCard label="候选总数" :value="optimizationRows.length" variant="gold" />
-      <ArtDecoStatCard label="当前筛选" :value="displayedRows.length" variant="gold" />
-      <ArtDecoStatCard label="异常策略" :value="errorCandidateCount" variant="fall" />
-      <ArtDecoStatCard label="当前焦点" :value="optimizationFocusLabel" variant="gold" />
+      <ArtDecoStatCard label="候选总数" :value="displayTotalCandidateCount" variant="gold" :show-change="false" />
+      <ArtDecoStatCard label="当前筛选" :value="displayVisibleCandidateCount" variant="gold" :show-change="false" />
+      <ArtDecoStatCard label="异常策略" :value="displayErrorCandidateCount" variant="fall" :show-change="false" />
+      <ArtDecoStatCard label="当前焦点" :value="optimizationFocusLabel" variant="gold" :show-change="false" />
     </section>
 
     <section :class="isEmbedded ? 'embedded-shell' : 'content-shell artdeco-card-shell'">
       <div v-if="!isEmbedded" class="content-shell-header">
         <div class="content-shell-copy">
           <span class="content-shell-kicker">optimization propagation route</span>
-          <h3 class="content-shell-title">优化候选与回写面板</h3>
+          <h2 class="content-shell-title">优化候选与回写面板</h2>
         </div>
         <div class="content-shell-meta">
-          <span>VISIBLE: {{ displayedRows.length }}</span>
+          <span>{{ visibleCandidateLabel }}: {{ displayVisibleCandidateCount }}</span>
           <span>FOCUS: {{ optimizationFocusLabel }}</span>
         </div>
       </div>
@@ -54,11 +54,11 @@
         <div class="header-row">
           <div class="header-copy">
             <span class="header-eyebrow">{{ isEmbedded ? 'optimization module' : 'optimization repository' }}</span>
-            <h2>{{ isEmbedded ? '策略优化模块' : '策略优化' }}</h2>
+            <h3>{{ isEmbedded ? '策略优化模块' : '策略优化' }}</h3>
           </div>
           <div class="header-meta">
-            <span class="trace-id">VISIBLE: {{ displayedRows.length }}</span>
-            <span class="trace-id">TOTAL: {{ optimizationRows.length }}</span>
+            <span class="trace-id">{{ visibleCandidateLabel }}: {{ displayVisibleCandidateCount }}</span>
+            <span class="trace-id">TOTAL: {{ displayTotalCandidateCount }}</span>
             <span :class="['source-badge', dataSource]">SOURCE: {{ sourceModeLabel }}</span>
           </div>
         </div>
@@ -95,7 +95,8 @@
         <button class="toolbar-button" :disabled="loading" @click="refreshOptimizationRows">刷新</button>
       </div>
 
-      <p v-if="error" class="error-tip">{{ error }}</p>
+      <p v-if="errorDisplayMessage" class="error-tip">{{ errorDisplayMessage }}</p>
+      <p v-if="dataSourceNotice" class="source-notice" :class="`is-${dataSource}`">{{ dataSourceNotice }}</p>
 
       <div class="content-grid">
         <div class="table-wrap" v-loading="loading">
@@ -124,29 +125,25 @@
                     size="sm"
                   />
                 </td>
-                <td>{{ row.parameterCount }}</td>
-                <td>{{ row.backtestStatus }}</td>
-                <td>{{ row.score }}</td>
-                <td>{{ formatUpdatedTime(row.lastUpdated) }}</td>
+                <td class="numeric-cell">{{ row.parameterCount }}</td>
+                <td class="numeric-cell">{{ row.backtestStatus }}</td>
+                <td class="numeric-cell">{{ row.score }}</td>
+                <td class="numeric-cell">{{ formatUpdatedTime(row.lastUpdated) }}</td>
                 <td class="writeback-cell">
-                  <button class="action-button" :disabled="loading" @click="writebackToManagement(row)">
+                  <button class="action-button" :disabled="loading || !writebackEnabled" @click="writebackToManagement(row)">
                     管理
                   </button>
-                  <button class="action-button" :disabled="loading" @click="writebackToParameters(row)">
+                  <button class="action-button" :disabled="loading || !writebackEnabled" @click="writebackToParameters(row)">
                     参数
                   </button>
-                  <button class="action-button" :disabled="loading" @click="writebackToBacktest(row)">
+                  <button class="action-button" :disabled="loading || !writebackEnabled" @click="writebackToBacktest(row)">
                     回测
                   </button>
                 </td>
               </tr>
             </tbody>
           </table>
-
-          <p v-else-if="selectedStrategyMissing" class="empty-state">
-            未找到策略 {{ selectedStrategyId }} 的优化候选，请返回策略管理页重试。
-          </p>
-          <p v-else class="empty-state">REAL 数据为空，暂无可优化策略。</p>
+          <p v-else class="empty-state">{{ emptyStateText }}</p>
         </div>
 
         <aside class="contract-card artdeco-card">
@@ -192,9 +189,14 @@ import {
   buildOptimizationRows,
   createMockOptimizationRows,
   type StrategyOptimizationRow,
-  type OptimizationDataSource,
   type OptimizationStatusLabel
 } from './strategyOptimizationViewModel'
+import {
+  canWritebackOptimizationRow,
+  formatOptimizationSourceLabel,
+  shouldUseOptimizationMockFallback,
+  type OptimizationDataSource
+} from './strategyOptimizationSourcePolicy'
 import {
   OPTIMIZATION_WRITEBACK_POINTS,
   createOptimizationWritebackPayload
@@ -228,6 +230,11 @@ const statusFilter = ref<StatusFilter>('all')
 const strategyRecords = ref<StrategyConfig[]>([])
 const optimizationRows = ref<StrategyOptimizationRow[]>([])
 const dataSource = ref<OptimizationDataSource>('real')
+const hasVerifiedOptimizationSnapshot = ref(false)
+const verifiedStrategyIds = ref<Set<string>>(new Set())
+const lastVerifiedRequestId = ref('')
+const lastVerifiedProcessTime = ref('')
+const staleError = ref('')
 
 const selectedStrategyId = computed(() => extractStrategyIdFromQuery(route.query as Record<string, unknown>))
 const selectedSnapshot = computed(() => {
@@ -236,13 +243,72 @@ const selectedSnapshot = computed(() => {
   }
   return getSnapshot(selectedStrategyId.value)
 })
+const hasCurrentVerifiedOptimizationSnapshot = computed(() => {
+  if (!selectedStrategyId.value) {
+    return hasVerifiedOptimizationSnapshot.value
+  }
+
+  return verifiedStrategyIds.value.has(selectedStrategyId.value)
+})
 
 const isEmbedded = computed(() => Boolean(props.functionKey))
-const traceRequestId = computed(() => (lastRequestId.value.trim().length > 0 ? lastRequestId.value : 'N/A'))
-const traceProcessTimeMs = computed(() => normalizeProcessTime(lastProcessTime.value))
-const sourceModeLabel = computed(() => dataSource.value.toUpperCase())
+const effectiveError = computed(() => (!hasVerifiedOptimizationSnapshot.value ? error.value : ''))
+const traceRequestId = computed(() => {
+  if (hasCurrentVerifiedOptimizationSnapshot.value) {
+    return lastVerifiedRequestId.value || 'N/A'
+  }
+
+  if (selectedStrategyId.value && hasVerifiedOptimizationSnapshot.value) {
+    return 'N/A'
+  }
+
+  const requestId = lastRequestId.value.trim()
+  if (!requestId.length) {
+    return loading.value ? '--' : 'N/A'
+  }
+
+  return effectiveError.value ? 'N/A' : requestId
+})
+const traceProcessTimeMs = computed(() => {
+  if (hasCurrentVerifiedOptimizationSnapshot.value) {
+    return normalizeProcessTime(lastVerifiedProcessTime.value)
+  }
+
+  if (selectedStrategyId.value && hasVerifiedOptimizationSnapshot.value) {
+    return 'N/A'
+  }
+
+  const processTime = lastProcessTime.value.trim()
+  if (!processTime.length) {
+    return loading.value ? '--' : 'N/A'
+  }
+
+  return effectiveError.value ? 'N/A' : normalizeProcessTime(processTime)
+})
+const sourceModeLabel = computed(() => formatOptimizationSourceLabel(dataSource.value))
 const writebackPoints = OPTIMIZATION_WRITEBACK_POINTS
+const writebackEnabled = computed(() => canWritebackOptimizationRow(dataSource.value))
 const errorCandidateCount = computed(() => optimizationRows.value.filter((row) => row.statusLabel === 'ERROR').length)
+const showPendingOptimizationPlaceholders = computed(
+  () => loading.value && strategyRecords.value.length === 0 && optimizationRows.value.length === 0
+)
+const showSummaryPlaceholders = computed(
+  () => (
+    showPendingOptimizationPlaceholders.value ||
+    dataSource.value === 'unavailable' ||
+    (Boolean(selectedStrategyId.value) && !hasCurrentVerifiedOptimizationSnapshot.value)
+  )
+)
+const displayTotalCandidateCount = computed(() => (
+  showSummaryPlaceholders.value ? '--' : String(optimizationRows.value.length)
+))
+const displayVisibleCandidateCount = computed(() => (
+  showSummaryPlaceholders.value ? '--' : String(displayedRows.value.length)
+))
+const displayErrorCandidateCount = computed(() => (
+  showSummaryPlaceholders.value ? '--' : String(errorCandidateCount.value)
+))
+const visibleCandidateLabel = computed(() => (showSummaryPlaceholders.value ? '可见' : 'VISIBLE'))
 const optimizationFocusLabel = computed(() => {
   if (selectedStrategyId.value) return `ID ${selectedStrategyId.value}`
   if (statusFilter.value === 'RUNNING') return '运行中'
@@ -253,12 +319,48 @@ const optimizationFocusLabel = computed(() => {
 })
 const pageStatusText = computed(() => {
   if (loading.value) return '同步中'
-  if (error.value) return '接口异常'
-  return dataSource.value === 'real' ? '优化链路在线' : '本地保底视图'
+  if (staleError.value) return '刷新异常'
+  if (dataSource.value === 'unavailable') return '真实数据不可用'
+  if (dataSource.value === 'mock') return '嵌入保底视图'
+  if (effectiveError.value) return '接口异常'
+  return '优化链路在线'
 })
 const pageStatusType = computed(() => {
-  if (error.value) return 'warning'
+  if (staleError.value || dataSource.value === 'unavailable' || effectiveError.value) return 'warning'
   return dataSource.value === 'real' ? 'success' : 'info'
+})
+const errorDisplayMessage = computed(() => {
+  if (staleError.value) {
+    return `${staleError.value}，当前仍显示上次成功同步的优化候选快照。`
+  }
+
+  return effectiveError.value
+})
+const dataSourceNotice = computed(() => {
+  if (dataSource.value === 'mock') {
+    return '当前为嵌入保底视图，仅供结构浏览；mock 候选不会回写到管理、参数或回测链路。'
+  }
+
+  if (dataSource.value === 'unavailable') {
+    return '真实优化候选不可用，当前不注入 mock 行，避免把本地样例误写回真实策略上下文。'
+  }
+
+  return ''
+})
+const emptyStateText = computed(() => {
+  if (showPendingOptimizationPlaceholders.value) {
+    return '优化候选同步中，正在等待真实候选返回。'
+  }
+  if (dataSource.value === 'unavailable') {
+    return 'REAL 数据不可用，当前不展示 mock 候选，避免误回写。'
+  }
+  if (selectedStrategyMissing.value) {
+    return `未找到策略 ${selectedStrategyId.value} 的优化候选，请返回策略管理页重试。`
+  }
+  if (dataSource.value === 'mock') {
+    return '当前为嵌入保底视图，暂无 mock 候选可展示。'
+  }
+  return 'REAL 数据为空，暂无可优化策略。'
 })
 
 function getOptimizationStatusBadgeVariant(status: OptimizationStatusLabel): 'profit' | 'warning' | 'loss' | 'neutral' {
@@ -291,6 +393,15 @@ const selectedStrategyMissing = computed(() => {
   if (!selectedStrategyId.value) {
     return false
   }
+
+  if (showPendingOptimizationPlaceholders.value || dataSource.value === 'unavailable') {
+    return false
+  }
+
+  if (!hasCurrentVerifiedOptimizationSnapshot.value) {
+    return true
+  }
+
   return optimizationRows.value.every((row) => row.strategyId !== selectedStrategyId.value)
 })
 
@@ -354,25 +465,63 @@ function applyMockFallback() {
   }
 }
 
+function applyUnavailableState(message: string) {
+  strategyRecords.value = []
+  optimizationRows.value = []
+  dataSource.value = 'unavailable'
+  error.value = message
+}
+
+function markVerifiedOptimizationSnapshot(strategyIds: string[]) {
+  hasVerifiedOptimizationSnapshot.value = true
+  lastVerifiedRequestId.value = lastRequestId.value || lastVerifiedRequestId.value
+  lastVerifiedProcessTime.value = lastProcessTime.value || lastVerifiedProcessTime.value
+  verifiedStrategyIds.value = new Set(strategyIds)
+}
+
 async function refreshOptimizationRows() {
+  staleError.value = ''
   const payload = await exec(() => strategyApi.getStrategies({}), {
-    silent: true,
-    errorMsg: '获取策略优化数据失败，当前显示空结果'
+    silent: true
   })
 
   if (!payload) {
-    applyMockFallback()
+    if (hasVerifiedOptimizationSnapshot.value) {
+      staleError.value = error.value || '获取策略优化数据失败'
+      return
+    }
+
+    if (shouldUseOptimizationMockFallback(isEmbedded.value)) {
+      applyMockFallback()
+      return
+    }
+
+    applyUnavailableState('获取策略优化数据失败，已停用 mock 保底候选与回写。')
     return
   }
 
   const realStrategies = extractStrategiesFromPayload(payload)
   if (realStrategies === null) {
-    applyMockFallback()
+    if (hasVerifiedOptimizationSnapshot.value) {
+      staleError.value = '优化候选返回结构异常'
+      return
+    }
+
+    if (shouldUseOptimizationMockFallback(isEmbedded.value)) {
+      applyMockFallback()
+      error.value = '优化候选结构异常，已降级为嵌入保底视图。'
+      return
+    }
+
+    applyUnavailableState('优化候选返回结构异常，当前不展示 mock 候选。')
     return
   }
 
   strategyRecords.value = realStrategies
   dataSource.value = 'real'
+  error.value = null
+  staleError.value = ''
+  markVerifiedOptimizationSnapshot(realStrategies.map((strategy) => String(strategy.strategy_id ?? '')))
 
   if (realStrategies.length === 0) {
     optimizationRows.value = []
@@ -418,7 +567,23 @@ function applyOptimizationWriteback(row: StrategyOptimizationRow) {
   })
 }
 
+function guardWriteback(): boolean {
+  if (writebackEnabled.value) {
+    return true
+  }
+
+  const message =
+    dataSource.value === 'mock'
+      ? '当前为嵌入保底视图，已禁用 mock 优化候选回写。'
+      : '当前未获取到真实优化候选，已禁用回写。'
+  ElMessage.warning(message)
+  return false
+}
+
 async function writebackToManagement(row: StrategyOptimizationRow) {
+  if (!guardWriteback()) {
+    return
+  }
   applyOptimizationWriteback(row)
   await router.push({
     name: 'strategy-repo',
@@ -430,21 +595,31 @@ async function writebackToManagement(row: StrategyOptimizationRow) {
 }
 
 async function writebackToParameters(row: StrategyOptimizationRow) {
+  if (!guardWriteback()) {
+    return
+  }
   applyOptimizationWriteback(row)
   const routeLocation = buildStrategyCrossTabRoute('parameters', row.strategyId)
   if (routeLocation) {
     await router.push(routeLocation)
+    ElMessage.success(`优化参数已回写并同步到参数页：${row.strategyName}`)
+    return
   }
-  ElMessage.success(`优化参数已回写并同步到参数页：${row.strategyName}`)
+  ElMessage.warning(`优化参数已回写，但未找到参数页路由：${row.strategyName}`)
 }
 
 async function writebackToBacktest(row: StrategyOptimizationRow) {
+  if (!guardWriteback()) {
+    return
+  }
   applyOptimizationWriteback(row)
   const routeLocation = buildQuickBacktestRoute(row.strategyId)
   if (routeLocation) {
     await router.push(routeLocation)
+    ElMessage.success(`优化上下文已回写并跳转回测：${row.strategyName}`)
+    return
   }
-  ElMessage.success(`优化上下文已回写并跳转回测：${row.strategyName}`)
+  ElMessage.warning(`优化上下文已回写，但未找到回测页路由：${row.strategyName}`)
 }
 
 onMounted(() => {
