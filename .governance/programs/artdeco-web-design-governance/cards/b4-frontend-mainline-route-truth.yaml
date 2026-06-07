@@ -32,5 +32,8 @@ acceptance:
     - "All five M1 E2E failures fixed or explicitly reclassified with evidence; mainline route/menu matrix updated; no Backlog or high-risk excluded files touched."
 
 evidence:
-  current_head: "b2a559c1741aae5619ab5083ab6ad43a18ab168b"
-  notes: []
+  current_head: "e92d7fab0fa518d05ccb0f14a9144a992a31cddb"
+  notes:
+    - "M1/M2/M3 mainline route truth closed with full validation evidence."
+    - "F3 root legacy backlog closed through A+B, C, and D family archive batches."
+    - "Final closeout report: docs/reports/worklogs/claude-auto/b4-007-final-closeout-2026-06-08.md"

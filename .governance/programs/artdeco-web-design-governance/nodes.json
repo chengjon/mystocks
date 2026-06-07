@@ -4371,7 +4371,7 @@
     "parent": "",
     "status": "closed",
     "function_tree_ref": "B4.007-M1",
-    "current_head": "b2a559c1741aae5619ab5083ab6ad43a18ab168b",
+    "current_head": "e92d7fab0fa518d05ccb0f14a9144a992a31cddb",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -4381,6 +4381,13 @@
         "note": "B4.007-M1 no-source mainline route continuity audit matrix and gate evidence",
         "current_head": "b2a559c1741aae5619ab5083ab6ad43a18ab168b",
         "recorded_at": "2026-06-07T10:40:43.351Z"
+      },
+      {
+        "kind": "closeout",
+        "path": "docs/reports/worklogs/claude-auto/b4-007-final-closeout-2026-06-08.md",
+        "note": "B4.007 full governance line closeout after F3 A+B/C/D family archive batches",
+        "current_head": "e92d7fab0fa518d05ccb0f14a9144a992a31cddb",
+        "recorded_at": "2026-06-08T02:42:07+08:00"
       }
     ],
     "allowed_paths": [
@@ -4408,7 +4415,7 @@
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-07T10:18:26.920Z",
-    "updated_at": "2026-06-07T12:27:05.127Z",
+    "updated_at": "2026-06-08T02:42:07+08:00",
     "acceptance": {
       "commit_gate": [
         "Stage only files touched by the current M2 batch; run GitNexus/OPENDOG, type-check, focused unit, and PM2-backed business E2E before commit."
@@ -4459,6 +4466,25 @@
       ],
       "current_head": "b39fc7b858797a155da9c96a1630842ca587d777",
       "prepared_at": "2026-06-07T12:27:05.085Z"
+    },
+    "final_closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-007-final-closeout-2026-06-08.md",
+      "compatibility": "B4.007 mainline route truth stayed green; F3 root legacy backlog completed later under explicit family authorization via A+B, C, and D archive batches. No ST-HOLD, marketKlineData, external dirty files, or unrelated domains were touched.",
+      "f3_family_commits": [
+        "b296af2e0 B4.007-F3-A+B: archive root legacy static + entry-guard batch",
+        "ad20a04e2 B4.007-F3-C: archive high-reference root legacy views",
+        "e92d7fab0 B4.007-F3-D: archive high-risk root legacy views"
+      ],
+      "gates": [
+        "latest type-check passed after F3-D",
+        "latest stable unit suite passed after F3-D: 33 files, 415 tests",
+        "latest focused F3-D guard suite passed: 5 files, 36 tests",
+        "latest PM2 business smoke passed after all F3 batches: chromium 55/55",
+        "GitNexus fresh at e92d7fab0 and staged diff empty",
+        "OPENDOG recorded fresh verification with no new failures"
+      ],
+      "current_head": "e92d7fab0fa518d05ccb0f14a9144a992a31cddb",
+      "prepared_at": "2026-06-08T02:42:07+08:00"
     }
   }
 ]
