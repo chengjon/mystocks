@@ -9,7 +9,6 @@ function readSource(pathFromFrontendRoot: string): string {
 describe('root/demo style entrypoints', () => {
   it('keeps view entrypoints free of deprecated style imports', () => {
     const viewFiles = [
-      'src/views/Analysis.vue',
       'src/views/BacktestAnalysis.vue',
       'src/views/BacktestWizard.vue',
       'src/views/Dashboard.vue',

@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-test.describe('MarketData.vue - P2高优先级页面集成测试', () => {
+test.describe('market-data route - P2高优先级页面集成测试', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/market-data')
   })

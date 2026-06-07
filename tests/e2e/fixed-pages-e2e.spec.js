@@ -60,7 +60,7 @@ test.describe('🔧 Fixed Pages E2E Tests - P0 Integration', () => {
       expect(jsErrors.length).toBe(0);
     });
 
-    test('Analysis.vue - renders without errors', async ({ page }) => {
+    test('analysis route - renders without errors', async ({ page }) => {
       await page.goto(`${BASE_URL}/analysis`);
       await page.waitForLoadState('networkidle');
 
@@ -287,7 +287,7 @@ test.describe('🔧 Fixed Pages E2E Tests - P0 Integration', () => {
       await newPage.close();
     });
 
-    test('Analysis.vue - shows loading state during data fetch', async ({ page, context }) => {
+    test('analysis route - shows loading state during data fetch', async ({ page, context }) => {
       const newPage = await context.newPage();
 
       // Slow down network to observe loading state
@@ -429,7 +429,7 @@ test.describe('🔧 Fixed Pages E2E Tests - P0 Integration', () => {
       expect(pageContent).toBeTruthy();
     });
 
-    test('Analysis.vue - does not have memory leaks', async ({ page }) => {
+    test('analysis route - does not have memory leaks', async ({ page }) => {
       await page.goto(`${BASE_URL}/analysis`);
       await page.waitForLoadState('networkidle');
 
