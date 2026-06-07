@@ -5,75 +5,75 @@
         <div class="artdeco-trading-signals__corner artdeco-trading-signals__corner--br"></div>
 
         <ArtDecoCard title="实时交易信号" hoverable>
-            <div class="artdeco-trading-signals__table">
-                <div class="artdeco-trading-signals__header">
-                    <div class="artdeco-trading-signals__col artdeco-trading-signals__col--select">选择</div>
-                    <div class="artdeco-trading-signals__col artdeco-trading-signals__col--id">信号ID</div>
-                    <div class="artdeco-trading-signals__col artdeco-trading-signals__col--time">时间</div>
-                    <div class="artdeco-trading-signals__col artdeco-trading-signals__col--symbol">股票</div>
-                    <div class="artdeco-trading-signals__col artdeco-trading-signals__col--type">类型</div>
-                    <div class="artdeco-trading-signals__col artdeco-trading-signals__col--strength">强度</div>
-                    <div class="artdeco-trading-signals__col artdeco-trading-signals__col--price">价格</div>
-                    <div class="artdeco-trading-signals__col artdeco-trading-signals__col--reason">理由</div>
-                    <div class="artdeco-trading-signals__col artdeco-trading-signals__col--confidence">置信度</div>
-                    <div class="artdeco-trading-signals__col artdeco-trading-signals__col--actions">操作</div>
+            <div class="artdeco-trading-signals__table" role="table" aria-label="实时交易信号表">
+                <div class="artdeco-trading-signals__header" role="rowgroup">
+                    <div class="artdeco-trading-signals__col artdeco-trading-signals__col--select" role="columnheader">选择</div>
+                    <div class="artdeco-trading-signals__col artdeco-trading-signals__col--id" role="columnheader">信号ID</div>
+                    <div class="artdeco-trading-signals__col artdeco-trading-signals__col--time" role="columnheader">时间</div>
+                    <div class="artdeco-trading-signals__col artdeco-trading-signals__col--symbol" role="columnheader">股票</div>
+                    <div class="artdeco-trading-signals__col artdeco-trading-signals__col--type" role="columnheader">类型</div>
+                    <div class="artdeco-trading-signals__col artdeco-trading-signals__col--strength" role="columnheader">强度</div>
+                    <div class="artdeco-trading-signals__col artdeco-trading-signals__col--price" role="columnheader">价格</div>
+                    <div class="artdeco-trading-signals__col artdeco-trading-signals__col--reason" role="columnheader">来源 / 理由</div>
+                    <div class="artdeco-trading-signals__col artdeco-trading-signals__col--confidence" role="columnheader">置信度</div>
+                    <div class="artdeco-trading-signals__col artdeco-trading-signals__col--actions" role="columnheader">操作</div>
                 </div>
                 <div v-if="signals.length === 0" class="artdeco-trading-signals__empty">
                     暂无实时交易信号
                 </div>
-                <div v-else class="artdeco-trading-signals__body">
-                    <div class="artdeco-trading-signals__row" v-for="signal in signals" :key="signal.id">
-                        <div class="artdeco-trading-signals__col artdeco-trading-signals__col--select">
-                            <input type="checkbox" v-model="signal.selected" />
+                <div v-else class="artdeco-trading-signals__body" role="rowgroup">
+                    <div class="artdeco-trading-signals__row" v-for="signal in signals" :key="signal.rowKey" role="row">
+                        <div class="artdeco-trading-signals__col artdeco-trading-signals__col--select" role="cell">
+                            <input
+                                v-model="signal.selected"
+                                type="checkbox"
+                                :disabled="!signal.executionReady"
+                                :aria-label="`选择信号 ${signal.id} ${signal.symbolName}`"
+                            />
                         </div>
-                        <div class="artdeco-trading-signals__col artdeco-trading-signals__col--id">{{ signal.id }}</div>
-                        <div class="artdeco-trading-signals__col artdeco-trading-signals__col--time">
+                        <div class="artdeco-trading-signals__col artdeco-trading-signals__col--id artdeco-trading-signals__numeric" role="cell">{{ signal.displayId }}</div>
+                        <div class="artdeco-trading-signals__col artdeco-trading-signals__col--time artdeco-trading-signals__numeric" role="cell">
                             {{ signal.time }}
                         </div>
-                        <div class="artdeco-trading-signals__col artdeco-trading-signals__col--symbol">
+                        <div class="artdeco-trading-signals__col artdeco-trading-signals__col--symbol" role="cell">
                             <div class="artdeco-trading-signals__symbol-name">{{ signal.symbolName }}</div>
                             <div class="artdeco-trading-signals__symbol-code">{{ signal.symbol }}</div>
                         </div>
                         <div
                             class="artdeco-trading-signals__col artdeco-trading-signals__col--type"
                             :class="`artdeco-trading-signals__type--${signal.type}`"
+                            role="cell"
                         >
                             {{ signal.typeText }}
                         </div>
-                        <div class="artdeco-trading-signals__col artdeco-trading-signals__col--strength">
-                            <div class="artdeco-trading-signals__strength">
-                                <span
-                                    v-for="(i, _idx) in 5"
-                                    :key="i"
-                                    class="artdeco-trading-signals__star"
-                                    :class="{ 'artdeco-trading-signals__star--filled': i <= signal.strength }"
-                                >
-                                    ★
-                                </span>
-                            </div>
+                        <div class="artdeco-trading-signals__col artdeco-trading-signals__col--strength" role="cell">
+                            <span class="artdeco-trading-signals__strength-label">{{ signal.strengthLabel }}</span>
                         </div>
-                        <div class="artdeco-trading-signals__col artdeco-trading-signals__col--price">
+                        <div class="artdeco-trading-signals__col artdeco-trading-signals__col--price artdeco-trading-signals__numeric" role="cell">
                             ¥{{ signal.price }}
                         </div>
-                        <div class="artdeco-trading-signals__col artdeco-trading-signals__col--reason">
+                        <div class="artdeco-trading-signals__col artdeco-trading-signals__col--reason" role="cell">
                             {{ signal.reason }}
                         </div>
-                        <div class="artdeco-trading-signals__col artdeco-trading-signals__col--confidence">
-                            <div class="artdeco-trading-signals__confidence-bar">
+                        <div class="artdeco-trading-signals__col artdeco-trading-signals__col--confidence artdeco-trading-signals__numeric" role="cell">
+                            <div v-if="signal.confidenceValue !== null" class="artdeco-trading-signals__confidence-bar">
                                 <div
                                     class="artdeco-trading-signals__confidence-fill"
-                                    :style="{ width: signal.confidence + '%' }"
+                                    :style="{ width: signal.confidenceValue + '%' }"
                                 ></div>
-                                <span class="artdeco-trading-signals__confidence-text">{{ signal.confidence }}%</span>
+                                <span class="artdeco-trading-signals__confidence-text">{{ signal.confidenceLabel }}</span>
                             </div>
+                            <span v-else class="artdeco-trading-signals__confidence-pending">{{ signal.confidenceLabel }}</span>
                         </div>
-                        <div class="artdeco-trading-signals__col artdeco-trading-signals__col--actions">
+                        <div class="artdeco-trading-signals__col artdeco-trading-signals__col--actions" role="cell">
                             <ArtDecoButton
                                 variant="solid"
                                 size="sm"
+                                :disabled="!signal.executionReady"
                                 :class="`artdeco-trading-signals__button--${signal.type}`"
+                                @click="emit('execute', signal)"
                             >
-                                {{ signal.type === 'buy' ? '买入' : '卖出' }}
+                                {{ signal.type === 'buy' ? '买入' : signal.type === 'sell' ? '卖出' : '观察' }}
                             </ArtDecoButton>
                         </div>
                     </div>
@@ -88,21 +88,29 @@
     import ArtDecoButton from '@/components/artdeco/base/ArtDecoButton.vue'
 
     export interface TradingSignal {
-        id: number
+        rowKey: string
+        id?: string | null
+        displayId: string
         selected?: boolean
         time: string
         symbol: string
         symbolName: string
-        type: 'buy' | 'sell'
+        type: 'buy' | 'sell' | 'hold'
         typeText: string
-        strength: number
+        strengthLabel: string
         price: number
         reason: string
-        confidence: number
+        confidenceValue: number | null
+        confidenceLabel: string
+        executionReady: boolean
     }
 
     defineProps<{
         signals: TradingSignal[]
+    }>()
+
+    const emit = defineEmits<{
+        (e: 'execute', signal: TradingSignal): void
     }>()
 </script>
 
@@ -225,6 +233,11 @@
         color: var(--artdeco-fg-muted);
     }
 
+    .artdeco-trading-signals__numeric {
+        font-family: var(--artdeco-font-mono);
+        font-variant-numeric: tabular-nums;
+    }
+
     .artdeco-trading-signals__type--buy {
         color: var(--artdeco-up);
         font-weight: 600;
@@ -235,18 +248,14 @@
         font-weight: 600;
     }
 
-    .artdeco-trading-signals__strength {
-        display: flex;
-        gap: calc(var(--artdeco-spacing-1) / 2);
+    .artdeco-trading-signals__type--hold {
+        color: var(--artdeco-gold-primary);
+        font-weight: 600;
     }
 
-    .artdeco-trading-signals__star {
-        color: var(--artdeco-fg-muted);
-        font-size: var(--artdeco-text-xs);
-
-        &.artdeco-trading-signals__star--filled {
-            color: var(--artdeco-gold-primary);
-        }
+    .artdeco-trading-signals__strength-label {
+        font-family: var(--artdeco-font-mono);
+        color: var(--artdeco-fg-primary);
     }
 
     .artdeco-trading-signals__confidence-bar {
@@ -275,6 +284,11 @@
         color: var(--artdeco-fg-primary);
     }
 
+    .artdeco-trading-signals__confidence-pending {
+        color: var(--artdeco-fg-muted);
+        font-size: var(--artdeco-text-xs);
+    }
+
     .artdeco-trading-signals__button--buy {
         --button-bg: var(--artdeco-up);
         --button-color: white;
@@ -283,6 +297,11 @@
     .artdeco-trading-signals__button--sell {
         --button-bg: var(--artdeco-down);
         --button-color: white;
+    }
+
+    .artdeco-trading-signals__button--hold {
+        --button-bg: var(--artdeco-gold-dim);
+        --button-color: var(--artdeco-fg-primary);
     }
 
     // Corner decorations
