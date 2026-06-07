@@ -1,24 +1,10 @@
-<template>
-    <div class="positions-view">
-        <h1>Current Positions</h1>
-        <p>View and manage your current trading positions</p>
-        <div class="placeholder-content">
-            <el-alert
-                title="Coming Soon"
-                description="Positions management interface will be implemented in Phase 4"
-                type="info"
-                show-icon
-            />
-        </div>
-    </div>
-</template>
-
 <script setup lang="ts">
-    // Current positions view for trading domain
+import { useAttrs } from 'vue'
+import TradePositionsCanonicalPage from '@/views/artdeco-pages/trading-tabs/ArtDecoTradingPositions.vue'
+
+const attrs = useAttrs()
 </script>
 
-<style scoped>
-    .positions-view {
-        padding: var(--artdeco-spacing-5);
-    }
-</style>
+<template>
+  <TradePositionsCanonicalPage v-bind="attrs" />
+</template>

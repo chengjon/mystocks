@@ -30,9 +30,10 @@ describe('portfolioOverviewData', () => {
       total_assets: 1025000,
       today_pnl: 55000,
       today_pnl_pct: 5.67,
+      rebalance_policy_ready: false,
       positions: [
-        { symbol: '600519.SH', name: '贵州茅台', market_value: 875000, pnl_pct: 6.06 },
-        { symbol: '000858.SZ', name: '五粮液', market_value: 150000, pnl_pct: 3.45 }
+        { symbol: '600519.SH', name: '贵州茅台', market_value: 875000, pnl_pct: 6.06, target_weight: null },
+        { symbol: '000858.SZ', name: '五粮液', market_value: 150000, pnl_pct: 3.45, target_weight: null }
       ]
     })
   })
@@ -55,7 +56,8 @@ describe('portfolioOverviewData', () => {
       total_assets: 12000.5,
       today_pnl: 0,
       today_pnl_pct: 0,
-      positions: [{ symbol: '600000.SH', name: '浦发银行', market_value: 12000.5, pnl_pct: -1.5 }]
+      rebalance_policy_ready: false,
+      positions: [{ symbol: '600000.SH', name: '浦发银行', market_value: 12000.5, pnl_pct: -1.5, target_weight: null }]
     })
   })
 
@@ -64,7 +66,24 @@ describe('portfolioOverviewData', () => {
       total_assets: 0,
       today_pnl: 0,
       today_pnl_pct: 0,
+      rebalance_policy_ready: false,
       positions: []
     })
+  })
+
+  it('marks rebalance policy as unavailable when live positions payload has no target weights', () => {
+    const payload = extractTradePositionsPayload({
+      positions: [
+        {
+          symbol: '600519.SH',
+          symbol_name: '贵州茅台',
+          market_value: 875000,
+          profit_loss_percent: 6.06
+        }
+      ],
+      total_market_value: 875000
+    })
+
+    expect(toPortfolioOverviewData(payload).rebalance_policy_ready).toBe(false)
   })
 })
