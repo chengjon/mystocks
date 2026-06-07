@@ -38,10 +38,10 @@
     </section>
 
     <section v-if="!isEmbedded" class="stats-strip artdeco-card-shell">
-      <ArtDecoStatCard label="策略总数" :value="strategies.length" variant="gold" />
-      <ArtDecoStatCard label="运行中" :value="runningStrategyCount" variant="rise" />
-      <ArtDecoStatCard label="异常数" :value="issueStrategyCount" variant="fall" />
-      <ArtDecoStatCard label="当前焦点" :value="statusFilterLabel" variant="gold" />
+      <ArtDecoStatCard label="策略总数" :value="strategyCountDisplay" :show-change="false" variant="gold" />
+      <ArtDecoStatCard label="运行中" :value="runningStrategyCountDisplay" :show-change="false" variant="rise" />
+      <ArtDecoStatCard label="异常数" :value="issueStrategyCountDisplay" :show-change="false" variant="fall" />
+      <ArtDecoStatCard label="当前焦点" :value="statusFilterLabel" :show-change="false" variant="gold" />
     </section>
 
     <section :class="isEmbedded ? 'embedded-shell' : 'content-shell artdeco-card-shell'">
@@ -51,8 +51,8 @@
           <h3 class="content-shell-title">策略仓库与生命周期面板</h3>
         </div>
         <div class="content-shell-meta">
-          <span>MATCHED: {{ filteredStrategies.length }}</span>
-          <span>PAGE: {{ currentPage }} / {{ totalPages }}</span>
+          <span>MATCHED: {{ matchedCountDisplay }}</span>
+          <span>PAGE: {{ currentPageDisplay }} / {{ totalPagesDisplay }}</span>
         </div>
       </div>
 
@@ -66,8 +66,8 @@
           <div class="header-meta">
             <span class="trace-id">REQ_ID: {{ traceRequestId }}</span>
             <span class="trace-id">PROCESS: {{ traceProcessTimeMs }} ms</span>
-            <span class="trace-id">MATCHED: {{ filteredStrategies.length }}</span>
-            <span class="trace-id">PAGE: {{ currentPage }} / {{ totalPages }}</span>
+            <span class="trace-id">MATCHED: {{ matchedCountDisplay }}</span>
+            <span class="trace-id">PAGE: {{ currentPageDisplay }} / {{ totalPagesDisplay }}</span>
             <span :class="['source-badge', dataSource]">SOURCE: {{ sourceModeLabel }}</span>
           </div>
         </div>
@@ -96,7 +96,7 @@
         </button>
       </div>
 
-      <p v-if="error" class="error-tip">{{ error }}</p>
+      <p v-if="errorDisplayMessage" class="error-tip">{{ errorDisplayMessage }}</p>
       <div v-if="failedOperation" class="retry-banner">
         <span class="retry-message">{{ failedOperation.message }}</span>
         <div class="retry-actions">
@@ -413,10 +413,37 @@ const formState = ref<StrategyFormState>(createDefaultForm())
 const retrying = ref(false)
 const failedOperation = ref<FailedOperation | null>(null)
 const rowFeedback = ref<Record<string, string>>({})
+const hasVerifiedStrategySnapshot = ref(false)
+const lastVerifiedRequestId = ref('')
+const lastVerifiedProcessTime = ref('')
+const staleError = ref('')
 
 const isEmbedded = computed(() => Boolean(props.functionKey))
-const traceRequestId = computed(() => lastRequestId.value || 'N/A')
-const traceProcessTimeMs = computed(() => lastProcessTimeMs.value || 'N/A')
+const effectiveError = computed(() => staleError.value || error.value)
+const traceRequestId = computed(() => {
+  if (hasVerifiedStrategySnapshot.value) {
+    return lastVerifiedRequestId.value || 'N/A'
+  }
+
+  const requestId = lastRequestId.value.trim()
+  if (!requestId || requestId === 'N/A') {
+    return 'N/A'
+  }
+
+  return error.value ? 'N/A' : requestId
+})
+const traceProcessTimeMs = computed(() => {
+  if (hasVerifiedStrategySnapshot.value) {
+    return lastVerifiedProcessTime.value || 'N/A'
+  }
+
+  const processTime = lastProcessTimeMs.value.trim()
+  if (!processTime || processTime === 'N/A') {
+    return 'N/A'
+  }
+
+  return error.value ? 'N/A' : processTime
+})
 const sourceModeLabel = computed(() => dataSource.value.toUpperCase())
 const runningStrategyCount = computed(() => strategies.value.filter((strategy) => strategy.status === 'running').length)
 const issueStrategyCount = computed(() => strategies.value.filter((strategy) => strategy.status === 'error').length)
@@ -427,14 +454,30 @@ const statusFilterLabel = computed(() => {
   if (statusFilter.value === 'error') return '异常策略'
   return '全部状态'
 })
+const hasPendingFirstLoad = computed(
+  () => loading.value && !error.value && strategies.value.length === 0 && !hasVerifiedStrategySnapshot.value
+)
+const hasFailedFirstLoad = computed(
+  () => !loading.value && Boolean(error.value) && strategies.value.length === 0 && !hasVerifiedStrategySnapshot.value
+)
+const shouldUseSummaryPlaceholder = computed(() => hasPendingFirstLoad.value || hasFailedFirstLoad.value)
 const pageStatusText = computed(() => {
   if (loading.value) return '同步中'
+  if (staleError.value) return '刷新异常'
   if (error.value) return '接口异常'
   return dataSource.value === 'real' ? '策略仓库在线' : '本地保底视图'
 })
 const pageStatusType = computed(() => {
+  if (staleError.value) return 'warning'
   if (error.value) return 'warning'
   return dataSource.value === 'real' ? 'success' : 'info'
+})
+const errorDisplayMessage = computed(() => {
+  if (staleError.value) {
+    return `${staleError.value}，当前仍显示上次成功同步的策略仓库快照。`
+  }
+
+  return effectiveError.value
 })
 
 const filteredStrategies = computed(() => {
@@ -456,7 +499,18 @@ const pagedStrategies = computed(() => {
   return filteredStrategies.value.slice(offset, offset + PAGE_SIZE)
 })
 
+const strategyCountDisplay = computed(() => (shouldUseSummaryPlaceholder.value ? '--' : String(strategies.value.length)))
+const runningStrategyCountDisplay = computed(() => (shouldUseSummaryPlaceholder.value ? '--' : String(runningStrategyCount.value)))
+const issueStrategyCountDisplay = computed(() => (shouldUseSummaryPlaceholder.value ? '--' : String(issueStrategyCount.value)))
+const matchedCountDisplay = computed(() => (shouldUseSummaryPlaceholder.value ? '--' : String(filteredStrategies.value.length)))
+const currentPageDisplay = computed(() => (shouldUseSummaryPlaceholder.value ? '--' : String(currentPage.value)))
+const totalPagesDisplay = computed(() => (shouldUseSummaryPlaceholder.value ? '--' : String(totalPages.value)))
+
 const emptyStateText = computed(() => {
+  if (hasPendingFirstLoad.value) {
+    return '策略仓库同步中，正在等待真实策略返回。'
+  }
+
   if (error.value) {
     return 'REAL 请求失败，请稍后重试。'
   }
@@ -482,6 +536,21 @@ watch(
   strategies,
   (items) => {
     upsertFromStrategyList(items as StrategyListItemVM[])
+  },
+  { immediate: true }
+)
+
+watch(
+  [loading, error, strategies, dataSource, lastRequestId, lastProcessTimeMs],
+  ([isLoading, currentError, items, source, requestId, processTime]) => {
+    const hasTransportSnapshot =
+      (typeof requestId === 'string' && requestId.trim().length > 0 && requestId !== 'N/A') ||
+      (typeof processTime === 'string' && processTime.trim().length > 0 && processTime !== 'N/A')
+
+    if (!isLoading && !currentError && ((items as StrategyListItemVM[]).length > 0 || (source === 'real' && hasTransportSnapshot))) {
+      markVerifiedStrategySnapshot()
+      staleError.value = ''
+    }
   },
   { immediate: true }
 )
@@ -519,10 +588,21 @@ function formatUpdatedTime(timestamp: string): string {
   })
 }
 
-function refreshStrategies() {
+function markVerifiedStrategySnapshot() {
+  hasVerifiedStrategySnapshot.value = true
+  lastVerifiedRequestId.value = lastRequestId.value || lastVerifiedRequestId.value
+  lastVerifiedProcessTime.value = lastProcessTimeMs.value || lastVerifiedProcessTime.value
+}
+
+async function refreshStrategies() {
   rowFeedback.value = {}
   failedOperation.value = null
-  void fetchStrategies()
+  staleError.value = ''
+  await fetchStrategies()
+
+  if (error.value && hasVerifiedStrategySnapshot.value) {
+    staleError.value = error.value
+  }
 }
 
 function createDefaultForm(): StrategyFormState {
