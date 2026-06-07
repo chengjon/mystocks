@@ -4495,7 +4495,7 @@
     "parent": "",
     "status": "implementation-landed",
     "function_tree_ref": "B4.008-M1",
-    "current_head": "15316c9a8d2f1424411c89cd49ed35473832964c",
+    "current_head": "5287d1d30d0eb811313108ab0d61d0a0326311b2",
     "freshness": "current-head",
     "source_edits_authorized": true,
     "evidence": [
@@ -4510,7 +4510,7 @@
         "kind": "implementation",
         "path": "docs/reports/worklogs/claude-auto/b4-008-m2a-shared-shell-layout-header-summary-2026-06-08.md",
         "note": "B4.008-M2a source-authorized shared shell/layout/header summary repair and gate evidence",
-        "current_head": "15316c9a8d2f1424411c89cd49ed35473832964c",
+        "current_head": "5287d1d30d0eb811313108ab0d61d0a0326311b2",
         "recorded_at": "2026-06-08T03:25:00+08:00"
       }
     ],
@@ -4577,7 +4577,7 @@
         "from": "approved-for-implementation",
         "to": "implementation-landed",
         "note": "B4.008-M2a repair staged after type-check, focused unit, stable unit, PM2 business smoke, OPENDOG, and GitNexus gates.",
-        "current_head": "15316c9a8d2f1424411c89cd49ed35473832964c",
+        "current_head": "5287d1d30d0eb811313108ab0d61d0a0326311b2",
         "transitioned_at": "2026-06-08T03:25:00+08:00"
       }
     ]
