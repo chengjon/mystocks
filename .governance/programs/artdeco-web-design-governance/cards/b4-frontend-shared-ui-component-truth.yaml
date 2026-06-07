@@ -1,0 +1,47 @@
+task:
+  id: "b4-frontend-shared-ui-component-truth"
+  title: "Frontend shared UI component continuity and grouped cleanup"
+
+scope:
+  allowed_paths:
+    - "web/frontend/src/layouts/ArtDecoLayoutEnhanced.vue"
+    - "web/frontend/src/layouts/BaseLayout.vue"
+    - "web/frontend/src/composables/useHeaderSummary.ts"
+    - "web/frontend/src/components.d.ts"
+    - "web/frontend/src/layouts/archive/BaseLayout.vue"
+    - "web/frontend/src/components/artdeco/base/ArtDecoDialog.vue"
+    - "web/frontend/src/components/artdeco/base/ArtDecoLanguageSwitcher.vue"
+    - "web/frontend/src/components/artdeco/core/ArtDecoSkeleton.vue"
+    - "web/frontend/src/components/market/ProKLineChart.vue"
+    - "web/frontend/src/components/market/WencaiQueryTable.vue"
+    - "web/frontend/src/components/market/composables/useProKLineChart.ts"
+    - "web/frontend/src/components/market/composables/useProKLineChart.types.ts"
+    - "web/frontend/src/components/market/composables/useWencaiPanelV2.ts"
+    - "web/frontend/src/composables/market/dataAnalysisData.ts"
+    - "web/frontend/src/composables/market/useDataAnalysis.ts"
+    - "web/frontend/src/composables/market/__node_tests__/dataAnalysisData.test.ts"
+    - "docs/reports/worklogs/claude-auto"
+  forbidden_paths:
+    - "ST-HOLD"
+    - "marketKlineData"
+    - "web/frontend/src/views"
+    - "archive/web/frontend/src/views/root-legacy"
+
+non_goals:
+  - "Do not reopen or mutate B4.007 route truth or root legacy archive packages."
+  - "Do not pull B4.004 data/market, B4.005 system/risk, or B4.006 strategy/trade route page work into this shared UI package."
+  - "Do not stage generated component registry changes unless paired with a source-authorized component package and regeneration policy."
+  - "Do not edit ST-HOLD, marketKlineData, external dirty files, backend/API contracts, or unrelated frontend domains."
+
+acceptance:
+  commit_gate:
+    - "For M1, stage only the audit report and governance node/card files; run diff check, JSON parse, GitNexus staged detect, and verify-staged before commit."
+  closeout_gate:
+    - "B4.008 closes only after grouped shared UI packages are source-authorized, implemented without cross-domain mixing, and validated by type-check, focused unit coverage, PM2 business smoke, GitNexus, and OPENDOG."
+
+evidence:
+  current_head: "a6c202fa53de99fd9f6584b1e05b5400376b766a"
+  notes:
+    - "M1 no-source audit completed after B4.007 was frozen."
+    - "Final report: docs/reports/worklogs/claude-auto/b4-008-m1-shared-ui-component-no-source-audit-2026-06-08.md"
+    - "Next gate: source authorization for grouped M2 package, preferably UI-1 shared shell/layout/header summary."
