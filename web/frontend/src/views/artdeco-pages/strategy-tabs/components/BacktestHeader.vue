@@ -16,8 +16,10 @@
         <span class="value">{{ lastUpdated }}</span>
       </div>
       <div class="header-actions">
-        <ArtDecoButton variant="outline" size="sm" @click="$emit('reset')">重置参数</ArtDecoButton>
-        <ArtDecoButton variant="solid" size="sm" @click="$emit('run')">启动回测</ArtDecoButton>
+        <ArtDecoButton variant="outline" size="sm" :disabled="resetDisabled" @click="$emit('reset')">重置参数</ArtDecoButton>
+        <ArtDecoButton variant="solid" size="sm" :disabled="runDisabled" @click="$emit('run')">
+          {{ runDisabled ? '回测执行中' : '启动回测' }}
+        </ArtDecoButton>
       </div>
     </div>
   </header>
@@ -30,6 +32,8 @@ defineProps<{
   subtitle: string
   statusText: string
   lastUpdated: string
+  runDisabled?: boolean
+  resetDisabled?: boolean
 }>()
 
 defineEmits<{

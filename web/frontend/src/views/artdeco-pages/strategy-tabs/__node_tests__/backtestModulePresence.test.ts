@@ -7,9 +7,12 @@ const strategyTabsDir = resolve(import.meta.dirname, "..")
 
 test("strategy backtest view model module is present", () => {
   const viewModelPath = resolve(strategyTabsDir, "backtestAnalysisViewModel.ts")
+  const source = readFileSync(viewModelPath, "utf8")
 
   assert.equal(existsSync(viewModelPath), true)
-  assert.match(readFileSync(viewModelPath, "utf8"), /export function useBacktestAnalysisViewModel/)
+  assert.match(source, /export function useBacktestAnalysisViewModel/)
+  assert.match(source, /function handleGenerateParameterSnapshot\(/)
+  assert.match(source, /function handleInspectGpuAllocation\(/)
 })
 
 test("strategy backtest helper module is present", () => {
