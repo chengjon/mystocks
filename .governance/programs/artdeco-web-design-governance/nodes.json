@@ -4369,11 +4369,11 @@
     "node_type": "evidence",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "",
-    "status": "approved-for-implementation",
+    "status": "closed",
     "function_tree_ref": "B4.007-M1",
     "current_head": "b2a559c1741aae5619ab5083ab6ad43a18ab168b",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "baseline",
@@ -4404,11 +4404,11 @@
       "Do not touch ST-HOLD, marketKlineData, archive-only retirement, or external dirty files.",
       "Do not change backend/API contracts or unrelated frontend domains."
     ],
-    "next_gate": "implement within allowed_paths",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-07T10:18:26.920Z",
-    "updated_at": "2026-06-07T10:45:44.870Z",
+    "updated_at": "2026-06-07T12:27:05.127Z",
     "acceptance": {
       "commit_gate": [
         "Stage only files touched by the current M2 batch; run GitNexus/OPENDOG, type-check, focused unit, and PM2-backed business E2E before commit."
@@ -4424,7 +4424,41 @@
         "note": "User formally approved B4.007-M2 source-authorized mainline breakpoint repair scope",
         "current_head": "b2a559c1741aae5619ab5083ab6ad43a18ab168b",
         "transitioned_at": "2026-06-07T10:45:44.870Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "M2 source-authorized repairs landed in b39fc7b85; M3 validation started",
+        "current_head": "b39fc7b858797a155da9c96a1630842ca587d777",
+        "transitioned_at": "2026-06-07T12:27:04.994Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "B4.007 M2 implementation landed at b39fc7b85",
+        "current_head": "b39fc7b858797a155da9c96a1630842ca587d777",
+        "transitioned_at": "2026-06-07T12:27:05.039Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "B4.007 mainline route truth and runtime continuity closed after M3 gates",
+        "current_head": "b39fc7b858797a155da9c96a1630842ca587d777",
+        "transitioned_at": "2026-06-07T12:27:05.127Z"
       }
-    ]
+    ],
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-007-m3-mainline-full-gate-validation-2026-06-07.md",
+      "compatibility": "No route compatibility removal beyond M2 menu truth alignment; F3 Backlog remains frozen",
+      "gates": [
+        "type-check passed",
+        "stable mainline unit suite passed: 33 files, 415 tests",
+        "PM2 business smoke passed: chromium 55/55",
+        "GitNexus fresh and staged diff empty",
+        "OPENDOG fresh with failing runs 0"
+      ],
+      "current_head": "b39fc7b858797a155da9c96a1630842ca587d777",
+      "prepared_at": "2026-06-07T12:27:05.085Z"
+    }
   }
 ]
