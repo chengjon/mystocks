@@ -45,13 +45,6 @@ const menuConfig = [
         path: '/market/technical',
         icon: 'DataAnalysis',
         disabled: false
-      },
-      {
-        id: 'market-wencai',
-        title: '问财筛选',
-        path: '/market/wencai',
-        icon: 'Search',
-        disabled: false
       }
     ]
   },
@@ -67,14 +60,14 @@ const menuConfig = [
       {
         id: 'technical-indicators',
         title: '技术指标',
-        path: '/technical/indicators',
+        path: '/data/indicator',
         icon: 'Histogram',
         disabled: false
       },
       {
         id: 'technical-analysis',
         title: '综合分析',
-        path: '/technical/analysis',
+        path: '/market/technical',
         icon: 'Odometer',
         disabled: false
       }
@@ -92,7 +85,7 @@ const menuConfig = [
       {
         id: 'strategy-management',
         title: '策略管理',
-        path: '/strategy/management',
+        path: '/strategy/repo',
         icon: 'Management',
         disabled: false
       },
@@ -106,7 +99,7 @@ const menuConfig = [
       {
         id: 'strategy-risk',
         title: '策略参数',
-        path: '/strategy/risk',
+        path: '/strategy/parameters',
         icon: 'Operation',
         disabled: false
       },
@@ -177,7 +170,7 @@ const menuConfig = [
       {
         id: 'risk-stop-loss',
         title: '止损监控',
-        path: '/monitoring/watchlists', // 暂时映射到监控清单，未来升级为专用止损界面
+        path: '/risk/stop-loss',
         icon: 'Aim',
         disabled: false
       },
@@ -198,7 +191,7 @@ const menuConfig = [
       {
         id: 'risk-announcement',
         title: '公告监控',
-        path: '/risk/announcement',
+        path: '/risk/news',
         icon: 'Document',
         disabled: false
       }
@@ -216,28 +209,28 @@ const menuConfig = [
       {
         id: 'watchlist-manage',
         title: '自选管理',
-        path: '/stocks/management',
+        path: '/watchlist/manage',
         icon: 'List',
         disabled: false
       },
       {
         id: 'watchlist-portfolio',
         title: '持仓透视',
-        path: '/stocks/portfolio',
+        path: '/trade/portfolio',
         icon: 'PieChart',
         disabled: false
       },
       {
         id: 'watchlist-scanner',
         title: '技术扫描',
-        path: '/stocks/management', // 暂复用管理页，待独立视图开发
+        path: '/watchlist/screener',
         icon: 'Aim',
         disabled: false
       },
       {
         id: 'watchlist-prediction',
         title: '智能预测',
-        path: '/stocks/management', // 暂复用管理页，待独立视图开发
+        path: '/watchlist/signals',
         icon: 'TrendCharts',
         disabled: false
       }
@@ -253,45 +246,24 @@ const menuConfig = [
     roles: ['admin'],
     children: [
       {
-        id: 'system-architecture',
-        title: '系统架构',
-        path: '/system/architecture',
-        icon: 'Grid',
-        disabled: false
-      },
-      {
         id: 'system-database-monitor',
         title: '数据库监控',
-        path: '/system/database-monitor',
+        path: '/system/data',
         icon: 'Database',
         disabled: false
       },
       {
         id: 'system-monitoring',
         title: '系统监控',
-        path: '/system/monitoring',
+        path: '/system/health',
         icon: 'Monitor',
-        disabled: false
-      },
-      {
-        id: 'system-logs',
-        title: '系统日志',
-        path: '/system/logs',
-        icon: 'Document',
         disabled: false
       },
       {
         id: 'system-config',
         title: '系统配置',
-        path: '/system/settings',
+        path: '/system/config',
         icon: 'Tools',
-        disabled: false
-      },
-      {
-        id: 'data-import',
-        title: '数据导入',
-        path: '/data/import',
-        icon: 'Upload',
         disabled: false
       }
     ]

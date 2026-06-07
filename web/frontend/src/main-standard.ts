@@ -1,9 +1,10 @@
-import { createApp } from 'vue'
+import { createApp, type App as VueApp } from 'vue'
 import { createPinia } from 'pinia'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
 import App from './App.vue'
 import router from './router/index.ts'
+import i18n from './i18n'
 import ArtDecoCardCompact from '@/components/artdeco/base/ArtDecoCardCompact.vue'
 
 // --- Style imports (ordered: base → theme → overrides → optimization) ---
@@ -27,6 +28,12 @@ import './utils/echarts.ts'
 //  App initialization
 // ============================================================
 
+declare global {
+  interface Window {
+    $vue?: VueApp
+  }
+}
+
 const app = createApp(App)
 const pinia = createPinia()
 
@@ -37,6 +44,7 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 app.component('ArtDecoCardCompact', ArtDecoCardCompact)
 
 app.use(pinia)
+app.use(i18n)
 app.use(router)
 
 // Global error handler — contract validation drift detection
@@ -66,6 +74,9 @@ if (import.meta.env.DEV) {
 // PWA: Service Worker registration (post-load, non-blocking)
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
+    const hadController = Boolean(navigator.serviceWorker.controller)
+    let refreshing = false
+
     navigator.serviceWorker.register('/sw.js')
       .then((registration) => {
         registration.addEventListener('updatefound', () => {
@@ -79,6 +90,10 @@ if ('serviceWorker' in navigator) {
           }
         })
         navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (refreshing || !hadController) {
+            return
+          }
+          refreshing = true
           window.location.reload()
         })
       })
@@ -127,7 +142,6 @@ initPromise
   })
 
 // Browser debugging access
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 if (typeof window !== 'undefined') {
-  (window as any).$vue = app
+  window.$vue = app
 }

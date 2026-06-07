@@ -4362,5 +4362,69 @@
       "current_head": "81743a773cf3ef3286277354e7bbeb40a627ef1d",
       "prepared_at": "2026-06-03T15:30:48.215Z"
     }
+  },
+  {
+    "id": "b4-frontend-mainline-route-truth",
+    "title": "Frontend mainline route truth and runtime continuity",
+    "node_type": "evidence",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "",
+    "status": "approved-for-implementation",
+    "function_tree_ref": "B4.007-M1",
+    "current_head": "b2a559c1741aae5619ab5083ab6ad43a18ab168b",
+    "freshness": "current-head",
+    "source_edits_authorized": true,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-007-m1-mainline-route-continuity-audit-2026-06-07.md",
+        "note": "B4.007-M1 no-source mainline route continuity audit matrix and gate evidence",
+        "current_head": "b2a559c1741aae5619ab5083ab6ad43a18ab168b",
+        "recorded_at": "2026-06-07T10:40:43.351Z"
+      }
+    ],
+    "allowed_paths": [
+      "web/frontend/src/router/index.ts",
+      "web/frontend/src/layouts/MenuConfig.ts",
+      "web/frontend/src/config/menu.config.js",
+      "web/frontend/src/main-standard.ts",
+      "web/frontend/src/composables/useI18n.ts",
+      "web/frontend/src/components/artdeco/base/ArtDecoSkipLink.vue",
+      "web/frontend/src/layouts/ArtDecoLayoutEnhanced.vue",
+      "web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue",
+      "web/frontend/src/views/market/Realtime.vue",
+      "web/frontend/tests/e2e/critical/menu-navigation-fixed.spec.ts",
+      "web/frontend/tests/e2e/market-data.spec.ts",
+      "web/frontend/tests/e2e/kline-chart.spec.ts",
+      "docs/reports/worklogs/claude-auto"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not touch the 11 F3 archive Backlog root legacy view files.",
+      "Do not touch ST-HOLD, marketKlineData, archive-only retirement, or external dirty files.",
+      "Do not change backend/API contracts or unrelated frontend domains."
+    ],
+    "next_gate": "implement within allowed_paths",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-07T10:18:26.920Z",
+    "updated_at": "2026-06-07T10:45:44.870Z",
+    "acceptance": {
+      "commit_gate": [
+        "Stage only files touched by the current M2 batch; run GitNexus/OPENDOG, type-check, focused unit, and PM2-backed business E2E before commit."
+      ],
+      "closeout_gate": [
+        "All five M1 E2E failures fixed or explicitly reclassified with evidence; mainline route/menu matrix updated; no Backlog or high-risk excluded files touched."
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User formally approved B4.007-M2 source-authorized mainline breakpoint repair scope",
+        "current_head": "b2a559c1741aae5619ab5083ab6ad43a18ab168b",
+        "transitioned_at": "2026-06-07T10:45:44.870Z"
+      }
+    ]
   }
 ]

@@ -1,0 +1,36 @@
+task:
+  id: "b4-frontend-mainline-route-truth"
+  title: "Frontend mainline route truth and runtime continuity"
+
+scope:
+  allowed_paths:
+    - "web/frontend/src/router/index.ts"
+    - "web/frontend/src/layouts/MenuConfig.ts"
+    - "web/frontend/src/config/menu.config.js"
+    - "web/frontend/src/main-standard.ts"
+    - "web/frontend/src/composables/useI18n.ts"
+    - "web/frontend/src/components/artdeco/base/ArtDecoSkipLink.vue"
+    - "web/frontend/src/layouts/ArtDecoLayoutEnhanced.vue"
+    - "web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue"
+    - "web/frontend/src/views/market/Realtime.vue"
+    - "web/frontend/tests/e2e/critical/menu-navigation-fixed.spec.ts"
+    - "web/frontend/tests/e2e/market-data.spec.ts"
+    - "web/frontend/tests/e2e/kline-chart.spec.ts"
+    - "docs/reports/worklogs/claude-auto"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not touch the 11 F3 archive Backlog root legacy view files."
+  - "Do not touch ST-HOLD, marketKlineData, archive-only retirement, or external dirty files."
+  - "Do not change backend/API contracts or unrelated frontend domains."
+
+acceptance:
+  commit_gate:
+    - "Stage only files touched by the current M2 batch; run GitNexus/OPENDOG, type-check, focused unit, and PM2-backed business E2E before commit."
+  closeout_gate:
+    - "All five M1 E2E failures fixed or explicitly reclassified with evidence; mainline route/menu matrix updated; no Backlog or high-risk excluded files touched."
+
+evidence:
+  current_head: "b2a559c1741aae5619ab5083ab6ad43a18ab168b"
+  notes: []

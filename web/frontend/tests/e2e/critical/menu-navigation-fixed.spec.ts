@@ -68,14 +68,15 @@ test.describe("Critical Menu Navigation - Fixed", { tag: "@critical" }, () => {
     await page.goto(`${FRONTEND_BASE_URL}/dashboard`, { waitUntil: "domcontentloaded" })
     // Cold-start Vite runs can take >10s on the first dashboard render.
     await expect(page.getByRole("main")).toBeVisible({ timeout: 20000 })
-    await expect(page.getByRole("heading", { level: 1, name: "QUANTIX" })).toBeVisible({ timeout: 20000 })
+    await expect(page.getByRole("heading", { level: 1, name: "量化驾驶舱" })).toBeVisible({ timeout: 20000 })
+    await expect(page.getByText(/QUANTIX · 实时洞察 · 策略执行/)).toBeVisible({ timeout: 20000 })
   })
 
   test("navigates to dealing room shell without errors", async ({ page }) => {
     await expect(page).toHaveURL(/\/dashboard/)
     await expect(page.getByRole("main")).toBeVisible()
     await expect(page.getByRole("button", { name: "市场行情" })).toBeVisible()
-    await expect(page.getByRole("heading", { level: 1, name: "QUANTIX" })).toBeVisible()
+    await expect(page.getByRole("heading", { level: 1, name: "量化驾驶舱" })).toBeVisible()
   })
 
   test("navigates to market realtime via sidebar menu", async ({ page }) => {

@@ -240,7 +240,7 @@ test.describe("Market Data Module - E2E Tests", () => {
 
     test("should render trace area without breaking layout", async ({ page }) => {
       await gotoRealtime(page)
-      await expect(page.getByText(/PRESET:\s*核心蓝筹样本/)).toBeVisible()
+      await expect(page.getByTestId('market-realtime-header').getByText(/PRESET:\s*核心蓝筹样本/)).toBeVisible()
       await expect(page.getByRole('button', { name: '刷新行情' }).first()).toBeVisible()
     })
   })
