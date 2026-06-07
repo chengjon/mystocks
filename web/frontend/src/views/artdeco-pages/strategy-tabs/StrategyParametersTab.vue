@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { ArtDecoBadge, ArtDecoButton, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import { useStrategyCrossTabContext } from '@/composables/strategy/useStrategyCrossTabContext'
 import { strategyApi } from '@/api'
 import type { StrategyConfig } from '@/api/types/common'
-import { extractStrategyIdFromQuery } from './strategyCrossTabNavigation'
+import { buildStrategyCrossTabRoute, extractStrategyIdFromQuery, type StrategyCrossTabTarget } from './strategyCrossTabNavigation'
 import {
   extractStrategyConfigs,
   normalizeProcessTimeMs
@@ -20,7 +20,14 @@ const strategies = ref<StrategyConfig[]>([])
 const dataSource = ref<ParametersDataSource>('real')
 const fallbackReason = ref('')
 const route = useRoute()
+const router = useRouter()
 const { getSnapshot, setActiveStrategy } = useStrategyCrossTabContext()
+const hasLoaded = ref(false)
+const hasVerifiedStrategySnapshot = ref(false)
+const verifiedStrategyIds = ref<Set<string>>(new Set())
+const lastVerifiedRequestId = ref('')
+const lastVerifiedProcessTime = ref('')
+const staleError = ref('')
 
 const selectedStrategyId = computed(() => extractStrategyIdFromQuery(route.query as Record<string, unknown>))
 const selectedStrategySnapshot = computed(() => {
@@ -31,10 +38,37 @@ const selectedStrategySnapshot = computed(() => {
 })
 
 const traceRequestId = computed(() => {
+  if (hasCurrentVerifiedStrategySnapshot.value) {
+    return lastVerifiedRequestId.value || 'N/A'
+  }
+
+  if (selectedStrategyId.value && hasLoaded.value) {
+    return loading.value && !hasLoaded.value ? '--' : 'N/A'
+  }
+
   const requestId = lastRequestId.value.trim()
-  return requestId.length > 0 ? requestId : 'N/A'
+  if (!requestId.length) {
+    return loading.value && !hasLoaded.value ? '--' : 'N/A'
+  }
+
+  return effectiveError.value ? 'N/A' : requestId
 })
-const traceProcessTimeMs = computed(() => normalizeProcessTimeMs(lastProcessTime.value))
+const traceProcessTimeMs = computed(() => {
+  if (hasCurrentVerifiedStrategySnapshot.value) {
+    return normalizeProcessTimeMs(lastVerifiedProcessTime.value)
+  }
+
+  if (selectedStrategyId.value && hasLoaded.value) {
+    return loading.value && !hasLoaded.value ? '--' : 'N/A'
+  }
+
+  const rawProcessTime = lastProcessTime.value.trim()
+  if (!rawProcessTime.length) {
+    return loading.value && !hasLoaded.value ? '--' : 'N/A'
+  }
+
+  return effectiveError.value ? 'N/A' : normalizeProcessTimeMs(rawProcessTime)
+})
 const selectedStrategyLabel = computed(() => selectedStrategyId.value || 'ALL')
 const visibleStrategyCount = computed(() => hydratedStrategies.value.length)
 const parameterEntryCount = computed(() =>
@@ -45,11 +79,12 @@ const optimizationLinkedCount = computed(() =>
 )
 const pageStatusText = computed(() => {
   if (loading.value) return '同步中'
-  if (headerError.value) return '接口异常'
+  if (staleError.value) return '刷新异常'
+  if (effectiveError.value) return '接口异常'
   return selectedStrategyId.value ? '参数上下文已绑定' : '策略参数在线'
 })
 const pageStatusType = computed(() => {
-  if (headerError.value) return 'warning'
+  if (staleError.value || effectiveError.value) return 'warning'
   return 'success'
 })
 const contentShellDescription = computed(() => {
@@ -71,6 +106,14 @@ const selectedStrategyMissing = computed(() => {
   return Boolean(selectedStrategyId.value) && displayedStrategies.value.length === 0
 })
 
+const hasCurrentVerifiedStrategySnapshot = computed(() => {
+  if (!selectedStrategyId.value) {
+    return hasVerifiedStrategySnapshot.value
+  }
+
+  return verifiedStrategyIds.value.has(selectedStrategyId.value)
+})
+
 const hydratedStrategies = computed(() => {
   return displayedStrategies.value.map((strategy) => {
     const strategyId = getStrategyId(strategy)
@@ -87,9 +130,24 @@ const hydratedStrategies = computed(() => {
   })
 })
 
-const headerError = computed(() => {
-  return error.value || fallbackReason.value
-})
+const effectiveError = computed(() => (!hasVerifiedStrategySnapshot.value ? (error.value || fallbackReason.value) : ''))
+const headerError = computed(() => effectiveError.value)
+const showInitialLoading = computed(() => loading.value && !hasLoaded.value)
+const showErrorState = computed(() => !loading.value && hasLoaded.value && Boolean(headerError.value))
+const showEmptyState = computed(() => !loading.value && hasLoaded.value && !headerError.value && strategies.value.length === 0)
+const showStaleWarning = computed(() => !loading.value && staleError.value.length > 0 && strategies.value.length > 0)
+const showSummaryPlaceholders = computed(() => !hasCurrentVerifiedStrategySnapshot.value)
+const displayVisibleStrategyCount = computed(() => showSummaryPlaceholders.value ? '--' : `${visibleStrategyCount.value}`)
+const displayParameterEntryCount = computed(() => showSummaryPlaceholders.value ? '--' : `${parameterEntryCount.value}`)
+const displayOptimizationLinkedCount = computed(() => showSummaryPlaceholders.value ? '--' : `${optimizationLinkedCount.value}`)
+const optimizationLinkedVariant = computed(() => showSummaryPlaceholders.value ? 'gold' : 'rise')
+
+function markVerifiedStrategySnapshot(strategyIds: string[]) {
+  hasVerifiedStrategySnapshot.value = true
+  lastVerifiedRequestId.value = lastRequestId.value || lastVerifiedRequestId.value
+  lastVerifiedProcessTime.value = lastProcessTime.value || lastVerifiedProcessTime.value
+  verifiedStrategyIds.value = new Set(strategyIds)
+}
 
 function getStrategyId(strategy: StrategyConfig): string {
   return String(strategy.strategy_id ?? '')
@@ -153,12 +211,18 @@ function getStrategyStatusBadgeVariant(status?: StrategyConfig['status']): 'prof
 }
 
 const fetchStrategies = async () => {
+  staleError.value = ''
   const payload = await exec(() => strategyApi.getStrategies({}), {
     silent: true,
     errorMsg: '获取策略参数失败'
   })
 
   if (!payload) {
+    hasLoaded.value = true
+    if (hasVerifiedStrategySnapshot.value) {
+      staleError.value = error.value || '获取策略参数失败'
+      return
+    }
     strategies.value = []
     dataSource.value = 'real'
     fallbackReason.value = error.value || '获取策略参数失败'
@@ -167,6 +231,11 @@ const fetchStrategies = async () => {
 
   const extracted = extractStrategyConfigs(payload)
   if (extracted === null) {
+    hasLoaded.value = true
+    if (hasVerifiedStrategySnapshot.value) {
+      staleError.value = '策略参数数据格式异常'
+      return
+    }
     strategies.value = []
     dataSource.value = 'real'
     fallbackReason.value = '策略参数数据格式异常'
@@ -176,6 +245,39 @@ const fetchStrategies = async () => {
   strategies.value = extracted
   dataSource.value = 'real'
   fallbackReason.value = ''
+  staleError.value = ''
+  markVerifiedStrategySnapshot(extracted.map((strategy) => getStrategyId(strategy)))
+  hasLoaded.value = true
+}
+
+function getStrategyCardDescription(strategy: StrategyConfig): string {
+  return strategy.description || '暂无策略说明'
+}
+
+function getParameterDisplayValue(value: StrategyParameterValue): string {
+  if (value === undefined || value === null || value === '') {
+    return '--'
+  }
+
+  if (Array.isArray(value)) {
+    return value.join(', ')
+  }
+
+  if (typeof value === 'object') {
+    return JSON.stringify(value)
+  }
+
+  return String(value)
+}
+
+async function navigateToStrategyTab(target: StrategyCrossTabTarget, strategyId: string) {
+  const routeLocation = buildStrategyCrossTabRoute(target, strategyId)
+  if (!routeLocation) {
+    return
+  }
+
+  setActiveStrategy(strategyId)
+  await router.push(routeLocation)
 }
 
 onMounted(() => {
@@ -220,10 +322,15 @@ watch(selectedStrategyId, (value) => {
     </section>
 
     <section class="stats-strip artdeco-card-shell">
-      <ArtDecoStatCard label="可见策略" :value="visibleStrategyCount" variant="gold" />
-      <ArtDecoStatCard label="参数总项" :value="parameterEntryCount" variant="gold" />
-      <ArtDecoStatCard label="优化联动" :value="optimizationLinkedCount" variant="rise" />
-      <ArtDecoStatCard label="当前焦点" :value="selectedStrategyLabel" variant="gold" />
+      <ArtDecoStatCard label="可见策略" :value="displayVisibleStrategyCount" variant="gold" :show-change="false" />
+      <ArtDecoStatCard label="参数总项" :value="displayParameterEntryCount" variant="gold" :show-change="false" />
+      <ArtDecoStatCard
+        label="优化联动"
+        :value="displayOptimizationLinkedCount"
+        :variant="optimizationLinkedVariant"
+        :show-change="false"
+      />
+      <ArtDecoStatCard label="当前焦点" :value="selectedStrategyLabel" variant="gold" :show-change="false" />
     </section>
 
     <section class="content-shell artdeco-card-shell">
@@ -239,55 +346,90 @@ watch(selectedStrategyId, (value) => {
         </div>
       </div>
 
-      <p v-if="headerError" class="error-tip">{{ headerError }}</p>
+      <div v-if="showInitialLoading" class="state-panel artdeco-card" role="status" aria-live="polite">
+        <p>策略参数同步中</p>
+        <span>正在拉取策略参数快照和优化联动上下文。</span>
+      </div>
 
-      <div class="strategy-grid" v-loading="loading">
-        <div
-          v-for="strategy in hydratedStrategies"
-          :key="getStrategyId(strategy)"
-          class="artdeco-card strategy-card"
-          :class="{ selected: getStrategyId(strategy) === selectedStrategyId }"
-        >
-          <div class="card-decoration"></div>
-          <div class="card-content">
-            <div class="strategy-info">
-              <h3 class="strategy-name">{{ strategy.strategy_name }}</h3>
-              <ArtDecoBadge
-                :text="strategy.status?.toUpperCase()"
-                :variant="getStrategyStatusBadgeVariant(strategy.status)"
-                size="sm"
-              />
-              <ArtDecoBadge
-                v-if="getOptimizationScore(strategy) !== null"
-                :text="`OPT ${getOptimizationScore(strategy)}`"
-                variant="gold"
-                size="sm"
-              />
-            </div>
+      <div v-else-if="showErrorState" class="state-panel artdeco-card" role="alert">
+        <p>策略参数加载失败</p>
+        <span>{{ headerError }}</span>
+        <ArtDecoButton variant="outline" size="sm" @click="fetchStrategies">重试刷新</ArtDecoButton>
+      </div>
 
-            <p class="description">{{ strategy.description }}</p>
+      <div v-else-if="showEmptyState" class="state-panel artdeco-card" role="status" aria-live="polite">
+        <p>暂无策略参数</p>
+        <span>当前还没有可展示的策略配置，请先在策略仓库中创建策略。</span>
+      </div>
 
-            <div class="params-list">
-              <div v-for="param in strategy.parameters" :key="param.name" class="param-item">
-                <span class="param-label">{{ param.name }}</span>
-                <span class="param-value">{{ param.value }}</span>
+      <template v-else>
+        <div v-if="showStaleWarning" class="state-panel artdeco-card" role="status" aria-live="polite">
+          <p>部分刷新失败</p>
+          <span>{{ staleError }}，当前仍显示上次成功同步的参数快照。</span>
+        </div>
+
+        <div class="strategy-grid" v-loading="loading">
+          <div
+            v-for="strategy in hydratedStrategies"
+            :key="getStrategyId(strategy)"
+            class="artdeco-card strategy-card"
+            :class="{ selected: getStrategyId(strategy) === selectedStrategyId }"
+          >
+            <div class="card-decoration"></div>
+            <div class="card-content">
+              <div class="strategy-info">
+                <h3 class="strategy-name">{{ strategy.strategy_name }}</h3>
+                <ArtDecoBadge
+                  :text="strategy.status?.toUpperCase()"
+                  :variant="getStrategyStatusBadgeVariant(strategy.status)"
+                  size="sm"
+                />
+                <ArtDecoBadge
+                  v-if="getOptimizationScore(strategy) !== null"
+                  :text="`OPT ${getOptimizationScore(strategy)}`"
+                  variant="gold"
+                  size="sm"
+                />
+              </div>
+
+              <p class="description" :title="getStrategyCardDescription(strategy)">{{ getStrategyCardDescription(strategy) }}</p>
+
+              <div v-if="strategy.parameters?.length" class="params-list">
+                <div v-for="param in strategy.parameters" :key="param.name" class="param-item">
+                  <span class="param-label">{{ param.name }}</span>
+                  <span class="param-value">{{ getParameterDisplayValue(param.value) }}</span>
+                </div>
+              </div>
+              <div v-else class="param-empty-state">
+                当前策略尚未写入参数，需先在策略仓库或优化联动中补全配置。
+              </div>
+
+              <div class="card-footer">
+                <ArtDecoButton
+                  variant="outline"
+                  size="sm"
+                  :disabled="loading || !getStrategyId(strategy)"
+                  @click="navigateToStrategyTab('signals', getStrategyId(strategy))"
+                >
+                  查看信号
+                </ArtDecoButton>
+                <ArtDecoButton
+                  variant="solid"
+                  size="sm"
+                  :disabled="loading || !getStrategyId(strategy)"
+                  @click="navigateToStrategyTab('backtest', getStrategyId(strategy))"
+                >
+                  进入回测
+                </ArtDecoButton>
               </div>
             </div>
+          </div>
 
-            <div class="card-footer">
-              <button class="artdeco-button gold-outline">Edit Parameters</button>
-              <button class="artdeco-button gold-solid" v-if="strategy.status !== 'active'">Activate</button>
-            </div>
+          <div v-if="!loading && selectedStrategyMissing" class="empty-state artdeco-card">
+            <p>未找到策略 {{ selectedStrategyId }} 的参数配置，请返回策略管理页重试。</p>
           </div>
         </div>
-
-        <div v-if="!loading && selectedStrategyMissing" class="empty-state artdeco-card">
-          <p>未找到策略 {{ selectedStrategyId }} 的参数配置，请返回策略管理页重试。</p>
-        </div>
-        <div v-else-if="!loading && strategies.length === 0" class="empty-state artdeco-card">
-          <p>REAL 数据为空，请先在 Strategy Management 中创建策略。</p>
-        </div>
-      </div>
+      </template>
     </section>
   </div>
 </template>
