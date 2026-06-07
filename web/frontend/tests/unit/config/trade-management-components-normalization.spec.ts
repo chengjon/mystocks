@@ -7,29 +7,38 @@ function readSource(pathFromFrontendRoot: string): string {
 }
 
 describe('trade-management component normalization', () => {
-  it('moves PortfolioOverview onto ArtDeco stat cards', () => {
+  it('degrades orphan trade-management components to honest static shells', () => {
     const source = readSource('src/views/trade-management/components/PortfolioOverview.vue')
-    expect(source).toContain("import ArtDecoStatCard from '@/components/artdeco/base/ArtDecoStatCard.vue'")
-    expect(source).toContain('<ArtDecoStatCard')
-    expect(source).not.toContain('BloombergStatCard')
-    expect(source).toContain('const formatCurrency = (value: number) =>')
-  })
-
-  it('keeps PositionsTab, StatisticsTab, and TradeDialog on tokenized layout values', () => {
     const positions = readSource('src/views/trade-management/components/PositionsTab.vue')
     const statistics = readSource('src/views/trade-management/components/StatisticsTab.vue')
+    const history = readSource('src/views/trade-management/components/TradeHistoryTab.vue')
     const dialog = readSource('src/views/trade-management/components/TradeDialog.vue')
 
-    expect(positions).toContain("@use '@/styles/artdeco-tokens.scss' as *;")
-    expect(positions).toContain('var(--artdeco-border-default)')
-    expect(positions).not.toContain('#1E293B')
+    for (const sourceText of [source, positions, statistics, history, dialog]) {
+      expect(sourceText).toContain('legacy-static-shell')
+      expect(sourceText).toContain('未接入 canonical verified truth')
+      expect(sourceText).not.toContain("from '@/api/trade'")
+      expect(sourceText).not.toContain('tradeApi.')
+      expect(sourceText).not.toContain('console.error')
+    }
 
-    expect(statistics).toContain('const chartHeight =')
-    expect(statistics).toContain('getCssVar')
-    expect(statistics).toContain("@use '@/styles/artdeco-tokens.scss' as *;")
+    expect(source).not.toContain('total_assets: 1000000')
+    expect(source).not.toContain('<ArtDecoStatCard')
 
-    expect(dialog).toContain("const dialogWidth = 'calc((var(--artdeco-spacing-20) * 7) + var(--artdeco-spacing-10))'")
-    expect(dialog).toContain("const labelWidth = 'calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-10))'")
-    expect(dialog).toContain("@use '@/styles/artdeco-tokens.scss' as *;")
+    expect(positions).not.toContain('PING AN BANK')
+    expect(positions).not.toContain('handleQuickSell')
+    expect(positions).not.toContain('POSITION DATA REFRESHED')
+
+    expect(statistics).not.toContain('echarts.init')
+    expect(statistics).not.toContain('NO POSITION')
+    expect(statistics).not.toContain('startDate.setDate')
+
+    expect(history).not.toContain('getTradeHistory')
+    expect(history).not.toContain('FAILED TO LOAD TRADE HISTORY')
+    expect(history).not.toContain('TOTAL: {{ pagination.total }} RECORDS')
+
+    expect(dialog).not.toContain('createOrder')
+    expect(dialog).not.toContain('ORDER SUBMITTED')
+    expect(dialog).not.toContain('TRADE FAILED')
   })
 })
