@@ -7,11 +7,11 @@ function readSource(pathFromFrontendRoot: string): string {
 }
 
 describe('console log cleanup batch 2', () => {
-  it('removes production console.log calls from shared stores and stocks page', () => {
+  it('removes production console.log calls from shared stores and the archived stocks shell', () => {
     const files = [
       'src/stores/baseStore.ts',
       'src/stores/marketData.ts',
-      'src/views/Stocks.vue',
+      '../../archive/web/frontend/src/views/root-legacy/stocks/Stocks.vue',
     ]
 
     for (const file of files) {

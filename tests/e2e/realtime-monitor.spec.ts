@@ -2,7 +2,7 @@
  * Phase 4 Milestone 1: Real-Time Monitor E2E Tests
  *
  * Comprehensive test suite for WebSocket and Server-Sent Events (SSE) functionality
- * in the RealTimeMonitor.vue component and related real-time data streaming features.
+ * in the realtime monitor route and related real-time data streaming features.
  *
  * @module tests/e2e/realtime-monitor
  */
@@ -524,7 +524,7 @@ test.describe('Real-Time Monitor Component - Integration', () => {
 
     // Simulate network disconnect by closing all WebSockets
     await page.evaluate(() => {
-      (window as any).__simulateNetworkDisconnect?.();
+      (window as any).__simulateNetworkDisconnect?.(); // TODO owner=frontend-platform issue=techdebt-expired-markers ttl=2026-06-30: replace any with typed test-only window hook
     });
 
     await page.waitForTimeout(1000);

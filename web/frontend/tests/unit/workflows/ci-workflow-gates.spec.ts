@@ -37,7 +37,15 @@ describe("CI workflow gates", () => {
     expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-dir src/components/common");
     expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-dir src/views/styles");
     expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-dir src/components/shared/ui");
-    expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-file src/views/Stocks.vue");
+    const rootTargetFiles = [
+      ...packageJson.scripts["lint:artdeco:changed"].matchAll(/--target-file (src\/views\/[^ ]+)/g),
+    ].map((match) => match[1]);
+
+    expect(rootTargetFiles).toContain("src/views/Dashboard.vue");
+    for (const targetFile of rootTargetFiles) {
+      expect(fs.existsSync(path.join(frontendRoot, targetFile))).toBe(true);
+    }
+    expect(rootTargetFiles).not.toContain("src/views/Stocks.vue");
   });
 
   it("defines visual regression package scripts for workflow reuse", () => {

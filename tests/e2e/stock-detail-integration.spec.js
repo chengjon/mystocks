@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test'
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000'
 const STOCK_CODE = '600519'
 
-test.describe('StockDetail.vue - Stock Analysis Integration Tests', () => {
+test.describe('stock detail route - Stock Analysis Integration Tests', () => {
   test.beforeEach(async ({ page }) => {
     // Phase 11.1 修复: 使用 addInitScript 安全操作 localStorage
     await page.addInitScript(() => {

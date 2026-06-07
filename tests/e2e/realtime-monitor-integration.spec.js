@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000'
 
-test.describe('RealTimeMonitor.vue - SSE Integration Tests', () => {
+test.describe('realtime monitor route - SSE Integration Tests', () => {
   test.beforeEach(async ({ page }) => {
     // Phase 11.1 修复: 使用 addInitScript 安全操作 localStorage
     await page.addInitScript(() => {
