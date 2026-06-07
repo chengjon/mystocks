@@ -34,6 +34,18 @@ test("extractMonitoringWatchlists accepts already-unwrapped watchlist arrays", (
   ])
 })
 
+test("extractMonitoringWatchlists rejects success:false envelopes instead of collapsing them into empty watchlists", () => {
+  assert.throws(
+    () => extractMonitoringWatchlists({
+      success: false,
+      request_id: "req-watchlists-first-fail",
+      message: "watchlists unavailable",
+      data: [],
+    }),
+    /watchlists unavailable/,
+  )
+})
+
 test("extractMonitoringWatchlistStocks maps watchlist stock rows for display table", () => {
   const rows = extractMonitoringWatchlistStocks({
     data: [
@@ -50,6 +62,10 @@ test("extractMonitoringWatchlistStocks maps watchlist stock rows for display tab
       change: "--",
       volume: "--",
       weight: "40.00%",
+      stock_code: "600519.SH",
+      stock_name: "600519.SH",
+      entry_price: 1650,
+      stop_loss_price: undefined,
     },
     {
       symbol: "000858.SZ",
@@ -58,6 +74,10 @@ test("extractMonitoringWatchlistStocks maps watchlist stock rows for display tab
       change: "--",
       volume: "--",
       weight: "20.00%",
+      stock_code: "000858.SZ",
+      stock_name: "000858.SZ",
+      entry_price: 145,
+      stop_loss_price: undefined,
     },
   ])
 })
@@ -76,6 +96,10 @@ test("extractMonitoringWatchlistStocks accepts already-unwrapped stock arrays", 
       change: "--",
       volume: "--",
       weight: "40.00%",
+      stock_code: "600519.SH",
+      stock_name: "600519.SH",
+      entry_price: 1650,
+      stop_loss_price: undefined,
     },
     {
       symbol: "000858.SZ",
@@ -84,8 +108,24 @@ test("extractMonitoringWatchlistStocks accepts already-unwrapped stock arrays", 
       change: "--",
       volume: "--",
       weight: "20.00%",
+      stock_code: "000858.SZ",
+      stock_name: "000858.SZ",
+      entry_price: 145,
+      stop_loss_price: undefined,
     },
   ])
+})
+
+test("extractMonitoringWatchlistStocks rejects success:false envelopes instead of collapsing them into empty stock rows", () => {
+  assert.throws(
+    () => extractMonitoringWatchlistStocks({
+      success: false,
+      request_id: "req-watchlist-stocks-first-fail",
+      message: "watchlist stocks unavailable",
+      data: [],
+    }),
+    /watchlist stocks unavailable/,
+  )
 })
 
 test("extractPortfolioMonitorRows maps /v1/trade/positions payload to portfolio rows", () => {

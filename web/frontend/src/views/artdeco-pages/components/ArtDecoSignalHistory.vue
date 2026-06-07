@@ -159,13 +159,13 @@
         letter-spacing: var(--artdeco-tracking-wide);
 
         &.artdeco-signal-history__outcome--win {
-            background: color-mix(in srgb, var(--artdeco-down) 10%, transparent);
-            color: var(--artdeco-down);
+            background: color-mix(in srgb, var(--artdeco-up) 10%, transparent);
+            color: var(--artdeco-up);
         }
 
         &.artdeco-signal-history__outcome--loss {
-            background: color-mix(in srgb, var(--artdeco-up) 10%, transparent);
-            color: var(--artdeco-up);
+            background: color-mix(in srgb, var(--artdeco-down) 10%, transparent);
+            color: var(--artdeco-down);
         }
     }
 

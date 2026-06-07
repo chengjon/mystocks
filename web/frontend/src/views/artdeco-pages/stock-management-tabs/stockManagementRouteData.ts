@@ -50,6 +50,14 @@ function parseId(value: unknown, fallback = ''): string {
   return parseString(value, fallback)
 }
 
+function assertSuccessfulEnvelope(raw: unknown, fallbackMessage: string): void {
+  if (!isRecord(raw) || raw.success !== false) {
+    return
+  }
+
+  throw new Error(parseString(raw.message, fallbackMessage))
+}
+
 function extractList(raw: unknown): Record<string, unknown>[] {
   if (Array.isArray(raw)) {
     return raw.filter(isRecord)
@@ -71,6 +79,7 @@ function extractList(raw: unknown): Record<string, unknown>[] {
 }
 
 export function extractMonitoringWatchlists(raw: unknown): Array<{ id: string; name: string; stocks: unknown[] }> {
+  assertSuccessfulEnvelope(raw, '监控自选列表加载失败')
   return extractList(raw).map((item) => {
     const row = item as MonitoringWatchlistItem
     const stocksCount = Math.max(0, Math.trunc(parseNumber(row.stocks_count)))
@@ -96,6 +105,7 @@ export function extractMonitoringWatchlistStocks(
   entry_price: number
   stop_loss_price?: unknown
 }> {
+  assertSuccessfulEnvelope(raw, '监控自选股票加载失败')
   return extractList(raw).map((item, index) => {
     const row = item as MonitoringWatchlistStockItem
     const symbol = parseString(row.stock_code, `UNKNOWN-${index + 1}`)

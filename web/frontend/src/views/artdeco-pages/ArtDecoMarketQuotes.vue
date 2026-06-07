@@ -454,7 +454,7 @@ function analyzeStock() {
         console.warn('未配置的API端点:', currentRouteName.value)
         return
     }
-    // TODO: 使用 apiEndpoint 调用 API
+    // TODO owner=frontend-platform issue=techdebt-expired-markers ttl=2026-06-30: 使用 apiEndpoint 调用 API
 }
 
 // 观察者模式 - 订阅 WebSocket
@@ -463,7 +463,7 @@ const _subscribeWebSocket = () => {
         console.warn('未配置的WebSocket频道:', currentRouteName.value)
         return
     }
-    // TODO: 使用 wsChannel 订阅 WebSocket
+    // TODO owner=frontend-platform issue=techdebt-expired-markers ttl=2026-06-30: 使用 wsChannel 订阅 WebSocket
 }
 </script>
 
