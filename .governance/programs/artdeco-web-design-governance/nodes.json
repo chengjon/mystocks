@@ -4493,9 +4493,9 @@
     "node_type": "evidence",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "",
-    "status": "authorization-prepared",
+    "status": "implementation-landed",
     "function_tree_ref": "B4.008-M1",
-    "current_head": "088b2f790b83359104b8e00881b6013d26ddaef6",
+    "current_head": "7854fa20d3fa0a75e898767fbd736dfabe6ce996",
     "freshness": "current-head",
     "source_edits_authorized": true,
     "evidence": [
@@ -4533,6 +4533,13 @@
         "note": "B4.008-M2d no-source boundary audit for UI-4 shared market/data composables before source standardization",
         "current_head": "088b2f790b83359104b8e00881b6013d26ddaef6",
         "recorded_at": "2026-06-08T09:12:25+08:00"
+      },
+      {
+        "kind": "implementation",
+        "path": "docs/reports/worklogs/claude-auto/b4-008-m2d-shared-market-data-composables-implementation-2026-06-08.md",
+        "note": "B4.008-M2d source-authorized shared market/data composables standardization repair and gate evidence",
+        "current_head": "7854fa20d3fa0a75e898767fbd736dfabe6ce996",
+        "recorded_at": "2026-06-08T09:52:09+08:00"
       }
     ],
     "allowed_paths": [
@@ -4566,11 +4573,11 @@
       "Do not stage generated component registry changes unless paired with a source-authorized component package and regeneration policy.",
       "Do not edit ST-HOLD, marketKlineData, external dirty files, backend/API contracts, or unrelated frontend domains."
     ],
-    "next_gate": "B4.008-M2d source authorization for the audited UI-4 shared market/data composables standardization package.",
+    "next_gate": "B4.008-M3 shared UI/component full validation and closeout.",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-08T03:00:02+08:00",
-    "updated_at": "2026-06-08T09:12:25+08:00",
+    "updated_at": "2026-06-08T09:52:09+08:00",
     "acceptance": {
       "commit_gate": [
         "For M1, stage only the audit report and governance node/card files; run diff check, JSON parse, GitNexus staged detect, and verify-staged before commit."
@@ -4635,6 +4642,20 @@
         "note": "B4.008-M2d no-source boundary audit prepared exact UI-4 shared market/data composables scope; source edits remain gated by source authorization.",
         "current_head": "088b2f790b83359104b8e00881b6013d26ddaef6",
         "transitioned_at": "2026-06-08T09:12:25+08:00"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User formally approved B4.008-M2d source-authorized market/data composables standardization repair.",
+        "current_head": "056fcf5c1a77cb9397850b923442ab0f0b005776",
+        "transitioned_at": "2026-06-08T09:52:09+08:00"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-landed",
+        "note": "B4.008-M2d repair landed after red/green helper coverage, type-check, focused unit, stable unit, PM2 business smoke, OPENDOG, and GitNexus gates.",
+        "current_head": "7854fa20d3fa0a75e898767fbd736dfabe6ce996",
+        "transitioned_at": "2026-06-08T09:52:09+08:00"
       }
     ]
   }
