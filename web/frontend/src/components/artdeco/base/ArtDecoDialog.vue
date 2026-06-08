@@ -266,17 +266,17 @@
             dailyTradingLimit: dailyTradingLimit.value,
             singleStockLimit: singleStockLimit.value
         })
-        // TODO: 实现交易设置更新逻辑
+        // TODO owner=frontend-platform issue=techdebt-expired-markers ttl=2026-06-30: 实现交易设置更新逻辑
     }
 
     const pauseTrading = () => {
         tradingPaused.value = !tradingPaused.value
         console.log(tradingPaused.value ? '交易已暂停' : '交易已恢复')
-        // TODO: 实现交易暂停/恢复逻辑
+        // TODO owner=frontend-platform issue=techdebt-expired-markers ttl=2026-06-30: 实现交易暂停/恢复逻辑
     }
 
     onMounted(() => {
-        // TODO: 加载交易数据
+        // TODO owner=frontend-platform issue=techdebt-expired-markers ttl=2026-06-30: 加载交易数据
     })
 </script>
 

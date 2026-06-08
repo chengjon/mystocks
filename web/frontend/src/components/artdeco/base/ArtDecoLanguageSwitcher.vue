@@ -9,7 +9,7 @@
                 role="button"
                 tabindex="0"
             >
-                <span class="language-flag">{{ currentLocale.flag }}</span>
+                <span class="language-flag" aria-hidden="true">{{ currentLocale.flag }}</span>
                 <span class="language-code">{{ currentLocale.code.split('-')[1] }}</span>
                 <span class="language-icon" aria-hidden="true">▼</span>
             </button>
@@ -24,7 +24,7 @@
                         role="option"
                         :aria-selected="localeItem.code === locale"
                     >
-                        <span class="locale-flag">{{ localeItem.flag }}</span>
+                        <span class="locale-flag" aria-hidden="true">{{ localeItem.flag }}</span>
                         <span class="locale-name">{{ localeItem.name }}</span>
                         <span v-if="localeItem.code === locale" class="locale-check" aria-hidden="true">✓</span>
                     </el-dropdown-item>
@@ -74,7 +74,7 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens';
+    @use '@/styles/artdeco-tokens.scss' as *;
 
     .artdeco-language-switcher {
         display: inline-block;

@@ -40,22 +40,22 @@ const props = defineProps({
 
 const radius = computed(() => {
   if (props.variant === 'circle') return '50%'
-  if (props.variant === 'button') return '4px'
-  if (props.variant === 'image') return '8px'
-  return '2px' // text/rect default
+  if (props.variant === 'button') return 'var(--artdeco-spacing-1)'
+  if (props.variant === 'image') return 'var(--artdeco-spacing-2)'
+  return 'calc(var(--artdeco-spacing-px) * 2)' // text/rect default
 })
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .artdeco-skeleton {
   background-color: var(--artdeco-bg-elevated);
   display: inline-block;
   
   &.skeleton-text {
-    height: 1em;
-    margin-bottom: 0.5em;
+    height: var(--artdeco-spacing-4);
+    margin-bottom: var(--artdeco-spacing-2);
     &:last-child { margin-bottom: 0; }
   }
   
