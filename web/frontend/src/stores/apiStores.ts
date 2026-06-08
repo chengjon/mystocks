@@ -19,7 +19,7 @@ export const useMarketQuotesStore = createMarketDataStore(
 // Create real-time trading signals store
 export const useTradingSignalsStore = PiniaStoreFactory.createRealtimeStore({
   id: frontendStorePolicies.tradingSignals.capability,
-  endpoint: '/api/trading/signals',
+  endpoint: '/v1/trade/signals',
   method: 'GET',
   cache: frontendStorePolicies.tradingSignals.cache,
   loading: { enabled: true, key: frontendStorePolicies.tradingSignals.loadingKey },

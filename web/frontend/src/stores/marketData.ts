@@ -96,7 +96,7 @@ export const useMarketDataStore = defineStore('marketData', () => {
             if (!forceRefresh && canUseCache.value) {
                 try {
                     const cachedData = await indexedDB.getCache<MarketOverview>('market_overview')
-                    if (cachedData && isCacheValid.value) {
+                    if (cachedData) {
                         data = cachedData
                         source = 'indexeddb'
                     }
@@ -121,7 +121,7 @@ export const useMarketDataStore = defineStore('marketData', () => {
                     // Strategy 3: Use stale cache as fallback
                     if (!data && canUseCache.value) {
                         try {
-                            const staleData = await indexedDB.getCache<MarketOverview>('market_overview')
+                            const staleData = await indexedDB.getStaleCache<MarketOverview>('market_overview')
                             if (staleData) {
                                 data = staleData
                                 source = 'cache'
