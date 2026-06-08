@@ -35,6 +35,13 @@ export interface CachedData<T> {
   expiresAt?: number;
 }
 
+export interface StorageQuotaInfo {
+  supported: boolean;
+  usage: number | null;
+  quota: number | null;
+  usageRatio: number | null;
+}
+
 type StoreName = 'market_data' | 'technical_indicators' | 'user_preferences' | 'api_cache';
 
 export class IndexedDBManager {
@@ -44,7 +51,11 @@ export class IndexedDBManager {
   private isInitialized = false;
 
   constructor() {
-    this.init();
+    if (typeof window !== 'undefined' && window.indexedDB) {
+      this.init().catch((error) => {
+        console.warn('IndexedDB initialization deferred:', error);
+      });
+    }
   }
 
   /**
@@ -52,6 +63,9 @@ export class IndexedDBManager {
    */
   async init(): Promise<void> {
     if (this.isInitialized) return;
+    if (typeof window === 'undefined' || !window.indexedDB) {
+      throw new Error('IndexedDB is not available');
+    }
 
     return new Promise((resolve, reject) => {
       const request = window.indexedDB.open(this.dbName, this.dbVersion);
@@ -326,6 +340,27 @@ export class IndexedDBManager {
   }
 
   /**
+   * Get cached API response even when expired.
+   * Use this only as an explicit stale fallback after network failure.
+   */
+  async getStaleCache<T>(key: string): Promise<T | null> {
+    await this.ensureInitialized();
+
+    return new Promise((resolve, reject) => {
+      const store = this.getObjectStore('api_cache');
+
+      const request = store.get(key);
+
+      request.onsuccess = () => {
+        const result = request.result;
+        resolve(result ? result.data : null);
+      };
+
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  /**
    * Delete cached API response
    */
   async deleteCache(key: string): Promise<void> {
@@ -421,6 +456,40 @@ export class IndexedDBManager {
     }
 
     return stats;
+  }
+
+  /**
+   * Get browser storage quota usage when the StorageManager API is available.
+   */
+  async getStorageQuota(): Promise<StorageQuotaInfo> {
+    if (typeof navigator === 'undefined' || !navigator.storage?.estimate) {
+      return {
+        supported: false,
+        usage: null,
+        quota: null,
+        usageRatio: null
+      };
+    }
+
+    const estimate = await navigator.storage.estimate();
+    const usage = estimate.usage ?? null;
+    const quota = estimate.quota ?? null;
+    const usageRatio = usage !== null && quota !== null && quota > 0 ? usage / quota : null;
+
+    return {
+      supported: true,
+      usage,
+      quota,
+      usageRatio
+    };
+  }
+
+  /**
+   * Report whether storage usage is near a configurable quota limit.
+   */
+  async isStorageQuotaNearLimit(threshold: number = 0.8): Promise<boolean> {
+    const quota = await this.getStorageQuota();
+    return quota.usageRatio !== null && quota.usageRatio >= threshold;
   }
 
   /**

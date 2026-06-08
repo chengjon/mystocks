@@ -25,21 +25,31 @@ import {
 // 使用别名以保持测试代码一致性
 const calculateBollingerBands = calculateBOLL
 
+function createSeededRandom(seed: number): () => number {
+  let value = seed
+  return () => {
+    value = (value * 1664525 + 1013904223) >>> 0
+    return value / 0x100000000
+  }
+}
+
 // 生成测试用K线数据
 function generateKLineData(count: number): KLineDataPoint[] {
   const data: KLineDataPoint[] = []
   let price = 10.0
+  const random = createSeededRandom(20260509 + count)
+  const baseTimestamp = Date.UTC(2026, 0, 1)
 
   for (let i = 0; i < count; i++) {
-    const change = (Math.random() - 0.5) * 0.5
+    const change = (random() - 0.5) * 0.5
     const open = price
     price = price + change
-    const high = Math.max(open, price) + Math.random() * 0.1
-    const low = Math.min(open, price) - Math.random() * 0.1
-    const volume = Math.floor(1000000 + Math.random() * 9000000)
+    const high = Math.max(open, price) + random() * 0.1
+    const low = Math.min(open, price) - random() * 0.1
+    const volume = Math.floor(1000000 + random() * 9000000)
 
     data.push({
-      timestamp: Date.now() - (count - i) * 86400000,
+      timestamp: baseTimestamp - (count - i) * 86400000,
       open,
       high,
       low,

@@ -8,7 +8,8 @@
  */
 
 import { describe, it, expect, vi } from 'vitest'
-import type { MarketData, TechnicalIndicator, UserPreferences } from '@/utils/indexedDB'
+import { indexedDB as indexedDBContract } from '@/utils/indexedDB'
+import type { CachedData, MarketData, TechnicalIndicator, UserPreferences } from '@/utils/indexedDB'
 
 describe('IndexedDB Manager API Contract', () => {
   // Import the types to verify they exist
@@ -174,6 +175,74 @@ describe('IndexedDB Manager Performance Characteristics', () => {
     expect(cacheEntry).toHaveProperty('expiresAt')
     expect(typeof cacheEntry.expiresAt).toBe('number')
     expect(cacheEntry.expiresAt).toBeGreaterThan(cacheEntry.timestamp)
+  })
+
+  it('should distinguish active cache reads from stale fallback reads', () => {
+    const expiredEntry: CachedData<{ source: string }> = {
+      key: 'market_overview',
+      data: { source: 'stale-network-snapshot' },
+      timestamp: Date.now() - 600000,
+      expiresAt: Date.now() - 1000
+    }
+
+    expect(expiredEntry.expiresAt).toBeLessThan(Date.now())
+    expect(expiredEntry.data.source).toBe('stale-network-snapshot')
+    expect(typeof indexedDBContract.getCache).toBe('function')
+    expect(typeof indexedDBContract.getStaleCache).toBe('function')
+  })
+
+  it('should expose storage quota monitoring helpers', () => {
+    expect(typeof indexedDBContract.getStorageQuota).toBe('function')
+    expect(typeof indexedDBContract.isStorageQuotaNearLimit).toBe('function')
+  })
+
+  it('should calculate storage quota usage ratio when StorageManager is available', async () => {
+    const originalStorage = navigator.storage
+    Object.defineProperty(navigator, 'storage', {
+      configurable: true,
+      value: {
+        estimate: vi.fn().mockResolvedValue({ usage: 80, quota: 100 })
+      }
+    })
+
+    try {
+      await expect(indexedDBContract.getStorageQuota()).resolves.toMatchObject({
+        supported: true,
+        usage: 80,
+        quota: 100,
+        usageRatio: 0.8
+      })
+      await expect(indexedDBContract.isStorageQuotaNearLimit()).resolves.toBe(true)
+      await expect(indexedDBContract.isStorageQuotaNearLimit(0.9)).resolves.toBe(false)
+    } finally {
+      Object.defineProperty(navigator, 'storage', {
+        configurable: true,
+        value: originalStorage
+      })
+    }
+  })
+
+  it('should treat missing StorageManager estimate as unsupported', async () => {
+    const originalStorage = navigator.storage
+    Object.defineProperty(navigator, 'storage', {
+      configurable: true,
+      value: undefined
+    })
+
+    try {
+      await expect(indexedDBContract.getStorageQuota()).resolves.toMatchObject({
+        supported: false,
+        usage: null,
+        quota: null,
+        usageRatio: null
+      })
+      await expect(indexedDBContract.isStorageQuotaNearLimit()).resolves.toBe(false)
+    } finally {
+      Object.defineProperty(navigator, 'storage', {
+        configurable: true,
+        value: originalStorage
+      })
+    }
   })
 })
 

@@ -209,6 +209,32 @@ async function retryRequest<T>(
   throw lastError
 }
 
+async function retryRequestSilently<T>(
+  requestFn: () => Promise<T>,
+  maxRetries: number = MAX_RETRIES
+): Promise<T> {
+  let lastError: Error | null = null
+
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await requestFn()
+    } catch (error) {
+      lastError = error as Error
+      const axiosError = error as AxiosError
+      const errorInfo = classifyError(axiosError)
+
+      if (!errorInfo.canRetry || attempt === maxRetries) {
+        break
+      }
+
+      const waitTime = RETRY_DELAY * Math.pow(RETRY_BACKOFF, attempt)
+      await delay(waitTime)
+    }
+  }
+
+  throw lastError
+}
+
 /**
  * 创建 Axios 实例
  */
@@ -291,14 +317,17 @@ export class IndicatorService {
    * 获取指标注册表 (带重试)
    * @returns 所有可用指标及其元数据
    */
-  async getRegistry(): Promise<IndicatorRegistryResponse> {
-    return await retryRequest(
-      async () => {
-        const response = await apiClient.get<IndicatorRegistryResponse>('/indicators/registry')
-        return response.data
-      },
-      '获取指标列表'
-    )
+  async getRegistry(options: { silentRetryMessages?: boolean } = {}): Promise<IndicatorRegistryResponse> {
+    const request = async () => {
+      const response = await apiClient.get<IndicatorRegistryResponse>('/indicators/registry')
+      return response.data
+    }
+
+    if (options.silentRetryMessages) {
+      return await retryRequestSilently(request)
+    }
+
+    return await retryRequest(request, '获取指标列表')
   }
 
   /**
