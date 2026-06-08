@@ -361,7 +361,7 @@ const confirmAddToGroup = () => {
     return
   }
 
-  // TODO: 实现实际的分组保存逻辑
+  // TODO owner=frontend-platform issue=techdebt-expired-markers ttl=2026-06-30: 实现实际的分组保存逻辑
   ElMessage.success(`已将 ${selectedStock.value?.['股票简称'] || ''} 加入到 ${groupForm.value.groupName} 分组`)
   groupDialogVisible.value = false
 }

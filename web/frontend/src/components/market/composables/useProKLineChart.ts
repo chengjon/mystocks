@@ -35,6 +35,7 @@ type ProKLineChartEmit = {
   (e: 'indicator-change', indicators: string[]): void
   (e: 'data-loaded', data: unknown[]): void
   (e: 'error', error: Error): void
+  (e: 'request-refresh'): void
 }
 
 export function useProKLineChart(props: ProKLineChartProps, emit: ProKLineChartEmit) {
@@ -69,6 +70,7 @@ export function useProKLineChart(props: ProKLineChartProps, emit: ProKLineChartE
 
   // Available indicators (for selector)
   const availableIndicators = ref<Indicator[]>(normalizeIndicators(props.indicators))
+  const usesExternalData = (): boolean => Array.isArray(props.externalData)
 
   const parseCategoryTimestamp = (value: string | undefined, index: number): number => {
     if (!value) {
@@ -101,6 +103,36 @@ export function useProKLineChart(props: ProKLineChartProps, emit: ProKLineChartE
         volume: payload.volumes[index] ?? 0,
       }
     })
+  }
+
+  const syncChartData = (chartData: KLineDataPoint[], notify: boolean = true): void => {
+    currentKLineData.value = chartData
+
+    if (showPriceLimits.value) {
+      calculatePriceLimitMarkers(chartData)
+    } else {
+      priceLimitMarkers.value = []
+    }
+
+    chartInstance.value?.applyNewData(chartData)
+
+    if (notify) {
+      emit('data-loaded', chartData)
+    }
+
+    applyIndicators()
+
+    if (showPriceLimits.value) {
+      applyPriceLimitOverlay()
+    }
+  }
+
+  const syncExternalData = (): void => {
+    if (!chartInstance.value) {
+      return
+    }
+
+    syncChartData(props.externalData ?? [])
   }
 
   const isBenignLifecycleError = (error: unknown): boolean => {
@@ -142,7 +174,7 @@ export function useProKLineChart(props: ProKLineChartProps, emit: ProKLineChartE
    * 加载历史数据
    */
   const loadHistoricalData = async (): Promise<void> => {
-    if (!chartInstance.value || !props.symbol) {
+    if (!chartInstance.value || !props.symbol || usesExternalData()) {
       return
     }
 
@@ -157,31 +189,11 @@ export function useProKLineChart(props: ProKLineChartProps, emit: ProKLineChartE
 
       const chartData = toChartData(klineData)
       if (chartData.length > 0) {
-
-        // Save current K-line data for indicator calculation
-        currentKLineData.value = chartData
-
-        // Calculate price limit markers if enabled
-        if (showPriceLimits.value) {
-          calculatePriceLimitMarkers(chartData)
-        }
-
-        chartInstance.value?.applyNewData(chartData)
-        emit('data-loaded', chartData)
+        syncChartData(chartData)
         ElMessage.success(`加载 ${chartData.length} 条K线数据`)
-
-        // Apply default indicators after data loaded
-        applyIndicators()
-
-        // Apply price limit overlay if enabled
-        if (showPriceLimits.value) {
-          applyPriceLimitOverlay()
-        }
       } else {
         ElMessage.warning('暂无数据')
-        currentKLineData.value = []
-        // Initialize empty chart
-        chartInstance.value?.applyNewData([])
+        syncChartData([])
       }
     } catch (error) {
       if (isBenignLifecycleError(error)) {
@@ -191,9 +203,7 @@ export function useProKLineChart(props: ProKLineChartProps, emit: ProKLineChartE
       console.error('Failed to load historical data:', error)
       ElMessage.error('加载K线数据失败')
       emit('error', error as Error)
-      currentKLineData.value = []
-      // Initialize empty chart on error
-      chartInstance.value?.applyNewData([])
+      syncChartData([], false)
     } finally {
       loading.value = false
     }
@@ -371,6 +381,11 @@ export function useProKLineChart(props: ProKLineChartProps, emit: ProKLineChartE
    * 处理刷新
    */
   const handleRefresh = (): void => {
+    if (usesExternalData()) {
+      emit('request-refresh')
+      return
+    }
+
     loadHistoricalData()
   }
 
@@ -408,16 +423,28 @@ export function useProKLineChart(props: ProKLineChartProps, emit: ProKLineChartE
    * Watch symbol change
    */
   watch(() => props.symbol, (newSymbol) => {
-    if (newSymbol) {
+    if (newSymbol && !usesExternalData()) {
       loadHistoricalData()
     }
   })
+
+  watch(
+    () => props.externalData,
+    () => {
+      if (usesExternalData()) {
+        syncExternalData()
+      }
+    },
+    { deep: true }
+  )
 
   // Lifecycle hooks
   onMounted(() => {
     isUnmounted = false
     initChart()
-    if (props.symbol) {
+    if (usesExternalData()) {
+      syncExternalData()
+    } else if (props.symbol) {
       loadHistoricalData()
     }
   })

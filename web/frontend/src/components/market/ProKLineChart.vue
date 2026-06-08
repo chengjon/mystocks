@@ -4,6 +4,7 @@
     <div class="chart-toolbar">
       <!-- Period Selector -->
       <el-select
+        v-if="!usesExternalData"
         v-model="selectedPeriod"
         placeholder="周期"
         size="small"
@@ -37,9 +38,10 @@
 
       <!-- Refresh Button -->
       <el-button
+        v-if="!usesExternalData"
         size="small"
         type="primary"
-        :loading="loading"
+        :loading="effectiveLoading"
         @click="handleRefresh"
       >
         <el-icon><RefreshRight /></el-icon>
@@ -55,6 +57,7 @@
           @change="handleTogglePriceLimits"
         />
         <el-switch
+          v-if="!usesExternalData"
           v-model="useForwardAdjusted"
           size="small"
           active-text="前复权"
@@ -67,7 +70,7 @@
     <div
       ref="chartContainer"
       class="chart-container"
-      v-loading="loading"
+      v-loading="effectiveLoading"
       element-loading-text="加载中..."
     />
   </div>
@@ -75,7 +78,7 @@
 
 <script setup lang="ts">
 import { RefreshRight } from '@element-plus/icons-vue'
-import { withDefaults } from 'vue'
+import { computed } from 'vue'
 import { useProKLineChart } from './composables/useProKLineChart'
 import { defaultProKLineChartProps, type ProKLineChartProps } from './composables/useProKLineChart.types'
 
@@ -86,6 +89,7 @@ const emit = defineEmits<{
   (e: 'indicator-change', indicators: string[]): void
   (e: 'data-loaded', data: unknown[]): void
   (e: 'error', error: Error): void
+  (e: 'request-refresh'): void
 }>()
 
 const {
@@ -105,6 +109,8 @@ const {
 
 // Expose periods from props for template usage
 const periods = props.periods
+const usesExternalData = computed(() => Array.isArray(props.externalData))
+const effectiveLoading = computed(() => (usesExternalData.value ? Boolean(props.loading) : loading.value))
 </script>
 
 <style scoped lang="scss">

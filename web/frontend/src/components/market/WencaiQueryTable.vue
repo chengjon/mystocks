@@ -210,7 +210,7 @@ const viewDetails = (row) => {
 // 加入自选
 const addToWatchlist = (row) => {
   ElMessage.success(`已将 ${row.name || row.code} 加入自选`)
-  // TODO: 实现加入自选逻辑
+  // TODO owner=frontend-platform issue=techdebt-expired-markers ttl=2026-06-30: 实现加入自选逻辑
 }
 
 // 页面加载时获取数据

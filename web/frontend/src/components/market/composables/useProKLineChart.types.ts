@@ -1,3 +1,4 @@
+import type { KLineDataPoint } from '@/utils/indicators'
 import type { PriceLimitStatus } from '@/utils/atrading'
 
 export interface TimePeriod {
@@ -24,6 +25,8 @@ export interface PriceLimitMarker {
 
 export interface ProKLineChartProps {
   symbol: string
+  externalData?: KLineDataPoint[]
+  loading?: boolean
   periods?: TimePeriod[]
   defaultPeriod?: string
   indicators?: Array<Indicator | LegacyChartIndicator>
