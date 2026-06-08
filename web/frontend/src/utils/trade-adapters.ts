@@ -10,7 +10,7 @@ import type {
 } from '@/api/types/generated-types.ts'
 
 // Temporary: Use any for missing generated types
-// TODO: Fix type generation to include these types
+// TODO owner=frontend-platform issue=techdebt-expired-markers ttl=2026-06-30: fix type generation to include these types
 type AccountOverviewResponse = Record<string, unknown>
 type PositionResponse = Record<string, unknown>
 type AnyRecord = Record<string, unknown>

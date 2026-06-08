@@ -163,7 +163,7 @@ export function isTradingDay(date: Date): boolean {
   if (day === 0 || day === 6) {
     return false
   }
-  // TODO: 检查节假日
+  // TODO owner=frontend-platform issue=techdebt-expired-markers ttl=2026-06-30: 检查节假日
   return true
 }
 
