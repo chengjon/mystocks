@@ -10,7 +10,8 @@ test.describe('API Client', () => {
   test('should be configured with correct base URL', async ({ page }) => {
     // Navigate to a page that uses the API client
     await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
+    await expect(page.locator('body')).toBeVisible();
 
     // Check that the page loads without console errors related to API
     const consoleErrors = [];
@@ -33,7 +34,8 @@ test.describe('API Client', () => {
 
   test('should handle API requests gracefully', async ({ page }) => {
     await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
+    await expect(page.locator('body')).toBeVisible();
 
     // Check that page content loads even if some APIs fail
     const body = await page.locator('body').textContent();
@@ -44,17 +46,17 @@ test.describe('API Client', () => {
 test.describe('Composables Integration', () => {
   test('useMarket composable should be accessible', async ({ page }) => {
     await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
+    await expect(page.locator('body')).toBeVisible();
 
     // Check for market-related content
     const marketContent = await page.locator('text=Market').first().isVisible().catch(() => false);
     // The page might use different text, so we just verify the page loaded
-    await expect(page.locator('body')).toBeVisible();
   });
 
   test('useStrategy composable should be accessible', async ({ page }) => {
     await page.goto('/strategy');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Strategy page should load
     await expect(page.locator('body')).toBeVisible();
@@ -81,11 +83,13 @@ test.describe('Data Flow', () => {
 
   test('should handle API errors without crashing', async ({ page }) => {
     await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
+    await expect(page.locator('body')).toBeVisible();
 
     // Navigate to another page to test error handling
     await page.goto('/strategy');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
+    await expect(page.locator('body')).toBeVisible();
 
     // Should still be able to interact with the page
     const body = await page.locator('body').textContent();
