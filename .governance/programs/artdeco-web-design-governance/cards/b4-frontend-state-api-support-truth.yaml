@@ -1,0 +1,72 @@
+task:
+  id: "b4-frontend-state-api-support-truth"
+  title: "Frontend state/API support truth and grouped cleanup"
+
+scope:
+  allowed_paths:
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/cards/b4-frontend-state-api-support-truth.yaml"
+    - "docs/reports/worklogs/claude-auto/b4-009-m1-frontend-state-api-support-no-source-audit-2026-06-08.md"
+  forbidden_paths:
+    - "ST-HOLD"
+    - "marketKlineData"
+    - "web/frontend/src/layouts/archive/BaseLayout.vue"
+    - "web/frontend/src/router"
+    - "web/frontend/src/views"
+    - "archive/web/frontend/src/views/root-legacy"
+    - "B4.007"
+    - "B4.008"
+
+non_goals:
+  - "Do not reopen B4.007 route truth, root legacy archive packages, or B4.008 shared UI/component governance."
+  - "Do not edit or stage source, tests, generated declarations, routes, menu config, backend/API contracts, ST-HOLD, marketKlineData, or external dirty files during M1."
+  - "Do not treat this no-source audit as acceptance of existing dirty test/source behavior."
+  - "Do not split later source work by single files; use the family packages named in the M1 audit."
+
+candidate_families:
+  - id: "SA-1"
+    title: "API/mock support evidence"
+    risk: "Medium"
+    paths:
+      - "web/frontend/src/mock/__tests__/backtestWorkbenchMock.spec.ts"
+      - "web/frontend/tests/api/mockApiClient.spec.ts"
+      - "web/frontend/tests/e2e/api-integration.spec.ts"
+  - id: "SA-2"
+    title: "State stores + store tests"
+    risk: "High"
+    paths:
+      - "web/frontend/src/stores/apiStores.ts"
+      - "web/frontend/src/stores/marketData.ts"
+      - "web/frontend/src/stores/__tests__/marketData.spec.ts"
+  - id: "SA-3"
+    title: "Data utility/service support"
+    risk: "Medium"
+    paths:
+      - "web/frontend/src/services/indicatorService.ts"
+      - "web/frontend/src/utils/adapters.ts"
+      - "web/frontend/src/utils/indexedDB.ts"
+      - "web/frontend/tests/unit/utils/indexedDB.spec.ts"
+      - "web/frontend/tests/unit/utils/indicators-extended.test.ts"
+      - "web/frontend/tests/unit/utils/indicators.test.ts"
+      - "web/frontend/tests/unit/views/data-fund-flow-partial-state.spec.ts"
+  - id: "SA-4"
+    title: "Strategy/trade adapter boundary"
+    risk: "High"
+    paths:
+      - "web/frontend/src/utils/atrading.ts"
+      - "web/frontend/src/utils/strategy-adapters.ts"
+      - "web/frontend/src/utils/trade-adapters.ts"
+
+acceptance:
+  commit_gate:
+    - "For M1, stage only the audit report and governance node/card files; run JSON parse, diff check, GitNexus staged detection, and verify-staged before commit."
+  closeout_gate:
+    - "B4.009 closes only after grouped state/API support packages are explicitly source-authorized, implemented without cross-domain mixing, and validated by type-check, focused unit coverage, PM2 business smoke where applicable, GitNexus, and OPENDOG."
+
+evidence:
+  current_head: "64411dba119ebdedcda2f8e67c6d62f49783da6b"
+  notes:
+    - "M1 no-source audit completed after B4.008 was closed and sealed."
+    - "Fresh scan found 16 state/API/support candidates across 4 families."
+    - "Old 2026-06-06 B4.009 preflight is stale because current support runtime source paths remain dirty."
+    - "Recommended next gate: B4.009-M2a SA-2 state stores + store tests source authorization."

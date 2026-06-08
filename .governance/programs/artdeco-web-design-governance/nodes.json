@@ -4692,5 +4692,69 @@
       "current_head": "43eb2c2f64da93f2133d1852fccf8041be2b649f",
       "prepared_at": "2026-06-08T19:38:37+08:00"
     }
+  },
+  {
+    "id": "b4-frontend-state-api-support-truth",
+    "title": "Frontend state/API support truth and grouped cleanup",
+    "node_type": "evidence",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "",
+    "status": "evidence-prepared",
+    "function_tree_ref": "B4.009-M1",
+    "current_head": "64411dba119ebdedcda2f8e67c6d62f49783da6b",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-009-m1-frontend-state-api-support-no-source-audit-2026-06-08.md",
+        "note": "B4.009-M1 no-source frontend state/API support audit, family grouping, risk ranking, and proposed package order",
+        "current_head": "64411dba119ebdedcda2f8e67c6d62f49783da6b",
+        "recorded_at": "2026-06-08T22:21:42+08:00"
+      }
+    ],
+    "allowed_paths": [
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/cards/b4-frontend-state-api-support-truth.yaml",
+      "docs/reports/worklogs/claude-auto/b4-009-m1-frontend-state-api-support-no-source-audit-2026-06-08.md"
+    ],
+    "forbidden_paths": [
+      "ST-HOLD",
+      "marketKlineData",
+      "web/frontend/src/layouts/archive/BaseLayout.vue",
+      "web/frontend/src/router",
+      "web/frontend/src/views",
+      "archive/web/frontend/src/views/root-legacy",
+      "B4.007",
+      "B4.008"
+    ],
+    "non_goals": [
+      "Do not reopen B4.007 route truth, root legacy archive packages, or B4.008 shared UI/component governance.",
+      "Do not edit or stage source, tests, generated declarations, routes, menu config, backend/API contracts, ST-HOLD, marketKlineData, or external dirty files during M1.",
+      "Do not treat this no-source audit as acceptance of existing dirty test/source behavior.",
+      "Do not split later source work by single files; use the family packages named in the M1 audit."
+    ],
+    "next_gate": "B4.009-M2a source authorization for SA-2 state stores + store tests",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-08T22:21:42+08:00",
+    "updated_at": "2026-06-08T22:21:42+08:00",
+    "acceptance": {
+      "commit_gate": [
+        "For M1, stage only the audit report and governance node/card files; run JSON parse, diff check, GitNexus staged detection, and verify-staged before commit."
+      ],
+      "closeout_gate": [
+        "B4.009 closes only after grouped state/API support packages are explicitly source-authorized, implemented without cross-domain mixing, and validated by type-check, focused unit coverage, PM2 business smoke where applicable, GitNexus, and OPENDOG."
+      ]
+    },
+    "transitions": [
+      {
+        "from": "untracked",
+        "to": "evidence-prepared",
+        "note": "B4.009-M1 no-source audit prepared after B4.008 governance line was closed and sealed.",
+        "current_head": "64411dba119ebdedcda2f8e67c6d62f49783da6b",
+        "transitioned_at": "2026-06-08T22:21:42+08:00"
+      }
+    ]
   }
 ]
