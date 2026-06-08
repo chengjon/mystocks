@@ -15,6 +15,7 @@ export interface DataAnalysisStatsInput {
   qualifiedStocks: number
   previousQualifiedStocks: number
   screeningTimes: number
+  screeningExecuted: boolean
 }
 
 export interface StockScreeningResultRow {
@@ -22,6 +23,17 @@ export interface StockScreeningResultRow {
   name: string
   price: number
   changePercent: number
+  volume: number
+  amount: number
+  pe: number
+  marketCap: number
+}
+
+export interface DataAnalysisResultRow {
+  symbol: string
+  name: string
+  price: number
+  change: number
   volume: number
   amount: number
   pe: number
@@ -87,14 +99,14 @@ export function buildDataAnalysisStats(input: DataAnalysisStatsInput) {
   return {
     availableIndicators: input.indicators.length,
     customIndicators: 0,
-    screenedStocks: input.stockUniverseSize,
+    screenedStocks: input.screeningExecuted ? input.stockUniverseSize : 0,
     screeningTimes: input.screeningTimes,
     qualifiedStocks: input.qualifiedStocks,
     qualifiedChange: input.qualifiedStocks - input.previousQualifiedStocks,
   }
 }
 
-export function toDataAnalysisResults(rows: StockScreeningResultRow[]) {
+export function toDataAnalysisResults(rows: StockScreeningResultRow[]): DataAnalysisResultRow[] {
   return rows.map((row) => ({
     symbol: row.symbol,
     name: row.name,

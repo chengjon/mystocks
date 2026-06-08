@@ -53,6 +53,7 @@ test('buildDataAnalysisStats reflects indicator inventory and screening result c
     qualifiedStocks: 3,
     previousQualifiedStocks: 1,
     screeningTimes: 4,
+    screeningExecuted: true,
   })
 
   assert.deepEqual(stats, {
@@ -62,6 +63,26 @@ test('buildDataAnalysisStats reflects indicator inventory and screening result c
     screeningTimes: 4,
     qualifiedStocks: 3,
     qualifiedChange: 2,
+  })
+})
+
+test('buildDataAnalysisStats keeps screening counts at zero before the user runs screening', () => {
+  const stats = buildDataAnalysisStats({
+    indicators: [{ id: 1 }, { id: 2 }],
+    stockUniverseSize: 8,
+    qualifiedStocks: 0,
+    previousQualifiedStocks: 0,
+    screeningTimes: 0,
+    screeningExecuted: false,
+  })
+
+  assert.deepEqual(stats, {
+    availableIndicators: 2,
+    customIndicators: 0,
+    screenedStocks: 0,
+    screeningTimes: 0,
+    qualifiedStocks: 0,
+    qualifiedChange: 0,
   })
 })
 
