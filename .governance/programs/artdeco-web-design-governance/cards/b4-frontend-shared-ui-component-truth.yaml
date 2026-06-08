@@ -40,7 +40,7 @@ acceptance:
     - "B4.008 closes only after grouped shared UI packages are source-authorized, implemented without cross-domain mixing, and validated by type-check, focused unit coverage, PM2 business smoke, GitNexus, and OPENDOG."
 
 evidence:
-  current_head: "04f4a5fc151bc5066a93b36c515af8674110ea80"
+  current_head: "088b2f790b83359104b8e00881b6013d26ddaef6"
   notes:
     - "M1 no-source audit completed after B4.007 was frozen."
     - "M2a source-authorized UI-1 shared shell/layout/header summary repair completed."
@@ -49,5 +49,7 @@ evidence:
     - "M2b report: docs/reports/worklogs/claude-auto/b4-008-m2b-market-chart-query-chain-2026-06-08.md"
     - "M2c source-authorized UI-2 shared ArtDeco primitives repair completed."
     - "M2c report: docs/reports/worklogs/claude-auto/b4-008-m2c-shared-artdeco-primitives-2026-06-08.md"
+    - "M2d no-source boundary audit for UI-4 shared market/data composables completed."
+    - "M2d boundary report: docs/reports/worklogs/claude-auto/b4-008-m2d-shared-market-data-composables-boundary-2026-06-08.md"
     - "Final report: docs/reports/worklogs/claude-auto/b4-008-m1-shared-ui-component-no-source-audit-2026-06-08.md"
-    - "Next gate: source authorization for B4.008-M2d UI-4 shared market/data composables."
+    - "Next gate: source authorization for the audited B4.008-M2d UI-4 shared market/data composables standardization package."
