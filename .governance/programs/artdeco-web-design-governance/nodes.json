@@ -5331,5 +5331,34 @@
       "current_head": "f682e041956de72cd8da8b63af8fce0b055fcdb9",
       "prepared_at": "2026-06-09T18:18:43.143Z"
     }
+  },
+  {
+    "id": "b4-docs-superpowers-trade-reconciliation-hold",
+    "title": "Docs superpowers trade reconciliation drift hold",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "",
+    "status": "evidence-prepared",
+    "function_tree_ref": "B4.011-M2b-HOLD",
+    "current_head": "f74d37c994da2b2a22f3e8dbd54d150962b60f15",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "no-source-drift-decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-011-m2b-hold-trade-reconciliation-drift-decision-no-source-audit-2026-06-10.md",
+        "note": "M2b-HOLD audit recommends accepting corrected archive variant for trade reconciliation design; drift is two summary lines consistent with active body.",
+        "current_head": "f74d37c994da2b2a22f3e8dbd54d150962b60f15",
+        "recorded_at": "2026-06-09T18:35:39.562Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare decision or authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-09T18:35:21.144Z",
+    "updated_at": "2026-06-09T18:35:39.562Z"
   }
 ]
