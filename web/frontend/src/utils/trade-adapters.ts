@@ -24,8 +24,21 @@ const asArray = <T = unknown>(value: unknown): T[] =>
 const asString = (value: unknown, fallback = ''): string =>
   typeof value === 'string' ? value : value == null ? fallback : String(value)
 
-const asNumber = (value: unknown, fallback = 0): number =>
-  typeof value === 'number' && Number.isFinite(value) ? value : fallback
+const NUMERIC_STRING_PATTERN = /^[+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?$/i
+
+const asNumber = (value: unknown, fallback = 0): number => {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return value
+  }
+  if (typeof value === 'string') {
+    const text = value.trim()
+    if (NUMERIC_STRING_PATTERN.test(text)) {
+      const parsed = Number(text)
+      return Number.isFinite(parsed) ? parsed : fallback
+    }
+  }
+  return fallback
+}
 
 // ViewModel interfaces
 export interface AccountOverviewVM {
