@@ -4916,5 +4916,34 @@
       "current_head": "3653fb8b06f55a83825ff75911c5195ac424dd3b",
       "prepared_at": "2026-06-09T12:12:46.775Z"
     }
+  },
+  {
+    "id": "b4-docs-archive-reorg-truth",
+    "title": "Docs archive/reorg truth and dirty disposition",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "",
+    "status": "evidence-prepared",
+    "function_tree_ref": "B4.011-M1",
+    "current_head": "fdffe958b60ea76c3418511a510cb74f98ab51e9",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "no-source-audit",
+        "path": "docs/reports/worklogs/claude-auto/b4-011-m1-docs-archive-reorg-truth-no-source-audit-2026-06-09.md",
+        "note": "B4.011 M1 docs archive/reorg no-source boundary audit prepared; source edits remain unauthorized.",
+        "current_head": "fdffe958b60ea76c3418511a510cb74f98ab51e9",
+        "recorded_at": "2026-06-09T13:26:47.810Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare decision or authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-09T13:25:42.907Z",
+    "updated_at": "2026-06-09T13:26:47.810Z"
   }
 ]
