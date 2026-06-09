@@ -5132,9 +5132,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "",
-    "status": "evidence-prepared",
+    "status": "closed",
     "function_tree_ref": "B4.011-M2c-HOLD",
-    "current_head": "4e41e45ccec1782057d256b12995b3e30556e084",
+    "current_head": "dccf19bf02496e193a134ded3e1018fb57532ace",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -5144,15 +5144,84 @@
         "note": "B4.011 M2c-HOLD OMC workflow guide no-source audit prepared; deletion not safe, preserve/restore authorization recommended.",
         "current_head": "4e41e45ccec1782057d256b12995b3e30556e084",
         "recorded_at": "2026-06-09T16:27:21.556Z"
+      },
+      {
+        "kind": "current-head-evidence-refresh",
+        "path": "docs/reports/worklogs/claude-auto/b4-011-m2c-hold-omc-workflow-guide-no-source-audit-2026-06-10.md",
+        "note": "Refresh OMC workflow hold evidence at current HEAD before preserve/restore authorization.",
+        "current_head": "dccf19bf02496e193a134ded3e1018fb57532ace",
+        "recorded_at": "2026-06-09T17:14:57.849Z"
       }
     ],
-    "allowed_paths": [],
+    "allowed_paths": [
+      "docs/guides/ai-tools/OMC_WORKFLOW_GUIDE.md",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/cards/b4-docs-guides-omc-workflow-hold.yaml",
+      "docs/reports/worklogs/claude-auto/b4-011-m2c-hold-a-omc-workflow-guide-preserve-closeout-2026-06-10.md"
+    ],
     "forbidden_paths": [],
-    "non_goals": [],
-    "next_gate": "prepare decision or authorization",
+    "non_goals": [
+      "No archive add, no deletion acceptance, no source/test/runtime changes.",
+      "Do not touch docs/reports outside the closeout worklog, docs/superpowers, active guide sidecars, web, src, tests, scripts, ST-HOLD, or marketKlineData."
+    ],
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-09T16:26:47.890Z",
-    "updated_at": "2026-06-09T16:27:21.556Z"
+    "updated_at": "2026-06-09T17:23:08.887Z",
+    "acceptance": {
+      "commit_gate": [
+        "Staged diff contains only OMC preserve scope and governance metadata.",
+        "git diff --cached --check passes.",
+        "GitNexus verify-staged passes for the exact staged set."
+      ],
+      "closeout_gate": [
+        "OMC workflow guide is present at docs/guides/ai-tools/OMC_WORKFLOW_GUIDE.md with no deletion or archive acceptance.",
+        "Active gate for b4-docs-guides-omc-workflow-hold is closed after commit."
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "dccf19bf02496e193a134ded3e1018fb57532ace",
+        "transitioned_at": "2026-06-09T17:19:34.191Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "dccf19bf02496e193a134ded3e1018fb57532ace",
+        "transitioned_at": "2026-06-09T17:20:00.079Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "dccf19bf02496e193a134ded3e1018fb57532ace",
+        "transitioned_at": "2026-06-09T17:21:58.659Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "dccf19bf02496e193a134ded3e1018fb57532ace",
+        "transitioned_at": "2026-06-09T17:23:08.886Z"
+      }
+    ],
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-011-m2c-hold-a-omc-workflow-guide-preserve-closeout-2026-06-10.md",
+      "compatibility": "Preserved docs/guides/ai-tools/OMC_WORKFLOW_GUIDE.md from HEAD; no deletion, archive acceptance, source/test/runtime, route, UI, or docs/superpowers changes.",
+      "gates": [
+        "OMC guide worktree deletion cleared before staging.",
+        "Exact staging required for governance metadata and closeout worklog only.",
+        "Cached Git and GitNexus gates required before commit."
+      ],
+      "current_head": "dccf19bf02496e193a134ded3e1018fb57532ace",
+      "prepared_at": "2026-06-09T17:22:49.484Z"
+    }
   }
 ]
