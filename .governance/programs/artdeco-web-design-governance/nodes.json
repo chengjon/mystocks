@@ -5125,5 +5125,34 @@
       "current_head": "c484ab39813c9e1300d6019dc4fc68e404b113dc",
       "prepared_at": "2026-06-09T16:10:31.908Z"
     }
+  },
+  {
+    "id": "b4-docs-guides-omc-workflow-hold",
+    "title": "Docs guides OMC workflow hold disposition",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "",
+    "status": "evidence-prepared",
+    "function_tree_ref": "B4.011-M2c-HOLD",
+    "current_head": "4e41e45ccec1782057d256b12995b3e30556e084",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "hold-audit",
+        "path": "docs/reports/worklogs/claude-auto/b4-011-m2c-hold-omc-workflow-guide-no-source-audit-2026-06-10.md",
+        "note": "B4.011 M2c-HOLD OMC workflow guide no-source audit prepared; deletion not safe, preserve/restore authorization recommended.",
+        "current_head": "4e41e45ccec1782057d256b12995b3e30556e084",
+        "recorded_at": "2026-06-09T16:27:21.556Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare decision or authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-09T16:26:47.890Z",
+    "updated_at": "2026-06-09T16:27:21.556Z"
   }
 ]
