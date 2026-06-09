@@ -4818,5 +4818,34 @@
       "current_head": "bd9d78576fd3de770401eb79ae9fb76e7399e363",
       "prepared_at": "2026-06-09T04:39:39.571Z"
     }
+  },
+  {
+    "id": "b4-frontend-tooling-config-static-governance",
+    "title": "Frontend tooling config static governance and local state",
+    "node_type": "evidence",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "",
+    "status": "evidence-prepared",
+    "function_tree_ref": "B4.010-M1",
+    "current_head": "25024d08c79f6ea4844986f6133a5ea6c71d9bf5",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-010-m1-frontend-tooling-config-static-governance-no-source-audit-2026-06-09.md",
+        "note": "B4.010-M1 fresh no-source audit for frontend tooling/config/static governance after B4.009 closeout.",
+        "current_head": "25024d08c79f6ea4844986f6133a5ea6c71d9bf5",
+        "recorded_at": "2026-06-09T05:09:05.589Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare decision or authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-09T05:08:37.202Z",
+    "updated_at": "2026-06-09T05:09:05.589Z"
   }
 ]
