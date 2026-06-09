@@ -4827,7 +4827,7 @@
     "parent": "",
     "status": "evidence-prepared",
     "function_tree_ref": "B4.010-M1",
-    "current_head": "25024d08c79f6ea4844986f6133a5ea6c71d9bf5",
+    "current_head": "9ac2d257f7b9b43066c60445f69d37a5bb3623bf",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -4837,6 +4837,13 @@
         "note": "B4.010-M1 fresh no-source audit for frontend tooling/config/static governance after B4.009 closeout.",
         "current_head": "25024d08c79f6ea4844986f6133a5ea6c71d9bf5",
         "recorded_at": "2026-06-09T05:09:05.589Z"
+      },
+      {
+        "kind": "disposition",
+        "path": "docs/reports/worklogs/claude-auto/b4-010-m2b-frontend-governance-worklog-disposition-2026-06-09.md",
+        "note": "B4.010-M2b accepted repo-level worklog backlog as durable evidence and deferred frontend-local/local-state artifacts.",
+        "current_head": "9ac2d257f7b9b43066c60445f69d37a5bb3623bf",
+        "recorded_at": "2026-06-09T06:11:57.470Z"
       }
     ],
     "allowed_paths": [],
@@ -4846,6 +4853,6 @@
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-09T05:08:37.202Z",
-    "updated_at": "2026-06-09T05:09:05.589Z"
+    "updated_at": "2026-06-09T06:11:57.470Z"
   }
 ]
