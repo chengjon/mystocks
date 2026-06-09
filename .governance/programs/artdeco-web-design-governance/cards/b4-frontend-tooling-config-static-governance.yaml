@@ -1,0 +1,26 @@
+task:
+  id: "b4-frontend-tooling-config-static-governance"
+  title: "Frontend tooling config static governance and local state"
+
+scope:
+  allowed_paths:
+    - "docs/reports/worklogs/claude-auto/b4-010-m3-frontend-tooling-config-static-governance-closeout-2026-06-09.md"
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/cards/b4-frontend-tooling-config-static-governance.yaml"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No source, test, route, view, store, API, .omc, TASK*, docs archive migration, or held frontend dirty files."
+
+acceptance:
+  commit_gate:
+    - "Stage only B4.010 closeout worklog and FUNCTION_TREE governance metadata; git diff --cached --check; GitNexus verify-staged and detect_changes low risk; OPENDOG fresh."
+  closeout_gate:
+    - "B4.010 node closed; GitNexus post-commit analyze/status fresh; external docs archive residue remains in DOC-ARCH backlog."
+
+evidence:
+  current_head: "3653fb8b06f55a83825ff75911c5195ac424dd3b"
+  notes: []
