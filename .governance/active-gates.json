@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-09T13:26:47.812Z",
+  "updated_at": "2026-06-09T14:41:21.121Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -17,7 +17,7 @@
       "freshness": "current-head",
       "allowed_paths": [],
       "forbidden_paths": [],
-      "updated_at": "2026-06-09T13:26:47.810Z"
+      "updated_at": "2026-06-09T14:41:21.115Z"
     }
   ]
 }

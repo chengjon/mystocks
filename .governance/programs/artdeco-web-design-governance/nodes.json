@@ -4925,7 +4925,7 @@
     "parent": "",
     "status": "evidence-prepared",
     "function_tree_ref": "B4.011-M1",
-    "current_head": "fdffe958b60ea76c3418511a510cb74f98ab51e9",
+    "current_head": "527f86a882830ae280ad559f2511156ddcebcd02",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -4935,6 +4935,13 @@
         "note": "B4.011 M1 docs archive/reorg no-source boundary audit prepared; source edits remain unauthorized.",
         "current_head": "fdffe958b60ea76c3418511a510cb74f98ab51e9",
         "recorded_at": "2026-06-09T13:26:47.810Z"
+      },
+      {
+        "kind": "no-source-mapping",
+        "path": "docs/reports/worklogs/claude-auto/b4-011-m2c-pre-docs-guides-mapping-no-source-audit-2026-06-09.md",
+        "note": "B4.011 docs/guides mapping audit prepared: 57 exact mappings and 1 hold item; no deletion or source edit authorized.",
+        "current_head": "527f86a882830ae280ad559f2511156ddcebcd02",
+        "recorded_at": "2026-06-09T14:41:21.115Z"
       }
     ],
     "allowed_paths": [],
@@ -4944,6 +4951,6 @@
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-09T13:25:42.907Z",
-    "updated_at": "2026-06-09T13:26:47.810Z"
+    "updated_at": "2026-06-09T14:41:21.115Z"
   }
 ]
