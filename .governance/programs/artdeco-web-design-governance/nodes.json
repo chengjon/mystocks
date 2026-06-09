@@ -4699,9 +4699,9 @@
     "node_type": "evidence",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "",
-    "status": "evidence-prepared",
+    "status": "closed",
     "function_tree_ref": "B4.009-M1",
-    "current_head": "64411dba119ebdedcda2f8e67c6d62f49783da6b",
+    "current_head": "bd9d78576fd3de770401eb79ae9fb76e7399e363",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -4711,6 +4711,13 @@
         "note": "B4.009-M1 no-source frontend state/API support audit, family grouping, risk ranking, and proposed package order",
         "current_head": "64411dba119ebdedcda2f8e67c6d62f49783da6b",
         "recorded_at": "2026-06-08T22:21:42+08:00"
+      },
+      {
+        "kind": "closeout",
+        "path": "docs/reports/worklogs/claude-auto/b4-009-m3-frontend-state-api-support-full-validation-closeout-2026-06-09.md",
+        "note": "B4.009 M3 full validation evidence recorded at final implemented HEAD bd9d78576.",
+        "current_head": "bd9d78576fd3de770401eb79ae9fb76e7399e363",
+        "recorded_at": "2026-06-09T04:38:44.741Z"
       }
     ],
     "allowed_paths": [
@@ -4734,11 +4741,11 @@
       "Do not treat this no-source audit as acceptance of existing dirty test/source behavior.",
       "Do not split later source work by single files; use the family packages named in the M1 audit."
     ],
-    "next_gate": "B4.009-M2a source authorization for SA-2 state stores + store tests",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-08T22:21:42+08:00",
-    "updated_at": "2026-06-08T22:21:42+08:00",
+    "updated_at": "2026-06-09T04:40:09.894Z",
     "acceptance": {
       "commit_gate": [
         "For M1, stage only the audit report and governance node/card files; run JSON parse, diff check, GitNexus staged detection, and verify-staged before commit."
@@ -4754,7 +4761,62 @@
         "note": "B4.009-M1 no-source audit prepared after B4.008 governance line was closed and sealed.",
         "current_head": "64411dba119ebdedcda2f8e67c6d62f49783da6b",
         "transitioned_at": "2026-06-08T22:21:42+08:00"
+      },
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "B4.009 M1 audit accepted; grouped source packages M2a/M2b/M2c/M2d were selected for implementation.",
+        "current_head": "bd9d78576fd3de770401eb79ae9fb76e7399e363",
+        "transitioned_at": "2026-06-09T04:38:06.609Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "authorization-prepared",
+        "note": "B4.009 M2 implementation scopes were explicitly authorized by the user across SA-2, SA-3, API/mock evidence, and SA-4 high-risk adapter batches.",
+        "current_head": "bd9d78576fd3de770401eb79ae9fb76e7399e363",
+        "transitioned_at": "2026-06-09T04:38:18.100Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "Source-authorized M2 batches were approved with strict isolation from ST-HOLD, B4.006, marketKlineData, BaseLayout, and unrelated dirty files.",
+        "current_head": "bd9d78576fd3de770401eb79ae9fb76e7399e363",
+        "transitioned_at": "2026-06-09T04:38:55.931Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "All B4.009 implementation boundaries were known; target packages were committed as separate scoped M2 batches.",
+        "current_head": "bd9d78576fd3de770401eb79ae9fb76e7399e363",
+        "transitioned_at": "2026-06-09T04:39:09.534Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "B4.009 M2 implementation landed through commits 1318ddf11, bc4190776, 70d6f02f6, 4c1478d7f, ee2dfc637, 2ff0b9eba, and bd9d78576.",
+        "current_head": "bd9d78576fd3de770401eb79ae9fb76e7399e363",
+        "transitioned_at": "2026-06-09T04:39:25.311Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "B4.009 M3 closeout reviewed; all final validation gates passed and no B4.009 source work remains open.",
+        "current_head": "bd9d78576fd3de770401eb79ae9fb76e7399e363",
+        "transitioned_at": "2026-06-09T04:40:09.894Z"
       }
-    ]
+    ],
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-009-m3-frontend-state-api-support-full-validation-closeout-2026-06-09.md",
+      "compatibility": "No B4.009 closeout source edits; runtime compatibility validated by type-check, stable unit, PM2 business smoke, GitNexus, and OPENDOG.",
+      "gates": [
+        "type-check passed on bd9d78576",
+        "stable unit suite passed: 33 files / 415 tests",
+        "PM2 business smoke passed: chromium 55/55",
+        "GitNexus indexed current HEAD and staged files remained empty before closeout",
+        "OPENDOG verification fresh with 0 failing runs and 0 blockers"
+      ],
+      "current_head": "bd9d78576fd3de770401eb79ae9fb76e7399e363",
+      "prepared_at": "2026-06-09T04:39:39.571Z"
+    }
   }
 ]
