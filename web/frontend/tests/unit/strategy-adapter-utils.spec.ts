@@ -58,4 +58,34 @@ describe('StrategyAdapter utils', () => {
       winRate: 0.6
     })
   })
+
+  it('keeps empty strategy payloads inside default view-model boundaries', () => {
+    expect(StrategyAdapter.toStrategyListVM(null)).toEqual([])
+
+    expect(StrategyAdapter.toStrategyConfigVM(null)).toMatchObject({
+      id: '',
+      name: '',
+      description: '',
+      parameters: [],
+      canEdit: true,
+      lastModified: ''
+    })
+
+    expect(StrategyAdapter.toBacktestResultVM(null)).toMatchObject({
+      strategyId: '',
+      strategyName: '',
+      initialCapital: 0,
+      finalCapital: 0,
+      totalTrades: 0,
+      equityCurve: []
+    })
+
+    expect(StrategyAdapter.toTechnicalIndicatorVM(null)).toMatchObject({
+      name: '',
+      displayName: '',
+      category: 'technical',
+      parameters: [],
+      outputs: []
+    })
+  })
 })

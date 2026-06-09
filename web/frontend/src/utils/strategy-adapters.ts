@@ -184,7 +184,7 @@ export class StrategyAdapter {
   /**
    * Convert strategy config response to ViewModel
    */
-  static toStrategyConfigVM(data: StrategyConfigResponse): StrategyConfigVM {
+  static toStrategyConfigVM(data: unknown): StrategyConfigVM {
     const record = asRecord(data)
     return {
       id: asString(record.id),
@@ -199,7 +199,7 @@ export class StrategyAdapter {
   /**
    * Convert backtest result to ViewModel
    */
-  static toBacktestResultVM(data: BacktestResultResponse): BacktestResultVM {
+  static toBacktestResultVM(data: unknown): BacktestResultVM {
     const record = asRecord(data)
     const initialCapital = asNumber(record.initialCapital)
     const finalCapital = asNumber(record.finalCapital)
@@ -245,7 +245,7 @@ export class StrategyAdapter {
   /**
    * Convert technical indicator to ViewModel
    */
-  static toTechnicalIndicatorVM(data: TechnicalIndicatorResponse): TechnicalIndicatorVM {
+  static toTechnicalIndicatorVM(data: unknown): TechnicalIndicatorVM {
     const record = asRecord(data)
     return {
       name: asString(record.name),

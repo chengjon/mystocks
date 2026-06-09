@@ -115,25 +115,26 @@ export class TradeAdapter {
   /**
    * Convert account overview to ViewModel
    */
-  static toAccountOverviewVM(data: AccountOverviewResponse): AccountOverviewVM {
-    const totalAssets = asNumber(data.totalAssets)
-    const todayPnL = asNumber(data.todayPnL)
-    const totalPnL = asNumber(data.totalPnL)
+  static toAccountOverviewVM(data: unknown): AccountOverviewVM {
+    const record = asRecord(data)
+    const totalAssets = asNumber(record.totalAssets)
+    const todayPnL = asNumber(record.todayPnL)
+    const totalPnL = asNumber(record.totalPnL)
     const todayPnLPercent = totalAssets ? (todayPnL / (totalAssets - todayPnL)) * 100 : 0
     const totalPnLPercent = totalAssets ? (totalPnL / (totalAssets - totalPnL)) * 100 : 0
 
     return {
       totalAssets,
-      availableCash: asNumber(data.availableCash),
-      totalMarketValue: asNumber(data.totalMarketValue),
-      totalPositionValue: asNumber(data.totalPositionValue),
+      availableCash: asNumber(record.availableCash),
+      totalMarketValue: asNumber(record.totalMarketValue),
+      totalPositionValue: asNumber(record.totalPositionValue),
       todayPnL,
       todayPnLPercent: this.formatPercent(todayPnLPercent),
       totalPnL,
       totalPnLPercent: this.formatPercent(totalPnLPercent),
-      currency: asString(data.currency, 'CNY'),
+      currency: asString(record.currency, 'CNY'),
       lastUpdate: Date.now(),
-      assetAllocation: asArray(data.assetAllocation).map((item) => {
+      assetAllocation: asArray(record.assetAllocation).map((item) => {
         const record = asRecord(item)
         return {
           category: asString(record.category),
@@ -148,8 +149,8 @@ export class TradeAdapter {
   /**
    * Convert order response to ViewModel
    */
-  static toOrderVM(data: OrderResponse[]): OrderVM[] {
-    return data.map((order) => {
+  static toOrderVM(data: unknown): OrderVM[] {
+    return asArray(data).map((order) => {
       const record = asRecord(order)
       return {
         orderId: asString(record.order_id || record.orderId),
@@ -174,8 +175,8 @@ export class TradeAdapter {
   /**
    * Convert position response to ViewModel
    */
-  static toPositionVM(data: PositionResponse[]): PositionVM[] {
-    return data.map(position => {
+  static toPositionVM(data: unknown): PositionVM[] {
+    return asArray(data).map(position => {
       const record = asRecord(position)
       const quantity = asNumber(record.quantity)
       const avgPrice = asNumber(record.avgPrice)
@@ -214,9 +215,9 @@ export class TradeAdapter {
   /**
    * Convert trade history response to ViewModel
    */
-  static toTradeHistoryVM(data: TradeHistoryResponse[]): TradeHistoryVM[] {
+  static toTradeHistoryVM(data: unknown): TradeHistoryVM[] {
     // Group trades by date
-    const groupedTrades = data.reduce((groups, trade) => {
+    const groupedTrades = asArray(data).reduce<Record<string, unknown[]>>((groups, trade) => {
       const record = asRecord(trade)
       const date = this.formatDate(record.tradeTime || record.trade_time || record.trade_date)
       if (!groups[date]) {
