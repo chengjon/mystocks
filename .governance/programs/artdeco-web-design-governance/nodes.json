@@ -5230,9 +5230,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "",
-    "status": "evidence-prepared",
+    "status": "closed",
     "function_tree_ref": "B4.011-M2b",
-    "current_head": "ae7852b4a2f9f253af340e007fea6e09829e7f82",
+    "current_head": "f682e041956de72cd8da8b63af8fce0b055fcdb9",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -5242,15 +5242,94 @@
         "note": "M2b no-source audit split docs/superpowers into five exact archive-retirement files and one non-exact HOLD drift candidate.",
         "current_head": "ae7852b4a2f9f253af340e007fea6e09829e7f82",
         "recorded_at": "2026-06-09T18:12:18.601Z"
+      },
+      {
+        "kind": "current-head-evidence-refresh",
+        "path": "docs/reports/worklogs/claude-auto/b4-011-m2b-pre-docs-superpowers-archive-truth-no-source-audit-2026-06-10.md",
+        "note": "Refresh M2b-A five exact docs/superpowers archive-retirement evidence at current HEAD after M2b-pre commit.",
+        "current_head": "f682e041956de72cd8da8b63af8fce0b055fcdb9",
+        "recorded_at": "2026-06-09T18:16:01.941Z"
       }
     ],
-    "allowed_paths": [],
+    "allowed_paths": [
+      "docs/superpowers/plans/2026-05-09-miniqmt-evidence-execution-tracking.md",
+      "docs/superpowers/plans/2026-05-19-codebase-map-openspec-execution-plan.md",
+      "docs/superpowers/specs/2026-05-03-akshare-official-rename-mapping-design.md",
+      "docs/superpowers/specs/2026-05-08-attribution-analysis-design.md",
+      "docs/superpowers/specs/2026-05-08-ml-training-prediction-runtime-design.md",
+      "docs/superpowers/specs/2026-05-06-trade-reconciliation-statement-design.md",
+      "archive/docs/superpowers/plans/2026-05-09-miniqmt-evidence-execution-tracking.md",
+      "archive/docs/superpowers/plans/2026-05-19-codebase-map-openspec-execution-plan.md",
+      "archive/docs/superpowers/specs/2026-05-03-akshare-official-rename-mapping-design.md",
+      "archive/docs/superpowers/specs/2026-05-08-attribution-analysis-design.md",
+      "archive/docs/superpowers/specs/2026-05-08-ml-training-prediction-runtime-design.md",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/cards/b4-docs-superpowers-archive-exact-retirement.yaml",
+      "docs/reports/worklogs/claude-auto/b4-011-m2b-a-docs-superpowers-exact-archive-retirement-closeout-2026-06-10.md"
+    ],
     "forbidden_paths": [],
-    "non_goals": [],
-    "next_gate": "prepare decision or authorization",
+    "non_goals": [
+      "Do not accept deletion of docs/superpowers/specs/2026-05-06-trade-reconciliation-statement-design.md; restore/preserve it for HOLD decision only.",
+      "Do not touch docs/reports outside the closeout worklog, docs/guides, docs/superpowers files outside the authorized set, source, tests, runtime, UI, routes, ST-HOLD, or marketKlineData."
+    ],
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-09T18:11:59.199Z",
-    "updated_at": "2026-06-09T18:12:18.601Z"
+    "updated_at": "2026-06-09T18:19:01.533Z",
+    "acceptance": {
+      "commit_gate": [
+        "Staged diff contains only five exact active deletions, their five archive evidence additions, governance metadata, and closeout worklog.",
+        "git diff --cached --check passes.",
+        "GitNexus verify-staged and detect-changes pass with low risk and zero affected processes."
+      ],
+      "closeout_gate": [
+        "HOLD file is restored/clean and not staged as deletion.",
+        "FUNCTION_TREE node closes and active gates are empty after commit."
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "f682e041956de72cd8da8b63af8fce0b055fcdb9",
+        "transitioned_at": "2026-06-09T18:16:43.114Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "f682e041956de72cd8da8b63af8fce0b055fcdb9",
+        "transitioned_at": "2026-06-09T18:16:58.782Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "f682e041956de72cd8da8b63af8fce0b055fcdb9",
+        "transitioned_at": "2026-06-09T18:18:29.588Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "f682e041956de72cd8da8b63af8fce0b055fcdb9",
+        "transitioned_at": "2026-06-09T18:19:01.533Z"
+      }
+    ],
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-011-m2b-a-docs-superpowers-exact-archive-retirement-closeout-2026-06-10.md",
+      "compatibility": "Five exact docs/superpowers files retired to archive evidence; non-exact trade reconciliation design restored and preserved for HOLD decision.",
+      "gates": [
+        "Five active deletions have exact archive hash matches.",
+        "HOLD file restored and not staged as deletion.",
+        "Cached Git/GitNexus gates required before commit."
+      ],
+      "current_head": "f682e041956de72cd8da8b63af8fce0b055fcdb9",
+      "prepared_at": "2026-06-09T18:18:43.143Z"
+    }
   }
 ]

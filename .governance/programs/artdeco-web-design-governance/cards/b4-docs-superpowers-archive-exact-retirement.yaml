@@ -1,0 +1,41 @@
+task:
+  id: "b4-docs-superpowers-archive-exact-retirement"
+  title: "Docs superpowers exact archive retirement"
+
+scope:
+  allowed_paths:
+    - "docs/superpowers/plans/2026-05-09-miniqmt-evidence-execution-tracking.md"
+    - "docs/superpowers/plans/2026-05-19-codebase-map-openspec-execution-plan.md"
+    - "docs/superpowers/specs/2026-05-03-akshare-official-rename-mapping-design.md"
+    - "docs/superpowers/specs/2026-05-08-attribution-analysis-design.md"
+    - "docs/superpowers/specs/2026-05-08-ml-training-prediction-runtime-design.md"
+    - "docs/superpowers/specs/2026-05-06-trade-reconciliation-statement-design.md"
+    - "archive/docs/superpowers/plans/2026-05-09-miniqmt-evidence-execution-tracking.md"
+    - "archive/docs/superpowers/plans/2026-05-19-codebase-map-openspec-execution-plan.md"
+    - "archive/docs/superpowers/specs/2026-05-03-akshare-official-rename-mapping-design.md"
+    - "archive/docs/superpowers/specs/2026-05-08-attribution-analysis-design.md"
+    - "archive/docs/superpowers/specs/2026-05-08-ml-training-prediction-runtime-design.md"
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/cards/b4-docs-superpowers-archive-exact-retirement.yaml"
+    - "docs/reports/worklogs/claude-auto/b4-011-m2b-a-docs-superpowers-exact-archive-retirement-closeout-2026-06-10.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not accept deletion of docs/superpowers/specs/2026-05-06-trade-reconciliation-statement-design.md; restore/preserve it for HOLD decision only."
+  - "Do not touch docs/reports outside the closeout worklog, docs/guides, docs/superpowers files outside the authorized set, source, tests, runtime, UI, routes, ST-HOLD, or marketKlineData."
+
+acceptance:
+  commit_gate:
+    - "Staged diff contains only five exact active deletions, their five archive evidence additions, governance metadata, and closeout worklog."
+    - "git diff --cached --check passes."
+    - "GitNexus verify-staged and detect-changes pass with low risk and zero affected processes."
+  closeout_gate:
+    - "HOLD file is restored/clean and not staged as deletion."
+    - "FUNCTION_TREE node closes and active gates are empty after commit."
+
+evidence:
+  current_head: "f682e041956de72cd8da8b63af8fce0b055fcdb9"
+  notes: []
