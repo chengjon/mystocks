@@ -5338,9 +5338,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "",
-    "status": "evidence-prepared",
+    "status": "closed",
     "function_tree_ref": "B4.011-M2b-HOLD",
-    "current_head": "f74d37c994da2b2a22f3e8dbd54d150962b60f15",
+    "current_head": "af62ee75e19270b05a436635e61f1e92a4f8a690",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -5350,15 +5350,85 @@
         "note": "M2b-HOLD audit recommends accepting corrected archive variant for trade reconciliation design; drift is two summary lines consistent with active body.",
         "current_head": "f74d37c994da2b2a22f3e8dbd54d150962b60f15",
         "recorded_at": "2026-06-09T18:35:39.562Z"
+      },
+      {
+        "kind": "current-head-evidence-refresh",
+        "path": "docs/reports/worklogs/claude-auto/b4-011-m2b-hold-trade-reconciliation-drift-decision-no-source-audit-2026-06-10.md",
+        "note": "Refresh trade reconciliation drift evidence at current HEAD before corrected archive-retirement authorization.",
+        "current_head": "af62ee75e19270b05a436635e61f1e92a4f8a690",
+        "recorded_at": "2026-06-09T18:39:28.037Z"
       }
     ],
-    "allowed_paths": [],
+    "allowed_paths": [
+      "docs/superpowers/specs/2026-05-06-trade-reconciliation-statement-design.md",
+      "archive/docs/superpowers/specs/2026-05-06-trade-reconciliation-statement-design.md",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/cards/b4-docs-superpowers-trade-reconciliation-hold.yaml",
+      "docs/reports/worklogs/claude-auto/b4-011-m2b-hold-a-trade-reconciliation-corrected-archive-retirement-closeout-2026-06-10.md"
+    ],
     "forbidden_paths": [],
-    "non_goals": [],
-    "next_gate": "prepare decision or authorization",
+    "non_goals": [
+      "Do not modify runtime/API/source/test behavior; this is documentation archive-retirement only.",
+      "Do not touch other docs/superpowers files, docs/guides, docs/reports outside the closeout worklog, source, tests, UI, routes, ST-HOLD, or marketKlineData."
+    ],
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-09T18:35:21.144Z",
-    "updated_at": "2026-06-09T18:35:39.562Z"
+    "updated_at": "2026-06-09T23:47:05.124Z",
+    "acceptance": {
+      "commit_gate": [
+        "Staged diff contains only the trade reconciliation active deletion, corrected archive addition, governance metadata, and closeout worklog.",
+        "git diff --cached --check passes.",
+        "GitNexus verify-staged and detect-changes pass with low risk and zero affected processes."
+      ],
+      "closeout_gate": [
+        "Active docs/superpowers trade reconciliation file is retired and archive variant is tracked.",
+        "FUNCTION_TREE node closes and active gates are empty after commit."
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "af62ee75e19270b05a436635e61f1e92a4f8a690",
+        "transitioned_at": "2026-06-09T18:40:03.262Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "af62ee75e19270b05a436635e61f1e92a4f8a690",
+        "transitioned_at": "2026-06-09T18:40:17.699Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "09cc1071ab93a4ebc6c69e46ea0412f7493e8048",
+        "transitioned_at": "2026-06-09T23:46:23.856Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "09cc1071ab93a4ebc6c69e46ea0412f7493e8048",
+        "transitioned_at": "2026-06-09T23:47:05.124Z"
+      }
+    ],
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-011-m2b-hold-a-trade-reconciliation-corrected-archive-retirement-closeout-2026-06-10.md",
+      "compatibility": "Corrected archive variant is already tracked; untracked active docs/superpowers leftover removed; no source/test/runtime/API behavior changed.",
+      "gates": [
+        "docs/superpowers active leftover removed and empty directories removed.",
+        "archive/docs/superpowers trade reconciliation design remains tracked.",
+        "Cached Git/GitNexus gates required before commit."
+      ],
+      "current_head": "09cc1071ab93a4ebc6c69e46ea0412f7493e8048",
+      "prepared_at": "2026-06-09T23:46:45.101Z"
+    }
   }
 ]

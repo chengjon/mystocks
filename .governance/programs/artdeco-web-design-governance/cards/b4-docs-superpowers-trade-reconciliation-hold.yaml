@@ -1,0 +1,32 @@
+task:
+  id: "b4-docs-superpowers-trade-reconciliation-hold"
+  title: "Docs superpowers trade reconciliation drift hold"
+
+scope:
+  allowed_paths:
+    - "docs/superpowers/specs/2026-05-06-trade-reconciliation-statement-design.md"
+    - "archive/docs/superpowers/specs/2026-05-06-trade-reconciliation-statement-design.md"
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/cards/b4-docs-superpowers-trade-reconciliation-hold.yaml"
+    - "docs/reports/worklogs/claude-auto/b4-011-m2b-hold-a-trade-reconciliation-corrected-archive-retirement-closeout-2026-06-10.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not modify runtime/API/source/test behavior; this is documentation archive-retirement only."
+  - "Do not touch other docs/superpowers files, docs/guides, docs/reports outside the closeout worklog, source, tests, UI, routes, ST-HOLD, or marketKlineData."
+
+acceptance:
+  commit_gate:
+    - "Staged diff contains only the trade reconciliation active deletion, corrected archive addition, governance metadata, and closeout worklog."
+    - "git diff --cached --check passes."
+    - "GitNexus verify-staged and detect-changes pass with low risk and zero affected processes."
+  closeout_gate:
+    - "Active docs/superpowers trade reconciliation file is retired and archive variant is tracked."
+    - "FUNCTION_TREE node closes and active gates are empty after commit."
+
+evidence:
+  current_head: "af62ee75e19270b05a436635e61f1e92a4f8a690"
+  notes: []

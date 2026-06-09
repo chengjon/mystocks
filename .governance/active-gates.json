@@ -1,23 +1,5 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-09T18:35:39.566Z",
-  "gates": [
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-docs-superpowers-trade-reconciliation-hold",
-      "title": "Docs superpowers trade reconciliation drift hold",
-      "node_type": "decision",
-      "owner_lane": "artdeco-web-design-governance",
-      "parent": "",
-      "status": "evidence-prepared",
-      "source_edits_authorized": false,
-      "current_blocker": "",
-      "next_allowed": "prepare decision or authorization",
-      "function_tree_ref": "B4.011-M2b-HOLD",
-      "freshness": "current-head",
-      "allowed_paths": [],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-09T18:35:39.562Z"
-    }
-  ]
+  "updated_at": "2026-06-09T23:47:05.128Z",
+  "gates": []
 }
