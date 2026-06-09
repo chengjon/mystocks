@@ -1,5 +1,23 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-09T17:23:08.890Z",
-  "gates": []
+  "updated_at": "2026-06-09T18:12:18.604Z",
+  "gates": [
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-docs-superpowers-archive-exact-retirement",
+      "title": "Docs superpowers exact archive retirement",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "",
+      "status": "evidence-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "prepare decision or authorization",
+      "function_tree_ref": "B4.011-M2b",
+      "freshness": "current-head",
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-09T18:12:18.601Z"
+    }
+  ]
 }
