@@ -4923,7 +4923,7 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "",
-    "status": "implementation-landed",
+    "status": "closed",
     "function_tree_ref": "B4.011-M1",
     "current_head": "600a1f67df3a01e3aefbbd93c604648a357f6a5e",
     "freshness": "current-head",
@@ -4973,11 +4973,11 @@
     "non_goals": [
       "No archive/docs forced add, no OMC_WORKFLOW_GUIDE disposition, no modified docs/guides index updates, no docs/reports, no docs/superpowers, no source/test/runtime files."
     ],
-    "next_gate": "prepare closeout",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-09T13:25:42.907Z",
-    "updated_at": "2026-06-09T15:24:14.854Z",
+    "updated_at": "2026-06-09T15:35:07.280Z",
     "acceptance": {
       "commit_gate": [
         "Stage only 27 active reparent exact pairs plus B4.011 governance metadata; git diff --cached --check; GitNexus verify-staged low risk; OPENDOG fresh; staged set contains no archive, source, test, runtime, HOLD, or modified sidecar docs."
@@ -5007,7 +5007,26 @@
         "note": "",
         "current_head": "600a1f67df3a01e3aefbbd93c604648a357f6a5e",
         "transitioned_at": "2026-06-09T15:24:14.854Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "89fb2bf0648d5d31a402e7dc26969732984d3633",
+        "transitioned_at": "2026-06-09T15:35:07.279Z"
       }
-    ]
+    ],
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-011-m2c-a-active-guide-reparent-closeout-2026-06-09.md",
+      "compatibility": "Docs-only active guide reparent; no source/test/runtime/API changes; archive exact and HOLD items remain deferred.",
+      "gates": [
+        "git diff --cached --check passed before commit",
+        "GitNexus verify-staged low risk; affected processes 0",
+        "OPENDOG fresh with 0 failing runs and 0 blockers",
+        "GitNexus post-commit analyze --index-only fresh at 89fb2bf06"
+      ],
+      "current_head": "89fb2bf0648d5d31a402e7dc26969732984d3633",
+      "prepared_at": "2026-06-09T15:34:47.800Z"
+    }
   }
 ]
