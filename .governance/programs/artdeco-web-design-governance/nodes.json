@@ -5028,5 +5028,82 @@
       "current_head": "89fb2bf0648d5d31a402e7dc26969732984d3633",
       "prepared_at": "2026-06-09T15:34:47.800Z"
     }
+  },
+  {
+    "id": "b4-docs-guides-archive-exact-retirement",
+    "title": "Docs guides archive exact retirement",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "",
+    "status": "implementation-landed",
+    "function_tree_ref": "B4.011-M2c-B",
+    "current_head": "23272f8948bf5ce8a76ad0c172bb01b9774938d0",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "mapping-evidence",
+        "path": "docs/reports/worklogs/claude-auto/b4-011-m2c-pre-docs-guides-mapping-no-source-audit-2026-06-09.md",
+        "note": "B4.011 M2c-B archive exact package evidence: 30 docs/guides deletions have exact ignored archive matches.",
+        "current_head": "23272f8948bf5ce8a76ad0c172bb01b9774938d0",
+        "recorded_at": "2026-06-09T15:56:35.154Z"
+      }
+    ],
+    "allowed_paths": [
+      "docs/guides/features",
+      "archive/docs/guides-merged/features",
+      "docs/guides/openspec-cmd",
+      "archive/docs/guides-merged/openspec-cmd",
+      "docs/guides/quant-trading",
+      "archive/docs/guides-merged/quant-trading",
+      "docs/guides/superpowers",
+      "archive/docs/guides-merged/superpowers",
+      "docs/guides/templates",
+      "archive/docs/guides-merged/templates",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/cards/b4-docs-guides-archive-exact-retirement.yaml"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No active reparent paths, no OMC_WORKFLOW_GUIDE, no docs/reports, no docs/superpowers root package, no modified docs/guides sidecars, no source/test/runtime files."
+    ],
+    "next_gate": "prepare closeout",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-09T15:56:17.054Z",
+    "updated_at": "2026-06-09T16:00:45.474Z",
+    "acceptance": {
+      "commit_gate": [
+        "Stage only 30 archive exact guide pairs plus B4.011-M2c-B governance metadata; archive targets must be force-added by exact path; git diff --cached --check; GitNexus verify-staged low risk; OPENDOG fresh; no active docs/source/test paths beyond exact old sources."
+      ],
+      "closeout_gate": [
+        "Guides archive exact package committed and indexed; active gates closed or explicitly moved to next package; HOLD and reports/superpowers remain separate."
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "23272f8948bf5ce8a76ad0c172bb01b9774938d0",
+        "transitioned_at": "2026-06-09T15:57:38.334Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "23272f8948bf5ce8a76ad0c172bb01b9774938d0",
+        "transitioned_at": "2026-06-09T15:58:08.975Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "23272f8948bf5ce8a76ad0c172bb01b9774938d0",
+        "transitioned_at": "2026-06-09T16:00:45.474Z"
+      }
+    ]
   }
 ]

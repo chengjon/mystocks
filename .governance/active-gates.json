@@ -1,5 +1,38 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-09T15:35:07.284Z",
-  "gates": []
+  "updated_at": "2026-06-09T16:00:45.476Z",
+  "gates": [
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-docs-guides-archive-exact-retirement",
+      "title": "Docs guides archive exact retirement",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "",
+      "status": "implementation-landed",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "prepare closeout",
+      "function_tree_ref": "B4.011-M2c-B",
+      "freshness": "current-head",
+      "allowed_paths": [
+        "docs/guides/features",
+        "archive/docs/guides-merged/features",
+        "docs/guides/openspec-cmd",
+        "archive/docs/guides-merged/openspec-cmd",
+        "docs/guides/quant-trading",
+        "archive/docs/guides-merged/quant-trading",
+        "docs/guides/superpowers",
+        "archive/docs/guides-merged/superpowers",
+        "docs/guides/templates",
+        "archive/docs/guides-merged/templates",
+        ".governance/active-gates.json",
+        ".governance/active-gates.md",
+        ".governance/programs/artdeco-web-design-governance/nodes.json",
+        ".governance/programs/artdeco-web-design-governance/cards/b4-docs-guides-archive-exact-retirement.yaml"
+      ],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-09T16:00:45.474Z"
+    }
+  ]
 }
