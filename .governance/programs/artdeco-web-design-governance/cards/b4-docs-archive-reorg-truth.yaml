@@ -1,0 +1,37 @@
+task:
+  id: "b4-docs-archive-reorg-truth"
+  title: "Docs archive/reorg truth and dirty disposition"
+
+scope:
+  allowed_paths:
+    - "docs/guides/akshare"
+    - "docs/guides/data-source/akshare"
+    - "docs/guides/buger/INDEX.md"
+    - "docs/guides/ai-tools/buger/INDEX.md"
+    - "docs/guides/chrome-devtools"
+    - "docs/guides/ai-tools/chrome-devtools"
+    - "docs/guides/data-interface"
+    - "docs/guides/data-source/data-interface"
+    - "docs/guides/tdx-integration"
+    - "docs/guides/data-source/tdx-integration"
+    - "docs/guides/wencai"
+    - "docs/guides/data-source/wencai"
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/cards/b4-docs-archive-reorg-truth.yaml"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No archive/docs forced add, no OMC_WORKFLOW_GUIDE disposition, no modified docs/guides index updates, no docs/reports, no docs/superpowers, no source/test/runtime files."
+
+acceptance:
+  commit_gate:
+    - "Stage only 27 active reparent exact pairs plus B4.011 governance metadata; git diff --cached --check; GitNexus verify-staged low risk; OPENDOG fresh; staged set contains no archive, source, test, runtime, HOLD, or modified sidecar docs."
+  closeout_gate:
+    - "Active guide reparent exact package committed; GitNexus post-commit index fresh; B4.011 node remains open for archive exact and HOLD decisions."
+
+evidence:
+  current_head: "527f86a882830ae280ad559f2511156ddcebcd02"
+  notes: []

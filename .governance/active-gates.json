@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-09T14:41:21.121Z",
+  "updated_at": "2026-06-09T15:24:14.857Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -9,15 +9,32 @@
       "node_type": "decision",
       "owner_lane": "artdeco-web-design-governance",
       "parent": "",
-      "status": "evidence-prepared",
+      "status": "implementation-landed",
       "source_edits_authorized": false,
       "current_blocker": "",
-      "next_allowed": "prepare decision or authorization",
+      "next_allowed": "prepare closeout",
       "function_tree_ref": "B4.011-M1",
       "freshness": "current-head",
-      "allowed_paths": [],
+      "allowed_paths": [
+        "docs/guides/akshare",
+        "docs/guides/data-source/akshare",
+        "docs/guides/buger/INDEX.md",
+        "docs/guides/ai-tools/buger/INDEX.md",
+        "docs/guides/chrome-devtools",
+        "docs/guides/ai-tools/chrome-devtools",
+        "docs/guides/data-interface",
+        "docs/guides/data-source/data-interface",
+        "docs/guides/tdx-integration",
+        "docs/guides/data-source/tdx-integration",
+        "docs/guides/wencai",
+        "docs/guides/data-source/wencai",
+        ".governance/active-gates.json",
+        ".governance/active-gates.md",
+        ".governance/programs/artdeco-web-design-governance/nodes.json",
+        ".governance/programs/artdeco-web-design-governance/cards/b4-docs-archive-reorg-truth.yaml"
+      ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-09T14:41:21.115Z"
+      "updated_at": "2026-06-09T15:24:14.854Z"
     }
   ]
 }

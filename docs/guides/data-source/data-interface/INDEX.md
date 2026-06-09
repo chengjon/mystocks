@@ -2,7 +2,7 @@
 
 > **导航说明**:
 > 本文件是 `docs/guides/data-interface/` 的 transition index，不是仓库共享规则、当前数据接口实现边界或唯一事实来源。
-> 若涉及仓库级共享规则、审批门禁或治理口径，请优先阅读 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)；若涉及具体实现状态，再结合根目录 `AGENTS.md`、当前代码与相关脚本输出核对。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先阅读 [`architecture/STANDARDS.md`](../../../../architecture/STANDARDS.md)；若涉及具体实现状态，再结合根目录 `AGENTS.md`、当前代码与相关脚本输出核对。
 
 ## Current Entry Order
 

@@ -2,7 +2,7 @@
 
 > **导航说明**:
 > 本目录用于承载 `expand-akshare-data-sources` 相关的 AkShare 专题文档，不是仓库共享规则或当前实现边界的唯一事实来源。
-> 若涉及仓库级共享规则、审批门禁或治理口径，请优先阅读 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)；若涉及当前实现状态，请再结合当前代码、OpenSpec 台账与验证结果核对。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先阅读 [`architecture/STANDARDS.md`](../../../../architecture/STANDARDS.md)；若涉及当前实现状态，请再结合当前代码、OpenSpec 台账与验证结果核对。
 
 ## Current Entry Order
 
@@ -32,9 +32,9 @@ python scripts/dev/quality_gate/run_akshare_market_gates.py \
 
 ## Relationship To Historical Docs
 
-- [`docs/api/AKSHARE_INTERFACE_MAPPING.md`](/opt/claude/mystocks_spec/docs/api/AKSHARE_INTERFACE_MAPPING.md)
+- [`docs/api/AKSHARE_INTERFACE_MAPPING.md`](../../../api/AKSHARE_INTERFACE_MAPPING.md)
   - 历史快照 / 设计映射，不应直接当作当前实现事实
-- [`docs/reports/AKSHARE_DATA_SOURCE_API_SUMMARY.md`](/opt/claude/mystocks_spec/docs/reports/AKSHARE_DATA_SOURCE_API_SUMMARY.md)
+- [`docs/reports/AKSHARE_DATA_SOURCE_API_SUMMARY.md`](../../../reports/AKSHARE_DATA_SOURCE_API_SUMMARY.md)
   - 历史总结，不是当前 repo-truth
-- [`docs/api/AKSHARE_MARKET_ENDPOINTS_REPO_TRUTH.md`](/opt/claude/mystocks_spec/docs/api/AKSHARE_MARKET_ENDPOINTS_REPO_TRUTH.md)
+- [`docs/api/AKSHARE_MARKET_ENDPOINTS_REPO_TRUTH.md`](../../../api/AKSHARE_MARKET_ENDPOINTS_REPO_TRUTH.md)
   - 当前 change 范围下的专题 API 真相源

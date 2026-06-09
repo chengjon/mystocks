@@ -4923,9 +4923,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "",
-    "status": "evidence-prepared",
+    "status": "implementation-landed",
     "function_tree_ref": "B4.011-M1",
-    "current_head": "527f86a882830ae280ad559f2511156ddcebcd02",
+    "current_head": "600a1f67df3a01e3aefbbd93c604648a357f6a5e",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -4942,15 +4942,72 @@
         "note": "B4.011 docs/guides mapping audit prepared: 57 exact mappings and 1 hold item; no deletion or source edit authorized.",
         "current_head": "527f86a882830ae280ad559f2511156ddcebcd02",
         "recorded_at": "2026-06-09T14:41:21.115Z"
+      },
+      {
+        "kind": "current-head-evidence-refresh",
+        "path": "docs/reports/worklogs/claude-auto/b4-011-m2c-pre-docs-guides-mapping-no-source-audit-2026-06-09.md",
+        "note": "Refresh B4.011 docs/guides mapping evidence at current HEAD before M2c-A active reparent authorization.",
+        "current_head": "600a1f67df3a01e3aefbbd93c604648a357f6a5e",
+        "recorded_at": "2026-06-09T15:18:04.684Z"
       }
     ],
-    "allowed_paths": [],
+    "allowed_paths": [
+      "docs/guides/akshare",
+      "docs/guides/data-source/akshare",
+      "docs/guides/buger/INDEX.md",
+      "docs/guides/ai-tools/buger/INDEX.md",
+      "docs/guides/chrome-devtools",
+      "docs/guides/ai-tools/chrome-devtools",
+      "docs/guides/data-interface",
+      "docs/guides/data-source/data-interface",
+      "docs/guides/tdx-integration",
+      "docs/guides/data-source/tdx-integration",
+      "docs/guides/wencai",
+      "docs/guides/data-source/wencai",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/cards/b4-docs-archive-reorg-truth.yaml"
+    ],
     "forbidden_paths": [],
-    "non_goals": [],
-    "next_gate": "prepare decision or authorization",
+    "non_goals": [
+      "No archive/docs forced add, no OMC_WORKFLOW_GUIDE disposition, no modified docs/guides index updates, no docs/reports, no docs/superpowers, no source/test/runtime files."
+    ],
+    "next_gate": "prepare closeout",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-09T13:25:42.907Z",
-    "updated_at": "2026-06-09T14:41:21.115Z"
+    "updated_at": "2026-06-09T15:24:14.854Z",
+    "acceptance": {
+      "commit_gate": [
+        "Stage only 27 active reparent exact pairs plus B4.011 governance metadata; git diff --cached --check; GitNexus verify-staged low risk; OPENDOG fresh; staged set contains no archive, source, test, runtime, HOLD, or modified sidecar docs."
+      ],
+      "closeout_gate": [
+        "Active guide reparent exact package committed; GitNexus post-commit index fresh; B4.011 node remains open for archive exact and HOLD decisions."
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "600a1f67df3a01e3aefbbd93c604648a357f6a5e",
+        "transitioned_at": "2026-06-09T15:21:15.514Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "600a1f67df3a01e3aefbbd93c604648a357f6a5e",
+        "transitioned_at": "2026-06-09T15:21:43.522Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "600a1f67df3a01e3aefbbd93c604648a357f6a5e",
+        "transitioned_at": "2026-06-09T15:24:14.854Z"
+      }
+    ]
   }
 ]
