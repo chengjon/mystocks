@@ -1,0 +1,33 @@
+- consolidated_issue_id: secondary-shell-issue-12
+  severity: Medium
+  title: Legacy risk monitor page now delegates to the canonical risk-management owner
+  pages:
+    - /secondary/legacy-risk-monitor-canonical-wrapper
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The local risk summary cards, distribution placeholders, position-risk table, and alerts were all facets of the same defect: `RiskMonitor.vue` preserved a forked pseudo-live risk workbench shell even though a semantically matching canonical risk-management owner already exists."
+  primary_owner: web/frontend/src/views/RiskMonitor.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-risk-monitor-canonical-wrapper
+  dedupe_keys:
+    - /secondary/legacy-risk-monitor-canonical-wrapper:route-truth:legacyRiskMonitorCanonicalWrapper
+  verification_scope:
+    routes:
+      - /secondary/legacy-risk-monitor-canonical-wrapper
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/RiskMonitor.vue
+      - web/frontend/src/views/__tests__/RiskMonitor.spec.ts
+    notes:
+      - "the legacy risk monitor page now renders only the canonical `/risk/management` owner instead of a forked pseudo-live risk workbench shell"
+      - "the page no longer fabricates local risk summary cards, chart placeholders, or alert/table truth"
+      - "secondary inventory heuristics now drop `RiskMonitor.vue` out of the high-priority shortlist"
+  verification_surface: code-review-only

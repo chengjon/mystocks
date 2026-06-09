@@ -1,0 +1,39 @@
+- finding_id: trade-terminal-data-state-003
+  batch_id: trade-batch-12
+  page:
+    route: /trade/terminal
+    page_key: trade-terminal
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/TradingDashboard.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Trade terminal later status refresh failure replaced the visible verified trading session snapshot with offline fallback truth
+  trigger:
+    steps:
+      - "Open `/trade/terminal`"
+      - "Trigger a verified trading session snapshot so the route shows a live session id, running state, and non-zero KPI cards"
+      - "Trigger a later manual refresh"
+      - "Resolve `/api/trading/status` as failed while the other terminal slices remain verified"
+      - "Inspect the visible trading session details, KPI strip, and degraded-state messaging"
+  expected: "After at least one verified trading-status snapshot exists, a later status refresh failure should preserve the visible session id, running state, total PnL, positions, win rate, and drawdown while pairing the route with explicit degraded-state messaging. Synthetic fallback values such as `fallback-offline`, `0`, or `已停止` are only acceptable before the first verified trading snapshot exists."
+  actual: "Before repair, `loadTradingData()` always replaced the visible trading-status slice with `FALLBACK_TRADING_DATA` on any failure. A later status refresh failure therefore rewrote the route to `fallback-offline`, zeroed the primary KPI strip, and changed the visible shell to offline truth even though the failed refresh had not replaced the current verified trading snapshot."
+  evidence:
+    kind: live-observation
+    note: "System-`google-chrome` verification with browser-context interception reproduced a successful terminal session snapshot followed by a failing status refresh. After repair the route keeps `mock-session-running`, `运行中`, and the KPI strip `¥12,890.40 / 2 / 67.00% / 1.80%` while the runtime alert degrades to `部分数据降级：交易状态 / 当前降级模块：交易状态`."
+  repair_target:
+    files:
+      - web/frontend/src/views/composables/useTradingDashboard.ts
+    primary_owner: web/frontend/src/views/composables/useTradingDashboard.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /trade/terminal
+  status: open
+  dependency: null
+  dedupe_key: /trade/terminal:data-state:tradingStatusRefreshFallbackRetentionTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/trade/terminal` after repair and confirm first-load trading-status fallback remains intact while a later status refresh failure now preserves the last verified trading-session slice."

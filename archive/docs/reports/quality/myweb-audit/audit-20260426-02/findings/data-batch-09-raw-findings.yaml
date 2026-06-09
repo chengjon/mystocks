@@ -1,0 +1,37 @@
+- finding_id: data-concept-data-state-001
+  batch_id: data-batch-09
+  page:
+    route: /data/concept
+    page_key: data-concept
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/data/Concepts.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Routed concept tally and leader surfaces presented unresolved first-load placeholders as faux live zero metrics and fallback labels
+  trigger:
+    steps:
+      - Open `/data/concept`
+      - Observe the route before its first successful concept payload resolves
+      - Inspect the hero meta, top KPI strip, and content meta while the page still shows the loading panel
+  expected: "Before the first successful concept payload arrives, tally and leader surfaces should render explicit placeholders such as `--` and suppress shared delta chrome instead of presenting `0`, `0.00`, `+0%`, or `N/A` as if they were resolved route truth."
+  actual: "Before repair, the routed concept page rendered `SECTORS: 0`, `POSITIVE: 0`, `NEGATIVE: 0`, `龙头股 N/A`, and shared `0.00 / +0%` KPI chrome while the page was still in unresolved first-load state."
+  evidence:
+    kind: live-observation
+    note: "System-`google-chrome` verification of the real PM2 route with the concept request intentionally hung showed the page on `概念板块同步中` while hero meta, KPI cards, and content meta all leaked faux zero metrics. Post-fix live verification now shows `--` placeholders and zero `.artdeco-stat-change` nodes."
+  repair_target:
+    files:
+      - web/frontend/src/views/data/Concepts.vue
+    primary_owner: web/frontend/src/views/data/Concepts.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /data/fund-flow
+  status: open
+  dependency: null
+  dedupe_key: /data/concept:data-state:unresolvedFirstLoadConceptPlaceholderTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that unresolved first-load concept surfaces render `--` placeholders and suppress `.artdeco-stat-change`, `+0%`, `0.00`, and `N/A` leakage across hero/meta and KPI surfaces.

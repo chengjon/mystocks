@@ -1,0 +1,76 @@
+- finding_id: secondary-shell-020-history
+  batch_id: secondary-batch-20
+  page:
+    route: /secondary/legacy-trading-history-wrapper
+    page_key: secondary-legacy-trading-history-wrapper
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/trading/History.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy trading history page still exposed a placeholder shell even though a semantically matching canonical trade-history owner already exists
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/trading/History.vue`"
+      - "Inspect the local title, subtitle, and `Coming Soon` alert shell"
+      - "Confirm the current router already exposes a semantically matching canonical trade-history owner at `/trade/history`"
+  expected: "A nested legacy trading history page with a semantically matching canonical owner should delegate to that owner instead of preserving a placeholder shell."
+  actual: "Before repair, `trading/History.vue` still rendered its own `Trade History` placeholder and `Coming Soon` alert instead of delegating to the canonical `/trade/history` owner."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green regression confirmed the legacy trading history page still rendered its own placeholder shell before delegation."
+  repair_target:
+    files:
+      - web/frontend/src/views/trading/History.vue
+      - web/frontend/src/views/trading/__tests__/History.spec.ts
+    primary_owner: web/frontend/src/views/trading/History.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-trading-history-wrapper
+  status: open
+  dependency: null
+  dedupe_key: /secondary/legacy-trading-history-wrapper:route-truth:legacyTradingHistoryWrapper
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner wrapper regression to confirm the placeholder shell is gone and the canonical trade-history owner is rendered instead."
+- finding_id: secondary-shell-020-positions
+  batch_id: secondary-batch-20
+  page:
+    route: /secondary/legacy-trading-positions-wrapper
+    page_key: secondary-legacy-trading-positions-wrapper
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/trading/Positions.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy trading positions page still exposed a placeholder shell even though a semantically matching canonical trade-positions owner already exists
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/trading/Positions.vue`"
+      - "Inspect the local title, subtitle, and `Coming Soon` alert shell"
+      - "Confirm the current router already exposes a semantically matching canonical trade-positions owner at `/trade/positions`"
+  expected: "A nested legacy trading positions page with a semantically matching canonical owner should delegate to that owner instead of preserving a placeholder shell."
+  actual: "Before repair, `trading/Positions.vue` still rendered its own `Current Positions` placeholder and `Coming Soon` alert instead of delegating to the canonical `/trade/positions` owner."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green regression confirmed the legacy trading positions page still rendered its own placeholder shell before delegation."
+  repair_target:
+    files:
+      - web/frontend/src/views/trading/Positions.vue
+      - web/frontend/src/views/trading/__tests__/Positions.spec.ts
+    primary_owner: web/frontend/src/views/trading/Positions.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-trading-positions-wrapper
+  status: open
+  dependency: null
+  dedupe_key: /secondary/legacy-trading-positions-wrapper:route-truth:legacyTradingPositionsWrapper
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner wrapper regression to confirm the placeholder shell is gone and the canonical trade-positions owner is rendered instead."

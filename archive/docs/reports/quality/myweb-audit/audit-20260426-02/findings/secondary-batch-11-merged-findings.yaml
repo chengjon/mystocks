@@ -1,0 +1,33 @@
+- consolidated_issue_id: secondary-shell-issue-11
+  severity: Medium
+  title: Legacy backtest analysis page now delegates to the canonical strategy-backtest owner
+  pages:
+    - /secondary/legacy-backtest-analysis-canonical-wrapper
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The local backtest configuration form, run CTA, metrics grid, chart placeholder, and trade-history shell were all facets of the same defect: `BacktestAnalysis.vue` preserved a forked pseudo-live backtest workbench shell even though a semantically matching canonical strategy-backtest owner already exists."
+  primary_owner: web/frontend/src/views/BacktestAnalysis.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-backtest-analysis-canonical-wrapper
+  dedupe_keys:
+    - /secondary/legacy-backtest-analysis-canonical-wrapper:route-truth:legacyBacktestAnalysisCanonicalWrapper
+  verification_scope:
+    routes:
+      - /secondary/legacy-backtest-analysis-canonical-wrapper
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/BacktestAnalysis.vue
+      - web/frontend/src/views/__tests__/BacktestAnalysis.spec.ts
+    notes:
+      - "the legacy backtest analysis page now renders only the canonical `/strategy/backtest` owner instead of a forked pseudo-live backtest workbench shell"
+      - "the page no longer fabricates local backtest configuration, metrics, or placeholder chart/trade-history truth"
+      - "secondary inventory heuristics now drop `BacktestAnalysis.vue` out of the high-priority shortlist"
+  verification_surface: code-review-only

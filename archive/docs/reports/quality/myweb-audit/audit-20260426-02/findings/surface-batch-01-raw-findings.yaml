@@ -1,0 +1,117 @@
+- finding_id: risk-alerts-data-state-005
+  batch_id: surface-batch-01
+  page:
+    route: /risk/alerts
+    page_key: risk-alerts
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/risk/Alerts.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Risk alerts count-only KPI cards inherited fabricated delta chrome and decimal precision from shared stat-card defaults
+  trigger:
+    steps:
+      - Open `/risk/alerts`
+      - Inspect the routed KPI strip for `规则总数`, `启用规则`, `未读告警`, and `高优先级`
+      - Compare the visible stat-card presentation with the actual routed payload, which only proves integer counts and no comparison baseline
+  expected: "The routed KPI strip should render honest plain counts with no delta affordance because the page does not expose a verified comparison baseline for these cards."
+  actual: "Before repair, the count-only stat cards rendered exact-decimal values such as `2.00` and fabricated flat delta chrome such as `● +0%`, implying unsupported movement semantics on a plain count surface."
+  evidence:
+    kind: live-observation
+    note: Targeted PM2 browser verification and the new routed regression test both showed `.artdeco-stat-change` chrome and decimal-formatted count values on the canonical `/risk/alerts` KPI strip before the page-local opt-out landed.
+  repair_target:
+    files:
+      - web/frontend/src/views/risk/Alerts.vue
+    primary_owner: web/frontend/src/views/risk/Alerts.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /risk/news
+    - /watchlist/manage
+  status: open
+  dependency: null
+  dedupe_key: /risk/alerts:data-state:count-kpi-delta-truth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check the routed KPI strip after repair and confirm the same shared pattern no longer appears on the other selected count-only routes in this batch.
+
+- finding_id: risk-news-data-state-005
+  batch_id: surface-batch-01
+  page:
+    route: /risk/news
+    page_key: risk-news
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/risk/News.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Risk news count-only KPI cards inherited fabricated delta chrome and pseudo precision from shared stat-card defaults
+  trigger:
+    steps:
+      - Open `/risk/news`
+      - Inspect the routed KPI strip for `公告总数`, `今日公告`, `重要公告`, and `原文链接`
+      - Compare the visible stat-card presentation with the actual routed payload, which only proves counts and no delta baseline
+  expected: "The routed KPI strip should render honest plain counts and should not imply flat movement or fractional precision when the page only exposes count truth."
+  actual: "Before repair, the canonical route rendered exact-decimal count values and flat-change chrome such as `● +0%`, making count-only KPI cards look like movement metrics."
+  evidence:
+    kind: live-observation
+    note: Targeted PM2 verification and the new routed unit test reproduced `.artdeco-stat-change` elements and decimal-formatted count values on `/risk/news` before the page opted out of shared stat-card delta defaults.
+  repair_target:
+    files:
+      - web/frontend/src/views/risk/News.vue
+    primary_owner: web/frontend/src/views/risk/News.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /risk/alerts
+    - /watchlist/manage
+  status: open
+  dependency: null
+  dedupe_key: /risk/news:data-state:count-kpi-delta-truth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check the routed KPI strip after repair and verify the count cards stay plain even when the live announcement list is empty.
+
+- finding_id: watchlist-manage-data-state-003
+  batch_id: surface-batch-01
+  page:
+    route: /watchlist/manage
+    page_key: watchlist-manage
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/watchlist/Manage.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Watchlist manage count-only KPI cards inherited fabricated delta chrome and pseudo precision from shared stat-card defaults
+  trigger:
+    steps:
+      - Open `/watchlist/manage`
+      - Inspect the overview grid for `组合数量`, `当前股票数`, `上涨家数`, and `下跌家数`
+      - Compare the visible stat-card presentation with the routed surface, which only exposes counts and no comparison baseline
+  expected: "The overview cards should render plain integer counts and should not borrow stat-card delta chrome or decimal formatting that implies unsupported movement semantics."
+  actual: "Before repair, the route rendered flat delta chrome such as `● +0%` and decimal-formatted counts such as `18.00` or `0.00` even though the surface only proved plain counts."
+  evidence:
+    kind: live-observation
+    note: Targeted PM2 verification and the new routed watchlist regression reproduced faux delta chrome and pseudo precision on the canonical `/watchlist/manage` overview grid before the route-local fix landed in `WatchlistManager.vue`.
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/stock-management-tabs/WatchlistManager.vue
+      - web/frontend/src/views/watchlist/Manage.vue
+    primary_owner: web/frontend/src/views/artdeco-pages/stock-management-tabs/WatchlistManager.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /risk/alerts
+    - /risk/news
+  status: open
+  dependency: null
+  dedupe_key: /watchlist/manage:data-state:count-kpi-delta-truth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check the overview grid after repair and confirm the canonical route still renders real watchlist counts without delta chrome or decimal-formatted pseudo precision.

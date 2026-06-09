@@ -1,0 +1,44 @@
+- finding_id: secondary-shell-047-advanced-analysis-remaining-children
+  batch_id: secondary-batch-47
+  page:
+    route: /secondary/advanced-analysis-remaining-children-static-shell
+    page_key: secondary-advanced-analysis-remaining-children-static-shell
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/advanced-analysis/BatchAnalysisView.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Remaining advanced-analysis orphan children preserved placeholder or aggregate analysis semantics
+  trigger:
+    steps:
+      - "Inspect the remaining advanced-analysis orphan child pages not covered by earlier child-shell batches"
+      - "Confirm `BatchAnalysisView.vue` still renders local result summary, completion count, score fallback, and metric extraction"
+      - "Confirm the other six pages still render placeholder-content copy as if their analysis modules exist"
+  expected: "All advanced-analysis orphan children should degrade to honest static shells when no independent canonical owner or verified truth contract exists."
+  actual: "Before repair, `BatchAnalysisView.vue` preserved local aggregate result truth and six sibling pages preserved placeholder module semantics."
+  evidence:
+    kind: code-review-plus-owner-regression
+    note: "RED regression failed on seven child pages because they did not render `legacy-static-shell`; `BatchAnalysisView.vue` also warned about a required `results` prop and Element Plus tag dependency."
+  repair_target:
+    files:
+      - web/frontend/src/views/advanced-analysis/AnomalyTrackingView.vue
+      - web/frontend/src/views/advanced-analysis/BatchAnalysisView.vue
+      - web/frontend/src/views/advanced-analysis/CapitalFlowView.vue
+      - web/frontend/src/views/advanced-analysis/ChipDistributionView.vue
+      - web/frontend/src/views/advanced-analysis/DecisionModelsView.vue
+      - web/frontend/src/views/advanced-analysis/FinancialValuationView.vue
+      - web/frontend/src/views/advanced-analysis/SentimentAnalysisView.vue
+      - web/frontend/src/views/advanced-analysis/__tests__/legacyStaticShells.spec.ts
+    primary_owner: web/frontend/src/views/advanced-analysis/BatchAnalysisView.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/advanced-analysis-remaining-children-static-shell
+  status: open
+  dependency: null
+  dedupe_key: /secondary/advanced-analysis-remaining-children-static-shell:route-truth:advancedAnalysisRemainingChildrenStaticShell
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run advanced-analysis owner regressions to confirm all child pages render honest static shells and no old pseudo-analysis labels remain."

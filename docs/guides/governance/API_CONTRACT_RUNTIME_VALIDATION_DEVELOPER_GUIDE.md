@@ -2,7 +2,7 @@
 
 > **使用说明**:
 > 本文件是 API 契约 runtime validation 的 current-state developer guide，不是仓库共享规则、OpenAPI 唯一真相源或未来 roadmap 的替代品。
-> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)；若涉及 API 契约事实源，再以 FastAPI 路由、Pydantic Schema 与运行时导出的 `/openapi.json` 为准。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 [`architecture/STANDARDS.md`](../../../architecture/STANDARDS.md)；若涉及 API 契约事实源，再以 FastAPI 路由、Pydantic Schema 与运行时导出的 `/openapi.json` 为准。
 
 ## Purpose
 
@@ -13,13 +13,13 @@
 当前可确认的 runtime validation 事实分成三层：
 
 1. backend response validation
-   - 入口：[`contract_validator.py`](/opt/claude/mystocks_spec/web/backend/app/api/contract/services/contract_validator.py)
+   - 入口：[`contract_validator.py`](../../../web/backend/app/api/contract/services/contract_validator.py)
    - 能力：按路径、方法、状态码对响应体做 schema 校验，并输出 `ValidationResult`
 2. pytest contract fixtures / helpers
-   - 入口：[`contract_testing.py`](/opt/claude/mystocks_spec/web/backend/app/api/contract/services/contract_testing.py)
+   - 入口：[`contract_testing.py`](../../../web/backend/app/api/contract/services/contract_testing.py)
    - 能力：默认加载 runtime-generated OpenAPI，给测试提供 `contract_validator`、`api_client`、`ContractTestMixin`
 3. CI workflow gate
-   - 入口：[`.github/workflows/api-contract-validation.yml`](/opt/claude/mystocks_spec/.github/workflows/api-contract-validation.yml)
+   - 入口：[`.github/workflows/api-contract-validation.yml`](../../../.github/workflows/api-contract-validation.yml)
    - 能力：按 contract scope 触发后端 import 校验、OpenAPI generation、documentation regression、frontend type generation 等步骤
 
 ## Frontend Boundary
@@ -28,9 +28,9 @@
 
 当前 repo-truth 是：
 
-- [`unifiedApiClient.ts`](/opt/claude/mystocks_spec/web/frontend/src/api/unifiedApiClient.ts) 只是 `apiClient` 的 legacy wrapper
+- [`unifiedApiClient.ts`](../../../web/frontend/src/api/unifiedApiClient.ts) 只是 `apiClient` 的 legacy wrapper
 - 它保留了 `ContractValidationError`、`createLoadingConfig`、`createCacheConfig` 等兼容导出
-- [`versionNegotiator.ts`](/opt/claude/mystocks_spec/web/frontend/src/services/versionNegotiator.ts) 负责版本探测、兼容性检查与 fallback，不负责响应 schema 校验
+- [`versionNegotiator.ts`](../../../web/frontend/src/services/versionNegotiator.ts) 负责版本探测、兼容性检查与 fallback，不负责响应 schema 校验
 
 因此“前端 runtime contract validation”在当前仓库里应理解为：
 - 前端保留 contract-related error surface 和 version negotiation seam
@@ -40,14 +40,14 @@
 
 ## Canonical Files
 
-- backend validator: [`contract_validator.py`](/opt/claude/mystocks_spec/web/backend/app/api/contract/services/contract_validator.py)
-- pytest fixtures: [`contract_testing.py`](/opt/claude/mystocks_spec/web/backend/app/api/contract/services/contract_testing.py)
-- contract routes: [`routes.py`](/opt/claude/mystocks_spec/web/backend/app/api/contract/routes.py)
-- frontend wrapper boundary: [`unifiedApiClient.ts`](/opt/claude/mystocks_spec/web/frontend/src/api/unifiedApiClient.ts)
-- frontend version negotiation: [`versionNegotiator.ts`](/opt/claude/mystocks_spec/web/frontend/src/services/versionNegotiator.ts)
-- frontend wrapper contract tests: [`unifiedApiClient.contract.test.ts`](/opt/claude/mystocks_spec/web/frontend/src/api/__tests__/unifiedApiClient.contract.test.ts)
-- version negotiation unit tests: [`versionNegotiator.spec.ts`](/opt/claude/mystocks_spec/web/frontend/src/services/__tests__/versionNegotiator.spec.ts)
-- workflow runtime checks: [`test_ci_workflow_runtime_setup.py`](/opt/claude/mystocks_spec/tests/unit/scripts/test_ci_workflow_runtime_setup.py)
+- backend validator: [`contract_validator.py`](../../../web/backend/app/api/contract/services/contract_validator.py)
+- pytest fixtures: [`contract_testing.py`](../../../web/backend/app/api/contract/services/contract_testing.py)
+- contract routes: [`routes.py`](../../../web/backend/app/api/contract/routes.py)
+- frontend wrapper boundary: [`unifiedApiClient.ts`](../../../web/frontend/src/api/unifiedApiClient.ts)
+- frontend version negotiation: [`versionNegotiator.ts`](../../../web/frontend/src/services/versionNegotiator.ts)
+- frontend wrapper contract tests: [`unifiedApiClient.contract.test.ts`](../../../web/frontend/src/api/__tests__/unifiedApiClient.contract.test.ts)
+- version negotiation unit tests: [`versionNegotiator.spec.ts`](../../../web/frontend/src/services/__tests__/versionNegotiator.spec.ts)
+- workflow runtime checks: [`test_ci_workflow_runtime_setup.py`](../../../tests/unit/scripts/test_ci_workflow_runtime_setup.py)
 
 ## Local Validation Commands
 

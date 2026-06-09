@@ -1,0 +1,43 @@
+- finding_id: system-health-data-state-001
+  batch_id: system-batch-14
+  page:
+    route: /system/health
+    page_key: system-health
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/system/Health.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Routed system-health page presented unresolved first-load summary labels as faux probe facts before any verified health snapshot existed
+  trigger:
+    steps:
+      - "Open `/system/health`"
+      - "Keep the first `/api/health` request unresolved before any verified probe snapshot lands"
+      - "Inspect the visible stats strip, content-shell meta, and backend status card while the route is still in the pending shell"
+  expected: "While the first health probe snapshot is still unresolved, summary labels that depend on the probe should stay degraded to `-- / -- / --`, and the hero should keep unresolved provenance (`REQ_ID: N/A`) until the first verified probe snapshot exists."
+  actual: "Before repair, `/system/health` rendered `服务名称: N/A / 版本: N/A / 中间件项: 3` and `content-shell-meta MIDDLEWARE: 3` even though the route had not yet verified any health probe payload. The shell therefore looked like a real probe snapshot instead of an in-flight sync."
+  evidence:
+    kind: live-observation
+    note: "A new owner red test first reproduced the faux-label `N/A / N/A / 3` shell, then targeted Phase 4 Chromium proof confirmed the routed page now stays at `UNKNOWN / -- / -- / --` until the delayed health request resolves."
+  repair_target:
+    files:
+      - web/frontend/src/views/system/Health.vue
+      - web/frontend/src/views/system/__tests__/Health.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/references/route-truth-families.md
+      - .claude/skills/myweb-audit/references/route-truth-casebook.md
+      - .claude/skills/myweb-audit/references/route-truth-coverage-matrix.md
+    primary_owner: web/frontend/src/views/system/Health.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /system/api
+    - /system/config
+  status: open
+  dependency: null
+  dedupe_key: /system/health:data-state:pendingSummaryLabelTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/system/health` after repair and confirm unresolved summary labels stay at `-- / -- / --` until the first verified probe snapshot lands."

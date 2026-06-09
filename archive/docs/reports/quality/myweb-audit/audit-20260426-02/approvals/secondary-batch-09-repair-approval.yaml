@@ -1,0 +1,24 @@
+- consolidated_issue_id: secondary-shell-issue-09
+  severity: Medium
+  affected_routes:
+    - /secondary/enhanced-dashboard-canonical-wrapper
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/EnhancedDashboard.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "Enhanced legacy dashboard now delegates to the canonical dashboard owner."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The repair stays scoped to the enhanced legacy dashboard owner; no new store, snapshot cache, or shell-level truth surface was introduced."
+    related_routes:
+      - /secondary/enhanced-dashboard-canonical-wrapper
+  approval_status: approved

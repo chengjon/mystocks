@@ -1,0 +1,118 @@
+- finding_id: market-lhb-functional-001
+  batch_id: market-batch-01
+  page:
+    route: /market/lhb
+    page_key: market-lhb
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/market/LHB.vue
+  source_role: functional-audit
+  severity: Medium
+  issue_type: interaction
+  title: 龙虎榜日期筛选只做本地切片，不会驱动新的榜单查询
+  trigger:
+    steps:
+      - Open /market/lhb
+      - Switch the date selector between `今日`、`昨日`、`前日`
+      - Observe the request path and the displayed rows
+  expected: "日期切换应触发与所选交易日一致的数据刷新，或明确声明当前页面只展示当前载入批次中的可用交易日。"
+  actual: "`handleDateChange` 只更新本地状态，`fetchDragonTigerRows` 也始终只请求 `limit=100`，不会按所选日期重新取数，因此日期控件只能过滤当前内存 payload。"
+  evidence:
+    kind: code-path-review
+    note: "LHB.vue 中 `handleDateChange` 不会调用 `fetchDragonTigerRows`，而 `fetchDragonTigerRows` 也没有把当前日期写入请求参数。"
+  repair_target:
+    files:
+      - web/frontend/src/views/market/LHB.vue
+      - web/frontend/src/views/market/dragonTigerData.ts
+    primary_owner: web/frontend/src/views/market/LHB.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /market/lhb:interaction:LHB
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: Re-check whether date changes now trigger a route-consistent refresh or the control is explicitly constrained to loaded dates.
+
+- finding_id: market-technical-data-state-001
+  batch_id: market-batch-01
+  page:
+    route: /market/technical
+    page_key: market-technical
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/market/Technical.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: K线工作台把摘要表格与主图表拆成两套独立请求和状态源
+  trigger:
+    steps:
+      - Open /market/technical
+      - Compare the page-level K-line summary/table path with the embedded `ProKLineChart` path
+      - Consider one path succeeding while the other fails or uses different request defaults
+  expected: "页面级状态、摘要和主图应共享同一份 K 线加载结果，避免图表与摘要在请求、加载和错误状态上分叉。"
+  actual: "`Technical.vue` 通过 `dataApi.getKline` 自己加载摘要和表格，而 `ProKLineChart` 又通过 `marketApi.getKLineData` 独立拉取主图数据，导致页面展示被拆成两套互不统一的请求与状态源。"
+  evidence:
+    kind: code-path-review
+    note: "`Technical.vue` 的 `fetchKLine` 与 `useProKLineChart.ts` 的 `loadHistoricalData` 分别走不同数据路径和内部 loading/error 处理。"
+  repair_target:
+    files:
+      - web/frontend/src/views/market/Technical.vue
+      - web/frontend/src/components/market/ProKLineChart.vue
+      - web/frontend/src/components/market/composables/useProKLineChart.ts
+    primary_owner: web/frontend/src/views/market/Technical.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /market/technical
+  status: open
+  dependency: null
+  dedupe_key: /market/technical:data-state:Technical
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that the chart and summary route now share one source of truth or explicitly coordinated state boundaries.
+
+- finding_id: market-domain-responsive-001
+  batch_id: market-batch-01
+  page:
+    route: /market/realtime
+    page_key: market-realtime
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/market/Realtime.vue
+  source_role: responsive-a11y-audit
+  severity: Medium
+  issue_type: responsive
+  title: 市场主导航三页仍保留不符合当前 desktop-first 基线的 48rem 分支
+  trigger:
+    steps:
+      - Inspect the routed stylesheets for /market/realtime, /market/technical, and /market/lhb
+      - Review responsive branches below the current supported desktop baseline
+  expected: "主导航市场页应按当前支持的桌面断点组织布局，不应继续保留面向 48rem 移动宽度的主动布局分支。"
+  actual: "Realtime.vue、Technical.vue 和 LHB.vue 都定义了 `@media (width <= 48rem)` 分支，会在当前不支持的移动宽度上重写 header、stats 和控制区布局。"
+  evidence:
+    kind: code-path-review
+    note: "三个 routed market 页面都包含 `@media (width <= 48rem)` 分支；这不是单页偶发现象，而是同一批次内的重复 desktop-policy 偏差。"
+  repair_target:
+    files:
+      - web/frontend/src/views/market/Realtime.vue
+      - web/frontend/src/views/market/Technical.vue
+      - web/frontend/src/views/market/LHB.vue
+    primary_owner: web/frontend/src/views/market/Realtime.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /market/realtime
+    - /market/technical
+    - /market/lhb
+  status: open
+  dependency: null
+  dedupe_key: /market/realtime:responsive:Realtime
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: Re-check 1920, 1440, and 1280 layouts after removing unsupported mobile-width branches from the market batch.

@@ -1,0 +1,41 @@
+- finding_id: data-indicator-data-state-002
+  batch_id: data-batch-06
+  page:
+    route: /data/indicator
+    page_key: data-indicator
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/data/Advanced.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Routed indicator page mislabeled hydrated stock-pool data as executed screening output before the user ran screening
+  trigger:
+    steps:
+      - Open `/data/indicator`
+      - Wait for the initial registry and stock-pool hydration to complete
+      - Inspect the header status, stat cards, and `筛选结果` tab before clicking `执行筛选`
+  expected: "Before the user runs screening, the page should stay in an explicit idle state and should not present hydrated stock-pool data as executed screening results."
+  actual: "Before repair, the page auto-populated screening results during initial refresh and labeled the route as `筛选已就绪`, `筛选股票数`, and `符合条件` even though no screening action had been executed."
+  evidence:
+    kind: live-observation
+    note: "Unit reproduction and targeted system-Chrome verification both confirmed that `/data/indicator` collapsed `not yet run` and `already executed` workflow states."
+  repair_target:
+    files:
+      - web/frontend/src/composables/market/useDataAnalysis.ts
+      - web/frontend/src/composables/market/dataAnalysisData.ts
+      - web/frontend/src/views/data/Advanced.vue
+      - web/frontend/src/composables/market/__node_tests__/dataAnalysisData.test.ts
+      - web/frontend/tests/unit/views/data-advanced-screening-truth.spec.ts
+      - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/composables/market/useDataAnalysis.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /data/indicator:data-state:useDataAnalysis
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check the idle state before screening, then run screening and confirm the page transitions into an executed-results state.

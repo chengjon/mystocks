@@ -1,0 +1,94 @@
+audit_run_id: audit-20260426-02
+batch_id: risk-batch-02
+module: risk
+scope:
+  requested_by: user
+  pages:
+    - route: /risk/management
+      page_key: risk-management
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/risk/Center.vue
+  compatibility_redirects: []
+batch_rationale: Close the routed risk-management holdings-derived truth gap so live positions data cannot coexist with embedded sector samples, static concentration thresholds, or unsupported risk-ratio placeholders, and fold that pattern back into myweb-audit.
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+  - visual-artdeco-audit
+  - responsive-a11y-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - canonical route truth for `/risk/management` remains `web/frontend/src/views/risk/Center.vue`
+    - the routed page continues to load holdings data from `/api/v1/trade/positions`
+    - the current live positions payload may omit sector and higher-order risk-analytic fields, so unsupported slices must degrade honestly rather than borrow embedded samples
+  fallback_log:
+    - the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`
+    - targeted live verification used a real backend login token plus system `google-chrome` so route truth could be confirmed against the real holdings endpoint
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1920, 1440, 1280]
+  required_states: [default, empty]
+  notes:
+    - verify `/risk/management` no longer leaves static sector rows or concentration-threshold samples on the primary routed surface when the live positions payload lacks those fields
+    - verify unsupported holdings analytics degrade to `未校验` or `待接入` instead of numeric placeholders
+    - verify the canonical route starts from an honest empty state rather than sample risk data
+repair_approval:
+  status: approved
+  approved_findings:
+    - risk-management-issue-01
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - risk-management
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/risk/Center.vue
+    - web/frontend/src/views/artdeco-pages/risk-tabs/riskManagementData.ts
+    - web/frontend/src/views/artdeco-pages/risk-tabs/riskManagementHelpers.ts
+    - web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskOverviewPanel.vue
+    - web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskStatsGrid.vue
+    - web/frontend/src/views/artdeco-pages/risk-tabs/__node_tests__/riskManagementData.test.ts
+    - web/frontend/src/views/artdeco-pages/risk-tabs/__tests__/ArtDecoRiskOverviewPanel.spec.ts
+    - web/frontend/src/views/artdeco-pages/risk-tabs/__tests__/ArtDecoRiskStatsGrid.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-risk-management-1-route
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated frontend or backend files before `risk-batch-02` was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` is treated as observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/risk-management-holdings-derived-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-02-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-02-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-02-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/risk-batch-02-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-risk-batch-02-closeout
+  notes:
+    - "the routed `/risk/management` page now derives concentration rows only from current live positions truth and removes embedded sector or threshold samples from the primary surface"
+    - "unsupported holdings analytics now degrade to `未校验` or `待接入` until a richer positions or risk-summary contract exists"
+status: complete

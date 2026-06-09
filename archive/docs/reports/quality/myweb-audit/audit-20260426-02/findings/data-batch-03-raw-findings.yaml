@@ -1,0 +1,38 @@
+- finding_id: data-fund-flow-data-state-001
+  batch_id: data-batch-03
+  page:
+    route: /data/fund-flow
+    page_key: data-fund-flow
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/data/FundFlow.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Routed fund-flow page silently treated a failed ranking refresh as full success when summary data still loaded
+  trigger:
+    steps:
+      - Open `/data/fund-flow`
+      - Allow `/akshare/market/fund-flow/hsgt-summary` to succeed
+      - Force `/akshare/market/fund-flow/big-deal` to fail
+  expected: "The page should preserve the successfully refreshed summary and trend surfaces while explicitly warning that the ranking surface failed."
+  actual: "Before repair, the page kept rendering the summary and trend content but only exposed a generic `同步异常` status, with no explicit partial-failure notice explaining that the ranking surface was stale or unavailable."
+  evidence:
+    kind: live-observation
+    note: "Focused unit reproduction and targeted system-Chrome verification both showed the ranking failure being masked by successful sibling content until page-local partial-failure tracking was added."
+  repair_target:
+    files:
+      - web/frontend/src/views/data/FundFlow.vue
+      - web/frontend/tests/unit/views/data-fund-flow-partial-state.spec.ts
+      - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/data/FundFlow.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /data/fund-flow:data-state:fundFlowPartialRefreshState
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-run the partial-success route with a successful summary request and a failed ranking request, then confirm the warning panel appears while the trend card stays visible.

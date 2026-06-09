@@ -1,0 +1,37 @@
+- finding_id: market-realtime-data-state-001
+  batch_id: market-batch-03
+  page:
+    route: /market/realtime
+    page_key: market-realtime
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/market/Realtime.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Routed realtime first-load surfaces presented unresolved quote snapshots as faux live zero metrics
+  trigger:
+    steps:
+      - Open `/market/realtime`
+      - Delay `/api/v1/market/quotes` before the first successful payload resolves
+      - Inspect the KPI strip, hero meta, and distribution panel while the route still shows the loading state
+  expected: "Before the first successful quote snapshot arrives, unresolved numeric surfaces should render explicit placeholders such as `--` and pending copy rather than presenting `0亿`, `0%`, `0只`, or `MOOD: 0% / UP: 0 / DOWN: 0` as live truth."
+  actual: "Before repair, the canonical realtime route rendered zero-valued summary cards and zero-valued distribution meta while the page was still on `同步中` and had not completed its first successful quote snapshot."
+  evidence:
+    kind: live-observation
+    note: "Targeted system-`google-chrome` verification with a delayed `/api/v1/market/quotes` response showed the page still loading while it rendered `0亿 / 0% / 0只` and zero-valued distribution meta before the fix. Post-fix verification now shows `-- / -- / 核心蓝筹样本 / --`, `SAMPLE: --`, `MOOD: --`, and explicit pending distribution copy."
+  repair_target:
+    files:
+      - web/frontend/src/views/market/Realtime.vue
+    primary_owner: web/frontend/src/views/market/Realtime.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /data/fund-flow
+  status: open
+  dependency: null
+  dedupe_key: /market/realtime:data-state:unresolvedFirstQuoteSnapshotTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that delayed first-load realtime surfaces render placeholders and pending copy instead of zero metrics.

@@ -1,0 +1,26 @@
+- consolidated_issue_id: trade-portfolio-issue-02
+  severity: High
+  affected_routes:
+    - /trade/portfolio
+    - /risk/pnl
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/trade/Portfolio.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: true
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: Top summary cards, hero meta, hero totals, and dependent empty panels on the canonical portfolio owner should distinguish verified empty holdings truth from unavailable or unresolved-first-load states instead of reusing faux zero balances or real-empty copy before any verified snapshot exists.
+  dependency: null
+  shared_impact:
+    candidate: true
+    basis: The defect lived on the canonical `Portfolio.vue` owner and leaked into `/risk/pnl` through the thin wrapper route, but the approved repair stays page-local because widening into shared `ArtDecoStatCard.vue` defaults would unnecessarily expand blast radius.
+    related_routes:
+      - /trade/portfolio
+      - /risk/pnl
+  approval_status: approved

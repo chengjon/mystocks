@@ -1,7 +1,7 @@
 # ArtDecoRiskOverviewPanel Test Matrix
 
 > **说明**
-> 本文用于把 [`ARTDECO_COMPONENT_GOVERNANCE_RECORD_ARTDECO_RISK_OVERVIEW_PANEL.md`](/opt/claude/mystocks_spec/docs/plans/ARTDECO_COMPONENT_GOVERNANCE_RECORD_ARTDECO_RISK_OVERVIEW_PANEL.md) 中的测试要求落成可执行矩阵。
+> 本文用于把 [`ARTDECO_COMPONENT_GOVERNANCE_RECORD_ARTDECO_RISK_OVERVIEW_PANEL.md`](ARTDECO_COMPONENT_GOVERNANCE_RECORD_ARTDECO_RISK_OVERVIEW_PANEL.md) 中的测试要求落成可执行矩阵。
 > 目标不是一次性覆盖所有风险业务细节，而是先为第一份 `Domain` 样板建立最小保护网。
 
 ---

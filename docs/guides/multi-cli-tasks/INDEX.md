@@ -2,7 +2,7 @@
 
 > **导航说明**:
 > 本文件是 `docs/guides/multi-cli-tasks/` 的 transition index，不是仓库共享规则、当前执行真相或唯一事实来源。
-> 若涉及仓库级共享规则、审批门禁或治理口径，请优先阅读 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)；若涉及具体执行入口，再结合根目录 `AGENTS.md`、根目录 `CLAUDE.md`、当前脚本实现、Mongo control plane 输出与最近一次实际验证结果核对。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先阅读 [`architecture/STANDARDS.md`](../../../architecture/STANDARDS.md)；若涉及具体执行入口，再结合根目录 `AGENTS.md`、根目录 `CLAUDE.md`、当前脚本实现、Mongo control plane 输出与最近一次实际验证结果核对。
 
 ## Current Entry Order
 

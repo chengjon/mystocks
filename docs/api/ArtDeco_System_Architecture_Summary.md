@@ -94,8 +94,8 @@ ArtDeco 运行时由六层组成：
 `web/frontend/src/router/index.ts` 当前负责：
 
 - 挂载 `ArtDecoLayoutEnhanced.vue`
-- 定义主业务域路由：`market`、`data`、`watchlist`、`strategy`、`trade`、`risk`、`system`
-- 将大量 ArtDeco page/workbench 直接作为独立路由挂入
+- 定义主业务域路由：`market`、`data`、`watchlist`、`strategy`、`ai`、`trade`、`risk`、`system`
+- 额外保留 `detail/*` 详情页路由组，以及少量直接落在 `artdeco-pages/**` 的明确例外入口
 
 更准确地说：
 
@@ -128,6 +128,7 @@ ArtDeco 运行时由六层组成：
 - `/strategy/signals` -> `views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue`
 - `/strategy/pos` -> `views/artdeco-pages/trading-tabs/ArtDecoTradingPositions.vue`
 - `/risk/pnl` -> `views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue`
+- `/detail/graphics/:symbol` -> `views/artdeco-pages/analysis-tabs/KLineAnalysis.vue`
 
 当前新增的一条运行时事实：
 

@@ -1,0 +1,102 @@
+- consolidated_issue_id: data-indicator-issue-01
+  severity: High
+  affected_routes:
+    - /data/indicator
+  source_roles:
+    - functional-audit
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/data/Advanced.vue
+  page_scope: shared-impact
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: true
+    shared_composable: true
+    shared_component: true
+    generated_artifact: true
+  summary: Indicator-page result context and screening behavior diverged from visible selection state and declared capability boundaries.
+  dependency: null
+  shared_impact:
+    candidate: true
+    basis: indicator interaction and screening behavior crosses page-local logic, shared indicator components, and generated page truth
+    related_routes:
+      - /data/indicator
+  approval_status: approved
+- consolidated_issue_id: data-fund-flow-issue-01
+  severity: High
+  affected_routes:
+    - /data/fund-flow
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/artdeco-pages/market-data-tabs/fundFlowPageData.ts
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: Partial request failure incorrectly cleared successful fund-flow sections instead of preserving known-good data.
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: null
+    related_routes: []
+  approval_status: approved
+- consolidated_issue_id: data-indicator-issue-02
+  severity: Medium
+  affected_routes:
+    - /data/indicator
+  source_roles:
+    - functional-audit
+  primary_repair_target: web/frontend/src/views/artdeco-pages/components/AnalysisIndicators.vue
+  page_scope: shared-impact
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: true
+    generated_artifact: false
+  summary: Indicator cards lacked a consistent clickable contract, weakening visible affordance and selection behavior.
+  dependency: null
+  shared_impact:
+    candidate: true
+    basis: shared indicator-card component participates in the indicator-page selection flow
+    related_routes:
+      - /data/indicator
+  approval_status: approved
+- consolidated_issue_id: data-domain-issue-01
+  severity: Medium
+  affected_routes:
+    - /data/industry
+    - /data/concept
+    - /data/fund-flow
+    - /data/indicator
+  source_roles:
+    - responsive-a11y-audit
+  primary_repair_target: web/frontend/src/views/data/Industry.vue
+  page_scope: shared-impact
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: Desktop-baseline compression patterns across the data domain needed a coordinated responsive cleanup wave.
+  dependency: null
+  shared_impact:
+    candidate: true
+    basis: multiple canonical data pages shared the same desktop-baseline layout compression risk
+    related_routes:
+      - /data/industry
+      - /data/concept
+      - /data/fund-flow
+      - /data/indicator
+  approval_status: approved

@@ -1,0 +1,36 @@
+- consolidated_issue_id: strategy-opt-issue-03
+  severity: High
+  title: Strategy optimization now keys request provenance, summary tallies, and visible rows to the current strategy query's verified snapshot
+  pages:
+    - /strategy/opt
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The leaked hero `REQ_ID / PROCESS`, summary tallies, content-shell focus meta, and visible optimization row all came from the same selector-scoped verified-snapshot defect on the canonical strategy-optimization owner route, so they are treated as one consolidated route-truth issue."
+  primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/opt
+  dedupe_keys:
+    - /strategy/opt:data-state:selectorScopedVerifiedSnapshotTruth
+  verification_scope:
+    routes:
+      - /strategy/opt
+    states:
+      - default
+      - selector-switch-without-new-verified-snapshot
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyOptimization.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    notes:
+      - "the canonical strategy-optimization route now tracks verified strategy ids from the last successful payload instead of treating one route-local verified flag as proof for every `strategyId` query"
+      - "hero `REQ_ID / PROCESS`, `VISIBLE / TOTAL`, top-strip tallies, and visible optimization rows now degrade to selector-local placeholder truth when the same mounted route switches to a strategy without its own verified snapshot"
+      - "the strengthened regressions now lock the same-instance `strategyId=101 -> 202` route-switch path in both owner tests and the routed Phase 3 matrix"
+      - "this batch reuses existing `myweb-audit v1.68`, because the defect directly matches the current selector-scoped verified-snapshot rule introduced for query-owned routed workbenches"
+  verification_surface: code-review-plus-targeted-live-verification

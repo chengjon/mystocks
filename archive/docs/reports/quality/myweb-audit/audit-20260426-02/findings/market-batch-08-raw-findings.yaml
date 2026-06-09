@@ -1,0 +1,41 @@
+- finding_id: market-realtime-data-state-002
+  batch_id: market-batch-08
+  page:
+    route: /market/realtime
+    page_key: market-realtime
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/market/Realtime.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Realtime route leaked failed quote request ids into hero metadata before any verified snapshot existed
+  trigger:
+    steps:
+      - "Open `/market/realtime`"
+      - "Force the first `/api/v1/market/quotes` request to resolve `success: false` with a `request_id` before any verified quote snapshot exists"
+      - "Repeat with one successful quote load followed by a failed manual refresh"
+      - "Inspect the hero `TRACE_ID / PRESET / SAMPLE` metadata, the visible stats strip, and the error banner copy"
+  expected: "Before `/market/realtime` has any verified quote snapshot, hero metadata and first-load summary surfaces should degrade to explicit placeholders such as `TRACE_ID: N/A / SAMPLE: --`, and the route must not claim a previous verified snapshot exists. If a later refresh fails while the route still displays the previous verified sample, hero `TRACE_ID` should continue to identify the visible verified snapshot instead of the failed retry."
+  actual: "Before repair, `/market/realtime` rendered `TRACE_ID: realtime-first-fail / SAMPLE: 0只` on first-load failure, claimed `已保留上一份有效样本快照` even though none existed, and switched the hero trace id to the failed refresh request after a successful initial sync."
+  evidence:
+    kind: live-observation
+    note: "Component red tests reproduced both failure shapes before repair. Targeted Playwright-library verification with system `google-chrome` then confirmed the routed page now renders `TRACE_ID: N/A / SAMPLE: --` plus the no-verified-snapshot error copy on first-load failure and keeps `TRACE_ID: req-market-b08-success` on stale refresh failure while the previous rows remain visible."
+  repair_target:
+    files:
+      - web/frontend/src/views/market/Realtime.vue
+    primary_owner: web/frontend/src/views/market/Realtime.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /market/technical
+    - /market/lhb
+    - /data/concept
+    - /trade/portfolio
+  status: open
+  dependency: null
+  dedupe_key: /market/realtime:data-state:quoteRequestProvenanceTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/market/realtime` after repair and confirm first-load failure and stale-refresh failure both preserve honest hero request provenance and banner truth."

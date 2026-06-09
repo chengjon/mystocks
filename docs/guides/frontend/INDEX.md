@@ -2,7 +2,7 @@
 
 > **导航说明**:
 > 本文件是 `docs/guides/frontend/` 的 transition index，不是仓库共享规则、当前前端实现边界或唯一事实来源。
-> 若涉及仓库级共享规则、审批门禁或治理口径，请优先阅读 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)；若涉及具体执行入口，再结合根目录 `AGENTS.md`、根目录 `CLAUDE.md`、当前代码与验证结果核对。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先阅读 [`architecture/STANDARDS.md`](../../../architecture/STANDARDS.md)；若涉及具体执行入口，再结合根目录 `AGENTS.md`、根目录 `CLAUDE.md`、当前代码与验证结果核对。
 
 ## Current Entry Order
 
@@ -15,12 +15,13 @@
 5. [`DASHBOARD_API_ENRICHMENT_GUIDE.md`](./DASHBOARD_API_ENRICHMENT_GUIDE.md)
 6. [`HTML5_RUNTIME_CAPABILITY_GUIDE.md`](./HTML5_RUNTIME_CAPABILITY_GUIDE.md)
 7. [`HTML5_RUNTIME_OPERATIONS_GUIDE.md`](./HTML5_RUNTIME_OPERATIONS_GUIDE.md)
-8. [`HTML5_RUNTIME_USER_GUIDE.md`](./HTML5_RUNTIME_USER_GUIDE.md)
-9. [`HTML5_RUNTIME_ROLLOUT_COMMUNICATION_GUIDE.md`](./HTML5_RUNTIME_ROLLOUT_COMMUNICATION_GUIDE.md)
-10. [`history-mode-deployment-guide.md`](./history-mode-deployment-guide.md)
-11. [`SASS_DEPRECATION_FIX.md`](./SASS_DEPRECATION_FIX.md)
-12. [`css-scss-development-guide.md`](./css-scss-development-guide.md)
-13. 再按需进入 service adapter、routing optimization、dayjs 与其他历史任务/总结材料
+8. [`HTML5_RUNTIME_ROLLBACK_RUNBOOK.md`](./HTML5_RUNTIME_ROLLBACK_RUNBOOK.md)
+9. [`HTML5_RUNTIME_USER_GUIDE.md`](./HTML5_RUNTIME_USER_GUIDE.md)
+10. [`HTML5_RUNTIME_ROLLOUT_COMMUNICATION_GUIDE.md`](./HTML5_RUNTIME_ROLLOUT_COMMUNICATION_GUIDE.md)
+11. [`history-mode-deployment-guide.md`](./history-mode-deployment-guide.md)
+12. [`SASS_DEPRECATION_FIX.md`](./SASS_DEPRECATION_FIX.md)
+13. [`css-scss-development-guide.md`](./css-scss-development-guide.md)
+14. 再按需进入 service adapter、routing optimization、dayjs 与其他历史任务/总结材料
 
 ## Active Supporting Guides
 
@@ -38,6 +39,8 @@
   - HTML5 runtime 当前能力面：以 Desktop-only 为前提的 PWA/IndexedDB/Web Workers 真相源与边界说明
 - [`HTML5_RUNTIME_OPERATIONS_GUIDE.md`](./HTML5_RUNTIME_OPERATIONS_GUIDE.md)
   - HTML5 runtime 当前运维观察面、最小检查命令与故障排查入口（Desktop-only）
+- [`HTML5_RUNTIME_ROLLBACK_RUNBOOK.md`](./HTML5_RUNTIME_ROLLBACK_RUNBOOK.md)
+  - HTML5 runtime 回滚触发条件、人工告警信号、桌面端回滚步骤与验证记录模板（Desktop-only）
 - [`HTML5_RUNTIME_USER_GUIDE.md`](./HTML5_RUNTIME_USER_GUIDE.md)
   - HTML5 runtime 当前用户使用说明：以桌面浏览器为范围的 PWA 安装、离线使用与通知设置边界
 - [`HTML5_RUNTIME_ROLLOUT_COMMUNICATION_GUIDE.md`](./HTML5_RUNTIME_ROLLOUT_COMMUNICATION_GUIDE.md)
@@ -50,6 +53,10 @@
   - CSS/SCSS 开发规范入口
 
 ## Retained Specialized References
+
+> **Reader note（2026-05-11）**:
+> 下列 retained references 中的历史总结、任务方案和分析报告不得覆盖当前 HTML5 runtime guides、`docs/guides/frontend-structure.md`、当前代码与 OpenSpec task evidence。
+> 特别是 `HTML5_MIGRATION_WEB_WORKERS_SUMMARY.md` 与 `router_analysis_report_corrected.md` 已保留为历史材料：不能用它们恢复 6-domain 菜单口径、移动端范围、完整 Worker orchestration 或性能收益承诺。
 
 - [`SERVICE_ADAPTER_GUIDE.md`](./SERVICE_ADAPTER_GUIDE.md)
   - Service 适配器层使用指南

@@ -1,0 +1,40 @@
+- finding_id: risk-overview-data-state-009
+  batch_id: risk-batch-09
+  page:
+    route: /risk/overview
+    page_key: risk-overview
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/risk/Overview.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Risk overview route bound hero request provenance and summary counts to the latest multi-request attempt and cleared verified rows on refresh failure
+  trigger:
+    steps:
+      - "Open `/risk/overview`."
+      - "Force both `**/api/v1/monitoring/alert-rules**` and `**/api/v1/monitoring/alerts**` to resolve `success: false` before any verified overview snapshot exists."
+      - "Repeat with one successful overview sync followed by a failed manual refresh that also resolves `success: false` for the same routed slices."
+      - "Inspect hero `REQ_ID / ALERTS`, the top stats strip, the content-shell `RULES` meta, and the visible rule/alert tab content."
+  expected: "Before `/risk/overview` has any verified snapshot, a resolved first-load failure should render explicit unavailable truth such as `REQ_ID: N/A`, `ALERTS: --`, `RULES: --`, and stats `-- / -- / -- / --` instead of falling through to faux zero counts or leaking failed request ids. If a later refresh fails after success, the route should keep the last verified request id and visible rules/alerts while showing stale-refresh copy."
+  actual: "Before repair, `/risk/overview` bound hero provenance directly to `useArtDecoApi.lastRequestId`, so the final failed alerts request could replace the visible shell with `REQ_ID: <failed-id>` plus `ALERTS: 0`. The same refresh path also rewrote `rules` and `alertRecords` to empty arrays on failure, so verified rule rows disappeared instead of staying visible with stale-state messaging."
+  evidence:
+    kind: live-observation
+    note: "Targeted component regressions, routed Phase 4 assertions, and controlled system-Chrome first-load verification reproduced the broken provenance and faux-zero count behavior before repair. After repair, the first-load failure path now renders `REQ_ID: N/A / ALERTS: --`, top-strip `-- / -- / -- / --`, and `RULES: --`; the success-then-refresh-fail retention path is now pinned by routed component and Phase 4 regressions, while browser-level reproduction of that path remained auth/reload observation-only on this machine."
+  repair_target:
+    files:
+      - web/frontend/src/views/risk/Overview.vue
+      - web/frontend/src/views/risk/__tests__/Overview.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/risk/Overview.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /risk/overview
+  status: open
+  dependency: null
+  dedupe_key: /risk/overview:data-state:multiRequestRefreshProvenanceAndPlaceholderTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/risk/overview` after repair and confirm first-load failures no longer leak failed request ids or zero-count summary truth, while stale-refresh failures keep the last verified request id and visible rule/alert content."

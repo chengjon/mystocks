@@ -1,0 +1,40 @@
+- consolidated_issue_id: data-fund-flow-issue-03
+  severity: High
+  title: Fund-flow routed hero request metadata now tracks the visible verified ranking snapshot instead of failed refresh ids
+  pages:
+    - /data/fund-flow
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The stale-refresh request-id overwrite and the visible-ranking mismatch were two faces of the same route-provenance defect: the canonical fund-flow route treated the latest transport request id as if it always represented the currently displayed verified ranking snapshot."
+  primary_owner: web/frontend/src/views/data/FundFlow.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /data/fund-flow
+    - /data/industry
+    - /market/lhb
+    - /trade/history
+  dedupe_keys:
+    - /data/fund-flow:data-state:refreshRequestProvenanceTruth
+  verification_scope:
+    routes:
+      - /data/fund-flow
+    states:
+      - first-load-failure
+      - stale-refresh-failure
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/data/FundFlow.vue
+      - web/frontend/src/views/data/__tests__/FundFlow.spec.ts
+      - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+    notes:
+      - "the canonical fund-flow route now keeps a page-local verified request id and only updates hero `REQ` after a full verified ranking snapshot resolves"
+      - "a failed ranking refresh no longer overwrites the visible hero `REQ` when the previous verified ranking rows remain on screen"
+      - "the strengthened routed regression and Phase 2 matrix now lock the exact stale-refresh provenance failure mode without widening the repair into shared composables or stat-card defaults"
+      - "this batch intentionally reuses existing `myweb-audit v1.43`, `v1.41`, and `v1.39` guidance instead of introducing a new skill version"
+  verification_surface: code-review-plus-targeted-live-verification

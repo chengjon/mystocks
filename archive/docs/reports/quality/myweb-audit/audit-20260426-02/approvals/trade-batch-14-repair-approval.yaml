@@ -1,0 +1,24 @@
+- consolidated_issue_id: trade-terminal-issue-05
+  severity: High
+  affected_routes:
+    - /trade/terminal
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/composables/useTradingDashboard.ts
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: true
+    page_config: false
+    shared_composable: true
+    shared_component: false
+    generated_artifact: false
+  summary: "The canonical trade-terminal route now keeps the last verified strategy-performance rows visible when a later `/api/trading/strategies/performance` refresh fails instead of falling back to empty-state placeholder truth."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The repair stays local to the terminal workbench composable and only affects the `/trade/terminal` owner route."
+    related_routes:
+      - /trade/terminal
+  approval_status: approved

@@ -1,0 +1,26 @@
+- consolidated_issue_id: system-health-issue-01
+  severity: High
+  affected_routes:
+    - /system/health
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/system/Health.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: true
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "The canonical system-health route now keeps first-load summary labels unresolved until the first verified health probe snapshot exists."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The repaired gap stays inside `Health.vue`, its owner regression, and the Phase 4 routed proof; no shared system probe contract changed."
+    related_routes:
+      - /system/health
+      - /system/api
+      - /system/config
+  approval_status: approved

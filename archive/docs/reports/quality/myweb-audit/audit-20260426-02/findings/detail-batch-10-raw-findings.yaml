@@ -1,0 +1,40 @@
+- finding_id: detail-news-data-state-10
+  batch_id: detail-batch-10
+  page:
+    route: /detail/news/:symbol
+    page_key: stock-news
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/announcement/AnnouncementMonitor.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Detail news primary announcement rows stayed visible while a newly selected detail symbol remained unresolved before its first verified snapshot
+  trigger:
+    steps:
+      - "Open `/detail/news/600519` and let the primary announcement list verify successfully."
+      - "Navigate within the same page instance to `/detail/news/000001`."
+      - "Keep the first `/api/announcement/list?stock_code=000001` request unresolved so the new selector has not verified any rows yet."
+      - "Inspect the route banner and the primary `公告列表` card together."
+  expected: "A selector-scoped primary list on the canonical detail news route must clear the previous symbol rows as soon as the page shell switches to a new symbol that does not yet have its own verified snapshot. A pending first load must not keep the old rows visible under the new symbol banner."
+  actual: "Before repair, `fetchAnnouncements()` only updated the primary list after the new request resolved. During a same-instance switch from `600519` to `000001`, the old `600519` rows stayed visible while the first `000001` request remained unresolved, even though the route banner had already changed to the new symbol."
+  evidence:
+    kind: code-path-review
+    note: "New RED selector-switch tests showed the new `000001` shell still rendered `2026 年第一季度经营数据公告` until the first `000001` request settled."
+  repair_target:
+    files:
+      - web/frontend/src/views/announcement/composables/useAnnouncementMonitor.ts
+      - web/frontend/src/views/announcement/__tests__/useAnnouncementMonitor.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/announcement/composables/useAnnouncementMonitor.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /detail/news/:symbol
+  status: open
+  dependency: null
+  dedupe_key: /detail/news/:symbol:data-state:selectorScopedPendingPrimaryRowProvenance
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check the canonical detail/news route after repair and confirm that a same-instance symbol switch into an unresolved first load clears the previous selector rows immediately and does not leak the old announcement title under the new detail banner."

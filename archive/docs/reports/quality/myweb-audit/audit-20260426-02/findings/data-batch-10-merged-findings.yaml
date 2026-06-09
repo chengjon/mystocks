@@ -1,0 +1,37 @@
+- consolidated_issue_id: data-indicator-issue-01
+  severity: High
+  title: Data indicator summary surfaces now render honest unverified placeholders and verified tally strings instead of faux zero metrics or fake freshness metadata
+  pages:
+    - /data/indicator
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The header freshness stamp and the five summary stat cards were the same route-truth defect expressed in two adjacent surfaces: the canonical page treated default summary state as resolved data before any verified indicator-analysis summary existed."
+  primary_owner: web/frontend/src/views/data/Advanced.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /data/indicator
+  dedupe_keys:
+    - /data/indicator:data-state:unverifiedSummaryAndCountKpiTruth
+  verification_scope:
+    routes:
+      - /data/indicator
+    states:
+      - loading
+      - error
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/data/Advanced.vue
+      - web/frontend/src/views/data/__tests__/Advanced.spec.ts
+      - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+    notes:
+      - "the canonical data-indicator route now derives `showSummaryPlaceholders` from loading, first-load, and no-evidence error states, so `UPDATED` and all five summary cards degrade to `--` until verified summary evidence exists"
+      - "the same route now passes plain string values and `show-change=false` to every summary stat card, so verified tally cards no longer inherit shared `+0%` chrome or decimal pseudo precision"
+      - "the new routed component regression and strengthened phase2 error assertion now protect both fake freshness metadata and summary-card numeric leakage"
+      - "this batch reuses existing `myweb-audit v1.32 + v1.38` rules rather than introducing a new skill version, because the defect was a direct combination of unverified first-load summary truth and count-kpi delta truth"
+  verification_surface: code-review-plus-targeted-live-verification

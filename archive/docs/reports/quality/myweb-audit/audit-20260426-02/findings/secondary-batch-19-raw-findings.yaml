@@ -1,0 +1,38 @@
+- finding_id: secondary-shell-019
+  batch_id: secondary-batch-19
+  page:
+    route: /secondary/legacy-stock-detail-static-shell
+    page_key: secondary-legacy-stock-detail-static-shell
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/StockDetail.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy stock-detail page still exposed a forked pseudo-live stock detail workbench even though no one-to-one canonical owner exists
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/StockDetail.vue`"
+      - "Inspect the local quote header, chart, technical analysis, trading summary, and trading operations shell surfaces"
+      - "Confirm the page is not mounted by the current router graph and does not have a one-to-one active canonical owner for direct delegation"
+  expected: "An orphan legacy stock-detail page with no one-to-one canonical owner should degrade to an honest static shell instead of preserving a forked pseudo-live detail and trading workbench."
+  actual: "Before repair, `StockDetail.vue` rendered its own pseudo-live stock detail shell with local price, technical indicators, trading summary, and trade controls even though no one-to-one canonical owner existed for direct delegation."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green regression confirmed the legacy stock-detail page still rendered its own fake detail/trading workbench shell before the static-shell repair."
+  repair_target:
+    files:
+      - web/frontend/src/views/StockDetail.vue
+      - web/frontend/src/views/__tests__/StockDetail.spec.ts
+    primary_owner: web/frontend/src/views/StockDetail.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-stock-detail-static-shell
+  status: open
+  dependency: null
+  dedupe_key: /secondary/legacy-stock-detail-static-shell:route-truth:legacyStockDetailStaticShell
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner static-shell regression and secondary inventory tooling to confirm the legacy stock-detail page no longer exposes pseudo-live quote, chart, technical, summary, or trade-operation truth."

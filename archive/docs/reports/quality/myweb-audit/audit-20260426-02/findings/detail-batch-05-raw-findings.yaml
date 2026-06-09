@@ -1,0 +1,43 @@
+- finding_id: detail-news-data-state-05
+  batch_id: detail-batch-05
+  page:
+    route: /detail/news/:symbol
+    page_key: stock-news
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/announcement/AnnouncementMonitor.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Detail news auxiliary rules and trigger slices silently degraded into empty or unlabeled stale tables when they failed independently of the verified announcement list
+  trigger:
+    steps:
+      - "Open `/detail/news/600519`."
+      - "Let the announcement list verify successfully."
+      - "Force `/api/announcement/monitor-rules` and/or `/api/announcement/triggered-records` to fail on first load or on a later refresh."
+      - "Inspect the `监控规则管理` and `触发记录` cards while the verified announcement list remains visible."
+  expected: "Dedicated auxiliary slices on the canonical detail news route must distinguish first-load unavailable from later stale-refresh truth, keep the verified announcement list visible, and pair any retained auxiliary rows with explicit slice-local note copy instead of silent empty-success or unlabeled stale rows."
+  actual: "Before repair, `fetchMonitorRules()` and `fetchTriggeredRecords()` only emitted toast failures. First-load slice failures therefore collapsed into silent empty tables, and later slice refresh failures retained last verified rows without any route-local stale note, even though the announcement list itself stayed verified."
+  evidence:
+    kind: code-path-review
+    note: "New RED tests reproduced the missing route-local note surfaces and the absent composable slice-state refs for both `monitor-rules` and `triggered-records` while the detail/news owner continued to show the verified announcement list."
+  repair_target:
+    files:
+      - web/frontend/src/views/announcement/composables/useAnnouncementMonitor.ts
+      - web/frontend/src/views/announcement/AnnouncementMonitor.vue
+      - web/frontend/src/views/announcement/styles/AnnouncementMonitor.scss
+      - web/frontend/src/views/announcement/__tests__/AnnouncementMonitor.spec.ts
+      - web/frontend/src/views/announcement/__tests__/useAnnouncementMonitor.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/announcement/composables/useAnnouncementMonitor.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /detail/news/:symbol
+  status: open
+  dependency: null
+  dedupe_key: /detail/news/:symbol:data-state:auxiliaryTableSliceRefreshTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check the canonical detail/news route after repair and confirm that first-load auxiliary slice failure shows explicit unavailable notes, while later auxiliary refresh failure keeps the last verified rows with stale-slice notes and preserves the verified announcement list."

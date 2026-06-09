@@ -1,0 +1,47 @@
+- finding_id: trade-reconciliation-data-state-003
+  batch_id: trade-batch-17
+  page:
+    route: /trade/reconciliation
+    page_key: trade-reconciliation
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/trade/Reconciliation.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Trade reconciliation leaked previous account request provenance and verified freshness while a newly selected account snapshot was still unresolved
+  trigger:
+    steps:
+      - "Open `/trade/reconciliation`"
+      - "Load verified statement rows and imported reconciliation results for account `backtest:7`"
+      - "Inspect the hero metadata and confirm the page shows a verified `REQ_ID` and `UPDATED` timestamp for the visible account snapshot"
+      - "Switch the same page instance to account `backtest:8` while its first statement/results snapshot is still unresolved"
+      - "Inspect the hero metadata under the new unresolved account shell"
+  expected: "When the newly selected account has no verified snapshot yet, selector-owned reconciliation provenance and verified freshness should reset immediately so the hero degrades to `REQ_ID: N/A / UPDATED: --` instead of leaking the previous account's sync context."
+  actual: "Before repair, the hero changed to `ACCOUNT: backtest:8` but still rendered the previous account's verified `REQ_ID` and `UPDATED` timestamp until the new account finished resolving."
+  evidence:
+    kind: live-observation
+    note: "A new owner red test first reproduced the same-instance account-switch provenance and freshness leak, then a routed Phase 3 Chromium proof confirmed the unresolved `backtest:8` shell now clears both surfaces immediately."
+  repair_target:
+    files:
+      - web/frontend/src/api/tradeReconciliation.ts
+      - web/frontend/src/views/trade/composables/useTradeReconciliation.ts
+      - web/frontend/src/views/trade/Reconciliation.vue
+      - web/frontend/src/views/trade/__tests__/Reconciliation.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/references/route-truth-casebook.md
+      - .claude/skills/myweb-audit/references/route-truth-coverage-matrix.md
+    primary_owner: web/frontend/src/views/trade/composables/useTradeReconciliation.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /strategy/signals
+    - /strategy/parameters
+    - /detail/news/:symbol
+  status: open
+  dependency: null
+  dedupe_key: /trade/reconciliation:data-state:accountSelectorPendingProvenanceFreshness
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check the same-instance `backtest:7 -> backtest:8` unresolved switch after repair and confirm the new account shell shows `REQ_ID: N/A / UPDATED: --` with no previous-account request id or sync timestamp."

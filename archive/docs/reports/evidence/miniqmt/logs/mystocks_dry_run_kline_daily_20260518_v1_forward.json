@@ -1,0 +1,49 @@
+{
+  "artifact": {
+    "byte_count": 4689,
+    "hash": "6166deee3de84798e11703b8b5616aa2dd772c9460225e81c86e66323f5a6706",
+    "type": "parquet",
+    "uri": "file:///D:/MyCode3/miniQMT/bridge/logs/uat_market_data_validation_forward_logfix_release/domain%3Dkline_daily/dataset_version%3Dkline_daily_20260518_v1/artifacts/format%3Dparquet/part-00000.parquet"
+  },
+  "dataset": {
+    "dataset_version": "kline_daily_20260518_v1",
+    "lineage_id": "lin_kline_daily_20260518_v1",
+    "maturity": "candidate",
+    "payload_hash": "268b62bb0fb0891833ef1998d4993d6531cc6a9d84aaecb911da0cd559d2357e",
+    "quality_status": "validated",
+    "rows_hash": "d4fccc8a83d6144b1d8da1e818726db339c25026f5933cb056eef3cb6badda4f",
+    "schema_version": "v1"
+  },
+  "dataset_version": "kline_daily_20260518_v1",
+  "dry_run": {
+    "artifact_sha256_verified": true,
+    "comparison_summary": {
+      "row_count": 4,
+      "sample_dates": [
+        "2026-05-12",
+        "2026-05-13"
+      ],
+      "sample_symbols": [
+        "000001.SZ",
+        "600000.SH"
+      ]
+    },
+    "database_target": "dry-run-only",
+    "failed_checks": [],
+    "field_mapping_version": "miniqmt.kline_daily.v1",
+    "mapped_classification": "daily_kline",
+    "placeholder_count": 0,
+    "row_count": 4,
+    "sample_dates": [
+      "2026-05-12",
+      "2026-05-13"
+    ],
+    "sample_symbols": [
+      "000001.SZ",
+      "600000.SH"
+    ],
+    "warnings": [],
+    "writes_performed": false
+  },
+  "generated_at": "2026-05-19T09:48:37.868076Z"
+}

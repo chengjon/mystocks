@@ -6,6 +6,15 @@
 >
 > 文内优先级、缺口清单、执行步骤、目标值和时间线如未重新复核，应视为历史计划上下文，不得直接当作当前事实。
 
+> **Current Repo-Truth Disposition（2026-05-11）**:
+> 本文件保留 2026-01-19 菜单结构重构历史计划，不代表当前菜单真相源。
+> 当前前端菜单与路由事实应优先回到 `docs/guides/frontend-structure.md`、`web/frontend/src/layouts/MenuConfig.ts` 和 `web/frontend/src/router/index.ts`。
+>
+> 当前已确认边界：
+> - 当前 canonical 菜单结构为 Market / Data / Watchlist / Strategy / Trade / Risk / System 7 个业务域。
+> - 本文 6 个功能域目标、旧路由冗余判断和子菜单缺口清单不得直接作为当前待办或完成判定。
+> - 涉及 `implement-html5-migration-experience-optimization` 时，以该 OpenSpec change 的 `tasks.md`、`tasks-review.md` 与实测证据为准。
+
 
 **创建时间**: 2026-01-19
 **目标**: 重构web端菜单结构，使其符合6个功能域的设计要求，并应用ArtDeco设计系统

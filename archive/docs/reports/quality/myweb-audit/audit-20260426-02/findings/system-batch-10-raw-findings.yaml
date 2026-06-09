@@ -1,0 +1,40 @@
+- finding_id: system-data-data-state-002
+  batch_id: system-batch-10
+  page:
+    route: /system/data
+    page_key: system-data
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/system/DataSource.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Routed system-data page fabricated `REQ_ID` when config snapshots had no request metadata and could overwrite visible provenance on stale refresh
+  trigger:
+    steps:
+      - "Open `/system/data`"
+      - "Force the first `/api/v1/data-sources/config/` payload to resolve successfully without any request metadata"
+      - "Repeat with one successful config snapshot followed by a failed manual refresh"
+      - "Inspect the visible hero and stats-strip `REQ_ID` along with the retained config rows"
+  expected: "If the current verified config snapshot has no request metadata, `/system/data` should degrade visible request provenance to `REQ_ID: N/A` instead of inventing a synthetic id. If a later refresh fails after a verified snapshot exists, the route should retain the last verified request id and visible config rows while showing stale-refresh copy."
+  actual: "Before repair, `/system/data` generated a synthetic `cfg-<timestamp>` request id whenever `lastRequestId` was empty on a successful config payload. On stale refresh failure, the same route could swap visible request provenance to the failed refresh id and downgrade the shell as if no verified snapshot remained visible."
+  evidence:
+    kind: live-observation
+    note: "Component red tests reproduced both failure shapes before repair. Targeted Playwright-library verification with system `google-chrome` then confirmed the routed page now renders `REQ_ID: N/A` when the verified config snapshot has no request metadata and keeps `REQ_ID: req-live-system-data-success` plus visible rows on stale refresh failure."
+  repair_target:
+    files:
+      - web/frontend/src/views/system/DataSource.vue
+      - web/frontend/src/views/system/__tests__/DataSource.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/system/DataSource.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /system/config
+  status: open
+  dependency: null
+  dedupe_key: /system/data:data-state:requestProvenanceTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/system/data` after repair and confirm missing-request-id success and refresh-after-success failure both preserve honest visible request provenance."

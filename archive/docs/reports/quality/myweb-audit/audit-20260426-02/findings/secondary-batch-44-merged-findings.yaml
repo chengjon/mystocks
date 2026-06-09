@@ -1,0 +1,41 @@
+- consolidated_issue_id: secondary-shell-issue-44
+  severity: Medium
+  title: Legacy stock-analysis demo now degrades to an honest static shell
+  pages:
+    - /secondary/stock-analysis-demo-static-shell
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The six high-priority `stock-analysis/*Tab.vue` pages were children of the same unrouted legacy stock-analysis demo shell and duplicated local TDX, strategy, backtest, realtime, and status truth."
+  primary_owner: web/frontend/src/views/StockAnalysisDemo.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/stock-analysis-demo-static-shell
+  dedupe_keys:
+    - /secondary/stock-analysis-demo-static-shell:route-truth:legacyStockAnalysisDemoStaticShell
+  verification_scope:
+    routes:
+      - /secondary/stock-analysis-demo-static-shell
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/StockAnalysisDemo.vue
+      - web/frontend/src/views/stock-analysis/StockBacktestTab.vue
+      - web/frontend/src/views/stock-analysis/StockDataTab.vue
+      - web/frontend/src/views/stock-analysis/StockOverviewTab.vue
+      - web/frontend/src/views/stock-analysis/StockRealtimeTab.vue
+      - web/frontend/src/views/stock-analysis/StockStatusTab.vue
+      - web/frontend/src/views/stock-analysis/StockStrategyTab.vue
+      - web/frontend/src/views/styles/StockAnalysisDemo.scss
+      - web/frontend/src/views/__tests__/StockAnalysisDemo.spec.ts
+      - web/frontend/tests/unit/config/stock-analysis-style-normalization.spec.ts
+    notes:
+      - "the parent page now renders `legacy-static-shell` and links to verified `/market/realtime`, `/market/technical`, and `/strategy/backtest` handoff routes"
+      - "the six child tab files and page-local style were removed after confirming their only consumer was retired"
+      - "the secondary inventory high-priority shortlist dropped from 11 to 5 after the repair"
+  verification_surface: code-review-only

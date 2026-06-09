@@ -1,0 +1,40 @@
+- consolidated_issue_id: strategy-backtest-issue-04
+  severity: High
+  title: Strategy backtest rejected manual run actions now preserve placeholder freshness truth before any verified strategy context exists
+  pages:
+    - /strategy/backtest
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The visible hero `最后更新` surface and the route-local rejected-run branch expressed the same freshness-provenance defect, so they are treated as one canonical action-triggered freshness issue on `/strategy/backtest`."
+  primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/backtest
+  dedupe_keys:
+    - /strategy/backtest:data-state:rejectedActionFreshnessTruth
+  verification_scope:
+    routes:
+      - /strategy/backtest
+    states:
+      - first-load-fail-then-click-run
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/SKILL.md
+      - .claude/skills/myweb-audit/references/CHANGELOG.md
+      - .claude/skills/myweb-audit/references/audit-checklist.md
+      - .claude/agents/myweb-audit-data-state-audit.md
+    notes:
+      - "the route-local `runBacktest()` guard no longer advances `lastUpdated` when no verified strategy context exists"
+      - "the canonical `/strategy/backtest` route now keeps hero freshness on `--` when `启动回测` is clicked from an unresolved or failed-first-load shell"
+      - "owner and routed regressions now lock the `first-load fail -> click run` interaction so warning banners can update without mutating hero freshness truth"
+      - "this batch extends `myweb-audit` to `v1.54`, clarifying action-triggered freshness truth for unresolved-context manual actions"
+  verification_surface: code-review-plus-targeted-live-verification

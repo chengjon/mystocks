@@ -1,0 +1,37 @@
+- consolidated_issue_id: risk-overview-issue-16
+  severity: High
+  title: Risk overview now preserves rules-slice truth when alerts fail before the first full overview snapshot exists
+  pages:
+    - /risk/overview
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The missing rule counts, hidden rules table, faux all-placeholder stats, and generic `no verified overview` copy were one routed partial-slice truth defect: `/risk/overview` treated rules and alerts as one global verified shell instead of allowing the verified rules slice to survive an alerts first-load failure."
+  primary_owner: web/frontend/src/views/risk/Overview.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /risk/overview
+  dedupe_keys:
+    - /risk/overview:data-state:rulesAlertsFirstLoadPartialSliceTruth
+  verification_scope:
+    routes:
+      - /risk/overview
+    states:
+      - first-load-partial-success
+      - stale-refresh-failure
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/risk/Overview.vue
+      - web/frontend/src/views/risk/__tests__/Overview.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    notes:
+      - "the canonical risk overview owner now keeps rules and alerts on separate verified-snapshot boundaries instead of treating them as one route-global shell"
+      - "hero request provenance, summary counts, runtime copy, and `RULES` meta now follow the currently visible slice, so a verified rules slice can stay visible while alerts remain unresolved"
+      - "the strengthened routed regressions now pin the `rules success + alerts fail` first-load path at both owner and Phase 4 matrix levels"
+      - "this batch reuses existing `myweb-audit v1.71` guidance; no new skill-version bump was required"
+  verification_surface: code-review-plus-targeted-live-verification

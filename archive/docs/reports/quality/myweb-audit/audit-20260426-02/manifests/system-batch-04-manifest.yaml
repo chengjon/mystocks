@@ -1,0 +1,91 @@
+audit_run_id: audit-20260426-02
+batch_id: system-batch-04
+module: system
+scope:
+  requested_by: user
+  pages:
+    - route: /system/data
+      page_key: system-data
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/system/DataSource.vue
+  compatibility_redirects: []
+batch_rationale: Close the routed system-data payload-normalization truth gap so endpoint-level config rows remain distinguishable when the live contract omits friendly `name` or `url` fields, and fold that normalization rule back into myweb-audit.
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+  - visual-artdeco-audit
+  - responsive-a11y-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - canonical route truth for `/system/data` remains `web/frontend/src/views/system/DataSource.vue`
+    - the live backend contract still returns the data-source configuration payload under `data.endpoints`
+    - targeted browser verification can reuse the existing PM2 frontend with real-login navigation and Playwright-library control of system `google-chrome`
+  fallback_log:
+    - the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`
+    - same-tab automation navigation could show a readiness fallback banner with an aborted message even though a fresh authenticated page deep-link loaded `/system/data` correctly; batch conclusions use the fresh-page verification as route truth
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1920, 1440, 1280]
+  required_states: [default, loading]
+  notes:
+    - verify that live endpoint rows do not collapse to repeated `source_name` values when friendly `name` fields are absent
+    - verify that the endpoint column prefers stable endpoint identifiers such as `endpoint_name` when the live contract omits `url` or `endpoint`
+    - if same-tab automation navigation hits the readiness fallback banner, rerun `/system/data` in a fresh authenticated page and use that second-pass evidence as route truth
+repair_approval:
+  status: approved
+  approved_findings:
+    - system-data-issue-01
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - system-data
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/artdeco-pages/system-tabs/dataManagementData.ts
+    - web/frontend/src/views/system/__tests__/DataSource.spec.ts
+    - web/frontend/src/views/artdeco-pages/system-tabs/__node_tests__/dataManagementData.test.ts
+    - web/frontend/src/views/artdeco-pages/system-tabs/__tests__/ArtDecoDataManagement.spec.ts
+    - web/frontend/tests/unit/views/system-wrapper-retention.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-system-data-1-route
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated frontend or backend files before `system-batch-04` was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` is treated as observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/system-data-payload-normalization-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-04-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-04-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-04-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/system-batch-04-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-system-batch-04-closeout
+  notes:
+    - "the routed `/system/data` page now renders live endpoint descriptions and falls back to `endpoint_name` instead of collapsing rows to repeated `source_name` and `N/A`"
+    - "same-tab automation navigation could still surface a readiness-shell abort artifact, but a fresh authenticated page deep-link verified the routed page and live endpoint table are healthy"
+status: complete

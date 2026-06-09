@@ -1,0 +1,40 @@
+- finding_id: secondary-shell-033-portfolio-management
+  batch_id: secondary-batch-33
+  page:
+    route: /secondary/portfolio-management-static-shell
+    page_key: secondary-portfolio-management-static-shell
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/PortfolioManagement.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy portfolio-management page still exposed local watchlist scoring, alert summaries, stock-edit flows, and radar/detail semantics without a semantically matching canonical owner
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/PortfolioManagement.vue`"
+      - "Inspect the local score cards, watchlist tabs, alert totals, stock-edit actions, and radar/detail dialogs"
+      - "Confirm there is no routed or otherwise active canonical portfolio-management owner that validates those combined shell-level semantics"
+  expected: "An unrouted legacy portfolio-management workbench with no semantically matching canonical owner should degrade to an honest static shell instead of preserving local pseudo-live watchlist, portfolio, and risk truth."
+  actual: "Before repair, `PortfolioManagement.vue` still rendered local health-score cards, watchlist tabs, alert summaries, stock-edit actions, and radar/detail flows as if they were verified portfolio-management truth."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green regression confirmed the legacy portfolio-management page still rendered pseudo-live management semantics before static-shell degradation."
+  repair_target:
+    files:
+      - web/frontend/src/views/PortfolioManagement.vue
+      - web/frontend/src/views/__tests__/PortfolioManagement.spec.ts
+      - web/frontend/src/views/composables/usePortfolioManagement.ts
+      - web/frontend/src/views/styles/PortfolioManagement.scss
+    primary_owner: web/frontend/src/views/PortfolioManagement.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/portfolio-management-static-shell
+  status: open
+  dependency: null
+  dedupe_key: /secondary/portfolio-management-static-shell:route-truth:portfolioManagementStaticShell
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner regression to confirm the score cards, watchlist tabs, alert summaries, stock-edit, and detail-dialog surfaces are gone and replaced by a static shell."

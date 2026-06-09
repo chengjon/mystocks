@@ -1,0 +1,39 @@
+- finding_id: strategy-backtest-data-state-002
+  batch_id: strategy-batch-13
+  page:
+    route: /strategy/backtest
+    page_key: strategy-backtest
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Strategy backtest route seeded hero freshness metadata from the local current clock before any verified strategy snapshot existed
+  trigger:
+    steps:
+      - "Open `/strategy/backtest`"
+      - "Resolve the initial `/api/v1/strategy/strategies` request as a failure before any verified strategy snapshot exists"
+      - "Inspect the visible `最后更新` surface in the hero header together with the failed-first-load state panel"
+  expected: "Before any verified strategy snapshot exists, a failed first load should degrade hero freshness metadata to explicit placeholder truth such as `UPDATED: --` and pair it with the unavailable-state copy."
+  actual: "Before repair, the route-local empty backtest workbench builder seeded `lastUpdated` from `new Date().toLocaleString()`, so `/strategy/backtest` could fail its first real strategy-list load while still presenting the local current time as if the workbench had already synchronized a fresh live snapshot."
+  evidence:
+    kind: live-observation
+    note: "Targeted system-`google-chrome` verification with browser-context interception reproduced the failed first-load path. After repair the same route renders `最后更新 / --` together with an explicit failed-first-load state and no faux freshness truth. The owner regression and routed Phase 3 matrix additionally lock the exact route-copy expectations."
+  repair_target:
+    files:
+      - web/frontend/src/mock/backtestWorkbenchMock.ts
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/mock/backtestWorkbenchMock.ts
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/backtest
+  status: open
+  dependency: null
+  dedupe_key: /strategy/backtest:data-state:initialFreshnessPlaceholderTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check that failed first loads no longer present local current-time freshness truth before any verified strategy snapshot exists."

@@ -1,111 +1,59 @@
-# Mock数据系统文档
+# Mock 数据系统历史快照
 
-> **参考指南说明**:
-> 本文件是补充指南、命令参考、操作说明或使用手册，不是当前仓库共享规则、当前实现边界或当前主线流程的唯一事实来源。
-> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现及主线治理文档一并核对。
+> **历史快照说明**:
+> 本文件保留 2025 年底早期 Mock 系统整理阶段的说明脉络，仅作为历史背景参考，不再作为当前 Mock/Real 数据治理、切换流程或实现边界的主入口。
 >
-> 文内步骤、示例、命令和说明应视为补充参考；若与当前代码、`architecture/STANDARDS.md` 或主线治理文档不一致，应以 `architecture/STANDARDS.md`、当前代码实现及主线治理文档为准。
+> 当前有效入口请优先阅读：
+> - [`INDEX.md`](./INDEX.md)
+> - [`MOCK_DATA_USAGE_RULES.md`](./MOCK_DATA_USAGE_RULES.md)
+> - [`MOCK_REAL_DATA_SWITCHING_GUIDE.md`](./MOCK_REAL_DATA_SWITCHING_GUIDE.md)
+>
+> 若涉及仓库级共享规则、审批门禁或当前主线治理口径，请以 [`architecture/STANDARDS.md`](../../../architecture/STANDARDS.md) 和 [`openspec/specs/api-integration/spec.md`](../../../openspec/specs/api-integration/spec.md) 为准。
 
+## 为什么保留
 
-## 🏗️ 双层Mock架构
+- 该文件记录了仓库早期将前端 `web/frontend/src/mock/` 与后端 `src/mock/` 作为专题资产集中梳理时的历史认知。
+- 它能帮助理解为何仓库中仍存在较多 page-level mock 文件、桥接脚本和旧页面引用。
+- 它不再代表当前主线的“Mock 使用规则”或“Mock/Real 切换流程”。
 
-### JavaScript Mock文件 (前端)
-- **位置**: `web/frontend/src/mock/`
-- **用途**: Vue组件直接导入使用
-- **格式**: JavaScript/ES6模块
-- **状态**: ✅ 桥接文件已创建
+## 当前应如何理解 Mock
 
-### Python Mock文件 (后端)
-- **位置**: `src/mock/`
-- **用途**: 后端API开发和参考
-- **格式**: Python源代码
-- **状态**: ✅ 完整文档化 (27个文件)
+- Mock 的主要作用是前后端解耦开发与测试稳定性，不是通用兜底成功路径。
+- 对已进入 `verified` 的页面，主线要求是真实接口优先，失败时显式暴露 `loading / error / empty / request id`，不得对同一路径静默回退 mock。
+- 对仍处于 `pending` 的页面，可以保留壳层、加载态、错误态、空态和 blocker 登记，但不得臆造契约字段。
 
-## 📋 文档索引
+以上口径分别对应：
 
-完整的Mock数据文件文档已整理完成，请查看：
+- [`architecture/STANDARDS.md`](../../architecture/STANDARDS.md)
+- [`openspec/specs/api-integration/spec.md`](../../../openspec/specs/api-integration/spec.md)
 
-**[Mock数据文件文档索引](docs/MOCK_DOCUMENTATION_INDEX.md)**
+## 与当前仓库的关系
 
-## 🎯 核心特性
+- 仓库中仍可见 `src/mock/`、`src/data_sources/mock/`、`web/backend/app/mock/`、`web/frontend/src/mock/` 等实现与测试资产。
+- 这些资产说明 Mock 系统并未消失，但当前治理重点已经从“统一描述所有 Mock 文件”转向“明确 Mock 的允许场景、禁止场景和真实接口主链边界”。
+- 因此，当前读者不应再把“Mock 文件数量”“接口总数”“覆盖率”“服务正常运行”等旧统计值视为当前事实。
 
-- **27个Mock文件**：覆盖所有页面组件
-- **102个接口**：完整的API接口模拟
-- **100%文档化**：所有文件包含类型注释和文档
-- **双层架构**：前端JavaScript + 后端Python
-- **严格规范**：严格按照用户要求开发
+## 历史内容范围
 
-## 🔧 关键文件
+此文件过去主要覆盖：
 
-### Dashboard页面
-- **Mock文件**：`src/mock/mock_Dashboard.py`
-- **Vue页面**：`web/frontend/src/views/Dashboard.vue`
-- **接口数量**：10个
-- **主要功能**：市场热度、板块数据、实时表格
+- 早期双层 Mock 架构说明
+- page-level mock 文件清单
+- 早期桥接脚本与导入模式
+- 若干旧页面与旧统计口径
 
-### 股票管理
-- **Mock文件**：`src/mock/mock_Stocks.py`
-- **Vue页面**：`web/frontend/src/views/Stocks.vue`
-- **接口数量**：3个
-- **主要功能**：股票列表、实时行情、历史收益
+这些内容已经不再维护为 current truth。
 
-### 策略管理
-- **Mock文件**：`src/mock/mock_StrategyManagement.py`
-- **Vue页面**：`web/frontend/src/views/StrategyManagement.vue`
-- **接口数量**：6个
-- **主要功能**：策略定义、运行、结果查询
+## 迁移后的阅读路径
 
-## ✅ 完成状态
+如果你现在要做的是：
 
-- ✅ **硬编码数据移除**：100%
-- ✅ **Mock数据集成**：100%
-- ✅ **类型注释添加**：100% (27/27文件)
-- ✅ **文档标准化**：100%
-- ✅ **服务正常运行**：前后端稳定运行
+- 理解 Mock 使用边界：看 [`MOCK_DATA_USAGE_RULES.md`](./MOCK_DATA_USAGE_RULES.md)
+- 了解如何切换 Mock/Real：看 [`MOCK_REAL_DATA_SWITCHING_GUIDE.md`](./MOCK_REAL_DATA_SWITCHING_GUIDE.md)
+- 浏览整个专题文档家族：看 [`INDEX.md`](./INDEX.md)
 
-## 🚀 快速开始
+## 保留策略
 
-1. **访问系统**：
-   - 前端：http://localhost:3020
-   - 后端：http://localhost:8020
-
-2. **查看文档**：
-   ```bash
-   # 打开Mock数据文档索引
-   cat docs/MOCK_DOCUMENTATION_INDEX.md
-   ```
-
-3. **验证Mock数据**：
-   ```javascript
-   // 测试Dashboard JavaScript Mock函数 (前端)
-   import { getDashboardStats } from '@/mock/mockDashboard'
-   console.log(getDashboardStats())
-   ```
-
-   ```python
-   # 测试Dashboard Python Mock函数 (后端)
-   from src.mock.mock_Dashboard import get_dashboard_stats
-   print(get_dashboard_stats())
-   ```
-
-## 🔧 架构说明
-
-### 解决Vite导入问题
-- **问题**: Vite无法直接导入Python文件
-- **解决**: 创建JavaScript桥接文件
-- **位置**: `web/frontend/src/mock/mockDashboard.js`
-- **映射**: JavaScript函数名与Python函数名对应
-
-## 📊 统计信息
-
-| 指标 | 数值 |
-|------|------|
-| 总Mock文件 | 27个 |
-| 总接口数量 | 102个 |
-| 文档覆盖率 | 100% |
-| 平均每文件接口 | 3.8个 |
-
----
-
-*文档生成时间：2025-11-14*
-*严格遵循用户要求：严禁硬编码数据，统一导入模式*
+- 当前状态：`historical retention`
+- 默认用途：历史背景和旧实现线索
+- 后续策略：若 inbound links 继续下降，可再评估 archive/delete，而不是继续把本文件补写成主指南

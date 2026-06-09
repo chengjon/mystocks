@@ -2,7 +2,7 @@
 
 > **参考说明**
 > 本文是对 MyStocks “模块化生长”治理理念的严格差距审视与落地路线建议，不是仓库共享规则的唯一事实来源。
-> 涉及治理规则、审批门禁与执行约束时，请优先遵循 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)。
+> 涉及治理规则、审批门禁与执行约束时，请优先遵循 [`architecture/STANDARDS.md`](../../architecture/STANDARDS.md)。
 
 > **结论摘要**
 > MyStocks 已完整采纳六步走治理理念，并在可观测性、自动化防护、契约治理上实现高度落地。

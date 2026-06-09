@@ -1,0 +1,34 @@
+- consolidated_issue_id: secondary-shell-issue-43
+  severity: Medium
+  title: Legacy realtime monitor page now degrades to an honest static shell
+  pages:
+    - /secondary/realtime-monitor-static-shell
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The legacy `RealTimeMonitor.vue` page had no independent route truth but still preserved SSE demo widgets, local backend status calls, test buttons, and fallback connection counts."
+  primary_owner: web/frontend/src/views/RealTimeMonitor.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/realtime-monitor-static-shell
+  dedupe_keys:
+    - /secondary/realtime-monitor-static-shell:route-truth:legacyRealtimeMonitorStaticShell
+  verification_scope:
+    routes:
+      - /secondary/realtime-monitor-static-shell
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/RealTimeMonitor.vue
+      - web/frontend/src/views/styles/RealTimeMonitor.scss
+      - web/frontend/src/views/__tests__/RealTimeMonitor.spec.ts
+    notes:
+      - "the page now renders `legacy-static-shell` and links to verified `/market/realtime`, `/risk/alerts`, and `/strategy/backtest` handoff routes"
+      - "the page-local SSE demo widget imports, direct status request, test actions, and fallback connection counts were removed"
+      - "the secondary inventory high-priority shortlist dropped from 12 to 11 after the repair"
+  verification_surface: code-review-only

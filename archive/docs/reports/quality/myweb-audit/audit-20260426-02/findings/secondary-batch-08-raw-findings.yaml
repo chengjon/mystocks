@@ -1,0 +1,39 @@
+- finding_id: secondary-shell-008
+  batch_id: secondary-batch-08
+  page:
+    route: /secondary/legacy-settings-canonical-wrapper
+    page_key: secondary-legacy-settings-canonical-wrapper
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/Settings.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy top-level settings page still exposed a forked pseudo-live settings shell even though a semantically matching canonical system-config owner already exists
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/Settings.vue`"
+      - "Inspect the top-level tabs, faux database table, faux logs panel, and local display-settings form"
+      - "Confirm the page is not the current router-backed `/system/config` owner and does not delegate to `web/frontend/src/views/system/Settings.vue`"
+  expected: "An unrouted legacy page that already has a semantically matching canonical system-config owner should collapse to a thin orchestration wrapper instead of preserving a forked pseudo-live settings shell."
+  actual: "Before repair, `Settings.vue` rendered a self-owned pseudo-live shell with local forms, fake database status rows, and faux log-summary cards instead of delegating to the canonical `/system/config` owner."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green regression confirmed the legacy top-level page still rendered its own fake settings shell before the wrapper repair."
+  repair_target:
+    files:
+      - web/frontend/src/views/Settings.vue
+      - web/frontend/src/views/__tests__/Settings.spec.ts
+      - .claude/skills/myweb-audit/references/route-truth-casebook.md
+    primary_owner: web/frontend/src/views/Settings.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-settings-canonical-wrapper
+  status: open
+  dependency: null
+  dedupe_key: /secondary/legacy-settings-canonical-wrapper:route-truth:legacySettingsCanonicalWrapper
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner wrapper regression and secondary inventory tooling to confirm the legacy settings page now delegates entirely to the canonical `/system/config` owner."

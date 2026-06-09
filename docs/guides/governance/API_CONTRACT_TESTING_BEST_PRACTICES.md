@@ -2,20 +2,20 @@
 
 > **使用说明**:
 > 本文件说明当前仓库里 API contract testing 的推荐执行方式与目录口径，不替代 OpenAPI 真相源、仓库共享规则或 CI 历史报告。
-> 共享规则仍以 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md) 为准；接口事实仍以 FastAPI 路由、Pydantic Schema 与 `/openapi.json` 为准。
+> 共享规则仍以 [`architecture/STANDARDS.md`](../../../architecture/STANDARDS.md) 为准；接口事实仍以 FastAPI 路由、Pydantic Schema 与 `/openapi.json` 为准。
 
 ## Current Test Layout
 
 当前仓库是“三层并存”状态：
 
 - current backend integration entry
-  - [`tests/integration/contract/`](/opt/claude/mystocks_spec/tests/integration/contract)
+  - [`tests/integration/contract/`](../../../tests/integration/contract)
 - current unit / repo-truth checks
-  - [`tests/unit/contract/`](/opt/claude/mystocks_spec/tests/unit/contract)
+  - [`tests/unit/contract/`](../../../tests/unit/contract)
 - current canonical support implementation package
-  - [`tests/contract_support/`](/opt/claude/mystocks_spec/tests/contract_support)
+  - [`tests/contract_support/`](../../../tests/contract_support)
 - retained legacy contract tree
-  - [`tests/contract/`](/opt/claude/mystocks_spec/tests/contract)
+  - [`tests/contract/`](../../../tests/contract)
 
 这意味着：
 - 新增 contract tests 优先落在 `tests/integration/contract/` 或 `tests/unit/contract/`
@@ -28,9 +28,9 @@
 优先复用这些 helper，而不是自行拼一套 schema loader：
 
 - runtime OpenAPI loader and fixtures:
-  [`contract_testing.py`](/opt/claude/mystocks_spec/web/backend/app/api/contract/services/contract_testing.py)
+  [`contract_testing.py`](../../../web/backend/app/api/contract/services/contract_testing.py)
 - validator core:
-  [`contract_validator.py`](/opt/claude/mystocks_spec/web/backend/app/api/contract/services/contract_validator.py)
+  [`contract_validator.py`](../../../web/backend/app/api/contract/services/contract_validator.py)
 
 关键 repo-truth：
 - 默认契约来源是运行时生成的 OpenAPI
@@ -45,10 +45,10 @@
 - 验证 generator / validator / executor 的集成行为
 
 现有入口：
-- [`test_contract_executor.py`](/opt/claude/mystocks_spec/tests/integration/contract/test_contract_executor.py)
-- [`test_contract_generator.py`](/opt/claude/mystocks_spec/tests/integration/contract/test_contract_generator.py)
-- [`test_contract_validator.py`](/opt/claude/mystocks_spec/tests/integration/contract/test_contract_validator.py)
-- [`test_api_contract_schemathesis.py`](/opt/claude/mystocks_spec/tests/integration/contract/test_api_contract_schemathesis.py)
+- [`test_contract_executor.py`](../../../tests/integration/contract/test_contract_executor.py)
+- [`test_contract_generator.py`](../../../tests/integration/contract/test_contract_generator.py)
+- [`test_contract_validator.py`](../../../tests/integration/contract/test_contract_validator.py)
+- [`test_api_contract_schemathesis.py`](../../../tests/integration/contract/test_api_contract_schemathesis.py)
 
 ### 2. Unit repo-truth tests
 
@@ -57,10 +57,10 @@
 - 避免 regression 把 runtime-generated OpenAPI 又退回静态 spec truth
 
 现有入口：
-- [`test_contract_support_aliases.py`](/opt/claude/mystocks_spec/tests/unit/contract/test_contract_support_aliases.py)
-- [`test_contract_engine_runtime_source.py`](/opt/claude/mystocks_spec/tests/unit/contract/test_contract_engine_runtime_source.py)
-- [`test_risk_router_runtime_import.py`](/opt/claude/mystocks_spec/tests/unit/contract/test_risk_router_runtime_import.py)
-- [`test_ci_workflow_runtime_setup.py`](/opt/claude/mystocks_spec/tests/unit/scripts/test_ci_workflow_runtime_setup.py)
+- [`test_contract_support_aliases.py`](../../../tests/unit/contract/test_contract_support_aliases.py)
+- [`test_contract_engine_runtime_source.py`](../../../tests/unit/contract/test_contract_engine_runtime_source.py)
+- [`test_risk_router_runtime_import.py`](../../../tests/unit/contract/test_risk_router_runtime_import.py)
+- [`test_ci_workflow_runtime_setup.py`](../../../tests/unit/scripts/test_ci_workflow_runtime_setup.py)
 
 ### 3. Frontend seam tests
 
@@ -69,8 +69,8 @@
 - 验证 version negotiation 的 fallback truth
 
 现有入口：
-- [`unifiedApiClient.contract.test.ts`](/opt/claude/mystocks_spec/web/frontend/src/api/__tests__/unifiedApiClient.contract.test.ts)
-- [`versionNegotiator.spec.ts`](/opt/claude/mystocks_spec/web/frontend/src/services/__tests__/versionNegotiator.spec.ts)
+- [`unifiedApiClient.contract.test.ts`](../../../web/frontend/src/api/__tests__/unifiedApiClient.contract.test.ts)
+- [`versionNegotiator.spec.ts`](../../../web/frontend/src/services/__tests__/versionNegotiator.spec.ts)
 
 ## Recommended Commands
 

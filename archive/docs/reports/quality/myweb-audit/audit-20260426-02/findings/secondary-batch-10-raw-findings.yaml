@@ -1,0 +1,38 @@
+- finding_id: secondary-shell-010
+  batch_id: secondary-batch-10
+  page:
+    route: /secondary/legacy-strategy-management-canonical-wrapper
+    page_key: secondary-legacy-strategy-management-canonical-wrapper
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/StrategyManagement.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy top-level strategy management page still exposed a forked pseudo-live strategy workbench even though a semantically matching canonical strategy-repo owner already exists
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/StrategyManagement.vue`"
+      - "Inspect the local strategy workbench shell, summary copy, create CTA, and empty-state messaging"
+      - "Confirm the page is not the current router-backed `/strategy/repo` owner and does not delegate to `web/frontend/src/views/strategy/List.vue`"
+  expected: "An unrouted legacy page that already has a semantically matching canonical strategy-repo owner should collapse to a thin orchestration wrapper instead of preserving a forked pseudo-live strategy workbench shell."
+  actual: "Before repair, `StrategyManagement.vue` rendered its own pseudo-live strategy management shell with local workbench copy, create CTA, and empty-state messaging instead of delegating to the canonical `/strategy/repo` owner."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green regression confirmed the legacy top-level strategy management page still rendered its own fake workbench shell before the wrapper repair."
+  repair_target:
+    files:
+      - web/frontend/src/views/StrategyManagement.vue
+      - web/frontend/src/views/__tests__/StrategyManagement.spec.ts
+    primary_owner: web/frontend/src/views/StrategyManagement.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-strategy-management-canonical-wrapper
+  status: open
+  dependency: null
+  dedupe_key: /secondary/legacy-strategy-management-canonical-wrapper:route-truth:legacyStrategyManagementCanonicalWrapper
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner wrapper regression and secondary inventory tooling to confirm the legacy strategy management page now delegates entirely to the canonical `/strategy/repo` owner."

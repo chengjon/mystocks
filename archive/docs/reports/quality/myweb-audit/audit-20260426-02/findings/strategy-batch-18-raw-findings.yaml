@@ -1,0 +1,39 @@
+- finding_id: strategy-backtest-data-state-006
+  batch_id: strategy-batch-18
+  page:
+    route: /strategy/backtest
+    page_key: strategy-backtest
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Strategy backtest queued or running task-state updates advanced hero freshness before any new verified result snapshot existed
+  trigger:
+    steps:
+      - "Open `/strategy/backtest?strategyId=101` with a controlled successful strategy-list load so the route already has one verified strategy-context freshness value."
+      - "Wait long enough for the local current clock to diverge, then click `启动回测` while the backtest request only reaches queued or running state."
+      - "Inspect the visible hero freshness surface `最后更新 / UPDATED` before any verified backtest result or report snapshot has synchronized."
+  expected: "Queued or running task-state updates may change task rows, logs, progress, and warning banners, but hero freshness metadata should remain pinned to the last verified snapshot or explicit placeholder truth until a new verified result or report snapshot actually exists."
+  actual: "Before repair, `applyBacktestTaskSnapshot()` wrote `lastUpdated.value = new Date().toLocaleString()` for queued, running, failed, and completed task-state updates, so `/strategy/backtest` could present a new local current-time freshness stamp before any verified result or report snapshot existed."
+  evidence:
+    kind: live-observation
+    note: "The red-green owner proof first fixed time at `2026-05-05T01:00:00Z`, captured the verified strategy-context freshness, advanced the local clock to `2026-05-05T01:30:00Z`, and reproduced a queued-only click path that rewrote `UPDATED` to the newer local time. After repair, targeted system-Chrome verification confirmed the same controlled queued-only route keeps identical `最后更新` text before and after `启动回测` while the banner still says `回测任务已创建，进入排队`."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/backtest
+  status: open
+  dependency: null
+  dedupe_key: /strategy/backtest:data-state:queuedTaskFreshnessTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check that queued-only or running-only task-state updates preserve the existing hero freshness text until a new verified result or report snapshot exists."

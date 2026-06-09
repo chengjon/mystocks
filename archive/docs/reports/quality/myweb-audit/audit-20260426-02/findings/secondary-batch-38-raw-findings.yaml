@@ -1,0 +1,76 @@
+- finding_id: secondary-shell-038-auction
+  batch_id: secondary-batch-38
+  page:
+    route: /secondary/market-auction-static-shell
+    page_key: secondary-market-auction-static-shell
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/market/Auction.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy market auction page still exposed local pseudo-live auction metrics without a verified canonical owner
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/market/Auction.vue`"
+      - "Inspect the local auction stats, refresh action, delayed refresh simulation, and hardcoded auction table rows"
+      - "Confirm the current router does not expose a semantically matching `/market/auction` canonical owner"
+  expected: "A legacy auction page with no semantically matching canonical owner should degrade to an honest static shell instead of preserving local pseudo-live auction truth."
+  actual: "Before repair, `Auction.vue` rendered hardcoded auction volume, participating-stock count, success rate, refresh chrome, and sample rows as if they were verified market truth."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green static-shell regression confirmed the page still rendered pseudo-live auction shell semantics before repair."
+  repair_target:
+    files:
+      - web/frontend/src/views/market/Auction.vue
+      - web/frontend/src/views/market/__tests__/Auction.spec.ts
+    primary_owner: web/frontend/src/views/market/Auction.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/market-auction-static-shell
+  status: open
+  dependency: null
+  dedupe_key: /secondary/market-auction-static-shell:route-truth:legacyStaticShell
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner regression to confirm the auction page renders an honest static shell and no longer exposes local auction metrics, refresh chrome, or hardcoded sample rows."
+- finding_id: secondary-shell-038-etf
+  batch_id: secondary-batch-38
+  page:
+    route: /secondary/market-etf-static-shell
+    page_key: secondary-market-etf-static-shell
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/market/Etf.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy market ETF page still exposed local pseudo-live ETF metrics without a verified canonical owner
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/market/Etf.vue`"
+      - "Inspect the local ETF overview cards, auto-refresh switch, category selectors, ranking tables, and page-only composable"
+      - "Confirm the available ETF sibling modules are not current router truth and still carry local fallback or embedded-tab semantics"
+  expected: "A legacy ETF page with no semantically matching verified canonical owner should degrade to an honest static shell instead of preserving a separate ETF snapshot contract."
+  actual: "Before repair, `Etf.vue` rendered local ETF asset totals, product counts, volume metrics, category tables, top-gainer lists, refresh controls, and hardcoded ETF sample rows as if they were verified market truth."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green static-shell regression confirmed the page still rendered pseudo-live ETF shell semantics before repair."
+  repair_target:
+    files:
+      - web/frontend/src/views/market/Etf.vue
+      - web/frontend/src/views/market/__tests__/Etf.spec.ts
+    primary_owner: web/frontend/src/views/market/Etf.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/market-etf-static-shell
+  status: open
+  dependency: null
+  dedupe_key: /secondary/market-etf-static-shell:route-truth:legacyStaticShell
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner regression to confirm the ETF page renders an honest static shell and no longer exposes local ETF metrics, refresh chrome, category selectors, or hardcoded ETF sample rows."

@@ -1,0 +1,44 @@
+- finding_id: dashboard-home-data-state-007
+  batch_id: dashboard-batch-07
+  page:
+    route: /dashboard
+    page_key: dashboard-home
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Dashboard trend slice collapsed live pending and later refresh failure into misleading capability or retention-only copy
+  trigger:
+    steps:
+      - "Open `/dashboard` with a controlled first load where the core dashboard slices resolve but `/api/v1/market/kline` remains unresolved."
+      - "Observe the trend-chart note under `上证指数分时趋势`, then rerun with a successful first kline snapshot followed by a later refresh where `/api/v1/market/kline` resolves as `success:false`."
+      - "Inspect the chart note and whether the existing trend chart stays visible after the later refresh settles."
+  expected: "A route-owned live trend slice should use explicit sync-state truth: unresolved first load should say the trend snapshot is synchronizing, first-load failure should say the trend slice is unavailable with no verified snapshot, and a later refresh failure should preserve the last verified chart while explicitly saying the current refresh is unavailable and the previous snapshot is still shown."
+  actual: "Before repair, `/dashboard` rendered `分时趋势待接入真实行情时间序列接口。` while the first live kline request was still unresolved, and a later `success:false` kline refresh only produced `当前仍显示上次成功同步的分时趋势快照。` because the route treated the resolved failure envelope as empty rows instead of explicit failure truth."
+  evidence:
+    kind: live-observation
+    note: "Targeted Playwright-library verification with system `google-chrome` and browser-context interception reproduced both defects on the canonical route: unresolved first load rendered the false capability note, and a later `success:false` kline refresh retained the chart but omitted the `暂不可用` failure truth. After repair, the same controlled paths rendered `分时趋势同步中...` on first unresolved load and `分时趋势暂不可用，当前仍显示上次成功同步的分时趋势快照。` with `chartEmptyStateCount: 0` on later refresh failure."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+      - web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+      - web/frontend/tests/unit/components/ArtDecoDashboardLogic.spec.ts
+      - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/SKILL.md
+      - .claude/skills/myweb-audit/references/CHANGELOG.md
+      - .claude/skills/myweb-audit/references/audit-checklist.md
+      - .claude/agents/myweb-audit-data-state-audit.md
+    primary_owner: web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /dashboard
+  status: open
+  dependency: null
+  dedupe_key: /dashboard:data-state:trendSliceSyncStateTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/dashboard` and confirm unresolved first-load trend uses `分时趋势同步中...`, while later `success:false` kline refresh keeps the last verified chart visible and surfaces explicit unavailable-plus-stale copy."

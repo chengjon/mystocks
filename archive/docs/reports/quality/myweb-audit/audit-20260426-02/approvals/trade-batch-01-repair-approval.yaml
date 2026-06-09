@@ -1,0 +1,26 @@
+- consolidated_issue_id: trade-portfolio-issue-01
+  severity: Medium
+  affected_routes:
+    - /trade/portfolio
+    - /risk/pnl
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/trade/Portfolio.vue
+  page_scope: shared-impact
+  frontend_fixable: true
+  repair_bucket: fix-with-shared-impact-review
+  changes_truth_sources:
+    route_truth: true
+    page_config: false
+    shared_composable: false
+    shared_component: true
+    generated_artifact: false
+  summary: The routed portfolio workbench family should not present equal-weight rebalance targets or amount advice unless the live routed source exposes real target-weight or portfolio-policy inputs.
+  dependency: null
+  shared_impact:
+    candidate: true
+    basis: "`/risk/pnl` is a thin routed wrapper over the same canonical trade portfolio page, so policy-truth repairs must be verified across both routes to avoid a second visible advice surface drifting from the canonical owner."
+    related_routes:
+      - /trade/portfolio
+      - /risk/pnl
+  approval_status: approved

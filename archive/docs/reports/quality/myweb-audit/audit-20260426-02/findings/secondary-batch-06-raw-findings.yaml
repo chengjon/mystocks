@@ -1,0 +1,40 @@
+- finding_id: secondary-shell-006
+  batch_id: secondary-batch-06
+  page:
+    route: /secondary/legacy-dashboard-canonical-wrapper
+    page_key: secondary-legacy-dashboard-canonical-wrapper
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/Dashboard.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy dashboard still exposed pseudo-live market summary shells even though a semantically matching canonical dashboard owner already exists
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/Dashboard.vue`"
+      - "Inspect the summary cards, market heat panel, industry flow panel, and sector performance table"
+      - "Confirm the page is not mounted by the current router and does not delegate to the canonical ArtDeco dashboard owner"
+  expected: "An unrouted legacy page that has a semantically matching canonical dashboard owner should collapse to a thin orchestration wrapper instead of preserving a forked pseudo-live dashboard shell."
+  actual: "Before repair, `Dashboard.vue` hardcoded pseudo-live dashboard stats (`5216 / 2456 / 1892 / 868`), tables, and charts even though the page was not the router-backed canonical dashboard owner."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green tests confirmed the legacy page still rendered a fake live dashboard shell instead of delegating to the canonical dashboard owner."
+  repair_target:
+    files:
+      - web/frontend/src/views/Dashboard.vue
+      - web/frontend/src/views/__tests__/Dashboard.spec.ts
+      - .claude/skills/myweb-audit/references/route-truth-operations.md
+      - .claude/skills/myweb-audit/references/route-truth-casebook.md
+    primary_owner: web/frontend/src/views/Dashboard.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-dashboard-canonical-wrapper
+  status: open
+  dependency: null
+  dedupe_key: /secondary/legacy-dashboard-canonical-wrapper:route-truth:legacyDashboardCanonicalWrapper
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run owner regression and secondary inventory tooling to confirm the legacy dashboard now acts as a thin orchestration wrapper over the canonical ArtDeco dashboard owner."

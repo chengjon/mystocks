@@ -1823,7 +1823,7 @@ const demoInput = ref('')
 
 - **[实施指南](./ART_DECO_IMPLEMENTATION_REPORT.md)** - 详细的实施指南
 - **[快速参考](./ART_DECO_QUICK_REFERENCE.md)** - 快速参考手册
-- **[组件目录](/opt/claude/mystocks_spec/web/frontend/ARTDECO_COMPONENTS_CATALOG.md)** - 完整组件清单
+- **[组件目录](../../../web/frontend/ARTDECO_COMPONENTS_CATALOG.md)** - 完整组件清单
 
 ---
 

@@ -10,8 +10,8 @@
 
 当前如需查看 repo-truth 测试执行口径，请优先阅读：
 
-- [`API_CONTRACT_TESTING_BEST_PRACTICES.md`](/opt/claude/mystocks_spec/docs/guides/governance/API_CONTRACT_TESTING_BEST_PRACTICES.md)
-- [`API_CONTRACT_RUNTIME_VALIDATION_DEVELOPER_GUIDE.md`](/opt/claude/mystocks_spec/docs/guides/governance/API_CONTRACT_RUNTIME_VALIDATION_DEVELOPER_GUIDE.md)
+- [`API_CONTRACT_TESTING_BEST_PRACTICES.md`](../guides/governance/API_CONTRACT_TESTING_BEST_PRACTICES.md)
+- [`API_CONTRACT_RUNTIME_VALIDATION_DEVELOPER_GUIDE.md`](../guides/governance/API_CONTRACT_RUNTIME_VALIDATION_DEVELOPER_GUIDE.md)
 
 ## Current Status
 

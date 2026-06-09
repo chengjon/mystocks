@@ -1,0 +1,39 @@
+- finding_id: detail-news-data-state-03
+  batch_id: detail-batch-03
+  page:
+    route: /detail/news/:symbol
+    page_key: detail-news
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/announcement/AnnouncementMonitor.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Detail news route silently preserved stale sibling stats counts after the announcement stats slice refresh failed
+  trigger:
+    steps:
+      - "Open `/detail/news/600519` and let `/api/announcement/stats` verify once."
+      - "Keep `/api/announcement/list` successful and visible."
+      - "Trigger a second `/api/announcement/stats` refresh that resolves `success: false` or otherwise fails."
+      - "Inspect the four top stat cards after the refresh failure."
+  expected: "If the dedicated announcement stats slice fails on refresh and the route has no explicit slice-local stale-summary UX, the four sibling stat cards should degrade back to placeholder truth such as `--` while independent verified announcement rows may remain visible."
+  actual: "Before repair, the detail news route preserved the previously verified stats object inside `useAnnouncementMonitor`, so the four sibling stat cards silently kept their old counts after a later stats refresh failure. The route therefore presented stale counts as if the stats slice had refreshed successfully."
+  evidence:
+    kind: live-observation
+    note: "A new composable red test first proved that `fetchStats()` preserved the old stats object after a later failure. Controlled Playwright-library verification with system `google-chrome` then confirmed the repaired route now transitions from `2 / 2 / 1 / 0` to `-- / -- / -- / --` after the failing stats refresh while keeping the verified announcement row visible."
+  repair_target:
+    files:
+      - web/frontend/src/views/announcement/composables/useAnnouncementMonitor.ts
+      - web/frontend/src/views/announcement/__tests__/useAnnouncementMonitor.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/announcement/composables/useAnnouncementMonitor.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /detail/news/:symbol:data-state:statsRefreshStaleSummaryTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/detail/news/:symbol` after repair and confirm a failed stats refresh clears the sibling stat cards back to `--` while the verified announcement rows remain visible."

@@ -1,0 +1,23 @@
+- consolidated_issue_id: trade-signals-issue-01
+  severity: High
+  affected_routes:
+    - /trade/signals
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/trade/Signals.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: true
+    page_config: false
+    shared_composable: false
+    shared_component: true
+    generated_artifact: false
+  summary: The routed trade signals workspace should not fabricate per-row signal detail, HOLD actions, or execution analytics when the current live payload only returns current signal rows.
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The visible routed defect was isolated to `/trade/signals`, even though the repair also hardened a shared signal mapper and list component."
+    related_routes: []
+  approval_status: approved

@@ -12,9 +12,9 @@
 
 ## 当前应查看的文档
 
-- [组件全景目录](/opt/claude/mystocks_spec/web/frontend/ARTDECO_COMPONENTS_CATALOG.md)
-- [组件展示 V2](/opt/claude/mystocks_spec/docs/guides/web/ART_DECO_COMPONENT_SHOWCASE_V2.md)
-- [统一规格](/opt/claude/mystocks_spec/docs/guides/web/ARTDECO_FINTECH_UNIFIED_SPEC.md)
+- [组件全景目录](../../../web/frontend/ARTDECO_COMPONENTS_CATALOG.md)
+- [组件展示 V2](ART_DECO_COMPONENT_SHOWCASE_V2.md)
+- [统一规格](ARTDECO_FINTECH_UNIFIED_SPEC.md)
 
 ## 当前定位
 

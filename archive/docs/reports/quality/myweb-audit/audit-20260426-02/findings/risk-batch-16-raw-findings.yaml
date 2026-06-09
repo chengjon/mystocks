@@ -1,0 +1,39 @@
+- finding_id: risk-overview-data-state-016
+  batch_id: risk-batch-16
+  page:
+    route: /risk/overview
+    page_key: risk-overview
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/risk/Overview.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Risk overview treated rules and alerts as one global verified shell, hiding a verified rules slice when alerts failed on the first load
+  trigger:
+    steps:
+      - "Open `/risk/overview`."
+      - "Force `**/api/v1/monitoring/alert-rules**` to resolve `success: true` and `**/api/v1/monitoring/alerts?page=1&page_size=50**` to resolve `success: false` before any verified overview snapshot exists."
+      - "Inspect the hero `REQ_ID / ALERTS`, the top stats strip, then switch to `规则清单`."
+  expected: "The overview shell should remain partial and unresolved (`REQ_ID: N/A`, `ALERTS: --`), while the verified rules slice should still be available after switching tabs: rules counts should render, the rule table should stay visible, and the page should describe alerts as temporarily unavailable instead of claiming the whole overview lacks any verified snapshot."
+  actual: "Before repair, `/risk/overview` used one route-global verified flag and one request id. A first-load alerts failure therefore collapsed the entire shell back to `-- / -- / -- / --`, hid the verified rules slice, and rendered `当前暂无已验证风险概览快照。` even though the rules request had already succeeded."
+  evidence:
+    kind: live-observation
+    note: "Targeted owner regressions, a new Phase 4 routed assertion, and a controlled system-Chrome proof pinned the repaired shape. After repair, the overview shell stays partial (`REQ_ID: N/A`, `ALERTS: --`, stats `2 / 2 / -- / 未校验`), while the rules tab exposes `REQ_ID: req-live-risk-overview-rules-first-success`, `RULES: 2`, and the verified rule rows."
+  repair_target:
+    files:
+      - web/frontend/src/views/risk/Overview.vue
+      - web/frontend/src/views/risk/__tests__/Overview.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/risk/Overview.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /risk/overview
+  status: open
+  dependency: null
+  dedupe_key: /risk/overview:data-state:rulesAlertsFirstLoadPartialSliceTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/risk/overview` after repair and confirm a verified rules slice remains visible when alerts fail on the first load, while the overview shell still reports unresolved alert truth."

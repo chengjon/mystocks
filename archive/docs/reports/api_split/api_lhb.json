@@ -1,0 +1,51 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/lhb",
+  "total_endpoints": 4,
+  "endpoints": [
+    {
+      "path": "/lhb",
+      "method": "GET",
+      "file": "market_v2.py",
+      "function": "get_lhb_detail",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 105
+    },
+    {
+      "path": "/lhb/refresh",
+      "method": "POST",
+      "file": "market_v2.py",
+      "function": "refresh_lhb_detail",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 126
+    },
+    {
+      "path": "/lhb",
+      "method": "GET",
+      "file": "market.py",
+      "function": "get_lhb_detail",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 433
+    },
+    {
+      "path": "/lhb/refresh",
+      "method": "POST",
+      "file": "market.py",
+      "function": "refresh_lhb_detail",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 461
+    }
+  ]
+}

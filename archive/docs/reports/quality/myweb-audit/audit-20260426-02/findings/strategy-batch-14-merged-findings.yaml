@@ -1,0 +1,36 @@
+- consolidated_issue_id: strategy-backtest-issue-03
+  severity: High
+  title: Strategy backtest report rows now degrade missing completion metadata to explicit placeholder truth
+  pages:
+    - /strategy/backtest
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The visible `生成时间` cell and the route-local result-sync mapper expressed the same row-level freshness provenance defect, so they are treated as one canonical report-timestamp truth issue on `/strategy/backtest`."
+  primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/backtest
+  dedupe_keys:
+    - /strategy/backtest:data-state:resultRowFreshnessProvenance
+  verification_scope:
+    routes:
+      - /strategy/backtest
+    states:
+      - report-row-success-with-missing-completion-metadata
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    notes:
+      - "the route-local result timestamp formatter now degrades missing completion metadata to `--` instead of substituting the local current clock"
+      - "the canonical `/strategy/backtest` route no longer presents a faux local generation timestamp when synced backtest results omit `completed_at` or equivalent fields"
+      - "the strengthened owner and routed regressions now lock the `报告中心` row-level freshness behavior for missing result metadata"
+      - "this batch extends `myweb-audit` to `v1.48`, clarifying row-level result freshness provenance for routed report tables and ledgers"
+  verification_surface: code-review-plus-targeted-live-verification

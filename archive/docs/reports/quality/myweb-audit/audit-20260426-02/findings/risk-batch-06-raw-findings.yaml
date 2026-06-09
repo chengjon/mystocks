@@ -1,0 +1,39 @@
+- finding_id: risk-management-functional-003
+  batch_id: risk-batch-06
+  page:
+    route: /risk/management
+    page_key: risk-management
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/risk/Center.vue
+  source_role: functional-audit
+  severity: High
+  issue_type: route
+  title: Routed risk-management stock tab could not switch in a live browser and overstated unsupported single-name analysis as if it were a working actionable slice
+  trigger:
+    steps:
+      - Open `/risk/management`
+      - Let the canonical route finish its initial overview-tab load
+      - Click the `个股分析` tab in a real authenticated browser session
+      - Inspect both the selected-tab state and the visible subtitle or panel copy
+  expected: "The `个股分析` tab should switch away from the overview slice in a live browser, and if no single-name route contract exists yet the subtitle, panel, CTA, and feedback copy should explicitly degrade to pending-integration semantics rather than promising executable actions."
+  actual: "Before repair, the live route stayed on the overview slice after clicking `个股分析`, while the stock-tab metadata still promised `形成可执行的个股风控动作` and the panel only showed a placeholder selector hint rather than honest pending-integration copy."
+  evidence:
+    kind: live-observation
+    note: "System-`google-chrome` verification showed `aria-selected` stuck on `false` for the stock tab until the button semantics were repaired, and code-path review showed the same slice using an unsupported single-name action promise plus a placeholder panel."
+  repair_target:
+    files:
+      - web/frontend/src/views/risk/Center.vue
+      - web/frontend/src/views/artdeco-pages/risk-tabs/riskManagementHelpers.ts
+      - web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskStockPanel.vue
+    primary_owner: web/frontend/src/views/risk/Center.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /risk/management:route:riskCenter
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that the routed stock tab becomes selectable in a live browser and that the unsupported single-name slice now renders explicit pending-integration copy.

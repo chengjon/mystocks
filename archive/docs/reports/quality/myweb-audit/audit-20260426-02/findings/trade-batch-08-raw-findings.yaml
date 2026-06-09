@@ -1,0 +1,38 @@
+- finding_id: trade-history-data-state-003
+  batch_id: trade-batch-08
+  page:
+    route: /trade/history
+    page_key: trade-history
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/trade/History.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Trade history route collapsed unresolved or failed first-load ledger summary surfaces into faux verified empty truth
+  trigger:
+    steps:
+      - "Open `/trade/history`"
+      - "Observe the route while the first `/api/v1/trade/trades` payload is still unresolved"
+      - "Repeat with the same first request resolving as `success: false` before any verified ledger snapshot exists"
+      - "Inspect the hero `REQ_ID / TIME / ROWS` metadata, top KPI strip, content-shell `COMPLETED / CANCELLED` summary, and first-load empty copy"
+  expected: "Before the route has any verified ledger snapshot, top-level row counts, request metadata, and history tallies should degrade to explicit placeholders plus pending or unavailable messaging. A first-load failure must not reuse the same zero-row and empty-history semantics as a verified empty ledger."
+  actual: "Before repair, `/trade/history` rendered `ROWS: 0` on the unresolved first load, reused `暂无历史` and `暂无成交记录`, and on a resolved `success: false` first-load failure still surfaced `REQ_ID`, `TIME`, `ROWS: 0`, and zero-valued KPI tallies as if the route had completed a verified empty history load."
+  evidence:
+    kind: live-observation
+    note: "System-`google-chrome` verification with browser-context interception reproduced pending and first-load failure states on the authenticated routed page. After repair the same route renders `REQ_ID: N/A / TIME: N/A / ROWS: --`, placeholder KPI tallies, `交易历史同步中...`, and `交易历史接口失败，当前显示空历史状态。` before any verified ledger snapshot exists."
+  repair_target:
+    files:
+      - web/frontend/src/views/trade/History.vue
+    primary_owner: web/frontend/src/views/trade/History.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /trade/history
+  status: open
+  dependency: null
+  dedupe_key: /trade/history:data-state:firstLoadLedgerProvenanceTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/trade/history` after repair and confirm pending, unavailable, and verified-success paths now stay distinct on the routed page."

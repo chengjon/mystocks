@@ -1,0 +1,24 @@
+- consolidated_issue_id: secondary-shell-issue-50
+  severity: Medium
+  affected_routes:
+    - /secondary/stocks-orphan-static-shells
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/stocks/Activity.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "Orphan stocks child pages may be degraded to honest static shells because they are not active canonical route truth and preserve only local mock selector/refresh semantics."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The repair is scoped to unrouted secondary pages and source regression; it does not create new market, watchlist, or trade contracts."
+    related_routes:
+      - /secondary/stocks-orphan-static-shells
+  approval_status: approved

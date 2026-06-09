@@ -1,0 +1,85 @@
+audit_run_id: audit-20260426-02
+batch_id: system-batch-09
+module: system
+scope:
+  requested_by: user
+  pages:
+    - route: /system/config
+      page_key: system-config
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/system/Settings.vue
+  compatibility_redirects: []
+batch_rationale: Close the remaining routed `/system/config` active-tab request-provenance gap so header `REQ_ID / TIME` follows the currently visible tab snapshot instead of the last sibling loader that finished.
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+  - visual-artdeco-audit
+  - responsive-a11y-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - canonical route truth for `/system/config` remains under `web/frontend/src/views/system/Settings.vue`
+    - the route issues source, general-settings, and monitor requests in parallel during initial shell hydration, so header provenance must be verified against the visible active tab instead of the last sibling loader
+    - targeted browser verification can reuse the existing PM2 frontend with authenticated browser-context control of system `google-chrome`
+  fallback_log:
+    - the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, loading]
+  notes:
+    - "verify that the default `数据源` tab keeps source-config `REQ_ID / TIME` even if monitor or settings loaders finish later"
+    - "verify that the routed header swaps request provenance with the visible `系统监控` and `系统设置` tabs"
+    - "verify that the natural PM2 route still shows real source-tab rows while the active-tab header changes with the visible tab"
+repair_approval:
+  status: approved
+  approved_findings:
+    - system-config-issue-03
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - system-config
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/system/Settings.vue
+    - web/frontend/src/views/system/__tests__/Settings.spec.ts
+    - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/composables/artdeco/useArtDecoApi.ts
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-system-config-tab-provenance
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated frontend or backend files before `system-batch-09` was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` is treated as observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/system-config-active-tab-request-provenance-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-09-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-09-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-09-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/system-batch-09-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-system-batch-09-closeout
+  notes:
+    - "the routed `/system/config` page now captures request id and process time inside each tab-local loader closure, so visible header provenance follows the active tab instead of shared sibling-loader state"
+    - "natural PM2 verification confirmed the live route now reports distinct request metadata for `sources`, `monitor`, and `settings` while preserving real source-tab rows"
+status: complete

@@ -1,0 +1,38 @@
+- finding_id: data-indicator-functional-001
+  batch_id: data-batch-01
+  page:
+    route: /data/indicator
+    page_key: data-indicator
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/data/Advanced.vue
+  source_role: functional-audit
+  severity: Medium
+  issue_type: interaction
+  title: Routed indicator workbench still dropped users into a pseudo-editor placeholder instead of a truthful indicator detail surface
+  trigger:
+    steps:
+      - Open /data/indicator
+      - Wait for the indicator registry cards to render
+      - Click the first indicator card
+  expected: "Selecting an indicator should open a real detail workspace that shows the indicator metadata and registry-backed parameter summary."
+  actual: "Before repair, the routed page switched to a `指标编辑器` placeholder panel with `公式编辑器升级中` copy, and real registry parameter objects degraded to `[object Object]`."
+  evidence:
+    kind: live-observation
+    note: "System-Chrome verification and source review both showed the indicator-card interaction landing on placeholder copy rather than a truthful detail surface."
+  repair_target:
+    files:
+      - web/frontend/src/views/data/Advanced.vue
+      - web/frontend/tests/unit/views/data-indicator-details.spec.ts
+      - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/data/Advanced.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /data/indicator:interaction:advancedIndicatorDetails
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check routed indicator-card selection in a browser and confirm parameter summaries render registry values instead of placeholder text or generic object stringification.

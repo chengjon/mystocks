@@ -1,0 +1,39 @@
+- finding_id: system-config-data-state-003
+  batch_id: system-batch-09
+  page:
+    route: /system/config
+    page_key: system-config
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/system/Settings.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Routed system-config header request metadata followed the last sibling loader instead of the visible active-tab snapshot
+  trigger:
+    steps:
+      - "Open `/system/config`"
+      - "Let the default `数据源` tab, the sibling `系统设置` loader, and the sibling `系统监控` loader resolve in overlapping order"
+      - "Inspect the visible header `REQ_ID / TIME` metadata on the default tab"
+      - "Switch among `数据源`, `系统监控`, and `系统设置` and compare the header metadata with the visible tab surface"
+  expected: "The routed header should report the request id and process time for the currently visible active-tab snapshot. `数据源` should keep the source-config request metadata even if the monitor or settings loader finishes later, and tab switches should swap the header provenance with the visible tab."
+  actual: "Before repair, `/system/config` bound the header metadata to shared `useArtDecoApi.lastRequestId/lastProcessTime`, so whichever sibling loader finished last could overwrite the visible header on the default tab and the routed page could pin the wrong request metadata to the active tab."
+  evidence:
+    kind: live-observation
+    note: "New routed red tests reproduced both the late-sibling overwrite and the active-tab switching gap before repair. Targeted Playwright-library verification with system `google-chrome` then confirmed the live route now reports distinct active-tab request metadata for `sources`, `monitor`, and `settings`."
+  repair_target:
+    files:
+      - web/frontend/src/views/system/Settings.vue
+      - web/frontend/src/views/system/__tests__/Settings.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/system/Settings.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /system/config:data-state:activeTabRequestProvenanceTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/system/config` after repair and confirm the header `REQ_ID / TIME` follows the visible active tab instead of the last sibling loader."

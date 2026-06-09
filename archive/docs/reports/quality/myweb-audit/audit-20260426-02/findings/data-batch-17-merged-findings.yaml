@@ -1,0 +1,35 @@
+- consolidated_issue_id: data-indicator-issue-04
+  severity: High
+  title: Data indicator route now keeps failed-first-load screening actions from promoting local freshness or summary truth
+  pages:
+    - /data/indicator
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The false `筛选已就绪` status, the local-current-clock `UPDATED` stamp, and the promoted screening counters all came from the same unresolved-context action path inside `runScreening()`, so they are treated as one canonical first-load action-triggered freshness issue."
+  primary_owner: web/frontend/src/composables/market/useDataAnalysis.ts
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /data/indicator
+  dedupe_keys:
+    - /data/indicator:data-state:actionTriggeredFirstLoadFreshnessTruth
+  verification_scope:
+    routes:
+      - /data/indicator
+    states:
+      - first-load-fail-then-run-screening
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/composables/market/useDataAnalysis.ts
+      - web/frontend/tests/unit/views/data-advanced-screening-truth.spec.ts
+      - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+    notes:
+      - "the route-local `runScreening()` guard now refuses to advance counters, status, results, or `lastUpdateTime` until a verified analysis snapshot exists"
+      - "the canonical `/data/indicator` route now keeps `STATUS: 同步异常 / UPDATED: --` and `-- / -- / -- / -- / --` after `执行筛选` is clicked from a failed-first-load shell"
+      - "owner and routed regressions now pin the exact `first-load fail -> click 执行筛选` path without widening the repair into unrelated data-analysis routes or shared stat-card defaults"
+      - "this batch reuses existing `myweb-audit v1.54` action-triggered freshness guidance instead of introducing a new rule version"
+  verification_surface: code-review-plus-targeted-live-verification

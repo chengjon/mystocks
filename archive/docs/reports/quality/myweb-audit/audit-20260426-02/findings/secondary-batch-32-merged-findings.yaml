@@ -1,0 +1,36 @@
+- consolidated_issue_id: secondary-shell-issue-32
+  severity: Medium
+  title: Legacy backtest wizard page now degrades to an honest static shell
+  pages:
+    - /secondary/backtest-wizard-static-shell
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The local template cards, wizard steps, parameter comparison table, faux KPI result cards, and wrapper-local chart in `BacktestWizard.vue` were all faces of the same defect family: a legacy backtest wizard preserved pseudo-live truth even though no semantically matching canonical backtest-wizard owner existed."
+  primary_owner: web/frontend/src/views/BacktestWizard.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/backtest-wizard-static-shell
+  dedupe_keys:
+    - /secondary/backtest-wizard-static-shell:route-truth:backtestWizardStaticShell
+  verification_scope:
+    routes:
+      - /secondary/backtest-wizard-static-shell
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/BacktestWizard.vue
+      - web/frontend/src/views/__tests__/BacktestWizard.spec.ts
+      - web/frontend/src/views/composables/useBacktestWizard.ts
+      - web/frontend/src/views/styles/BacktestWizard.scss
+    notes:
+      - "the legacy backtest wizard page now renders an honest static shell"
+      - "the repair removes local template cards, wizard steps, comparison table, faux KPI cards, and wrapper-local chart instead of preserving pseudo-live backtest truth"
+      - "the now-unused local pseudo-live composable and style chain were retired with the owner"
+      - "users are handed back to verified `/strategy/backtest`, `/strategy/repo`, and `/strategy/opt` routes"
+  verification_surface: code-review-only

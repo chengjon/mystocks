@@ -2,7 +2,7 @@
 
 > **导航说明**:
 > 本文件是 `docs/guides/web/` 的 transition index，不是仓库共享规则、当前前端实现边界或唯一事实来源。
-> 若涉及仓库级共享规则、审批门禁或治理口径，请优先阅读 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)；若涉及具体执行入口，再结合根目录 `AGENTS.md`、根目录 `CLAUDE.md`、当前代码、`docs/README.md` 与最近一次实际验证结果核对。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先阅读 [`architecture/STANDARDS.md`](../../../architecture/STANDARDS.md)；若涉及具体执行入口，再结合根目录 `AGENTS.md`、根目录 `CLAUDE.md`、当前代码、`docs/README.md` 与最近一次实际验证结果核对。
 
 ## Current Entry Order
 
@@ -39,6 +39,10 @@
 
 ## Retained ArtDeco Governance And Implementation References
 
+> **Reader note（2026-05-11）**:
+> 下列 retained references 中的历史 ArtDeco/menu 计划不得覆盖当前前端结构真相。
+> 当前菜单与路由事实应优先回到 `docs/guides/frontend-structure.md`、`web/frontend/src/layouts/MenuConfig.ts`、`web/frontend/src/router/index.ts` 与 active OpenSpec evidence；历史 6-domain 计划不能恢复为当前完成判定。
+
 - [`ARTDECO_FINTECH_IMPLEMENTATION_AUDIT.md`](./ARTDECO_FINTECH_IMPLEMENTATION_AUDIT.md)
 - [`ARTDECO_FINTECH_PAGE_COMPOSITION_AUDIT.md`](./ARTDECO_FINTECH_PAGE_COMPOSITION_AUDIT.md)
 - [`ARTDECO_GRID_QUICK_START.md`](./ARTDECO_GRID_QUICK_START.md)
@@ -57,6 +61,10 @@
 - [`mystocks-artdeco-available-components.md`](./mystocks-artdeco-available-components.md)
 
 ## Retained Runtime, Planning And Migration References
+
+> **Reader note（2026-05-11）**:
+> 下列 retained runtime/planning references 中的 HTML5/PWA/Web Worker 方案或完成标记必须按历史材料阅读。
+> `2026-01-23-html5-migration-experience-optimization.md` 不代表当前 PWA/offline/push/accessibility、Worker + IndexedDB dataflow、Web Worker benchmark、移动端能力或生产 rollout 已闭合；当前状态以 `implement-html5-migration-experience-optimization` 的 `tasks.md`、`tasks-review.md` 和实测证据为准。
 
 - [`2026-01-23-html5-migration-experience-optimization.md`](./2026-01-23-html5-migration-experience-optimization.md)
 - [`FRONTEND_ACCESS_GUIDE.md`](./FRONTEND_ACCESS_GUIDE.md)

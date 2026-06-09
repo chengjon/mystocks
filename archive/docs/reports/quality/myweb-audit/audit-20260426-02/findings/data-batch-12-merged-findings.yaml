@@ -1,0 +1,36 @@
+- consolidated_issue_id: data-fund-flow-issue-02
+  severity: High
+  title: Fund-flow first-load hero row metadata now stays out of faux zero-row truth until a verified ranking snapshot exists
+  pages:
+    - /data/fund-flow
+  source_roles:
+    - data-state-audit
+  why_consolidated: The hero `ROWS / REQ` metadata and its first-load shell both leaked the same verified-empty interpretation before any fund-flow ranking snapshot existed, so they represent one first-load route-provenance issue on the canonical fund-flow page.
+  primary_owner: web/frontend/src/views/data/FundFlow.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /data/fund-flow
+  dedupe_keys:
+    - /data/fund-flow:data-state:firstLoadRankingMetaTruth
+  verification_scope:
+    routes:
+      - /data/fund-flow
+    states:
+      - loading
+      - error
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/data/FundFlow.vue
+      - web/frontend/src/views/data/__tests__/FundFlow.spec.ts
+      - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+    notes:
+      - "the canonical fund-flow route now gates hero `ROWS` and `REQ` metadata behind a page-local verified-snapshot boundary"
+      - "the strengthened routed regression now guards against `ROWS: 0` and leaked failed request ids on unresolved or failed first-load fund-flow states"
+      - "the strengthened Phase 2 matrix now guards pending and failed first-load hero-row provenance on `/data/fund-flow` without creating a new `myweb-audit` version branch"
+  verification_surface: code-review-plus-targeted-live-verification

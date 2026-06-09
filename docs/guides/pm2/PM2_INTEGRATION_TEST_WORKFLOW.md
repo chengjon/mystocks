@@ -2,7 +2,7 @@
 
 > **导航说明**:
 > 本文件是当前仓库本地 PM2 集成测试执行说明，服务于前后端整合后的日常验证。
-> 若涉及仓库级共享规则、审批门禁或环境一致性，请先回到 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)；若涉及历史 PM2 专题说明，再结合本 family 其他 supporting guides。
+> 若涉及仓库级共享规则、审批门禁或环境一致性，请先回到 [`architecture/STANDARDS.md`](../../../architecture/STANDARDS.md)；若涉及历史 PM2 专题说明，再结合本 family 其他 supporting guides。
 
 ## Scope
 
@@ -238,7 +238,7 @@ bash scripts/run_pm2_integration_workflow.sh all
 
 拆成两条链是为了避免 PM2 生命周期冲突。
 
-[`scripts/run_e2e_pm2.sh`](/opt/claude/mystocks_spec/scripts/run_e2e_pm2.sh) 自带：
+[`scripts/run_e2e_pm2.sh`](../../../scripts/run_e2e_pm2.sh) 自带：
 
 - `pm2 delete all`
 - `pm2 start ecosystem.test.config.js`
@@ -354,11 +354,11 @@ bash scripts/run_runtime_delivery_summary_local.sh
 
 ## Related Files
 
-- [`scripts/run_pm2_integration_workflow.sh`](/opt/claude/mystocks_spec/scripts/run_pm2_integration_workflow.sh)
-- [`scripts/run_e2e_pm2.sh`](/opt/claude/mystocks_spec/scripts/run_e2e_pm2.sh)
-- [`scripts/run_api_performance_baseline.sh`](/opt/claude/mystocks_spec/scripts/run_api_performance_baseline.sh)
-- [`scripts/run_monitoring_auth_performance_baseline.sh`](/opt/claude/mystocks_spec/scripts/run_monitoring_auth_performance_baseline.sh)
-- [`scripts/run_runtime_quality_summary.sh`](/opt/claude/mystocks_spec/scripts/run_runtime_quality_summary.sh)
-- [`scripts/dev/quality_gate/build_runtime_quality_summary.py`](/opt/claude/mystocks_spec/scripts/dev/quality_gate/build_runtime_quality_summary.py)
-- [`ecosystem.test.config.js`](/opt/claude/mystocks_spec/ecosystem.test.config.js)
-- [`web/frontend/package.json`](/opt/claude/mystocks_spec/web/frontend/package.json)
+- [`scripts/run_pm2_integration_workflow.sh`](../../../scripts/run_pm2_integration_workflow.sh)
+- [`scripts/run_e2e_pm2.sh`](../../../scripts/run_e2e_pm2.sh)
+- [`scripts/run_api_performance_baseline.sh`](../../../scripts/run_api_performance_baseline.sh)
+- [`scripts/run_monitoring_auth_performance_baseline.sh`](../../../scripts/run_monitoring_auth_performance_baseline.sh)
+- [`scripts/run_runtime_quality_summary.sh`](../../../scripts/run_runtime_quality_summary.sh)
+- [`scripts/dev/quality_gate/build_runtime_quality_summary.py`](../../../scripts/dev/quality_gate/build_runtime_quality_summary.py)
+- [`ecosystem.test.config.js`](../../../ecosystem.test.config.js)
+- [`web/frontend/package.json`](../../../web/frontend/package.json)

@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/me",
+  "total_endpoints": 1,
+  "endpoints": [
+    {
+      "path": "/me",
+      "method": "GET",
+      "file": "auth.py",
+      "function": "read_users_me",
+      "return_model": "User",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 218
+    }
+  ]
+}

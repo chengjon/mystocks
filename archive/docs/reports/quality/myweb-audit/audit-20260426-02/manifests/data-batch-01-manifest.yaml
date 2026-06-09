@@ -1,0 +1,103 @@
+audit_run_id: audit-20260426-02
+batch_id: data-batch-01
+module: data
+scope:
+  requested_by: user
+  pages:
+    - route: /data/industry
+      page_key: data-industry
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/data/Industry.vue
+    - route: /data/concept
+      page_key: data-concept
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/data/Concepts.vue
+    - route: /data/fund-flow
+      page_key: data-fund-flow
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/data/FundFlow.vue
+    - route: /data/indicator
+      page_key: data-indicator
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/data/Advanced.vue
+  compatibility_redirects:
+    - /data -> /data/industry
+batch_rationale: Primary routed data workbenches with one remaining active-route truthfulness issue in the indicator detail workflow.
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+  - visual-artdeco-audit
+  - responsive-a11y-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: live-audit
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - PM2 frontend and backend remain reachable on the canonical local URLs
+    - the seeded admin test account is available for live route-entry checks
+  fallback_log:
+    - live route-entry checks reused the existing PM2 frontend/backend instead of starting a new frontend server
+    - the default Playwright chromium bundle is missing on this machine, so targeted browser verification fell back to Playwright-library control of system `google-chrome`
+verification_plan:
+  verification_strategy: chromium-only
+  browser_project: chromium
+  breakpoints: [1920, 1440, 1280]
+  required_states: [default, loading, empty, error, disabled, extreme-data]
+  notes:
+    - live route-entry confirmation covered `/data/industry`, `/data/concept`, `/data/fund-flow`, and `/data/indicator`
+    - targeted post-fix browser verification focused on `/data/indicator` because it was the only repaired routed defect in this batch
+repair_approval:
+  status: approved
+  approved_findings:
+    - data-indicator-issue-01
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - data-industry
+    - data-concept
+    - data-fund-flow
+    - data-indicator
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/data/Advanced.vue
+    - web/frontend/tests/unit/views/data-indicator-details.spec.ts
+    - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-indicator-detail-1-of-1
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained previously staged audit artifacts and earlier frontend repair files before `data-batch-01` was added"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` returned `risk_level: low`, `changed_files: 76`, `changed_count: 216`, and `affected_count: 0`"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/data-industry-audit.md
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/data-concept-audit.md
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/data-fund-flow-audit.md
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/data-indicator-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-01-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-01-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-01-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/data-batch-01-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: staged-scope-and-artifact-validation
+  next_action: finalize-data-batch-closeout
+  notes:
+    - "all four routed data pages now point at canonical `src/views/data/*.vue` entries"
+    - "`/data/indicator` no longer exposes the pseudo-editor placeholder on indicator-card selection"
+    - "GitNexus staged detect stayed low risk but remained a mixed staged observation because earlier batches were already staged"
+status: complete

@@ -1,0 +1,42 @@
+- consolidated_issue_id: data-fund-flow-issue-01
+  severity: Medium
+  title: Fund-flow routed numeric surfaces now render honest first-load placeholders and ordinal ranks instead of fabricated zero metrics or pseudo decimals
+  pages:
+    - /data/fund-flow
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The unresolved first-load KPI strip and the ranking-table `rank` column were two manifestations of the same routed numeric-truth cluster: shared numeric renderers leaked faux live metric semantics onto zero-initialized loading placeholders and discrete ordinal values on the same canonical page."
+  primary_owner: web/frontend/src/views/data/FundFlow.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /market/lhb
+  dedupe_keys:
+    - /data/fund-flow:data-state:unresolvedFirstLoadNumericTruth
+    - /data/fund-flow:data-state:fundFlowRankOrdinalPrecision
+  verification_scope:
+    routes:
+      - /data/fund-flow
+    states:
+      - default
+      - loading
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/data/FundFlow.vue
+      - web/frontend/src/views/data/__tests__/FundFlow.spec.ts
+      - web/frontend/tests/unit/views/data-fund-flow-partial-state.spec.ts
+      - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/SKILL.md
+      - .claude/skills/myweb-audit/references/audit-checklist.md
+      - .claude/agents/myweb-audit-data-state-audit.md
+      - .claude/skills/myweb-audit/references/CHANGELOG.md
+    notes:
+      - "the canonical fund-flow route now gates its shared stat cards behind `showSummaryCardPlaceholders` so unresolved first-load KPI surfaces render `--` and suppress shared delta chrome instead of leaking `0.00 / +0%`"
+      - "the canonical fund-flow route now overrides shared table formatting for the discrete `rank` field so the routed ranking table renders `1 / 2` rather than `1.00 / 2.00`"
+      - "the new routed component regression mounts the real `ArtDecoStatCard` and `ArtDecoTable` path so the test fails if either unresolved faux zero metrics or ordinal pseudo precision leak back"
+      - "the strengthened Phase 2 matrix assertion and new `v1.38` rule now treat unresolved first-load numeric surfaces as an explicit route-truth defect instead of letting zero-initialized loading placeholders pass as live metrics"
+  verification_surface: code-review-plus-targeted-live-verification

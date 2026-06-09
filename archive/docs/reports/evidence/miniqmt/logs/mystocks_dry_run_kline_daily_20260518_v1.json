@@ -1,0 +1,46 @@
+{
+  "artifact": {
+    "byte_count": 4579,
+    "hash": "6b48f4fe167e812926aef7a40bda5bc38b03dc76eb7dc2feadd84b0f75523c65",
+    "type": "parquet",
+    "uri": "file:///D:/MyCode3/miniQMT/logs/mystocks_evidence_dataset_registry_20260518/exports/kline_daily/kline_daily_20260518_v1.parquet"
+  },
+  "dataset": {
+    "dataset_version": "kline_daily_20260518_v1",
+    "lineage_id": "lin_kline_daily_20260518_v1",
+    "maturity": "candidate",
+    "payload_hash": "61eedd9cd029f6c0a3324b3e66be0d9b83402279cbd0aed75885459822ec13d1",
+    "quality_status": "raw",
+    "rows_hash": "0efbcdd407ff0461c8d3f06a4dc6ac315c6b6ec177f783705ce8f57c233c1152",
+    "schema_version": "v1"
+  },
+  "dry_run": {
+    "artifact_sha256_verified": true,
+    "comparison_summary": {
+      "row_count": 2,
+      "sample_dates": [
+        "2026-05-12",
+        "2026-05-13"
+      ],
+      "sample_symbols": [
+        "600000.SH"
+      ]
+    },
+    "database_target": "dry-run-only",
+    "failed_checks": [],
+    "field_mapping_version": "miniqmt.kline_daily.v1",
+    "mapped_classification": "daily_kline",
+    "placeholder_count": 0,
+    "row_count": 2,
+    "sample_dates": [
+      "2026-05-12",
+      "2026-05-13"
+    ],
+    "sample_symbols": [
+      "600000.SH"
+    ],
+    "warnings": [],
+    "writes_performed": false
+  },
+  "generated_at": "2026-05-18T11:17:16.684047Z"
+}

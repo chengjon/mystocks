@@ -1,0 +1,24 @@
+- consolidated_issue_id: risk-alerts-issue-10
+  severity: High
+  affected_routes:
+    - /risk/alerts
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/risk/Alerts.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: The canonical risk alerts route now keeps request provenance, summary counts, and visible rules/alerts aligned with the currently visible verified multi-request snapshot instead of the latest failed refresh attempt.
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: The approved repair stayed page-local in `web/frontend/src/views/risk/Alerts.vue` and its routed regressions; the legacy `ArtDecoRiskAlerts.vue` consumer only inherits the owner fix.
+    related_routes:
+      - /risk/alerts
+  approval_status: approved

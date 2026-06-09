@@ -1,0 +1,35 @@
+- consolidated_issue_id: secondary-shell-issue-42
+  severity: Medium
+  title: Legacy system monitor page now degrades to an honest static shell
+  pages:
+    - /secondary/monitor-static-shell
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The legacy `monitor.vue` page had no independent route truth but still preserved page-local pseudo-live service checks, history rows, and endpoint metadata."
+  primary_owner: web/frontend/src/views/monitor.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/monitor-static-shell
+  dedupe_keys:
+    - /secondary/monitor-static-shell:route-truth:legacyMonitorStaticShell
+  verification_scope:
+    routes:
+      - /secondary/monitor-static-shell
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/monitor.vue
+      - web/frontend/src/views/composables/usemonitor.ts
+      - web/frontend/src/views/styles/monitor.scss
+      - web/frontend/src/views/__tests__/monitor.spec.ts
+    notes:
+      - "the page now renders `legacy-static-shell` and links to verified `/system/*` and trade runtime handoff routes"
+      - "the page-local pseudo-live composable and style were removed after their only consumer was retired"
+      - "the secondary inventory high-priority shortlist dropped from 13 to 12 after the repair"
+  verification_surface: code-review-only

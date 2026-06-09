@@ -1,0 +1,38 @@
+- finding_id: secondary-shell-028-system-architecture
+  batch_id: secondary-batch-28
+  page:
+    route: /secondary/system-architecture-static-shell
+    page_key: secondary-system-architecture-static-shell
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/system/Architecture.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy system architecture page still exposed pseudo migration progress, topology counts, and stack summaries without any verified canonical owner
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/system/Architecture.vue`"
+      - "Inspect the local architecture summary cards, database topology section, routing table, migration percentages, and stack summaries"
+      - "Confirm there is no routed or otherwise active canonical architecture owner that validates those shell-level metrics"
+  expected: "An unrouted legacy architecture dashboard with no verified canonical owner should degrade to an honest static shell instead of preserving pseudo migration and topology truth."
+  actual: "Before repair, `Architecture.vue` still rendered hardcoded migration counts, database quantities, Redis/MySQL retirement copy, and architecture/tech-stack summaries as if they were live verified system truth."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green regression confirmed the legacy architecture page still rendered pseudo migration and topology shell semantics before static-shell degradation."
+  repair_target:
+    files:
+      - web/frontend/src/views/system/Architecture.vue
+      - web/frontend/src/views/system/__tests__/Architecture.spec.ts
+    primary_owner: web/frontend/src/views/system/Architecture.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/system-architecture-static-shell
+  status: open
+  dependency: null
+  dedupe_key: /secondary/system-architecture-static-shell:route-truth:systemArchitectureStaticShell
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner regression to confirm the pseudo migration cards, topology summaries, and stack counts are gone and replaced by a static shell."

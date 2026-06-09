@@ -1,0 +1,33 @@
+- consolidated_issue_id: secondary-shell-issue-15
+  severity: Medium
+  title: Legacy trade management page now delegates to the active trading orchestration shell
+  pages:
+    - /secondary/legacy-trade-management-canonical-wrapper
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The local header, portfolio overview, positions, trade-history, and statistics surfaces were all facets of the same defect: `TradeManagement.vue` preserved a forked pseudo-live trading workbench shell even though the active trading orchestration shell already exists."
+  primary_owner: web/frontend/src/views/TradeManagement.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-trade-management-canonical-wrapper
+  dedupe_keys:
+    - /secondary/legacy-trade-management-canonical-wrapper:route-truth:legacyTradeManagementCanonicalWrapper
+  verification_scope:
+    routes:
+      - /secondary/legacy-trade-management-canonical-wrapper
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/TradeManagement.vue
+      - web/frontend/src/views/__tests__/TradeManagement.spec.ts
+    notes:
+      - "the legacy trade management page now renders only the active trading orchestration shell instead of a forked pseudo-live workbench"
+      - "the page no longer fabricates local positions, trade-history, or statistics shell truth"
+      - "secondary inventory heuristics now drop `TradeManagement.vue` out of the high-priority shortlist"
+  verification_surface: code-review-only

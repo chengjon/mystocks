@@ -1,0 +1,92 @@
+audit_run_id: audit-20260426-02
+batch_id: strategy-batch-15
+module: strategy
+scope:
+  requested_by: user
+  pages:
+    - route: /strategy/backtest
+      page_key: strategy-backtest
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue
+  compatibility_redirects: []
+batch_rationale: "Promote `myweb-audit` to `v1.54` and repair the canonical strategy-backtest route so rejected manual run actions from unresolved context no longer stamp hero freshness metadata with the local current clock."
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "the canonical `/strategy/backtest` route is still owned by `web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue` through `web/frontend/src/views/strategy/Backtest.vue`"
+    - "the approved repair should stay route-local in `web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts` instead of widening into strategy service transport or backend backtest schemas"
+    - "the visible hero freshness surface `最后更新 / UPDATED` must remain on placeholder truth when a rejected manual run action occurs before any verified strategy context exists"
+    - "auth-seeded browser contexts plus browser-context interception with `serviceWorkers: block` are acceptable verification harnesses for the controlled `first-load fail -> click run` proof on this route"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, error]
+  notes:
+    - "verify `/strategy/backtest` keeps `最后更新 / UPDATED` at `--` when the first strategy-list load fails and the user still clicks `启动回测`"
+    - "verify the warning banner `未绑定有效策略ID，无法启动真实回测。` appears without mutating hero freshness"
+    - "verify the natural PM2 route still reaches `/strategy/backtest` and preserves its existing live or honest shell behavior while this guard remains route-local"
+repair_approval:
+  status: approved
+  approved_findings:
+    - strategy-backtest-issue-04
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - strategy-backtest
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts
+    - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/strategy/Backtest.vue
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+    confirmed:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+      - web/frontend/src/views/strategy/Backtest.vue
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-strategy-backtest-action-freshness-verification
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `strategy-batch-15` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-backtest-action-triggered-freshness-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-15-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-15-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-15-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/strategy-batch-15-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-strategy-batch-15-closeout
+  notes:
+    - "the repaired strategy-backtest route now keeps hero `最后更新 / UPDATED` on placeholder truth when `启动回测` is rejected before any verified strategy context exists"
+    - "future routed action audits should treat rejected or no-op manual actions as separate freshness-provenance surfaces from first-load shell rendering and refresh-failure paths"
+status: complete

@@ -1,0 +1,41 @@
+- finding_id: secondary-shell-050-stocks-orphan-pages
+  batch_id: secondary-batch-50
+  page:
+    route: /secondary/stocks-orphan-static-shells
+    page_key: secondary-stocks-orphan-static-shells
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/stocks/Activity.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Orphan stocks child pages preserved mock selector and refresh truth
+  trigger:
+    steps:
+      - "Inspect `views/stocks/{Activity,Concept,Industry,Watchlist}.vue`"
+      - "Confirm the pages have no active route or importing owner"
+      - "Confirm they still expose local mock rows, selector/filter state, refresh success messages, or random local mutation"
+  expected: "Unrouted orphan stocks child pages should degrade to honest static shells and hand off users to canonical market, data, trade, or watchlist owners."
+  actual: "Before repair, the pages preserved mock trading rows, concept/industry stock pools, watchlist filters, local mutations, and refresh success semantics."
+  evidence:
+    kind: code-review-plus-owner-regression
+    note: "RED regression failed because `Activity.vue` lacked `legacy-static-shell` and still exposed mock trading activity and refresh behavior."
+  repair_target:
+    files:
+      - web/frontend/src/views/stocks/Activity.vue
+      - web/frontend/src/views/stocks/Concept.vue
+      - web/frontend/src/views/stocks/Industry.vue
+      - web/frontend/src/views/stocks/Watchlist.vue
+      - web/frontend/tests/unit/config/stocks-orphan-static-shells.spec.ts
+    primary_owner: web/frontend/src/views/stocks/Activity.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/stocks-orphan-static-shells
+  status: open
+  dependency: null
+  dedupe_key: /secondary/stocks-orphan-static-shells:route-truth:orphanStocksPages
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run source regression to confirm the orphan stocks pages render `legacy-static-shell` and no longer preserve mock rows, refresh success, selector state, or random mutation."

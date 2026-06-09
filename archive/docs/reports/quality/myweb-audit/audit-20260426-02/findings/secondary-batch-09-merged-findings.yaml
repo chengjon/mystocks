@@ -1,0 +1,33 @@
+- consolidated_issue_id: secondary-shell-issue-09
+  severity: Medium
+  title: Enhanced legacy dashboard now delegates to the canonical dashboard owner
+  pages:
+    - /secondary/enhanced-dashboard-canonical-wrapper
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The faux stats grid, watchlist workbench, market overview, and sector-performance sections were all facets of the same defect: `EnhancedDashboard.vue` preserved a forked pseudo-live dashboard shell even though a semantically matching canonical dashboard owner already exists."
+  primary_owner: web/frontend/src/views/EnhancedDashboard.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/enhanced-dashboard-canonical-wrapper
+  dedupe_keys:
+    - /secondary/enhanced-dashboard-canonical-wrapper:route-truth:enhancedDashboardCanonicalWrapper
+  verification_scope:
+    routes:
+      - /secondary/enhanced-dashboard-canonical-wrapper
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/EnhancedDashboard.vue
+      - web/frontend/src/views/__tests__/EnhancedDashboard.spec.ts
+    notes:
+      - "the enhanced legacy dashboard now renders only the canonical ArtDeco dashboard owner instead of a forked pseudo-live shell"
+      - "the page no longer fabricates local watchlist, sector-performance, or market-summary truth"
+      - "secondary inventory heuristics now drop `EnhancedDashboard.vue` out of the high-priority shortlist"
+  verification_surface: code-review-only

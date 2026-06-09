@@ -1,0 +1,86 @@
+audit_run_id: audit-20260426-02
+batch_id: risk-batch-12
+module: risk
+scope:
+  requested_by: user
+  pages:
+    - route: /risk/management
+      page_key: risk-management
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/risk/Center.vue
+  compatibility_redirects: []
+batch_rationale: "Close the canonical `/risk/management` initial freshness placeholder truth gap so loading and first-load failure shells no longer seed footer `最后一次更新` from the local current clock before any verified positions snapshot exists. This batch reuses existing `myweb-audit v1.47` without a new skill bump."
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/risk/management` remains `web/frontend/src/views/risk/Center.vue`"
+    - "the approved repair should stay page-local in `Center.vue` instead of widening into shared ArtDeco page-template behavior or unrelated risk-family routes"
+    - "the visible freshness surface for this batch is the footer copy `风险数据每5分钟自动更新 · 最后一次更新：...`, because loading and first-load failure shells do not keep the content-shell `UPDATED:` meta mounted"
+    - "natural PM2 browser reuse is healthy enough to confirm the same footer still advances to a real time after a verified positions snapshot exists"
+    - "controlled browser-context fulfillment is acceptable for the first-load failure proof because it isolates the initial freshness leak without depending on backend timing"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [loading, error, default]
+  notes:
+    - "verify a hanging or failed first `/v1/trade/positions` load now keeps the footer freshness at `最后一次更新：--`"
+    - "verify the same route still advances footer freshness to a real time after a verified live positions snapshot exists"
+repair_approval:
+  status: approved
+  approved_findings:
+    - risk-management-issue-12
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - risk-management
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/risk/Center.vue
+    - web/frontend/src/views/risk/__tests__/Center.spec.ts
+    - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/artdeco-pages/ArtDecoRiskManagement.vue
+    confirmed:
+      - web/frontend/src/views/artdeco-pages/ArtDecoRiskManagement.vue
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-risk-management-initial-freshness-proof-and-phase4-list
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contains earlier staged audit artifacts and unrelated files, so any staged GitNexus output remains observation-only unless an isolated staged scope is prepared later"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` remains an observation-only reading in this run because the staged set is not isolated to `risk-batch-12`"
+      - "latest staged observation returned `risk_level: low`, `changed_files: 126`, `changed_count: 317`, and `affected_count: 0`"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/risk-management-initial-freshness-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-12-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-12-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-12-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/risk-batch-12-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-risk-batch-12-closeout
+  notes:
+    - "the canonical risk management route now keeps footer freshness unresolved until the first verified positions snapshot arrives"
+    - "this batch reuses `myweb-audit v1.47` initial freshness placeholder truth guidance without adding a new skill version"
+status: complete

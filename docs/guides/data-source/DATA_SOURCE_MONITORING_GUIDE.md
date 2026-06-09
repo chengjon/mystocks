@@ -33,7 +33,7 @@
    - 不是当前仓库里唯一的监控真相源
 
 > **Repo-truth（2026-05-01）**:
-> - `GET /metrics` 已在 [main.py](/opt/claude/mystocks_spec/web/backend/app/main.py:735) 存在，但当前主要暴露的是 performance middleware 的全局 registry 指标。
+> - `GET /metrics` 已在 [main.py](../../../web/backend/app/main.py:735) 存在，但当前主要暴露的是 performance middleware 的全局 registry 指标。
 > - `src/core/data_source/metrics.py` 已有 `datasource_api_latency_seconds`、`datasource_api_calls_total`、`datasource_cache_hits_total`、`datasource_circuit_breaker_state` 等指标，并已接到 `DataSourceManagerV2` hook。
 > - `src/monitoring/data_source_metrics.py` 与 `scripts/runtime/start_metrics_server.py` 仍存在，但它们不再是唯一监控真相源。
 > - 当前仓库已存在并维护数据源监控 dashboard / alert rule 的 canonical 配置：

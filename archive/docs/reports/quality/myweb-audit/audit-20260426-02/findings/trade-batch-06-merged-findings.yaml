@@ -1,0 +1,41 @@
+- consolidated_issue_id: trade-portfolio-issue-02
+  severity: High
+  title: Trade portfolio and risk-pnl now distinguish verified empty holdings truth from unavailable or unresolved-first-load summary truth
+  pages:
+    - /trade/portfolio
+    - /risk/pnl
+  source_roles:
+    - data-state-audit
+  why_consolidated: The canonical trade route and the risk wrapper share the same portfolio owner, so their faux zero-balance summary surfaces and false first-load empty semantics represent one shared summary-truth issue rather than separate route bugs.
+  primary_owner: web/frontend/src/views/trade/Portfolio.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /trade/portfolio
+    - /risk/pnl
+  dedupe_keys:
+    - /trade/portfolio:data-state:firstLoadPortfolioSummaryTruth
+  verification_scope:
+    routes:
+      - /trade/portfolio
+      - /risk/pnl
+    states:
+      - default
+      - empty
+      - loading
+      - error
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/trade/Portfolio.vue
+      - web/frontend/src/views/trade/__tests__/Portfolio.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    notes:
+      - "the canonical portfolio owner now tracks whether a verified holdings snapshot has ever resolved and uses that truth to separate natural empty-state zeros from unavailable or unresolved-first-load placeholders"
+      - "top summary cards, hero meta, hero totals, and dependent empty panels now degrade to `--` or explicit pending/unavailable copy until a verified portfolio snapshot exists"
+      - "the strengthened routed regression and Phase 3 matrix assertions now guard the owner route against faux zero balances, false real-empty copy, and leaked shared stat-card semantics on `/trade/portfolio`, while the natural `/risk/pnl` wrapper reuses the repaired owner behavior"
+      - "the current repair reuses the existing `myweb-audit v1.32 + v1.38 + v1.39` rules rather than adding a new skill-version branch"
+  verification_surface: code-review-plus-targeted-live-verification

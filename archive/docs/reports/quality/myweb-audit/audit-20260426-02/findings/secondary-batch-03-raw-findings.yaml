@@ -1,0 +1,44 @@
+- finding_id: secondary-shell-003
+  batch_id: secondary-batch-03
+  page:
+    route: /secondary/artdeco-trading-center-active-wrappers
+    page_key: secondary-artdeco-trading-center-active-wrappers
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/artdeco-pages/ArtDecoTradingCenter.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Active trading-center monitor wrappers still exposed placeholder migration shells instead of delegating to canonical market and risk truth
+  trigger:
+    steps:
+      - "Open `ArtDecoTradingCenter.vue` and select the active `realtime-monitor` and `risk-monitor` function panels"
+      - "Inspect `ArtDecoRealtimeMonitor.vue` and `ArtDecoRiskMonitor.vue`"
+      - "Compare those wrapper shells against existing canonical `/market/realtime` and `/risk/management` truth owners already used elsewhere in the repo"
+  expected: "Active monitor wrappers should either embed canonical verified truth directly or degrade honestly when no contract exists; they should not keep local `STATUS: PLACEHOLDER` migration shells when canonical truth already exists."
+  actual: "Before repair, both wrappers rendered local placeholder migration copy and next-step cards even though the live trading-center shell already had a concrete import chain and the repo already exposed canonical market realtime and risk-center truth."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green wrapper tests confirmed the live parent shell still fronted placeholder monitor panels instead of delegating to canonical owners."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoRealtimeMonitor.vue
+      - web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskMonitor.vue
+      - web/frontend/src/views/artdeco-pages/market-data-tabs/__tests__/ArtDecoRealtimeMonitor.spec.ts
+      - web/frontend/src/views/artdeco-pages/risk-tabs/__tests__/ArtDecoRiskMonitor.spec.ts
+      - web/frontend/src/views/market/__tests__/Realtime.spec.ts
+      - web/frontend/src/views/risk/__tests__/Center.spec.ts
+      - .claude/skills/myweb-audit/references/route-truth-operations.md
+      - .claude/skills/myweb-audit/references/route-truth-casebook.md
+    primary_owner: web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoRealtimeMonitor.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/artdeco-trading-center-active-wrappers
+  status: open
+  dependency: null
+  dedupe_key: /secondary/artdeco-trading-center-active-wrappers:data-state:activeMonitorWrapperPlaceholderTruth
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run owner wrapper regressions and the canonical market/risk regression subset to confirm the live parent shell now delegates those monitor panels to canonical truth."

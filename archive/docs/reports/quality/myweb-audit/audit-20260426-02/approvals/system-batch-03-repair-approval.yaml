@@ -1,0 +1,46 @@
+- consolidated_issue_id: system-api-issue-02
+  severity: Medium
+  affected_routes:
+    - /system/api
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/system/API.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: The routed system-api page now degrades middleware runtime labels to `未校验` instead of leaving them in `启用` or `活跃` states after the health probe fails.
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: null
+    related_routes: []
+  approval_status: approved
+- consolidated_issue_id: system-health-issue-01
+  severity: Medium
+  affected_routes:
+    - /system/health
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/system/Health.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: The routed system-health page now degrades middleware runtime labels to `UNVERIFIED` instead of leaving them in `ENABLED` or `ACTIVE` states after the health probe fails.
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: null
+    related_routes: []
+  approval_status: approved

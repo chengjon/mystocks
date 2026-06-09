@@ -1,0 +1,41 @@
+- consolidated_issue_id: trade-reconciliation-issue-02
+  severity: High
+  title: Trade reconciliation now clears previous account import metadata while a newly selected account snapshot is unresolved
+  pages:
+    - /trade/reconciliation
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The route exposed a second selector-scoped truth cluster: local import-batch metadata remained tied to the previous verified account after the visible account selector had already changed."
+  primary_owner: web/frontend/src/views/trade/composables/useTradeReconciliation.ts
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /watchlist/manage
+    - /strategy/backtest
+    - /risk/stop-loss
+  dedupe_keys:
+    - /trade/reconciliation:data-state:accountSelectorPendingImportContext
+  verification_scope:
+    routes:
+      - /trade/reconciliation
+    states:
+      - verified-account-success
+      - imported-results-visible
+      - same-instance-account-switch-pending
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/trade/composables/useTradeReconciliation.ts
+      - web/frontend/src/views/trade/__tests__/Reconciliation.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/references/route-truth-casebook.md
+      - .claude/skills/myweb-audit/references/route-truth-coverage-matrix.md
+    notes:
+      - "account switches now clear selector-owned `importBatchId` and `importRowCount` before the new account refresh begins"
+      - "the unresolved new-account hero no longer leaks `IMPORT_BATCH: batch-7 / ROWS: 3` from the previous verified account"
+      - "owner and routed Phase 3 regressions now lock the same-instance `backtest:7 -> backtest:8` unresolved-switch metadata path"
+      - "the stable `myweb-audit v2.0` numeric-truth and selector-scoped families are reused; only the casebook and coverage matrix were updated"
+  verification_surface: code-review-plus-targeted-live-verification

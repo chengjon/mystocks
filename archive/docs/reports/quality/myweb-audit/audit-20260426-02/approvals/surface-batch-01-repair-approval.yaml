@@ -1,0 +1,77 @@
+- consolidated_issue_id: risk-alerts-issue-05
+  severity: High
+  affected_routes:
+    - /risk/alerts
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/risk/Alerts.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: true
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: Count-only KPI cards on `/risk/alerts` should not inherit shared stat-card delta chrome or exact-decimal precision when the routed payload only proves plain counts.
+  dependency: null
+  shared_impact:
+    candidate: true
+    basis: The defect pattern came from shared stat-card defaults and was also reproduced on `/risk/news` and `/watchlist/manage`, but the current batch intentionally repaired the route locally because the shared `ArtDecoStatCard.vue` owner had a HIGH upstream blast radius.
+    related_routes:
+      - /risk/news
+      - /watchlist/manage
+  approval_status: approved
+
+- consolidated_issue_id: risk-news-issue-05
+  severity: High
+  affected_routes:
+    - /risk/news
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/risk/News.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: true
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: Count-only KPI cards on `/risk/news` should render plain counts instead of borrowing fabricated `+0%` chrome or decimal precision from shared stat-card defaults.
+  dependency: null
+  shared_impact:
+    candidate: true
+    basis: The same shared stat-card pattern was reproduced on `/risk/alerts` and `/watchlist/manage`, but the approved repair stays page-local for this batch because the shared owner is high-blast-radius.
+    related_routes:
+      - /risk/alerts
+      - /watchlist/manage
+  approval_status: approved
+
+- consolidated_issue_id: watchlist-manage-issue-03
+  severity: High
+  affected_routes:
+    - /watchlist/manage
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/artdeco-pages/stock-management-tabs/WatchlistManager.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: true
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: The canonical watchlist manage overview cards should not render faux delta chrome or exact-decimal precision when the routed surface only exposes plain counts.
+  dependency: null
+  shared_impact:
+    candidate: true
+    basis: The same shared stat-card defaults affected `/risk/alerts` and `/risk/news`, but the approved repair remains route-local because changing `ArtDecoStatCard.vue` directly would hit a HIGH shared blast radius.
+    related_routes:
+      - /risk/alerts
+      - /risk/news
+  approval_status: approved

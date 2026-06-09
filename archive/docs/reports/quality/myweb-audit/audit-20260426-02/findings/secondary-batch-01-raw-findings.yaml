@@ -1,0 +1,42 @@
+- finding_id: secondary-shell-001
+  batch_id: secondary-batch-01
+  page:
+    route: /secondary/artdeco-trading-management
+    page_key: secondary-artdeco-trading-management
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/artdeco-pages/ArtDecoTradingManagement.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Secondary trading shell leaked fake live provenance and summary data instead of reusing canonical /trade truth
+  trigger:
+    steps:
+      - "Open `ArtDecoTradingManagement.vue` as the secondary embedded trading shell owner"
+      - "Inspect the shell hero, stats strip, and local tab panels"
+      - "Compare the displayed runtime copy against canonical `/trade/*` verified-snapshot rules"
+  expected: "The shell should either reuse canonical `/trade/*` truth directly or degrade to a static shell; it should not render independent REQ_ID, SYNC, market status, P&L, or fake signal counts."
+  actual: "Before repair, the owner rendered local `REQ_ID: N/A`, `SYNC: 实时工作流`, hardcoded market status and P&L cards, and fake local trade panels even though it did not own a verified snapshot contract."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green tests confirmed the shell still claimed live runtime truth while bypassing existing canonical `/trade/*` pages."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/ArtDecoTradingManagement.vue
+      - web/frontend/src/views/artdeco-pages/__tests__/ArtDecoTradingManagement.spec.ts
+      - web/frontend/src/views/trade/Portfolio.vue
+      - web/frontend/src/views/trade/__tests__/Portfolio.spec.ts
+      - .claude/skills/myweb-audit/references/route-truth-operations.md
+      - .claude/skills/myweb-audit/references/route-truth-casebook.md
+    primary_owner: web/frontend/src/views/artdeco-pages/ArtDecoTradingManagement.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/artdeco-trading-management
+  status: open
+  dependency: null
+  dedupe_key: /secondary/artdeco-trading-management:data-state:fakeShellLiveTruth
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run owner regression and the canonical trade regression subset to confirm the shell only orchestrates canonical pages and static fallback tabs."

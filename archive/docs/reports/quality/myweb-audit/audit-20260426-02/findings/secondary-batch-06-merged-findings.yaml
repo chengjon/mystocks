@@ -1,0 +1,35 @@
+- consolidated_issue_id: secondary-shell-issue-06
+  severity: Medium
+  title: Legacy dashboard now collapses to a thin orchestration wrapper over the canonical ArtDeco dashboard owner
+  pages:
+    - /secondary/legacy-dashboard-canonical-wrapper
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The summary cards, market heat panel, industry flow panel, and sector performance table were all facets of the same defect: `Dashboard.vue` presented hardcoded pseudo-live dashboard truth even though a semantically matching canonical dashboard owner already exists."
+  primary_owner: web/frontend/src/views/Dashboard.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-dashboard-canonical-wrapper
+  dedupe_keys:
+    - /secondary/legacy-dashboard-canonical-wrapper:route-truth:legacyDashboardCanonicalWrapper
+  verification_scope:
+    routes:
+      - /secondary/legacy-dashboard-canonical-wrapper
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/Dashboard.vue
+      - web/frontend/src/views/__tests__/Dashboard.spec.ts
+      - .claude/skills/myweb-audit/references/route-truth-operations.md
+      - .claude/skills/myweb-audit/references/route-truth-casebook.md
+    notes:
+      - "the legacy dashboard now renders a thin wrapper over the canonical ArtDeco dashboard owner instead of a forked pseudo-live shell"
+      - "the page no longer fabricates request provenance, freshness, or live monitoring semantics"
+      - "the repair keeps the page available as a compatibility wrapper while delegating all real dashboard truth to the canonical owner"
+  verification_surface: code-review-only

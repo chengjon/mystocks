@@ -1,0 +1,38 @@
+- finding_id: secondary-shell-009
+  batch_id: secondary-batch-09
+  page:
+    route: /secondary/enhanced-dashboard-canonical-wrapper
+    page_key: secondary-enhanced-dashboard-canonical-wrapper
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/EnhancedDashboard.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Enhanced legacy dashboard still exposed a forked pseudo-live dashboard shell even though a semantically matching canonical dashboard owner already exists
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/EnhancedDashboard.vue`"
+      - "Inspect the faux stats grid, market overview, watchlist panel, and sector-performance sections"
+      - "Confirm the page is not mounted by the current router and does not delegate to the canonical ArtDeco dashboard owner"
+  expected: "An unrouted legacy page that already has a semantically matching canonical dashboard owner should collapse to a thin orchestration wrapper instead of preserving a forked pseudo-live dashboard shell."
+  actual: "Before repair, `EnhancedDashboard.vue` rendered its own pseudo-live dashboard shell with local watchlist, market heat, and sector-performance surfaces instead of delegating to the canonical dashboard owner."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green regression confirmed the enhanced legacy page still rendered a fake live dashboard shell before the wrapper repair."
+  repair_target:
+    files:
+      - web/frontend/src/views/EnhancedDashboard.vue
+      - web/frontend/src/views/__tests__/EnhancedDashboard.spec.ts
+    primary_owner: web/frontend/src/views/EnhancedDashboard.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/enhanced-dashboard-canonical-wrapper
+  status: open
+  dependency: null
+  dedupe_key: /secondary/enhanced-dashboard-canonical-wrapper:route-truth:enhancedDashboardCanonicalWrapper
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner wrapper regression and secondary inventory tooling to confirm the enhanced legacy dashboard now delegates entirely to the canonical dashboard owner."

@@ -1,0 +1,38 @@
+- consolidated_issue_id: risk-news-issue-11
+  severity: High
+  title: Risk news now preserves verified announcement snapshot truth for request provenance, summary counts, and stale refresh behavior
+  pages:
+    - /risk/news
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The failed first-load request-id leak, faux today/count summary surfaces, and refresh-after-success row clearing were one routed truth cluster: `/risk/news` trusted the latest `useArtDecoApi` request metadata and failure-null arrays instead of a page-local verified announcements snapshot boundary."
+  primary_owner: web/frontend/src/views/risk/News.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /risk/news
+  dedupe_keys:
+    - /risk/news:data-state:announcementRefreshProvenanceAndPlaceholderTruth
+  verification_scope:
+    routes:
+      - /risk/news
+    states:
+      - first-load-failure
+      - stale-refresh-failure
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/risk/News.vue
+      - web/frontend/src/views/risk/__tests__/News.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    notes:
+      - "the canonical risk news owner now keeps page-local verified snapshot state for request provenance instead of binding hero `REQ_ID` to the latest failed refresh attempt"
+      - "the same route now gates sibling count surfaces such as `TODAY`, `ANNOUNCEMENTS`, `LINKED`, and the top stats strip behind first-load placeholder truth, so unresolved or failed first loads render `--` instead of faux zero counts"
+      - "a later failed refresh now preserves verified announcements with stale-refresh copy instead of clearing the routed shell to empty arrays"
+      - "the strengthened routed regressions now pin both the component and the Phase 4 matrix against first-load provenance leaks, empty-success copy regressions, and refresh-after-success retention regressions"
+      - "this batch reuses existing `myweb-audit v1.43` plus the already-promoted first-load placeholder rules, so no new skill-version bump was required"
+  verification_surface: code-review-plus-targeted-live-verification

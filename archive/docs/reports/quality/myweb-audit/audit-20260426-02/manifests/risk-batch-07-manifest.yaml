@@ -1,0 +1,84 @@
+audit_run_id: audit-20260426-02
+batch_id: risk-batch-07
+module: risk
+scope:
+  requested_by: user
+  pages:
+    - route: /risk/overview
+      page_key: risk-overview
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/risk/Overview.vue
+  compatibility_redirects: []
+batch_rationale: Apply the strengthened `v1.36` ordinal-precision truth rule to the canonical risk-overview rules tab so live integer rule priorities no longer inherit shared `x.00` table formatting.
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/risk/overview` remains `web/frontend/src/views/risk/Overview.vue`"
+    - "the live `/v1/monitoring/alert-rules` contract returns discrete integer priorities that express ordering semantics rather than fractional metrics"
+    - "shared `ArtDecoTable` exact-decimal formatting remains valid for many numeric surfaces, so the approved repair should stay page-local on the priority column instead of changing shared table defaults"
+    - "the alerts endpoint may legitimately return zero records; empty alerts are not part of this precision defect"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default]
+  notes:
+    - "verify `/risk/overview` renders the live rule list under `规则清单` with integer priorities such as `4`, `3`, and `2` instead of fabricated `4.00`, `3.00`, or `2.00`"
+    - "verify the rules tab remains backed by the live alert-rules contract while the overview KPI strip and alert tab stay unaffected"
+repair_approval:
+  status: approved
+  approved_findings:
+    - risk-overview-issue-04
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - risk-overview
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/risk/Overview.vue
+    - web/frontend/src/views/risk/__tests__/Overview.spec.ts
+    - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-risk-overview-1-route
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `risk-batch-07` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/risk-overview-priority-precision-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-07-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-07-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-07-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/risk-batch-07-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-risk-batch-07-closeout
+  notes:
+    - "this batch introduced `v1.36` because the live alert-rules contract exposed integer priorities while the routed rules tab still rendered those discrete values with fabricated shared-table decimal precision"
+status: complete

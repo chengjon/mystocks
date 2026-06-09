@@ -1,0 +1,90 @@
+audit_run_id: audit-20260426-02
+batch_id: secondary-batch-38
+module: secondary-legacy-surfaces
+scope:
+  requested_by: user
+  pages:
+    - route: /secondary/market-auction-static-shell
+      page_key: secondary-market-auction-static-shell
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/market/Auction.vue
+    - route: /secondary/market-etf-static-shell
+      page_key: secondary-market-etf-static-shell
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/market/Etf.vue
+  compatibility_redirects: []
+batch_rationale: >-
+  Continue the secondary inventory phase by degrading two legacy market-domain
+  pages to honest static shells because no semantically matching verified
+  auction or ETF canonical owner exists.
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-only
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "the manifest routes are synthetic secondary-inventory aliases used for artifact indexing; `web/frontend/src/views/market/Auction.vue` and `web/frontend/src/views/market/Etf.vue` are not current router entries"
+    - "nearby auction and ETF sibling modules are embedded or legacy surfaces, not independent one-to-one canonical owners for these pages"
+    - "the repair must not add a new store, snapshot cache, request provenance badge, selector shell, ranking table, or shell-level freshness strip"
+  fallback_log: []
+verification_plan:
+  verification_strategy: code-review-only
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states:
+    - default
+  notes:
+    - "verify the market auction page no longer renders local auction metrics, refresh simulation, status tags, or hardcoded sample rows"
+    - "verify the market ETF page no longer renders local ETF metrics, auto-refresh controls, category selectors, ranking tables, or hardcoded ETF rows"
+    - "verify secondary inventory tooling still passes after the static-shell precedent write-back"
+repair_approval:
+  status: approved
+  approved_findings:
+    - secondary-shell-issue-38
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - secondary-market-auction-static-shell
+    - secondary-market-etf-static-shell
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/market/Auction.vue
+    - web/frontend/src/views/market/Etf.vue
+    - web/frontend/src/views/market/__tests__/Auction.spec.ts
+    - web/frontend/src/views/market/__tests__/Etf.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/market/Auction.vue
+      - web/frontend/src/views/market/Etf.vue
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vitest
+    typecheck: failed-existing-frontend-debt-only
+    pm2: passed
+    e2e: not-run-unrouted-owner
+    gitnexus_staged_detect: mixed-observation-non-isolated
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "the staged index already contained many unrelated files before this micro-batch, so `gitnexus_detect_changes({scope: staged})` must be recorded only as a mixed observation"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/market-auction-etf-legacy-static-shell-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/secondary-batch-38-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/secondary-batch-38-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/secondary-batch-38-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/secondary-batch-38-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: verification
+  next_action: continue-secondary-inventory-triage
+  notes:
+    - "legacy market auction and ETF pages with only local metrics, refresh controls, selectors, rankings, and sample rows should degrade to honest static shells when no verified one-to-one canonical owner exists"
+status: complete

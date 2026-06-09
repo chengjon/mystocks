@@ -1,0 +1,26 @@
+- consolidated_issue_id: secondary-shell-issue-37
+  severity: Medium
+  affected_routes:
+    - /secondary/market-capital-flow-canonical-wrapper
+    - /secondary/market-concepts-canonical-wrapper
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/market/CapitalFlow.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "Legacy market-domain pages now delegate to canonical data-domain owners."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The repair stays scoped to the two legacy market wrappers and reuses existing `/data/*` truth without introducing any new shared shell state."
+    related_routes:
+      - /secondary/market-capital-flow-canonical-wrapper
+      - /secondary/market-concepts-canonical-wrapper
+  approval_status: approved

@@ -1,0 +1,42 @@
+- finding_id: risk-management-data-state-013
+  batch_id: risk-batch-13
+  page:
+    route: /risk/management
+    page_key: risk-management
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/risk/Center.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Risk management stats grid reused total PnL ratio as faux summary-delta truth for unrelated cards
+  trigger:
+    steps:
+      - "Open `/risk/management`."
+      - "Inspect the stats grid cards `总资产` and `今日收益` under either a holdings payload with only `total_market_value / total_profit_loss / total_profit_loss_percent` or a natural empty-success payload."
+      - "Compare the rendered secondary `%` rows with the actual positions-response contract."
+  expected: "When the live positions payload only proves absolute totals and total floating PnL ratio, unsupported summary-delta rows under `总资产` and `今日收益` should degrade to explicit pending copy such as `待接入` instead of re-labeling that aggregate ratio as per-card change truth."
+  actual: "Before repair, `toRiskManagementMetrics()` mapped `total_profit_loss_percent` into both `totalAssetsChange` and `todayProfitChange`, and `ArtDecoRiskStatsGrid.vue` rendered those values as if they were verified secondary deltas for unrelated cards. The same surface also leaked `+0%` on natural empty-success payloads."
+  evidence:
+    kind: live-observation
+    note: "Natural PM2 `/risk/management` reproduced `总资产 ¥0 +0% / 今日收益 +¥0 +0%`, and controlled browser-context fulfillment with `total_profit_loss_percent: 1.84` reproduced the same grid semantics. After repair, natural PM2 now shows `待接入` instead of `+0%`, and the controlled holdings payload shows `¥372,664 / +¥6,844 / 待接入` without leaking `+1.84%`."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/risk-tabs/riskManagementHelpers.ts
+      - web/frontend/src/views/artdeco-pages/risk-tabs/riskManagementData.ts
+      - web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskStatsGrid.vue
+      - web/frontend/src/views/artdeco-pages/risk-tabs/__node_tests__/riskManagementData.test.ts
+      - web/frontend/src/views/artdeco-pages/risk-tabs/__tests__/ArtDecoRiskStatsGrid.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/artdeco-pages/risk-tabs/riskManagementData.ts
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /risk/management
+  status: open
+  dependency: null
+  dedupe_key: /risk/management:data-state:summaryDeltaTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check natural PM2 `/risk/management` empty-success rendering and a controlled holdings payload with `total_profit_loss_percent` to confirm the stats grid no longer shows `+0%` or `+1.84%` as faux per-card deltas."

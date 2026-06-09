@@ -1,7 +1,7 @@
 # ArtDeco High-Frequency Candidate List
 
 > **说明**
-> 本文用于承接 [`ARTDECO_STANDARDIZATION_P0_TASKS.md`](/opt/claude/mystocks_spec/docs/plans/ARTDECO_STANDARDIZATION_P0_TASKS.md) 中“选定首批高频组件样板”的工作。
+> 本文用于承接 [`ARTDECO_STANDARDIZATION_P0_TASKS.md`](ARTDECO_STANDARDIZATION_P0_TASKS.md) 中“选定首批高频组件样板”的工作。
 > 它不是全量组件 inventory，而是首批 P1 样板治理候选清单。
 
 ---

@@ -1,0 +1,39 @@
+- finding_id: risk-management-data-state-012
+  batch_id: risk-batch-12
+  page:
+    route: /risk/management
+    page_key: risk-management
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/risk/Center.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Risk management route seeded footer freshness with local current time before any verified positions snapshot existed
+  trigger:
+    steps:
+      - "Open `/risk/management`."
+      - "Force `**/api/v1/trade/positions` to hang or resolve the first load as `success: false` before any verified positions snapshot exists."
+      - "Inspect the footer surface `风险数据每5分钟自动更新 · 最后一次更新：...`."
+  expected: "Before `/risk/management` has any verified positions snapshot, the visible freshness surface should stay unresolved as `最后一次更新：--` instead of fabricating a local current-time stamp."
+  actual: "Before repair, `web/frontend/src/views/risk/Center.vue` initialized `lastUpdateTime` with `new Date().toLocaleString()`, so both loading-state and first-load failure shells leaked a local current-time footer even though the route had not yet verified any positions snapshot."
+  evidence:
+    kind: live-observation
+    note: "Owner-level regression, routed Phase 4 assertion, and controlled system-Chrome verification all reproduced the same leak before repair. After repair, controlled first-load failure now renders footer `最后一次更新：--`, while natural PM2 success still advances the same footer to a real time only after a verified positions snapshot exists."
+  repair_target:
+    files:
+      - web/frontend/src/views/risk/Center.vue
+      - web/frontend/src/views/risk/__tests__/Center.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/risk/Center.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /risk/management
+  status: open
+  dependency: null
+  dedupe_key: /risk/management:data-state:initialFreshnessFooterTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/risk/management` after repair and confirm loading/error shells keep footer freshness as `--`, while natural success still shows a real update time."

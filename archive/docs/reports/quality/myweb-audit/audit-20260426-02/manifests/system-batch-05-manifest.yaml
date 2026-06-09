@@ -1,0 +1,117 @@
+audit_run_id: audit-20260426-02
+batch_id: system-batch-05
+module: system
+scope:
+  requested_by: user
+  pages:
+    - route: /system/health
+      page_key: system-health
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/system/Health.vue
+    - route: /system/api
+      page_key: system-api
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/system/API.vue
+    - route: /system/data
+      page_key: system-data
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/system/DataSource.vue
+    - route: /system/config
+      page_key: system-config
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/system/Settings.vue
+  compatibility_redirects: []
+batch_rationale: Close the remaining routed system top-strip count-kpi truth leaks and the system health probe-envelope truth gap so successful plain `/api/health` payloads are normalized instead of collapsing to unknown or unavailable semantics, then fold that detection rule back into myweb-audit.
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+  - visual-artdeco-audit
+  - responsive-a11y-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - canonical route truth for `/system/health`, `/system/api`, `/system/data`, and `/system/config` remains under `web/frontend/src/views/system/*.vue`
+    - the live `/api/health` contract still returns a successful plain-object probe payload rather than a `UnifiedResponse` envelope
+    - the live `/api/health/detailed` contract remains a `UnifiedResponse` path and may still be unavailable without auth
+    - targeted browser verification can reuse the existing PM2 frontend with real-login navigation and Playwright-library control of system `google-chrome`
+  fallback_log:
+    - the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1920, 1440, 1280]
+  required_states: [default, loading, error]
+  notes:
+    - verify that system KPI strips render plain counts and labels without fabricated `+0%`, flat dots, arrows, or `2.00`-style pseudo precision
+    - verify that `/system/health` and `/system/api` accept successful plain `/api/health` payloads and no longer collapse the routed cards into `UNKNOWN / N/A / N/A`
+    - verify that `/system/config` can still fall back to a health-summary surface when detailed metrics are unavailable instead of collapsing the monitor tab to `UNAVAILABLE`
+repair_approval:
+  status: approved
+  approved_findings:
+    - system-health-family-issue-01
+    - system-data-issue-01
+    - system-config-issue-01
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - system-health
+    - system-api
+    - system-data
+    - system-config
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/system/API.vue
+    - web/frontend/src/views/system/Health.vue
+    - web/frontend/src/views/system/DataSource.vue
+    - web/frontend/src/views/system/Settings.vue
+    - web/frontend/src/views/system/healthProbeContract.ts
+    - web/frontend/src/views/system/__tests__/API.spec.ts
+    - web/frontend/src/views/system/__tests__/Health.spec.ts
+    - web/frontend/src/views/system/__tests__/DataSource.spec.ts
+    - web/frontend/src/views/system/__tests__/Settings.spec.ts
+    - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+  shared_impact:
+    candidates:
+      - web/frontend/src/api/index.ts
+      - web/frontend/src/components/artdeco/base/ArtDecoStatCard.vue
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-system-routes-3-routes
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated frontend or backend files before `system-batch-05` was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` is treated as observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/system-health-family-probe-and-kpi-truth-audit.md
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/system-data-count-kpi-truth-audit.md
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/system-config-health-summary-fallback-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-05-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-05-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-05-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/system-batch-05-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-system-batch-05-closeout
+  notes:
+    - "the routed `/system/health` and `/system/api` pages now normalize successful plain `/api/health` payloads and render `HEALTHY / N/A / 1.0.0 / 3` instead of collapsing to `UNKNOWN / N/A / N/A / 3`"
+    - "the routed `/system/health`, `/system/api`, and `/system/data` KPI strips now suppress shared stat-card change chrome and pseudo precision"
+status: complete

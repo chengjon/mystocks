@@ -1,0 +1,38 @@
+- finding_id: secondary-shell-046-decision-header
+  batch_id: secondary-batch-46
+  page:
+    route: /secondary/trading-decision-header-static-shell
+    page_key: secondary-trading-decision-header-static-shell
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/trading-decision/DecisionHeader.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy trading-decision header preserved local quick actions, tab selectors, and auto-refresh execution state
+  trigger:
+    steps:
+      - "Inspect `web/frontend/src/views/trading-decision/DecisionHeader.vue`"
+      - "Confirm its only direct consumer is unrouted `TradingDecisionCenter.vue`"
+      - "Confirm the header retained local trade quick actions and refresh timers while sibling panels had already been delegated or degraded"
+  expected: "A secondary trading-decision header with no verified canonical owner should not preserve local execution controls, panel selectors, or auto-refresh dispatch state."
+  actual: "Before repair, the header exposed quick trade buttons, tab scroll controls, auto-refresh toggling, custom events, and an import to a missing ArtDecoCardCompact component."
+  evidence:
+    kind: code-review-plus-owner-regression
+    note: "RED regression failed before repair because the old header imported a missing `ArtDecoCardCompact.vue` dependency."
+  repair_target:
+    files:
+      - web/frontend/src/views/trading-decision/DecisionHeader.vue
+      - web/frontend/src/views/trading-decision/__tests__/DecisionHeader.spec.ts
+    primary_owner: web/frontend/src/views/trading-decision/DecisionHeader.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/trading-decision-header-static-shell
+  status: open
+  dependency: null
+  dedupe_key: /secondary/trading-decision-header-static-shell:route-truth:decisionHeaderStaticShell
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run owner and sibling panel regressions to confirm the header is static and no local execution controls remain."

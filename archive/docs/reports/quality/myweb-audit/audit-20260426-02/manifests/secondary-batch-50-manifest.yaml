@@ -1,0 +1,86 @@
+audit_run_id: audit-20260426-02
+batch_id: secondary-batch-50
+module: secondary-legacy-surfaces
+scope:
+  requested_by: user
+  pages:
+    - route: /secondary/stocks-orphan-static-shells
+      page_key: secondary-stocks-orphan-static-shells
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/stocks/Activity.vue
+  compatibility_redirects: []
+batch_rationale: >-
+  Close orphan stocks child pages that still preserved local mock selector,
+  refresh, and row truth.
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-only
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "the manifest route is a synthetic secondary-inventory alias used for artifact indexing"
+    - "the repair must not add new stocks APIs, stores, snapshots, request provenance badges, selector shells, freshness strips, or execution truth"
+    - "canonical market/data/trade/watchlist owners remain the only live truth for these semantics"
+  fallback_log: []
+verification_plan:
+  verification_strategy: code-review-only
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states:
+    - default
+  notes:
+    - "verify orphan stocks pages render `legacy-static-shell`"
+    - "verify orphan stocks pages no longer preserve mock rows, selector state, random mutation, or refresh success semantics"
+repair_approval:
+  status: approved
+  approved_findings:
+    - secondary-shell-issue-50
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - secondary-stocks-orphan-static-shells
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/stocks/Activity.vue
+    - web/frontend/src/views/stocks/Concept.vue
+    - web/frontend/src/views/stocks/Industry.vue
+    - web/frontend/src/views/stocks/Watchlist.vue
+    - web/frontend/tests/unit/config/stocks-orphan-static-shells.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/stocks/Activity.vue
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vitest-and-diff-check
+    typecheck: failed-existing-frontend-debt-only
+    pm2: passed
+    e2e: not-run-unrouted-owner
+    gitnexus_staged_detect: mixed-staged-observation-medium-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files:
+      - "GitNexus staged detect observed 259 staged files and 537 changed symbols across the dirty index"
+      - "GitNexus staged detect observed 3 affected processes, all outside the isolated stocks orphan page scope"
+    verdict_origin: isolated-batch-only
+    notes:
+      - "the staged index already contained many unrelated files before this micro-batch, so `gitnexus_detect_changes({scope: staged})` must be recorded only as a mixed observation"
+      - "pre-edit file-level impact was LOW for stocks/Activity.vue, stocks/Concept.vue, stocks/Industry.vue, and stocks/Watchlist.vue"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/stocks-orphan-static-shells-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/secondary-batch-50-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/secondary-batch-50-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/secondary-batch-50-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/secondary-batch-50-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: verification
+  next_action: continue-secondary-m-priority-triage
+  notes:
+    - "orphan stocks child pages should not preserve local mock selector, refresh, or row truth"
+status: complete

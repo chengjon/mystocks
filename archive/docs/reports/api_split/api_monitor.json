@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/monitor",
+  "total_endpoints": 2,
+  "endpoints": [
+    {
+      "path": "/monitor/evaluate",
+      "method": "POST",
+      "file": "announcement.py",
+      "function": "evaluate_monitor_rules",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 257
+    },
+    {
+      "path": "/monitor/evaluate",
+      "method": "POST",
+      "file": "announcement/routes.py",
+      "function": "evaluate_monitor_rules",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 512
+    }
+  ]
+}

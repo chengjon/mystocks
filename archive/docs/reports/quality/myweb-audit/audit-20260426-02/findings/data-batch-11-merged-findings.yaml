@@ -1,0 +1,37 @@
+- consolidated_issue_id: data-industry-issue-03
+  severity: High
+  title: Data industry route now derives hero provenance from actual first-load route state instead of hardcoding REAL
+  pages:
+    - /data/industry
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The unresolved-first-load and first-load-failure behaviors were two manifestations of the same route-truth defect: the canonical industry page presented optimistic top-level provenance without any verified board snapshot."
+  primary_owner: web/frontend/src/views/data/Industry.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /data/industry
+  dedupe_keys:
+    - /data/industry:data-state:firstLoadRouteProvenanceTruth
+  verification_scope:
+    routes:
+      - /data/industry
+    states:
+      - loading
+      - error
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/data/Industry.vue
+      - web/frontend/src/views/data/__tests__/Industry.spec.ts
+      - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+    notes:
+      - "the canonical industry route now derives `DATA` from `loading`, `error`, `hasLoaded`, and verified board evidence instead of a hardcoded `REAL` ref"
+      - "the routed component regression now protects `DATA: PENDING` and `DATA: UNAVAILABLE` on first unresolved and first-failure states"
+      - "the phase1 matrix now covers the same route-local provenance states at the routed page layer"
+      - "this batch reuses existing `myweb-audit v1.40` route-provenance truth without introducing a new skill version, because the defect is a direct page-local application of the existing rule"
+  verification_surface: code-review-plus-targeted-live-verification

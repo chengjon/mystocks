@@ -1,0 +1,41 @@
+- finding_id: market-realtime-data-state-003
+  batch_id: market-batch-09
+  page:
+    route: /market/realtime
+    page_key: market-realtime
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/market/Realtime.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Market realtime leaked the previous preset's verified quote rows into a new unresolved preset shell
+  trigger:
+    steps:
+      - "Open `/market/realtime` and let the default `核心蓝筹样本` quote request complete successfully."
+      - "Keep the same mounted route instance alive, then switch the local preset selector from `核心蓝筹样本` to `金融权重样本`."
+      - "Leave the first `/api/v1/market/quotes?symbols=600036,601318,600000,601166,601288` request unresolved before any verified `金融权重样本` snapshot exists."
+      - "Inspect the active preset chrome, hero metadata, and the visible quote rows without remounting the route."
+  expected: "Visible rows, sample count, and `TRACE_ID` must be scoped to the active preset. If `金融权重样本` has no verified snapshot yet, the same mounted route should show `TRACE_ID: N/A / SAMPLE: --` plus an empty or pending selector-local shell, and it must not keep the earlier `核心蓝筹样本` rows visible under the new preset."
+  actual: "Before repair, the same mounted `/market/realtime` instance could switch to active `金融权重样本` while the first finance-preset request was unresolved and still keep the previous verified rows visible, so the new selector shell inherited stale `核心蓝筹样本` quote rows and verified provenance."
+  evidence:
+    kind: live-observation
+    note: "The new owner red test first failed with `金融权重样本` active while `tbody tr` still had `2` visible rows. After repair, targeted Playwright-library verification with system `google-chrome` and `serviceWorkers: block` confirmed the active preset switches to `金融权重样本` with `TRACE_ID: N/A`, `SAMPLE: --`, `0` visible rows, and the pending distribution copy."
+  repair_target:
+    files:
+      - web/frontend/src/views/market/Realtime.vue
+      - web/frontend/src/views/market/__tests__/Realtime.spec.ts
+      - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/market/Realtime.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /dashboard
+    - /detail/graphics/:symbol
+  status: open
+  dependency: null
+  dedupe_key: /market/realtime:data-state:presetSelectorSnapshotTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check the same mounted `/market/realtime` instance after repair and confirm `核心蓝筹样本 -> 金融权重样本` no longer leaks the previous preset rows or verified `TRACE_ID` while the new preset has not verified yet."

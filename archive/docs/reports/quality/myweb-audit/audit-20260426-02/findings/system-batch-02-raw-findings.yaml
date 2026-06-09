@@ -1,0 +1,38 @@
+- finding_id: system-api-data-state-001
+  batch_id: system-batch-02
+  page:
+    route: /system/api
+    page_key: system-api
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/system/API.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Routed system-api page fabricated a local request ID instead of showing the real traced request ID from the unified response wrapper
+  trigger:
+    steps:
+      - Open `/system/api`
+      - Let the initial `/api/health` request succeed with a top-level `request_id`
+      - Inspect the visible `REQ_ID` in the hero and content meta surfaces
+      - Optionally click `导出报告` and compare the visible `REQ_ID` with the detailed health response trace ID
+  expected: "Visible request-tracing surfaces should show the real request ID exposed by the request wrapper or unified response metadata, or an explicit unavailable state if no trace ID exists."
+  actual: "Before repair, the page ignored the wrapper trace metadata and rendered a fabricated `sys-${Date.now()}` placeholder as if it were the backend request ID."
+  evidence:
+    kind: live-observation
+    note: "Targeted system-Chrome verification confirmed that `/system/api` showed `REQ_ID: sys-*` even when the backend wrapper returned `request_id: req-health-top`."
+  repair_target:
+    files:
+      - web/frontend/src/views/system/API.vue
+      - web/frontend/src/views/system/__tests__/API.spec.ts
+    primary_owner: web/frontend/src/views/system/API.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /system/api:data-state:API
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check initial health load and post-export report trace surfaces so visible `REQ_ID` always follows the latest real traced interaction.

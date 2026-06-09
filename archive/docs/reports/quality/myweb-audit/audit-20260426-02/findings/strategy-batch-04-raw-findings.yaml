@@ -1,0 +1,38 @@
+- finding_id: strategy-gpu-data-state-001
+  batch_id: strategy-batch-04
+  page:
+    route: /strategy/gpu
+    page_key: strategy-gpu
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/strategy/BacktestGPU.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Strategy GPU route presented partial runtime payload gaps as exact zero-valued live metrics
+  trigger:
+    steps:
+      - Open `/strategy/gpu`
+      - Let the routed page load against the current PM2 backend `/api/gpu/status` and `/api/gpu/performance` endpoints
+      - Observe the successful `200` responses that prove GPU availability and utilization but omit benchmark and secondary sensor fields such as `matrix_speedup`, `matrix_gflops`, `sm_clock`, `memory_clock`, and `fan_speed`
+  expected: "A successful but partial GPU runtime payload should keep verified availability visible while degrading unsupported thermals, clocks, fan speed, power, and benchmark metrics to explicit unverified or pending-benchmark copy."
+  actual: "Before repair, the routed page coerced absent or placeholder fields into exact zero-valued runtime metrics and rendered `0°C 正常`, `0x`, `-100%`, `0 MHz`, `0%`, and `0 W` style surfaces as if they were verified live telemetry."
+  evidence:
+    kind: live-page-and-code-path-review
+    note: "The actual PM2 `/strategy/gpu` route reproduced `NVIDIA GeForce RTX 2080` together with `0°C 正常`, `当前加速倍数 0x`, `计算性能提升 -100%`, `能效比 0`, and `0 MHz / 0%` metrics before repair, while `gpuMonitorData.ts` defaulted missing sensor and benchmark fields to `0` and `BacktestGPU.vue` rendered those exact values as synced runtime truth."
+  repair_target:
+    files:
+      - web/frontend/src/views/strategy/composables/gpuMonitorData.ts
+      - web/frontend/src/views/strategy/composables/useBacktestGPU.ts
+      - web/frontend/src/views/strategy/BacktestGPU.vue
+    primary_owner: web/frontend/src/views/strategy/composables/gpuMonitorData.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /strategy/gpu:data-state:gpuMonitorData
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check the actual PM2 `/strategy/gpu` route plus a controlled partial-runtime browser scenario after repair and confirm the metrics tab also degrades missing clock, fan, and power fields honestly.

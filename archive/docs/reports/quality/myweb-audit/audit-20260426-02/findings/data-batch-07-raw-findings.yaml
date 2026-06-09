@@ -1,0 +1,77 @@
+- finding_id: data-industry-data-state-002
+  batch_id: data-batch-07
+  page:
+    route: /data/industry
+    page_key: data-industry
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/data/Industry.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Routed industry KPI strip inherited shared stat-card delta chrome and decimal precision for plain board tallies
+  trigger:
+    steps:
+      - Open `/data/industry`
+      - Wait for the canonical route to finish loading live industry rows
+      - Inspect the top KPI strip
+  expected: "Plain board tallies should render as honest count or label values such as `10`, `10`, `3.56%`, and `0` without fabricated flat-change dots, `+0%`, or exact-decimal count formatting."
+  actual: "Before repair, the routed KPI strip rendered board tallies as `10.00`, `10.00`, and `0.00` with shared flat-change chrome and `+0%`, implying unsupported delta semantics and pseudo precision."
+  evidence:
+    kind: live-observation
+    note: "System-`google-chrome` verification of the real PM2 route showed the top strip rendering `10.00 / ● +0%` style count cards even though the page only had current board tallies and no comparison baseline."
+  repair_target:
+    files:
+      - web/frontend/src/views/data/Industry.vue
+    primary_owner: web/frontend/src/views/data/Industry.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /data/fund-flow
+    - /market/lhb
+  status: open
+  dependency: null
+  dedupe_key: /data/industry:data-state:count-kpi-delta-truth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that the live industry KPI strip renders plain count or label values with zero `.artdeco-stat-change` nodes and no `+0%`.
+
+- finding_id: data-industry-data-state-003
+  batch_id: data-batch-07
+  page:
+    route: /data/industry
+    page_key: data-industry
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/data/Industry.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Routed industry rank column inherited shared exact-decimal table formatting and rendered ordinal rows as faux metrics
+  trigger:
+    steps:
+      - Open `/data/industry`
+      - Wait for the canonical route to finish loading live industry rows
+      - Inspect the `排名` column in the routed board table
+  expected: "The `排名` column should render live ordinal values as plain whole numbers such as `1`, `2`, and `3`, because board rank is an ordering field rather than a fractional metric."
+  actual: "Before repair, the routed board table passed rank values through shared exact-decimal table formatting and rendered `1.00`, `2.00`, and `3.00`, implying unsupported fractional precision."
+  evidence:
+    kind: live-observation
+    note: "System-`google-chrome` verification of the real PM2 route showed the live industry table rendering `1.00 / 2.00 / 3.00` in the first column; source review confirmed the page delegated `rank` to `ArtDecoTable`'s generic numeric formatter."
+  repair_target:
+    files:
+      - web/frontend/src/views/data/Industry.vue
+    primary_owner: web/frontend/src/views/data/Industry.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /data/fund-flow
+    - /market/lhb
+  status: open
+  dependency: null
+  dedupe_key: /data/industry:data-state:industryRankOrdinalPrecision
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that the live board table still renders real rows and now shows ordinal ranks without `x.00` precision.

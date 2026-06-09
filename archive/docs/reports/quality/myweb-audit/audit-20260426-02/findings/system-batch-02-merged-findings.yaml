@@ -1,0 +1,40 @@
+- consolidated_issue_id: system-api-issue-01
+  severity: Medium
+  title: System API trace surfaces now use real request-tracing IDs instead of fabricated local placeholders
+  pages:
+    - /system/api
+  source_roles:
+    - data-state-audit
+  why_consolidated: The fake `sys-*` header ID, missing wrapper-trace truth, and stale request-trace surface after report export were one routed telemetry trace-truth defect owned by the canonical system API page.
+  primary_owner: web/frontend/src/views/system/API.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact: []
+  dedupe_keys:
+    - /system/api:data-state:API
+  verification_scope:
+    routes:
+      - /system/api
+    states:
+      - default
+      - loading
+      - error
+    breakpoints:
+      - 1920
+      - 1440
+      - 1280
+  repair_summary:
+    files:
+      - web/frontend/src/views/system/API.vue
+      - web/frontend/src/views/system/__tests__/API.spec.ts
+      - .claude/skills/myweb-audit/SKILL.md
+      - .claude/skills/myweb-audit/references/audit-checklist.md
+      - .claude/agents/myweb-audit-data-state-audit.md
+      - .claude/skills/myweb-audit/references/CHANGELOG.md
+    notes:
+      - "switched visible `REQ_ID` ownership from a local synthetic `sys-*` fallback to `useArtDecoApi.lastRequestId`"
+      - "kept the routed telemetry page aligned with the existing ArtDeco request-tracing wrapper instead of inventing page-local trace semantics"
+      - "live verification confirmed the page now advances from `req-health-top` to `req-health-detailed-top` after exporting the detailed health report"
+  verification_surface: code-review-plus-targeted-live-verification

@@ -1,0 +1,76 @@
+- finding_id: secondary-shell-025-portfolio
+  batch_id: secondary-batch-25
+  page:
+    route: /secondary/trading-decision-portfolio-canonical-wrapper
+    page_key: secondary-trading-decision-portfolio-canonical-wrapper
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/trading-decision/DecisionPortfolio.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Trading decision portfolio panel still exposed a local pseudo-live portfolio shell even though a semantically matching canonical trade-portfolio owner already exists
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/trading-decision/DecisionPortfolio.vue`"
+      - "Inspect the local total-assets, available-cash, position-value, total-profit, and profit-rate cards plus quick actions"
+      - "Confirm the live parent `web/frontend/src/views/TradingDecisionCenter.vue` already imports this panel while a semantically matching canonical owner exists at `web/frontend/src/views/trade/Portfolio.vue`"
+  expected: "An active embedded decision panel with a semantically matching canonical portfolio owner should delegate to that owner instead of preserving a local pseudo-live portfolio shell."
+  actual: "Before repair, `DecisionPortfolio.vue` still rendered its own local pseudo-live portfolio cards and quick actions instead of delegating to the canonical `/trade/portfolio` owner."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green regression confirmed the decision portfolio panel still rendered local pseudo-live portfolio chrome before wrapper delegation."
+  repair_target:
+    files:
+      - web/frontend/src/views/trading-decision/DecisionPortfolio.vue
+      - web/frontend/src/views/trading-decision/__tests__/DecisionPortfolio.spec.ts
+    primary_owner: web/frontend/src/views/trading-decision/DecisionPortfolio.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/trading-decision-portfolio-canonical-wrapper
+  status: open
+  dependency: null
+  dedupe_key: /secondary/trading-decision-portfolio-canonical-wrapper:route-truth:tradingDecisionPortfolioCanonicalWrapper
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner wrapper regression to confirm the local pseudo-live portfolio cards are gone and the canonical trade-portfolio owner is rendered instead."
+- finding_id: secondary-shell-025-positions
+  batch_id: secondary-batch-25
+  page:
+    route: /secondary/trading-decision-positions-canonical-wrapper
+    page_key: secondary-trading-decision-positions-canonical-wrapper
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/trading-decision/DecisionPositions.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Trading decision positions panel still exposed a local pseudo-live positions shell even though a semantically matching canonical trade-positions owner already exists
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/trading-decision/DecisionPositions.vue`"
+      - "Inspect the local refresh button, position-card grid, and empty-state shell"
+      - "Confirm the live parent `web/frontend/src/views/TradingDecisionCenter.vue` already imports this panel while a semantically matching canonical owner exists at `web/frontend/src/views/trade/Center.vue`"
+  expected: "An active embedded decision panel with a semantically matching canonical positions owner should delegate to that owner instead of preserving a local pseudo-live positions shell."
+  actual: "Before repair, `DecisionPositions.vue` still rendered its own refresh action, local positions grid wiring, and empty-state shell instead of delegating to the canonical `/trade/positions` owner."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green regression confirmed the decision positions panel still rendered local pseudo-live positions chrome before wrapper delegation."
+  repair_target:
+    files:
+      - web/frontend/src/views/trading-decision/DecisionPositions.vue
+      - web/frontend/src/views/trading-decision/__tests__/DecisionPositions.spec.ts
+    primary_owner: web/frontend/src/views/trading-decision/DecisionPositions.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/trading-decision-positions-canonical-wrapper
+  status: open
+  dependency: null
+  dedupe_key: /secondary/trading-decision-positions-canonical-wrapper:route-truth:tradingDecisionPositionsCanonicalWrapper
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner wrapper regression to confirm the local refresh button and empty-state shell are gone and the canonical trade-positions owner is rendered instead."

@@ -1,0 +1,83 @@
+audit_run_id: audit-20260426-02
+batch_id: detail-batch-06
+module: detail
+scope:
+  requested_by: user
+  pages:
+    - route: /detail/news/:symbol
+      page_key: stock-news
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/announcement/AnnouncementMonitor.vue
+  compatibility_redirects: []
+batch_rationale: "Repair the canonical `/detail/news/:symbol` route so a new failing detail symbol cannot inherit the previous verified announcement rows, reusing existing `myweb-audit v1.66` selector-scoped provenance guidance."
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "the canonical `/detail/news/:symbol` route remains owned by `web/frontend/src/views/announcement/AnnouncementMonitor.vue`"
+    - "the detail route selector is route-scoped truth, so primary announcement rows must stay aligned with the current symbol rather than the previous verified snapshot"
+    - "the approved repair should stay page-local inside the routed detail/news composable and owner view instead of widening into shared announcement transport or cross-route detail widgets"
+    - "browser-context fulfillment with auth-seeded system `google-chrome` is an acceptable verification harness for controlled selector-switch first-load failures on this machine"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, error]
+  notes:
+    - "verify the first selector shows the expected verified announcement row"
+    - "verify a new failing selector clears the old rows and renders explicit route-local unavailable copy"
+    - "verify the new failing selector does not leak the previous symbol row into the current `.announcements-card`"
+repair_approval:
+  status: approved
+  approved_findings:
+    - detail-news-issue-06
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - stock-news
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/announcement/composables/useAnnouncementMonitor.ts
+    - web/frontend/src/views/announcement/AnnouncementMonitor.vue
+    - web/frontend/src/views/announcement/__tests__/AnnouncementMonitor.spec.ts
+    - web/frontend/src/views/announcement/__tests__/useAnnouncementMonitor.spec.ts
+    - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed-pm2-online
+    e2e: passed-custom-system-chrome-detail-news-selector-switch-proof
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contains earlier staged audit artifacts and unrelated files, so any staged GitNexus output remains observation-only unless an isolated staged scope is prepared later"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/detail-news-selector-row-provenance-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-06-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-06-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/detail-batch-06-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/detail-batch-06-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-detail-batch-06-closeout
+  notes:
+    - "the canonical detail news route now keeps primary announcement rows selector-scoped so a new failing symbol cannot inherit the previous verified snapshot"
+    - "future detail-route audits should reuse `v1.66` whenever a route selector and the visible primary rows can drift apart under refresh failure"
+status: complete

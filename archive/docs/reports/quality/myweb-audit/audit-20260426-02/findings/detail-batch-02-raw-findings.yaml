@@ -1,0 +1,40 @@
+- finding_id: detail-news-data-state-02
+  batch_id: detail-batch-02
+  page:
+    route: /detail/news/:symbol
+    page_key: detail-news
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/announcement/AnnouncementMonitor.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Detail news route rendered only one live announcement stats count while sibling stat cards stayed label-only or unresolved zero fallback
+  trigger:
+    steps:
+      - "Open `/detail/news/600519`."
+      - "Inspect the four top stat cards before any verified `/api/announcement/stats` snapshot exists."
+      - "Repeat with `/api/announcement/list` succeeding while `/api/announcement/stats` resolves `success: false` or returns no verified counts."
+      - "Inspect the same stat cards after a verified stats payload returns `total_count`, `today_count`, `important_count`, and `triggered_count`."
+  expected: "When `/detail/news/:symbol` requests a dedicated live stats contract with sibling count fields, the visible four-card strip should either render each verified count or explicitly degrade every unsupported card to placeholder truth such as `--`. Before any verified stats snapshot exists, the route must not show one live count card beside label-only siblings or unresolved `0` fallbacks."
+  actual: "Before repair, the detail news route wired only `total_count` into the visible stat strip and defaulted that card to `0`, while the adjacent `TODAY`, `IMPORTANT`, and `TRIGGERED` cards remained static label shells with no verified count surface. When the stats slice had not yet verified, the route therefore looked like a partial live success instead of an unverified stats shell."
+  evidence:
+    kind: live-observation
+    note: "New routed component red tests reproduced both failure modes before repair: unresolved stats rendered a lone `0`, and a verified stats payload still surfaced only one visible count. Controlled Playwright-library verification with system `google-chrome` then confirmed the repaired route now renders `2 / 2 / 1 / 0` for a verified stats contract and degrades to `-- / -- / -- / --` when only the announcements list succeeds but the stats slice fails."
+  repair_target:
+    files:
+      - web/frontend/src/views/announcement/AnnouncementMonitor.vue
+      - web/frontend/src/views/announcement/__tests__/AnnouncementMonitor.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/announcement/AnnouncementMonitor.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /risk/news
+  status: open
+  dependency: null
+  dedupe_key: /detail/news/:symbol:data-state:siblingStatsContractTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/detail/news/:symbol` after repair and confirm the route either renders all four verified sibling counts or degrades every stat card to `--` when the stats slice has not verified."

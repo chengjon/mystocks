@@ -1,0 +1,33 @@
+- consolidated_issue_id: secondary-shell-issue-28
+  severity: Medium
+  title: Legacy system architecture page now degrades to an honest static shell
+  pages:
+    - /secondary/system-architecture-static-shell
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The hardcoded migration progress cards, database topology counts, Redis/MySQL retirement copy, and technology-stack summaries in `Architecture.vue` were all faces of the same defect family: a legacy architecture dashboard preserved pseudo-live truth even though no verified canonical architecture owner existed."
+  primary_owner: web/frontend/src/views/system/Architecture.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/system-architecture-static-shell
+  dedupe_keys:
+    - /secondary/system-architecture-static-shell:route-truth:systemArchitectureStaticShell
+  verification_scope:
+    routes:
+      - /secondary/system-architecture-static-shell
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/system/Architecture.vue
+      - web/frontend/src/views/system/__tests__/Architecture.spec.ts
+    notes:
+      - "the legacy architecture page now renders an honest static shell"
+      - "the repair removes local migration progress cards, topology metrics, stack summaries, and retirement percentages instead of preserving pseudo-live system truth"
+      - "users are handed back to verified `/system/config`, `/system/resources`, and `/system/health` routes"
+  verification_surface: code-review-only

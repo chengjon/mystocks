@@ -1,0 +1,1339 @@
+diff --git a/web/frontend/src/App.vue b/web/frontend/src/App.vue
+index 35a3495ab..8e85dca1c 100644
+--- a/web/frontend/src/App.vue
++++ b/web/frontend/src/App.vue
+@@ -28,8 +28,13 @@
+       </div>
+     </section>
+ 
+-    <section v-else class="app-shell" data-readiness-state="ready">
+-      <div v-if="usingMockFallback" class="app-readiness-banner">
++    <section
++      v-else
++      :class="['app-shell', isBlankLayout ? 'app-shell--blank' : 'app-shell--default']"
++      :data-layout="isBlankLayout ? 'blank' : 'default'"
++      data-readiness-state="ready"
++    >
++      <div v-if="usingMockFallback && !isBlankLayout" class="app-readiness-banner">
+         <span>{{ readinessMessage }}</span>
+         <span v-if="requestId" class="app-readiness-banner__request-id">Request ID: {{ requestId }}</span>
+       </div>
+@@ -39,10 +44,14 @@
+ </template>
+ 
+ <script setup lang="ts">
+-import { onMounted } from 'vue'
++import { computed, onMounted } from 'vue'
++import { useRoute } from 'vue-router'
+ 
+ import { useBackendReadiness } from '@/composables/useBackendReadiness'
+ 
++const route = useRoute()
++const isBlankLayout = computed(() => route.meta.layout === 'Blank')
++
+ const {
+   readinessMessage,
+   requestId,
+@@ -70,6 +79,15 @@ onMounted(() => {
+   min-height: 100vh;
+ }
+ 
++.app-shell--blank {
++  display: flex;
++  min-height: 100vh;
++}
++
++.app-shell--blank > * {
++  flex: 1;
++}
++
+ .app-readiness-shell {
+   display: flex;
+   align-items: center;
+diff --git a/web/frontend/src/stores/auth.ts b/web/frontend/src/stores/auth.ts
+index 8d8e2a172..266aa5e1e 100644
+--- a/web/frontend/src/stores/auth.ts
++++ b/web/frontend/src/stores/auth.ts
+@@ -69,6 +69,7 @@ export const useAuthStore = defineStore('auth', () => {
+   const user = ref<User | null>(null)
+   const token = ref<string | null>(null)
+   const isAuthenticated = ref(false)
++  const loginPending = ref(false)
+ 
+   // Get login store instance for internal use
+   const loginStore = useLoginStore()
+@@ -79,7 +80,7 @@ export const useAuthStore = defineStore('auth', () => {
+     return user.value?.permissions?.includes(permission) ?? false
+   })
+ 
+-  const isLoading = computed(() => loginStore.isLoading)
++  const isLoading = computed(() => loginPending.value || loginStore.isLoading)
+ 
+   // Actions
+   const setUser = (userData: User) => {
+@@ -136,6 +137,7 @@ export const useAuthStore = defineStore('auth', () => {
+ 
+   // Login with standardized API pattern
+   const login = async (username: string, password: string): Promise<{ success: boolean; message?: string; error?: unknown }> => {
++    loginPending.value = true
+     try {
+       // Use authApi.login which correctly sets Content-Type to application/x-www-form-urlencoded
+       const response = await authApi.login(username, password) as LoginResponse
+@@ -196,6 +198,8 @@ export const useAuthStore = defineStore('auth', () => {
+         message: '网络错误，请检查网络连接',
+         error
+       }
++    } finally {
++      loginPending.value = false
+     }
+   }
+ 
+diff --git a/web/frontend/src/views/Login.vue b/web/frontend/src/views/Login.vue
+index e512e6e88..d6edf7374 100644
+--- a/web/frontend/src/views/Login.vue
++++ b/web/frontend/src/views/Login.vue
+@@ -1,34 +1,34 @@
+ <template>
+-  <div class="login-container">
+-
+-    <div class="login-card">
+-      <div class="corner-tl"></div>
+-      <div class="corner-br"></div>
++  <main class="login-container" aria-labelledby="login-title">
++    <div class="login-stage" aria-hidden="true"></div>
+ 
++    <section class="login-card" :aria-busy="loading">
+       <div class="login-header">
+-        <div class="divider">
+-          <span class="divider-text">MYSTOCKS</span>
+-        </div>
+-        <h1 class="title">LOGIN</h1>
++        <p class="eyebrow">MYSTOCKS ACCESS GATE</p>
++        <h1 id="login-title" class="title">LOGIN</h1>
+         <p class="subtitle">QUANTITATIVE TRADING MANAGEMENT SYSTEM</p>
+       </div>
+ 
+-      <form @submit.prevent="handleLogin" class="login-form">
++      <form class="login-form" @submit.prevent="handleLogin">
+         <div class="form-group">
+-          <label class="label">USERNAME</label>
++          <label class="label" for="login-username">USERNAME</label>
+           <input
++            id="login-username"
+             v-model="loginForm.username"
+             type="text"
+             class="input"
+             placeholder="ENTER USERNAME"
+             data-testid="username-input"
+             autocomplete="username"
++            spellcheck="false"
++            @input="clearStatusMessage"
+           >
+         </div>
+ 
+         <div class="form-group">
+-          <label class="label">PASSWORD</label>
++          <label class="label" for="login-password">PASSWORD</label>
+           <input
++            id="login-password"
+             v-model="loginForm.password"
+             type="password"
+             class="input"
+@@ -36,23 +36,39 @@
+             data-testid="password-input"
+             autocomplete="current-password"
+             @keyup.enter="handleLogin"
++            @input="clearStatusMessage"
+           >
+         </div>
+ 
++        <p
++          v-if="statusMessage"
++          :class="['status-message', `status-message--${statusTone}`]"
++          role="status"
++          aria-live="polite"
++        >
++          {{ statusMessage }}
++        </p>
++
+         <button
+           type="submit"
++          class="submit-button"
+           :disabled="loading"
+           data-testid="login-button"
+         >
+-          <span v-if="loading" class="spinner"></span>
+-          <span v-else>SIGN IN</span>
++          <span v-if="loading" class="spinner" aria-hidden="true"></span>
++          <span>{{ loading ? 'SIGNING IN' : 'SIGN IN' }}</span>
+         </button>
+       </form>
+ 
+-      <div class="test-accounts">
++      <section
++        v-if="showTestAccounts"
++        class="test-accounts"
++        aria-labelledby="test-accounts-title"
++      >
+         <div class="divider">
+-          <span class="divider-text">TEST ACCOUNTS</span>
++          <span id="test-accounts-title" class="divider-text">TEST ACCOUNTS</span>
+         </div>
++        <p class="account-hint">Use the seeded demo credentials below for shell access checks.</p>
+         <div class="account-row" data-testid="admin-account-hint">
+           <span class="account-label">ADMIN</span>
+           <span class="account-value">admin / admin123</span>
+@@ -61,13 +77,13 @@
+           <span class="account-label">USER</span>
+           <span class="account-value">user / user123</span>
+         </div>
+-      </div>
+-    </div>
+-  </div>
++      </section>
++    </section>
++  </main>
+ </template>
+ 
+ <script setup lang="ts">
+-import { ref, reactive } from 'vue'
++import { computed, reactive, ref } from 'vue'
+ import { useRouter, useRoute } from 'vue-router'
+ import { useAuthStore } from '@/stores/auth'
+ import { ElMessage } from 'element-plus'
+@@ -77,7 +93,10 @@ const router = useRouter()
+ const route = useRoute()
+ const authStore = useAuthStore()
+ 
+-const loading = ref<boolean>(false)
++const loading = computed(() => authStore.isLoading)
++const statusMessage = ref('')
++const statusTone = ref<'neutral' | 'error' | 'success'>('neutral')
++const showTestAccounts = computed(() => import.meta.env.DEV || import.meta.env.VITE_SHOW_TEST_ACCOUNTS === '1')
+ 
+ interface LoginForm {
+   username: string
+@@ -94,324 +113,352 @@ interface LoginResult {
+   message?: string
+ }
+ 
++const setStatusMessage = (message: string, tone: 'neutral' | 'error' | 'success' = 'neutral') => {
++  statusMessage.value = message
++  statusTone.value = tone
++}
++
++const clearStatusMessage = () => {
++  if (statusMessage.value) {
++    statusMessage.value = ''
++    statusTone.value = 'neutral'
++  }
++}
++
+ const handleLogin = async (): Promise<void> => {
+   if (!loginForm.username || !loginForm.password) {
++    setStatusMessage('PLEASE ENTER USERNAME AND PASSWORD', 'error')
+     ElMessage.error('PLEASE ENTER USERNAME AND PASSWORD')
+     return
+   }
+ 
+   if (loginForm.password.length < 6) {
++    setStatusMessage('PASSWORD MUST BE AT LEAST 6 CHARACTERS', 'error')
+     ElMessage.error('PASSWORD MUST BE AT LEAST 6 CHARACTERS')
+     return
+   }
+ 
+-  loading.value = true
++  setStatusMessage('AUTHENTICATING ACCESS REQUEST...', 'neutral')
+   try {
+     const result: LoginResult = await authStore.login(loginForm.username, loginForm.password)
+ 
+     if (result.success) {
++      setStatusMessage('LOGIN SUCCESSFUL. REDIRECTING...', 'success')
+       ElMessage.success('LOGIN SUCCESSFUL')
+       const redirect = normalizeLegacyHomeRedirect((route.query.redirect as string) || HOME_ROUTE_PATH)
+       router.push(redirect)
+     } else {
++      setStatusMessage(result.message || 'LOGIN FAILED', 'error')
+       ElMessage.error(result.message || 'LOGIN FAILED')
+     }
+   } catch (_error) {
++    setStatusMessage('LOGIN FAILED', 'error')
+     ElMessage.error('LOGIN FAILED')
+-  } finally {
+-    loading.value = false
+   }
+ }
+ </script>
+ 
+ <style scoped lang="scss">
+-
+-.login {
+-  min-height: 100vh;
++.login-container {
++  position: relative;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+-  position: relative;
+-  background: var(--bg-primary);
++  min-height: 100vh;
++  padding: var(--artdeco-spacing-8);
+   overflow: hidden;
++  background:
++    radial-gradient(circle at top, rgb(212 175 55 / 14%), transparent 28%),
++    linear-gradient(180deg, rgb(17 17 24 / 96%), rgb(10 10 10 / 98%)),
++    var(--artdeco-bg-global);
+ }
+ 
+-.background-pattern {
++.login-stage {
+   position: absolute;
+-  top: 0;
+-  left: 0;
+-  width: 100%;
+-  height: 100%;
++  inset: 0;
+   pointer-events: none;
+-  z-index: 0;
+-  opacity: 4%;
++  opacity: 0.36;
+   background-image:
++    linear-gradient(90deg, transparent 0, rgb(212 175 55 / 10%) 50%, transparent 100%),
+     repeating-linear-gradient(
+-        45deg,
+-        var(--accent-gold) 0px,
+-        var(--accent-gold) 1px,
+-        transparent 1px,
+-        transparent 10px
+-      ),
+-      repeating-linear-gradient(
+-        -45deg,
+-        var(--accent-gold) 0px,
+-        var(--accent-gold) 1px,
+-        transparent 1px,
+-        transparent 10px
+-      );
+-  }
++      45deg,
++      transparent 0,
++      transparent 12px,
++      rgb(212 175 55 / 6%) 12px,
++      rgb(212 175 55 / 6%) 13px
++    );
++}
+ 
+-  .login-card {
+-    position: relative;
+-    width: 480px;
+-    background: var(--bg-card);
+-    border: 1px solid var(--accent-gold);
+-    border-radius: var(--radius-none);
+-    padding: var(--spacing-8);
+-    box-shadow: 0 0 40px rgb(212 175 55 / 10%);
+-    z-index: 1;
+-    transition: all var(--transition-base);
+-  }
++.login-card {
++  position: relative;
++  z-index: 1;
++  width: min(100%, 32rem);
++  padding: var(--artdeco-spacing-8);
++  border: 1px solid var(--artdeco-border-accent);
++  background:
++    linear-gradient(180deg, rgb(26 26 26 / 95%), rgb(10 10 10 / 92%)),
++    var(--artdeco-bg-card);
++  box-shadow:
++    0 0 0 1px rgb(212 175 55 / 10%) inset,
++    0 24px 64px rgb(0 0 0 / 45%),
++    0 0 24px rgb(212 175 55 / 14%);
++}
+ 
+-  .corner-decoration {
+-    position: absolute;
+-    width: 24px;
+-    height: 24px;
+-    pointer-events: none;
+-    opacity: 60%;
+-  }
++.login-header {
++  margin-bottom: var(--artdeco-spacing-6);
++  text-align: center;
++}
+ 
+-  .corner-tl {
+-    top: 12px;
+-    left: 12px;
+-    border-top: 3px solid var(--accent-gold);
+-    border-left: 3px solid var(--accent-gold);
+-  }
++.eyebrow {
++  margin: 0 0 var(--artdeco-spacing-3);
++  font-family: var(--font-mono);
++  font-size: var(--artdeco-text-xs);
++  letter-spacing: var(--artdeco-tracking-widest);
++  text-transform: uppercase;
++  color: var(--artdeco-gold-light);
++}
+ 
+-  .corner-br {
+-    bottom: 12px;
+-    right: 12px;
+-    border-bottom: 3px solid var(--accent-gold);
+-    border-right: 3px solid var(--accent-gold);
+-  }
++.title {
++  margin: 0;
++  font-family: var(--font-display);
++  font-size: clamp(2.25rem, 5vw, 3rem);
++  line-height: 1;
++  letter-spacing: var(--artdeco-tracking-widest);
++  color: var(--artdeco-gold-primary);
++}
+ 
+-  .login-header {
+-    text-align: center;
+-    margin-bottom: var(--spacing-6);
++.subtitle {
++  margin: var(--artdeco-spacing-3) 0 0;
++  font-family: var(--font-body);
++  font-size: var(--artdeco-text-sm);
++  line-height: var(--artdeco-leading-relaxed);
++  letter-spacing: var(--artdeco-tracking-wide);
++  color: var(--artdeco-fg-muted);
++}
+ 
+-    .logo-container {
+-      display: flex;
+-      align-items: center;
+-      gap: var(--spacing-4);
+-      margin-bottom: var(--spacing-4);
+-    }
++.login-form {
++  display: grid;
++  gap: var(--artdeco-spacing-4);
++}
+ 
+-    .logo-container {
+-      display: flex;
+-      align-items: center;
+-      gap: var(--spacing-4);
+-      margin-bottom: var(--spacing-4);
+-
+-      &::before,
+-      &::after {
+-        content: '';
+-        flex: 1;
+-        height: 1px;
+-        background: linear-gradient(
+-          to right,
+-          transparent,
+-          var(--accent-gold),
+-          transparent
+-        );
+-        opacity: 50%;
+-      }
+-    }
++.form-group {
++  display: grid;
++  gap: var(--artdeco-spacing-2);
++}
+ 
+-    .logo-text {
+-      font-family: var(--font-display);
+-      font-size: var(--font-size-small);
+-      font-weight: 600;
+-      text-transform: uppercase;
+-      letter-spacing: var(--tracking-widest);
+-      color: var(--accent-gold);
+-      padding: 0 var(--spacing-4);
+-    }
++.label {
++  font-family: var(--font-display);
++  font-size: var(--artdeco-text-xs);
++  letter-spacing: var(--artdeco-tracking-wider);
++  text-transform: uppercase;
++  color: var(--artdeco-gold-light);
++}
+ 
+-    .login-title {
+-      font-family: var(--font-display);
+-      font-size: var(--font-size-h2);
+-      font-weight: 600;
+-      text-transform: uppercase;
+-      letter-spacing: var(--tracking-widest);
+-      color: var(--accent-gold);
+-      margin: var(--spacing-3) 0 var(--spacing-2) 0;
+-    }
++.input {
++  width: 100%;
++  min-height: 3rem;
++  padding: 0 var(--artdeco-spacing-4);
++  border: 1px solid var(--artdeco-border-default);
++  background: rgb(255 255 255 / 2%);
++  color: var(--artdeco-fg-primary);
++  font-family: var(--font-body);
++  font-size: var(--artdeco-text-base);
++  transition:
++    border-color var(--artdeco-transition-quick) ease,
++    box-shadow var(--artdeco-transition-quick) ease,
++    background-color var(--artdeco-transition-quick) ease;
++}
+ 
+-    .login-subtitle {
+-      font-family: var(--font-body);
+-      font-size: var(--font-size-small);
+-      color: var(--fg-muted);
+-      text-transform: uppercase;
+-      letter-spacing: var(--tracking-wider);
+-      margin: 0;
+-    }
++.input::placeholder {
++  color: var(--artdeco-fg-subtle);
++  text-transform: uppercase;
++  letter-spacing: var(--artdeco-tracking-wide);
++}
++
++.input:hover {
++  border-color: var(--artdeco-border-accent);
++}
++
++.input:focus-visible {
++  outline: none;
++  border-color: var(--artdeco-gold-primary);
++  background: rgb(255 255 255 / 4%);
++  box-shadow: 0 0 0 3px rgb(212 175 55 / 14%);
++}
++
++.submit-button {
++  display: inline-flex;
++  align-items: center;
++  justify-content: center;
++  gap: var(--artdeco-spacing-2);
++  width: 100%;
++  min-height: 3.25rem;
++  margin-top: var(--artdeco-spacing-2);
++  border: 1px solid var(--artdeco-gold-primary);
++  background: linear-gradient(90deg, var(--artdeco-gold-primary), var(--artdeco-gold-light));
++  color: var(--artdeco-bg-global);
++  font-family: var(--font-display);
++  font-size: var(--artdeco-text-sm);
++  font-weight: var(--artdeco-font-semibold);
++  letter-spacing: var(--artdeco-tracking-widest);
++  text-transform: uppercase;
++  cursor: pointer;
++  transition:
++    transform var(--artdeco-transition-quick) ease,
++    box-shadow var(--artdeco-transition-quick) ease,
++    filter var(--artdeco-transition-quick) ease;
++}
++
++.submit-button:hover:not(:disabled) {
++  transform: translateY(-1px);
++  box-shadow: 0 0 20px rgb(212 175 55 / 28%);
++  filter: brightness(1.03);
++}
++
++.submit-button:focus-visible {
++  outline: none;
++  box-shadow: 0 0 0 3px rgb(212 175 55 / 18%);
++}
++
++.submit-button:disabled {
++  cursor: wait;
++  opacity: 0.75;
++}
++
++.status-message {
++  margin: 0;
++  padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
++  border: 1px solid var(--artdeco-border-default);
++  background: rgb(255 255 255 / 3%);
++  font-family: var(--font-mono);
++  font-size: var(--artdeco-text-xs);
++  letter-spacing: var(--artdeco-tracking-wide);
++}
++
++.status-message--neutral {
++  color: var(--artdeco-gold-light);
++}
++
++.status-message--error {
++  color: var(--artdeco-rise);
++  border-color: rgb(255 82 82 / 45%);
++  background: rgb(255 82 82 / 8%);
++}
++
++.status-message--success {
++  color: var(--artdeco-gold-light);
++  border-color: rgb(212 175 55 / 45%);
++  background: rgb(212 175 55 / 8%);
++}
++
++.spinner {
++  width: 1rem;
++  height: 1rem;
++  border: 2px solid rgb(0 0 0 / 18%);
++  border-top-color: currentColor;
++  border-radius: 50%;
++  animation: login-spin 0.7s linear infinite;
++}
++
++.test-accounts {
++  margin-top: var(--artdeco-spacing-6);
++  padding-top: var(--artdeco-spacing-5);
++  border-top: 1px solid var(--artdeco-border-default);
++}
++
++.divider {
++  display: flex;
++  align-items: center;
++  gap: var(--artdeco-spacing-3);
++  margin-bottom: var(--artdeco-spacing-3);
++}
++
++.divider::before,
++.divider::after {
++  content: "";
++  flex: 1;
++  height: 1px;
++  background: linear-gradient(90deg, transparent, rgb(212 175 55 / 34%), transparent);
++}
++
++.divider-text {
++  font-family: var(--font-display);
++  font-size: var(--artdeco-text-xs);
++  letter-spacing: var(--artdeco-tracking-widest);
++  text-transform: uppercase;
++  color: var(--artdeco-gold-primary);
++}
++
++.account-hint {
++  margin: 0 0 var(--artdeco-spacing-3);
++  color: var(--artdeco-fg-muted);
++  font-size: var(--artdeco-text-sm);
++  line-height: var(--artdeco-leading-relaxed);
++}
++
++.account-row {
++  display: flex;
++  justify-content: space-between;
++  gap: var(--artdeco-spacing-4);
++  padding: var(--artdeco-spacing-2) 0;
++  border-bottom: 1px solid rgb(212 175 55 / 10%);
++}
++
++.account-row:last-child {
++  border-bottom: 0;
++}
++
++.account-label,
++.account-value {
++  font-size: var(--artdeco-text-sm);
++}
++
++.account-label {
++  color: var(--artdeco-gold-light);
++  font-family: var(--font-display);
++  letter-spacing: var(--artdeco-tracking-wide);
++}
++
++.account-value {
++  color: var(--artdeco-fg-primary);
++  font-family: var(--font-mono);
++  font-variant-numeric: tabular-nums;
++}
++
++@keyframes login-spin {
++  to {
++    transform: rotate(360deg);
+   }
++}
+ 
+-  .login-form {
+-    margin-bottom: var(--spacing-6);
+-
+-    .form-group {
+-      margin-bottom: var(--spacing-4);
+-
+-      .form-label {
+-        display: block;
+-
+-    .login-form {
+-      margin-bottom: var(--spacing-6);
+-
+-      .form-group {
+-          display: block;
+-          font-family: var(--font-display);
+-          font-size: var(--font-size-xs);
+-          font-weight: 600;
+-          text-transform: uppercase;
+-          letter-spacing: var(--tracking-wider);
+-          color: var(--accent-gold);
+-          margin-bottom: var(--spacing-1);
+-        }
+-
+-        .input {
+-          width: 100%;
+-          padding: var(--spacing-2) var(--spacing-3);
+-          font-family: var(--font-body);
+-          font-size: var(--font-size-body);
+-          color: var(--fg-primary);
+-          background: transparent;
+-          border: none;
+-          border-bottom: 2px solid var(--accent-gold);
+-          border-radius: var(--radius-none);
+-          transition: all var(--transition-base);
+-
+-          &::placeholder {
+-            color: var(--fg-muted);
+-            text-transform: uppercase;
+-            letter-spacing: var(--tracking-normal);
+-          }
+-
+-          &:focus {
+-            outline: none;
+-            border-bottom-color: var(--accent-gold-light);
+-            box-shadow: 0 4px 10px rgb(212 175 55 / 20%);
+-          }
+-        }
+-      }
+-
+-      .btn-login {
+-        display: flex;
+-        align-items: center;
+-        justify-content: center;
+-        width: 100%;
+-        padding: var(--spacing-3) var(--spacing-6);
+-        font-family: var(--font-display);
+-        font-size: var(--font-size-body);
+-        font-weight: 600;
+-        text-transform: uppercase;
+-        letter-spacing: var(--tracking-widest);
+-        border: 2px solid var(--accent-gold);
+-        border-radius: var(--radius-none);
+-        cursor: pointer;
+-        transition: all var(--transition-base);
+-        margin-top: var(--spacing-4);
+-
+-        &:disabled {
+-          opacity: 50%;
+-          cursor: not-allowed;
+-        }
+-
+-        .spinner {
+-          display: inline-block;
+-          width: 20px;
+-          height: 20px;
+-          border: 2px solid rgb(0 0 0 / 10%);
+-          border-top-color: currentColor;
+-          border-radius: 50%;
+-          animation: spin 0.6s linear infinite;
+-        }
+-
+-        @keyframes spin {
+-          to { transform: rotate(360deg); }
+-        }
+-      }
+-
+-      .btn-login-primary {
+-        background: var(--accent-gold);
+-        color: var(--bg-primary);
+-
+-        &:hover:not(:disabled) {
+-          background: var(--accent-gold-light);
+-          box-shadow: var(--glow-medium);
+-        }
+-      }
+-    }
++@media (width <= 768px) {
++  .login-container {
++    padding: var(--artdeco-spacing-5);
++  }
+ 
+-    .test-accounts {
+-      text-align: center;
+-      padding-top: var(--spacing-4);
+-      border-top: 1px solid rgb(212 175 55 / 20%);
+-
+-      .account-buttons {
+-        display: flex;
+-        align-items: center;
+-        gap: var(--spacing-4);
+-        margin-bottom: var(--spacing-3);
+-
+-        &::before,
+-        &::after {
+-          content: '';
+-          flex: 1;
+-          height: 1px;
+-          background: linear-gradient(
+-            to right,
+-            transparent,
+-            var(--accent-gold),
+-            transparent
+-          );
+-          opacity: 30%;
+-        }
+-
+-          font-family: var(--font-display);
+-          font-size: var(--font-size-xs);
+-          font-weight: 600;
+-          text-transform: uppercase;
+-          letter-spacing: var(--tracking-widest);
+-          color: var(--fg-muted);
+-          padding: 0 var(--spacing-2);
+-        }
+-      }
+-
+-      .account-row {
+-        display: flex;
+-        justify-content: space-between;
+-        align-items: center;
+-        padding: var(--spacing-2) 0;
+-        font-family: var(--font-body);
+-
+-        .account-label {
+-          font-size: var(--font-size-small);
+-          font-weight: 600;
+-          text-transform: uppercase;
+-          letter-spacing: var(--tracking-wider);
+-          color: var(--fg-muted);
+-        }
+-
+-        .account-value {
+-          font-size: var(--font-size-small);
+-          font-family: var(--font-body);
+-          color: var(--fg-secondary);
+-          letter-spacing: var(--tracking-normal);
+-        }
+-      }
+-    }
++  .login-card {
++    padding: var(--artdeco-spacing-6);
++  }
++
++  .account-row {
++    flex-direction: column;
++    align-items: flex-start;
++    gap: var(--artdeco-spacing-1);
++  }
++}
++
++@media (width <= 390px) {
++  .login-container {
++    padding: var(--artdeco-spacing-4);
+   }
++
++  .login-card {
++    padding: var(--artdeco-spacing-5);
++  }
++
++  .submit-button,
++  .input {
++    min-height: 2.875rem;
++  }
++}
+ </style>
+diff --git a/web/frontend/src/views/NotFound.vue b/web/frontend/src/views/NotFound.vue
+index 95a360930..c7d6722d1 100644
+--- a/web/frontend/src/views/NotFound.vue
++++ b/web/frontend/src/views/NotFound.vue
+@@ -1,15 +1,23 @@
+ <template>
+-  <div class="not-found-page">
+-
+-    <div class="card error-card">
++  <main class="not-found-page" aria-labelledby="not-found-title">
++    <section class="error-card">
+       <div class="error-content">
+-        <div class="error-code">404</div>
+-        <div class="error-title">页面未找到</div>
+-        <div class="error-description">
+-          抱歉，您访问的页面不存在或已被移除
+-        </div>
+-        <button class="button" @click="goHome">
+-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" :stroke="'var(--gold-primary)'" stroke-width="2">
++        <p class="error-eyebrow">ROUTE FALLBACK</p>
++        <p class="error-code">404</p>
++        <h1 id="not-found-title" class="error-title">页面未找到</h1>
++        <p class="error-description">
++          当前地址未映射到有效页面。请返回首页，继续进入交易室或其他已审核路由。
++        </p>
++        <button class="button" type="button" @click="goHome">
++          <svg
++            width="16"
++            height="16"
++            viewBox="0 0 24 24"
++            fill="none"
++            :stroke="'currentColor'"
++            stroke-width="2"
++            aria-hidden="true"
++          >
+             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+             <polyline points="9,22 9,12 15,12 15,22"></polyline>
+           </svg>
+@@ -17,15 +25,15 @@
+         </button>
+       </div>
+ 
+-      <div class="error-illustration">
+-        <svg width="200" height="200" viewBox="0 0 24 24" fill="none" :stroke="'var(--gold-muted)'" stroke-width="1">
++      <div class="error-illustration" aria-hidden="true">
++        <svg width="200" height="200" viewBox="0 0 24 24" fill="none" :stroke="'var(--artdeco-gold-dim)'" stroke-width="1">
+           <circle cx="12" cy="12" r="10"></circle>
+           <line x1="12" y1="8" x2="12" y2="12"></line>
+           <line x1="12" y1="16" x2="12.01" y2="16"></line>
+         </svg>
+       </div>
+-    </div>
+-  </div>
++    </section>
++  </main>
+ </template>
+ 
+ <script setup>
+@@ -39,188 +47,163 @@ const goHome = () => {
+ </script>
+ 
+ <style scoped lang="scss">
+-
+ .not-found-page {
+-  min-height: 100vh;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+-  background: var(--bg-primary);
+-  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgb(212 175 55 / 2%) 10px, rgb(212 175 55 / 2%) 11px);
+-  padding: 20px;
+-}
+-
+-.background-pattern {
+-  position: fixed;
+-  top: 0;
+-  left: 0;
+-  width: 100%;
+-  height: 100%;
+-  pointer-events: none;
+-  z-index: 0;
+-  opacity: 4%;
+-  background-image:
+-    repeating-linear-gradient(45deg, var(--gold-primary) 0px, var(--gold-primary) 1px, transparent 1px, transparent 10px),
+-    repeating-linear-gradient(-45deg, var(--gold-primary) 0px, var(--gold-primary) 1px, transparent 1px, transparent 10px);
++  min-height: 100vh;
++  padding: var(--artdeco-spacing-8);
++  background:
++    radial-gradient(circle at top, rgb(212 175 55 / 10%), transparent 30%),
++    repeating-linear-gradient(
++      45deg,
++      transparent 0,
++      transparent 14px,
++      rgb(212 175 55 / 4%) 14px,
++      rgb(212 175 55 / 4%) 15px
++    ),
++    var(--artdeco-bg-global);
+ }
+ 
+ .error-card {
+   position: relative;
+-  z-index: 1;
+-  display: flex;
+-  gap: 60px;
++  display: grid;
++  grid-template-columns: minmax(0, 1.35fr) minmax(10rem, 14rem);
++  gap: var(--artdeco-spacing-8);
+   align-items: center;
+-  padding: 60px;
+-  max-width: 800px;
+-  width: 100%;
+-
+-  &::before,
+-  &::after {
+-    content: '';
+-    position: absolute;
+-    width: 20px;
+-    height: 20px;
+-    border: 3px solid var(--gold-primary);
+-  }
++  width: min(100%, 54rem);
++  padding: var(--artdeco-spacing-8);
++  border: 1px solid var(--artdeco-border-accent);
++  background:
++    linear-gradient(180deg, rgb(20 20 20 / 96%), rgb(10 10 10 / 94%)),
++    var(--artdeco-bg-card);
++  box-shadow:
++    0 0 0 1px rgb(212 175 55 / 10%) inset,
++    0 28px 60px rgb(0 0 0 / 45%),
++    0 0 24px rgb(212 175 55 / 10%);
++}
+ 
+-  &::before {
+-    top: 16px;
+-    left: 16px;
+-    border-right: none;
+-    border-bottom: none;
+-  }
++.error-content {
++  display: grid;
++  gap: var(--artdeco-spacing-4);
++}
+ 
+-  &::after {
+-    bottom: 16px;
+-    right: 16px;
+-    border-left: none;
+-    border-top: none;
+-  }
++.error-eyebrow {
++  margin: 0;
++  color: var(--artdeco-gold-light);
++  font-family: var(--font-mono);
++  font-size: var(--artdeco-text-xs);
++  letter-spacing: var(--artdeco-tracking-widest);
++  text-transform: uppercase;
+ }
+ 
+-.error-content {
+-  flex: 1;
+-
+-  .error-code {
+-    font-family: var(--font-display);
+-    font-size: 120px;
+-    font-weight: 700;
+-    color: var(--gold-primary);
+-    line-height: 1;
+-    margin-bottom: 20px;
+-    text-transform: uppercase;
+-    letter-spacing: 10px;
+-  }
++.error-code {
++  margin: 0;
++  color: var(--artdeco-gold-primary);
++  font-family: var(--font-display);
++  font-size: clamp(4.5rem, 12vw, 7.5rem);
++  line-height: 0.92;
++  letter-spacing: 0.12em;
++}
+ 
+-  .error-title {
+-    font-family: var(--font-display);
+-    font-size: 32px;
+-    color: var(--text-primary);
+-    text-transform: uppercase;
+-    letter-spacing: 3px;
+-    margin-bottom: 16px;
+-    font-weight: 600;
+-  }
++.error-title {
++  margin: 0;
++  color: var(--artdeco-fg-primary);
++  font-family: var(--font-display);
++  font-size: clamp(1.625rem, 3vw, 2.25rem);
++  letter-spacing: var(--artdeco-tracking-wider);
++  text-transform: uppercase;
++}
+ 
+-  .error-description {
+-    font-family: var(--font-body);
+-    font-size: 16px;
+-    color: var(--text-muted);
+-    line-height: 1.6;
+-    margin-bottom: 40px;
+-  }
++.error-description {
++  margin: 0;
++  max-width: 34rem;
++  color: var(--artdeco-fg-muted);
++  font-size: var(--artdeco-text-base);
++  line-height: var(--artdeco-leading-relaxed);
++}
+ 
+-  .button {
+-    display: inline-flex;
+-    align-items: center;
+-    gap: 10px;
+-    padding: 14px 32px;
+-    background: var(--gold-primary);
+-    color: var(--bg-primary);
+-    border: none;
+-    font-family: var(--font-display);
+-    font-size: 14px;
+-    text-transform: uppercase;
+-    letter-spacing: 2px;
+-    cursor: pointer;
+-    border-radius: 0;
+-    transition: all 0.3s ease;
+-
+-    &:hover {
+-      background: var(--gold-muted);
+-      box-shadow: 0 0 20px rgb(212 175 55 / 40%);
+-      transform: translateY(-2px);
+-    }
+-  }
++.button {
++  display: inline-flex;
++  align-items: center;
++  justify-content: center;
++  gap: var(--artdeco-spacing-2);
++  min-height: 3rem;
++  width: fit-content;
++  padding: 0 var(--artdeco-spacing-6);
++  border: 1px solid var(--artdeco-gold-primary);
++  background: linear-gradient(90deg, var(--artdeco-gold-primary), var(--artdeco-gold-light));
++  color: var(--artdeco-bg-global);
++  font-family: var(--font-display);
++  font-size: var(--artdeco-text-sm);
++  font-weight: var(--artdeco-font-semibold);
++  letter-spacing: var(--artdeco-tracking-wider);
++  text-transform: uppercase;
++  cursor: pointer;
++  transition:
++    transform var(--artdeco-transition-quick) ease,
++    box-shadow var(--artdeco-transition-quick) ease,
++    filter var(--artdeco-transition-quick) ease;
++}
++
++.button:hover {
++  transform: translateY(-1px);
++  box-shadow: 0 0 20px rgb(212 175 55 / 24%);
++  filter: brightness(1.03);
++}
++
++.button:focus-visible {
++  outline: none;
++  box-shadow: 0 0 0 3px rgb(212 175 55 / 18%);
+ }
+ 
+ .error-illustration {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+-  width: 200px;
+-  height: 200px;
+-  background: rgb(212 175 55 / 5%);
+-  border: 1px solid var(--gold-dim);
+-  position: relative;
+-
+-  &::before,
+-  &::after {
+-    content: '';
+-    position: absolute;
+-    width: 12px;
+-    height: 12px;
+-    border: 2px solid var(--gold-primary);
+-  }
++  min-height: 14rem;
++  border: 1px solid var(--artdeco-border-default);
++  background: linear-gradient(180deg, rgb(212 175 55 / 7%), rgb(212 175 55 / 2%));
++}
+ 
+-  &::before {
+-    top: 10px;
+-    left: 10px;
+-    border-right: none;
+-    border-bottom: none;
++@media (width <= 1024px) {
++  .error-card {
++    grid-template-columns: 1fr;
+   }
+ 
+-  &::after {
+-    bottom: 10px;
+-    right: 10px;
+-    border-left: none;
+-    border-top: none;
++  .error-illustration {
++    order: -1;
++    min-height: 11rem;
+   }
+ }
+ 
+ @media (width <= 768px) {
++  .not-found-page {
++    padding: var(--artdeco-spacing-5);
++  }
++
+   .error-card {
+-    flex-direction: column;
+-    gap: 40px;
+-    padding: 30px;
+-
+-    .error-content {
+-      text-align: center;
+-
+-      .error-code {
+-        font-size: 80px;
+-        letter-spacing: 5px;
+-      }
+-
+-      .error-title {
+-        font-size: 24px;
+-        letter-spacing: 2px;
+-      }
+-
+-      .error-description {
+-        font-size: 14px;
+-      }
+-
+-      .button {
+-        width: 100%;
+-        justify-content: center;
+-      }
+-    }
++    gap: var(--artdeco-spacing-6);
++    padding: var(--artdeco-spacing-6);
+   }
+ 
+-  .error-illustration {
+-    width: 150px;
+-    height: 150px;
++  .error-content {
++    text-align: center;
++    justify-items: center;
++  }
++
++  .button {
++    width: 100%;
++  }
++}
++
++@media (width <= 390px) {
++  .not-found-page {
++    padding: var(--artdeco-spacing-4);
++  }
++
++  .error-card {
++    padding: var(--artdeco-spacing-5);
+   }
+ }
+ </style>
+diff --git a/web/frontend/tests/e2e/auth-login.spec.ts b/web/frontend/tests/e2e/auth-login.spec.ts
+index 321e5af2a..7efb4616f 100644
+--- a/web/frontend/tests/e2e/auth-login.spec.ts
++++ b/web/frontend/tests/e2e/auth-login.spec.ts
+@@ -140,6 +140,23 @@ test.describe("Authentication Login Smoke", () => {
+     await expect(page.getByTestId("username-input")).toBeVisible({ timeout: 15000 });
+   });
+ 
++  test("redirects qm root requests through the canonical dashboard login redirect", async ({ page }) => {
++    await page.goto("/qm", { waitUntil: "domcontentloaded" });
++
++    await page.waitForURL(/\/login\?redirect=\/dashboard/, { timeout: 15000 });
++    await expect(page.getByTestId("username-input")).toBeVisible({ timeout: 15000 });
++  });
++
++  test("redirects qm compatibility routes to login while preserving canonical return URL", async ({ page }) => {
++    await page.goto("/qm/strategy/repo?from=legacy#trace-anchor", { waitUntil: "domcontentloaded" });
++
++    await page.waitForURL(/\/login\?redirect=/, { timeout: 15000 });
++    await expect
++      .poll(() => new URL(page.url()).searchParams.get("redirect"), { timeout: 10000 })
++      .toBe("/strategy/repo?from=legacy#trace-anchor");
++    await expect(page.getByTestId("username-input")).toBeVisible({ timeout: 15000 });
++  });
++
+   test("logs in through the UI and lands on the requested protected route", async ({ page }) => {
+     await stubDashboardApi(page);
+ 
+@@ -165,4 +182,21 @@ test.describe("Authentication Login Smoke", () => {
+       user: expect.stringContaining('"username":"admin"'),
+     });
+   });
++
++  test("logs in through a qm compatibility route and lands on the canonical protected destination", async ({ page }) => {
++    await stubDashboardApi(page);
++
++    await page.goto("/qm/strategy/repo?from=legacy#trace-anchor", { waitUntil: "domcontentloaded" });
++    await page.waitForURL(/\/login\?redirect=/, { timeout: 15000 });
++    await expect
++      .poll(() => new URL(page.url()).searchParams.get("redirect"), { timeout: 10000 })
++      .toBe("/strategy/repo?from=legacy#trace-anchor");
++
++    await page.getByTestId("username-input").fill("admin");
++    await page.getByTestId("password-input").fill("admin123");
++    await page.getByRole("button", { name: /SIGN IN|SIGNING IN/ }).click();
++
++    await page.waitForURL(/\/strategy\/repo\?from=legacy#trace-anchor/, { timeout: 20000 });
++    await expect.poll(() => new URL(page.url()).pathname, { timeout: 10000 }).toBe("/strategy/repo");
++  });
+ });
+diff --git a/web/frontend/tests/unit/config/dashboard-route-canonical-truth.spec.ts b/web/frontend/tests/unit/config/dashboard-route-canonical-truth.spec.ts
+index 5fea89767..ae2f93289 100644
+--- a/web/frontend/tests/unit/config/dashboard-route-canonical-truth.spec.ts
++++ b/web/frontend/tests/unit/config/dashboard-route-canonical-truth.spec.ts
+@@ -27,6 +27,24 @@ describe('dashboard route canonical truth', () => {
+     expect(routerSource).toContain('redirect: HOME_ROUTE_PATH')
+   })
+ 
++  it('preserves qm compatibility redirects in router truth', () => {
++    expect(routerSource).toContain("path: '/qm'")
++    expect(routerSource).toContain("path: '/qm/:pathMatch(.*)*'")
++    expect(routerSource).toContain('redirect: HOME_ROUTE_PATH')
++    expect(routerSource).toContain('pathMatch = to.params.pathMatch')
++    expect(routerSource).toContain('query: to.query')
++    expect(routerSource).toContain('hash: to.hash')
++  })
++
++  it('preserves qm compatibility redirects in router truth', () => {
++    expect(routerSource).toContain("path: '/qm'")
++    expect(routerSource).toContain("path: '/qm/:pathMatch(.*)*'")
++    expect(routerSource).toContain('redirect: HOME_ROUTE_PATH')
++    expect(routerSource).toContain('pathMatch = to.params.pathMatch')
++    expect(routerSource).toContain('query: to.query')
++    expect(routerSource).toContain('hash: to.hash')
++  })
++
+   it('keeps trade-terminal semantics separate from dashboard truth', () => {
+     expect(routerSource).toContain("name: 'trade-terminal'")
+     expect(routerSource).toContain("component: () => import('@/views/TradingDashboard.vue')")
+diff --git a/web/frontend/tests/unit/config/shell-route-runtime-guardrails.spec.ts b/web/frontend/tests/unit/config/shell-route-runtime-guardrails.spec.ts
+new file mode 100644
+index 000000000..df31b9b94
+--- /dev/null
++++ b/web/frontend/tests/unit/config/shell-route-runtime-guardrails.spec.ts
+@@ -0,0 +1,46 @@
++import { describe, expect, it } from 'vitest'
++import { readFileSync } from 'node:fs'
++import { resolve } from 'node:path'
++
++const appSource = readFileSync(resolve(process.cwd(), 'src/App.vue'), 'utf8')
++const authStoreSource = readFileSync(resolve(process.cwd(), 'src/stores/auth.ts'), 'utf8')
++const loginSource = readFileSync(resolve(process.cwd(), 'src/views/Login.vue'), 'utf8')
++const notFoundSource = readFileSync(resolve(process.cwd(), 'src/views/NotFound.vue'), 'utf8')
++
++describe('shell route runtime guardrails', () => {
++  it('gives Blank layout routes a dedicated runtime shell branch', () => {
++    expect(appSource).toContain("route.meta.layout === 'Blank'")
++    expect(appSource).toContain("app-shell--blank")
++    expect(appSource).toContain(":data-layout=\"isBlankLayout ? 'blank' : 'default'\"")
++  })
++
++  it('keeps login page status feedback inside the page shell', () => {
++    expect(loginSource).toContain("role=\"status\"")
++    expect(loginSource).toContain("aria-live=\"polite\"")
++    expect(loginSource).toContain("status-message--error")
++    expect(loginSource).toContain("status-message--success")
++  })
++
++  it('bridges login loading state through the shared auth store', () => {
++    expect(authStoreSource).toContain('const loginPending = ref(false)')
++    expect(authStoreSource).toContain('const isLoading = computed(() => loginPending.value || loginStore.isLoading)')
++    expect(authStoreSource).toContain('loginPending.value = true')
++    expect(authStoreSource).toContain('loginPending.value = false')
++    expect(loginSource).toContain('const loading = computed(() => authStore.isLoading)')
++  })
++
++  it('hides seeded test-account hints outside explicit dev flags', () => {
++    expect(loginSource).toContain("import.meta.env.DEV || import.meta.env.VITE_SHOW_TEST_ACCOUNTS === '1'")
++    expect(loginSource).toContain('v-if="showTestAccounts"')
++  })
++
++  it('keeps the 404 shell on ArtDeco runtime tokens', () => {
++    expect(notFoundSource).toContain('var(--artdeco-bg-global)')
++    expect(notFoundSource).toContain('var(--artdeco-gold-primary)')
++    expect(notFoundSource).toContain('var(--artdeco-fg-primary)')
++
++    expect(notFoundSource).not.toContain('var(--bg-primary)')
++    expect(notFoundSource).not.toContain('var(--gold-primary)')
++    expect(notFoundSource).not.toContain('var(--text-primary)')
++  })
++})

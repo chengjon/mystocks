@@ -1,0 +1,2782 @@
+# Audit Closeout Checklist: audit-20260426-02
+
+## Scope Closure
+- [x] All requested batches were audited or explicitly deferred.
+- [x] Every audited page has a page report or equivalent inline record.
+- [x] Every batch has a batch report or equivalent inline record.
+
+## Artifact Completeness
+- [x] Each completed batch has a manifest.
+- [x] Findings were normalized before merge and deduplication.
+- [x] Repair approval package is recorded when the batch used a formal approval artifact.
+- [x] Deferred items include severity, reason, and dependency.
+
+## Fix Accounting
+- [x] User approval for repaired findings was recorded.
+- [x] Approval package path or inline approval package record is stated when applicable.
+- [x] Fixes applied are separated clearly from findings only recorded.
+- [x] Out-of-scope issues are marked as deferred, not silently skipped.
+- [x] Shared-component or token changes record related-page impact.
+
+## Verification Closure
+- [x] Verification surfaces are stated honestly.
+- [x] Verification policy (`full`, `chromium-only`, `code-review-only`) is recorded honestly.
+- [x] Checked routes are listed.
+- [x] Checked states are listed.
+- [x] Checked breakpoints are listed.
+- [x] Partial verification, if any, is explained.
+- [x] Executed browser project or external frontend reuse policy is recorded.
+
+## Runtime And Repo Gates
+- [x] Frontend syntax check result is recorded.
+- [x] Frontend type-check result is recorded.
+- [x] PM2 or equivalent runtime service status is recorded.
+- [x] Chromium E2E or targeted live regression result is recorded.
+- [x] Staged GitNexus scope detection result is recorded.
+- [x] Dirty worktree staging decisions are recorded when closeout depended on staged-scope isolation.
+
+## Secondary Inventory Batches
+- `secondary-batch-01`
+  - `ArtDecoTradingManagement.vue` is now treated as a pure secondary orchestration shell: shell-level fake runtime copy was removed, supported tabs reuse canonical `/trade/*` pages, and unsupported attribution degrades to a static explanatory shell.
+- `secondary-batch-08`
+  - `Settings.vue` no longer preserves a forked pseudo-live settings shell; it now acts only as a thin orchestration wrapper over the canonical `/system/config` owner.
+- `secondary-batch-09`
+  - `EnhancedDashboard.vue` no longer preserves a forked pseudo-live dashboard shell; it now acts only as a thin orchestration wrapper over the canonical dashboard owner.
+- `secondary-batch-10`
+  - `StrategyManagement.vue` no longer preserves a forked pseudo-live strategy-management shell; it now acts only as a thin orchestration wrapper over the canonical `/strategy/repo` owner.
+- `secondary-batch-11`
+  - `BacktestAnalysis.vue` no longer preserves a forked pseudo-live backtest-analysis shell; it now acts only as a thin orchestration wrapper over the canonical `/strategy/backtest` owner.
+- `secondary-batch-12`
+  - `RiskMonitor.vue` no longer preserves a forked pseudo-live risk-monitor shell; it now acts only as a thin orchestration wrapper over the canonical `/risk/management` owner.
+- `secondary-batch-13`
+  - `Market.vue` no longer preserves a forked pseudo-live asset and trade-history shell; it now acts only as a thin orchestration wrapper over the canonical `/trade/portfolio` owner.
+- `secondary-batch-14`
+  - `IndicatorLibrary.vue` no longer preserves a forked pseudo-live indicator-registry shell; it now acts only as a thin orchestration wrapper over the canonical `/data/indicator` owner.
+- `secondary-batch-15`
+  - `TradeManagement.vue` no longer preserves a forked pseudo-live trade-management shell; it now acts only as a thin orchestration wrapper over the active trading orchestration shell.
+- `secondary-batch-16`
+  - `strategy/StrategyList.vue` no longer preserves a forked pseudo-live strategy-definition shell; it now acts only as a thin orchestration wrapper over the canonical strategy-repo owner.
+- `secondary-batch-17`
+  - `TechnicalAnalysis.vue` no longer preserves a forked pseudo-live technical-analysis shell; because no active canonical technical-analysis owner exists, it now degrades to an honest static shell that points users back to verified chart, market-technical, and indicator routes.
+- `secondary-batch-18`
+  - `technical/TechnicalAnalysis.vue` no longer preserves a forked pseudo-live nested technical-analysis shell; because no active canonical technical-analysis owner exists, it now degrades to an honest static shell that points users back to verified chart, market-technical, and indicator routes.
+- `secondary-batch-19`
+  - `StockDetail.vue` no longer preserves a forked pseudo-live stock-detail shell; because no one-to-one canonical stock-detail owner exists, it now degrades to an honest static shell that points users back to verified detail-graphics, detail-news, and trade routes.
+- `secondary-batch-20`
+  - `trading/History.vue` and `trading/Positions.vue` no longer preserve nested `Coming Soon` placeholder shells; they now act only as thin orchestration wrappers over the canonical `/trade/history` and `/trade/positions` owners.
+- `secondary-batch-21`
+  - `trading/Orders.vue` and `trading/Execution.vue` no longer preserve nested `Coming Soon` placeholder shells; because no semantically matching canonical owners exist, they now degrade to honest static shells that hand users back to verified `/trade/*` routes.
+- `secondary-batch-22`
+  - `TdxMarket.vue` no longer preserves a forked pseudo-live TDX workbench shell; because no verified canonical owner exists and the same-domain sibling still relies on simulated transport, it now degrades to an honest static shell that hands users back to verified `/market/*` and `/system/data` routes.
+- `secondary-batch-23`
+  - `Phase4Dashboard.vue` no longer preserves a forked pseudo-live dashboard shell; it now acts only as a thin orchestration wrapper over the canonical dashboard owner, and the secondary inventory high-priority shortlist dropped from `41` to `40`.
+- `secondary-batch-24`
+  - `EnhancedRiskMonitor.vue` no longer preserves a forked pseudo-live enhanced risk-monitor shell; it now acts only as a thin orchestration wrapper over the canonical `/risk/management` owner, and the secondary inventory high-priority shortlist dropped from `40` to `39`.
+- `secondary-batch-25`
+  - `trading-decision/DecisionPortfolio.vue` and `trading-decision/DecisionPositions.vue` no longer preserve local pseudo-live decision shells; they now act only as thin orchestration wrappers over the canonical `/trade/portfolio` and `/trade/positions` owners.
+- `secondary-batch-26`
+  - `trading-decision/DecisionOrders.vue` no longer preserves local pseudo-live order-entry shell semantics; because no semantically matching canonical `/trade/orders` or `/trade/execution` owner exists, it now degrades to an honest static shell.
+- `secondary-batch-27`
+  - `Wencai.vue` no longer preserves a pseudo overview and fake statistics shell in front of the real Wencai panel; it now acts only as a thin wrapper over `WencaiPanel.vue`, and the secondary inventory high-priority shortlist dropped from `36` to `35`.
+- `secondary-batch-28`
+  - `system/Architecture.vue` no longer preserves pseudo migration progress, topology counts, or stack summaries; because no verified canonical architecture owner exists, it now degrades to an honest static shell, and the secondary inventory high-priority shortlist dropped from `35` to `34`.
+- `secondary-batch-29`
+  - `system/DatabaseMonitor.vue` no longer preserves pseudo health counts, routing-distribution cards, or migration-history summaries; because no verified canonical database-monitor owner exists, it now degrades to an honest static shell, and the secondary inventory high-priority shortlist dropped from `34` to `33`.
+- `secondary-batch-30`
+  - `system/PerformanceMonitor.vue` no longer preserves pseudo Core Web Vitals cards, budget bars, trend placeholders, or suggestion summaries; because no verified canonical performance-monitor owner exists, it now degrades to an honest static shell, and the secondary inventory high-priority shortlist dropped from `33` to `32`.
+- `secondary-batch-31`
+  - `TaskManagement.vue` no longer preserves pseudo task stats, task tables, import-export controls, or history dialogs; because no semantically matching canonical task-management owner exists, it now degrades to an honest static shell, and the secondary inventory high-priority shortlist dropped from `32` to `31`.
+- `secondary-batch-32`
+  - `BacktestWizard.vue` no longer preserves pseudo wizard steps, local templates, parameter comparison, faux KPI cards, or wrapper-local chart semantics; because no semantically matching canonical backtest-wizard owner exists, it now degrades to an honest static shell, retires its local pseudo-live composable chain, and the secondary inventory high-priority shortlist dropped from `31` to `30`.
+- `secondary-batch-33`
+  - `PortfolioManagement.vue` no longer preserves pseudo score cards, watchlist tabs, alert summaries, stock-edit actions, or radar/detail dialogs; because no semantically matching canonical portfolio-management owner exists, it now degrades to an honest static shell, retires its local pseudo-live composable chain, and the secondary inventory high-priority shortlist dropped from `30` to `29`.
+- `secondary-batch-34`
+  - `Stocks.vue` no longer preserves pseudo filter bars, stock-list rows, refresh chrome, or detail-analysis actions; because no semantically matching canonical stocks owner exists, it now degrades to an honest static shell, and the secondary inventory high-priority shortlist dropped from `29` to `28`.
+- `secondary-batch-35`
+  - `AdvancedAnalysis.vue` no longer preserves pseudo analysis configuration, batch-run controls, Kronos prediction, system health, or result panels; because no semantically matching canonical advanced-analysis owner exists, it now degrades to an honest static shell, retires its local page-only composable chain, and the secondary inventory high-priority shortlist dropped from `28` to `27`.
+- `secondary-batch-36`
+  - `IndustryConceptAnalysis.vue` no longer preserves pseudo tabs, filters, summary cards, charts, stock tables, or export actions; because no semantically matching canonical industry-concept owner exists, it now degrades to an honest static shell, retires its local page-only composable/style chain, and the secondary inventory high-priority shortlist dropped from `27` to `26`.
+- `secondary-batch-37`
+  - `market/CapitalFlow.vue` and `market/Concepts.vue` no longer preserve duplicate market-domain overview cards, refresh controls, rankings, or detail shells; because semantically matching canonical `/data/fund-flow` and `/data/concept` owners already exist, both pages now delegate directly to those owners, and the secondary inventory high-priority shortlist dropped from `26` to `24`.
+- `secondary-batch-38`
+  - `market/Auction.vue` and `market/Etf.vue` no longer preserve pseudo auction/ETF metrics, refresh controls, selector tables, rankings, or hardcoded sample rows; because no semantically matching verified auction or ETF canonical owners exist, both pages now degrade to honest static shells, and the secondary inventory high-priority shortlist dropped from `24` to `22`.
+- `secondary-batch-39`
+  - `MarketData.vue` and `market/MarketDataView.vue` no longer preserve local multi-route market-data tabs, realtime chrome, or legacy widget mounting; because no one-to-one verified aggregate market-data owner exists, both pages now degrade to honest static shells, and the secondary inventory high-priority shortlist dropped from `22` to `20`.
+- `secondary-batch-40`
+  - `advanced-analysis/FundamentalAnalysisView.vue`, `MarketPanoramaView.vue`, `RadarAnalysisView.vue`, `TechnicalAnalysisView.vue`, `TimeSeriesView.vue`, and `TradingSignalsView.vue` no longer preserve local fallback values, default scores, indicator cards, or signal counters; because no independent verified child-page owners exist, all six now degrade to honest static shells, and the secondary inventory high-priority shortlist dropped from `20` to `14`.
+- `secondary-batch-41`
+  - `market/Tdx.vue` no longer preserves simulated TDX connection status, random response/session metrics, mock quotes, K-line controls, or hardcoded server metadata; because no verified canonical TDX owner exists, it now degrades to an honest static shell, its page-local pseudo-live composable/style were removed, and the secondary inventory high-priority shortlist dropped from `14` to `13`.
+- `secondary-batch-42`
+  - `monitor.vue` no longer preserves local refresh controls, generated service status, history rows, or hardcoded endpoint metadata; because no verified one-to-one canonical monitoring owner exists, it now degrades to an honest static shell, its page-local pseudo-live composable/style were removed, and the secondary inventory high-priority shortlist dropped from `13` to `12`.
+- `secondary-batch-43`
+  - `RealTimeMonitor.vue` no longer preserves SSE demo widget mounting, direct status requests, push-test actions, or fallback connection counts; because no verified one-to-one canonical SSE owner exists, it now degrades to an honest static shell, its page-local style was removed, and the secondary inventory high-priority shortlist dropped from `12` to `11`.
+- `secondary-batch-44`
+  - `StockAnalysisDemo.vue` no longer preserves selector-driven TDX, strategy, backtest, realtime ticker, or integration-status demo truth; because no verified aggregate stock-analysis owner exists, it now degrades to an honest static shell, its six page-local child tabs and style were removed, and the secondary inventory high-priority shortlist dropped from `11` to `5`.
+- `secondary-batch-45`
+  - `strategy/BatchScan.vue`, `ResultsQuery.vue`, `SingleRun.vue`, and `StatsAnalysis.vue` no longer preserve selector-owned strategy execution, query/export, auto-refresh, or aggregate metric truth; because these pages are unrouted and their execution/query API surface is deprecated, they now degrade to honest static shells, their page-local styles were removed, and the secondary inventory high-priority shortlist dropped from `5` to `1`.
+- `secondary-batch-46`
+  - `trading-decision/DecisionHeader.vue` no longer preserves local quick trade actions, tab scroll controls, auto-refresh timers, or stale missing component imports; because its sibling panels already own canonical/static truth and the header has no standalone canonical owner, it now degrades to an honest static shell, and the secondary inventory high-priority shortlist dropped from `1` to `0`.
+- `secondary-batch-47`
+  - The remaining advanced-analysis orphan child pages no longer preserve placeholder module descriptions or local batch-result summary truth; all thirteen advanced-analysis child pages are now covered by the same `legacy-static-shell` regression, and the secondary inventory high-priority shortlist remains `0`.
+- `secondary-batch-48`
+  - `settings/{General,Notifications,Security,Theme}.vue` and `TestPage.vue` no longer preserve Element Plus placeholder alerts, local test UI, or console side effects; these unrouted secondary surfaces now degrade to honest static shells, and the secondary inventory high-priority shortlist remains `0`.
+
+## Rule Compliance
+- [x] Scope stayed within approved frontend repair boundaries.
+- [x] No backend/API redesign was introduced implicitly.
+- [x] Existing route truth and ArtDeco repository truth were respected.
+- [x] No verification result was fabricated.
+
+## Residual Risk Summary
+- [x] Remaining risks are listed with severity.
+- [x] Next actions or dependencies are recorded.
+
+## Final Status
+- Status: complete
+  - Notes:
+  - Completed batches currently recorded in `audit-20260426-02`:
+    - `watchlist-batch-01`
+    - `watchlist-batch-02`
+    - `watchlist-batch-03`
+    - `watchlist-batch-04`
+    - `watchlist-batch-05`
+    - `watchlist-batch-06`
+    - `market-batch-01`
+    - `market-batch-02`
+    - `market-batch-03`
+    - `market-batch-04`
+    - `market-batch-05`
+    - `market-batch-06`
+    - `market-batch-07`
+    - `market-batch-08`
+    - `data-batch-01`
+    - `data-batch-02`
+    - `data-batch-03`
+    - `data-batch-04`
+    - `data-batch-05`
+    - `data-batch-06`
+    - `data-batch-07`
+    - `data-batch-08`
+    - `data-batch-09`
+    - `data-batch-10`
+    - `data-batch-11`
+    - `data-batch-12`
+    - `data-batch-13`
+    - `data-batch-14`
+    - `system-batch-01`
+    - `system-batch-02`
+    - `system-batch-03`
+    - `system-batch-04`
+    - `system-batch-05`
+    - `system-batch-06`
+    - `system-batch-07`
+    - `system-batch-08`
+    - `risk-batch-01`
+    - `risk-batch-02`
+    - `risk-batch-03`
+    - `risk-batch-04`
+    - `risk-batch-05`
+    - `risk-batch-06`
+    - `risk-batch-07`
+    - `risk-batch-12`
+    - `risk-batch-15`
+    - `trade-batch-01`
+    - `trade-batch-02`
+    - `trade-batch-03`
+    - `trade-batch-04`
+    - `trade-batch-05`
+    - `trade-batch-06`
+    - `trade-batch-07`
+    - `trade-batch-08`
+    - `trade-batch-09`
+    - `trade-batch-10`
+    - `trade-batch-11`
+    - `surface-batch-01`
+    - `strategy-batch-01`
+    - `strategy-batch-02`
+    - `strategy-batch-03`
+    - `strategy-batch-04`
+    - `strategy-batch-05`
+    - `strategy-batch-06`
+    - `strategy-batch-07`
+    - `strategy-batch-08`
+    - `dashboard-batch-01`
+  - Recorded approval artifacts:
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/watchlist-batch-01-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/watchlist-batch-02-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/watchlist-batch-03-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/watchlist-batch-04-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/market-batch-01-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/market-batch-02-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/market-batch-03-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/market-batch-04-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/market-batch-05-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/market-batch-06-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/market-batch-07-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/market-batch-08-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-01-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-02-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-03-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-04-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-05-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-06-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-07-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-08-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-09-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-10-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-11-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-12-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-13-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-14-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-01-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-02-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-03-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-04-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-05-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-06-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-07-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-08-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-10-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-11-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-01-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-02-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-03-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-04-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-05-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-06-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-07-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-12-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-15-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-01-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-02-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-03-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-04-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-05-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-06-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-07-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-08-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-09-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/surface-batch-01-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-01-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-02-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-03-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-04-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-05-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-06-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-07-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-08-repair-approval.yaml`
+    - `docs/reports/quality/myweb-audit/audit-20260426-02/approvals/dashboard-batch-01-repair-approval.yaml`
+  - Runtime gates currently confirmed in this run:
+    - PM2: passed (`mystocks-backend` and `mystocks-frontend` online)
+    - frontend URL target: `http://localhost:3020`
+    - backend URL target: `http://localhost:8020`
+    - risk stock-tab truth regression:
+      - `node --test web/frontend/src/views/artdeco-pages/risk-tabs/__node_tests__/riskManagementHelpers.test.ts web/frontend/src/views/artdeco-pages/risk-tabs/__node_tests__/riskManagementModulePresence.test.ts` passed (`7/7`)
+      - `npx vitest run src/views/artdeco-pages/risk-tabs/__tests__/ArtDecoRiskStockPanel.spec.ts src/views/artdeco-pages/risk-tabs/__tests__/ArtDecoRiskOverviewPanel.spec.ts src/views/artdeco-pages/risk-tabs/__tests__/ArtDecoRiskStatsGrid.spec.ts tests/unit/views/risk-center-template-retention.spec.ts tests/unit/views/risk-wrapper-retention.spec.ts` passed (`22/22`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `12` tests
+      - Playwright-library verification with system `google-chrome` confirmed `/risk/management` now switches `个股分析` to `aria-selected="true"`, renders the pending-integration subtitle and stock-panel copy, and shows the CTA toast `个股风险分析入口待接入，当前仅保留接入说明与反馈。`
+    - risk stock-tab truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-06-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-06-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-06-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-06-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-06-manifest.yaml` passed
+    - risk stock-tab truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged" })` is recorded as mixed-staged observation only for this run because the staged set remains shared with earlier batches
+    - risk overview ordinal-precision regression:
+      - `npx vitest run src/views/risk/__tests__/Overview.spec.ts src/views/risk/__tests__/Alerts.spec.ts src/views/risk/__tests__/StopLoss.spec.ts tests/unit/views/risk-wrapper-retention.spec.ts` passed (`11/11`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `12` tests
+      - Playwright-library verification with system `google-chrome` confirmed `/risk/overview` now hits `/api/v1/monitoring/alert-rules`, renders live rows such as `龙虎榜上榜`, and shows integer priorities `4/3/2` without `4.00/3.00/2.00`
+    - risk overview ordinal-precision artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-07-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-07-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-07-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-07-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-07-manifest.yaml` passed
+    - risk overview ordinal-precision staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged" })` is recorded as mixed-staged observation only for this run because the staged set remains shared with earlier batches
+    - watchlist route-semantic truth regression:
+      - `npx vitest run src/views/watchlist/__tests__/Signals.spec.ts src/views/trade/__tests__/Signals.spec.ts` passed (`3/3`)
+    - watchlist route-semantic truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - watchlist route-semantic truth structural E2E parse:
+      - `npx playwright test tests/e2e/phase2-mainline-matrix.spec.ts --list` listed `13` tests
+    - watchlist route-semantic truth targeted browser verification:
+      - Playwright-library verification with system `google-chrome` confirmed `/watchlist/signals` now shows `自选信号雷达`, `FOCUS: WATCHLIST`, and `当前复用全局交易信号流，自选组合联动与范围过滤待接入。`
+      - the same verification confirmed `/watchlist/signals` no longer shows `策略信号工作台` or the old strategy timeline description
+      - the same verification confirmed `/strategy/signals` still shows `策略信号工作台` and retains the strategy timeline description after the shared parameterization landed
+    - watchlist route-semantic truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/watchlist-batch-02-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/watchlist-batch-02-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/watchlist-batch-02-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/watchlist-batch-02-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/watchlist-batch-02-manifest.yaml` passed
+    - watchlist route-semantic truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged" })` returned `risk_level: low`, `changed_files: 80`, `changed_count: 258`, and `affected_count: 0`, but the staged set remained mixed with earlier batch files so the result is recorded as observation-only rather than isolated `watchlist-batch-02` scope
+    - market node regression: `node --test web/frontend/src/views/market/__node_tests__/marketKlineData.test.ts web/frontend/src/views/market/__node_tests__/dragonTigerData.test.ts` passed (`7/7`)
+    - market targeted Chromium regression: `env PLAYWRIGHT_EXTERNAL_FRONTEND=1 npx playwright test --config playwright.config.js --project=chromium tests/e2e/phase1-mainline-matrix.spec.ts --grep "market lhb|market technical"` passed (`4/4`)
+    - market type-check: `timeout 180s npm run type-check` passed
+    - market manifest-truth validation: `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/market-batch-01-manifest.yaml` passed
+    - market staged GitNexus check: `gitnexus_detect_changes({ scope: "staged" })` returned `risk_level: low`, `changed_files: 19`, `affected_count: 0`
+    - market LHB numeric-truth regression:
+      - `npx vitest run src/views/market/__tests__/LHB.spec.ts` passed (`2/2`)
+      - `node --test web/frontend/src/views/market/__node_tests__/dragonTigerData.test.ts` passed (`4/4`)
+    - market LHB numeric-truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - market LHB numeric-truth structural E2E parse:
+      - `npx playwright test tests/e2e/phase1-mainline-matrix.spec.ts --list` listed `10` tests
+    - market LHB numeric-truth targeted browser verification:
+      - Playwright-library verification with system `google-chrome` confirmed `/market/lhb` now shows top KPI values `44 / 今日 / 买入榜 / 74.41%`
+      - the same verification confirmed `/market/lhb` has `0` `.artdeco-stat-change` nodes and no `44.00`
+      - the same verification confirmed the leaderboard rank column no longer shows `1.00` or `2.00`
+      - actual PM2 requests reached `/api/health/ready`, `/api/health`, and `/api/v2/market/lhb?limit=100` with `200`
+    - market LHB numeric-truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-02-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-02-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/market-batch-02-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/market-batch-02-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/market-batch-02-manifest.yaml` passed
+    - market LHB numeric-truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` returned `risk_level: low`, `changed_files: 77`, `changed_count: 260`, and `affected_count: 0`, but the staged set remained mixed with earlier batch files so the result is recorded as observation-only rather than isolated `market-batch-02` scope
+    - market realtime unresolved-first-snapshot truth regression:
+      - `npx vitest run src/views/market/__tests__/Realtime.spec.ts src/views/market/__tests__/LHB.spec.ts` passed (`3/3`)
+    - market realtime unresolved-first-snapshot truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - market realtime unresolved-first-snapshot truth structural E2E parse:
+      - `npx playwright test tests/e2e/phase1-mainline-matrix.spec.ts --list` listed `11` tests
+    - market realtime unresolved-first-snapshot truth targeted browser verification:
+      - Playwright-library verification with system `google-chrome` confirmed delayed `/market/realtime` now shows `-- / -- / 核心蓝筹样本 / --`
+      - the same delayed verification confirmed `SAMPLE: --`, `MOOD: --`, `UP: --`, `DOWN: --`, and `首份样本快照同步中，涨跌分布待接入。`
+      - the same delayed verification confirmed the unresolved route has `0` `.artdeco-stat-change` nodes and no `0亿`, `0%`, or `0只`
+    - risk management initial-freshness truth regression:
+      - `npx vitest run src/views/risk/__tests__/Center.spec.ts` passed (`2/2`)
+      - `npx vitest run src/views/risk/__tests__/Center.spec.ts src/views/risk/__tests__/Overview.spec.ts src/views/risk/__tests__/StopLoss.spec.ts src/views/risk/__tests__/Alerts.spec.ts src/views/risk/__tests__/News.spec.ts tests/unit/views/risk-center-template-retention.spec.ts tests/unit/views/risk-wrapper-retention.spec.ts` passed (`25/25`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `27` tests
+      - Playwright-library verification with system `google-chrome` confirmed controlled first-load failure on `/risk/management` now keeps footer freshness at `最后一次更新：--`
+      - the same verification confirmed natural PM2 `/risk/management` still reaches the route and advances footer freshness to a real time after live `/api/v1/trade/positions` success
+      - a normal live PM2 verification confirmed `/market/realtime` still resolves to a real snapshot such as `13.0亿 / 20% / 核心蓝筹样本 / 5只`
+      - actual PM2 requests reached `/api/health/ready`, `/api/health`, and `/api/v1/market/quotes?...` with `200` on the non-delayed path
+    - market realtime unresolved-first-snapshot truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-03-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-03-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/market-batch-03-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/market-batch-03-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/market-batch-03-manifest.yaml` passed
+    - market realtime unresolved-first-snapshot truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remains observation-only in the current dirty worktree and must not be treated as an isolated `market-batch-03` verdict
+    - market technical unresolved-first-snapshot truth regression:
+      - `npx vitest run src/views/market/__tests__/Technical.spec.ts src/views/market/__tests__/Realtime.spec.ts src/views/market/__tests__/LHB.spec.ts` passed (`4/4`)
+    - market technical unresolved-first-snapshot truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - market technical unresolved-first-snapshot truth structural E2E parse:
+      - `npx playwright test tests/e2e/phase1-mainline-matrix.spec.ts --list` listed `12` tests
+    - market technical unresolved-first-snapshot truth targeted browser verification:
+      - Playwright-library verification with system `google-chrome` confirmed delayed `/market/technical` now shows `000001 / -- / -- / --`
+      - the same delayed verification confirmed `POINTS: --`, `LAST CLOSE: --`, and `Synchronizing K-Line Sample`
+      - the same delayed verification confirmed the unresolved route has `0` `.artdeco-stat-change` nodes and no `POINTS: 0`
+      - a normal live PM2 verification confirmed `/market/technical` still resolves to a real snapshot such as `000001 / 98.75 / 100.00 / 120.0万` and `POINTS: 60`
+      - actual PM2 requests reached `/api/health/ready`, `/api/health`, and `/api/v1/market/kline?...` with `200` on the non-delayed path
+      - a first-pass delayed verification using only `page.route()` was bypassed by a second request path, so the final verdict used browser-context interception with `serviceWorkers: block`; this handling is now codified in `myweb-audit v1.39`
+    - market technical unresolved-first-snapshot truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-04-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-04-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/market-batch-04-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/market-batch-04-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/market-batch-04-manifest.yaml` passed
+    - market technical unresolved-first-snapshot truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remains observation-only in the current dirty worktree and must not be treated as an isolated `market-batch-04` verdict
+    - market LHB unresolved-first-load count truth regression:
+      - `npx vitest run src/views/market/__tests__/LHB.spec.ts src/views/market/__tests__/Technical.spec.ts src/views/market/__tests__/Realtime.spec.ts` passed (`5/5`)
+    - market LHB unresolved-first-load count truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - market LHB unresolved-first-load count truth structural E2E parse:
+      - `npx playwright test tests/e2e/phase1-mainline-matrix.spec.ts --list` listed `13` tests
+    - market LHB unresolved-first-load count truth targeted browser verification:
+      - Playwright-library verification with system `google-chrome` confirmed delayed `/market/lhb` now shows `-- / 今日 / 买入榜 / --`
+      - the same delayed verification confirmed `ROWS: --`
+      - the same delayed verification confirmed the unresolved route has `0` `.artdeco-stat-change` nodes and no empty-state banner
+      - a normal live PM2 verification confirmed `/market/lhb` still resolves to a real leaderboard such as `44 / 今日 / 买入榜 / 74.41%` and `ROWS: 44`
+      - actual PM2 requests reached `/api/health/ready`, `/api/health`, and `/api/v2/market/lhb?limit=100` with `200` on the non-delayed path
+    - market LHB unresolved-first-load count truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-05-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-05-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/market-batch-05-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/market-batch-05-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/market-batch-05-manifest.yaml` passed
+    - market LHB unresolved-first-load count truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remains observation-only in the current dirty worktree and must not be treated as an isolated `market-batch-05` verdict
+    - data unit regression:
+      - `npx vitest run tests/unit/views/data-indicator-details.spec.ts tests/unit/views/data-advanced-cutover.spec.ts tests/unit/config/data-route-canonical-paths.spec.ts tests/unit/config/domain-body-migration-ownership.spec.ts` passed (`13/13`)
+    - data type-check: `timeout 180s npm run type-check` passed
+    - data live route-entry confirmation:
+      - real-login PM2 checks reached `/data/industry`, `/data/concept`, `/data/fund-flow`, and `/data/indicator`
+    - data targeted browser verification:
+      - custom Playwright-library Chromium-compatible check against system `google-chrome` reached `/data/indicator`, rendered `指标详情`, removed `公式编辑器升级中`, and displayed `timeperiod(20)` after indicator-card selection
+    - data default Playwright runner fallback:
+      - `env PLAYWRIGHT_EXTERNAL_FRONTEND=1 FRONTEND_BASE_URL=http://127.0.0.1:3020 npx playwright test --config playwright.config.js --project=chromium tests/e2e/phase2-mainline-matrix.spec.ts --grep "data concept|data fund flow|data indicator"` was blocked by a missing local Playwright chromium executable, so the result was treated as an environment fallback rather than a page regression
+    - data manifest-truth validation: `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-01-manifest.yaml` passed
+    - data staged GitNexus check: `gitnexus_detect_changes({ scope: "staged" })` returned `risk_level: low`, `changed_files: 76`, `changed_count: 216`, and `affected_count: 0`, but the staged set already contained earlier batch files so the verdict is recorded as mixed-staged observation rather than isolated `data-batch-01` scope
+    - data residual unit regression:
+      - `npx vitest run tests/unit/views/data-indicator-details.spec.ts tests/unit/views/data-advanced-cutover.spec.ts` passed (`3/3`)
+    - data residual type-check: `timeout 180s npm run type-check` passed
+    - data residual artifact validation: `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-02-manifest.yaml` passed
+    - data residual staged GitNexus observation: `gitnexus_detect_changes({ scope: "staged" })` returned `risk_level: low`, `changed_files: 76`, `changed_count: 216`, and `affected_count: 0`, but the staged set remained mixed with earlier batch files so the result is recorded as observation-only rather than isolated `data-batch-02` scope
+    - data partial-success regression:
+      - `npx vitest run tests/unit/views/data-fund-flow-partial-state.spec.ts tests/unit/views/data-indicator-details.spec.ts tests/unit/views/data-advanced-cutover.spec.ts tests/unit/config/data-route-canonical-paths.spec.ts tests/unit/config/domain-body-migration-ownership.spec.ts` passed (`14/14`)
+    - data partial-success type-check: `timeout 180s npm run type-check` passed
+    - data partial-success targeted browser verification:
+      - custom Playwright-library Chromium-compatible check against system `google-chrome` confirmed `/data/fund-flow` shows `部分数据同步失败`, keeps the trend card visible, and reports `0 条排行` when the ranking request is forced to fail
+    - data partial-success manifest-truth validation: `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-03-manifest.yaml` passed
+    - data partial-success staged GitNexus observation: `gitnexus_detect_changes({ scope: "staged" })` returned `risk_level: low`, `changed_files: 76`, `changed_count: 216`, and `affected_count: 0`, but the staged set remained mixed with earlier batch files so the result is recorded as observation-only rather than isolated `data-batch-03` scope
+    - data stale-refresh regression:
+      - `npx vitest run tests/unit/views/data-concept-refresh-fallback.spec.ts tests/unit/views/data-fund-flow-partial-state.spec.ts tests/unit/views/data-indicator-details.spec.ts tests/unit/views/data-advanced-cutover.spec.ts tests/unit/config/data-route-canonical-paths.spec.ts tests/unit/config/domain-body-migration-ownership.spec.ts` passed (`15/15`)
+    - data stale-refresh type-check: `timeout 180s npm run type-check` passed
+    - data stale-refresh targeted browser verification:
+      - custom Playwright-library Chromium-compatible check against system `google-chrome` confirmed `/data/concept` shows `部分刷新失败`, keeps the `机器人` row visible, and labels the page `刷新异常` after a forced refresh failure
+    - data stale-refresh artifact validation: `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-04-manifest.yaml` passed
+    - data stale-refresh staged GitNexus observation: `gitnexus_detect_changes({ scope: "staged" })` returned `risk_level: low`, `changed_files: 83`, `changed_count: 264`, and `affected_count: 0`, but the staged set remained mixed with earlier batch files so the result is recorded as observation-only rather than isolated `data-batch-04` scope
+    - data industry stale-refresh regression:
+      - `npx vitest run tests/unit/views/data-industry-refresh-fallback.spec.ts tests/unit/views/data-concept-refresh-fallback.spec.ts tests/unit/views/data-fund-flow-partial-state.spec.ts tests/unit/views/data-indicator-details.spec.ts tests/unit/views/data-advanced-cutover.spec.ts tests/unit/config/data-route-canonical-paths.spec.ts tests/unit/config/domain-body-migration-ownership.spec.ts` passed (`16/16`)
+    - data industry stale-refresh type-check: `timeout 180s npm run type-check` passed
+    - data industry stale-refresh targeted browser verification:
+      - custom Playwright-library Chromium-compatible check against system `google-chrome` confirmed `/data/industry` shows `部分刷新失败`, keeps the `半导体` and `算力` rows visible, and labels the page `刷新异常` after a forced refresh failure
+    - data industry stale-refresh artifact validation: `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-05-manifest.yaml` passed
+    - data industry stale-refresh staged GitNexus observation: `gitnexus_detect_changes({ scope: "staged" })` returned `risk_level: low`, `changed_files: 83`, `changed_count: 264`, and `affected_count: 0`, but the staged set remained mixed with earlier batch files so the result is recorded as observation-only rather than isolated `data-batch-05` scope
+    - data indicator workflow-truth regression:
+      - `npx vitest run tests/unit/views/data-advanced-screening-truth.spec.ts tests/unit/views/data-industry-refresh-fallback.spec.ts tests/unit/views/data-concept-refresh-fallback.spec.ts tests/unit/views/data-fund-flow-partial-state.spec.ts tests/unit/views/data-indicator-details.spec.ts tests/unit/views/data-advanced-cutover.spec.ts tests/unit/config/data-route-canonical-paths.spec.ts tests/unit/config/domain-body-migration-ownership.spec.ts` passed (`17/17`)
+      - `node --test src/composables/market/__node_tests__/dataAnalysisData.test.ts` passed (`4/4`)
+    - data indicator workflow-truth type-check: `timeout 180s npm run type-check` passed
+    - data indicator workflow-truth targeted browser verification:
+      - custom Playwright-library Chromium-compatible check against system `google-chrome` confirmed `/data/indicator` stays in `待执行筛选` before screening, shows `尚未执行筛选` in the results tab before execution, and only transitions to `筛选已就绪` after `执行筛选`
+    - data indicator workflow-truth artifact validation: `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-06-manifest.yaml` passed
+    - data indicator workflow-truth staged GitNexus observation: `gitnexus_detect_changes({ scope: "staged" })` returned `risk_level: low`, `changed_files: 83`, `changed_count: 264`, and `affected_count: 0`, but the staged set remained mixed with earlier batch files so the result is recorded as observation-only rather than isolated `data-batch-06` scope
+    - system config telemetry-truth regression:
+      - `npx vitest run src/views/system/__tests__/Settings.spec.ts src/views/artdeco-pages/system-tabs/__tests__/ArtDecoSystemSettings.spec.ts` passed (`4/4`)
+    - system config telemetry-truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - system config telemetry-truth targeted browser verification:
+      - custom Playwright-library Chromium-compatible check against system `google-chrome` confirmed `/system/config` reports `DATA: SUMMARY` for health-summary fallback without embedded example API metric rows and reports `DATA: UNAVAILABLE` plus `暂无系统监控接口数据。` when both monitor endpoints fail
+    - system config telemetry-truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-01-manifest.yaml` passed
+    - system config telemetry-truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged" })` returned `risk_level: low`, `changed_files: 83`, `changed_count: 264`, and `affected_count: 0`, but the staged set remained mixed with earlier batch files so the result is recorded as observation-only rather than isolated `system-batch-01` scope
+    - system api trace-truth regression:
+      - `npx vitest run src/views/system/__tests__/API.spec.ts` passed (`1/1`)
+      - `npx vitest run src/views/system/__tests__/API.spec.ts src/views/system/__tests__/Settings.spec.ts src/views/artdeco-pages/system-tabs/__tests__/ArtDecoSystemSettings.spec.ts` passed (`5/5`)
+    - system api trace-truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - system api trace-truth targeted browser verification:
+      - custom Playwright-library Chromium-compatible check against system `google-chrome` confirmed `/system/api` shows `REQ_ID: req-health-top` on initial health sync and advances to `REQ_ID: req-health-detailed-top` after `导出报告`
+    - system api trace-truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-02-manifest.yaml` passed
+    - system api trace-truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged" })` returned `risk_level: low`, `changed_files: 83`, `changed_count: 264`, and `affected_count: 0`, but the staged set remained mixed with earlier batch files so the result is recorded as observation-only rather than isolated `system-batch-02` scope
+    - system runtime-status truth regression:
+      - `npx vitest run src/views/system/__tests__/API.spec.ts src/views/system/__tests__/Health.spec.ts` passed (`3/3`)
+      - `npx vitest run src/views/system/__tests__/API.spec.ts src/views/system/__tests__/Health.spec.ts src/views/system/__tests__/Settings.spec.ts src/views/artdeco-pages/system-tabs/__tests__/ArtDecoSystemSettings.spec.ts` passed (`7/7`)
+    - system runtime-status truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - system runtime-status truth targeted browser verification:
+      - login-backed system `google-chrome` verification confirmed `/system/api` shows `无法连接到后端服务，当前遥测面板可能仅显示静态说明。` together with `性能追踪 未校验`, `统一响应 未校验`, and `Redis 缓存 未校验`
+      - login-backed system `google-chrome` verification confirmed `/system/health` shows `无法连接到后端服务，当前仅展示健康矩阵壳层。` together with `Performance Tracing UNVERIFIED`, `Unified Response UNVERIFIED`, and `Redis Caching UNVERIFIED`
+    - system runtime-status truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-03-manifest.yaml` passed
+    - system runtime-status truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged" })` returned `risk_level: low`, `changed_files: 83`, `changed_count: 300`, and `affected_count: 0`, but the staged set remained mixed with earlier batch files so the result is recorded as observation-only rather than isolated `system-batch-03` scope
+    - system data payload-normalization regression:
+      - `npx vitest run src/views/system/__tests__/DataSource.spec.ts src/views/artdeco-pages/system-tabs/__tests__/ArtDecoDataManagement.spec.ts src/api/__tests__/monitoringApi.spec.ts tests/unit/views/system-wrapper-retention.spec.ts` passed (`8/8`)
+      - `node --test src/views/artdeco-pages/system-tabs/__node_tests__/dataManagementData.test.ts src/views/artdeco-pages/system-tabs/__node_tests__/dataManagementCapabilities.test.ts` passed (`5/5`)
+    - system data payload-normalization type-check:
+      - `timeout 180s npm run type-check` passed
+    - system data payload-normalization targeted browser verification:
+      - login-backed system `google-chrome` verification confirmed a fresh authenticated page deep-link to `/system/data` shows a real `REQ_ID`, 19 data rows, and endpoint-level descriptions plus `endpoint_name` values instead of repeated `source_name / N/A` rows
+      - same-tab automation navigation to `/system/data` could show a readiness fallback banner with `signal is aborted without reason`, but that path was isolated as automation-environment evidence rather than route truth after the fresh-page rerun succeeded
+    - system data payload-normalization artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-04-manifest.yaml` passed
+    - system data payload-normalization staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged" })` returned `risk_level: low`, `changed_files: 83`, `changed_count: 300`, and `affected_count: 0`, but the staged set remained mixed with earlier batch files so the result is recorded as observation-only rather than isolated `system-batch-04` scope
+    - risk overview hybrid live-surface regression:
+      - `npx vitest run src/views/risk/__tests__/Overview.spec.ts tests/unit/views/risk-wrapper-retention.spec.ts` passed (`6/6`)
+    - risk overview hybrid live-surface type-check:
+      - `timeout 180s npm run type-check` passed
+    - risk overview hybrid live-surface structural E2E parse:
+      - `npx playwright test tests/e2e/risk-overview.spec.ts tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `11` tests
+    - risk overview hybrid live-surface targeted browser verification:
+      - login-backed system `google-chrome` verification confirmed `/risk/overview` issues real `GET /api/v1/monitoring/alert-rules` and `GET /api/v1/monitoring/alerts?page=1&page_size=50`
+      - the live KPI strip now shows `今日告警 0` and `仓位集中度 未校验`
+      - the live overview table now shows `组合Beta`, `波动率(20日)`, `最大回撤(近3月)`, and `VaR(95%)` as `未校验 / 待接入`
+      - the live alert tab now shows `暂无预警消息。` and no longer displays the embedded placeholder alert strings
+    - risk overview hybrid live-surface default Playwright runner fallback:
+      - `npx playwright test tests/e2e/risk-overview.spec.ts --project=chromium` was blocked by a missing local Playwright chromium executable, so the result was treated as an environment fallback rather than a page regression
+    - risk overview hybrid live-surface artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-01-manifest.yaml` passed
+    - risk overview hybrid live-surface staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged" })` returned `risk_level: low`, `changed_files: 83`, `changed_count: 300`, and `affected_count: 0`, but the staged set remained mixed with earlier batch files so the result is recorded as observation-only rather than isolated `risk-batch-01` scope
+    - risk management holdings-derived regression:
+      - `node --test web/frontend/src/views/artdeco-pages/risk-tabs/__node_tests__/riskManagementData.test.ts` passed (`5/5`)
+      - `npx vitest run src/views/artdeco-pages/risk-tabs/__tests__/ArtDecoRiskOverviewPanel.spec.ts src/views/artdeco-pages/risk-tabs/__tests__/ArtDecoRiskStatsGrid.spec.ts` passed (`12/12`)
+      - `npx vitest run src/views/risk/__tests__/Overview.spec.ts src/views/artdeco-pages/risk-tabs/__tests__/ArtDecoRiskOverviewPanel.spec.ts src/views/artdeco-pages/risk-tabs/__tests__/ArtDecoRiskStatsGrid.spec.ts tests/unit/views/risk-wrapper-retention.spec.ts tests/unit/views/risk-center-template-retention.spec.ts tests/unit/config/risk-route-canonical-paths.spec.ts` passed (`26/26`)
+    - risk management holdings-derived type-check:
+      - `timeout 180s npm run type-check` passed
+    - risk management holdings-derived targeted browser verification:
+      - login-backed system `google-chrome` verification confirmed `/risk/management` issues real `GET /api/v1/trade/positions`
+      - the live stats grid now shows `最大回撤`, `夏普比率`, `年化波动率`, `贝塔值`, and `索提诺比率` as `未校验 / 待接入`
+      - the live overview surface now shows `行业分布待接入` and `集中度指标待接入`
+      - the embedded sector rows `科技股`, `医药生物` and threshold strings `65 / 70`, `12 / 15` are absent
+    - risk management holdings-derived artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-02-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-02-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-02-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-02-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-02-manifest.yaml` passed
+    - risk management holdings-derived staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged" })` returned `risk_level: low`, `changed_files: 83`, `changed_count: 300`, and `affected_count: 0`, but the staged set remained mixed with earlier batch files so the result is recorded as observation-only rather than isolated `risk-batch-02` scope
+    - risk management alert-policy truth regression:
+      - `node --test src/views/artdeco-pages/risk-tabs/__node_tests__/riskManagementData.test.ts src/views/artdeco-pages/risk-tabs/__node_tests__/riskManagementHelpers.test.ts src/views/artdeco-pages/risk-tabs/__node_tests__/riskManagementModulePresence.test.ts` passed (`12/12`)
+      - `npx vitest run src/views/risk/__tests__/Overview.spec.ts src/views/artdeco-pages/risk-tabs/__tests__/ArtDecoRiskOverviewPanel.spec.ts src/views/artdeco-pages/risk-tabs/__tests__/ArtDecoRiskStatsGrid.spec.ts tests/unit/views/risk-wrapper-retention.spec.ts tests/unit/views/risk-center-template-retention.spec.ts tests/unit/config/risk-route-canonical-paths.spec.ts` passed (`27/27`)
+    - risk management alert-policy truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - risk management alert-policy truth structural E2E parse:
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `10` tests
+    - risk management alert-policy truth targeted browser verification:
+      - Playwright-library verification with system `google-chrome`, blocked service workers, and intercepted `/api/v1/trade/positions` confirmed `/risk/management` now shows `风险观察列表`, `策略状态`, `复核状态`, `未校验`, and `待复核`
+      - the same verification confirmed the first action toast now states `当前仅生成持仓风险观察，止损/减仓策略参数待接入。`
+      - the old alert-engine wording `风险预警列表`, `已触发`, and `接近` is absent from the routed surface after repair
+    - risk management alert-policy truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-03-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-03-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-03-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-03-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-03-manifest.yaml` passed
+    - risk management alert-policy truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged" })` returned `risk_level: low`, `changed_files: 77`, `changed_count: 256`, and `affected_count: 0`, but the staged set remained mixed with earlier batch files so the result is recorded as observation-only rather than isolated `risk-batch-03` scope
+    - risk stop-loss threshold-policy truth regression:
+      - `node --test src/views/artdeco-pages/risk-tabs/__node_tests__/stopLossMonitorData.test.ts src/views/artdeco-pages/risk-tabs/__node_tests__/riskManagementData.test.ts src/views/artdeco-pages/risk-tabs/__node_tests__/riskManagementHelpers.test.ts src/views/artdeco-pages/risk-tabs/__node_tests__/riskManagementModulePresence.test.ts` passed (`17/17`)
+      - `npx vitest run src/views/risk/__tests__/Overview.spec.ts src/views/risk/__tests__/StopLoss.spec.ts tests/unit/views/risk-wrapper-retention.spec.ts` passed (`7/7`)
+    - risk stop-loss threshold-policy truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - risk stop-loss threshold-policy truth structural E2E parse:
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `11` tests
+    - risk stop-loss threshold-policy truth targeted browser verification:
+      - Playwright-library verification with system `google-chrome` confirmed the real PM2 `/risk/stop-loss` route still shows `暂无监控标的` and `当前没有可用于止损监控的活跃标的。` when the backend returns no active stop-loss rows
+      - the same verification, with targeted fulfillment of `/api/v1/monitoring/watchlists`, `/api/v1/monitoring/watchlists/101/stocks`, and `/api/v1/market/quotes`, confirmed the routed page now shows `策略待接入`, `当前仅同步观察标的与行情，止损参数待接入。`, `STOP LOSS 待接入`, and `Distance to Stop 待接入`
+      - the old active-monitoring status `止损观察中` is absent from the threshold-missing routed surface after repair
+    - risk stop-loss threshold-policy truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-04-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-04-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-04-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-04-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-04-manifest.yaml` passed
+    - risk stop-loss threshold-policy truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged" })` returned `risk_level: low`, `changed_files: 84`, `changed_count: 303`, and `affected_count: 0`, but the staged set remained mixed with earlier batch files so the result is recorded as observation-only rather than isolated `risk-batch-04` scope
+    - trade portfolio policy-truth regression:
+      - `npx vitest run src/views/artdeco-pages/portfolio-tabs/__tests__/portfolioOverviewData.spec.ts src/views/trade/__tests__/Portfolio.spec.ts` passed (`5/5`)
+      - `npx vitest run src/views/artdeco-pages/portfolio-tabs/__tests__/portfolioOverviewData.spec.ts src/views/trade/__tests__/Portfolio.spec.ts tests/unit/views/trade-wrapper-retention.spec.ts tests/unit/config/trade-route-canonical-paths.spec.ts` passed (`14/14`)
+    - trade portfolio policy-truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - trade portfolio policy-truth structural E2E parse:
+      - `npx playwright test tests/e2e/risk-pnl.spec.ts tests/e2e/phase3-mainline-matrix.spec.ts tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `25` tests
+    - trade portfolio policy-truth targeted browser verification:
+      - Playwright-library verification with system `google-chrome`, blocked service workers, and intercepted `/api/v1/trade/positions` confirmed `/trade/portfolio` and `/risk/pnl` both show `再平衡建议 待接入` plus `再平衡策略待接入，当前持仓数据未提供目标仓位或组合约束。`
+      - the same verification confirmed both routes still show top positions such as `贵州茅台` and `宁德时代`
+      - the fabricated advice strings `目标 25%` and `建议减仓约` are absent from both routes after repair
+    - trade portfolio policy-truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-01-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-01-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-01-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-01-manifest.yaml` passed
+    - trade signals signal-truth regression:
+      - `node --test src/views/artdeco-pages/strategy-tabs/__node_tests__/strategySignalsData.test.ts` passed (`3/3`)
+      - `npx vitest run src/views/trade/__tests__/Signals.spec.ts src/views/trade/__tests__/Portfolio.spec.ts tests/unit/views/trade-wrapper-retention.spec.ts` passed (`7/7`)
+    - trade signals signal-truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - trade signals signal-truth structural E2E parse:
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `14` tests
+    - trade signals signal-truth targeted browser verification:
+      - Playwright-library verification with system `google-chrome` confirmed the actual PM2 `/trade/signals` route loads successfully, shows a real `REQ_ID`, and no longer surfaces `88%` or `76%`
+      - a controlled `/api/v1/trade/signals` fulfillment confirmed the route shows `策略来源：Momentum Alpha`, renders the `HOLD` row as `观望`, disables the `观察` action button, and keeps `暂无已验证执行历史。`
+    - trade signals signal-truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-02-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-02-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-02-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-02-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-02-manifest.yaml` passed
+    - trade signals signal-truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged" })` returned `risk_level: low`, `changed_files: 77`, `changed_count: 256`, and `affected_count: 0`, but the staged set remained mixed with earlier batch files so the result is recorded as observation-only rather than isolated `trade-batch-02` scope
+    - trade portfolio policy-truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged" })` returned `risk_level: low`, `changed_files: 130`, `changed_count: 409`, and `affected_count: 0`, but the staged set remained mixed with earlier batch files so the result is recorded as observation-only rather than isolated `trade-batch-01` scope
+    - trade history stale-refresh regression:
+      - `npx vitest run src/views/trade/__tests__/History.spec.ts` passed (`1/1`)
+      - `npx vitest run src/views/trade/__tests__/History.spec.ts src/views/trade/__tests__/Signals.spec.ts src/views/trade/__tests__/Portfolio.spec.ts tests/unit/views/trade-wrapper-retention.spec.ts` passed (`8/8`)
+    - trade history stale-refresh type-check:
+      - `timeout 180s npm run type-check` passed
+    - trade history stale-refresh structural E2E parse:
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `15` tests
+    - trade history stale-refresh targeted browser verification:
+      - Playwright-library verification with system `google-chrome` confirmed the actual PM2 `/trade/history` route loads successfully, shows a real `REQ_ID`, and renders an honest empty-history surface
+      - the same routed page then passed a controlled in-page `apiClient.get` success-then-refresh-fail verification because the current runtime short-circuits `/trade/history` through `mockApiClient`
+      - the controlled path confirmed `600519` and `已成交` remain visible, the header status becomes `刷新异常`, and `交易历史接口失败，当前仍展示上次成功同步的交易历史记录。` appears without the hard empty failure panel
+    - trade history stale-refresh artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-03-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-03-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-03-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-03-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-03-manifest.yaml` passed
+    - trade history stale-refresh staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged" })` returned `risk_level: low`, `changed_files: 77`, `changed_count: 256`, and `affected_count: 0`, but the staged set remained mixed with earlier batch files so the result is recorded as observation-only rather than isolated `trade-batch-03` scope
+    - strategy type-check: `timeout 180s npm run type-check` passed
+    - strategy targeted tests:
+      - `npm run test -- src/mock/__tests__/backtestWorkbenchMock.spec.ts` passed (`3/3`)
+      - `node --test src/views/artdeco-pages/strategy-tabs/__node_tests__/backtestModulePresence.test.ts` passed (`2/2`)
+    - strategy targeted Chromium regression: `env PLAYWRIGHT_EXTERNAL_FRONTEND=1 FRONTEND_BASE_URL=http://127.0.0.1:3020 npm run test:e2e -- --project=chromium tests/e2e/strategy-backtest.spec.ts` passed (`6/6`)
+    - strategy manifest-truth validation: `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-01-manifest.yaml` passed
+    - strategy staged GitNexus check: `gitnexus_detect_changes({ scope: "staged" })` returned `risk_level: low`, `changed_files: 38`, `affected_count: 0`, but the staged set also contained previously staged `market-batch-01` files so the verdict is recorded as mixed-staged observation rather than isolated strategy scope
+    - strategy secondary type-check: `timeout 180s npm run type-check` passed
+    - strategy secondary targeted tests:
+      - `node --test web/frontend/src/views/strategy/composables/__node_tests__/gpuMonitorData.test.ts` passed (`4/4`)
+      - `node --test web/frontend/src/views/artdeco-pages/strategy-tabs/__node_tests__/strategyOptimizationSourcePolicy.test.ts` passed (`3/3`)
+    - strategy secondary live browser verification: custom Playwright-library Chromium-compatible script against system `google-chrome` with `serviceWorkers: "block"` passed (`2/2`) for forced `/strategy/gpu` and `/strategy/opt` failure routes
+    - strategy secondary responsive cleanup check: `rg -n "@media \\(width <= 48rem\\)" web/frontend/src/views/artdeco-pages/strategy-tabs/styles/StrategySignalsTab.scss web/frontend/src/views/artdeco-pages/strategy-tabs/styles/ArtDecoStrategyOptimization.scss web/frontend/src/views/strategy/styles/BacktestGPU.scss` returned no matches
+    - strategy secondary staged GitNexus check: `gitnexus_detect_changes({ scope: "staged" })` returned `risk_level: low`, `changed_files: 55`, `changed_count: 201`, and `affected_count: 0`, but the staged set also contained earlier batch artifacts so the verdict is recorded as mixed-staged observation rather than isolated `strategy-batch-02` scope
+    - strategy positions type-check: `timeout 180s npm run type-check` passed
+    - strategy positions targeted tests:
+      - `npx vitest run tests/unit/views/trade-wrapper-retention.spec.ts` passed (`5/5`)
+    - strategy positions targeted Chromium regression: `env PLAYWRIGHT_EXTERNAL_FRONTEND=1 FRONTEND_BASE_URL=http://127.0.0.1:3020 npx playwright test --config playwright.config.js --project=chromium tests/e2e/phase3-mainline-matrix.spec.ts --grep "Strategy-Pos|Trade-Positions"` passed (`2/2`)
+    - strategy positions manifest-truth validation: `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-03-manifest.yaml` passed
+    - strategy positions staged GitNexus check: `gitnexus_detect_changes({ scope: "staged" })` returned `risk_level: low`, `changed_files: 64`, `changed_count: 204`, and `affected_count: 0`, but the staged set also contained earlier batch artifacts so the verdict is recorded as mixed-staged observation rather than isolated `strategy-batch-03` scope
+    - trade terminal lightweight-runtime demo regression:
+      - `npx vitest run src/views/composables/__tests__/useTradingDashboard.spec.ts` passed (`2/2`)
+      - `npx vitest run src/views/composables/__tests__/useTradingDashboard.spec.ts src/views/trade/__tests__/History.spec.ts src/views/trade/__tests__/Portfolio.spec.ts src/views/trade/__tests__/Signals.spec.ts tests/unit/views/trade-wrapper-retention.spec.ts` passed (`10/10`)
+    - trade terminal lightweight-runtime demo type-check:
+      - `timeout 180s npm run type-check` passed
+    - trade terminal lightweight-runtime demo structural E2E parse:
+      - `npx playwright test tests/e2e/trade-terminal.spec.ts --list` listed `2` tests
+    - trade terminal lightweight-runtime demo targeted browser verification:
+      - Playwright-library verification with system `google-chrome` confirmed the actual PM2 `/trade/terminal` route now shows `当前展示轻量运行时占位数据`, a KPI strip of `待接入`, and `会话ID 轻量占位`
+      - the same routed verification confirmed `风险监控 待接入`, the market card `轻量样例` note, and a risk-report dialog that says `当前仅展示轻量运行时占位数据，实盘风控建议待接入。`
+      - the old success-path strings `fallback-offline`, `风险监控 正常`, and `系统运行正常，继续监控` are absent after repair
+    - trade terminal lightweight-runtime demo artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-04-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-04-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-04-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-04-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-04-manifest.yaml` passed
+    - trade terminal lightweight-runtime demo staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged" })` returned `risk_level: low`, `changed_files: 77`, `changed_count: 256`, and `affected_count: 0`, but the staged set remained mixed with earlier batch files so the result is recorded as observation-only rather than isolated `trade-batch-04` scope
+    - strategy GPU partial-runtime metric truth regression:
+      - `node --test web/frontend/src/views/strategy/composables/__node_tests__/gpuMonitorData.test.ts` passed (`6/6`)
+    - strategy GPU partial-runtime metric truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - strategy GPU partial-runtime metric truth structural E2E parse:
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `16` tests
+    - strategy GPU partial-runtime metric truth targeted browser verification:
+      - Playwright-library verification with system `google-chrome` confirmed the actual PM2 `/strategy/gpu` route now shows `GPU 温度 未校验`, benchmark cards of `待接入`, and metrics-tab sensor rows of `未校验`
+      - the same routed verification confirmed the old exact-value strings `0°C`, `0x`, `-100%`, `0 MHz`, and `0%` are absent after repair
+      - a controlled partial-runtime browser scenario reproduced the same honest degradation path with route-level API fulfillment
+    - strategy GPU partial-runtime metric truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-04-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-04-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-04-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-04-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-04-manifest.yaml` passed
+    - strategy GPU partial-runtime metric truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` returned `risk_level: low`, `changed_files: 77`, `changed_count: 256`, and `affected_count: 0`, but the staged set remained mixed with earlier batch files so the result is recorded as observation-only rather than isolated `strategy-batch-04` scope
+    - surface count-kpi delta truth regression:
+      - `npx vitest run src/views/risk/__tests__/Alerts.spec.ts src/views/risk/__tests__/News.spec.ts src/views/watchlist/__tests__/Manage.spec.ts` passed (`3/3`)
+      - `npx vitest run src/views/risk/__tests__/Alerts.spec.ts src/views/risk/__tests__/News.spec.ts src/views/watchlist/__tests__/Manage.spec.ts src/views/watchlist/__tests__/Signals.spec.ts tests/unit/views/risk-wrapper-retention.spec.ts` passed (`9/9`)
+    - surface count-kpi delta truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - surface count-kpi delta truth structural E2E parse:
+      - `npx playwright test tests/e2e/phase2-mainline-matrix.spec.ts tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `24` tests
+    - surface count-kpi delta truth targeted browser verification:
+      - Playwright-library verification with system `google-chrome` and a real backend login token confirmed `/risk/alerts` now shows KPI values `8 / 8 / 0 / 0` with zero `.artdeco-stat-change` nodes
+      - the same routed verification confirmed `/risk/news` now shows KPI values `0 / 0 / 0 / 0` with zero `.artdeco-stat-change` nodes
+      - the same routed verification confirmed `/watchlist/manage` now shows overview values `18 / 0 / 0 / 0` with zero `.artdeco-stat-change` nodes
+      - all three real routes no longer show `+0%` or decimal-formatted pseudo precision on count-only KPI strips
+    - surface count-kpi delta truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/surface-batch-01-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/surface-batch-01-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/surface-batch-01-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/surface-batch-01-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/surface-batch-01-manifest.yaml` passed
+    - surface count-kpi delta truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` returned `risk_level: low`, `changed_files: 77`, `changed_count: 260`, and `affected_count: 0`, but the staged set remained mixed with earlier batch files so the result is recorded as observation-only rather than isolated `surface-batch-01` scope
+    - risk count-kpi delta truth regression:
+      - `npx vitest run src/views/risk/__tests__/Overview.spec.ts src/views/risk/__tests__/StopLoss.spec.ts` passed (`5/5`)
+      - `npx vitest run src/views/risk/__tests__/Overview.spec.ts src/views/risk/__tests__/StopLoss.spec.ts src/views/risk/__tests__/Alerts.spec.ts src/views/risk/__tests__/News.spec.ts tests/unit/views/risk-wrapper-retention.spec.ts` passed (`11/11`)
+    - risk count-kpi delta truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - risk count-kpi delta truth structural E2E parse:
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `11` tests
+    - risk count-kpi delta truth targeted browser verification:
+      - Playwright-library verification with system `google-chrome` confirmed `/risk/overview` now shows KPI values `8 / 8 / 0 / 未校验` with zero `.artdeco-stat-change` nodes
+      - the same verification confirmed `/risk/overview` reaches `/api/v1/monitoring/alert-rules` and `/api/v1/monitoring/alerts?page=1&page_size=50`
+      - the same verification confirmed `/risk/stop-loss` now shows KPI values `0 / 0 / 0 / --` with zero `.artdeco-stat-change` nodes
+      - the same verification confirmed `/risk/stop-loss` reaches `/api/v1/monitoring/watchlists` and `/api/v1/monitoring/watchlists/18/stocks`
+      - both routed pages no longer show `+0%`, `1.00`, or `0.00` on their KPI strips
+    - risk count-kpi delta truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-05-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-05-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-05-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-05-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-05-manifest.yaml` passed
+    - risk count-kpi delta truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` returned `risk_level: low`, `changed_files: 77`, `changed_count: 260`, and `affected_count: 0`, but the staged set remained mixed with earlier batch files so the result is recorded as observation-only rather than isolated `risk-batch-05` scope
+    - trade count-kpi delta truth regression:
+      - `npx vitest run src/views/trade/__tests__/History.spec.ts src/views/trade/__tests__/Signals.spec.ts` passed (`4/4`)
+      - `npx vitest run src/views/trade/__tests__/History.spec.ts src/views/trade/__tests__/Signals.spec.ts src/views/trade/__tests__/Portfolio.spec.ts tests/unit/views/trade-wrapper-retention.spec.ts` passed (`10/10`)
+    - trade count-kpi delta truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - trade count-kpi delta truth structural E2E parse:
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `16` tests
+    - trade count-kpi delta truth targeted browser verification:
+      - Playwright-library verification with system `google-chrome` confirmed `/trade/signals` now shows top KPI values `0 / 0 / 0 / 未校验` with zero `.artdeco-stat-change` nodes on both stat-card groups
+      - the same verification confirmed `/trade/signals` reaches `/api/v1/trade/signals?limit=20`
+      - the same verification confirmed `/trade/history` now shows top KPI values `0 / 0 / 0 / ¥0` with zero `.artdeco-stat-change` nodes
+      - the same verification confirmed `/trade/history` reaches `/api/v1/trade/trades`
+      - both routed pages no longer show `+0%`, `3.00`, `2.00`, `1.00`, or `0.00` on the affected card surfaces
+    - trade count-kpi delta truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-05-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-05-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-05-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-05-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-05-manifest.yaml` passed
+    - trade count-kpi delta truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` returned `risk_level: low`, `changed_files: 77`, `changed_count: 260`, and `affected_count: 0`, but the staged set remained mixed with earlier batch files so the result is recorded as observation-only rather than isolated `trade-batch-05` scope
+    - trade portfolio first-load summary truth regression:
+      - `npx vitest run src/views/trade/__tests__/Portfolio.spec.ts` passed (`3/3`)
+      - `npx vitest run src/views/trade/__tests__/Portfolio.spec.ts src/views/trade/__tests__/History.spec.ts src/views/trade/__tests__/Signals.spec.ts tests/unit/views/trade-wrapper-retention.spec.ts` passed (`12/12`)
+    - trade portfolio first-load summary truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - trade portfolio first-load summary truth structural E2E parse:
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `24` tests
+    - trade portfolio first-load summary truth targeted browser verification:
+      - Playwright-library verification with system `google-chrome` confirmed natural PM2 `/trade/portfolio` now renders a verified empty snapshot honestly with `POSITIONS: 0`, `REBALANCE: 待接入`, stat values `0.00 / +0 / 0 / 待接入`, and zero `.artdeco-stat-change` nodes
+      - the same verification confirmed browser-context failure on `/trade/portfolio` now renders `POSITIONS: --`, `REBALANCE: --`, stat values `-- / -- / -- / --`, and `positions unavailable，当前暂无已验证组合快照。`
+      - the same verification confirmed browser-context hanging-first-load on `/trade/portfolio` now renders `POSITIONS: --`, `REBALANCE: --`, stat values `-- / -- / -- / --`, and `组合资产同步中...`
+      - the same verification confirmed natural PM2 `/risk/pnl` reuses the repaired owner route and renders the same honest empty-state summary semantics with a distinct live `REQ` id and zero `.artdeco-stat-change` nodes
+    - trade portfolio first-load summary truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-06-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-06-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-06-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-06-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-06-manifest.yaml` passed
+    - trade portfolio first-load summary truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remains a low-risk mixed observation and is not treated as an isolated `trade-batch-06` verdict because the dirty worktree still contains staged files from earlier batches
+    - trade signals store-envelope provenance truth regression:
+      - `npx vitest run src/views/trade/__tests__/Signals.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategySignalsTab.spec.ts src/views/watchlist/__tests__/Signals.spec.ts` passed (`8/8`)
+    - trade signals store-envelope provenance truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - trade signals store-envelope provenance truth structural E2E parse:
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `26` tests
+    - trade signals store-envelope provenance truth targeted browser verification:
+      - Playwright-library verification with system `google-chrome` plus browser-context interception and `serviceWorkers: block` confirmed the unresolved `/trade/signals` route now renders `COUNT: --`, `DATA: PENDING`, `REQ_ID: N/A`, `TIME: N/A`, `VISIBLE: --`, and top-strip `-- / -- / -- / --`
+      - the same controlled verification confirmed a resolved `success: false` first-load envelope now renders `COUNT: --`, `DATA: UNAVAILABLE`, `REQ_ID: N/A`, `TIME: N/A`, `VISIBLE: --`, and the visible `trade signals unavailable` message instead of faux empty-signal truth
+      - the same controlled verification confirmed a verified success path still renders `COUNT: 3`, `DATA: REAL`, `REQ_ID: REQ-TRADE-SIGNALS-LIVE`, `TIME: 42.00MS`, `VISIBLE: 3`, live rows such as `贵州茅台`, and zero `.artdeco-stat-change` nodes
+    - trade signals store-envelope provenance truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-07-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-07-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-07-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-07-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-07-manifest.yaml` passed
+    - trade signals store-envelope provenance truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remains observation-only in the current dirty worktree and must not be treated as an isolated `trade-batch-07` verdict
+    - trade history first-load provenance truth regression:
+      - `npx vitest run src/views/trade/__tests__/History.spec.ts src/views/trade/__tests__/Signals.spec.ts src/views/trade/__tests__/Portfolio.spec.ts tests/unit/views/trade-wrapper-retention.spec.ts` passed (`16/16`)
+    - trade history first-load provenance truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - trade history first-load provenance truth structural E2E parse:
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `28` tests
+    - trade history first-load provenance truth targeted browser verification:
+      - Playwright-library verification with system `google-chrome` plus authenticated browser-context interception and `serviceWorkers: block` confirmed unresolved `/trade/history` now renders `REQ_ID: N/A`, `TIME: N/A`, `ROWS: --`, `COMPLETED: --`, `CANCELLED: --`, top-strip `-- / -- / -- / --`, and `交易历史同步中...`
+      - the same controlled verification confirmed a resolved `success: false` first-load envelope now renders `REQ_ID: N/A`, `TIME: N/A`, `ROWS: --`, placeholder tallies, and `交易历史接口失败，当前显示空历史状态。` instead of faux empty-ledger truth
+      - the same controlled verification confirmed a verified success path still renders `REQ_ID: REQ-TRADE-HISTORY-LIVE`, `TIME: 29.00MS`, `ROWS: 2`, `COMPLETED: 1`, `CANCELLED: 0`, top-strip `2 / 1 / 1 / ¥44394`, retained ledger rows such as `600519`, and zero `.artdeco-stat-change` nodes
+    - trade history first-load provenance truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-08-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-08-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-08-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-08-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-08-manifest.yaml` passed
+    - trade history first-load provenance truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remains observation-only in the current dirty worktree and must not be treated as an isolated `trade-batch-08` verdict
+    - trade portfolio request-provenance truth regression:
+      - `npx vitest run src/views/trade/__tests__/Portfolio.spec.ts src/views/trade/__tests__/History.spec.ts src/views/trade/__tests__/Signals.spec.ts tests/unit/views/trade-wrapper-retention.spec.ts` passed (`18/18`)
+    - trade portfolio request-provenance truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - trade portfolio request-provenance truth structural E2E parse:
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `30` tests
+    - trade portfolio request-provenance truth targeted browser verification:
+      - Playwright-library verification with system `google-chrome` plus seeded-auth browser-context interception and `serviceWorkers: block` confirmed first-load failure `/trade/portfolio` now renders `REQ: N/A`, `POSITIONS: --`, and `REBALANCE: --`
+      - the same first-load failure verification confirmed the failed request id no longer appears anywhere in the visible route shell
+      - the same controlled verification confirmed a success-then-fail refresh path keeps `REQ: req-trade-b09-success`, preserves two visible position cards, and surfaces `positions refresh unavailable，当前仍显示上次成功同步的组合快照。`
+      - wrapper verification confirmed `/risk/pnl` inherits the repaired owner truth and renders `REQ: req-trade-b09-success`, `POSITIONS: 2`, and `REBALANCE: 待接入`
+    - trade portfolio request-provenance truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-09-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-09-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-09-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-09-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-09-manifest.yaml` passed
+    - trade portfolio request-provenance truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` returned `risk_level: low`, `changed_files: 77`, `changed_count: 260`, and `affected_count: 0`, but the staged set remained mixed with earlier batch files so the result is recorded as observation-only rather than isolated `trade-batch-09` scope
+  - Residual risks:
+    - Low: `/watchlist/signals` now presents route-local radar semantics honestly, but the route still consumes the broader trading-signals feed and does not yet provide true watchlist-linked filtering or association
+    - Low: `/market/realtime` desktop cleanup is structurally verified rather than backed by a dedicated route-specific viewport assertion
+    - Low: `ProKLineChart` external-data mode is browser-verified through `/market/technical`, not every possible consumer
+    - Low: the strengthened Phase 2 data-domain Playwright spec still depends on installing the local Playwright chromium executable on this machine
+    - Low: `/data/fund-flow` partial-success warning path is browser-verified through system `google-chrome`, but the strengthened Phase 2 Playwright spec still cannot be executed here until the local Playwright chromium bundle is installed
+    - Low: `/data/industry` stale-refresh coexistence path is browser-verified through system `google-chrome`, but the strengthened Phase 1 Playwright spec still cannot be executed here until the local Playwright chromium bundle is installed
+    - Low: `/data/indicator` idle-vs-executed workflow path is browser-verified through system `google-chrome`, but the strengthened Phase 2 Playwright spec still cannot be executed here until the local Playwright chromium bundle is installed
+    - Low: `/system/config` telemetry-truth path is browser-verified through system `google-chrome`, but the repo's default Playwright Chromium runner still cannot execute this path on this machine until the local Playwright chromium bundle is installed
+    - Low: `/system/api` trace-truth path is browser-verified through system `google-chrome`, but the repo's default Playwright Chromium runner still cannot execute this path on this machine until the local Playwright chromium bundle is installed
+    - Low: `/system/api` and `/system/health` runtime-status truth paths are browser-verified through system `google-chrome`, but the repo's default Playwright Chromium runner still cannot execute these paths on this machine until the local Playwright chromium bundle is installed
+    - Low: `/system/data` payload-normalization path is browser-verified through system `google-chrome`, but the repo's default Playwright Chromium runner still cannot execute this path on this machine until the local Playwright chromium bundle is installed
+    - Low: same-tab Playwright navigation can still surface a readiness-shell abort artifact before `/system/data` mounts, but a fresh authenticated page deep-link verified the route itself is healthy
+    - Low: `/risk/overview` now labels alert and KPI slices honestly, but the strengthened routed-page Playwright spec still cannot run on this machine until the local Playwright chromium bundle is installed
+    - Low: `/risk/overview` metric cards and overview rows are intentionally degraded to `未校验 / 待接入` until a dedicated live risk-summary contract exists
+    - Low: `/risk/management` now degrades unsupported sector and higher-order analytics honestly, but those slices will remain pending until the live positions payload or a dedicated risk-summary contract exposes sector or risk-analytic fields
+    - Low: `/risk/management` live browser verification currently relies on system `google-chrome`; the default Playwright Chromium runner on this machine still cannot execute this path until the local Playwright bundle is installed
+    - Low: `/risk/management` now separates holdings observations from true alert semantics, but the visible `高风险 / 中风险 / 低风险` row tiers are still local exposure heuristics rather than backend policy labels
+    - Low: `/risk/stop-loss` now degrades threshold-missing rows honestly, but the hero subtitle and content-shell copy still describe the stop-loss workbench generically rather than using a dedicated pending-policy subtitle variant
+    - Low: `/risk/stop-loss` live browser verification currently relies on system `google-chrome`, and the threshold-missing path still requires targeted route fulfillment because the natural backend route presently exercises only the empty-state branch
+    - Low: `/risk/overview` and `/risk/stop-loss` now render KPI strips honestly, but the shared `ArtDecoStatCard.vue` default still remains high-blast-radius technical debt until a dedicated shared-component batch is approved
+    - Low: `/trade/portfolio` and `/risk/pnl` now degrade rebalance advice honestly, but those action surfaces will remain pending until the live portfolio contract exposes real target-weight or portfolio-constraint inputs
+    - Low: `/trade/portfolio` and `/risk/pnl` live browser verification currently relies on system `google-chrome`; the default Playwright Chromium runner on this machine still cannot execute these paths until the local Playwright bundle is installed
+    - Low: `/trade/terminal` now labels the current backend truth honestly, but the market card still shows sample rows under a clear `轻量样例` badge until a real runtime market-link contract exists
+    - Low: `/trade/terminal` live browser verification currently relies on system `google-chrome`; the default Playwright Chromium runner on this machine still cannot execute this path until the local Playwright bundle is installed
+    - Low: `/trade/signals` and `/trade/history` now render KPI strips honestly, but the shared `ArtDecoStatCard.vue` default still remains high-blast-radius technical debt until a dedicated shared-component batch is approved
+    - Low: `/strategy/gpu` now labels the current backend truth honestly, but benchmark, thermal, clock, fan-speed, and power slices will remain pending until `/api/gpu/*` exposes real non-placeholder sensor and benchmark fields
+    - Low: `/strategy/gpu` live browser verification currently relies on system `google-chrome`; the default Playwright Chromium runner on this machine still cannot execute this path until the local Playwright bundle is installed
+    - Low: `/strategy/repo` and `/strategy/parameters` desktop cleanup is structurally verified rather than backed by dedicated route-specific viewport assertions
+    - Low: `/strategy/backtest` now labels derived task/KPI/report surfaces honestly, but those panels are still fed from strategy-list-derived placeholders until a later runtime-depth batch
+    - Low: `/strategy/signals` desktop cleanup is structurally verified rather than backed by a dedicated route-specific viewport assertion
+    - Low: embedded strategy-center consumers still need explicit review if they continue to rely on optimization mock fallback semantics
+    - Low: `ArtDecoTradingCenter#trade-positions` is now source-locked to `Center.vue`, but current router truth does not expose that embedded host as a dedicated live browser path
+  - Next actions:
+    - system probe-envelope and count-kpi truth regression:
+      - `npx vitest run src/views/system/__tests__/API.spec.ts src/views/system/__tests__/Health.spec.ts src/views/system/__tests__/DataSource.spec.ts src/views/system/__tests__/Settings.spec.ts src/views/artdeco-pages/system-tabs/__tests__/ArtDecoSystemSettings.spec.ts` passed (`14/14`)
+    - system probe-envelope and count-kpi truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - system probe-envelope and count-kpi truth structural E2E parse:
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `11` tests
+    - system probe-envelope and count-kpi truth targeted browser verification:
+      - Playwright-library verification with system `google-chrome` confirmed `/system/health` now shows `HEALTHY / N/A / 1.0.0 / 3` and zero `.artdeco-stat-change` nodes while live PM2 requests reach `/api/health` and `/api/health/ready`
+      - the same verification confirmed `/system/api` now shows `HEALTHY / N/A / 1.0.0 / 3` and zero `.artdeco-stat-change` nodes while live PM2 requests reach `/api/health` and `/api/health/ready`
+      - the same verification confirmed `/system/data` now shows `19 / 19 / ON / <REQ_ID>` and zero `.artdeco-stat-change` nodes while live PM2 requests reach `/api/v1/data-sources/config/`
+      - all three routed strips no longer show `+0%`, `3.00`, `2.00`, `1.00`, or `0.00`
+      - faithful wrapper-contract regressions now prove `/system/config` can fall back from unavailable detailed metrics to `DATA: SUMMARY` with `/api/health` instead of collapsing directly to `DATA: UNAVAILABLE`
+    - system probe-envelope and count-kpi truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-05-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-05-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-05-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-05-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-05-manifest.yaml` passed
+    - system probe-envelope and count-kpi truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remains observation-only in the current dirty worktree and must not be treated as an isolated `system-batch-05` verdict
+    - system source-tab contract-truth regression:
+      - `npx vitest run src/views/system/__tests__/Settings.spec.ts src/views/artdeco-pages/system-tabs/__tests__/ArtDecoSystemSettings.spec.ts` passed (`6/6`)
+      - `npx vitest run src/views/system/__tests__/API.spec.ts src/views/system/__tests__/Health.spec.ts src/views/system/__tests__/DataSource.spec.ts src/views/system/__tests__/Settings.spec.ts src/views/artdeco-pages/system-tabs/__tests__/ArtDecoSystemSettings.spec.ts` passed (`15/15`)
+    - system source-tab contract-truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - system source-tab contract-truth structural E2E parse:
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `11` tests
+    - system source-tab contract-truth targeted browser verification:
+      - Playwright-library verification with system `google-chrome` confirmed `/system/config` now shows `DATA: REAL`
+      - the same verification confirmed the default source-tab strip now shows `19 / 19 / ON / <REQ_ID>` with zero `.artdeco-stat-change` nodes
+      - the same verification confirmed the routed table now shows live endpoint rows such as `AKShare龙虎榜详情数据` and `akshare.stock_lhb_detail_em`
+      - the same verification confirmed the source tab no longer shows `+0%`, `4.00`, `3/4`, `28,412`, `2.00`, or sample source rows such as `Wind`
+      - actual PM2 requests reached `/api/v1/data-sources/config/`, `/api/health`, `/api/health/ready`, `/api/health/detailed`, and `/api/v1/system/settings/general` with `200`
+    - system source-tab contract-truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-06-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-06-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-06-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-06-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-06-manifest.yaml` passed
+    - system source-tab contract-truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remains observation-only in the current dirty worktree and must not be treated as an isolated `system-batch-06` verdict
+    - system health request-provenance regression:
+      - `npx vitest run src/views/system/__tests__/Health.spec.ts` passed (`5/5`)
+      - `npx vitest run src/views/system/__tests__/Health.spec.ts src/views/system/__tests__/API.spec.ts src/views/system/__tests__/DataSource.spec.ts src/views/system/__tests__/Settings.spec.ts src/views/artdeco-pages/system-tabs/__tests__/ArtDecoSystemSettings.spec.ts` passed (`17/17`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `14` tests
+      - Playwright-library verification with system `google-chrome` confirmed `/system/health` now shows `REQ_ID: N/A` on controlled first-load failure and keeps `REQ_ID: req-system-b07-success` on controlled stale-refresh failure while the previous service snapshot remains visible
+      - the same verification confirmed the natural PM2 route still renders a real request id and `STATUS: HEALTHY`
+    - system health request-provenance artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-07-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-07-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-07-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-07-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-07-manifest.yaml` passed
+    - system health request-provenance staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` returned `risk_level: low`, `changed_files: 77`, `changed_count: 260`, and `affected_count: 0`, but remains observation-only in the current dirty worktree and must not be treated as an isolated `system-batch-07` verdict
+  - Residual risks:
+    - Low: `/system/health` and `/system/api` now normalize plain `/api/health` payloads honestly, but the `service` field still shows `N/A` because the live probe contract does not currently expose a service name
+    - Low: `/system/config` fallback-summary fix is regression-covered through a faithful wrapper-contract test path rather than a naturally occurring live detailed-failure session
+    - Low: the routed system KPI strips are now honest, but the shared `ArtDecoStatCard.vue` default still remains high-blast-radius technical debt until a dedicated shared-component batch is approved
+    - Low: `/system/config` source-tab verification now proves the live contract path, but the write-capability card is still a coarse helper-level `ON/OFF` signal rather than endpoint-level mutability truth
+    - Low: `/system/config` live source-tab verification currently relies on system `google-chrome`; the default Playwright Chromium runner on this machine still cannot execute this path until the local Playwright bundle is installed
+  - Next actions:
+    - `watchlist-batch-01`, `watchlist-batch-02`, `data-batch-01`, `data-batch-02`, `data-batch-03`, `data-batch-04`, `data-batch-05`, `data-batch-06`, `data-batch-07`, `data-batch-08`, `market-batch-01`, `market-batch-02`, `market-batch-03`, `market-batch-04`, `market-batch-05`, `system-batch-01`, `system-batch-02`, `system-batch-03`, `system-batch-04`, `system-batch-05`, `system-batch-06`, `risk-batch-01`, `risk-batch-02`, `risk-batch-03`, `risk-batch-04`, `risk-batch-05`, `risk-batch-06`, `trade-batch-01`, `trade-batch-02`, `trade-batch-03`, `trade-batch-04`, `trade-batch-05`, `strategy-batch-01`, `strategy-batch-02`, `strategy-batch-03`, and `strategy-batch-04` are closed at the repair and validation level; continue the next requested route family or deeper routed-page audit wave with the strengthened stale-refresh, workflow-truth, example-telemetry truth, trace-truth, runtime-status truth, payload-normalization truth, hybrid live-surface truth, holdings-derived truth, policy-derived action truth, alert-policy truth, threshold-policy truth, lightweight-runtime demo truth, partial-runtime metric truth, signal-surface truth, donor-route semantic truth, count-kpi delta truth, unresolved first-load numeric truth, numeric-coherence cluster truth, probe-envelope truth, tab-slice contract truth, unsupported-tab slice truth, tab-button semantics, mock-transport verification handling, and worker-transport interception fallback rules when needed
+    - data numeric-coherence cluster regression:
+      - `npx vitest run src/views/data/__tests__/Industry.spec.ts tests/unit/views/data-industry-refresh-fallback.spec.ts` passed (`3/3`)
+    - data numeric-coherence cluster type-check:
+      - `timeout 180s npm run type-check` passed
+    - data numeric-coherence cluster structural E2E parse:
+      - `npx playwright test tests/e2e/phase1-mainline-matrix.spec.ts --list` listed `10` tests
+    - data numeric-coherence cluster targeted browser verification:
+      - Playwright-library verification with system `google-chrome` confirmed `/data/industry` now shows KPI values `10 / 10 / 3.56% / 0`
+      - the same verification confirmed `/data/industry` has `0` `.artdeco-stat-change` nodes
+      - the same verification confirmed the board table rank column now renders `1 / 2 / 3`
+      - the route no longer shows `+0%`, `1.00`, `2.00`, or `3.00` on the affected surfaces
+      - actual PM2 requests reached `/api/health/ready`, `/api/health`, and `/api/v2/market/sector/fund-flow?...sector_type=行业...` with `200`
+    - data numeric-coherence cluster artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-07-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-07-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-07-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-07-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-07-manifest.yaml` passed
+    - data numeric-coherence cluster staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` returned `risk_level: low`, `changed_files: 77`, `changed_count: 260`, and `affected_count: 0`, but the staged set remained mixed with earlier batch files so the result is recorded as observation-only rather than isolated `data-batch-07` scope
+    - data unresolved-first-load numeric-truth regression:
+      - `npx vitest run src/views/data/__tests__/FundFlow.spec.ts tests/unit/views/data-fund-flow-partial-state.spec.ts` passed (`3/3`)
+    - data unresolved-first-load numeric-truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - data unresolved-first-load numeric-truth structural E2E parse:
+      - `npx playwright test tests/e2e/phase2-mainline-matrix.spec.ts --list` listed `13` tests
+    - data unresolved-first-load numeric-truth targeted browser verification:
+      - Playwright-library verification with system `google-chrome` confirmed `/data/fund-flow` now keeps the route in `资金流向同步中` while rendering top KPI placeholders as `-- / -- / -- / --`
+      - the same verification confirmed `/data/fund-flow` has `0` `.artdeco-stat-change` nodes and no `+0%` or `0.00` on the unresolved first-load strip
+      - the same verification confirmed live PM2 requests reached `/api/health/ready`, `/api/health`, and `/api/akshare/market/fund-flow/hsgt-summary?...` with `200`
+      - the resolved ranking-table ordinal proof remained covered by routed regression because the live PM2 route did not complete the ranking-table surface within the sampled verification window
+    - data unresolved-first-load numeric-truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-08-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-08-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-08-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-08-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-08-manifest.yaml` passed
+    - data unresolved-first-load numeric-truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` returned `risk_level: low`, `changed_files: 77`, `changed_count: 260`, and `affected_count: 0`, but the staged set remained mixed with earlier batch files so the result is recorded as observation-only rather than isolated `data-batch-08` scope
+    - data concept first-load placeholder-truth regression:
+      - `npx vitest run src/views/data/__tests__/Concepts.spec.ts tests/unit/views/data-concept-refresh-fallback.spec.ts` passed (`2/2`)
+      - `npx vitest run src/views/data/__tests__/Concepts.spec.ts src/views/data/__tests__/Industry.spec.ts src/views/data/__tests__/FundFlow.spec.ts tests/unit/views/data-concept-refresh-fallback.spec.ts tests/unit/views/data-fund-flow-partial-state.spec.ts tests/unit/views/data-industry-refresh-fallback.spec.ts` passed (`8/8`)
+    - data concept first-load placeholder-truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - data concept first-load placeholder-truth structural E2E parse:
+      - `npx playwright test tests/e2e/phase2-mainline-matrix.spec.ts --list` listed `14` tests
+    - data concept first-load placeholder-truth targeted browser verification:
+      - Playwright-library verification with system `google-chrome` confirmed `/data/concept` now keeps the route in `概念板块同步中` while rendering `SECTORS: --`, `LEADER: --`, and top-strip `-- / -- / -- / --`
+      - the same verification confirmed the content meta now renders `POSITIVE: --` and `NEGATIVE: --`
+      - the same verification confirmed the unresolved first-load strip now has `0` `.artdeco-stat-change` nodes and no `+0%`, `0.00`, or pre-resolution `N/A` leakage
+      - normal PM2 verification confirmed the route still resolves to live data such as `SECTORS: 20`, `POSITIVE: 20`, `NEGATIVE: 0`, and a real `REQ` id
+      - live PM2 requests still reached `/api/health/ready`, `/api/health`, and `/api/v2/market/sector/fund-flow?...sector_type=概念...` with `200`
+    - data concept first-load placeholder-truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-09-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-09-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-09-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-09-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-09-manifest.yaml` passed
+    - data concept first-load placeholder-truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remains observation-only in the current dirty worktree and must not be treated as an isolated `data-batch-09` verdict
+    - trade positions first-load and count-kpi truth regression:
+      - `npx vitest run src/views/trade/__tests__/Center.spec.ts src/views/trade/__tests__/History.spec.ts src/views/trade/__tests__/Portfolio.spec.ts src/views/trade/__tests__/Signals.spec.ts tests/unit/views/trade-wrapper-retention.spec.ts` passed (`12/12`)
+    - trade positions first-load and count-kpi truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - trade positions first-load and count-kpi truth structural E2E parse:
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `17` tests
+    - trade positions first-load and count-kpi truth targeted browser verification:
+      - Playwright-library verification with system `google-chrome` confirmed `/trade/positions` now shows `REQ_ID: --`, `TIME: --`, `ROWS: --`, top-strip `-- / -- / -- / --`, and content meta `MARKET_VALUE: -- / TOTAL_PNL: --` while the first positions request is intentionally hung
+      - the same unresolved verification confirmed the route now has `0` `.artdeco-stat-change` nodes and no `+0%`, `0.00`, or `N/A` leakage on the affected pending surfaces
+      - normal PM2 verification confirmed the route still resolves to honest empty-state data with `REQ_ID: <uuid>`, `TIME: <ms>`, `ROWS: 0`, top-strip `0 / 0 / ¥0 / --`, and content meta `MARKET_VALUE: ¥0 / TOTAL_PNL: ¥0`
+      - live PM2 requests still reached `/api/health/ready`, `/api/health`, and `/api/v1/trade/positions` with `200`
+    - trade positions first-load and count-kpi truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-06-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-06-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-06-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-06-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-06-manifest.yaml` passed
+    - trade positions first-load and count-kpi truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remains observation-only in the current dirty worktree and must not be treated as an isolated `trade-batch-06` verdict
+    - data indicator unverified-summary truth regression:
+      - `npx vitest run src/views/data/__tests__/Advanced.spec.ts tests/unit/views/data-indicator-details.spec.ts tests/unit/views/data-advanced-screening-truth.spec.ts tests/unit/views/data-advanced-cutover.spec.ts` passed (`6/6`)
+    - data indicator unverified-summary truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - data indicator unverified-summary truth structural E2E parse:
+      - `npx playwright test tests/e2e/phase2-mainline-matrix.spec.ts --list` listed `14` tests
+    - data indicator unverified-summary truth targeted browser verification:
+      - browser-context failure verification with system `google-chrome` confirmed `/data/indicator` now keeps `UPDATED: --`, five `--` summary values, and `0` `.artdeco-stat-change` nodes while no verified summary exists
+      - browser-context success verification confirmed the same route now renders verified tally strings `3 / 2 / 0 / 0 / 0` with zero `.artdeco-stat-change` nodes and no `+0%` or `x.00`
+      - natural PM2 verification in this environment still observed `401` responses for `/api/v1/indicators/registry` and `/api/v1/data/stocks/basic`, so verified-success route truth was confirmed through browser-context fulfillment rather than direct backend responses
+    - data indicator unverified-summary truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-10-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-10-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-10-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-10-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-10-manifest.yaml` passed
+    - data indicator unverified-summary truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remains observation-only in the current dirty worktree and must not be treated as an isolated `data-batch-10` verdict
+    - data industry first-load provenance truth regression:
+      - `npx vitest run src/views/data/__tests__/Industry.spec.ts tests/unit/views/data-industry-refresh-fallback.spec.ts` passed (`5/5`)
+    - data industry first-load provenance truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - data industry first-load provenance truth structural E2E parse:
+      - `npx playwright test tests/e2e/phase1-mainline-matrix.spec.ts --list` listed `15` tests
+      - `git diff --check -- web/frontend/src/views/data/Industry.vue web/frontend/src/views/data/__tests__/Industry.spec.ts web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts` passed
+    - data industry first-load provenance truth targeted browser verification:
+      - Playwright-library verification with system `google-chrome` confirmed unresolved `/data/industry` now renders `DATA: PENDING`, `REQ_ID: N/A`, `TIME: N/A`, and `板块数据同步中`
+      - the same verification confirmed a first-load failure now renders `DATA: UNAVAILABLE` and `板块数据加载失败` instead of optimistic `DATA: REAL`
+      - the same verification confirmed verified success still renders `DATA: REAL`, request id `industry-live-ok`, and board rows such as `半导体` and `算力`
+      - all three verification paths confirmed `0` `.artdeco-stat-change` nodes on the route's KPI strip
+    - data industry first-load provenance truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-11-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-11-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-11-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-11-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-11-manifest.yaml` passed
+    - data industry first-load provenance truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remains observation-only in the current dirty worktree and must not be treated as an isolated `data-batch-11` verdict
+    - data fund-flow first-load row-meta truth regression:
+      - `npx vitest run src/views/data/__tests__/FundFlow.spec.ts tests/unit/views/data-fund-flow-partial-state.spec.ts` passed (`5/5`)
+    - data fund-flow first-load row-meta truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - data fund-flow first-load row-meta truth structural E2E parse:
+      - `npx playwright test tests/e2e/phase2-mainline-matrix.spec.ts --list` listed `17` tests
+    - data fund-flow first-load row-meta truth targeted browser verification:
+      - Playwright-library verification with system `google-chrome` plus authenticated browser-context reuse, ready/healthy stubs, and browser-context interception confirmed unresolved `/data/fund-flow` now renders `ROWS: --`, `REQ: N/A`, summary values `-- / -- / -- / --`, and `资金流向同步中`
+      - the same controlled verification confirmed a first-load failure now renders `ROWS: --`, `REQ: N/A`, placeholder summary values, and `资金流向加载失败` instead of faux empty-ranking truth
+      - the same controlled verification confirmed a verified success path still renders `ROWS: 2`, `REQ: REQ-FUND-FLOW-RANKING`, and `当前按主力流入额重排 2 条排行，趋势窗口为今日。`
+    - data fund-flow first-load row-meta truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-12-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-12-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-12-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-12-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-12-manifest.yaml` passed
+    - data fund-flow first-load row-meta truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remains observation-only in the current dirty worktree and must not be treated as an isolated `data-batch-12` verdict
+    - data concept request-provenance truth regression:
+      - `npx vitest run src/views/data/__tests__/Concepts.spec.ts tests/unit/views/data-concept-refresh-fallback.spec.ts src/views/data/__tests__/FundFlow.spec.ts` passed (`8/8`)
+    - data concept request-provenance truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - data concept request-provenance truth structural E2E parse:
+      - `npx playwright test tests/e2e/phase2-mainline-matrix.spec.ts --list` listed `19` tests
+      - `git diff --check -- web/frontend/src/views/data/Concepts.vue web/frontend/src/views/data/__tests__/Concepts.spec.ts web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-13-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-13-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-13-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-13-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/data-concept-request-provenance-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/data-batch-13-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - data concept request-provenance truth targeted browser verification:
+      - Playwright-library verification with system `google-chrome` plus authenticated browser-context interception and `serviceWorkers: block` confirmed failed first-load `/data/concept` now renders `REQ: N/A`, `SECTORS: --`, `LEADER: --`, `POSITIVE: --`, and `NEGATIVE: --`
+      - the same controlled verification confirmed the first-load failure route no longer leaks the failed request id anywhere in the visible route shell
+      - the same controlled verification confirmed a success-then-fail refresh path keeps `REQ: req-data-b13-success`, preserves the visible `机器人` and `卫星互联网` rows, and still shows the stale-refresh warning
+    - data concept request-provenance truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-13-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-13-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-13-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-13-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-13-manifest.yaml` passed
+    - data concept request-provenance truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remains observation-only in the current dirty worktree and must not be treated as an isolated `data-batch-13` verdict
+    - data industry request-provenance truth regression:
+      - `npx vitest run src/views/data/__tests__/Industry.spec.ts src/views/data/__tests__/FundFlow.spec.ts src/views/data/__tests__/Concepts.spec.ts tests/unit/views/data-industry-refresh-fallback.spec.ts tests/unit/views/data-concept-refresh-fallback.spec.ts tests/unit/views/data-fund-flow-partial-state.spec.ts` passed (`16/16`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase1-mainline-matrix.spec.ts --list` listed `23` tests
+      - Playwright-library verification with system `google-chrome` confirmed failed first-load `/data/industry` now renders `REQ_ID: N/A` and no longer leaks `req-data-d14-first-fail`
+      - the same controlled verification confirmed a refresh-failure path keeps `REQ_ID: req-data-d14-success`, preserves `2` board rows, and still shows `当前仍展示上次成功同步的行业板块数据`
+      - natural PM2 verification confirmed `/data/industry` still renders a live success shell with a real request id plus `10 / 10 / 3.56% / 0`
+    - data industry request-provenance truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-14-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-14-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-14-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-14-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-14-manifest.yaml` passed
+    - data industry request-provenance truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged" })` remains mixed-staged observation only for this run because the staged set is still shared with earlier batches
+    - strategy parameters summary-truth regression:
+      - `npx vitest run src/views/artdeco-pages/strategy-tabs/__tests__/StrategyParametersTab.spec.ts tests/unit/strategy-parameters-data.spec.ts` passed (`5/5`)
+    - strategy parameters summary-truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - strategy parameters summary-truth structural E2E parse:
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `18` tests
+    - strategy parameters summary-truth targeted browser verification:
+      - Playwright-library verification with system `google-chrome` confirmed the natural PM2 `/strategy/parameters?strategyId=101` empty-state path now shows `0 / 0 / 0 / 101`
+      - the same natural-path verification confirmed the route has `0` `.artdeco-stat-change` nodes and the visible `暂无策略参数` state while `/api/v1/strategy/strategies` returns `200`
+      - browser-context success verification confirmed the same route now renders `1 / 2 / 0 / 101` with `0` `.artdeco-stat-change` nodes and the expected `Momentum Alpha` strategy card
+      - browser-context failure verification confirmed the same route now renders `-- / -- / -- / 101`, `0` `.artdeco-stat-change` nodes, and the visible `策略参数加载失败` state before any verified strategy payload exists
+      - live PM2 requests reached `/api/health/ready`, `/api/health`, and `/api/v1/strategy/strategies` with `200`
+    - strategy parameters summary-truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-05-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-05-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-05-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-05-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-05-manifest.yaml` passed
+    - strategy parameters summary-truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` returned `risk_level: low`, `changed_files: 77`, `changed_count: 260`, and `affected_count: 0`, but the staged set remained mixed with earlier batch files so the result is recorded as observation-only rather than isolated `strategy-batch-05` scope
+    - watchlist screener summary-truth regression:
+      - `npx vitest run src/views/watchlist/__tests__/Screener.spec.ts src/views/watchlist/__tests__/Signals.spec.ts src/views/watchlist/__tests__/Manage.spec.ts` passed (`5/5`)
+    - watchlist screener summary-truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - watchlist screener summary-truth structural E2E parse:
+      - `npx playwright test tests/e2e/phase2-mainline-matrix.spec.ts --list` listed `15` tests
+    - watchlist screener summary-truth targeted browser verification:
+      - Playwright-library verification with system `google-chrome` confirmed the natural PM2 `/watchlist/screener` error path now shows `UNIVERSE: --`
+      - the same natural-path verification confirmed the top summary strip now shows `-- / -- / -- / --` with `0` `.artdeco-stat-change` nodes while `/api/v1/data/stocks/basic` returns `401`
+      - browser-context success verification confirmed the same route now renders `3 / 3 / 2 / 1.61亿` with `0` `.artdeco-stat-change` nodes
+      - browser-context hanging-first-load verification confirmed the same route now renders `UNIVERSE: --`, `-- / -- / -- / --`, and the visible `股票池同步中` state
+      - live PM2 requests reached `/api/health/ready`, `/api/health`, and `/api/v1/data/stocks/basic` with `200 / 200 / 401`
+    - watchlist screener summary-truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/watchlist-batch-03-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/watchlist-batch-03-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/watchlist-batch-03-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/watchlist-batch-03-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/watchlist-batch-03-manifest.yaml` passed
+    - watchlist screener summary-truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` returned `risk_level: low`, `changed_files: 77`, `changed_count: 260`, and `affected_count: 0`, but the staged set remained mixed with earlier batch files so the result is recorded as observation-only rather than isolated `watchlist-batch-03` scope
+    - watchlist screener request-and-envelope truth regression:
+      - `npx vitest run src/views/watchlist/__tests__/Screener.spec.ts` passed (`4/4`)
+      - `npx vitest run src/views/watchlist/__tests__/Screener.spec.ts src/views/watchlist/__tests__/Signals.spec.ts src/views/watchlist/__tests__/Manage.spec.ts` passed (`7/7`)
+    - watchlist screener request-and-envelope truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - watchlist screener request-and-envelope truth structural E2E parse:
+      - `npx playwright test tests/e2e/phase2-mainline-matrix.spec.ts --list` listed `21` tests
+    - watchlist screener request-and-envelope truth targeted browser verification:
+      - Playwright-library verification with system `google-chrome` confirmed a controlled first-load `success:false` stock-universe path now shows `REQ: N/A`, `UNIVERSE: --`, summary-strip `-- / -- / -- / --`, and the visible `股票池加载失败` state
+      - the same controlled first-load verification confirmed the failed request id no longer appears in the hero shell and the route no longer falls through to `暂无可筛选标的`
+      - controlled success-then-refresh-fail verification confirmed the same route now keeps `REQ: req-watchlist-b04-success`, preserves the visible `贵州茅台` row, and shows `stocks basic refresh unavailable，当前仍展示上次成功同步的股票池。`
+      - natural PM2 `/watchlist/screener` now renders a real request id, `UNIVERSE: 200`, and live summary values `200 / 200 / 95 / 0` while `/api/v1/data/stocks/basic?limit=200` returns `200`
+    - watchlist screener request-and-envelope truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/watchlist-batch-04-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/watchlist-batch-04-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/watchlist-batch-04-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/watchlist-batch-04-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/watchlist-batch-04-manifest.yaml` passed
+    - watchlist screener request-and-envelope truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` returned `risk_level: low`, `changed_files: 85`, `changed_count: 271`, and `affected_count: 0`, but the staged set remained mixed with earlier batches so the result is recorded as observation-only rather than isolated `watchlist-batch-04` scope
+    - strategy signals summary-truth regression:
+      - `npx vitest run src/views/artdeco-pages/strategy-tabs/__tests__/StrategySignalsTab.spec.ts src/views/watchlist/__tests__/Signals.spec.ts` passed (`4/4`)
+      - `npx vitest run src/views/artdeco-pages/strategy-tabs/__tests__/StrategySignalsTab.spec.ts src/views/watchlist/__tests__/Signals.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategyParametersTab.spec.ts` passed (`6/6`)
+    - strategy signals summary-truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - strategy signals summary-truth structural E2E parse:
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `19` tests
+    - strategy signals summary-truth targeted browser verification:
+      - Playwright-library verification with system `google-chrome` confirmed the natural PM2 `/strategy/signals` empty-state path now shows `0 / 0 / 0 / 0`
+      - the same natural-path verification confirmed the route has `COUNT: 0`, `0` `.artdeco-stat-change` nodes, and a `200` response from `/api/v1/trade/signals?limit=10`
+      - browser-context success verification confirmed the same route now renders `3 / 1 / 1 / 1`, `COUNT: 3`, and `0` `.artdeco-stat-change` nodes with three signal items
+      - browser-context hanging-first-load verification confirmed the same route now renders `-- / -- / -- / --`, `COUNT: --`, `0` `.artdeco-stat-change` nodes, and the visible `策略信号同步中` state before any verified signal payload exists
+      - live PM2 requests reached `/api/health/ready`, `/api/health`, and `/api/v1/trade/signals?limit=10` with `200`
+    - strategy signals summary-truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-06-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-06-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-06-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-06-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-06-manifest.yaml` passed
+    - strategy signals summary-truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remains observation-only in the current dirty worktree and must not be treated as an isolated `strategy-batch-06` verdict
+    - strategy optimization summary-truth regression:
+      - `npx vitest run src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyOptimization.spec.ts` passed (`2/2`)
+      - `npx vitest run src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyOptimization.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategySignalsTab.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategyParametersTab.spec.ts src/views/watchlist/__tests__/Signals.spec.ts` passed (`8/8`)
+    - strategy optimization summary-truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - strategy optimization summary-truth structural E2E parse:
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `20` tests
+    - strategy optimization summary-truth targeted browser verification:
+      - Playwright-library verification with system `google-chrome` confirmed the natural PM2 `/strategy/opt?strategyId=101` empty-state path now shows `0 / 0 / 0 / ID 101`
+      - the same natural-path verification confirmed the route has `VISIBLE: 0`, `TOTAL: 0`, `0` `.artdeco-stat-change` nodes, and a `200` response from `/api/v1/strategy/strategies`
+      - browser-context success verification confirmed the same route now renders `2 / 1 / 0 / ID 101`, `VISIBLE: 1`, `TOTAL: 2`, and `0` `.artdeco-stat-change` nodes with one visible optimization row
+      - browser-context failure verification confirmed the same route now renders `-- / -- / -- / ID 101`, `VISIBLE: --`, `TOTAL: --`, `SOURCE: REAL-OFFLINE`, and the visible `REAL 数据不可用` state
+      - browser-context hanging-first-load verification confirmed the same route now renders `-- / -- / -- / ID 101`, `VISIBLE: --`, `TOTAL: --`, `0` `.artdeco-stat-change` nodes, and the visible `优化候选同步中，正在等待真实候选返回。` state before any verified candidate payload exists
+      - live PM2 requests reached `/api/health/ready`, `/api/health`, and `/api/v1/strategy/strategies` with `200`
+    - strategy optimization summary-truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-07-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-07-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-07-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-07-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-07-manifest.yaml` passed
+    - strategy optimization summary-truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remains observation-only in the current dirty worktree and must not be treated as an isolated `strategy-batch-07` verdict
+    - strategy repository summary-truth regression:
+      - `npx vitest run src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyManagement.spec.ts` passed (`3/3`)
+      - `npx vitest run src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyManagement.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyOptimization.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategySignalsTab.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategyParametersTab.spec.ts src/views/watchlist/__tests__/Signals.spec.ts` passed (`11/11`)
+    - strategy repository summary-truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - strategy repository summary-truth structural E2E parse:
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `22` tests
+    - strategy repository summary-truth targeted browser verification:
+      - Playwright-library verification with system `google-chrome` confirmed the natural PM2 `/strategy/repo` empty-state path now shows `0 / 0 / 0 / 全部状态`
+      - the same natural-path verification confirmed the route has `MATCHED: 0`, `PAGE: 1 / 1`, `0` `.artdeco-stat-change` nodes, and `200` responses from `/api/health/ready`, `/api/health`, and `/api/v1/strategy/strategies`
+      - browser-context failure verification confirmed the same route now renders `-- / -- / -- / 全部状态`, `MATCHED: --`, `PAGE: -- / --`, and the visible `REAL 请求失败，请稍后重试。` state
+      - browser-context hanging-first-load verification confirmed the same route now renders `-- / -- / -- / 全部状态`, `MATCHED: --`, `PAGE: -- / --`, `0` `.artdeco-stat-change` nodes, and the visible `策略仓库同步中，正在等待真实策略返回。` state before any verified inventory exists
+    - strategy repository summary-truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-08-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-08-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-08-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-08-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-08-manifest.yaml` passed
+    - strategy repository summary-truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` returned `risk_level: low`, `changed_files: 77`, `changed_count: 260`, and `affected_count: 0`, but the staged set remained mixed with earlier batch files so the result is recorded as observation-only rather than isolated `strategy-batch-08` scope
+    - dashboard aggregate-provenance envelope truth regression:
+      - `npx vitest run tests/unit/components/ArtDecoDashboardLogic.spec.ts` passed (`8/8`)
+    - dashboard aggregate-provenance envelope truth type-check:
+      - `timeout 180s npm run type-check` passed
+    - dashboard aggregate-provenance envelope truth structural E2E parse:
+      - `npx playwright test tests/e2e/phase1-mainline-matrix.spec.ts --list` listed `14` tests
+    - dashboard aggregate-provenance envelope truth targeted browser verification:
+      - Playwright-library verification with system `google-chrome` plus browser-context interception and `serviceWorkers: block` confirmed `/dashboard` now renders `DATA: PENDING` and `SYNC: PENDING` with no route alerts while the first quotes, fund-flow, and industry slices are intentionally hung
+      - the same controlled verification confirmed `/dashboard` now renders `DATA: REAL` and `SYNC: READY` when the core dashboard slices all resolve successfully
+      - controlled industry failure verification confirmed the same route now renders `DATA: MIXED`, `SYNC: DEGRADED`, and `行业热度数据暂不可用` when `/api/v2/market/sector/fund-flow` returns a `success: false` error envelope
+      - controlled fund-flow failure verification confirmed the same route now renders `DATA: MIXED`, `SYNC: DEGRADED`, and `资金流向数据暂不可用` when `/api/akshare/market/fund-flow/hsgt-summary` returns a `success: false` error envelope
+      - natural PM2 observation confirmed `/dashboard` currently redirects to `/login` after repeated `401` responses from live `/api/akshare/market/fund-flow/hsgt-summary` and `/api/akshare/market/fund-flow/big-deal`, so route-success proof remains browser-context controlled in this environment
+    - dashboard aggregate-provenance envelope truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-01-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-01-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/dashboard-batch-01-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/dashboard-batch-01-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/dashboard-batch-01-manifest.yaml` passed
+    - dashboard aggregate-provenance envelope truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remains observation-only in the current dirty worktree and must not be treated as an isolated `dashboard-batch-01` verdict
+    - market LHB request-provenance truth regression:
+      - `npx vitest run src/views/market/__tests__/LHB.spec.ts src/views/market/__tests__/Technical.spec.ts src/views/market/__tests__/Realtime.spec.ts` passed (`7/7`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase1-mainline-matrix.spec.ts --list` listed `17` tests
+      - Playwright-library verification with system `google-chrome` confirmed failed first-load `/market/lhb` now renders `REQ: N/A`, `ROWS: --`, and top stat values `-- / 今日 / 买入榜 / --`
+      - the same controlled verification confirmed the failed request id no longer appears anywhere in the visible route shell
+      - a controlled success-then-fail refresh verification confirmed the same route now keeps `REQ: req-market-b06-success`, preserves the visible `贵州茅台` row, and still shows `龙虎榜加载失败，已保留上一份有效榜单。`
+    - market LHB request-provenance truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-06-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-06-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/market-batch-06-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/market-batch-06-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/market-batch-06-manifest.yaml` passed
+    - market technical request-provenance truth regression:
+      - `npx vitest run src/views/market/__tests__/LHB.spec.ts src/views/market/__tests__/Technical.spec.ts src/views/market/__tests__/Realtime.spec.ts` passed (`9/9`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase1-mainline-matrix.spec.ts --list` listed `19` tests
+      - Playwright-library verification with system `google-chrome` confirmed failed first-load `/market/technical` now renders `REQ: N/A`, `POINTS: --`, `LAST CLOSE: --`, and top stat values `000001 / -- / -- / --`
+      - the same controlled verification confirmed the failed request id no longer appears anywhere in the visible route shell
+      - a controlled success-then-fail refresh verification confirmed the same route now keeps `REQ: req-market-b07-success`, preserves the visible `2026-04-02` row, and still shows `K线数据加载失败，已保留上一份有效样本。`
+    - market technical request-provenance truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-07-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-07-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/market-batch-07-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/market-batch-07-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/market-batch-07-manifest.yaml` passed
+    - market realtime request-provenance truth regression:
+      - `npx vitest run src/views/market/__tests__/Realtime.spec.ts src/views/market/__tests__/LHB.spec.ts src/views/market/__tests__/Technical.spec.ts` passed (`11/11`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase1-mainline-matrix.spec.ts --list` listed `21` tests
+      - Playwright-library verification with system `google-chrome` confirmed failed first-load `/market/realtime` now renders `TRACE_ID: N/A`, `SAMPLE: --`, top stats `-- / -- / 核心蓝筹样本 / --`, and `实时行情加载失败，当前暂无已验证样本快照。`
+      - the same controlled verification confirmed first-load failure no longer leaks `req-market-b08-first-fail`, and a controlled refresh-failure path keeps `TRACE_ID: req-market-b08-success` with `2` preserved quote rows and no leaked `req-market-b08-refresh-fail`
+      - natural PM2 verification confirmed `/market/realtime` still renders a live success shell with a real trace id plus `13.0亿 / 20% / 5只`
+    - market realtime request-provenance truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-08-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-08-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/market-batch-08-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/market-batch-08-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/market-batch-08-manifest.yaml` passed
+    - market realtime request-provenance truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged" })` returned `risk_level: low`, `changed_files: 78`, `changed_count: 261`, and `affected_count: 0`, but the staged set remained mixed with earlier batch files so the result is recorded as observation-only rather than isolated `market-batch-08` scope
+    - risk stop-loss store-envelope truth regression:
+      - `npx vitest run src/views/risk/__tests__/StopLoss.spec.ts` passed (`4/4`)
+      - `npx vitest run src/views/risk/__tests__/StopLoss.spec.ts src/views/risk/__tests__/Overview.spec.ts src/views/risk/__tests__/Alerts.spec.ts tests/unit/views/risk-wrapper-retention.spec.ts` passed (`13/13`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `16` tests
+      - Playwright-library verification with system `google-chrome` confirmed failed first-load `/risk/stop-loss` now renders `REQ_ID: N/A`, `CRITICAL: --`, `TRIGGERED: --`, top-strip `-- / -- / -- / --`, and `watchlist stocks unavailable，当前暂无已验证止损快照。`
+      - the same controlled verification confirmed the failed request id no longer appears anywhere in the visible route shell
+      - a controlled success-then-fail refresh verification confirmed the same route now keeps `REQ_ID: req-live-stoploss-success`, preserves the visible `贵州茅台` and `宁德时代` cards, and still shows `watchlist stocks refresh unavailable，当前仍显示上次成功同步的止损快照。`
+      - natural PM2 verification confirmed `/risk/stop-loss` still loads and currently renders the honest live empty-state shell with a real request id plus `0 / 0 / 0 / --`
+    - risk stop-loss store-envelope truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-08-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-08-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-08-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-08-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-08-manifest.yaml` passed
+    - trade signals store-refresh snapshot-provenance regression:
+      - `npx vitest run src/views/trade/__tests__/Signals.spec.ts src/views/trade/__tests__/Portfolio.spec.ts src/views/trade/__tests__/History.spec.ts tests/unit/views/trade-wrapper-retention.spec.ts` passed (`19/19`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `31` tests
+      - Playwright-library verification with system `google-chrome` confirmed failed first-load `/trade/signals` now renders `COUNT: --`, `DATA: UNAVAILABLE`, `REQ_ID: N/A`, `TIME: N/A`, top-strip `-- / -- / -- / --`, and `trade signals unavailable，当前显示空状态。`
+      - the same controlled verification confirmed the failed request id no longer appears anywhere in the visible route shell
+      - a controlled success-then-fail refresh verification confirmed the same route now keeps `COUNT: 3`, `DATA: REAL`, `REQ_ID: REQ-LIVE-TRADE-SIGNALS-SUCCESS`, `TIME: 42.00MS`, preserves `3` visible signal rows, and still shows `trade signals refresh unavailable，当前仍显示上次成功同步的交易信号快照。`
+      - natural PM2 verification confirmed `/trade/signals` still loads and currently renders the honest live empty-state shell with a real request id plus `0 / 0 / 0 / 未校验`
+    - trade signals store-refresh snapshot-provenance artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-09-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-09-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-09-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-09-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-09-manifest.yaml` passed
+    - trade signals store-refresh snapshot-provenance staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` returned `risk_level: low`, `changed_files: 85`, `changed_count: 271`, and `affected_count: 0`, but the staged set remained mixed with earlier batch files so the result is recorded as observation-only rather than isolated `trade-batch-09` scope
+    - trade positions store-refresh snapshot-provenance regression:
+      - `npx vitest run src/views/trade/__tests__/Center.spec.ts src/views/trade/__tests__/Portfolio.spec.ts src/views/trade/__tests__/History.spec.ts src/views/trade/__tests__/Signals.spec.ts tests/unit/views/trade-wrapper-retention.spec.ts` passed (`23/23`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `35` tests
+      - Playwright-library verification with system `google-chrome` confirmed failed first-load `/trade/positions` now renders `REQ_ID: N/A`, `TIME: N/A`, `ROWS: --`, top-strip `-- / -- / -- / --`, and `MARKET_VALUE: -- / TOTAL_PNL: --`
+      - the same controlled verification confirmed the failed request id no longer appears anywhere in the visible route shell
+      - a controlled success-then-fail refresh verification confirmed the same route now keeps `REQ_ID: req-live-trade-positions-success`, `TIME: 31.00ms`, `ROWS: 2`, preserves `2` visible holdings rows, and still shows `positions refresh unavailable，当前仍显示上次成功同步的持仓快照。`
+      - natural PM2 verification confirmed `/trade/positions` still loads and currently renders the honest live empty-state shell with a real request id plus `0 / 0 / ¥0 / --`
+      - natural PM2 verification confirmed the shared `/strategy/pos` consumer still loads with the same honest zero-row empty state
+    - trade positions store-refresh snapshot-provenance artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-10-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-10-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-10-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-10-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-10-manifest.yaml` passed
+    - trade positions store-refresh snapshot-provenance staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remains observation-only in the current dirty worktree and must not be treated as an isolated `trade-batch-10` verdict
+    - strategy signals store-refresh snapshot-provenance regression:
+      - `npx vitest run src/views/artdeco-pages/strategy-tabs/__tests__/StrategySignalsTab.spec.ts src/views/watchlist/__tests__/Signals.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategyParametersTab.spec.ts` passed (`8/8`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `33` tests
+      - Playwright-library verification with system `google-chrome` confirmed failed first-load `/strategy/signals` now renders `REQ_ID: N/A`, `COUNT: --`, top-strip `-- / -- / -- / --`, and `策略信号加载失败 / strategy signals unavailable`
+      - the same controlled verification confirmed the failed request id no longer appears anywhere in the visible route shell
+      - a controlled success-then-fail refresh verification confirmed the same route now keeps `REQ_ID: req-live-strategy-signals-success`, preserves `COUNT: 2` plus `2` visible signal rows, and still shows `strategy signals refresh unavailable，当前仍显示上次成功同步的策略信号快照。`
+      - natural PM2 verification confirmed `/strategy/signals` still loads and currently renders the honest live empty-state shell with a real request id plus `0 / 0 / 0 / 0`
+      - natural PM2 verification confirmed the shared `/watchlist/signals` consumer still loads with `FOCUS: WATCHLIST`, a real request id, and zero `.artdeco-stat-change` nodes
+    - strategy signals store-refresh snapshot-provenance artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-09-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-09-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-09-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-09-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-09-manifest.yaml` passed
+    - strategy signals store-refresh snapshot-provenance staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remains observation-only in the current dirty worktree and must not be treated as an isolated `strategy-batch-09` verdict
+    - risk overview multi-request refresh-provenance regression:
+      - `npx vitest run src/views/risk/__tests__/Overview.spec.ts` passed (`6/6`)
+      - `npx vitest run src/views/risk/__tests__/Overview.spec.ts src/views/risk/__tests__/Alerts.spec.ts src/views/risk/__tests__/News.spec.ts src/views/risk/__tests__/StopLoss.spec.ts tests/unit/views/risk-wrapper-retention.spec.ts` passed (`16/16`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `18` tests
+      - Playwright-library verification with system `google-chrome` confirmed failed first-load `/risk/overview` now renders `REQ_ID: N/A`, `ALERTS: --`, `RULES: --`, top-strip `-- / -- / -- / --`, and `获取预警记录失败，当前暂无已验证风险概览快照。`
+      - the same controlled verification confirmed the failed request id no longer appears anywhere in the visible route shell
+      - component and Phase 4 regressions now pin the `success -> refresh fail` path so the route keeps its last verified snapshot instead of clearing rules and alerts, while the equivalent headless browser reproduction remained auth/reload observation-only on this machine
+      - natural PM2 headless observation for `/risk/overview` currently bounces through `/dashboard -> /login` under the same auth/reload timing artifact, so natural-route success proof is not claimed for this batch
+    - risk overview multi-request refresh-provenance artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-09-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-09-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-09-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-09-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-09-manifest.yaml` passed
+    - risk alerts multi-request refresh-provenance regression:
+      - `npx vitest run src/views/risk/__tests__/Alerts.spec.ts` passed (`3/3`)
+      - `npx vitest run src/views/risk/__tests__/Alerts.spec.ts src/views/risk/__tests__/Overview.spec.ts src/views/risk/__tests__/News.spec.ts src/views/risk/__tests__/StopLoss.spec.ts tests/unit/views/risk-wrapper-retention.spec.ts` passed (`18/18`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `20` tests
+      - Playwright-library verification with system `google-chrome` confirmed failed first-load `/risk/alerts` now renders `REQ_ID: N/A`, `UNREAD: --`, `RULES: --`, `ALERTS: --`, top-strip `-- / -- / -- / --`, and `获取告警记录失败，当前暂无已验证告警快照。`
+      - the same controlled verification confirmed the failed request id no longer appears anywhere in the visible route shell and the route no longer falls through to `暂无告警记录` or `暂无风险告警规则`
+      - a controlled success-then-fail refresh verification confirmed the same route now keeps `REQ_ID: req-live-risk-alerts-success`, preserves visible rule and alert rows, and still shows `获取告警记录失败，当前仍显示上次成功同步的告警快照。`
+      - natural PM2 headless observation for `/risk/alerts` currently bounces through `/dashboard -> /login` under the same auth/reload timing artifact, so natural-route success proof is not claimed for this batch
+    - risk alerts multi-request refresh-provenance artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-10-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-10-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-10-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-10-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-10-manifest.yaml` passed
+    - risk alerts multi-request refresh-provenance staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` returned `risk_level: low`, `changed_files: 94`, `changed_count: 0`, and `affected_count: 0`, but the staged set remained mixed with earlier batch files so the result is recorded as observation-only rather than isolated `risk-batch-10` scope
+    - risk news announcement refresh-provenance regression:
+      - `npx vitest run src/views/risk/__tests__/News.spec.ts` passed (`3/3`)
+      - `npx vitest run src/views/risk/__tests__/News.spec.ts src/views/risk/__tests__/Alerts.spec.ts src/views/risk/__tests__/Overview.spec.ts src/views/risk/__tests__/StopLoss.spec.ts tests/unit/views/risk-wrapper-retention.spec.ts` passed (`20/20`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `22` tests
+      - Playwright-library verification with system `google-chrome` confirmed failed first-load `/risk/news` now renders `REQ_ID: N/A`, `TODAY: --`, `ANNOUNCEMENTS: --`, `LINKED: --`, top-strip `-- / -- / -- / --`, and `获取公告失败，当前暂无已验证公告快照。`
+      - the same controlled verification confirmed the failed request id no longer appears anywhere in the visible route shell and the route no longer falls through to `暂无公告数据` or `当前没有可展示的公告记录。`
+      - a controlled success-then-fail refresh verification confirmed the same route now keeps `REQ_ID: req-live-risk-news-success`, preserves visible announcement rows, and still shows `获取公告失败，当前仍显示上次成功同步的公告快照。`
+      - natural PM2 verification confirmed `/risk/news` still reaches the route and currently renders a real request id plus honest live empty-state `0 / 0 / 0 / 0`
+    - risk news announcement refresh-provenance artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-11-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-11-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-11-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-11-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-11-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/risk/News.vue web/frontend/src/views/risk/__tests__/News.spec.ts web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-11-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-11-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-11-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-11-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/risk-news-refresh-provenance-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/risk-batch-11-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - risk news announcement refresh-provenance gitnexus staged observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` returned `risk_level: low`, `changed_files: 102`, `changed_count: 295`, and `affected_count: 0`
+      - the staged set remained mixed with earlier batches and unrelated files, so the result is recorded as observation-only rather than isolated `risk-batch-11` scope
+    - system API request-provenance regression:
+      - `npx vitest run src/views/system/__tests__/API.spec.ts` passed (`6/6`)
+      - `npx vitest run src/views/system/__tests__/API.spec.ts src/views/system/__tests__/Health.spec.ts src/views/system/__tests__/DataSource.spec.ts src/views/system/__tests__/Settings.spec.ts src/views/artdeco-pages/system-tabs/__tests__/ArtDecoSystemSettings.spec.ts` passed (`19/19`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `24` tests
+      - Playwright-library verification with system `google-chrome` confirmed failed first-load `/system/api` now renders `REQ_ID: N/A`, `STATUS: UNKNOWN`, `MIDDLEWARE: 3`, and `无法连接到后端服务，当前暂无已验证系统探针快照。`
+      - the same controlled verification confirmed the failed request id no longer appears anywhere in the visible route shell
+      - a controlled success-then-fail refresh verification confirmed the same route now keeps `REQ_ID: req-live-system-api-success`, preserves the visible `mystocks-backend / 2.0.0` snapshot, and still shows `无法连接到后端服务，当前仍显示上次成功同步的系统探针快照。`
+      - natural PM2 verification confirmed `/system/api` still reaches the route and currently renders a real request id plus live healthy state
+    - system API request-provenance artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-08-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-08-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-08-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-08-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-08-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/system/API.vue web/frontend/src/views/system/__tests__/API.spec.ts web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-08-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-08-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-08-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-08-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/system-api-request-provenance-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/system-batch-08-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - system API request-provenance staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` returned `risk_level: low`, `changed_files: 111`, `changed_count: 304`, and `affected_count: 0`
+      - the staged set remained mixed with earlier batches and unrelated files, so the result is recorded as observation-only rather than isolated `system-batch-08` scope
+    - trade history refresh-provenance regression:
+      - `npx vitest run src/views/trade/__tests__/History.spec.ts` passed (`4/4`)
+      - `npx vitest run src/views/trade/__tests__/History.spec.ts src/views/trade/__tests__/Signals.spec.ts src/views/trade/__tests__/Portfolio.spec.ts src/views/trade/__tests__/Center.spec.ts tests/unit/views/trade-wrapper-retention.spec.ts` passed (`23/23`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `35` tests
+      - Playwright-library verification with system `google-chrome` confirmed failed first-load `/trade/history` now renders `REQ_ID: N/A`, `TIME: N/A`, `ROWS: --`, top-strip `-- / -- / -- / --`, and `交易历史接口失败，当前显示空历史状态。`
+      - the same controlled verification confirmed the failed request id no longer appears anywhere in the visible route shell
+      - a controlled success-then-fail refresh verification confirmed the same route now keeps `REQ_ID: req-live-trade-history-success`, `TIME: 18.00ms`, `ROWS: 2`, preserves the visible `600519` and `300750` rows, and still shows `交易历史接口失败，当前仍展示上次成功同步的交易历史记录。`
+      - natural PM2 verification confirmed `/trade/history` still reaches the route and currently renders a real request id plus honest live empty-state `ROWS: 0`
+    - trade history refresh-provenance artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-11-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-11-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-11-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-11-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-11-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/trade/History.vue web/frontend/src/views/trade/__tests__/History.spec.ts web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-11-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-11-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-11-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-11-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/trade-history-refresh-provenance-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/trade-batch-11-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - data fund-flow refresh-provenance regression:
+      - `npx vitest run src/views/data/__tests__/FundFlow.spec.ts` passed (`5/5`)
+      - `npx vitest run src/views/data/__tests__/FundFlow.spec.ts src/views/data/__tests__/Industry.spec.ts src/views/data/__tests__/Concepts.spec.ts tests/unit/views/data-fund-flow-partial-state.spec.ts tests/unit/views/data-industry-refresh-fallback.spec.ts tests/unit/views/data-concept-refresh-fallback.spec.ts` passed (`17/17`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase2-mainline-matrix.spec.ts --list` listed `21` tests
+      - Playwright-library verification with system `google-chrome` confirmed failed first-load `/data/fund-flow` now renders `ROWS: --`, `REQ: N/A`, and a failure shell without leaking failed request ids
+      - the same controlled verification confirmed a success-then-ranking-refresh-fail path now keeps `REQ: req-data-b15-ranking-success`, preserves the visible `2`-row ranking summary, and still shows `贵州茅台`
+      - natural PM2 headless observation for `/data/fund-flow` currently bounces through `/dashboard -> /login` after initial route mount in this environment, so natural-route success proof is not claimed for this batch
+    - data fund-flow refresh-provenance artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-15-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-15-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-15-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-15-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-15-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/data/FundFlow.vue web/frontend/src/views/data/__tests__/FundFlow.spec.ts web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-15-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-15-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-15-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-15-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/data-fund-flow-refresh-request-provenance-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/data-batch-15-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - data fund-flow refresh-provenance staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` returned `risk_level: low`, `changed_files: 126`, `changed_count: 317`, and `affected_count: 0`
+      - the staged set remained mixed with earlier batches and unrelated files, so the result is recorded as observation-only rather than isolated `data-batch-15` scope
+    - system config active-tab request-provenance regression:
+      - `npx vitest run src/views/system/__tests__/Settings.spec.ts` passed (`6/6`)
+      - `npx vitest run src/views/system/__tests__/API.spec.ts src/views/system/__tests__/Health.spec.ts src/views/system/__tests__/DataSource.spec.ts src/views/system/__tests__/Settings.spec.ts src/views/artdeco-pages/system-tabs/__tests__/ArtDecoSystemSettings.spec.ts` passed (`21/21`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `24` tests
+      - Playwright-library verification with system `google-chrome` confirmed natural PM2 `/system/config` now keeps tab-local header provenance:
+        - default `数据源` tab rendered `DATA: REAL`, `REQ_ID: 1fbe6533-391c-4a38-873b-02cd99737cdc`, `TIME: 100.42ms`
+        - `系统监控` tab rendered `DATA: SUMMARY`, `REQ_ID: 0733171d-c701-4c61-bf28-4edcd3eb7c3a`, `TIME: 153.16ms`
+        - `系统设置` tab rendered `DATA: REAL`, `REQ_ID: a9a9c44c-bfa8-4f81-8498-990eddd29626`, `TIME: 372.72ms`
+      - the same natural verification confirmed the routed source tab still shows `AKShare龙虎榜详情数据` and `akshare.stock_lhb_detail_em`
+    - system config active-tab request-provenance artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-09-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-09-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-09-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-09-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-09-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/system/Settings.vue web/frontend/src/views/system/__tests__/Settings.spec.ts web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-09-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-09-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-09-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-09-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/system-config-active-tab-request-provenance-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/system-batch-09-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - system config active-tab request-provenance staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` returned `risk_level: low`, `changed_files: 126`, `changed_count: 317`, and `affected_count: 0`
+      - the staged set remained mixed with earlier batches and unrelated files, so the result is recorded as observation-only rather than isolated `system-batch-09` scope
+    - strategy parameters refresh-provenance regression:
+      - `npx vitest run src/views/artdeco-pages/strategy-tabs/__tests__/StrategyParametersTab.spec.ts` passed (`4/4`)
+      - `npx vitest run src/views/artdeco-pages/strategy-tabs/__tests__/StrategyParametersTab.spec.ts src/views/watchlist/__tests__/Signals.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategySignalsTab.spec.ts` passed (`10/10`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `36` tests
+      - Playwright-library verification with system `google-chrome` confirmed failed first-load `/strategy/parameters` now renders `REQ_ID: N/A`, `PROCESS: N/A ms`, and top-strip `-- / -- / -- / 101`
+      - the same controlled verification confirmed the failed request id no longer appears anywhere in the visible route shell
+      - a controlled success-then-fail refresh verification confirmed the same route now keeps `REQ_ID: req-live-strategy-parameters-success`, `PROCESS: 36.00 ms`, preserves the visible `Momentum Alpha` parameter card, and still shows `strategy parameters refresh unavailable，当前仍显示上次成功同步的参数快照。`
+      - natural PM2 verification confirmed `/strategy/parameters?strategyId=101` still reaches the route and currently renders a real request id plus honest live empty-state `0 / 0 / 0 / 101`
+    - strategy parameters refresh-provenance artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-10-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-10-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-10-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-10-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-10-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/artdeco-pages/strategy-tabs/StrategyParametersTab.vue web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/StrategyParametersTab.spec.ts web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-10-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-10-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-10-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-10-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-parameters-refresh-provenance-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/strategy-batch-10-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - strategy parameters refresh-provenance staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remained a mixed dirty-worktree observation rather than isolated `strategy-batch-10` scope, so the batch keeps the existing observation-only verdict style
+    - strategy optimization refresh-provenance regression:
+      - `npx vitest run src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyOptimization.spec.ts` passed (`4/4`)
+      - `npx vitest run src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyOptimization.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategyParametersTab.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategySignalsTab.spec.ts` passed (`12/12`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `37` tests
+      - Playwright-library verification with system `google-chrome` confirmed failed first-load `/strategy/opt` now renders `REQ_ID: N/A`, `PROCESS: N/A`, and top-strip `-- / -- / -- / ID 101`
+      - the same controlled verification confirmed the failed request id no longer appears anywhere in the visible route shell
+      - a controlled success-then-fail refresh verification confirmed the same route now keeps `REQ_ID: req-live-strategy-opt-success`, `PROCESS: 42.00`, preserves the visible `Momentum Alpha` row, and still shows `strategy optimization refresh unavailable` plus `当前仍显示上次成功同步的优化候选快照。`
+      - natural PM2 verification confirmed `/strategy/opt?strategyId=101` still reaches the route and currently renders a real request id plus honest live empty-state `0 / 0 / 0 / ID 101`
+    - strategy optimization refresh-provenance artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-11-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-11-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-11-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-11-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-11-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyOptimization.spec.ts web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-11-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-11-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-11-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-11-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-optimization-refresh-provenance-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/strategy-batch-11-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - strategy optimization refresh-provenance staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` returned `risk_level: low`, `changed_files: 126`, `changed_count: 0`, and `affected_count: 0`
+      - the staged set remained mixed with earlier batches and unrelated files, so the result is recorded as observation-only rather than isolated `strategy-batch-11` scope
+    - strategy repo refresh-provenance regression:
+      - `npx vitest run src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyManagement.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyOptimization.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategyParametersTab.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategySignalsTab.spec.ts` passed (`17/17`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `39` tests
+      - Playwright-library verification with system `google-chrome` confirmed failed first-load `/strategy/repo` now renders `REQ_ID: N/A`, `PROCESS: N/A ms`, and top-strip `-- / -- / -- / 全部状态`
+      - the same controlled verification confirmed the failed request id no longer appears anywhere in the visible route shell
+      - a controlled success-then-fail refresh verification confirmed the same route now keeps `REQ_ID: req-live-strategy-repo-success`, `PROCESS: 36.00 ms`, preserves the visible `Momentum Alpha` and `Reversion Beta` rows, and still shows `strategy repository refresh unavailable` plus `当前仍显示上次成功同步的策略仓库快照。`
+      - natural PM2 verification confirmed `/strategy/repo` still reaches the route and currently renders a real request id plus honest live empty-state `0 / 0 / 0 / 全部状态`
+    - strategy repo refresh-provenance artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-12-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-12-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-12-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-12-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-12-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyManagement.vue web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyManagement.spec.ts web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-12-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-12-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-12-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-12-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-repo-refresh-provenance-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/strategy-batch-12-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - strategy repo refresh-provenance staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` returned `risk_level: low`, `changed_files: 126`, `changed_count: 317`, and `affected_count: 0`
+      - the staged set remained mixed with earlier batches and unrelated files, so the result is recorded as observation-only rather than isolated `strategy-batch-12` scope
+    - dashboard fund-flow stale-refresh retention regression:
+      - `npx vitest run tests/unit/components/ArtDecoDashboardLogic.spec.ts -t "keeps the last verified fund-flow slice visible when a later fund-flow refresh fails"` passed (`1/1`) after reproducing the expected red failure first
+      - `npx vitest run tests/unit/components/ArtDecoDashboardLogic.spec.ts` passed (`12/12`)
+      - `npx playwright test tests/e2e/phase1-mainline-matrix.spec.ts --list` listed `28` tests
+      - `timeout 180s npm run type-check` passed
+      - Playwright-library verification with system `google-chrome` confirmed controlled `/dashboard` load still renders the verified `沪股通净流入 / 18.5亿` fund-flow slice
+      - the same controlled browser observation recorded an out-of-scope issue: clicking the visible `刷新数据` control did not trigger a second fund-flow request in the natural PM2 path on this machine
+      - because that control path did not issue a second request, the repaired stale-refresh truth is proven by the strengthened dashboard logic harness and routed phase1 coverage rather than the natural PM2 refresh button path
+    - dashboard fund-flow stale-refresh retention artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-02-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-02-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/dashboard-batch-02-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/dashboard-batch-02-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/dashboard-batch-02-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts web/frontend/tests/unit/components/ArtDecoDashboardLogic.spec.ts web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/manifests/dashboard-batch-02-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-02-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-02-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/dashboard-batch-02-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/dashboard-fund-flow-slice-refresh-retention-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/dashboard-batch-02-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - dashboard fund-flow stale-refresh retention staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` returned `risk_level: low`, `changed_files: 126`, `changed_count: 317`, and `affected_count: 0`
+      - the staged set remained mixed with earlier batches and unrelated files, so the result is recorded as observation-only rather than isolated `dashboard-batch-02` scope
+    - dashboard shared-header refresh-binding regression:
+      - `npx vitest run tests/unit/components/ArtDecoDashboardLogic.spec.ts -t "keeps the shared header refresh action bound after the dashboard bootstrap reset path runs"` reproduced the expected red failure and then passed (`1/1`)
+      - `npx vitest run tests/unit/components/ArtDecoDashboardLogic.spec.ts` passed (`13/13`)
+      - `npx playwright test tests/e2e/phase1-mainline-matrix.spec.ts --list` listed `28` tests
+      - `timeout 180s npm run type-check` passed
+      - Playwright-library verification with system `google-chrome` confirmed the visible shared-header `刷新数据` control now triggers a second `/api/akshare/market/fund-flow/hsgt-summary` request on `/dashboard`
+      - the same controlled browser verification confirmed request count `2`, route-level degraded alert `资金流向数据暂不可用`, retained verified fund-flow slice text `沪股通净流入 / 18.5亿`, and `0` blocking `.error-message` nodes
+    - dashboard shared-header refresh-binding artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-03-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-03-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/dashboard-batch-03-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/dashboard-batch-03-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/dashboard-batch-03-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts web/frontend/tests/unit/components/ArtDecoDashboardLogic.spec.ts .claude/skills/myweb-audit/SKILL.md .claude/skills/myweb-audit/references/CHANGELOG.md .claude/skills/myweb-audit/references/audit-checklist.md .claude/agents/myweb-audit-data-state-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/manifests/dashboard-batch-03-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-03-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-03-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/dashboard-batch-03-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/dashboard-refresh-binding-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/dashboard-batch-03-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - dashboard shared-header refresh-binding staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` returned `risk_level: low`, `changed_files: 126`, `changed_count: 317`, and `affected_count: 0`
+      - the staged set remained mixed with earlier batches and unrelated files, so the result is recorded as observation-only rather than isolated `dashboard-batch-03` scope
+    - detail graphics primary-snapshot provenance regression:
+      - `npx vitest run src/views/artdeco-pages/analysis-tabs/__tests__/KLineAnalysis.spec.ts src/views/market/__tests__/Technical.spec.ts` passed (`6/6`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase1-mainline-matrix.spec.ts --list` listed `27` tests
+      - Playwright-library verification with system `google-chrome` confirmed unresolved first-load `/detail/graphics/600519` now renders `POINTS: --` and suppresses `REQ_ID`
+      - the same controlled verification confirmed failed first-load `/detail/graphics/600519` now renders `POINTS: --`, shows `K线数据加载失败，当前暂无已验证K线分析快照。`, and does not leak the failed request id
+      - a controlled success-then-fail `开始分析` refresh verification confirmed the same route now keeps `REQ_ID: req-live-kline-success`, preserves `POINTS: 2`, and shows `K线数据加载失败，当前仍显示上次成功同步的K线分析快照。`
+      - natural PM2 verification confirmed `/detail/graphics/600519` still reaches the route and currently renders a real request id plus live point count `57`
+    - detail graphics primary-snapshot provenance artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-01-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-01-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/detail-batch-01-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/detail-batch-01-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/detail-batch-01-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/artdeco-pages/analysis-tabs/KLineAnalysis.vue web/frontend/src/views/artdeco-pages/analysis-tabs/__tests__/KLineAnalysis.spec.ts web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts .claude/skills/myweb-audit/SKILL.md .claude/skills/myweb-audit/references/audit-checklist.md .claude/agents/myweb-audit-data-state-audit.md .claude/skills/myweb-audit/references/CHANGELOG.md docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-01-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-01-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/detail-batch-01-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/detail-batch-01-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/detail-graphics-primary-snapshot-provenance-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/detail-batch-01-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - detail graphics primary-snapshot provenance staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` returned `risk_level: low`, `changed_files: 126`, `changed_count: 317`, and `affected_count: 0`
+      - the staged set remained mixed with earlier batches and unrelated files, so the result is recorded as observation-only rather than isolated `detail-batch-01` scope
+    - system data refresh-request-provenance regression:
+      - `npx vitest run src/views/system/__tests__/DataSource.spec.ts` passed (`4/4`)
+      - `npx vitest run src/views/system/__tests__/DataSource.spec.ts src/views/system/__tests__/Settings.spec.ts src/views/system/__tests__/Health.spec.ts src/views/system/__tests__/API.spec.ts src/views/artdeco-pages/system-tabs/__tests__/ArtDecoSystemSettings.spec.ts` passed (`23/23`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `26` tests
+      - Playwright-library verification with system `google-chrome` confirmed a verified config snapshot without request metadata now renders `REQ_ID: N/A` and `当前请求 N/A` instead of fabricating `cfg-*`
+      - the same controlled verification confirmed a stale refresh after success now keeps `REQ_ID: req-live-system-data-success`, preserves visible `AKShare 行情 / TDX 实时深度` rows, and renders `获取数据源配置失败，当前仍显示上次成功同步的数据源配置快照。`
+      - natural PM2 verification confirmed `/system/data` still renders a real request id and `19` live config rows
+    - system data refresh-request-provenance artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-10-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-10-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-10-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-10-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-10-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/system/DataSource.vue web/frontend/src/views/system/__tests__/DataSource.spec.ts web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-10-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-10-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-10-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-10-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/system-data-refresh-request-provenance-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/system-batch-10-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - system data refresh-request-provenance staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` returned `risk_level: low`, `changed_files: 126`, `changed_count: 317`, and `affected_count: 0`
+      - the staged set remained mixed with earlier batches and unrelated files, so the result is recorded as observation-only rather than isolated `system-batch-10` scope
+    - data indicator refresh-timestamp provenance regression:
+      - `npx vitest run tests/unit/views/data-advanced-screening-truth.spec.ts src/views/data/__tests__/Advanced.spec.ts tests/unit/views/data-advanced-cutover.spec.ts tests/unit/views/data-indicator-details.spec.ts` passed (`7/7`)
+      - `npx vitest run src/views/data/__tests__/Advanced.spec.ts src/views/data/__tests__/Concepts.spec.ts src/views/data/__tests__/FundFlow.spec.ts src/views/data/__tests__/Industry.spec.ts tests/unit/views/data-advanced-screening-truth.spec.ts tests/unit/views/data-advanced-cutover.spec.ts tests/unit/views/data-indicator-details.spec.ts tests/unit/views/data-concept-refresh-fallback.spec.ts tests/unit/views/data-fund-flow-partial-state.spec.ts tests/unit/views/data-industry-refresh-fallback.spec.ts` passed (`24/24`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase2-mainline-matrix.spec.ts --list` listed `22` tests
+      - Playwright-library verification with system `google-chrome` confirmed a successful first sync on `/data/indicator` rendered `STATUS: 待执行筛选` with `UPDATED: 2026/5/3 23:21:57`
+      - the same controlled verification confirmed a failed manual refresh preserved the exact same `UPDATED: 2026/5/3 23:21:57`, showed `部分刷新失败 / 当前仍显示上次成功同步的数据分析快照。`, kept `移动平均线` visible, and did not show `数据分析数据加载失败`
+    - data indicator refresh-timestamp provenance artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-16-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-16-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-16-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-16-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-16-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/composables/market/useDataAnalysis.ts web/frontend/src/views/data/Advanced.vue web/frontend/tests/unit/views/data-advanced-screening-truth.spec.ts web/frontend/src/views/data/__tests__/Advanced.spec.ts web/frontend/tests/unit/views/data-advanced-cutover.spec.ts web/frontend/tests/unit/views/data-indicator-details.spec.ts web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts .claude/skills/myweb-audit/SKILL.md .claude/skills/myweb-audit/references/audit-checklist.md .claude/agents/myweb-audit-data-state-audit.md .claude/skills/myweb-audit/references/CHANGELOG.md docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-16-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-16-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-16-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-16-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/data-indicator-refresh-timestamp-provenance-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/data-batch-16-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - strategy backtest initial-freshness provenance regression:
+      - `npx vitest run src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyManagement.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyOptimization.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategyParametersTab.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategySignalsTab.spec.ts` passed (`18/18`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `40` tests
+      - Playwright-library verification with system `google-chrome` confirmed failed first-load `/strategy/backtest` now renders `系统状态 / 运行中 · 策略上下文待同步 / 最后更新 / --`
+      - the same controlled verification confirmed the route shows an explicit failed-first-load state instead of a mount-time freshness timestamp
+      - natural PM2 verification confirmed `/strategy/backtest` still reaches the route and currently remains on an honest pending shell with `最后更新 / --`
+    - strategy backtest initial-freshness provenance artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-13-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-13-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-13-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-13-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-13-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/mock/backtestWorkbenchMock.ts web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts .claude/skills/myweb-audit/SKILL.md .claude/skills/myweb-audit/references/audit-checklist.md .claude/agents/myweb-audit-data-state-audit.md .claude/skills/myweb-audit/references/CHANGELOG.md docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-13-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-13-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-13-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-13-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-backtest-initial-freshness-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/strategy-batch-13-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - strategy backtest initial-freshness provenance staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` returned `risk_level: low`, `changed_files: 126`, `changed_count: 317`, and `affected_count: 0`
+      - the staged set remained mixed with earlier batches and unrelated files, so the result is recorded as observation-only rather than isolated `strategy-batch-13` scope
+    - strategy backtest report-timestamp provenance regression:
+      - `npx vitest run src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyManagement.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyOptimization.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategyParametersTab.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategySignalsTab.spec.ts` passed (`19/19`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `41` tests
+      - Playwright-library verification with system `google-chrome` confirmed a controlled `/strategy/backtest?strategyId=101` run now renders `策略 101 ... --` in the first `报告中心` row when the synced result payload omits completion metadata
+      - the same controlled verification confirmed the route no longer substitutes the local current clock for missing row-level result freshness
+      - natural PM2 verification confirmed `/strategy/backtest` still reaches the route and keeps the surrounding workbench shell stable while this row-level repair remains route-local
+    - strategy backtest report-timestamp provenance artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-14-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-14-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-14-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-14-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-14-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts .claude/skills/myweb-audit/SKILL.md .claude/skills/myweb-audit/references/audit-checklist.md .claude/agents/myweb-audit-data-state-audit.md .claude/skills/myweb-audit/references/CHANGELOG.md docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-14-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-14-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-14-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-14-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-backtest-report-timestamp-provenance-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/strategy-batch-14-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - strategy backtest report-timestamp provenance staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` returned `risk_level: low`, `changed_files: 126`, `changed_count: 317`, and `affected_count: 0`
+      - the staged set remained mixed with earlier batches and unrelated files, so the result is recorded as observation-only rather than isolated `strategy-batch-14` scope
+    - risk management summary-delta truth regression:
+      - `node --test web/frontend/src/views/artdeco-pages/risk-tabs/__node_tests__/riskManagementData.test.ts web/frontend/src/views/artdeco-pages/risk-tabs/__node_tests__/riskManagementHelpers.test.ts web/frontend/src/views/artdeco-pages/risk-tabs/__node_tests__/riskManagementModulePresence.test.ts web/frontend/src/views/artdeco-pages/risk-tabs/__node_tests__/stopLossMonitorData.test.ts` passed (`17/17`)
+      - `npx vitest run src/views/risk/__tests__/Center.spec.ts src/views/risk/__tests__/Overview.spec.ts src/views/risk/__tests__/StopLoss.spec.ts src/views/risk/__tests__/Alerts.spec.ts tests/unit/views/risk-wrapper-retention.spec.ts src/views/artdeco-pages/risk-tabs/__tests__/ArtDecoRiskOverviewPanel.spec.ts src/views/artdeco-pages/risk-tabs/__tests__/ArtDecoRiskStatsGrid.spec.ts src/views/artdeco-pages/risk-tabs/__tests__/ArtDecoRiskStockPanel.spec.ts` passed (`35/35`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `27` tests
+      - Playwright-library verification with system `google-chrome` confirmed natural PM2 `/risk/management` now renders `总资产 / ¥0 / 待接入` and `今日收益 / +¥0 / 待接入`
+      - the same natural verification confirmed `+0%` no longer appears on the risk stats grid
+      - a controlled holdings payload with `total_profit_loss_percent: 1.84` now renders `总资产 / ¥372,664 / 待接入` and `今日收益 / +¥6,844 / 待接入`
+      - the same controlled verification confirmed `+1.84%` no longer appears on the visible route shell
+    - risk management summary-delta truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-13-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-13-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-13-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-13-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-13-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/artdeco-pages/risk-tabs/riskManagementHelpers.ts web/frontend/src/views/artdeco-pages/risk-tabs/riskManagementData.ts web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskStatsGrid.vue web/frontend/src/views/artdeco-pages/risk-tabs/__node_tests__/riskManagementData.test.ts web/frontend/src/views/artdeco-pages/risk-tabs/__tests__/ArtDecoRiskStatsGrid.spec.ts web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts .claude/skills/myweb-audit/SKILL.md .claude/skills/myweb-audit/references/CHANGELOG.md .claude/skills/myweb-audit/references/audit-checklist.md .claude/agents/myweb-audit-data-state-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-13-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-13-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-13-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-13-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/risk-management-summary-delta-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/risk-batch-13-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - risk management summary-delta truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` returned `risk_level: low`, `changed_files: 126`, `changed_count: 317`, and `affected_count: 0`
+      - the staged set remained mixed with earlier batches and unrelated files, so the result is recorded as observation-only rather than isolated `risk-batch-13` scope
+    - detail news sibling-stats contract truth regression:
+      - `npx vitest run src/views/announcement/__tests__/AnnouncementMonitor.spec.ts` passed (`2/2`)
+      - `npx vitest run src/views/announcement/__tests__/AnnouncementMonitor.spec.ts src/views/risk/__tests__/News.spec.ts` passed (`5/5`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `28` tests
+      - Playwright-library verification with system `google-chrome` confirmed a controlled success path for `/detail/news/600519` now renders `2 / 2 / 1 / 0` across the four visible stat cards
+      - the same controlled verification confirmed a stats-slice failure path now renders `-- / -- / -- / --` while preserving the visible announcement row `2026 年第一季度经营数据公告`
+      - the stats-failure path no longer falls through to `公告总数 0` or a single-count-plus-label-only sibling shell
+      - natural PM2 verification confirmed `/detail/news/600519` still reaches the route and currently renders four live count cards `0 / 0 / 0 / 0`
+    - detail news sibling-stats contract truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-02-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-02-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/detail-batch-02-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/detail-batch-02-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/detail-batch-02-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/announcement/AnnouncementMonitor.vue web/frontend/src/views/announcement/__tests__/AnnouncementMonitor.spec.ts web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts .claude/skills/myweb-audit/SKILL.md .claude/skills/myweb-audit/references/CHANGELOG.md .claude/skills/myweb-audit/references/audit-checklist.md .claude/agents/myweb-audit-data-state-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-02-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-02-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/detail-batch-02-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/detail-batch-02-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/detail-news-sibling-stats-contract-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/detail-batch-02-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - detail news sibling-stats contract truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` returned `risk_level: low`, `changed_files: 126`, `changed_count: 317`, and `affected_count: 0`
+      - the staged set remained mixed with earlier batches and unrelated files, so the result is recorded as observation-only rather than isolated `detail-batch-02` scope
+    - watchlist manage slice-summary truth regression:
+      - `npx vitest run src/views/watchlist/__tests__/Manage.spec.ts src/views/watchlist/__tests__/Signals.spec.ts src/views/watchlist/__tests__/Screener.spec.ts` passed (`9/9`)
+      - `node --test src/views/artdeco-pages/stock-management-tabs/__node_tests__/stockManagementRouteData.test.ts` passed (`8/8`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase2-mainline-matrix.spec.ts --list` listed `24` tests
+      - Playwright-library verification with system `google-chrome` confirmed a controlled first-load `success:false` watchlist payload now renders top-strip `-- / -- / -- / --` together with `自选列表加载失败`
+      - the same controlled verification confirmed the route no longer falls through to `暂无自选组合`
+      - a controlled hanging stock-slice path now renders `18 / -- / -- / --` with the visible loading panel, proving verified watchlist counts no longer promote unresolved stock-summary siblings into faux zero truth
+      - natural PM2 verification confirmed `/watchlist/manage` still reaches the route and currently renders live summary counts `18 / 0 / 0 / 0` once the stock slice verifies
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - watchlist manage slice-summary truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/watchlist-batch-05-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/watchlist-batch-05-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/watchlist-batch-05-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/watchlist-batch-05-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/watchlist-batch-05-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/artdeco-pages/stock-management-tabs/WatchlistManager.vue web/frontend/src/views/artdeco-pages/stock-management-tabs/stockManagementRouteData.ts web/frontend/src/views/watchlist/__tests__/Manage.spec.ts web/frontend/src/views/artdeco-pages/stock-management-tabs/__node_tests__/stockManagementRouteData.test.ts web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts .claude/skills/myweb-audit/SKILL.md .claude/skills/myweb-audit/references/CHANGELOG.md .claude/skills/myweb-audit/references/audit-checklist.md .claude/agents/myweb-audit-data-state-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/findings/watchlist-batch-05-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/watchlist-batch-05-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/watchlist-batch-05-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/watchlist-batch-05-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/watchlist-manage-slice-summary-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/watchlist-batch-05-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - watchlist manage slice-summary truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` returned `risk_level: low`, `changed_files: 126`, `changed_count: 317`, and `affected_count: 0`
+      - the staged set remained mixed with earlier batches and unrelated files, so the result is recorded as observation-only rather than isolated `watchlist-batch-05` scope
+    - risk management refresh-cadence truth regression:
+      - `npx vitest run src/views/risk/__tests__/Center.spec.ts` passed (`3/3`)
+      - `npx vitest run src/views/risk/__tests__/Center.spec.ts src/views/risk/__tests__/Overview.spec.ts src/views/risk/__tests__/StopLoss.spec.ts src/views/risk/__tests__/Alerts.spec.ts src/views/risk/__tests__/News.spec.ts tests/unit/views/risk-wrapper-retention.spec.ts src/views/artdeco-pages/risk-tabs/__tests__/ArtDecoRiskOverviewPanel.spec.ts src/views/artdeco-pages/risk-tabs/__tests__/ArtDecoRiskStatsGrid.spec.ts src/views/artdeco-pages/risk-tabs/__tests__/ArtDecoRiskStockPanel.spec.ts` passed (`39/39`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `28` tests
+      - Playwright-library verification with system `google-chrome` confirmed natural authenticated PM2 `/risk/management` now renders footer `风险数据按当前页同步结果更新 · 最后一次更新：...`
+      - the same verification confirmed the footer no longer contains `每5分钟自动更新`
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - risk management refresh-cadence truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-14-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-14-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-14-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-14-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-14-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/risk/Center.vue web/frontend/src/views/risk/__tests__/Center.spec.ts web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts .claude/skills/myweb-audit/SKILL.md .claude/skills/myweb-audit/references/CHANGELOG.md .claude/skills/myweb-audit/references/audit-checklist.md .claude/agents/myweb-audit-data-state-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-14-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-14-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-14-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-14-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/risk-management-refresh-cadence-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/risk-batch-14-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - risk management refresh-cadence truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` returned `risk_level: low`, `changed_files: 126`, `changed_count: 317`, and `affected_count: 0`
+      - the staged set remained mixed with earlier batches and unrelated files, so the result is recorded as observation-only rather than isolated `risk-batch-14` scope
+    - detail news stats-refresh stale-summary truth regression:
+      - `npx vitest run src/views/announcement/__tests__/useAnnouncementMonitor.spec.ts src/views/announcement/__tests__/AnnouncementMonitor.spec.ts src/views/risk/__tests__/News.spec.ts` passed (`6/6`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `29` tests
+      - Playwright-library verification with system `google-chrome` confirmed a controlled success path for `/detail/news/600519` renders `2 / 2 / 1 / 0`
+      - the same controlled verification confirmed a later failing stats refresh now renders `-- / -- / -- / --` while preserving the visible announcement row `2026 年第一季度经营数据公告`
+      - natural PM2 verification confirmed `/detail/news/600519` still reaches the route and currently renders four live count cards `0 / 0 / 0 / 0`
+    - detail news stats-refresh stale-summary truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-03-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-03-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/detail-batch-03-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/detail-batch-03-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/detail-batch-03-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/announcement/composables/useAnnouncementMonitor.ts web/frontend/src/views/announcement/__tests__/useAnnouncementMonitor.spec.ts web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts .claude/skills/myweb-audit/SKILL.md .claude/skills/myweb-audit/references/CHANGELOG.md .claude/skills/myweb-audit/references/audit-checklist.md .claude/agents/myweb-audit-data-state-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-03-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-03-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/detail-batch-03-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/detail-batch-03-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/detail-news-stats-refresh-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/detail-batch-03-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - detail news stats-refresh stale-summary truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remained observation-only because the staged set stayed mixed with earlier batches and unrelated files
+    - strategy backtest action-triggered freshness truth regression:
+      - `npx vitest run src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyManagement.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyOptimization.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategyParametersTab.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategySignalsTab.spec.ts` passed (`20/20`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `41` tests
+      - Playwright-library verification with system `google-chrome` confirmed an authenticated controlled `/strategy/backtest` `first-load fail -> click run` path now keeps `最后更新 / UPDATED` at `--`
+      - the same controlled verification confirmed the warning banner `未绑定有效策略ID，无法启动真实回测。` appears without mutating hero freshness metadata
+      - natural PM2 verification confirmed `/strategy/backtest` still reaches the route and currently renders the existing honest strategy-list shell
+    - strategy backtest action-triggered freshness truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-15-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-15-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-15-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-15-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-15-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts .claude/skills/myweb-audit/SKILL.md .claude/skills/myweb-audit/references/CHANGELOG.md .claude/skills/myweb-audit/references/audit-checklist.md .claude/agents/myweb-audit-data-state-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-15-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-15-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-15-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-15-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-backtest-action-triggered-freshness-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/strategy-batch-15-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - strategy backtest action-triggered freshness truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remained observation-only because the staged set stayed mixed with earlier batches and unrelated files
+    - data indicator first-load action-triggered freshness truth regression:
+      - `npx vitest run tests/unit/views/data-advanced-screening-truth.spec.ts -t "does not promote local screening actions into verified updated-at or results after the first load failed"` reproduced the expected red failure and then passed `1/1` after repair
+      - `npx vitest run tests/unit/views/data-advanced-screening-truth.spec.ts src/views/data/__tests__/Advanced.spec.ts tests/unit/views/data-advanced-cutover.spec.ts tests/unit/views/data-indicator-details.spec.ts` passed `8/8`
+      - `npx vitest run src/views/data/__tests__/Advanced.spec.ts src/views/data/__tests__/Concepts.spec.ts src/views/data/__tests__/FundFlow.spec.ts tests/unit/views/data-advanced-screening-truth.spec.ts tests/unit/views/data-advanced-cutover.spec.ts tests/unit/views/data-indicator-details.spec.ts tests/unit/views/data-industry-refresh-fallback.spec.ts tests/unit/views/data-concept-refresh-fallback.spec.ts tests/unit/views/data-fund-flow-partial-state.spec.ts` passed `19/19`
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase2-mainline-matrix.spec.ts --list` listed `25` tests
+      - Playwright-library verification with system `google-chrome` confirmed a controlled failed-first-load `/data/indicator` route keeps `STATUS: 同步异常 / UPDATED: --` before and after `执行筛选`
+      - the same controlled verification confirmed `-- / -- / -- / -- / --` remains visible and `#data-analysis-panel-results` stays unmounted
+      - a natural auth-seeded PM2 deep-link attempt settled on `/dashboard`, so no natural route success proof is claimed for this batch
+    - data indicator first-load action-triggered freshness truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-17-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-17-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-17-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-17-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-17-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/composables/market/useDataAnalysis.ts web/frontend/tests/unit/views/data-advanced-screening-truth.spec.ts web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-17-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-17-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-17-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-17-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/data-indicator-action-triggered-first-load-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/data-batch-17-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - data indicator first-load action-triggered freshness truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remained observation-only because the staged set stayed mixed with earlier batches and unrelated files
+    - trade terminal risk-slice fallback-retention truth regression:
+      - `npx vitest run src/views/composables/__tests__/useTradingDashboard.spec.ts` passed (`3/3`)
+      - `npx playwright test tests/e2e/trade-terminal.spec.ts --list` listed `3` tests
+      - `timeout 180s npm run type-check` passed
+      - Playwright-library verification with system `google-chrome` confirmed a controlled `success -> risk refresh fail` `/trade/terminal` path now renders `部分数据降级：风险指标 / 当前降级模块：风险指标`
+      - the same controlled verification confirmed the visible risk panel keeps `1.80%`, `¥3,450.50`, `2 个`, and `2026/5/4 17:30:00`
+      - the route no longer falls back to `待接入`, `未知`, or zeroed risk defaults after the later risk refresh failure
+      - natural PM2 verification confirmed `/trade/terminal` still reaches the route and currently renders the honest lightweight-runtime shell `当前展示轻量运行时占位数据`
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - trade terminal risk-slice fallback-retention truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-11-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-11-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-11-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-11-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-11-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/composables/useTradingDashboard.ts web/frontend/src/views/composables/__tests__/useTradingDashboard.spec.ts web/frontend/tests/e2e/trade-terminal.spec.ts .claude/skills/myweb-audit/SKILL.md .claude/skills/myweb-audit/references/CHANGELOG.md .claude/skills/myweb-audit/references/audit-checklist.md .claude/agents/myweb-audit-data-state-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-11-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-11-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-11-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-11-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/trade-terminal-risk-slice-refresh-retention-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/trade-batch-11-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - trade terminal risk-slice fallback-retention truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remained observation-only because the staged set stayed mixed with earlier batches and unrelated files
+    - trade terminal trading-status fallback-retention truth regression:
+      - `npx vitest run src/views/composables/__tests__/useTradingDashboard.spec.ts` passed (`4/4`)
+      - `npx playwright test tests/e2e/trade-terminal.spec.ts --list` listed `4` tests
+      - `timeout 180s npm run type-check` passed
+      - Playwright-library verification with system `google-chrome` confirmed a controlled `success -> status refresh fail` `/trade/terminal` path now renders `部分数据降级：交易状态 / 当前降级模块：交易状态`
+      - the same controlled verification confirmed the visible session and KPI surfaces keep `mock-session-running`, `运行中`, and `¥12,890.40 / 2 / 67.00% / 1.80%`
+      - the route no longer falls back to `fallback-offline`, `已停止`, or zeroed trading-status values after the later status refresh failure
+      - natural PM2 verification confirmed `/trade/terminal` still reaches the route and currently renders the honest lightweight-runtime shell `当前展示轻量运行时占位数据`
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - trade terminal trading-status fallback-retention truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-12-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-12-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-12-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-12-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-12-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/composables/useTradingDashboard.ts web/frontend/src/views/composables/__tests__/useTradingDashboard.spec.ts web/frontend/tests/e2e/trade-terminal.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-12-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-12-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-12-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-12-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/trade-terminal-status-slice-refresh-retention-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/trade-batch-12-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - trade terminal trading-status fallback-retention truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remained observation-only because the staged set stayed mixed with earlier batches and unrelated files
+    - trade terminal market-slice fallback-retention truth regression:
+      - `npx vitest run src/views/composables/__tests__/useTradingDashboard.spec.ts` passed (`5/5`)
+      - `npx vitest run src/views/composables/__tests__/useTradingDashboard.spec.ts src/views/trade/__tests__/History.spec.ts src/views/trade/__tests__/Portfolio.spec.ts src/views/trade/__tests__/Signals.spec.ts tests/unit/views/trade-wrapper-retention.spec.ts` passed (`24/24`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/trade-terminal.spec.ts --list` listed `5` tests
+      - Playwright-library verification with system `google-chrome` confirmed a controlled `success -> market refresh fail` `/trade/terminal` path now renders `部分数据降级：市场快照 / 当前降级模块：市场快照`
+      - the same controlled verification confirmed the visible market card keeps `SH000001`, `SZ399001`, and `¥3,321.08`
+      - the route no longer falls back to `暂无市场数据` or an empty market slice after the later market refresh failure
+      - natural PM2 verification confirmed `/trade/terminal` still reaches the route and currently renders the honest lightweight-runtime shell `当前展示轻量运行时占位数据`
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - trade terminal market-slice fallback-retention truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-13-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-13-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-13-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-13-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-13-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/composables/useTradingDashboard.ts web/frontend/src/views/composables/__tests__/useTradingDashboard.spec.ts web/frontend/tests/e2e/trade-terminal.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-13-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-13-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-13-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-13-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/trade-terminal-market-slice-refresh-retention-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/trade-batch-13-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - trade terminal market-slice fallback-retention truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remained observation-only because the staged set stayed mixed with earlier batches and unrelated files
+    - trade terminal strategy-slice fallback-retention truth regression:
+      - `npx vitest run src/views/composables/__tests__/useTradingDashboard.spec.ts` passed (`6/6`)
+      - `npx vitest run src/views/composables/__tests__/useTradingDashboard.spec.ts src/views/trade/__tests__/History.spec.ts src/views/trade/__tests__/Portfolio.spec.ts src/views/trade/__tests__/Signals.spec.ts tests/unit/views/trade-wrapper-retention.spec.ts` passed (`25/25`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/trade-terminal.spec.ts --list` listed `6` tests
+      - Playwright-library verification with system `google-chrome` confirmed a controlled `success -> strategy refresh fail` `/trade/terminal` path now renders `部分数据降级：策略绩效 / 当前降级模块：策略绩效`
+      - the same controlled verification confirmed the visible strategy table keeps `Momentum Alpha` and `Mean Reversion`
+      - the route no longer falls back to an empty strategy table after the later strategy refresh failure
+      - natural PM2 verification confirmed `/trade/terminal` still reaches the route and currently renders the honest lightweight-runtime shell `当前展示轻量运行时占位数据`
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - trade terminal strategy-slice fallback-retention truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-14-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-14-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-14-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-14-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-14-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/composables/useTradingDashboard.ts web/frontend/src/views/composables/__tests__/useTradingDashboard.spec.ts web/frontend/tests/e2e/trade-terminal.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-14-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-14-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-14-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-14-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/trade-terminal-strategy-slice-refresh-retention-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/trade-batch-14-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - trade terminal strategy-slice fallback-retention truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remained observation-only because the staged set stayed mixed with earlier batches and unrelated files
+    - dashboard fund-flow summary delta-chrome truth regression:
+      - `npx vitest run tests/unit/components/ArtDecoDashboardLogic.spec.ts -t "does not render default change chrome for description-only fund-flow summary cards"` reproduced the expected red failure and then passed `1/1`
+      - `npx vitest run tests/unit/components/ArtDecoDashboardLogic.spec.ts` passed `14/14`
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase1-mainline-matrix.spec.ts --list` listed `29` tests
+      - Playwright-library verification with system `google-chrome` confirmed the canonical `/dashboard` `.enhanced-fund-flow` section now renders exactly `2` `.artdeco-stat-change` nodes
+      - the same controlled verification confirmed `北向资金总额 / 主力净流入` no longer show `+0%` and remain plain value-plus-description cards
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - dashboard fund-flow summary delta-chrome truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-04-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-04-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/dashboard-batch-04-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/dashboard-batch-04-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/dashboard-batch-04-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue web/frontend/tests/unit/components/ArtDecoDashboardLogic.spec.ts web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts .claude/skills/myweb-audit/SKILL.md .claude/skills/myweb-audit/references/CHANGELOG.md .claude/skills/myweb-audit/references/audit-checklist.md .claude/agents/myweb-audit-data-state-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-04-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-04-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/dashboard-batch-04-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/dashboard-batch-04-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/dashboard-fund-flow-summary-delta-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/dashboard-batch-04-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - dashboard fund-flow summary delta-chrome truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remained observation-only because the staged set stayed mixed with earlier batches and unrelated files
+    - strategy backtest KPI-wrapper numeric-cluster truth regression:
+      - `npx vitest run src/views/artdeco-pages/strategy-tabs/components/__tests__/BacktestKpiGrid.spec.ts` first reproduced the expected red failures (`4` `.artdeco-stat-change` and later same-strip `12.00`) and finished green (`1/1`)
+      - `npx vitest run src/views/artdeco-pages/strategy-tabs/components/__tests__/BacktestKpiGrid.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyManagement.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyOptimization.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategyParametersTab.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategySignalsTab.spec.ts` passed (`21/21`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `41` tests
+      - Playwright-library verification with system `google-chrome` confirmed `/strategy/backtest?strategyId=101` now reports `changeCount: 0`, `hasPlusZero: false`, `hasZeroPointZeroZero: false`, and card values `总回测次数=0 / 策略胜率=0% / 年化收益=0% / 最大回撤=0%`
+      - the canonical route no longer shows `.artdeco-stat-change`, `+0%`, or `0.00` on the backtest KPI strip
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - strategy backtest KPI-wrapper numeric-cluster truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-16-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-16-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-16-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-16-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-16-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/artdeco-pages/strategy-tabs/components/BacktestKpiGrid.vue web/frontend/src/views/artdeco-pages/strategy-tabs/components/__tests__/BacktestKpiGrid.spec.ts web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts .claude/skills/myweb-audit/SKILL.md .claude/skills/myweb-audit/references/CHANGELOG.md .claude/skills/myweb-audit/references/audit-checklist.md .claude/agents/myweb-audit-data-state-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-16-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-16-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-16-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-16-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-backtest-kpi-numeric-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/strategy-batch-16-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - strategy backtest KPI-wrapper numeric-cluster truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remained observation-only because the staged set stayed mixed with earlier batches and unrelated files
+    - strategy GPU partial-sync banner truth regression:
+      - `npx vitest run src/views/strategy/composables/__tests__/useBacktestGPU.spec.ts` passed (`2/2`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `42` tests
+      - Playwright-library verification with system `google-chrome` confirmed a controlled performance-only `/strategy/gpu` path now renders `部分同步 9:04:55 PM · GPU 状态待同步`
+      - the same controlled verification confirmed the visible performance card still keeps `64x` while the runtime banner no longer shows generic `最近同步`
+      - a controlled full-success verification confirmed the route still renders `最近同步 9:46:10 PM` when both primary slices verify
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - strategy GPU partial-sync banner truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-17-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-17-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-17-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-17-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-17-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/strategy/composables/useBacktestGPU.ts web/frontend/src/views/strategy/BacktestGPU.vue web/frontend/src/views/strategy/composables/__tests__/useBacktestGPU.spec.ts web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts .claude/skills/myweb-audit/SKILL.md .claude/skills/myweb-audit/references/CHANGELOG.md .claude/skills/myweb-audit/references/audit-checklist.md .claude/agents/myweb-audit-data-state-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-17-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-17-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-17-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-17-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-gpu-partial-sync-banner-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/strategy-batch-17-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - strategy GPU partial-sync banner truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remained observation-only because the staged set stayed mixed with earlier batches and unrelated files
+    - detail graphics indicators-slice partial-failure truth regression:
+      - `npx vitest run src/views/artdeco-pages/analysis-tabs/__tests__/KLineAnalysis.spec.ts` passed (`5/5`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase1-mainline-matrix.spec.ts --list` listed the new `/detail/graphics/:symbol` indicators-slice assertions in a structurally valid matrix
+      - Playwright-library verification with system `google-chrome` confirmed a controlled first-load indicators failure now keeps the K-line trend snapshot visible and renders `技术指标暂不可用，当前仅显示趋势数据。`
+      - the same controlled verification confirmed a `success -> indicators refresh fail` path now keeps `RSI 61.2 偏强` visible and renders `技术指标部分加载失败：...，当前仍显示上次成功同步的技术指标快照。`
+      - the canonical route no longer falls back to `暂无技术指标结果。` when only the indicators slice fails
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - detail graphics indicators-slice partial-failure truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-04-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-04-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/detail-batch-04-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/detail-batch-04-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/detail-batch-04-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/artdeco-pages/analysis-tabs/KLineAnalysis.vue web/frontend/src/views/artdeco-pages/analysis-tabs/__tests__/KLineAnalysis.spec.ts web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts .claude/skills/myweb-audit/SKILL.md .claude/skills/myweb-audit/references/CHANGELOG.md .claude/skills/myweb-audit/references/audit-checklist.md .claude/agents/myweb-audit-data-state-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-04-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-04-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/detail-batch-04-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/detail-batch-04-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/detail-graphics-indicators-slice-refresh-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/detail-batch-04-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - detail graphics indicators-slice partial-failure truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remained observation-only because the staged set stayed mixed with earlier batches and unrelated files
+    - strategy backtest queued-task freshness truth regression:
+      - `npx vitest run src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts` passed (`4/4`)
+      - `npx vitest run src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyManagement.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyOptimization.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategyParametersTab.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategySignalsTab.spec.ts` passed (`21/21`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `43` tests
+      - Playwright-library verification with system `google-chrome` confirmed a controlled queued-only `/strategy/backtest?strategyId=101` path keeps identical `最后更新` text before and after `启动回测`
+      - the same controlled verification confirmed the route-level banner still updates to `回测任务已创建，进入排队`
+      - natural PM2 verification confirmed `/strategy/backtest?strategyId=101` still reaches the route and keeps its current honest shell with verified strategy-context freshness
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - strategy backtest queued-task freshness truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-18-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-18-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-18-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-18-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-18-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts .claude/skills/myweb-audit/SKILL.md .claude/skills/myweb-audit/references/CHANGELOG.md .claude/skills/myweb-audit/references/audit-checklist.md .claude/agents/myweb-audit-data-state-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-18-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-18-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-18-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-18-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-backtest-queued-task-freshness-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/strategy-batch-18-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - strategy backtest queued-task freshness truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remained observation-only because the staged set stayed mixed with earlier batches and unrelated files
+    - dashboard retained industry-slice aggregate-truth regression:
+      - `npx vitest run tests/unit/components/ArtDecoDashboardLogic.spec.ts -t "keeps the last verified industry slice visible when a later industry refresh fails"` reproduced the expected red failure and then passed `1/1`
+      - `npx vitest run tests/unit/components/ArtDecoDashboardLogic.spec.ts` passed `15/15`
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase1-mainline-matrix.spec.ts --list` listed `32` tests
+      - Playwright-library verification with system `google-chrome` plus browser-context interception and `serviceWorkers: block` confirmed the settled later-failure `/dashboard` path now renders `DATA: MIXED`, `SYNC: DEGRADED`, and route alert `行业热度数据暂不可用`
+      - the same controlled verification confirmed the visible market-status card still keeps `涨跌家数 2↑/0↓`
+      - the same controlled verification confirmed `.heat-map-card .chart-state-note` and `.sector-radar-card .chart-state-note` both remain absent after the later industry refresh failure
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - dashboard retained industry-slice aggregate-truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-05-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-05-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/dashboard-batch-05-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/dashboard-batch-05-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/dashboard-batch-05-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts web/frontend/tests/unit/components/ArtDecoDashboardLogic.spec.ts web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts .claude/skills/myweb-audit/SKILL.md .claude/skills/myweb-audit/references/CHANGELOG.md .claude/skills/myweb-audit/references/audit-checklist.md .claude/agents/myweb-audit-data-state-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-05-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-05-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/dashboard-batch-05-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/dashboard-batch-05-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/dashboard-industry-slice-refresh-retention-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/dashboard-batch-05-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - dashboard retained industry-slice aggregate-truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` reported `risk_level: low`, `changed_files: 126`, `changed_count: 317`, `affected_count: 0`
+      - the staged set remained mixed with earlier batches and unrelated files, so this stayed observation-only rather than an isolated `dashboard-batch-05` verdict
+    - dashboard capital-flow service-envelope truth regression:
+      - `npx vitest run src/api/services/__tests__/dashboardService.spec.ts -t "throws when the API client resolves a unified error envelope"` reproduced the expected red empty-success failure and then passed `1/1`
+      - `npx vitest run src/api/services/__tests__/dashboardService.spec.ts` passed `5/5`
+      - `npx vitest run tests/unit/components/ArtDecoDashboardLogic.spec.ts` passed `17/17`
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase1-mainline-matrix.spec.ts --list` listed `33` tests
+      - Playwright-library verification with system `google-chrome` plus browser-context interception and `serviceWorkers: block` confirmed the settled later-`big-deal`-failure `/dashboard` path now renders `资金流向持续排名暂不可用，当前仍显示上次成功同步的排名快照。`
+      - the same controlled verification confirmed the visible ranking slice still keeps `贵州茅台 / 宁德时代`
+      - the same controlled verification confirmed `.capital-heatmap-card .chart-state-note` renders once and aggregate shell truth settles to `DATA: MIXED / SYNC: DEGRADED` with dashboard alert `资金流向数据暂不可用`
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - dashboard capital-flow service-envelope truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-06-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-06-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/dashboard-batch-06-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/dashboard-batch-06-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/dashboard-batch-06-manifest.yaml` passed
+    - dashboard capital-flow service-envelope truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` reported `risk_level: low`, `changed_files: 126`, `changed_count: 317`, `affected_count: 0`
+      - the staged set remained mixed with earlier batches and unrelated files, so this stayed observation-only rather than an isolated `dashboard-batch-06` verdict
+    - dashboard trend-slice sync-state truth regression:
+      - `npx vitest run tests/unit/components/ArtDecoDashboardLogic.spec.ts -t "keeps the last verified trend slice visible when a later trend refresh fails"` first reproduced the expected red envelope-retention wording failure and then passed `1/1`
+      - `npx vitest run tests/unit/components/ArtDecoDashboardLogic.spec.ts` passed `18/18`
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase1-mainline-matrix.spec.ts --list` listed `35` tests
+      - Playwright-library verification with system `google-chrome` plus browser-context interception and `serviceWorkers: block` confirmed unresolved first-load `/dashboard` now renders `分时趋势同步中...`
+      - the same controlled verification confirmed the later `success:false` kline refresh path now renders `分时趋势暂不可用，当前仍显示上次成功同步的分时趋势快照。`
+      - the same controlled verification confirmed `.market-indicators .chart-section .chart-empty-state` stayed at count `0`, so the last verified chart remained visible while the stale note surfaced
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - dashboard trend-slice sync-state truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-07-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-07-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/dashboard-batch-07-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/dashboard-batch-07-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/dashboard-batch-07-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue web/frontend/tests/unit/components/ArtDecoDashboardLogic.spec.ts web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts .claude/skills/myweb-audit/SKILL.md .claude/skills/myweb-audit/references/CHANGELOG.md .claude/skills/myweb-audit/references/audit-checklist.md .claude/agents/myweb-audit-data-state-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-07-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-07-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/dashboard-batch-07-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/dashboard-batch-07-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/dashboard-trend-slice-sync-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/dashboard-batch-07-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - dashboard trend-slice sync-state truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` reported `risk_level: low`, `changed_files: 126`, `changed_count: 317`, `affected_count: 0`
+      - the staged set remained mixed with earlier batches and unrelated files, so this stayed observation-only rather than an isolated `dashboard-batch-07` verdict
+    - dashboard auxiliary live-slice sync-state truth regression:
+      - `npx vitest run tests/unit/components/ArtDecoDashboardLogic.spec.ts src/api/services/__tests__/dashboardService.spec.ts` passed and locked both dashboard owner and dashboard service envelope paths
+      - `npx vitest run tests/unit/components/ArtDecoDashboardLogic.spec.ts -t "technical-indicator|monitoring slice"` passed (`4/4`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase1-mainline-matrix.spec.ts --list` listed the new `/dashboard` auxiliary-slice assertions in a structurally valid matrix
+      - Playwright-library verification with system `google-chrome` plus browser-context interception and `serviceWorkers: block` confirmed first-load auxiliary failures now render `技术指标暂不可用，当前暂无已验证指标快照。` and `系统监控暂不可用，当前暂无已验证监控快照。`
+      - the same controlled verification confirmed later auxiliary refresh failures now keep `RSI 61.2 偏强` and verified monitoring rows visible while rendering explicit stale or unavailable copy
+      - the canonical route no longer falls back to `系统监控真实接口待接入...`, placeholder indicator rows, or retention-blind auxiliary copy on those failure paths
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - dashboard auxiliary live-slice sync-state truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-08-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-08-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/dashboard-batch-08-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/dashboard-batch-08-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/dashboard-batch-08-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/api/services/dashboardService.ts web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue web/frontend/tests/unit/components/ArtDecoDashboardLogic.spec.ts web/frontend/src/api/services/__tests__/dashboardService.spec.ts web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts .claude/skills/myweb-audit/SKILL.md .claude/skills/myweb-audit/references/CHANGELOG.md .claude/skills/myweb-audit/references/audit-checklist.md .claude/agents/myweb-audit-data-state-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-08-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-08-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/dashboard-batch-08-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/dashboard-batch-08-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/dashboard-auxiliary-slice-sync-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/dashboard-batch-08-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - dashboard auxiliary live-slice sync-state truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` reported `risk_level: low`, `changed_files: 126`, `changed_count: 317`, `affected_count: 0`
+      - the staged set remained mixed with earlier batches and unrelated files, so this stayed observation-only rather than an isolated `dashboard-batch-08` verdict
+    - watchlist manage selector row-provenance truth regression:
+      - `npx vitest run src/views/watchlist/__tests__/Manage.spec.ts` passed (`4/4`)
+      - `npx vitest run src/views/watchlist/__tests__/Manage.spec.ts src/views/watchlist/__tests__/Signals.spec.ts src/views/watchlist/__tests__/Screener.spec.ts` passed (`10/10`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase2-mainline-matrix.spec.ts --list` listed `26` tests
+      - the targeted browser proof started from a successful default `核心组合` snapshot before triggering the later selector-refresh failure
+      - Playwright-library verification with system `google-chrome` plus browser-context interception and `serviceWorkers: block` confirmed a controlled later watchlist-stock refresh failure now keeps `.watchlist-tab.active` on `核心组合`
+      - the same controlled verification confirmed the route preserves `贵州茅台 / 宁德时代`, does not leak `比亚迪`, and renders `自选列表刷新异常` together with `当前仍显示上次成功同步的自选组合快照。`
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - watchlist manage selector row-provenance truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/watchlist-batch-06-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/watchlist-batch-06-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/watchlist-batch-06-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/watchlist-batch-06-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/watchlist-batch-06-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/artdeco-pages/stock-management-tabs/WatchlistManager.vue web/frontend/src/views/watchlist/__tests__/Manage.spec.ts web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts .claude/skills/myweb-audit/SKILL.md .claude/skills/myweb-audit/references/CHANGELOG.md .claude/skills/myweb-audit/references/audit-checklist.md .claude/agents/myweb-audit-data-state-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/findings/watchlist-batch-06-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/watchlist-batch-06-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/watchlist-batch-06-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/watchlist-batch-06-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/watchlist-manage-selector-row-provenance-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/watchlist-batch-06-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - watchlist manage selector row-provenance truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remained observation-only because the staged set stayed mixed with earlier batches and unrelated files
+    - detail news auxiliary table-slice truth regression:
+      - `npx vitest run src/views/announcement/__tests__/AnnouncementMonitor.spec.ts src/views/announcement/__tests__/useAnnouncementMonitor.spec.ts src/views/risk/__tests__/News.spec.ts` passed (`11/11`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `30` tests
+      - Playwright-library verification with system `google-chrome` confirmed the first verified detail/news snapshot renders `高重要性公告` in `监控规则管理` and `2026 年第一季度经营数据公告` in `触发记录`
+      - the same controlled verification confirmed a later auxiliary refresh failure now keeps both auxiliary tables visible and renders `当前仍显示上次成功同步的监控规则快照。` together with `当前仍显示上次成功同步的触发记录快照。`
+      - the verified announcement list remained visible throughout the same controlled refresh path
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - detail news auxiliary table-slice truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-05-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-05-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/detail-batch-05-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/detail-batch-05-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/detail-batch-05-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/announcement/composables/useAnnouncementMonitor.ts web/frontend/src/views/announcement/AnnouncementMonitor.vue web/frontend/src/views/announcement/styles/AnnouncementMonitor.scss web/frontend/src/views/announcement/__tests__/AnnouncementMonitor.spec.ts web/frontend/src/views/announcement/__tests__/useAnnouncementMonitor.spec.ts web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-05-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-05-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/detail-batch-05-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/detail-batch-05-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/detail-news-auxiliary-table-slice-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/detail-batch-05-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - detail news auxiliary table-slice truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remained observation-only because the staged set stayed mixed with earlier batches and unrelated files
+    - detail news selector row-provenance truth regression:
+      - `npx vitest run src/views/announcement/__tests__/AnnouncementMonitor.spec.ts src/views/announcement/__tests__/useAnnouncementMonitor.spec.ts src/views/risk/__tests__/News.spec.ts` passed (`13/13`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `31` tests
+      - Playwright-library verification with system `google-chrome` confirmed `/detail/news/600519` first renders `2026 年第一季度经营数据公告`
+      - the same controlled route-switch verification confirmed `/detail/news/000001` then renders `当前标的公告暂不可用，请稍后重试。`
+      - the same controlled route-switch verification confirmed `.announcements-card` no longer leaks `2026 年第一季度经营数据公告`
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - detail graphics selector-snapshot truth regression:
+      - `npx vitest run src/views/artdeco-pages/analysis-tabs/__tests__/KLineAnalysis.spec.ts` passed (`7/7`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase1-mainline-matrix.spec.ts --list` listed `41` tests
+      - Playwright-library verification with system `google-chrome` confirmed the same PM2 page instance moved from `/detail/graphics/600519` to `/detail/graphics/000001`
+      - the same natural route-switch verification confirmed `.module-meta` updated to `SYMBOL: 000001` with a new request id instead of retaining the old `600519` header
+      - the same natural route-switch verification confirmed `.indicators-card` stayed in current-symbol unavailable state and did not render the previous symbol indicators
+      - the PM2 `/detail/graphics` request path on this machine remained outside browser-network interception during live verification, so controlled failure proof stayed in owner regressions plus routed matrix assertions
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - detail graphics selector-snapshot truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-07-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-07-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/detail-batch-07-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/detail-batch-07-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/detail-batch-07-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/artdeco-pages/analysis-tabs/KLineAnalysis.vue web/frontend/src/views/artdeco-pages/analysis-tabs/__tests__/KLineAnalysis.spec.ts web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-07-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-07-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/detail-batch-07-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/detail-batch-07-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/detail-graphics-selector-snapshot-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/detail-batch-07-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - detail graphics selector-snapshot truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remained observation-only because the staged set stayed mixed with earlier batches and unrelated files
+    - strategy backtest selector-local action truth regression:
+      - `npx vitest run src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyManagement.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyOptimization.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategyParametersTab.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategySignalsTab.spec.ts` passed (`22/22`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `44` tests
+      - Playwright-library verification with system `google-chrome` confirmed `/strategy/backtest?strategyId=101` can first render `最近快照：Momentum Alpha`
+      - the same controlled same-instance route-switch verification confirmed the page then reaches `当前策略上下文ID 202` with neutral selector-local baseline copy and no leaked `最近快照：Momentum Alpha`
+      - the owner red-green regression remains the primary proof for the more specific `策略上下文已切换` banner branch because the local PM2 browser path settled to the neutral synced banner while still proving the selector-local leak was removed
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - strategy backtest selector-local action truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-19-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-19-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-19-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-19-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-19-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts .claude/skills/myweb-audit/SKILL.md .claude/skills/myweb-audit/references/CHANGELOG.md .claude/skills/myweb-audit/references/audit-checklist.md .claude/agents/myweb-audit-data-state-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-19-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-19-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-19-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-19-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-backtest-selector-local-action-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/strategy-batch-19-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - strategy backtest selector-local action truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remained observation-only because the staged set stayed mixed with earlier batches and unrelated files
+    - strategy signals selector-scoped verified-snapshot truth regression:
+      - `npx vitest run src/views/artdeco-pages/strategy-tabs/__tests__/StrategySignalsTab.spec.ts src/views/watchlist/__tests__/Signals.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategyParametersTab.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyManagement.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyOptimization.spec.ts` passed (`25/25`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `45` tests
+      - Playwright-library verification with system `google-chrome` plus browser-context interception and `serviceWorkers: block` confirmed `/strategy/signals?strategyId=101` first renders `FOCUS: 101 / REQ_ID: req-live-strategy-signals-101 / COUNT: 2`
+      - the same controlled same-instance route-switch verification confirmed the route then reaches `FOCUS: 202 / REQ_ID: N/A / COUNT: --`
+      - the same controlled verification confirmed `.signal-item` count drops to `0` and no leaked `贵州茅台` or `比亚迪` rows remain after the selector switch
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - strategy signals selector-scoped verified-snapshot truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-20-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-20-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-20-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-20-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-20-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/StrategySignalsTab.spec.ts web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts .claude/skills/myweb-audit/SKILL.md .claude/skills/myweb-audit/references/CHANGELOG.md .claude/skills/myweb-audit/references/audit-checklist.md .claude/agents/myweb-audit-data-state-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-20-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-20-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-20-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-20-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-signals-selector-snapshot-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/strategy-batch-20-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - strategy signals selector-scoped verified-snapshot truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remained observation-only because the staged set stayed mixed with earlier batches and unrelated files
+    - strategy optimization selector-scoped verified-snapshot truth regression:
+      - `npx vitest run src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyOptimization.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategyParametersTab.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategySignalsTab.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyManagement.spec.ts src/views/watchlist/__tests__/Signals.spec.ts` passed (`27/27`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `47` tests
+      - Playwright-library verification with system `google-chrome` plus browser-context interception and `serviceWorkers: block` confirmed `/strategy/opt?strategyId=101` first renders `FOCUS: ID 101 / REQ_ID: req-live-strategy-opt-success / PROCESS: 42.00`
+      - the same controlled same-instance route-switch verification confirmed the route then reaches `FOCUS: ID 202 / REQ_ID: N/A / PROCESS: N/A`
+      - the same controlled verification confirmed the route shows `VISIBLE: -- / TOTAL: --`, `-- / -- / -- / ID 202`, zero visible optimization rows, and no leaked `Momentum Alpha` text after the selector switch
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - strategy optimization selector-scoped verified-snapshot truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-22-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-22-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-22-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-22-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-22-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyOptimization.spec.ts web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-22-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-22-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-22-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-22-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-optimization-selector-snapshot-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/strategy-batch-22-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - strategy optimization selector-scoped verified-snapshot truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remained observation-only because the staged set stayed mixed with earlier batches and unrelated files
+    - strategy parameters selector-scoped verified-snapshot truth regression:
+      - `npx vitest run src/views/artdeco-pages/strategy-tabs/__tests__/StrategyParametersTab.spec.ts src/views/watchlist/__tests__/Signals.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategySignalsTab.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyManagement.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyOptimization.spec.ts` passed (`26/26`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `46` tests
+      - Playwright-library verification with system `google-chrome` plus browser-context interception and `serviceWorkers: block` confirmed `/strategy/parameters?strategyId=101` first renders `FOCUS: 101 / REQ_ID: req-live-strategy-parameters-success / PROCESS: 36.00 ms`
+      - the same controlled same-instance route-switch verification confirmed the route then reaches `FOCUS: 202 / REQ_ID: N/A / PROCESS: N/A ms`
+      - the same controlled verification confirmed the route shows `-- / -- / -- / 202`, zero parameter cards, and no leaked `Momentum Alpha` text after the selector switch
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - strategy parameters selector-scoped verified-snapshot truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-21-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-21-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-21-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-21-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-21-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/artdeco-pages/strategy-tabs/StrategyParametersTab.vue web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/StrategyParametersTab.spec.ts web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-21-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-21-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-21-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-21-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-parameters-selector-snapshot-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/strategy-batch-21-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - strategy parameters selector-scoped verified-snapshot truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remained observation-only because the staged set stayed mixed with earlier batches and unrelated files
+    - strategy backtest selector-scoped report-row truth regression:
+      - `npx vitest run src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyManagement.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyOptimization.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategyParametersTab.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategySignalsTab.spec.ts` passed (`26/26`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `48` tests
+      - Playwright-library verification with system `google-chrome` plus browser-context interception and `serviceWorkers: block` confirmed `/strategy/backtest?strategyId=101` first syncs one verified report row
+      - the same controlled same-instance route-switch verification confirmed the route then reaches `当前策略上下文 ID 202` with `0` visible report rows
+      - the same controlled verification confirmed the previous `Momentum Alpha` report-row truth no longer remains visible after the selector switch
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - strategy backtest selector-scoped report-row truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-23-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-23-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-23-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-23-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-23-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-23-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-23-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-23-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-23-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-backtest-selector-report-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/strategy-batch-23-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - strategy backtest selector-scoped report-row truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remained observation-only because the staged set stayed mixed with earlier batches and unrelated files
+    - risk stop-loss implicit selector truth regression:
+      - `npx vitest run src/views/risk/__tests__/StopLoss.spec.ts src/views/risk/__tests__/Center.spec.ts src/views/risk/__tests__/Overview.spec.ts src/views/risk/__tests__/Alerts.spec.ts src/views/risk/__tests__/News.spec.ts tests/unit/views/risk-wrapper-retention.spec.ts tests/unit/views/risk-center-template-retention.spec.ts` passed (`27/27`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `32` tests
+      - Playwright-library verification with system `google-chrome` plus browser-context interception and `serviceWorkers: block` confirmed `/risk/stop-loss` first renders `REQ_ID: req-live-stoploss-101-success`, `2` cards, and `贵州茅台`
+      - the same controlled selector-switch verification confirmed the route then reaches `REQ_ID: N/A`, `CRITICAL: --`, `TRIGGERED: --`, `-- / -- / -- / --`, and `0` cards after `watchlist:202/stocks` fails before any verified `watchlist:202` snapshot exists
+      - the same controlled verification confirmed old selector-owned truth such as `贵州茅台` and `req-live-stoploss-101-success` no longer leaks into the newly derived selector shell
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - risk stop-loss implicit selector truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-15-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-15-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-15-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-15-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-15-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/risk/StopLoss.vue web/frontend/src/views/risk/__tests__/StopLoss.spec.ts web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts .claude/skills/myweb-audit/SKILL.md .claude/skills/myweb-audit/references/CHANGELOG.md .claude/skills/myweb-audit/references/audit-checklist.md .claude/agents/myweb-audit-data-state-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-15-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-15-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-15-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-15-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/risk-stop-loss-implicit-selector-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/risk-batch-15-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - risk stop-loss implicit selector truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remained observation-only because the staged set stayed mixed with earlier batches and unrelated files
+      - latest observation returned `risk_level: low`, `changed_files: 126`, `changed_count: 317`, and `affected_count: 0`
+    - strategy backtest selector-owned execution-state truth regression:
+      - `npx vitest run src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyManagement.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyOptimization.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategyParametersTab.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategySignalsTab.spec.ts` passed (`27/27`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `49` tests
+      - Playwright-library verification with system `google-chrome` plus browser-context interception and `serviceWorkers: block` confirmed `/strategy/backtest?strategyId=101` first reaches `回测完成 / 100%`
+      - the same controlled same-instance query-switch verification confirmed the route then reaches `当前策略上下文 ID 202` with `等待任务 / 0%`
+      - the same controlled verification confirmed the stale `回测结果已同步到报告中心。` log line no longer remains visible after the selector switch
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - strategy backtest selector-owned execution-state truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-24-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-24-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-24-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-24-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-24-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts .claude/skills/myweb-audit/SKILL.md .claude/skills/myweb-audit/references/CHANGELOG.md .claude/skills/myweb-audit/references/audit-checklist.md .claude/agents/myweb-audit-data-state-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-24-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-24-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-24-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-24-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-backtest-selector-execution-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/strategy-batch-24-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - strategy backtest selector-owned execution-state truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remained observation-only because the staged set stayed mixed with earlier batches and unrelated files
+    - data indicator selected-row context truth regression:
+      - `npx vitest run tests/unit/views/data-advanced-screening-truth.spec.ts -t "clears the previous selected stock context when a verified refresh replaces the screening result set with a different universe"` passed (`1/1`) after first reproducing the expected red failure
+      - `npx vitest run tests/unit/views/data-advanced-screening-truth.spec.ts src/views/data/__tests__/Advanced.spec.ts tests/unit/views/data-advanced-cutover.spec.ts tests/unit/views/data-indicator-details.spec.ts` passed (`9/9`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase2-mainline-matrix.spec.ts --list` listed `27` tests
+      - Playwright-library verification with system `google-chrome` plus browser-context fulfillment confirmed `/data/indicator` first renders a `selected stock` context for `贵州茅台 / 600519`
+      - the same controlled verified-refresh proof confirmed the route then keeps `002594 比亚迪` in the results panel while the old selected-stock context disappears and `贵州茅台` no longer remains in `.tab-content`
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - data indicator selected-row context truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-18-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-18-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-18-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-18-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-18-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/composables/market/useDataAnalysis.ts web/frontend/src/composables/market/dataAnalysisData.ts web/frontend/tests/unit/views/data-advanced-screening-truth.spec.ts web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts .claude/skills/myweb-audit/SKILL.md .claude/skills/myweb-audit/references/CHANGELOG.md .claude/skills/myweb-audit/references/audit-checklist.md .claude/agents/myweb-audit-data-state-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-18-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-18-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-18-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-18-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/data-indicator-selected-stock-context-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/data-batch-18-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - data indicator selected-row context truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remained observation-only because the staged set stayed mixed with earlier batches and unrelated files
+    - data indicator selected-indicator context truth regression:
+      - `npx vitest run tests/unit/views/data-advanced-screening-truth.spec.ts src/views/data/__tests__/Advanced.spec.ts tests/unit/views/data-advanced-cutover.spec.ts tests/unit/views/data-indicator-details.spec.ts` passed (`10/10`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase2-mainline-matrix.spec.ts --list` listed `28` tests
+      - Playwright-library verification with system `google-chrome` plus browser-context fulfillment confirmed `/data/indicator` first renders `selected indicator / 移动平均线 / MA`
+      - the same controlled verified-refresh proof confirmed the route then returns to `从指标库选择一个指标` and no longer leaks `移动平均线` inside `#data-analysis-panel-editor`
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - data indicator selected-indicator context truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-19-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-19-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-19-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-19-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-19-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/composables/market/useDataAnalysis.ts web/frontend/tests/unit/views/data-advanced-screening-truth.spec.ts web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-19-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-19-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-19-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-19-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/data-indicator-selected-indicator-context-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/data-batch-19-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - data indicator selected-indicator context truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remained observation-only because the staged set stayed mixed with earlier batches and unrelated files
+    - detail graphics period-scoped selector truth regression:
+      - `npx vitest run src/views/artdeco-pages/analysis-tabs/__tests__/KLineAnalysis.spec.ts` passed (`8/8`)
+      - `node --test web/frontend/src/views/market/__node_tests__/marketKlineData.test.ts` passed (`4/4`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase1-mainline-matrix.spec.ts --list` listed `42` tests
+      - Playwright-library verification with system `google-chrome` confirmed natural PM2 `/detail/graphics/600519` still loads and the same page instance updates `.module-meta` from `PERIOD: 1d` to `PERIOD: 1w`
+      - the controlled `1d -> 1w` first-load failure proof stayed closed by owner regressions and the new Phase 1 routed selector-switch assertion because this machine again kept the PM2 `/detail/graphics` request path outside browser-network interception
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - detail graphics period-scoped selector truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-08-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-08-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/detail-batch-08-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/detail-batch-08-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/detail-batch-08-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/market/marketKlineData.ts web/frontend/src/views/artdeco-pages/analysis-tabs/KLineAnalysis.vue web/frontend/src/views/artdeco-pages/analysis-tabs/__tests__/KLineAnalysis.spec.ts web/frontend/src/views/market/__node_tests__/marketKlineData.test.ts web/frontend/src/views/artdeco-pages/market-tabs/__node_tests__/marketKlineData.test.ts web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-08-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-08-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/detail-batch-08-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/detail-batch-08-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/detail-graphics-period-selector-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/detail-batch-08-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - detail graphics period-scoped selector truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remained observation-only because the staged set stayed mixed with earlier batches and unrelated files
+    - strategy backtest selector-owned task-row truth regression:
+      - `npx vitest run src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyManagement.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyOptimization.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategyParametersTab.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategySignalsTab.spec.ts` passed (`28/28`)
+      - `timeout 180s npm run type-check` passed
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `50` tests
+      - Playwright-library verification with system `google-chrome` plus browser-context interception and `serviceWorkers: block` confirmed `/strategy/backtest?strategyId=101` first shows a verified `101` task row in `回测任务`
+      - the same controlled same-instance query-switch verification confirmed the route then reaches `当前策略上下文 ID 202`
+      - reopening `回测任务` under `202` then produced `0` visible `.task-item` rows
+      - the stale prior `TASK ... / 回测任务已完成` row no longer remained visible after the selector switch
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - strategy backtest selector-owned task-row truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-25-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-25-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-25-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-25-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-25-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-25-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-25-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-25-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-25-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-backtest-selector-task-rows-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/strategy-batch-25-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - strategy backtest selector-owned task-row truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remained observation-only because the staged set stayed mixed with earlier batches and unrelated files
+    - detail news auxiliary selector-row truth regression:
+      - `npx vitest run src/views/announcement/__tests__/AnnouncementMonitor.spec.ts src/views/announcement/__tests__/useAnnouncementMonitor.spec.ts src/views/risk/__tests__/News.spec.ts` passed (`14/14`)
+      - `timeout 180s npm run type-check` failed because of pre-existing unrelated errors in `src/components/technical/composables/useKLinePatternOverlays.ts`; no new type errors were introduced by this batch's touched files
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `33` tests
+      - Playwright-library verification with system `google-chrome` plus authenticated browser-context fulfillment confirmed `/detail/news/600519` first shows `高重要性公告` and `2026 年第一季度经营数据公告`
+      - the same controlled same-instance route switch to `/detail/news/000001` then reaches `当前详情标的: 000001`
+      - the same controlled proof confirmed `.rules-card` still shows `全市场风险提示`
+      - the stale prior `高重要性公告` rule row and `2026 年第一季度经营数据公告` trigger row no longer remain visible after the selector switch
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - detail news auxiliary selector-row truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-09-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-09-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/detail-batch-09-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/detail-batch-09-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/detail-batch-09-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/announcement/AnnouncementMonitor.vue web/frontend/src/views/announcement/__tests__/AnnouncementMonitor.spec.ts web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-09-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-09-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/detail-batch-09-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/detail-batch-09-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/detail-news-auxiliary-selector-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/detail-batch-09-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - detail news auxiliary selector-row truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remained observation-only because the staged set stayed mixed with earlier batches and unrelated files
+    - dashboard capital-flow tab selector truth regression:
+      - `npx vitest run tests/unit/components/ArtDecoDashboardLogic.spec.ts -t "does not leak the last verified capital-flow rows into a different tab while that tab is still on its first unresolved load"` first failed as expected with active `3日` while `.capital-flow-card` still contained `贵州茅台`, then passed (`1/1`) after the repair
+      - `npx vitest run tests/unit/components/ArtDecoDashboardLogic.spec.ts` passed (`23/23`)
+      - `timeout 180s npm run type-check` failed only on pre-existing unrelated errors in `src/components/technical/composables/useKLinePatternOverlays.ts`; no new type errors were introduced by this batch's touched files
+      - `npx playwright test tests/e2e/phase1-mainline-matrix.spec.ts --list` listed `43` tests
+      - Playwright-library verification with system `google-chrome` plus browser-context interception and `serviceWorkers: block` confirmed `/dashboard` first shows verified `1day` rows `贵州茅台 / 宁德时代`
+      - the same controlled same-instance tab-switch verification confirmed the route then reaches active `3日` with no visible stale `1day` rows while the `3day` request is still unresolved
+      - the same controlled proof confirmed the unresolved `3day` path does not misreport `资金流向持续排名暂不可用`
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - dashboard capital-flow tab selector truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-09-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-09-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/dashboard-batch-09-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/dashboard-batch-09-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/dashboard-batch-09-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue web/frontend/tests/unit/components/ArtDecoDashboardLogic.spec.ts web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-09-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-09-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/dashboard-batch-09-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/dashboard-batch-09-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/dashboard-capital-flow-tab-selector-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/dashboard-batch-09-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - dashboard capital-flow tab selector truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remained observation-only because the staged set stayed mixed with earlier batches and unrelated files
+      - latest observation returned `risk_level: low`, `changed_files: 126`, `changed_count: 317`, and `affected_count: 0`
+    - market realtime preset-selector truth regression:
+      - `npx vitest run src/views/market/__tests__/Realtime.spec.ts src/views/market/__tests__/LHB.spec.ts src/views/market/__tests__/Technical.spec.ts` passed (`12/12`)
+      - `timeout 180s npm run type-check` failed because of pre-existing unrelated errors in `src/components/technical/composables/useKLinePatternOverlays.ts`; no new type errors were introduced by this batch's touched files
+      - `npx playwright test tests/e2e/phase1-mainline-matrix.spec.ts --list` listed `44` tests
+      - Playwright-library verification with system `google-chrome` plus auth-seeded browser-context interception and `serviceWorkers: block` confirmed `/market/realtime` first shows a verified `核心蓝筹样本` snapshot with `3` visible rows
+      - the same controlled same-instance preset switch then reached `PRESET: 金融权重样本 / TRACE_ID: N/A / SAMPLE: --`
+      - the same controlled proof confirmed `.hybrid-table__content tbody tr` dropped to `0` rows and the stale prior `000001.SH / 399001.SZ` rows no longer remained visible after the selector switch
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - market realtime preset-selector truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-09-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-09-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/market-batch-09-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/market-batch-09-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/market-batch-09-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/market/Realtime.vue web/frontend/src/views/market/__tests__/Realtime.spec.ts web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-09-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-09-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/market-batch-09-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/market-batch-09-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/market-realtime-preset-selector-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/market-batch-09-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - market realtime preset-selector truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remained observation-only because the staged set stayed mixed with earlier batches and unrelated files
+    - data indicator category-selector detail truth regression:
+      - `npx vitest run tests/unit/views/data-advanced-screening-truth.spec.ts -t "clears the previous selected indicator context when the user switches the active category before reopening the editor"` first failed as expected because reopening `指标详情` after `趋势指标 -> 动量指标` still showed `移动平均线 / MA`, then passed (`1/1`)
+      - `npx vitest run tests/unit/views/data-advanced-screening-truth.spec.ts src/views/data/__tests__/Advanced.spec.ts tests/unit/views/data-indicator-details.spec.ts tests/unit/views/data-advanced-cutover.spec.ts` passed (`11/11`)
+      - `timeout 180s npm run type-check` failed only on pre-existing unrelated dirty-worktree errors in `src/api/services/dashboardService.ts` and `src/components/technical/composables/useKLinePatternOverlays.ts`; no new type errors were introduced by this batch
+      - `npx playwright test tests/e2e/phase2-mainline-matrix.spec.ts --list` listed `29` tests
+      - Playwright-library verification with system `google-chrome` plus browser-context interception and `serviceWorkers: block` confirmed `/data/indicator` first shows `selected indicator / 移动平均线 / MA`
+      - the same controlled same-instance category switch then returned to `从指标库选择一个指标` after `趋势指标 -> 动量指标`
+      - the same controlled proof confirmed the stale prior `selected indicator / 移动平均线 / MA` copy no longer remained visible after the category switch
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - data indicator category-selector detail truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-18-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-18-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-18-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-18-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-18-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/composables/market/useDataAnalysis.ts web/frontend/tests/unit/views/data-advanced-screening-truth.spec.ts web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-18-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-18-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-18-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/data-batch-18-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/data-indicator-category-selector-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/data-batch-18-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - data indicator category-selector detail truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remains observation-only because the staged set stays mixed with earlier batches and unrelated files
+      - latest observation returned `risk_level: low`, `changed_files: 130`, `changed_count: 330`, and `affected_count: 0`
+    - strategy backtest selector-owned KPI-summary truth regression:
+      - `npx vitest run src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts -t "does not leak the previous strategy KPI summary into a new route query without its own verified task context"` first failed as expected because switching to `当前策略上下文ID 202` still kept `总回测次数:3`, then passed (`1/1`)
+      - `npx vitest run src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyManagement.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyOptimization.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategyParametersTab.spec.ts src/views/artdeco-pages/strategy-tabs/__tests__/StrategySignalsTab.spec.ts` passed (`29/29`)
+      - `timeout 180s npm run type-check` failed only on pre-existing unrelated errors in `src/api/services/dashboardService.ts` and `src/components/technical/composables/useKLinePatternOverlays.ts`; no new type errors were introduced by this batch
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `51` tests
+      - Playwright-library verification with system `google-chrome` plus browser-context interception and `serviceWorkers: block` confirmed `/strategy/backtest?strategyId=101` first shows the verified baseline KPI strip `2 / 50% / 3.2% / -2%`
+      - the same controlled proof confirmed clicking `启动回测` advances the same selector to `3 / 50% / 3.2% / -2%`
+      - the same mounted route then reached `当前策略上下文ID 202`
+      - the KPI strip under `202` returned to the neutral baseline `2 / 50% / 3.2% / -2%`
+      - the stale prior `总回测次数:3` increment no longer remained visible after the selector switch
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - strategy backtest selector-owned KPI-summary truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-26-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-26-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-26-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-26-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-26-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-26-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-26-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-26-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/strategy-batch-26-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-backtest-selector-kpi-summary-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/strategy-batch-26-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - strategy backtest selector-owned KPI-summary truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remains observation-only because the staged set stays mixed with earlier batches and unrelated files
+    - market LHB trade-date selector truth regression:
+      - `npx vitest run src/views/market/__tests__/LHB.spec.ts -t "does not leak the previous trade-date rows into a newly selected trade date without its own verified snapshot"` first failed as expected because switching to `DATE: 前日` still kept the earlier verified request provenance, then passed (`1/1`)
+      - `npx vitest run src/views/market/__tests__/LHB.spec.ts src/views/market/__tests__/Realtime.spec.ts src/views/market/__tests__/Technical.spec.ts` passed (`13/13`)
+      - `node --test src/views/market/__node_tests__/dragonTigerData.test.ts` passed (`4/4`)
+      - `timeout 180s npm run type-check` failed only on pre-existing unrelated errors in `src/api/services/dashboardService.ts` and `src/components/technical/composables/useKLinePatternOverlays.ts`; no new type errors were introduced by this batch
+      - `npx playwright test tests/e2e/phase1-mainline-matrix.spec.ts --list` listed `45` tests
+      - Playwright-library verification with system `google-chrome` plus auth-seeded browser-context interception and `serviceWorkers: block` confirmed `/market/lhb` first shows a verified `今日` leaderboard snapshot with `贵州茅台 (600519)` visible
+      - the same controlled same-instance trade-date switch then reached `REQ: N/A / DATE: 前日 / ROWS: --`
+      - the same controlled proof confirmed the stale prior `贵州茅台 (600519)` row no longer remained visible after the selector switch into the failed `前日` shell
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - market LHB trade-date selector truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-10-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-10-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/market-batch-10-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/market-batch-10-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/market-batch-10-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/market/LHB.vue web/frontend/src/views/market/__tests__/LHB.spec.ts web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-10-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-10-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/market-batch-10-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/market-batch-10-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/market-lhb-trade-date-selector-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/market-batch-10-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - market LHB trade-date selector truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remains observation-only because the staged set stays mixed with earlier batches and unrelated files
+    - detail news selector-pending primary-row truth regression:
+      - `npx vitest run src/views/announcement/__tests__/useAnnouncementMonitor.spec.ts -t "clears the previous selector rows while a newly selected detail symbol is still unresolved without its own verified snapshot"` first failed as expected because the new `000001` shell still rendered `2026 年第一季度经营数据公告`, then passed (`1/1`)
+      - `npx vitest run src/views/announcement/__tests__/useAnnouncementMonitor.spec.ts src/views/announcement/__tests__/AnnouncementMonitor.spec.ts src/views/risk/__tests__/News.spec.ts` passed (`15/15`)
+      - `timeout 180s npm run type-check` failed only on pre-existing unrelated errors in `src/api/services/dashboardService.ts` and `src/components/technical/composables/useKLinePatternOverlays.ts`; no new type errors were introduced by this batch
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `34` tests
+      - Playwright-library verification with system `google-chrome` plus authenticated browser-context fulfillment confirmed `/detail/news/600519` first shows `2026 年第一季度经营数据公告`
+      - the same controlled same-instance route switch to `/detail/news/000001` then reached `当前详情标的: 000001`
+      - the same controlled proof confirmed the stale prior `2026 年第一季度经营数据公告` row no longer remained visible while the new selector stayed unresolved
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - detail news selector-pending primary-row truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-10-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-10-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/detail-batch-10-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/detail-batch-10-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/detail-batch-10-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/announcement/composables/useAnnouncementMonitor.ts web/frontend/src/views/announcement/__tests__/useAnnouncementMonitor.spec.ts web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-10-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-10-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/detail-batch-10-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/detail-batch-10-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/detail-news-selector-pending-row-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/detail-batch-10-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - detail news selector-pending primary-row truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remains observation-only because the staged set stays mixed with earlier batches and unrelated files
+    - watchlist manage selector-pending primary-row truth regression:
+      - `npx vitest run src/views/watchlist/__tests__/Manage.spec.ts -t "does not keep the previous watchlist rows visible while a newly selected watchlist is still unresolved"` first failed as expected because `.watchlist-tab.active` had already switched to `成长跟踪` while `tbody` still rendered `贵州茅台 / 宁德时代`, then passed (`1/1`)
+      - `npx vitest run src/views/watchlist/__tests__/Manage.spec.ts` passed (`5/5`)
+      - `npx vitest run src/views/watchlist/__tests__/Manage.spec.ts src/views/watchlist/__tests__/Signals.spec.ts src/views/watchlist/__tests__/Screener.spec.ts` passed (`11/11`)
+      - `timeout 180s npm run type-check` failed only on pre-existing unrelated errors in `src/api/services/dashboardService.ts` and `src/components/technical/composables/useKLinePatternOverlays.ts`; no new type errors were introduced by this batch
+      - `npx playwright test tests/e2e/phase2-mainline-matrix.spec.ts --list` listed `30` tests
+      - Playwright-library verification with system `google-chrome` plus authenticated browser-context fulfillment confirmed `/watchlist/manage` first shows the verified default `核心组合` rows
+      - the same controlled same-instance selector switch then reached active `成长跟踪` with `stateText: 自选列表同步中正在刷新清单和持仓明细。`
+      - the same controlled proof confirmed `rowCount: 0`, `statValues: 2 / -- / -- / --`, and no stale `贵州茅台` row remained visible
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - watchlist manage selector-pending primary-row truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/watchlist-batch-07-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/watchlist-batch-07-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/watchlist-batch-07-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/watchlist-batch-07-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/watchlist-batch-07-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/artdeco-pages/stock-management-tabs/WatchlistManager.vue web/frontend/src/views/watchlist/__tests__/Manage.spec.ts web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/findings/watchlist-batch-07-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/watchlist-batch-07-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/watchlist-batch-07-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/watchlist-batch-07-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/watchlist-manage-selector-pending-row-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/watchlist-batch-07-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - watchlist manage selector-pending primary-row truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remains observation-only because the staged set stays mixed with earlier batches and unrelated files
+    - detail news selector-pending stats-card truth regression:
+      - `npx vitest run src/views/announcement/__tests__/useAnnouncementMonitor.spec.ts -t "clears the previous selector stats while a newly selected detail symbol stats slice is still unresolved"` first failed as expected because the new `000001` shell still rendered the previous `2 / 2 / 1 / 0` stat cluster, then passed (`1/1`)
+      - `npx vitest run src/views/announcement/__tests__/useAnnouncementMonitor.spec.ts src/views/announcement/__tests__/AnnouncementMonitor.spec.ts src/views/risk/__tests__/News.spec.ts` passed (`16/16`)
+      - `timeout 180s npm run type-check` failed only on pre-existing unrelated errors in `src/api/services/dashboardService.ts` and `src/components/technical/composables/useKLinePatternOverlays.ts`; no new type errors were introduced by this batch
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `35` tests
+      - Playwright-library verification with system `google-chrome` plus authenticated browser-context fulfillment confirmed `/detail/news/600519` first shows `2 / 2 / 1 / 0`
+      - the same controlled same-instance route switch to `/detail/news/000001` then reached `当前详情标的: 000001`
+      - the same controlled proof confirmed the stale prior `2 / 2 / 1 / 0` stat cluster no longer remained visible while the new selector stayed unresolved
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - detail news selector-pending stats-card truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-11-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-11-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/detail-batch-11-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/detail-batch-11-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/detail-batch-11-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/announcement/composables/useAnnouncementMonitor.ts web/frontend/src/views/announcement/AnnouncementMonitor.vue web/frontend/src/views/announcement/__tests__/useAnnouncementMonitor.spec.ts web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-11-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-11-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/detail-batch-11-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/detail-batch-11-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/detail-news-selector-pending-stats-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/detail-batch-11-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - detail news selector-pending stats-card truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remains observation-only because the staged set stays mixed with earlier batches and unrelated files
+    - risk overview partial-slice truth regression:
+      - `npx vitest run src/views/risk/__tests__/Overview.spec.ts -t "shows the verified rules slice when alerts are still unavailable on the first load"` first failed as expected because the route still collapsed the stats strip to `-- / -- / -- / --`, then passed (`1/1`)
+      - `npx vitest run src/views/risk/__tests__/Overview.spec.ts src/views/risk/__tests__/Alerts.spec.ts src/views/risk/__tests__/Center.spec.ts src/views/risk/__tests__/StopLoss.spec.ts src/views/risk/__tests__/News.spec.ts tests/unit/views/risk-wrapper-retention.spec.ts tests/unit/views/risk-center-template-retention.spec.ts` passed (`28/28`)
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `36` tests
+      - Playwright-library verification with system `google-chrome` plus authenticated browser-context fulfillment confirmed `/risk/overview` first stays partial at `REQ_ID: N/A / ALERTS: --` with top stats `2 / 2 / -- / 未校验`
+      - the same controlled proof confirmed switching to `规则清单` then reaches `REQ_ID: req-live-risk-overview-rules-first-success / RULES: 2`
+      - the same controlled proof confirmed verified rule content such as `单票止损线` remains visible while the page reports `risk alerts unavailable，当前预警消息暂不可用。`
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - risk overview partial-slice truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-16-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-16-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-16-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-16-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-16-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/risk/Overview.vue web/frontend/src/views/risk/__tests__/Overview.spec.ts web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-16-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-16-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-16-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-16-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/risk-overview-partial-slice-selector-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/risk-batch-16-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - risk overview partial-slice truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remains observation-only because the staged set stays mixed with earlier batches and unrelated files
+    - risk alerts partial-slice truth regression:
+      - `npx vitest run src/views/risk/__tests__/Alerts.spec.ts -t "keeps verified rules visible when alert records fail on the first load before any full snapshot exists"` first failed as expected because `.content-shell-meta` still rendered `RULES: -- / ALERTS: --`, then passed (`1/1`)
+      - `npx vitest run src/views/risk/__tests__/Alerts.spec.ts src/views/risk/__tests__/Overview.spec.ts src/views/risk/__tests__/StopLoss.spec.ts src/views/risk/__tests__/News.spec.ts src/views/risk/__tests__/Center.spec.ts tests/unit/views/risk-wrapper-retention.spec.ts tests/unit/views/risk-center-template-retention.spec.ts` passed (`29/29`)
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `37` tests
+      - Playwright-library verification with system `google-chrome` plus authenticated browser-context fulfillment confirmed `/risk/alerts` first stays partial at `REQ_ID: N/A / UNREAD: --`
+      - the same controlled proof confirmed `RULES: 2 / ALERTS: --`, top-strip `2 / 2 / -- / --`, and the verified rule row `组合波动率约束`
+      - the same controlled proof confirmed `获取告警记录失败，当前告警记录暂不可用。` while the route no longer shows `当前暂无已验证告警快照。`
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - risk alerts partial-slice truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-17-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-17-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-17-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-17-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-17-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/risk/Alerts.vue web/frontend/src/views/risk/__tests__/Alerts.spec.ts web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-17-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-17-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-17-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-17-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/risk-alerts-partial-slice-selector-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/risk-batch-17-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - risk alerts partial-slice truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remains observation-only because the staged set stays mixed with earlier batches and unrelated files
+    - risk stop-loss selector-pending card truth regression:
+      - `npx vitest run src/views/risk/__tests__/StopLoss.spec.ts -t "does not keep the previous watchlist cards visible while a new primary watchlist is still unresolved"` first failed as expected because one stale `risk-card` still rendered during the unresolved selector switch, then passed (`1/1`)
+      - `npx vitest run src/views/risk/__tests__/StopLoss.spec.ts src/views/risk/__tests__/Alerts.spec.ts src/views/risk/__tests__/Overview.spec.ts src/views/risk/__tests__/News.spec.ts src/views/risk/__tests__/Center.spec.ts tests/unit/views/risk-wrapper-retention.spec.ts tests/unit/views/risk-center-template-retention.spec.ts` passed (`30/30`)
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `38` tests
+      - Playwright-library verification with system `google-chrome` plus authenticated browser-context fulfillment confirmed `/risk/stop-loss` first shows verified `req-live-stoploss-101-success` and visible `贵州茅台 / 宁德时代`
+      - the same controlled selector switch then reached `REQ_ID: N/A / CRITICAL: -- / TRIGGERED: --`
+      - the same controlled proof confirmed `rowCount: 0`, top-strip `-- / -- / -- / --`, `止损标的同步中...`, and no stale `贵州茅台`
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - risk stop-loss selector-pending card truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-18-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-18-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-18-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-18-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-18-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/risk/StopLoss.vue web/frontend/src/views/risk/__tests__/StopLoss.spec.ts web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-18-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-18-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-18-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/risk-batch-18-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/risk-stop-loss-selector-pending-card-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/risk-batch-18-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - risk stop-loss selector-pending card truth staged GitNexus observation:
+      - `gitnexus_detect_changes({ scope: "staged", repo: "mystocks_spec" })` remains observation-only because the staged set stays mixed with earlier batches and unrelated files
+    - system config source-tab pending-count truth regression:
+      - `npx vitest run src/views/system/__tests__/Settings.spec.ts -t "does not present unresolved sources-tab counts as faux zero metrics before any verified config snapshot exists"` first failed as expected because the stats strip still rendered `0 / 0 / ON / N/A`, then passed (`1/1`)
+      - `npx vitest run src/views/system/__tests__/Settings.spec.ts` passed (`7/7`)
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts -g "System-Config keeps sources-tab counts unresolved while the first source-config snapshot is still pending"` passed (`1/1`) on Playwright `chromium`
+      - controlled browser proof confirmed `/system/config` default source tab stays at `DATA: PENDING / REQ_ID: N/A / TIME: N/A` with stat values `-- / -- / ON / N/A` while the first source-config request remains unresolved
+      - the same controlled proof confirmed the delayed resolution later promotes the same shell to `3 / 2 / ON / req-phase4-config-late`
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - system data pending-count truth regression:
+      - `npx vitest run src/views/system/__tests__/DataSource.spec.ts -t "keeps stats-strip counts unresolved while the first config snapshot is still pending"` first failed as expected because the stats strip still rendered `0 / 0 / ON / N/A`, then passed (`1/1`)
+      - `npx vitest run src/views/system/__tests__/DataSource.spec.ts src/views/system/__tests__/Settings.spec.ts src/views/system/__tests__/API.spec.ts src/views/system/__tests__/Health.spec.ts src/views/artdeco-pages/system-tabs/__tests__/ArtDecoSystemSettings.spec.ts` passed (`25/25`)
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts -g "System-Data keeps stats-strip counts unresolved while the first config snapshot is still pending"` passed (`1/1`) on Playwright `chromium`
+      - controlled browser proof confirmed `/system/data` stays at `REQ_ID: N/A` with stat values `-- / -- / ON / N/A` while the first config request remains unresolved
+      - the same controlled proof confirmed the delayed resolution later promotes the same shell to `3 / 2 / ON / req-phase4-system-data-pending-late`
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - system data pending-count truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-12-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-12-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-12-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-12-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-12-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/system/DataSource.vue web/frontend/src/views/system/__tests__/DataSource.spec.ts web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts .claude/skills/myweb-audit/references/route-truth-casebook.md .claude/skills/myweb-audit/references/route-truth-coverage-matrix.md docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-12-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-12-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-12-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/system-data-pending-count-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/system-batch-12-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-12-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - trade reconciliation selector-pending row truth regression:
+      - `npx vitest run src/views/trade/__tests__/Reconciliation.spec.ts -t "clears stale statement and result rows while a newly selected account snapshot is still pending"` first failed as expected because `ACCOUNT: backtest:8` still rendered old `600519.SH / 601318.SH / 000001.SZ`, then passed (`1/1`)
+      - `npx vitest run src/views/trade/__tests__/Reconciliation.spec.ts src/views/trade/__tests__/Center.spec.ts src/views/trade/__tests__/Portfolio.spec.ts src/views/trade/__tests__/History.spec.ts src/views/trade/__tests__/Signals.spec.ts src/views/composables/__tests__/useTradingDashboard.spec.ts tests/unit/views/trade-wrapper-retention.spec.ts` passed (`36/36`)
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts -g "Trade-Reconciliation clears stale statement and result rows while a newly selected account snapshot is still unresolved"` passed (`1/1`) on Playwright `chromium`
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts` passed (`53/53`) after reconciliation mocks were promoted into `stubPhase3Apis()` and the suite blocked service workers
+      - controlled browser proof confirmed `/trade/reconciliation` first showed verified `ACCOUNT: backtest:7` with `600519.SH / 601318.SH / 000001.SZ`
+      - the same page instance then switched to unresolved `ACCOUNT: backtest:8` and immediately cleared all old statement/result rows
+      - the pending shell showed `暂无内部账单记录。` plus `导入完成后将在这里展示只读对账结果。`
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - trade reconciliation selector import-context truth regression:
+      - `npx vitest run src/views/trade/__tests__/Reconciliation.spec.ts -t "clears stale statement and result rows while a newly selected account snapshot is still pending"` first failed as expected because the unresolved `ACCOUNT: backtest:8` shell still rendered `IMPORT_BATCH: batch-7 / ROWS: 3`, then passed (`1/1`)
+      - `npx vitest run src/views/trade/__tests__/Reconciliation.spec.ts` passed (`5/5`)
+      - `npx vitest run src/views/trade/__tests__/Reconciliation.spec.ts src/views/trade/__tests__/Center.spec.ts src/views/trade/__tests__/Portfolio.spec.ts src/views/trade/__tests__/History.spec.ts src/views/trade/__tests__/Signals.spec.ts src/views/composables/__tests__/useTradingDashboard.spec.ts tests/unit/views/trade-wrapper-retention.spec.ts` passed (`36/36`)
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts -g "Trade-Reconciliation clears stale statement and result rows while a newly selected account snapshot is still unresolved"` passed (`1/1`) on Playwright `chromium`
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts` passed (`53/53`) on rerun after one unrelated `Trade-Terminal` suite-order flake recovered under targeted rerun
+      - controlled browser proof confirmed `/trade/reconciliation` first showed verified `ACCOUNT: backtest:7 / IMPORT_BATCH: batch-7 / ROWS: 3`
+      - the same page instance then switched to unresolved `ACCOUNT: backtest:8` and immediately degraded the hero to `IMPORT_BATCH: 未导入 / ROWS: 0`
+      - the same unresolved shell kept no stale `600519.SH / 601318.SH / 000001.SZ`
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - trade reconciliation selector provenance-and-freshness truth regression:
+      - `npx vitest run src/views/trade/__tests__/Reconciliation.spec.ts -t "clears stale statement and result rows while a newly selected account snapshot is still pending"` first failed as expected because the unresolved `ACCOUNT: backtest:8` shell still rendered the previous account's `REQ_ID` without any `UPDATED` degradation, then passed (`1/1`)
+      - `npx vitest run src/views/trade/__tests__/Reconciliation.spec.ts` passed (`5/5`)
+      - `npx vitest run src/views/trade/__tests__/Reconciliation.spec.ts src/views/trade/__tests__/Center.spec.ts src/views/trade/__tests__/Portfolio.spec.ts src/views/trade/__tests__/History.spec.ts src/views/trade/__tests__/Signals.spec.ts src/views/composables/__tests__/useTradingDashboard.spec.ts tests/unit/views/trade-wrapper-retention.spec.ts` passed (`36/36`)
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts -g "Trade-Reconciliation clears stale statement and result rows while a newly selected account snapshot is still unresolved"` passed (`1/1`) on Playwright `chromium`
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts` passed (`53/53`) after the same routed proof began asserting `REQ_ID / UPDATED` together with row clearing
+      - controlled browser proof confirmed `/trade/reconciliation` first showed verified `ACCOUNT: backtest:7 / REQ_ID: req-phase3-reconciliation-results-backtest-7` with a non-placeholder `UPDATED`
+      - the same page instance then switched to unresolved `ACCOUNT: backtest:8` and immediately degraded the hero to `REQ_ID: N/A / UPDATED: --`
+      - the same unresolved shell kept no stale request id, no stale verified timestamp, and no stale reconciliation rows
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - trade reconciliation selector provenance-and-freshness truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-17-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-17-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-17-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-17-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-17-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/api/tradeReconciliation.ts web/frontend/src/views/trade/composables/useTradeReconciliation.ts web/frontend/src/views/trade/Reconciliation.vue web/frontend/src/views/trade/__tests__/Reconciliation.spec.ts web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts .claude/skills/myweb-audit/references/route-truth-casebook.md .claude/skills/myweb-audit/references/route-truth-coverage-matrix.md docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-17-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-17-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-17-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/manifests/trade-batch-17-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/trade-reconciliation-selector-provenance-freshness-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/trade-batch-17-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - trade reconciliation selector result-metrics truth regression:
+      - `npx vitest run src/views/trade/__tests__/Reconciliation.spec.ts -t "clears stale statement and result rows while a newly selected account snapshot is still pending"` first failed as expected because the unresolved `ACCOUNT: backtest:8` shell still rendered result metrics `0 / 0 / 0`, then passed (`1/1`)
+      - `npx vitest run src/views/trade/__tests__/Reconciliation.spec.ts` passed (`5/5`)
+      - `npx vitest run src/views/trade/__tests__/Reconciliation.spec.ts src/views/trade/__tests__/Center.spec.ts src/views/trade/__tests__/Portfolio.spec.ts src/views/trade/__tests__/History.spec.ts src/views/trade/__tests__/Signals.spec.ts src/views/composables/__tests__/useTradingDashboard.spec.ts tests/unit/views/trade-wrapper-retention.spec.ts` passed (`36/36`)
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts -g "Trade-Reconciliation clears stale statement and result rows while a newly selected account snapshot is still unresolved"` passed (`1/1`) on Playwright `chromium`
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts` passed (`53/53`)
+      - `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts --list` listed `53` tests
+      - controlled browser proof confirmed `/trade/reconciliation` first showed verified result rows and non-placeholder result metrics for `backtest:7`
+      - the same page instance then switched to unresolved `ACCOUNT: backtest:8` and immediately degraded the stats strip to `-- / -- / -- / -- / -- / --`
+      - the same unresolved shell kept no stale `600519.SH / 601318.SH / 000001.SZ` rows and no faux zero reconciliation result metrics
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - system resources pending-count truth regression:
+      - `npx vitest run src/views/system/__tests__/Resources.spec.ts -t "keeps stats-strip counts unresolved while the first resource snapshot is still pending"` first failed as expected because the stats strip and section headers still rendered `0 / 0 / 0` and `0 tracked`, then passed (`1/1`)
+      - `npx vitest run src/views/system/__tests__/Resources.spec.ts src/views/system/__tests__/DataSource.spec.ts src/views/system/__tests__/Settings.spec.ts src/views/system/__tests__/API.spec.ts src/views/system/__tests__/Health.spec.ts src/views/artdeco-pages/system-tabs/__tests__/ArtDecoSystemSettings.spec.ts` passed (`28/28`)
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts -g "System-Resources keeps stats-strip counts unresolved while the first resource snapshot is still pending"` passed (`1/1`) on Playwright `chromium`
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `41` tests
+      - controlled browser proof confirmed `/system/resources` first stayed at `REQ_ID: N/A / STATUS: UNKNOWN / NODE: N/A` with stats-strip values `UNKNOWN / N/A / -- / -- / --`
+      - the same controlled proof confirmed both resource section headers stayed at `-- tracked` until the delayed resource response resolved
+      - the same delayed response later promoted the route to `REQ_ID: req-phase4-system-resources-late` with stats-strip values `WARNING / local-runtime / 1 / 1 / 1`
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - system resources pending-count truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-13-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-13-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-13-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-13-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-13-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/system/Resources.vue web/frontend/src/views/system/__tests__/Resources.spec.ts web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts .claude/skills/myweb-audit/references/route-truth-families.md .claude/skills/myweb-audit/references/route-truth-casebook.md .claude/skills/myweb-audit/references/route-truth-coverage-matrix.md docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-13-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-13-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-13-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/system-resources-pending-count-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/system-batch-13-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-13-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - system health pending-label truth regression:
+      - `npx vitest run src/views/system/__tests__/Health.spec.ts -t "keeps stat-strip labels unresolved while the first health snapshot is still pending"` first failed as expected because the stats strip still rendered `UNKNOWN / N/A / N/A / 3`, then passed (`1/1`)
+      - `npx vitest run src/views/system/__tests__/Resources.spec.ts src/views/system/__tests__/DataSource.spec.ts src/views/system/__tests__/Settings.spec.ts src/views/system/__tests__/API.spec.ts src/views/system/__tests__/Health.spec.ts src/views/artdeco-pages/system-tabs/__tests__/ArtDecoSystemSettings.spec.ts` passed (`29/29`)
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts:2443` passed (`1/1`) on Playwright `chromium`
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `42` tests
+      - controlled browser proof confirmed `/system/health` first stayed at `REQ_ID: N/A / STATUS: UNKNOWN` with stats-strip values `UNKNOWN / -- / -- / --`
+      - the same controlled proof confirmed `content-shell-meta` stayed at `STATUS: UNKNOWN / MIDDLEWARE: --` until the delayed probe resolved
+      - the same delayed response later promoted the route to `REQ_ID: req-phase4-health-pending-late` with stats-strip values `HEALTHY / mystocks-backend / 2.0.0 / 3`
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - system health pending-label truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-14-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-14-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-14-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-14-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-14-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/system/Health.vue web/frontend/src/views/system/__tests__/Health.spec.ts web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts .claude/skills/myweb-audit/references/route-truth-families.md .claude/skills/myweb-audit/references/route-truth-casebook.md .claude/skills/myweb-audit/references/route-truth-coverage-matrix.md docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-14-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-14-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-14-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/system-health-pending-label-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/system-batch-14-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-14-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - system api pending-label truth regression:
+      - `npx vitest run src/views/system/__tests__/API.spec.ts -t "keeps stat-strip labels unresolved while the first system probe snapshot is still pending"` first failed as expected because the stats strip still rendered `UNKNOWN / N/A / N/A / 3`, then passed (`1/1`)
+      - `npx vitest run src/views/system/__tests__/API.spec.ts src/views/system/__tests__/Health.spec.ts src/views/system/__tests__/Resources.spec.ts src/views/system/__tests__/DataSource.spec.ts src/views/system/__tests__/Settings.spec.ts src/views/artdeco-pages/system-tabs/__tests__/ArtDecoSystemSettings.spec.ts` passed (`30/30`)
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts:2591` passed (`1/1`) on Playwright `chromium`
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `43` tests
+      - controlled browser proof confirmed `/system/api` first stayed at `REQ_ID: N/A / STATUS: UNKNOWN` with stats-strip values `UNKNOWN / -- / -- / --`
+      - the same controlled proof confirmed `content-shell-meta` stayed at `REQ_ID: N/A / MIDDLEWARE: --` until the delayed system probe resolved
+      - the same delayed response later promoted the route to `REQ_ID: req-phase4-system-api-pending-late` with stats-strip values `HEALTHY / mystocks-backend / 2.0.0 / 3`
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - system api pending-label truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-15-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-15-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-15-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-15-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-15-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/system/API.vue web/frontend/src/views/system/__tests__/API.spec.ts web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts .claude/skills/myweb-audit/references/route-truth-families.md .claude/skills/myweb-audit/references/route-truth-casebook.md .claude/skills/myweb-audit/references/route-truth-coverage-matrix.md docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-15-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-15-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-15-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/system-api-pending-label-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/system-batch-15-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-15-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - system resources pending-node-label truth regression:
+      - `npx vitest run src/views/system/__tests__/Resources.spec.ts -t "keeps stats-strip counts unresolved while the first resource snapshot is still pending"` first failed as expected because the visible shell still rendered `NODE: N/A`, then passed (`1/1`)
+      - `npx vitest run src/views/system/__tests__/Resources.spec.ts src/views/system/__tests__/DataSource.spec.ts src/views/system/__tests__/Settings.spec.ts src/views/system/__tests__/API.spec.ts src/views/system/__tests__/Health.spec.ts src/views/artdeco-pages/system-tabs/__tests__/ArtDecoSystemSettings.spec.ts` passed (`30/30`)
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts -g "System-Resources keeps stats-strip counts unresolved while the first resource snapshot is still pending"` passed (`1/1`) on Playwright `chromium`
+      - `npx playwright test tests/e2e/phase4-mainline-matrix.spec.ts --list` listed `43` tests
+      - controlled browser proof confirmed `/system/resources` first stayed at `REQ_ID: N/A / STATUS: UNKNOWN / NODE: --` with stats-strip values `UNKNOWN / -- / -- / -- / --`
+      - the same delayed response later promoted the route to `REQ_ID: req-phase4-system-resources-late` with stats-strip values `WARNING / local-runtime / 1 / 1 / 1`
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - system resources pending-node-label truth artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-16-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-16-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-16-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-16-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-16-manifest.yaml` passed
+      - `git diff --check -- web/frontend/src/views/system/Resources.vue web/frontend/src/views/system/composables/useSystemResourcesPage.ts web/frontend/src/views/system/__tests__/Resources.spec.ts web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts .claude/skills/myweb-audit/references/route-truth-casebook.md .claude/skills/myweb-audit/references/route-truth-coverage-matrix.md docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-16-raw-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-16-merged-findings.yaml docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-16-repair-approval.yaml docs/reports/quality/myweb-audit/audit-20260426-02/pages/system-resources-pending-node-label-truth-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/batches/system-batch-16-audit.md docs/reports/quality/myweb-audit/audit-20260426-02/manifests/system-batch-16-manifest.yaml docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` passed
+    - blank-layout mini batch closure:
+      - `blank-batch-01` closed the remaining routed blank-layout scope for `/login` and `/:pathMatch(.*)*` under the lightweight shell-isolation policy instead of the heavier canonical business-route regression stack
+      - `npx vitest run tests/unit/config/shell-route-runtime-guardrails.spec.ts` passed (`7/7`)
+      - `npx playwright test tests/e2e/blank-layout-smoke.spec.ts` passed (`1/1`) on Playwright `chromium`
+      - controlled browser proof confirmed `/login` rendered inside `.app-shell[data-layout="blank"]` with no readiness banner and no stats strip
+      - the same same-tab proof confirmed navigating into the unmatched route removed `.login-card`, rendered `.error-card`, and kept the blank shell free of request badges, trace badges, and stats chrome
+      - clicking `返回首页` on the 404 shell resolved through canonical `HOME_ROUTE_PATH` and landed on `/login?redirect=/dashboard` for the unauthenticated runtime
+      - `pm2 list` confirmed `mystocks-backend` and `mystocks-frontend` remained online
+    - blank-layout mini batch artifact validation:
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema findings --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/blank-batch-01-raw-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema merged --file docs/reports/quality/myweb-audit/audit-20260426-02/findings/blank-batch-01-merged-findings.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema approval --file docs/reports/quality/myweb-audit/audit-20260426-02/approvals/blank-batch-01-repair-approval.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --schema manifest --file docs/reports/quality/myweb-audit/audit-20260426-02/manifests/blank-batch-01-manifest.yaml` passed
+      - `node scripts/dev/tools/validate-myweb-audit-artifacts.mjs --from-manifest docs/reports/quality/myweb-audit/audit-20260426-02/manifests/blank-batch-01-manifest.yaml` passed
+    - secondary inventory phase transition:
+      - `node scripts/dev/tools/generate-myweb-audit-secondary-inventory.mjs` refreshed the secondary backlog and reported `271` total view files, `39` routed views, and `232` unrouted views
+      - the generated inventory split those `232` unrouted views into `候选待审=75 / 内嵌壳层=101 / Demo废弃=56`
+      - the fixed heuristic scan surfaced `56` high-priority backlog hits, `83` medium-priority assets, and `93` low-priority assets
+      - `myweb-audit v2.1` governance now records blank-layout mini batches, the secondary inventory phase, the fixed 4-signal heuristic shortlist, and the GitNexus flow for the secondary backlog as permanent operating rules
+      - `npm run test:myweb-audit:skill` passed after wiring the inventory generator, validator, agents, and workflow references together
+    - secondary embedded wrapper canonical delegation:
+      - `secondary-batch-02` closed the live `ArtDecoTradingCenter.vue` wrapper panels that still surfaced local placeholder migration shells in front of canonical `/trade/history` and `/trade/portfolio` truth
+      - `npx vitest run src/views/artdeco-pages/trading-tabs/__tests__/ArtDecoHistoryView.spec.ts src/views/artdeco-pages/trading-tabs/__tests__/ArtDecoPerformanceAnalysis.spec.ts src/views/trade/__tests__/History.spec.ts` passed (`7/7`)
+      - `npx vitest run src/views/artdeco-pages/trading-tabs/__tests__/ArtDecoHistoryView.spec.ts src/views/artdeco-pages/trading-tabs/__tests__/ArtDecoPerformanceAnalysis.spec.ts src/views/trade/__tests__/History.spec.ts src/views/trade/__tests__/Portfolio.spec.ts src/views/trade/__tests__/Signals.spec.ts src/views/trade/__tests__/Center.spec.ts` passed (`22/22`)
+      - the repaired wrappers now embed canonical trade history and portfolio owners directly, and canonical `History.vue` has explicit embedded-shell regression coverage
+    - secondary active monitor wrapper delegation:
+      - `secondary-batch-03` closed the live `ArtDecoTradingCenter.vue` monitor wrappers that still surfaced local placeholder migration shells in front of canonical `/market/realtime` and `/risk/management` truth
+      - `npx vitest run src/views/artdeco-pages/market-data-tabs/__tests__/ArtDecoRealtimeMonitor.spec.ts src/views/artdeco-pages/risk-tabs/__tests__/ArtDecoRiskMonitor.spec.ts` passed (`2/2`)
+      - `npx vitest run src/views/artdeco-pages/market-data-tabs/__tests__/ArtDecoRealtimeMonitor.spec.ts src/views/artdeco-pages/risk-tabs/__tests__/ArtDecoRiskMonitor.spec.ts src/views/market/__tests__/Realtime.spec.ts src/views/risk/__tests__/Center.spec.ts` passed (`9/9`)
+      - the repaired wrappers now embed canonical market realtime and risk center owners directly, and the secondary-phase governance now explicitly promotes low-score live wrappers ahead of orphan pages when a live import chain still blocks canonical truth
+    - secondary active market static-shell delegation:
+      - `secondary-batch-04` closed the remaining live `ArtDecoTradingCenter.vue` market wrappers that still surfaced `Component Not Implemented` or `STATUS: PLACEHOLDER` shell truth without a semantically matching canonical market owner
+      - `npx vitest run src/views/artdeco-pages/market-data-tabs/__tests__/ArtDecoMarketOverview.spec.ts src/views/artdeco-pages/market-data-tabs/__tests__/ArtDecoMarketAnalysis.spec.ts` passed (`2/2`)
+      - `npm run test:myweb-audit:skill` passed
+      - `npm run generate:myweb-audit:secondary-inventory` passed and currently reports `275` total view files, `40` routed views, `235` unrouted views, with `候选待审=75 / 内嵌壳层=104 / Demo废弃=56`
+      - the repaired wrappers now render honest static shells with no request, freshness, sync, or summary-strip semantics
+      - the secondary-phase governance now explicitly records that active wrappers without semantically matching canonical owners must degrade to static shells instead of being force-mapped to unrelated live routes
+    - secondary legacy monitoring static-shell delegation:
+      - `secondary-batch-05` closed `monitoring/MonitoringDashboard.vue`, which still exposed hardcoded pseudo-live summary cards, alert panels, and dragon-tiger rows despite having no routed or canonical monitoring truth contract
+      - `npx vitest run src/views/monitoring/__tests__/MonitoringDashboard.spec.ts` passed (`1/1`)
+      - the repaired page now renders an honest static legacy shell with no fake live summary, alert, or table semantics
+      - the secondary-phase governance now explicitly records that unrouted legacy pages with fabricated monitoring truth must degrade to static shells instead of preserving pseudo-live data
+    - secondary legacy dashboard canonical-wrapper delegation:
+      - `secondary-batch-06` closed `Dashboard.vue`, which still exposed hardcoded pseudo-live market summary cards, heat-flow panels, and sector tables despite a semantically matching canonical dashboard owner already existing
+      - `npx vitest run src/views/__tests__/Dashboard.spec.ts` passed (`1/1`)
+      - the repaired page now renders a thin orchestration wrapper over the canonical ArtDeco dashboard owner instead of a forked pseudo-live shell
+      - the secondary-phase governance now explicitly records that unrouted legacy pages with matching canonical owners should delegate truth to the canonical owner rather than preserving duplicate pseudo-live shells
+    - secondary legacy analysis static-shell delegation:
+      - `secondary-batch-07` closed `Analysis.vue`, which still exposed local pseudo-live analysis configuration, signal summaries, recent signal rows, and export actions despite having no semantically matching canonical analysis owner
+      - `npx vitest run src/views/__tests__/Analysis.spec.ts tests/unit/config/root-demo-style-entrypoints.spec.ts` passed (`3/3`)
+      - the repaired page now renders an honest static legacy shell with no fake live analysis or export semantics
+      - the secondary-phase governance casebook now explicitly records that unrouted legacy analysis workbenches with no canonical owner must degrade to static shells instead of preserving fabricated workbench truth
+    - secondary legacy strategy canonical-wrapper delegation:
+      - `secondary-batch-10` closed `StrategyManagement.vue`, which still exposed local pseudo-live strategy-management copy, create CTA semantics, and empty-state messaging despite a semantically matching canonical `/strategy/repo` owner already existing
+      - `npx vitest run src/views/__tests__/StrategyManagement.spec.ts` passed (`1/1`)
+      - the repaired page now renders a thin orchestration wrapper over the canonical `/strategy/repo` owner instead of a forked pseudo-live strategy workbench shell
+      - the secondary inventory high-priority shortlist dropped from `52` to `51` after the wrapper repair
+    - secondary legacy backtest canonical-wrapper delegation:
+      - `secondary-batch-11` closed `BacktestAnalysis.vue`, which still exposed local pseudo-live backtest configuration, metrics, chart placeholder, and trade-history shell surfaces despite a semantically matching canonical `/strategy/backtest` owner already existing
+      - `npx vitest run src/views/__tests__/BacktestAnalysis.spec.ts` passed (`1/1`)
+      - the repaired page now renders a thin orchestration wrapper over the canonical `/strategy/backtest` owner instead of a forked pseudo-live backtest workbench shell
+      - the secondary inventory high-priority shortlist dropped from `51` to `50` after the wrapper repair
+    - secondary legacy risk canonical-wrapper delegation:
+      - `secondary-batch-12` closed `RiskMonitor.vue`, which still exposed local pseudo-live risk summary cards, chart placeholders, position-risk table, and alert surfaces despite a semantically matching canonical `/risk/management` owner already existing
+      - `npx vitest run src/views/__tests__/RiskMonitor.spec.ts` passed (`1/1`)
+      - the repaired page now renders a thin orchestration wrapper over the canonical `/risk/management` owner instead of a forked pseudo-live risk workbench shell
+      - the secondary inventory high-priority shortlist dropped from `50` to `49` after the wrapper repair
+    - secondary legacy trade-portfolio canonical-wrapper delegation:
+      - `secondary-batch-13` closed `Market.vue`, which still exposed local pseudo-live asset summary cards, refresh controls, and positions/history shell surfaces despite a semantically matching canonical `/trade/portfolio` owner already existing
+      - `npx vitest run src/views/__tests__/Market.spec.ts src/views/trade/__tests__/Portfolio.spec.ts` passed (`7/7`)
+      - the repaired page now renders a thin orchestration wrapper over the canonical `/trade/portfolio` owner instead of a forked pseudo-live asset and trade-history shell
+      - the secondary inventory high-priority shortlist dropped from `49` to `48` after the wrapper repair
+    - secondary legacy data-indicator canonical-wrapper delegation:
+      - `secondary-batch-14` closed `IndicatorLibrary.vue`, which still exposed local pseudo-live registry totals, filter controls, and indicator-card shell surfaces despite a semantically matching canonical `/data/indicator` owner already existing
+      - `npx vitest run src/views/__tests__/IndicatorLibrary.spec.ts src/views/data/__tests__/Advanced.spec.ts` passed (`3/3`)
+      - the repaired page now renders a thin orchestration wrapper over the canonical `/data/indicator` owner instead of a forked pseudo-live indicator-library shell
+      - the secondary inventory high-priority shortlist dropped from `48` to `47` after the wrapper repair
+    - secondary legacy trade-management orchestration-wrapper delegation:
+      - `secondary-batch-15` closed `TradeManagement.vue`, which still exposed local pseudo-live trade-management header, positions, trade-history, and statistics shell surfaces despite the active trading orchestration shell already existing
+      - `npx vitest run src/views/__tests__/TradeManagement.spec.ts src/views/artdeco-pages/__tests__/ArtDecoTradingManagement.spec.ts` passed (`2/2`)
+      - the repaired page now renders a thin orchestration wrapper over `ArtDecoTradingManagement.vue` instead of a forked pseudo-live trade-management workbench shell
+      - the secondary inventory high-priority shortlist dropped from `47` to `46` after the wrapper repair
+    - secondary legacy strategy-list canonical-wrapper delegation:
+      - `secondary-batch-16` closed `strategy/StrategyList.vue`, which still exposed local pseudo-live strategy-list header, refresh, filter, and action shell surfaces despite a semantically matching canonical strategy-repo owner already existing
+      - `npx vitest run src/views/strategy/__tests__/StrategyList.spec.ts src/views/__tests__/StrategyManagement.spec.ts` passed (`2/2`)
+      - the repaired page now renders a thin orchestration wrapper over `strategy/List.vue` instead of a forked pseudo-live strategy-definition shell
+      - the secondary inventory high-priority shortlist dropped from `46` to `45` after the wrapper repair
+    - secondary legacy technical-analysis static-shell degradation:
+      - `secondary-batch-17` closed `TechnicalAnalysis.vue`, which still exposed local pseudo-live technical-analysis copy, indicator registry claims, search/batch-calculation controls, and signal semantics despite having no active routed or canonical technical-analysis truth contract
+      - `npx vitest run src/views/__tests__/TechnicalAnalysis.spec.ts` passed (`1/1`)
+      - the repaired page now renders an honest static shell with canonical route handoff guidance instead of a forked pseudo-live technical-analysis workbench
+      - the secondary inventory high-priority shortlist dropped from `45` to `44` after the static-shell repair
+    - secondary nested technical-analysis static-shell degradation:
+      - `secondary-batch-18` closed `technical/TechnicalAnalysis.vue`, which still exposed local pseudo-live technical-analysis search, indicator overview, chart, signal table, and batch-calculation shell surfaces despite having no active routed or canonical technical-analysis truth contract
+      - `npx vitest run src/views/technical/__tests__/TechnicalAnalysis.spec.ts` passed (`1/1`)
+      - the repaired page now renders an honest static shell with canonical route handoff guidance instead of a forked pseudo-live nested technical-analysis workbench
+      - the secondary inventory high-priority shortlist dropped from `44` to `43` after the static-shell repair
+    - secondary legacy stock-detail static-shell degradation:
+      - `secondary-batch-19` closed `StockDetail.vue`, which still exposed local pseudo-live quote, chart, technical-analysis, trading-summary, and trade-operation shell surfaces despite having no one-to-one routed or canonical stock-detail truth contract
+      - `npx vitest run src/views/__tests__/StockDetail.spec.ts` passed (`1/1`)
+      - the repaired page now renders an honest static shell with canonical route handoff guidance instead of a forked pseudo-live stock-detail workbench
+      - the secondary inventory high-priority shortlist dropped from `43` to `42` after the static-shell repair
+    - secondary nested trading canonical-wrapper delegation:
+      - `secondary-batch-20` closed `trading/History.vue` and `trading/Positions.vue`, which still exposed local `Coming Soon` placeholder shells despite semantically matching canonical `/trade/history` and `/trade/positions` owners already existing
+      - `npx vitest run src/views/trading/__tests__/History.spec.ts src/views/trading/__tests__/Positions.spec.ts` passed (`2/2`)
+      - the repaired pages now render thin orchestration wrappers over the canonical trade-history and trade-positions owners instead of standalone placeholder shells
+    - secondary nested trading static-shell degradation:
+      - `secondary-batch-21` closed `trading/Orders.vue` and `trading/Execution.vue`, which still exposed local `Coming Soon` placeholder shells despite having no semantically matching canonical `/trade/orders` or `/trade/execution` owners
+      - `npx vitest run src/views/trading/__tests__/Orders.spec.ts src/views/trading/__tests__/Execution.spec.ts` passed (`2/2`)
+      - the repaired pages now render honest static shells with `/trade/*` handoff guidance instead of standalone order-routing or execution placeholder shells
+    - secondary legacy TDX static-shell degradation:
+      - `secondary-batch-22` closed `TdxMarket.vue`, which still exposed local pseudo-live quote, index-monitoring, K-line, and refresh shell surfaces despite having no verified canonical TDX owner
+      - `cd web/frontend && npx vitest run src/views/__tests__/TdxMarket.spec.ts` passed (`1/1`)
+      - the repaired page now renders an honest static shell with `/market/realtime`, `/market/technical`, and `/system/data` handoff guidance instead of a forked pseudo-live TDX workbench
+      - the secondary inventory high-priority shortlist dropped from `42` to `41` after the static-shell repair
+    - secondary legacy phase-4 dashboard canonical-wrapper delegation:
+      - `secondary-batch-23` closed `Phase4Dashboard.vue`, which still exposed local pseudo-live stats cards, market-overview tabs, watchlist rows, and risk-alert shell surfaces despite a semantically matching canonical dashboard owner already existing
+      - `cd web/frontend && npx vitest run src/views/__tests__/Phase4Dashboard.spec.ts src/views/__tests__/Dashboard.spec.ts src/views/__tests__/EnhancedDashboard.spec.ts` passed (`3/3`)
+      - the repaired page now renders a thin orchestration wrapper over the canonical dashboard owner instead of a forked pseudo-live phase-specific dashboard shell
+      - the secondary inventory high-priority shortlist dropped from `41` to `40` after the canonical-wrapper repair
+    - secondary legacy enhanced-risk canonical-wrapper delegation:
+      - `secondary-batch-24` closed `EnhancedRiskMonitor.vue`, which still exposed local pseudo-live stop-loss, alert, websocket, GPU, and tabbed risk-control shell surfaces despite a semantically matching canonical `/risk/management` owner already existing
+      - `cd web/frontend && npx vitest run src/views/__tests__/EnhancedRiskMonitor.spec.ts src/views/risk/__tests__/Center.spec.ts` passed (`4/4`)
+      - the repaired page now renders a thin orchestration wrapper over the canonical `/risk/management` owner instead of a forked pseudo-live enhanced risk-monitor shell
+      - the secondary inventory high-priority shortlist dropped from `40` to `39` after the canonical-wrapper repair
+    - secondary active trading-decision canonical-wrapper delegation:
+      - `secondary-batch-25` closed `trading-decision/DecisionPortfolio.vue` and `trading-decision/DecisionPositions.vue`, which still exposed local pseudo-live portfolio cards, positions refresh chrome, and empty-state shell semantics despite semantically matching canonical `/trade/portfolio` and `/trade/positions` owners already existing
+      - `cd web/frontend && npx vitest run src/views/trading-decision/__tests__/DecisionPortfolio.spec.ts src/views/trading-decision/__tests__/DecisionPositions.spec.ts src/views/trade/__tests__/Portfolio.spec.ts src/views/trade/__tests__/Center.spec.ts` passed (`12/12`)
+      - the repaired decision panels now render thin wrappers over the canonical trade owners instead of preserving local pseudo-live portfolio and positions shells
+      - the secondary inventory high-priority shortlist dropped from `39` to `37` after the canonical-wrapper repair
+    - secondary active trading-decision static-shell degradation:
+      - `secondary-batch-26` closed `trading-decision/DecisionOrders.vue`, which still exposed local pseudo-live order-entry, search, refresh, and order-history shell semantics despite having no semantically matching canonical `/trade/orders` or `/trade/execution` owner
+      - `cd web/frontend && npx vitest run src/views/trading-decision/__tests__/DecisionOrders.spec.ts` passed (`1/1`)
+      - the repaired decision-orders panel now renders an honest static shell with canonical trade handoff guidance instead of preserving local pseudo-live order-entry chrome
+      - the secondary inventory high-priority shortlist dropped from `37` to `36` after the static-shell repair
+    - secondary live-truth-component wrapper reduction:
+      - `secondary-batch-27` closed `Wencai.vue`, which still exposed a local pseudo overview, fake API status, pseudo statistics tabs, and wrapper-local summary fetch even though `WencaiPanel.vue` already owned the live query/result/history contract
+      - `cd web/frontend && npx vitest run src/views/__tests__/Wencai.spec.ts` passed (`1/1`)
+      - the repaired page now renders a thin wrapper over `WencaiPanel.vue` instead of preserving duplicate overview and statistics truth in front of the live panel
+      - the secondary inventory high-priority shortlist dropped from `36` to `35` after the thin-wrapper repair
+    - secondary system architecture static-shell degradation:
+      - `secondary-batch-28` closed `system/Architecture.vue`, which still exposed hardcoded migration progress cards, topology counts, and stack summaries despite having no verified canonical architecture owner
+      - `cd web/frontend && npx vitest run src/views/system/__tests__/Architecture.spec.ts` passed (`1/1`)
+      - the repaired page now renders an honest static shell with canonical `/system/*` handoff guidance instead of preserving pseudo migration and topology truth
+      - the secondary inventory high-priority shortlist dropped from `35` to `34` after the static-shell repair
+    - secondary system database-monitor static-shell degradation:
+      - `secondary-batch-29` closed `system/DatabaseMonitor.vue`, which still exposed hardcoded health counters, routing-distribution cards, and migration-history summaries despite having no verified canonical database-monitor owner
+      - `cd web/frontend && npx vitest run src/views/system/__tests__/DatabaseMonitor.spec.ts` passed (`1/1`)
+      - the repaired page now renders an honest static shell with canonical `/system/health`, `/system/resources`, and `/system/data` handoff guidance instead of preserving pseudo health and migration truth
+      - the secondary inventory high-priority shortlist dropped from `34` to `33` after the static-shell repair
+    - secondary system performance-monitor static-shell degradation:
+      - `secondary-batch-30` closed `system/PerformanceMonitor.vue`, which still exposed hardcoded Core Web Vitals cards, budget bars, trend placeholders, and suggestion summaries despite having no verified canonical performance-monitor owner
+      - `cd web/frontend && npx vitest run src/views/system/__tests__/PerformanceMonitor.spec.ts` passed (`1/1`)
+      - the repaired page now renders an honest static shell with canonical `/system/health`, `/system/resources`, and `/system/api` handoff guidance instead of preserving pseudo performance truth
+      - the secondary inventory high-priority shortlist dropped from `33` to `32` after the static-shell repair
+    - secondary task-management static-shell degradation:
+      - `secondary-batch-31` closed `TaskManagement.vue`, which still exposed local task stats, task tables, import-export controls, and history dialogs despite having no semantically matching canonical task-management owner
+      - `cd web/frontend && npx vitest run src/views/__tests__/TaskManagement.spec.ts` passed (`1/1`)
+      - the repaired page now renders an honest static shell with canonical `/strategy/backtest`, `/trade/terminal`, and `/system/health` handoff guidance instead of preserving pseudo task-management truth
+      - the secondary inventory high-priority shortlist dropped from `32` to `31` after the static-shell repair
+    - secondary orphan trade-management component static-shell degradation:
+      - `secondary-batch-49` closed `trade-management/components/{PortfolioOverview,PositionsTab,StatisticsTab,TradeHistoryTab,TradeDialog}.vue`, which still exposed local portfolio fixtures, direct trade API requests, fallback rows, chart synthesis, history pagination, and order submission despite no longer being used by the active trading orchestration shell
+      - `cd web/frontend && npx vitest run tests/unit/config/trade-management-components-normalization.spec.ts` passed (`1/1`) after RED failed on the old non-shell implementation
+      - the repaired components now render honest static shells with canonical `/trade/*` handoff links instead of preserving independent live trading or execution truth
+      - the refreshed secondary inventory now reports `H=0 / M=129 / L=100`
+    - secondary orphan stocks page static-shell degradation:
+      - `secondary-batch-50` closed `stocks/{Activity,Concept,Industry,Watchlist}.vue`, which still exposed mock trading rows, concept/industry stock pools, watchlist filters, local mutations, and refresh success semantics despite having no active route or importing owner
+      - `cd web/frontend && npx vitest run tests/unit/config/stocks-orphan-static-shells.spec.ts` passed (`1/1`) after RED failed on the old non-shell implementation
+      - the repaired pages now render honest static shells with canonical `/trade/history`, `/data/concept`, `/data/industry`, and `/watchlist/manage` handoff links
+      - the refreshed secondary inventory now reports `H=0 / M=125 / L=104`
+    - secondary orphan stocks portfolio static-shell degradation:
+      - `secondary-batch-51` closed `stocks/Portfolio.vue`, which still exposed mock portfolio metrics, example positions, random refresh mutation, add-position toast semantics, and a performance chart placeholder despite having no active route or importing owner
+      - `cd web/frontend && npx vitest run tests/unit/config/stocks-portfolio-static-shell.spec.ts` passed (`1/1`) after RED failed on the old non-shell implementation
+      - the repaired page now renders an honest static shell with canonical `/trade/portfolio` handoff instead of preserving parallel portfolio execution truth
+      - the refreshed secondary inventory now reports `H=0 / M=124 / L=105`
+    - secondary orphan risk page static-shell degradation:
+      - `secondary-batch-52` closed `risk/{Portfolio,Positions}.vue`, which still exposed standalone `Coming Soon` / `Phase 7` placeholder semantics despite having no active route or importing owner
+      - `cd web/frontend && npx vitest run tests/unit/config/risk-orphan-static-shells.spec.ts` passed (`1/1`) after RED failed on the old non-shell implementation
+      - the repaired pages now render honest static shells with canonical `/risk/management` and `/risk/position` handoff links
+      - the refreshed secondary inventory remains `H=0 / M=124 / L=105` because the generator still classifies these compatibility shells as M candidates
+    - secondary orphan ArtDeco technical-analysis static-shell degradation:
+      - `secondary-batch-53` closed `artdeco-pages/ArtDecoTechnicalAnalysis.vue`, which still exposed local GPU/load badges, dashboardService calls, random trend/equity data, delayed mock backtest stats, and default stock execution despite having no active route or importing owner
+      - `cd web/frontend && npx vitest run tests/unit/config/artdeco-technical-analysis-static-shell.spec.ts` passed (`1/1`) after RED failed on the old non-shell implementation
+      - the repaired page now renders an honest static shell with canonical `/market/technical`, `/data/indicator`, and `/strategy/backtest` handoff links
+      - the refreshed secondary inventory now reports `H=0 / M=123 / L=106`

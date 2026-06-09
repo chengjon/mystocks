@@ -1,0 +1,95 @@
+audit_run_id: audit-20260426-02
+batch_id: secondary-batch-02
+module: secondary-embedded-shells
+scope:
+  requested_by: user
+  pages:
+    - route: /secondary/artdeco-trading-center
+      page_key: secondary-artdeco-trading-center
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/artdeco-pages/ArtDecoTradingCenter.vue
+  compatibility_redirects: []
+batch_rationale: >-
+  Continue the secondary inventory phase by repairing the active
+  `ArtDecoTradingCenter.vue` wrapper panels that still exposed local placeholder
+  migration shells, and delegate those surfaces to existing canonical
+  `/trade/history` and `/trade/portfolio` truth without introducing any new
+  shell snapshot or store.
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-only
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "the manifest route `/secondary/artdeco-trading-center` is a synthetic secondary-inventory alias used for artifact indexing; the live parent shell remains `web/frontend/src/views/artdeco-pages/ArtDecoTradingCenter.vue` and is not a real router entry"
+    - "the repaired surfaces are the active `trade-history` and `trade-portfolio` wrapper panels imported by `ArtDecoTradingCenter.vue`"
+    - "all live truth must continue to come from existing canonical `/trade/*` owners or degrade to a static shell"
+    - "the wrapper repair must not add a new store, snapshot cache, request provenance badge, or freshness strip"
+  fallback_log: []
+verification_plan:
+  verification_strategy: code-review-only
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states:
+    - default
+    - loading
+    - empty
+    - disabled
+  notes:
+    - "verify both active wrapper panels no longer render local placeholder migration copy"
+    - "verify history and portfolio surfaces now reuse canonical `/trade/*` owners directly"
+    - "verify canonical `History.vue` hides route-level hero and stats shells when embedded"
+repair_approval:
+  status: approved
+  approved_findings:
+    - secondary-shell-issue-02
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - secondary-artdeco-trading-center
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoHistoryView.vue
+    - web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoPerformanceAnalysis.vue
+    - web/frontend/src/views/artdeco-pages/trading-tabs/__tests__/ArtDecoHistoryView.spec.ts
+    - web/frontend/src/views/artdeco-pages/trading-tabs/__tests__/ArtDecoPerformanceAnalysis.spec.ts
+    - web/frontend/src/views/trade/__tests__/History.spec.ts
+    - .claude/skills/myweb-audit/references/route-truth-operations.md
+    - .claude/skills/myweb-audit/references/route-truth-casebook.md
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/trade/History.vue
+      - web/frontend/src/views/trade/Portfolio.vue
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vitest
+    typecheck: failed-existing-frontend-debt-only
+    pm2: passed
+    e2e: not-run-unrouted-owner
+    gitnexus_staged_detect: mixed-observation-non-isolated
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "the staged index already contained many unrelated files before this micro-batch, so `gitnexus_detect_changes({scope: staged})` was recorded only as a mixed observation"
+      - "current staged observation: risk_level=low, changed_files=122, changed_count=0, affected_count=0"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/artdeco-trading-center-wrapper-canonical-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/secondary-batch-02-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/secondary-batch-02-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/secondary-batch-02-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/secondary-batch-02-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: owner-regression
+  next_action: continue-secondary-inventory-triage
+  notes:
+    - "active embedded wrappers can outrank higher-scoring orphan pages when a live parent import chain still fronts placeholder migration copy over canonical truth"
+status: complete

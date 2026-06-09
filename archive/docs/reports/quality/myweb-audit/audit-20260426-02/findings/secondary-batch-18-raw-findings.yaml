@@ -1,0 +1,38 @@
+- finding_id: secondary-shell-018
+  batch_id: secondary-batch-18
+  page:
+    route: /secondary/legacy-technical-module-static-shell
+    page_key: secondary-legacy-technical-module-static-shell
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/technical/TechnicalAnalysis.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy nested technical-analysis page still exposed a forked pseudo-live technical-analysis workbench even though no semantically matching canonical owner exists
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/technical/TechnicalAnalysis.vue`"
+      - "Inspect the local search form, indicator overview cards, chart area, indicator table, and batch-calculation shell"
+      - "Confirm the page is not mounted by the current router graph and does not have an active semantically matching canonical owner for direct delegation"
+  expected: "An orphan legacy page with no semantically matching canonical owner should degrade to an honest static shell instead of preserving a forked pseudo-live technical-analysis workbench."
+  actual: "Before repair, `web/frontend/src/views/technical/TechnicalAnalysis.vue` rendered its own pseudo-live technical-analysis shell with local indicator totals, signal summaries, chart chrome, and batch-calculation surfaces even though no active canonical owner existed for direct delegation."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green regression confirmed the nested legacy technical-analysis page still rendered its own pseudo-live workbench shell before the static-shell repair."
+  repair_target:
+    files:
+      - web/frontend/src/views/technical/TechnicalAnalysis.vue
+      - web/frontend/src/views/technical/__tests__/TechnicalAnalysis.spec.ts
+    primary_owner: web/frontend/src/views/technical/TechnicalAnalysis.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-technical-module-static-shell
+  status: open
+  dependency: null
+  dedupe_key: /secondary/legacy-technical-module-static-shell:route-truth:legacyTechnicalModuleStaticShell
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner static-shell regression and secondary inventory tooling to confirm the nested legacy technical-analysis page no longer exposes pseudo-live indicator, signal, chart, or batch-calculation truth."

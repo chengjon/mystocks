@@ -1,0 +1,41 @@
+- finding_id: data-industry-data-state-003
+  batch_id: data-batch-14
+  page:
+    route: /data/industry
+    page_key: data-industry
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/data/Industry.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Industry route leaked failed board request ids into hero metadata before any verified snapshot existed
+  trigger:
+    steps:
+      - "Open `/data/industry`"
+      - "Force the first `/api/v2/market/sector/fund-flow` request to resolve `success: false` with a `request_id` before any verified industry board snapshot exists"
+      - "Repeat with one successful board load followed by a failed manual refresh"
+      - "Inspect the hero `DATA / REQ_ID / TIME` metadata and the visible warning or error shell"
+  expected: "Before `/data/industry` has any verified board snapshot, hero metadata should degrade to explicit placeholders such as `REQ_ID: N/A` instead of leaking a failed request id. If a later refresh fails while the route still displays the previous verified board rows, hero `REQ_ID` should continue to identify the visible verified snapshot instead of the failed retry."
+  actual: "Before repair, `/data/industry` rendered `REQ_ID: industry-first-fail` on first-load failure and switched the hero request id to `industry-refresh-fail` after a successful initial sync even though the visible board rows still came from the earlier successful snapshot."
+  evidence:
+    kind: live-observation
+    note: "Component red tests reproduced both failure shapes before repair. Targeted Playwright-library verification with system `google-chrome` then confirmed the routed page now renders `REQ_ID: N/A` on first-load failure and keeps `REQ_ID: req-data-d14-success` on stale refresh failure while the previous rows remain visible."
+  repair_target:
+    files:
+      - web/frontend/src/views/data/Industry.vue
+    primary_owner: web/frontend/src/views/data/Industry.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /data/concept
+    - /data/fund-flow
+    - /market/realtime
+    - /trade/history
+  status: open
+  dependency: null
+  dedupe_key: /data/industry:data-state:boardRequestProvenanceTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/data/industry` after repair and confirm first-load failure and stale-refresh failure both preserve honest hero request provenance."

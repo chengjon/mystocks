@@ -1,0 +1,28 @@
+- consolidated_issue_id: strategy-pos-issue-01
+  severity: Medium
+  affected_routes:
+    - /strategy/pos
+    - /trade/positions
+  source_roles:
+    - route-inventory
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoPositionMonitor.vue
+  page_scope: shared-impact
+  frontend_fixable: true
+  repair_bucket: fix-with-shared-impact-review
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: true
+    generated_artifact: false
+  summary: The positions workbench family should no longer keep a placeholder-only embedded fork once the canonical routed implementation already lives in `src/views/trade/Center.vue`.
+  dependency: null
+  shared_impact:
+    candidate: true
+    basis: routed strategy and trade position pages already reuse the canonical page, so the remaining embedded ArtDeco consumer must converge on the same wrapper contract to avoid a parallel truth source.
+    related_routes:
+      - /strategy/pos
+      - /trade/positions
+      - ArtDecoTradingCenter#trade-positions
+  approval_status: approved

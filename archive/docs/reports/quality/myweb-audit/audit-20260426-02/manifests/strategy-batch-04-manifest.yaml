@@ -1,0 +1,88 @@
+audit_run_id: audit-20260426-02
+batch_id: strategy-batch-04
+module: strategy
+scope:
+  requested_by: user
+  pages:
+    - route: /strategy/gpu
+      page_key: strategy-gpu
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/strategy/BacktestGPU.vue
+  compatibility_redirects: []
+batch_rationale: Close the routed partial-runtime metric truth gap on `/strategy/gpu` so successful but incomplete GPU runtime payloads cannot be rendered as verified zero-valued thermals, clocks, fan-speed, power, or benchmark truth, and fold that pattern back into myweb-audit.
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/strategy/gpu` remains `web/frontend/src/views/strategy/BacktestGPU.vue`"
+    - "the current backend `/api/gpu/status` and `/api/gpu/performance` endpoints may expose verified availability and utilization while omitting benchmark or secondary sensor fields such as clocks, fan speed, or non-zero thermals"
+    - "a successful `200` from those GPU endpoints does not by itself prove benchmark, thermal, power, or clock truth for every visible metric card"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1280]
+  required_states: [default]
+  notes:
+    - "verify the actual PM2 `/strategy/gpu` route no longer shows `0°C`, `0x`, `-100%`, `0 MHz`, or `0%` when the backend only proves partial GPU runtime availability"
+    - "verify the routed page instead degrades unsupported thermals, clocks, fan-speed, power, and benchmark fields to `未校验`, `待接入`, or equivalent pending-benchmark copy while preserving verified availability and utilization"
+repair_approval:
+  status: approved
+  approved_findings:
+    - strategy-gpu-issue-01
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - strategy-gpu
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/strategy/composables/gpuMonitorData.ts
+    - web/frontend/src/views/strategy/composables/useBacktestGPU.ts
+    - web/frontend/src/views/strategy/BacktestGPU.vue
+    - web/frontend/src/views/strategy/composables/__node_tests__/gpuMonitorData.test.ts
+    - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-strategy-gpu-partial-runtime-2-routes
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated repo changes before `strategy-batch-04` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` is treated as observation-only in this run because the staged set is not isolated to the current batch"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` returned `risk_level: low`, `changed_files: 77`, `changed_count: 256`, and `affected_count: 0`"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-gpu-partial-runtime-metric-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-04-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-04-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-04-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/strategy-batch-04-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-strategy-batch-04-closeout
+  notes:
+    - "`/strategy/gpu` now keeps verified availability and utilization while degrading unsupported thermals, clocks, fan-speed, power, and benchmark metrics to explicit unverified or pending-benchmark copy"
+    - "successful partial GPU runtime payloads no longer render exact zero-valued runtime metrics on the primary routed surface"
+status: complete

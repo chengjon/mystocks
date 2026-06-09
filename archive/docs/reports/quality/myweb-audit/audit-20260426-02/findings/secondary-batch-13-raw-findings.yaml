@@ -1,0 +1,38 @@
+- finding_id: secondary-shell-013
+  batch_id: secondary-batch-13
+  page:
+    route: /secondary/legacy-market-portfolio-wrapper
+    page_key: secondary-legacy-market-portfolio-wrapper
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/Market.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy top-level market page still exposed a forked pseudo-live asset and trade-history shell even though a semantically matching canonical trade-portfolio owner already exists
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/Market.vue`"
+      - "Inspect the local asset summary cards, pseudo refresh CTA, and positions/history shell"
+      - "Confirm the page is not the current router-backed canonical owner and does not delegate to `web/frontend/src/views/trade/Portfolio.vue`"
+  expected: "An unrouted legacy page whose visible semantics are actually portfolio assets, positions, and trade history should collapse to a thin orchestration wrapper over the canonical `/trade/portfolio` owner instead of preserving a forked pseudo-live shell."
+  actual: "Before repair, `Market.vue` rendered its own pseudo-live asset summary cards, positions/history tabs, and refresh controls instead of delegating to the canonical `/trade/portfolio` owner."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green regression confirmed the legacy top-level market page still rendered its own fake asset and trade-history shell before the wrapper repair."
+  repair_target:
+    files:
+      - web/frontend/src/views/Market.vue
+      - web/frontend/src/views/__tests__/Market.spec.ts
+    primary_owner: web/frontend/src/views/Market.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-market-portfolio-wrapper
+  status: open
+  dependency: null
+  dedupe_key: /secondary/legacy-market-portfolio-wrapper:route-truth:legacyMarketPortfolioCanonicalWrapper
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner wrapper regression, canonical portfolio regression, and secondary inventory tooling to confirm the legacy market page now delegates entirely to the canonical `/trade/portfolio` owner."

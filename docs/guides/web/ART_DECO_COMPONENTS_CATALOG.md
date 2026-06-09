@@ -12,9 +12,9 @@
 
 ## 当前应查看的文档
 
-- [当前组件全景目录](/opt/claude/mystocks_spec/web/frontend/ARTDECO_COMPONENTS_CATALOG.md)
-- [组件开发指南](/opt/claude/mystocks_spec/docs/guides/web/ARTDECO_COMPONENT_GUIDE.md)
-- [统一规格](/opt/claude/mystocks_spec/docs/guides/web/ARTDECO_FINTECH_UNIFIED_SPEC.md)
+- [当前组件全景目录](../../../web/frontend/ARTDECO_COMPONENTS_CATALOG.md)
+- [组件开发指南](ARTDECO_COMPONENT_GUIDE.md)
+- [统一规格](ARTDECO_FINTECH_UNIFIED_SPEC.md)
 
 ## 为什么降级
 

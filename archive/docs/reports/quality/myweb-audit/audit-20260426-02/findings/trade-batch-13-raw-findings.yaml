@@ -1,0 +1,39 @@
+- finding_id: trade-terminal-data-state-004
+  batch_id: trade-batch-13
+  page:
+    route: /trade/terminal
+    page_key: trade-terminal
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/TradingDashboard.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Trade terminal later market refresh failure replaced the visible verified market snapshot with empty fallback truth
+  trigger:
+    steps:
+      - "Open `/trade/terminal`"
+      - "Wait until the route shows a verified market snapshot with visible live rows"
+      - "Trigger a later manual refresh"
+      - "Resolve `/api/trading/market/snapshot` as failed while the other terminal slices remain verified"
+      - "Inspect the visible `.market-snapshot` card and degraded-state messaging"
+  expected: "After at least one verified market-snapshot slice exists, a later market refresh failure should preserve the visible symbols, prices, and timestamp while pairing the route with explicit degraded-state messaging. Empty fallback truth such as `暂无市场数据` or `{ timestamp: 0, data: {} }` is only acceptable before the first verified market snapshot exists."
+  actual: "Before repair, `loadMarketData()` always replaced the visible market-snapshot slice with `FALLBACK_MARKET_DATA` on any failure. A later market refresh failure therefore cleared the visible rows and fell through to the empty-state shell even though the failed refresh had not replaced the current verified market snapshot."
+  evidence:
+    kind: live-observation
+    note: "System-`google-chrome` verification with browser-context interception reproduced a successful market snapshot followed by a failing later refresh. After repair the route keeps `SH000001`, `SZ399001`, and `¥3,321.08` visible while the runtime alert degrades to `部分数据降级：市场快照 / 当前降级模块：市场快照`."
+  repair_target:
+    files:
+      - web/frontend/src/views/composables/useTradingDashboard.ts
+    primary_owner: web/frontend/src/views/composables/useTradingDashboard.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /trade/terminal
+  status: open
+  dependency: null
+  dedupe_key: /trade/terminal:data-state:marketSnapshotRefreshFallbackRetentionTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/trade/terminal` after repair and confirm a later market refresh failure now preserves the last verified market snapshot while first-load market fallback truth remains intact."

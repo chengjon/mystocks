@@ -1,0 +1,2576 @@
+{
+  "summary": {
+    "generatedAt": "2026-05-10T01:34:16.168Z",
+    "totalViews": 272,
+    "routedViews": 42,
+    "unroutedViews": 230,
+    "byClassification": {
+      "候选待审": 70,
+      "Demo废弃": 56,
+      "内嵌壳层": 104
+    },
+    "byPriority": {
+      "M": 123,
+      "L": 106,
+      "H": 1
+    },
+    "highPriorityShortlistCount": 1
+  },
+  "records": [
+    {
+      "pagePath": "web/frontend/src/views/AdvancedAnalysis.vue",
+      "layer": "top-level",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/Analysis.vue",
+      "layer": "top-level",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/ArtDecoTest.vue",
+      "layer": "top-level",
+      "classification": "Demo废弃",
+      "hasSelector": false,
+      "hasStatsStrip": true,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": [
+        "stats-strip"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/BacktestAnalysis.vue",
+      "layer": "top-level",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/BacktestWizard.vue",
+      "layer": "top-level",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/Dashboard.vue",
+      "layer": "top-level",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/DataVisualizationShowcase.vue",
+      "layer": "top-level",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/EnhancedDashboard.vue",
+      "layer": "top-level",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/EnhancedRiskMonitor.vue",
+      "layer": "top-level",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/FreqtradeDemo.vue",
+      "layer": "top-level",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/IndicatorLibrary.vue",
+      "layer": "top-level",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/IndustryConceptAnalysis.vue",
+      "layer": "top-level",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/KLineDemo.vue",
+      "layer": "top-level",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/Market.vue",
+      "layer": "top-level",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/MarketData.vue",
+      "layer": "top-level",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/MarketDataDemo.vue",
+      "layer": "top-level",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": true,
+      "priority": "L",
+      "heuristicHits": [
+        "selector",
+        "fallback-literal",
+        "shared-composable"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/MinimalTest.vue",
+      "layer": "top-level",
+      "classification": "Demo废弃",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/OpenStockDemo.vue",
+      "layer": "top-level",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/PageTitleDemo.vue",
+      "layer": "top-level",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": true,
+      "priority": "L",
+      "heuristicHits": [
+        "selector",
+        "shared-composable"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/Phase4Dashboard.vue",
+      "layer": "top-level",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/PortfolioManagement.vue",
+      "layer": "top-level",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/PyprofilingDemo.vue",
+      "layer": "top-level",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": true,
+      "priority": "L",
+      "heuristicHits": [
+        "selector",
+        "shared-composable"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/RealTimeMonitor.vue",
+      "layer": "top-level",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/RiskMonitor.vue",
+      "layer": "top-level",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/Settings.vue",
+      "layer": "top-level",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/SkeletonUsage.vue",
+      "layer": "top-level",
+      "classification": "Demo废弃",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/SmartDataSourceTest.vue",
+      "layer": "top-level",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/StockAnalysisDemo.vue",
+      "layer": "top-level",
+      "classification": "Demo废弃",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/StockDetail.vue",
+      "layer": "top-level",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/Stocks.vue",
+      "layer": "top-level",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/StrategyManagement.vue",
+      "layer": "top-level",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/TaskManagement.vue",
+      "layer": "top-level",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/TdxMarket.vue",
+      "layer": "top-level",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/TdxpyDemo.vue",
+      "layer": "top-level",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/TechnicalAnalysis.vue",
+      "layer": "top-level",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/Test.vue",
+      "layer": "top-level",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/TestPage.vue",
+      "layer": "top-level",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/TradeManagement.vue",
+      "layer": "top-level",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/TradingDecisionCenter.vue",
+      "layer": "top-level",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/Wencai.vue",
+      "layer": "top-level",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/advanced-analysis/AnomalyTrackingView.vue",
+      "layer": "advanced-analysis",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/advanced-analysis/BatchAnalysisView.vue",
+      "layer": "advanced-analysis",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/advanced-analysis/CapitalFlowView.vue",
+      "layer": "advanced-analysis",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/advanced-analysis/ChipDistributionView.vue",
+      "layer": "advanced-analysis",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/advanced-analysis/DecisionModelsView.vue",
+      "layer": "advanced-analysis",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/advanced-analysis/FinancialValuationView.vue",
+      "layer": "advanced-analysis",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/advanced-analysis/FundamentalAnalysisView.vue",
+      "layer": "advanced-analysis",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/advanced-analysis/MarketPanoramaView.vue",
+      "layer": "advanced-analysis",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/advanced-analysis/RadarAnalysisView.vue",
+      "layer": "advanced-analysis",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/advanced-analysis/SentimentAnalysisView.vue",
+      "layer": "advanced-analysis",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/advanced-analysis/TechnicalAnalysisView.vue",
+      "layer": "advanced-analysis",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/advanced-analysis/TimeSeriesView.vue",
+      "layer": "advanced-analysis",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/advanced-analysis/TradingSignalsView.vue",
+      "layer": "advanced-analysis",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/ai/BatchAnalysis.vue",
+      "layer": "ai",
+      "classification": "候选待审",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": true,
+      "priority": "H",
+      "heuristicHits": [
+        "selector",
+        "fallback-literal",
+        "shared-composable"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/ai/components/AiSentimentHero.vue",
+      "layer": "ai",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": true,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/ai/components/AiSentimentSummaryCards.vue",
+      "layer": "ai",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": true,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/ai/components/AiSentimentWorkbenchPanels.vue",
+      "layer": "ai",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "selector",
+        "fallback-literal"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/ArtDecoDataAnalysis.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/ArtDecoMarketData.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": true,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip",
+        "selector",
+        "fallback-literal"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/ArtDecoMarketQuotes.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": true,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip",
+        "selector",
+        "fallback-literal"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/ArtDecoRiskManagement.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/ArtDecoSettings.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": true,
+      "priority": "M",
+      "heuristicHits": [
+        "selector",
+        "shared-composable"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/ArtDecoStockManagement.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": true,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip",
+        "selector",
+        "fallback-literal"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/ArtDecoTechnicalAnalysis.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/ArtDecoTradingCenter.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "selector",
+        "fallback-literal"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/ArtDecoTradingManagement.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": true,
+      "usesSharedComposable": true,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip",
+        "selector",
+        "shared-composable"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/_templates/ArtDecoPageTemplate.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": true,
+      "usesSharedComposable": true,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip",
+        "selector",
+        "fallback-literal",
+        "shared-composable"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/_templates/ExampleRiskManagement.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": true,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip",
+        "selector",
+        "fallback-literal"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/analysis-tabs/BacktestAnalysis.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": true,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/components/AnalysisIndicators.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": true,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip",
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/components/AnalysisResults.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/components/AnalysisScreener.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/components/AnomalyAlerts.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/components/AnomalyPatterns.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/components/ArtDecoAttributionAnalysis.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/components/ArtDecoAttributionControls.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/components/ArtDecoPerformanceOverview.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": true,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/components/ArtDecoSignalHistory.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/components/ArtDecoSignalMonitoringMetrics.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/components/ArtDecoSignalMonitoringOverview.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": true,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/components/ArtDecoTradingHistoryControls.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/components/ArtDecoTradingSignalsControls.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/components/BuffettModel.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/components/DupontAnalysis.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/components/FinancialMetrics.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/components/LynchModel.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": true,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/components/MarketConcepts.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/components/MarketFundFlow.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": true,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/components/MarketPlaceholder.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/components/OneilModel.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/components/PanoramaCapitalFlow.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/components/PanoramaIndices.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoMarketAnalysis.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoMarketOverview.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoRealtimeMonitor.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/market-data-tabs/AuctionAnalysis.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": true,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/market-data-tabs/ConceptAnalysis.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": true,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip",
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/market-data-tabs/DataQualityPanel.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": true,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/market-data-tabs/DragonTigerAnalysis.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/market-data-tabs/ETFAnalysis.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": true,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip",
+        "selector",
+        "fallback-literal"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/market-data-tabs/FundFlow.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": true,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip",
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/market-data-tabs/FundFlowAnalysis.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/market-tabs/MarketConceptTab.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/market-tabs/MarketETFTab.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": true,
+      "usesSharedComposable": true,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip",
+        "selector",
+        "fallback-literal",
+        "shared-composable"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/market-tabs/MarketKLineTab.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/market-tabs/MarketRealtimeTab.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoAnnouncementMonitor.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskAlerts.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskMonitor.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskOverviewPanel.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskStatsGrid.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": true,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskStockPanel.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/risk-tabs/RiskOverviewTab.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/risk-tabs/StopLossMonitorTab.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/settings/AppearanceSettings.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/settings/DataSourceSettings.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/settings/NotificationSettings.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/settings/SecuritySettings.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/settings/SystemInfoSettings.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/stock-management-tabs/PortfolioMonitor.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": true,
+      "usesSharedComposable": true,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip",
+        "selector",
+        "shared-composable"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/stock-management-tabs/WatchlistManager.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": true,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip",
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": true,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip",
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyManagement.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": true,
+      "usesSharedComposable": true,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip",
+        "selector",
+        "fallback-literal",
+        "shared-composable"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": true,
+      "usesSharedComposable": true,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip",
+        "selector",
+        "fallback-literal",
+        "shared-composable"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/strategy-tabs/StrategyParametersTab.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": true,
+      "usesSharedComposable": true,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip",
+        "selector",
+        "fallback-literal",
+        "shared-composable"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/strategy-tabs/components/BacktestHeader.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/strategy-tabs/components/BacktestKpiGrid.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": true,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/strategy-tabs/components/BacktestWorkbenchTabs.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/system-tabs/ArtDecoDataManagement.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": true,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/system-tabs/ArtDecoMonitoringDashboard.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/system-tabs/ArtDecoSystemSettings.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/system-tabs/SystemHealthTab.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/technical-tabs/TechnicalScannerTab.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": true,
+      "usesSharedComposable": true,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip",
+        "selector",
+        "shared-composable"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoHistoryView.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoPerformanceAnalysis.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoPositionMonitor.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoSignalsView.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoTradingHistory.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoTradingSignals.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoTradingStats.vue",
+      "layer": "artdeco-embedded",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": true,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/components/RiskOverviewTab.vue",
+      "layer": "components",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": true,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip",
+        "selector",
+        "fallback-literal"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/components/StopLossMonitoringTab.vue",
+      "layer": "components",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": true,
+      "priority": "M",
+      "heuristicHits": [
+        "selector",
+        "shared-composable"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/demo/OpenStockDemo.vue",
+      "layer": "demo",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/demo/Phase4Dashboard.vue",
+      "layer": "demo",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": true,
+      "usesSharedComposable": true,
+      "priority": "L",
+      "heuristicHits": [
+        "stats-strip",
+        "selector",
+        "shared-composable"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/demo/PyprofilingDemo.vue",
+      "layer": "demo",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/demo/StockAnalysisDemo.vue",
+      "layer": "demo",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/demo/Wencai.vue",
+      "layer": "demo",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": true,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": [
+        "stats-strip",
+        "selector",
+        "fallback-literal"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/demo/openstock/components/FeatureStatus.vue",
+      "layer": "demo",
+      "classification": "Demo废弃",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/demo/openstock/components/HeatmapChart.vue",
+      "layer": "demo",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": [
+        "selector",
+        "fallback-literal"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/demo/openstock/components/KlineChart.vue",
+      "layer": "demo",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/demo/openstock/components/StockNews.vue",
+      "layer": "demo",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/demo/openstock/components/StockQuote.vue",
+      "layer": "demo",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": [
+        "selector",
+        "fallback-literal"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/demo/openstock/components/StockSearch.vue",
+      "layer": "demo",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/demo/openstock/components/WatchlistManagement.vue",
+      "layer": "demo",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/demo/pyprofiling/components/API.vue",
+      "layer": "demo",
+      "classification": "Demo废弃",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/demo/pyprofiling/components/Data.vue",
+      "layer": "demo",
+      "classification": "Demo废弃",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/demo/pyprofiling/components/Features.vue",
+      "layer": "demo",
+      "classification": "Demo废弃",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/demo/pyprofiling/components/Overview.vue",
+      "layer": "demo",
+      "classification": "Demo废弃",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/demo/pyprofiling/components/Prediction.vue",
+      "layer": "demo",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/demo/pyprofiling/components/Profiling.vue",
+      "layer": "demo",
+      "classification": "Demo废弃",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/demo/pyprofiling/components/Tech.vue",
+      "layer": "demo",
+      "classification": "Demo废弃",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/demo/stock-analysis/components/Backtest.vue",
+      "layer": "demo",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/demo/stock-analysis/components/DataParsing.vue",
+      "layer": "demo",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/demo/stock-analysis/components/Overview.vue",
+      "layer": "demo",
+      "classification": "Demo废弃",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/demo/stock-analysis/components/Realtime.vue",
+      "layer": "demo",
+      "classification": "Demo废弃",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/demo/stock-analysis/components/Status.vue",
+      "layer": "demo",
+      "classification": "Demo废弃",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/demo/stock-analysis/components/Strategy.vue",
+      "layer": "demo",
+      "classification": "Demo废弃",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/errors/Forbidden.vue",
+      "layer": "demo",
+      "classification": "Demo废弃",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/errors/NetworkError.vue",
+      "layer": "demo",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": true,
+      "priority": "L",
+      "heuristicHits": [
+        "selector",
+        "shared-composable"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/errors/ServiceUnavailable.vue",
+      "layer": "demo",
+      "classification": "Demo废弃",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/examples/PageConfigExample.vue",
+      "layer": "demo",
+      "classification": "Demo废弃",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/examples/TradingDashboard.migrated.vue",
+      "layer": "demo",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": true,
+      "priority": "L",
+      "heuristicHits": [
+        "selector",
+        "fallback-literal",
+        "shared-composable"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/examples/WebSocketConfigExample.vue",
+      "layer": "demo",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": true,
+      "priority": "L",
+      "heuristicHits": [
+        "selector",
+        "shared-composable"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/freqtrade-demo/FreqBacktestTab.vue",
+      "layer": "freqtrade-demo",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/freqtrade-demo/FreqConfigTab.vue",
+      "layer": "freqtrade-demo",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/freqtrade-demo/FreqOverviewTab.vue",
+      "layer": "freqtrade-demo",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/freqtrade-demo/FreqStatusTab.vue",
+      "layer": "freqtrade-demo",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/freqtrade-demo/FreqStrategyTab.vue",
+      "layer": "freqtrade-demo",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/freqtrade-demo/FreqWebuiTab.vue",
+      "layer": "freqtrade-demo",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/market/Auction.vue",
+      "layer": "market",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/market/CapitalFlow.vue",
+      "layer": "market",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/market/Concepts.vue",
+      "layer": "market",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/market/Etf.vue",
+      "layer": "market",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/market/MarketDataView.vue",
+      "layer": "market",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/market/Tdx.vue",
+      "layer": "market",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/monitor.vue",
+      "layer": "top-level",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/monitoring/AlertRulesManagement.vue",
+      "layer": "monitoring",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": true,
+      "priority": "M",
+      "heuristicHits": [
+        "selector",
+        "shared-composable"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/monitoring/MonitoringDashboard.vue",
+      "layer": "monitoring",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/monitoring/RiskDashboard.vue",
+      "layer": "monitoring",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": true,
+      "usesSharedComposable": true,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip",
+        "selector",
+        "fallback-literal",
+        "shared-composable"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/monitoring/WatchlistManagement.vue",
+      "layer": "monitoring",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": true,
+      "usesSharedComposable": true,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip",
+        "selector",
+        "fallback-literal",
+        "shared-composable"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/risk/Portfolio.vue",
+      "layer": "risk",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/risk/Positions.vue",
+      "layer": "risk",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/settings/General.vue",
+      "layer": "settings",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/settings/Notifications.vue",
+      "layer": "settings",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/settings/Security.vue",
+      "layer": "settings",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/settings/Theme.vue",
+      "layer": "settings",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/stocks/Activity.vue",
+      "layer": "stocks",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/stocks/Concept.vue",
+      "layer": "stocks",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/stocks/Industry.vue",
+      "layer": "stocks",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/stocks/Portfolio.vue",
+      "layer": "stocks",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/stocks/Screener.vue",
+      "layer": "stocks",
+      "classification": "内嵌壳层",
+      "hasSelector": true,
+      "hasStatsStrip": true,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": [
+        "stats-strip",
+        "selector",
+        "fallback-literal"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/stocks/Watchlist.vue",
+      "layer": "stocks",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/strategy/BatchScan.vue",
+      "layer": "strategy",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/strategy/ResultsQuery.vue",
+      "layer": "strategy",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/strategy/SingleRun.vue",
+      "layer": "strategy",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/strategy/StatsAnalysis.vue",
+      "layer": "strategy",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/strategy/StrategyList.vue",
+      "layer": "strategy",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/system/Architecture.vue",
+      "layer": "system",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/system/DatabaseMonitor.vue",
+      "layer": "system",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/system/PerformanceMonitor.vue",
+      "layer": "system",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/tdxpy-demo/TdxApiTab.vue",
+      "layer": "tdxpy-demo",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/tdxpy-demo/TdxExportTab.vue",
+      "layer": "tdxpy-demo",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/tdxpy-demo/TdxInstallTab.vue",
+      "layer": "tdxpy-demo",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/tdxpy-demo/TdxOverviewTab.vue",
+      "layer": "tdxpy-demo",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/tdxpy-demo/TdxStatusTab.vue",
+      "layer": "tdxpy-demo",
+      "classification": "Demo废弃",
+      "hasSelector": true,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": [
+        "selector"
+      ]
+    },
+    {
+      "pagePath": "web/frontend/src/views/technical/TechnicalAnalysis.vue",
+      "layer": "technical",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/trade-management/components/PortfolioOverview.vue",
+      "layer": "trade-management",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/trade-management/components/PositionsTab.vue",
+      "layer": "trade-management",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/trade-management/components/StatisticsTab.vue",
+      "layer": "trade-management",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/trade-management/components/TradeDialog.vue",
+      "layer": "trade-management",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/trade-management/components/TradeHistoryTab.vue",
+      "layer": "trade-management",
+      "classification": "内嵌壳层",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "L",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/trading-decision/DecisionHeader.vue",
+      "layer": "trading-decision",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/trading-decision/DecisionOrders.vue",
+      "layer": "trading-decision",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/trading-decision/DecisionPortfolio.vue",
+      "layer": "trading-decision",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/trading-decision/DecisionPositions.vue",
+      "layer": "trading-decision",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/trading/Execution.vue",
+      "layer": "trading",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/trading/History.vue",
+      "layer": "trading",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/trading/Orders.vue",
+      "layer": "trading",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    },
+    {
+      "pagePath": "web/frontend/src/views/trading/Positions.vue",
+      "layer": "trading",
+      "classification": "候选待审",
+      "hasSelector": false,
+      "hasStatsStrip": false,
+      "usesSharedComposable": false,
+      "priority": "M",
+      "heuristicHits": []
+    }
+  ]
+}

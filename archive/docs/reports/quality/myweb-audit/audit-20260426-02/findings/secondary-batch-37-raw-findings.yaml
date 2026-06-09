@@ -1,0 +1,76 @@
+- finding_id: secondary-shell-037-capital-flow
+  batch_id: secondary-batch-37
+  page:
+    route: /secondary/market-capital-flow-canonical-wrapper
+    page_key: secondary-market-capital-flow-canonical-wrapper
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/market/CapitalFlow.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Market capital-flow page still exposed a local pseudo-live shell even though a semantically matching canonical /data/fund-flow owner already exists
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/market/CapitalFlow.vue`"
+      - "Inspect the local overview cards, refresh-all action, movers tables, and wrapper-local `FundFlowPanel` shell"
+      - "Confirm the active canonical owner already exists at `web/frontend/src/views/data/FundFlow.vue`"
+  expected: "A legacy market capital-flow page with a semantically matching canonical fund-flow owner should delegate to that owner instead of preserving duplicate market-domain overview, refresh, and ranking truth."
+  actual: "Before repair, `CapitalFlow.vue` still rendered its own local market overview cards, refresh action, and movers tables in front of fund-flow data instead of delegating to the canonical `/data/fund-flow` owner."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green wrapper regression confirmed the market capital-flow page still rendered duplicate pseudo-live shell semantics before wrapper delegation."
+  repair_target:
+    files:
+      - web/frontend/src/views/market/CapitalFlow.vue
+      - web/frontend/src/views/market/__tests__/CapitalFlow.spec.ts
+    primary_owner: web/frontend/src/views/market/CapitalFlow.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/market-capital-flow-canonical-wrapper
+  status: open
+  dependency: null
+  dedupe_key: /secondary/market-capital-flow-canonical-wrapper:route-truth:marketCapitalFlowCanonicalWrapper
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner wrapper regression to confirm the market overview cards, refresh-all action, and movers tables are gone and the canonical fund-flow owner is rendered instead."
+- finding_id: secondary-shell-037-concepts
+  batch_id: secondary-batch-37
+  page:
+    route: /secondary/market-concepts-canonical-wrapper
+    page_key: secondary-market-concepts-canonical-wrapper
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/market/Concepts.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Market concepts page still exposed a local pseudo-live shell even though a semantically matching canonical /data/concept owner already exists
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/market/Concepts.vue`"
+      - "Inspect the local overview stats, refresh switch, hot-concepts ranking, and detail table shell"
+      - "Confirm the active canonical owner already exists at `web/frontend/src/views/data/Concepts.vue`"
+  expected: "A legacy market concepts page with a semantically matching canonical concepts owner should delegate to that owner instead of preserving duplicate market-domain stats, ranking, and detail truth."
+  actual: "Before repair, `Concepts.vue` still rendered its own local stats strip, refresh controls, hot-concepts ranking, and concept detail table instead of delegating to the canonical `/data/concept` owner."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green wrapper regression confirmed the market concepts page still rendered duplicate pseudo-live shell semantics before wrapper delegation."
+  repair_target:
+    files:
+      - web/frontend/src/views/market/Concepts.vue
+      - web/frontend/src/views/market/__tests__/Concepts.spec.ts
+    primary_owner: web/frontend/src/views/market/Concepts.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/market-concepts-canonical-wrapper
+  status: open
+  dependency: null
+  dedupe_key: /secondary/market-concepts-canonical-wrapper:route-truth:marketConceptsCanonicalWrapper
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner wrapper regression to confirm the local stats, refresh controls, ranking shell, and detail table are gone and the canonical concepts owner is rendered instead."

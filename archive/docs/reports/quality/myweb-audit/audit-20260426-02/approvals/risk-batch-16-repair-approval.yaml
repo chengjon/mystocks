@@ -1,0 +1,24 @@
+- consolidated_issue_id: risk-overview-issue-16
+  severity: High
+  affected_routes:
+    - /risk/overview
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/risk/Overview.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: The canonical risk overview route now keeps rules and alerts on separate verified snapshot boundaries so a verified rules slice remains visible even when the alerts slice fails before the first full overview snapshot exists.
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: The approved repair stayed page-local in `web/frontend/src/views/risk/Overview.vue` and its routed regressions; the legacy `RiskOverviewTab.vue` consumer only inherits the owner fix.
+    related_routes:
+      - /risk/overview
+  approval_status: approved

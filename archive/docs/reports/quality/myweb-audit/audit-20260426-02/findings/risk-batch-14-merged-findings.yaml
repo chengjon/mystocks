@@ -1,0 +1,40 @@
+- consolidated_issue_id: risk-management-issue-14
+  severity: High
+  title: Risk management footer now keeps refresh-cadence copy aligned with the canonical route's real sync mechanism
+  pages:
+    - /risk/management
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The canonical risk-management footer hardcoded a five-minute auto-refresh promise even though the route had no owned scheduler or push mechanism. This was one routed cadence-truth defect on `/risk/management`."
+  primary_owner: web/frontend/src/views/risk/Center.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /risk/management
+  dedupe_keys:
+    - /risk/management:data-state:refreshCadenceClaimWithoutOwnedScheduler
+  verification_scope:
+    routes:
+      - /risk/management
+    states:
+      - default
+      - loading
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/risk/Center.vue
+      - web/frontend/src/views/risk/__tests__/Center.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/SKILL.md
+      - .claude/skills/myweb-audit/references/CHANGELOG.md
+      - .claude/skills/myweb-audit/references/audit-checklist.md
+      - .claude/agents/myweb-audit-data-state-audit.md
+    notes:
+      - "the canonical risk-management footer now says `风险数据按当前页同步结果更新 · 最后一次更新：...` instead of claiming a fixed `每5分钟自动更新` cadence"
+      - "the new owner-level regression pins the canonical route against future fixed-cadence claims when no route-owned scheduler exists"
+      - "the Phase 4 routed matrix now guards the same footer truth on `/risk/management`"
+      - "this batch promotes `myweb-audit` to `v1.52` with explicit refresh-cadence truth guidance"
+  verification_surface: code-review-plus-targeted-live-verification

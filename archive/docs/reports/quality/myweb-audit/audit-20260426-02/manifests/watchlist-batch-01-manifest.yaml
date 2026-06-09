@@ -1,0 +1,107 @@
+audit_run_id: audit-20260426-02
+batch_id: watchlist-batch-01
+module: watchlist
+scope:
+  requested_by: user
+  pages:
+    - route: /watchlist/manage
+      page_key: watchlist-manage
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/watchlist/Manage.vue
+    - route: /watchlist/signals
+      page_key: watchlist-signals
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/watchlist/Signals.vue
+    - route: /watchlist/screener
+      page_key: watchlist-screener
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/watchlist/Screener.vue
+  compatibility_redirects:
+    - /watchlist -> /watchlist/manage
+batch_rationale: Primary watchlist domain pages with shared wrapper-to-canonical split points and high operational interaction density.
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+  - visual-artdeco-audit
+  - responsive-a11y-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-only
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - router truth and watchlist page source are readable
+    - live verification can be added later if this batch moves past route-inventory into repair work
+  fallback_log:
+    - batch initialized from route-inventory truth before live-page verification started
+verification_plan:
+  verification_strategy: code-review-only
+  browser_project: chromium
+  breakpoints: [1920, 1440, 1280]
+  required_states: [default, loading, empty, error, disabled, extreme-data]
+  notes:
+    - treat current watchlist domain files as canonical routed entrypoints
+    - record wrapper-to-canonical split points explicitly before deciding shared-impact repairs
+repair_approval:
+  status: approved
+  approved_findings:
+    - watchlist-screener-issue-01
+    - watchlist-manage-issue-01
+    - watchlist-signals-issue-01
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - watchlist-manage
+    - watchlist-signals
+    - watchlist-screener
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/artdeco-pages/stock-management-tabs/WatchlistManager.vue
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/strategySignalsData.ts
+    - web/frontend/src/views/stocks/Screener.vue
+    - web/frontend/src/views/stocks/stockScreenerData.ts
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-chromium-watchlist-3-of-3-plus-node-tests-6-of-6
+    gitnexus_staged_detect: mixed-staged-observation-no-batch-scope
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "unrelated staged file already existed: docs/FUNCTION_TREE.md"
+      - "git diff --cached showed no batch files staged"
+      - "gitnexus staged detect returned no indexed symbol changes and was not treated as an isolated batch verdict"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/watchlist-manage-audit.md
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/watchlist-signals-audit.md
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/watchlist-screener-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/watchlist-batch-01-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/watchlist-batch-01-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/watchlist-batch-01-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/watchlist-batch-01-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: closeout
+  next_action: move-to-next-audit-batch
+  notes:
+    - "router truth redirects `/watchlist` to `/watchlist/manage`"
+    - "`web/frontend/src/views/watchlist/Manage.vue` is the routed entrypoint but currently wraps `web/frontend/src/views/artdeco-pages/stock-management-tabs/WatchlistManager.vue`"
+    - "`web/frontend/src/views/watchlist/Signals.vue` is the routed entrypoint but currently wraps `web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue`"
+    - "`web/frontend/src/views/watchlist/Screener.vue` is the routed entrypoint but currently wraps `web/frontend/src/views/stocks/Screener.vue`"
+    - "likely shared-owner watchlist for downstream audit: `WatchlistManager.vue`, `StrategySignalsTab.vue`, and `stocks/Screener.vue`"
+    - "all three approved watchlist repairs were implemented"
+    - "`timeout 180s npm run type-check` later exited successfully after the earlier 60-second timeout observation"
+    - "trading signals store endpoint was aligned to `/v1/trade/signals`, resolving the residual watchlist signals mock/runtime contract mismatch"
+    - "targeted Chromium watchlist regression later passed `3/3`, and node-level regression passed `6/6`"
+status: complete

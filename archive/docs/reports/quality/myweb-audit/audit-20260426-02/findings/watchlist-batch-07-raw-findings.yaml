@@ -1,0 +1,40 @@
+- finding_id: watchlist-manage-data-state-07
+  batch_id: watchlist-batch-07
+  page:
+    route: /watchlist/manage
+    page_key: watchlist-manage
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/watchlist/Manage.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Watchlist manage primary stock rows stayed visible while a newly selected watchlist remained unresolved before its first verified snapshot
+  trigger:
+    steps:
+      - "Open `/watchlist/manage` and let the default `核心组合` stock slice verify successfully."
+      - "Click the `成长跟踪` tab within the same page instance."
+      - "Keep the first `watchlists/wl-growth/stocks` request unresolved so the new selector has not verified any rows yet."
+      - "Inspect the active watchlist tab and the stock table together."
+  expected: "A selector-scoped watchlist route must clear the previous watchlist rows as soon as the active tab switches to a new watchlist that does not yet have its own verified stock snapshot. An unresolved first load must not keep the old rows visible under the new watchlist label."
+  actual: "Before repair, `handleSelectList()` switched the active tab immediately, but `displayCurrentStocks` still read the last route-global stock rows. That left the old `核心组合` rows visible while the new `成长跟踪` selector remained unresolved."
+  evidence:
+    kind: code-path-review
+    note: "New RED selector-switch tests showed `.watchlist-tab.active` had already changed to `成长跟踪` while `tbody` still rendered `贵州茅台` and `宁德时代`."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/stock-management-tabs/WatchlistManager.vue
+      - web/frontend/src/views/watchlist/__tests__/Manage.spec.ts
+      - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/artdeco-pages/stock-management-tabs/WatchlistManager.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /watchlist/manage
+  status: open
+  dependency: null
+  dedupe_key: /watchlist/manage:data-state:selectorScopedPendingPrimaryRowProvenance
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check the canonical watchlist manage route after repair and confirm that a same-instance switch into an unresolved watchlist clears the previous rows immediately and does not leak the old stock list under the new active tab."

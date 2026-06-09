@@ -1,0 +1,36 @@
+- consolidated_issue_id: market-lhb-issue-02
+  severity: Medium
+  title: Market LHB routed first-load row counters now render honest pending placeholders instead of faux zero leaderboard truth
+  pages:
+    - /market/lhb
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The unresolved first-load hero row counter and count-only KPI card were two manifestations of the same routed leaderboard-count truth cluster: the canonical LHB page treated an unresolved board request as if a zero-row payload had already resolved."
+  primary_owner: web/frontend/src/views/market/LHB.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /market/realtime
+    - /market/technical
+  dedupe_keys:
+    - /market/lhb:data-state:unresolvedFirstLeaderboardCountTruth
+  verification_scope:
+    routes:
+      - /market/lhb
+    states:
+      - loading
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/market/LHB.vue
+      - web/frontend/src/views/market/__tests__/LHB.spec.ts
+      - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+    notes:
+      - "the canonical LHB route now gates unresolved first-load row-count surfaces behind `isAwaitingFirstLeaderboard`, so hero/meta and top stat-card count surfaces render `--` instead of `0` while the first board payload is still pending"
+      - "the new routed regression mounts the real stat-card path, and the strengthened Phase 1 matrix now exercises a hanging-LHB first-load state on `/market/lhb`"
+      - "this batch intentionally reuses `myweb-audit v1.38` for product truth and `v1.39` for delayed-state browser interception instead of introducing a new skill version"
+  verification_surface: code-review-plus-targeted-live-verification

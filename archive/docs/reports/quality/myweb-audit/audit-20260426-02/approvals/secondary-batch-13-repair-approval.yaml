@@ -1,0 +1,24 @@
+- consolidated_issue_id: secondary-shell-issue-13
+  severity: Medium
+  affected_routes:
+    - /secondary/legacy-market-portfolio-wrapper
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/Market.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "Legacy market page now delegates to the canonical trade-portfolio owner."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The repair stays scoped to the legacy market owner; no new store, snapshot cache, or shell-level truth surface was introduced."
+    related_routes:
+      - /secondary/legacy-market-portfolio-wrapper
+  approval_status: approved

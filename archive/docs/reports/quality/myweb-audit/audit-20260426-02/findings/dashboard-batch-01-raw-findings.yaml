@@ -1,0 +1,40 @@
+- finding_id: dashboard-aggregate-provenance-data-state-001
+  batch_id: dashboard-batch-01
+  page:
+    route: /dashboard
+    page_key: dashboard-home
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Dashboard aggregate provenance meta hardcoded optimistic `REAL / READY` semantics and swallowed core-slice error envelopes
+  trigger:
+    steps:
+      - Open `/dashboard`
+      - "Reproduce one of three route-truth paths on the primary core slices: all pending, all success, or a partial failure on industry or fund-flow"
+      - Compare the top request-meta bar and route-level alert surface against the actual resolved state of quotes, fund-flow, and industry
+  expected: "The dashboard request-meta bar should derive `DATA` and `SYNC` from the current truth of the primary core slices. Pending first-load should render `PENDING / PENDING`, full success should render `REAL / READY`, and any degraded slice should render `MIXED / DEGRADED` with a matching localized alert. Resolved `success: false` envelopes must remain failure truth instead of being collapsed into empty success."
+  actual: "Before repair, the dashboard header hardcoded optimistic aggregate provenance labels and the route-local service plus state owner treated resolved `success: false` envelopes from the transport layer as empty-success values. As a result, partial failures on industry or fund-flow could disappear into empty rendering while the page still looked globally healthy."
+  evidence:
+    kind: code-review-plus-targeted-verification
+    note: "Code review of the pre-repair dashboard view, state owner, and service showed optimistic aggregate meta plus missing `success: false` envelope handling. Targeted browser-context verification with system `google-chrome` confirmed the repaired route now resolves to `PENDING / PENDING`, `REAL / READY`, and `MIXED / DEGRADED` on the corresponding controlled core-slice states."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+      - web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+      - web/frontend/src/api/services/dashboardService.ts
+      - web/frontend/tests/unit/components/ArtDecoDashboardLogic.spec.ts
+      - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /dashboard:data-state:aggregateProvenanceEnvelopeTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/dashboard` pending, success, and degraded aggregate provenance states after repair, and record natural PM2 auth redirects as environment evidence rather than route-success proof."

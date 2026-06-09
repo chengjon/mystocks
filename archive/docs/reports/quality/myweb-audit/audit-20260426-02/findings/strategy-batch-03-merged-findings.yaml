@@ -1,0 +1,41 @@
+- consolidated_issue_id: strategy-pos-issue-01
+  severity: Medium
+  title: Position workbench family should stop shipping an embedded placeholder fork and reuse the canonical `src/views/trade/Center.vue` surface everywhere
+  pages:
+    - /strategy/pos
+    - /trade/positions
+  source_roles:
+    - route-inventory
+    - data-state-audit
+  why_consolidated: The routed pages already converge on `Center.vue`, while the embedded ArtDeco consumer still diverged into a placeholder-only fork; route truth and data-state drift come from the same missing wrapper convergence.
+  primary_owner: web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoPositionMonitor.vue
+  repair_bucket: fix-with-shared-impact-review
+  repair_decision: approval-pending
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/pos
+    - /trade/positions
+    - ArtDecoTradingCenter#trade-positions
+  dedupe_keys:
+    - /strategy/pos:route-truth:positionsEmbeddedPlaceholder
+    - /trade/positions:data-state:positionsEmbeddedState
+  verification_scope:
+    routes:
+      - /strategy/pos
+      - /trade/positions
+    states:
+      - default
+      - embedded
+    breakpoints:
+      - 1920
+      - 1440
+      - 1280
+  repair_summary:
+    files:
+      - web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoPositionMonitor.vue
+      - web/frontend/tests/unit/views/trade-wrapper-retention.spec.ts
+    notes:
+      - "replace the embedded placeholder with a thin wrapper over `src/views/trade/Center.vue`"
+      - "force embedded mode through `:positions=\"[]\"` so the canonical page reuses its degraded shell without becoming a second route-level implementation"
+  verification_surface: code-review-only

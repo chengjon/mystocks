@@ -1,0 +1,82 @@
+audit_run_id: audit-20260426-02
+batch_id: secondary-batch-19
+module: secondary-legacy-surfaces
+scope:
+  requested_by: user
+  pages:
+    - route: /secondary/legacy-stock-detail-static-shell
+      page_key: secondary-legacy-stock-detail-static-shell
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/StockDetail.vue
+  compatibility_redirects: []
+batch_rationale: >-
+  Continue the secondary inventory phase by collapsing the high-priority
+  legacy `StockDetail.vue` page into an honest static shell because no
+  one-to-one canonical owner exists for direct delegation.
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-only
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "the manifest route `/secondary/legacy-stock-detail-static-shell` is a synthetic secondary-inventory alias used for artifact indexing; `web/frontend/src/views/StockDetail.vue` is not a current router entry"
+    - "there is no one-to-one routed or otherwise active semantically matching canonical owner for direct delegation"
+    - "the repair must not add a new store, snapshot cache, request provenance badge, freshness strip, or fake live stock-detail rows"
+  fallback_log: []
+verification_plan:
+  verification_strategy: code-review-only
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states:
+    - default
+  notes:
+    - "verify the page no longer renders hardcoded pseudo-live stock-detail header, chart, technical analysis, trading summary, or trade-operation shell surfaces"
+    - "verify the owner degrades to an honest static shell with no fabricated live semantics"
+    - "verify secondary inventory tooling still passes after the precedent write-back"
+repair_approval:
+  status: approved
+  approved_findings:
+    - secondary-shell-issue-19
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - secondary-legacy-stock-detail-static-shell
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/StockDetail.vue
+    - web/frontend/src/views/__tests__/StockDetail.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/StockDetail.vue
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vitest
+    typecheck: failed-existing-frontend-debt-only
+    pm2: passed
+    e2e: not-run-unrouted-owner
+    gitnexus_staged_detect: mixed-observation-non-isolated
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "the staged index already contained many unrelated files before this micro-batch, so `gitnexus_detect_changes({scope: staged})` is recorded only as a mixed observation"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/stock-detail-legacy-static-shell-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/secondary-batch-19-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/secondary-batch-19-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/secondary-batch-19-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/secondary-batch-19-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: owner-regression
+  next_action: continue-secondary-inventory-triage
+  notes:
+    - "orphan legacy stock-detail pages with split canonical truth should degrade to an honest static shell instead of false one-owner delegation"
+status: complete

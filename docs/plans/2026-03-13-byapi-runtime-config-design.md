@@ -25,7 +25,7 @@
 
 ## Scope
 
-- 修改 [src/adapters/byapi_adapter.py](/opt/claude/mystocks_spec/src/adapters/byapi_adapter.py)
+- 修改 [src/adapters/byapi_adapter.py](../../src/adapters/byapi_adapter.py)
 - 更新 Byapi 相关单测默认行为预期
 - 用临时环境变量验证 Byapi 与 Tushare 实际恢复情况
 

@@ -1,0 +1,42 @@
+- consolidated_issue_id: secondary-shell-issue-02
+  severity: Medium
+  title: Active trading-center wrappers now delegate live history and portfolio truth to canonical /trade pages
+  pages:
+    - /secondary/artdeco-trading-center
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The `trade-history` and `trade-portfolio` panels were two faces of the same active-wrapper truth defect: both sat behind the live `ArtDecoTradingCenter.vue` shell but still rendered placeholder migration cards instead of delegating to existing canonical `/trade/history` and `/trade/portfolio` owners."
+  primary_owner: web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoHistoryView.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /trade/history
+    - /trade/portfolio
+  dedupe_keys:
+    - /secondary/artdeco-trading-center:data-state:activeWrapperPlaceholderTruth
+  verification_scope:
+    routes:
+      - /secondary/artdeco-trading-center
+    states:
+      - default
+      - loading
+      - empty
+      - embedded
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoHistoryView.vue
+      - web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoPerformanceAnalysis.vue
+      - web/frontend/src/views/artdeco-pages/trading-tabs/__tests__/ArtDecoHistoryView.spec.ts
+      - web/frontend/src/views/artdeco-pages/trading-tabs/__tests__/ArtDecoPerformanceAnalysis.spec.ts
+      - web/frontend/src/views/trade/__tests__/History.spec.ts
+      - .claude/skills/myweb-audit/references/route-truth-operations.md
+      - .claude/skills/myweb-audit/references/route-truth-casebook.md
+    notes:
+      - "the active trading-center history wrapper now embeds canonical `/trade/history` with embedded mode instead of placeholder migration cards"
+      - "the active trading-center performance wrapper now embeds canonical `/trade/portfolio` instead of placeholder migration cards"
+      - "canonical `History.vue` now has explicit embedded-shell regression coverage so wrapper reuse cannot reintroduce route-level hero/stats chrome"
+  verification_surface: code-review-only

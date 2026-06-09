@@ -1,0 +1,38 @@
+- finding_id: secondary-shell-011
+  batch_id: secondary-batch-11
+  page:
+    route: /secondary/legacy-backtest-analysis-canonical-wrapper
+    page_key: secondary-legacy-backtest-analysis-canonical-wrapper
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/BacktestAnalysis.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy top-level backtest analysis page still exposed a forked pseudo-live backtest workbench even though a semantically matching canonical strategy-backtest owner already exists
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/BacktestAnalysis.vue`"
+      - "Inspect the local backtest configuration form, run CTA, metrics grid, chart placeholder, and trade-history shell"
+      - "Confirm the page is not the current router-backed `/strategy/backtest` owner and does not delegate to `web/frontend/src/views/strategy/Backtest.vue`"
+  expected: "An unrouted legacy page that already has a semantically matching canonical strategy-backtest owner should collapse to a thin orchestration wrapper instead of preserving a forked pseudo-live backtest workbench shell."
+  actual: "Before repair, `BacktestAnalysis.vue` rendered its own pseudo-live backtest workbench with local configuration, metrics, and placeholder chart/trade-history surfaces instead of delegating to the canonical `/strategy/backtest` owner."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green regression confirmed the legacy top-level backtest analysis page still rendered its own fake backtest workbench shell before the wrapper repair."
+  repair_target:
+    files:
+      - web/frontend/src/views/BacktestAnalysis.vue
+      - web/frontend/src/views/__tests__/BacktestAnalysis.spec.ts
+    primary_owner: web/frontend/src/views/BacktestAnalysis.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-backtest-analysis-canonical-wrapper
+  status: open
+  dependency: null
+  dedupe_key: /secondary/legacy-backtest-analysis-canonical-wrapper:route-truth:legacyBacktestAnalysisCanonicalWrapper
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner wrapper regression and secondary inventory tooling to confirm the legacy backtest analysis page now delegates entirely to the canonical `/strategy/backtest` owner."

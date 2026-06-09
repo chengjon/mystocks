@@ -1,0 +1,83 @@
+audit_run_id: audit-20260426-02
+batch_id: strategy-batch-05
+module: strategy
+scope:
+  requested_by: user
+  pages:
+    - route: /strategy/parameters
+      page_key: strategy-parameters
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/strategy/Parameters.vue
+  compatibility_redirects: []
+batch_rationale: Reuse the existing `v1.32 + v1.38` rules on the canonical strategy-parameters route so count-only summary cards stop leaking shared faux delta chrome and failed first-load tallies stop presenting resolved zero metrics before any verified strategy summary exists.
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/strategy/parameters` remains `web/frontend/src/views/strategy/Parameters.vue`, while the routed surface is owned by `web/frontend/src/views/artdeco-pages/strategy-tabs/StrategyParametersTab.vue`"
+    - "the approved repair should stay page-local in `StrategyParametersTab.vue` instead of changing shared `ArtDecoStatCard.vue` defaults"
+    - "the natural PM2 route may resolve to an honest empty strategy set, so the verified non-empty summary path should be confirmed through browser-context fulfillment"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, empty, error]
+  notes:
+    - "verify `/strategy/parameters` no longer renders `1.00`, `2.00`, `0.00`, or shared `+0%` chrome on count-only summary cards"
+    - "verify the same route now degrades failed first-load summary tallies to `-- / -- / -- / 101` rather than `0 / 0 / 0 / 101` before any verified strategy payload exists"
+    - "verify the natural PM2 empty-state path still renders honest `0 / 0 / 0 / 101` with zero `.artdeco-stat-change` nodes when the backend returns a real empty strategy set"
+repair_approval:
+  status: approved
+  approved_findings:
+    - strategy-parameters-issue-01
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - strategy-parameters
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/StrategyParametersTab.vue
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/StrategyParametersTab.spec.ts
+    - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/components/artdeco/base/ArtDecoStatCard.vue
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-strategy-parameters-default-success-and-error-summary-verification
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `strategy-batch-05` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` is treated as observation-only in this run because the staged set is not isolated to the current batch"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` returned `risk_level: low`, `changed_files: 77`, `changed_count: 260`, and `affected_count: 0`"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-parameters-summary-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-05-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-05-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-05-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/strategy-batch-05-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-strategy-batch-05-closeout
+  notes:
+    - "the current batch reuses the existing `v1.32 + v1.38` rule set rather than introducing a new failure-mode class"
+    - "the canonical strategy-parameters route now distinguishes verified count-only summary cards, natural empty-state zero counts, and failed first-load placeholders"
+status: complete

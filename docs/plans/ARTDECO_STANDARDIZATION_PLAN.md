@@ -2,7 +2,7 @@
 
 > **说明**
 > 本文是 MyStocks 前端 ArtDeco 体系的专项标准化计划，用于把现有设计系统、组件体系、视觉治理和测试能力收敛为可持续演进的平台层。
-> 仓库级共享规则仍以 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md) 为准。
+> 仓库级共享规则仍以 [`architecture/STANDARDS.md`](../../architecture/STANDARDS.md) 为准。
 
 > **定位**
 > 这不是一次性 UI 重做计划，也不是纯视觉优化清单。

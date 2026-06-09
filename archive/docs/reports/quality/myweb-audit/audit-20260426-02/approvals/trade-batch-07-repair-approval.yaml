@@ -1,0 +1,24 @@
+- consolidated_issue_id: trade-signals-issue-03
+  severity: High
+  affected_routes:
+    - /trade/signals
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/trade/Signals.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: true
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "The canonical trade-signals route now keeps first-load pending and resolved failure envelopes out of faux REAL or EMPTY signal truth, and its verification mocks now mirror the real store-backed transport behavior."
+  dependency: null
+  shared_impact:
+    candidate: true
+    basis: "The deeper failure pattern originates from store-backed resolved-envelope behavior, but the approved repair remains page-local in `Signals.vue` while the broader store-factory scope is kept as an observation."
+    related_routes:
+      - /trade/signals
+  approval_status: approved

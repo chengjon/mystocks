@@ -1,0 +1,87 @@
+audit_run_id: audit-20260426-02
+batch_id: strategy-batch-17
+module: strategy
+scope:
+  requested_by: user
+  pages:
+    - route: /strategy/gpu
+      page_key: strategy-gpu
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/strategy/BacktestGPU.vue
+  compatibility_redirects: []
+batch_rationale: "Promote `myweb-audit` to `v1.59` and repair the canonical `/strategy/gpu` route so partial primary-slice refreshes no longer present a generic full `最近同步` runtime banner."
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "the canonical `/strategy/gpu` route remains owned by `web/frontend/src/views/strategy/BacktestGPU.vue` with page-local runtime banner logic in `web/frontend/src/views/strategy/composables/useBacktestGPU.ts`"
+    - "the approved repair should stay page-local inside the route composable and template instead of widening into shared runtime banner primitives or backend GPU schemas"
+    - "the visible top runtime banner summarizes multiple primary slices, so performance-only or status-only refreshes must degrade to explicit partial-sync wording rather than generic full `最近同步` copy"
+    - "auth-seeded browser contexts plus browser-context fulfillment are acceptable verification harnesses for controlled partial-primary-slice proofs on `/strategy/gpu`"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default]
+  notes:
+    - "verify `/strategy/gpu` degrades the runtime banner to `部分同步` when only `/api/gpu/performance` or only `/api/gpu/status` produces a verified primary slice"
+    - "verify the same route still shows generic `最近同步` wording on the full-success path"
+    - "verify the performance-only route keeps `64x` visible while the banner explicitly names `GPU 状态待同步`"
+repair_approval:
+  status: approved
+  approved_findings:
+    - strategy-gpu-issue-02
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - strategy-gpu
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/strategy/composables/useBacktestGPU.ts
+    - web/frontend/src/views/strategy/BacktestGPU.vue
+    - web/frontend/src/views/strategy/composables/__tests__/useBacktestGPU.spec.ts
+    - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-strategy-gpu-partial-sync-banner-verification
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contains earlier staged audit artifacts and unrelated files, so any staged GitNexus output remains observation-only unless an isolated staged scope is prepared later"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` remains a mixed observation and is not used as an isolated verdict for `strategy-batch-17`"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-gpu-partial-sync-banner-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-17-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-17-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-17-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/strategy-batch-17-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-strategy-batch-17-closeout
+  notes:
+    - "the canonical strategy-gpu route now distinguishes partial primary-slice sync from full recent route sync at the route-level runtime banner"
+    - "future routed runtime and monitoring audits should reuse `v1.59` whenever one primary slice remains pending or retained while another slice refreshes successfully"
+status: complete

@@ -1,0 +1,24 @@
+- consolidated_issue_id: market-realtime-issue-01
+  severity: Medium
+  affected_routes:
+    - /market/realtime
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/market/Realtime.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: The canonical realtime quote route now renders unresolved first-load KPI, hero-meta, and distribution surfaces honestly as placeholders and pending copy instead of faux zero quote metrics.
+  dependency: null
+  shared_impact:
+    candidate: true
+    basis: Shared stat-card defaults and adjacent numeric surface conventions made the first-load zero leak visible, but the approved repair remains page-local in `Realtime.vue`.
+    related_routes:
+      - /data/fund-flow
+  approval_status: approved

@@ -1,0 +1,43 @@
+- finding_id: system-resources-data-state-001
+  batch_id: system-batch-13
+  page:
+    route: /system/resources
+    page_key: system-resources
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/system/Resources.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Routed system-resources page presented unresolved first-load resource stats as faux zero metrics before any verified resource snapshot existed
+  trigger:
+    steps:
+      - "Open `/system/resources`"
+      - "Keep the first `/api/v1/system/resources` request unresolved before any verified resource snapshot lands"
+      - "Inspect the visible stats strip and resource section headers while the route is still in the pending shell"
+  expected: "While the first resource snapshot is still unresolved, resource-dependent counts should stay degraded to `-- / -- / --`, and the hero should keep unresolved provenance and freshness (`REQ_ID: N/A`, `UPDATED: N/A`) until the first verified resource snapshot exists."
+  actual: "Before repair, `/system/resources` rendered `运行进程: 0 / 关键告警: 0 / 依赖摘要: 0` and section headers like `0 tracked` even though the route had not yet verified any resource payload. The shell therefore looked like a real empty node snapshot rather than an in-flight sync."
+  evidence:
+    kind: live-observation
+    note: "A new owner red test first reproduced the faux-zero `0 / 0 / 0` shell, then targeted Phase 4 Chromium proof confirmed the routed page now stays at `UNKNOWN / N/A / -- / -- / --` until the delayed resource request resolves."
+  repair_target:
+    files:
+      - web/frontend/src/views/system/Resources.vue
+      - web/frontend/src/views/system/__tests__/Resources.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/references/route-truth-families.md
+      - .claude/skills/myweb-audit/references/route-truth-casebook.md
+      - .claude/skills/myweb-audit/references/route-truth-coverage-matrix.md
+    primary_owner: web/frontend/src/views/system/Resources.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /system/config
+    - /system/data
+  status: open
+  dependency: null
+  dedupe_key: /system/resources:data-state:resourcePendingCountTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/system/resources` after repair and confirm unresolved resource counts stay at `-- / -- / --` until the first verified resource snapshot lands."

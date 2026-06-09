@@ -1,0 +1,44 @@
+- finding_id: detail-graphics-data-state-08
+  batch_id: detail-batch-08
+  page:
+    route: /detail/graphics/:symbol
+    page_key: stock-graphics
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/artdeco-pages/analysis-tabs/KLineAnalysis.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Detail graphics route could leak the previous period-owned K-line and indicator snapshot into a new period before the new selector context established its own verified snapshot
+  trigger:
+    steps:
+      - "Open `/detail/graphics/600519` and let the route-owned `1d` K-line analysis snapshot verify successfully."
+      - "Keep the same routed page instance, switch the analysis period from `1d` to `1w`, and trigger `开始分析`."
+      - "Force the new `1w` K-line request to fail before any verified `600519 + 1w` snapshot exists."
+      - "Inspect `.module-meta`, `.trend-card`, and `.indicators-card` together."
+  expected: "The canonical detail graphics route must treat the current `symbol + period` selector context as part of primary snapshot provenance. A new period with no verified K-line snapshot must not inherit the previous period trend points, request metadata, or indicator workspace."
+  actual: "Before repair, the route-owned detail graphics page tracked verified K-line and indicator state only by symbol while the request helper also ignored the selected period. A same-instance period switch from `1d` to `1w` could therefore keep the previous verified `1d` snapshot visible under the new `PERIOD: 1w` shell when the new request failed before establishing its own verified snapshot."
+  evidence:
+    kind: code-path-review
+    note: "New RED regressions reproduced that a same-symbol period switch reused the old verified `1d` route snapshot instead of enforcing `symbol + period`-scoped truth."
+  repair_target:
+    files:
+      - web/frontend/src/views/market/marketKlineData.ts
+      - web/frontend/src/views/artdeco-pages/analysis-tabs/KLineAnalysis.vue
+      - web/frontend/src/views/artdeco-pages/analysis-tabs/__tests__/KLineAnalysis.spec.ts
+      - web/frontend/src/views/market/__node_tests__/marketKlineData.test.ts
+      - web/frontend/src/views/artdeco-pages/market-tabs/__node_tests__/marketKlineData.test.ts
+      - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/artdeco-pages/analysis-tabs/KLineAnalysis.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /detail/graphics/:symbol
+    - /market/technical
+  status: open
+  dependency: null
+  dedupe_key: /detail/graphics/:symbol:data-state:selectorScopedPeriodSnapshotProvenance
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check the canonical detail graphics route after repair and confirm that a same-instance period switch no longer leaks the previous verified `1d` trend, request metadata, or indicators into the current `1w` selector shell."

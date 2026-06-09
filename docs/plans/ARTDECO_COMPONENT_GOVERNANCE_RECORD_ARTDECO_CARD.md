@@ -1,14 +1,14 @@
 # ArtDeco Component Governance Record: ArtDecoCard
 
 > **说明**
-> 本文基于 [`ARTDECO_COMPONENT_GOVERNANCE_RECORD_TEMPLATE.md`](/opt/claude/mystocks_spec/docs/plans/ARTDECO_COMPONENT_GOVERNANCE_RECORD_TEMPLATE.md) 产出，是首批样板组件的第一份实战治理记录草案。
+> 本文基于 [`ARTDECO_COMPONENT_GOVERNANCE_RECORD_TEMPLATE.md`](ARTDECO_COMPONENT_GOVERNANCE_RECORD_TEMPLATE.md) 产出，是首批样板组件的第一份实战治理记录草案。
 
 ---
 
 ## 1. 组件基本信息
 
 - **组件名称**: `ArtDecoCard`
-- **组件路径**: [`web/frontend/src/components/artdeco/base/ArtDecoCard.vue`](/opt/claude/mystocks_spec/web/frontend/src/components/artdeco/base/ArtDecoCard.vue)
+- **组件路径**: [`web/frontend/src/components/artdeco/base/ArtDecoCard.vue`](../../web/frontend/src/components/artdeco/base/ArtDecoCard.vue)
 - **所属层级**: `Base`
 - **所属业务域**: `通用`
 - **当前状态**: `候选`

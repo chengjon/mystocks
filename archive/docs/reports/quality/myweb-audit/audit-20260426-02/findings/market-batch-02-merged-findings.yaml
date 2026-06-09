@@ -1,0 +1,39 @@
+- consolidated_issue_id: market-lhb-issue-02
+  severity: Medium
+  title: LHB routed numeric surfaces now render honest count and ordinal values instead of fabricated shared decimal precision
+  pages:
+    - /market/lhb
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The count-only KPI card and the ranking-table `rank` column were two manifestations of the same routed numeric-truth cluster: shared numeric renderers leaked exact-decimal precision onto both a plain tally and a discrete ordinal field on the same canonical page."
+  primary_owner: web/frontend/src/views/market/LHB.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /data/fund-flow
+    - /data/industry
+    - /trade/history
+    - /risk/overview
+  dedupe_keys:
+    - /market/lhb:data-state:countOnlyKpiPrecisionTruth
+    - /market/lhb:data-state:lhbRankOrdinalPrecision
+  verification_scope:
+    routes:
+      - /market/lhb
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/market/LHB.vue
+      - web/frontend/src/views/market/__tests__/LHB.spec.ts
+      - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+    notes:
+      - "the canonical LHB route now passes the count-only `榜单条目` card as a plain string so it no longer inherits shared exact-decimal stat-card formatting"
+      - "the canonical LHB route now overrides shared table formatting for the discrete `rank` field so the leaderboard renders `1 / 2 / 3` instead of `1.00 / 2.00 / 3.00`"
+      - "the new routed component regression mounts the real `ArtDecoStatCard` and `ArtDecoTable` path so the test fails if count-only precision or ordinal pseudo decimals leak back"
+      - "the strengthened Phase 1 matrix assertion now keeps `/market/lhb` aligned with the existing numeric-truth rules instead of introducing a new skill version"
+  verification_surface: code-review-plus-targeted-live-verification

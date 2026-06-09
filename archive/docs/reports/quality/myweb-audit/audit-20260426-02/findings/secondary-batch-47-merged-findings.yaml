@@ -1,0 +1,39 @@
+- consolidated_issue_id: secondary-shell-issue-47
+  severity: Medium
+  title: Remaining advanced-analysis orphan children now degrade to honest static shells
+  pages:
+    - /secondary/advanced-analysis-remaining-children-static-shell
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The seven pages are the remaining orphan advanced-analysis children and share the same lack of independent canonical verified truth."
+  primary_owner: web/frontend/src/views/advanced-analysis/BatchAnalysisView.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/advanced-analysis-remaining-children-static-shell
+  dedupe_keys:
+    - /secondary/advanced-analysis-remaining-children-static-shell:route-truth:advancedAnalysisRemainingChildrenStaticShell
+  verification_scope:
+    routes:
+      - /secondary/advanced-analysis-remaining-children-static-shell
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/advanced-analysis/AnomalyTrackingView.vue
+      - web/frontend/src/views/advanced-analysis/BatchAnalysisView.vue
+      - web/frontend/src/views/advanced-analysis/CapitalFlowView.vue
+      - web/frontend/src/views/advanced-analysis/ChipDistributionView.vue
+      - web/frontend/src/views/advanced-analysis/DecisionModelsView.vue
+      - web/frontend/src/views/advanced-analysis/FinancialValuationView.vue
+      - web/frontend/src/views/advanced-analysis/SentimentAnalysisView.vue
+      - web/frontend/src/views/advanced-analysis/__tests__/legacyStaticShells.spec.ts
+    notes:
+      - "all seven pages now render `legacy-static-shell` with canonical handoff links"
+      - "`BatchAnalysisView.vue` no longer requires props, Element Plus tags, local result aggregation, score fallback, or metric extraction"
+      - "secondary inventory high-priority count remains `0` after refreshing the M-batch"
+  verification_surface: code-review-only

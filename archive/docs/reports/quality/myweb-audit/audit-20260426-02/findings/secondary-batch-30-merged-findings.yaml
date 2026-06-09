@@ -1,0 +1,33 @@
+- consolidated_issue_id: secondary-shell-issue-30
+  severity: Medium
+  title: Legacy system performance monitor page now degrades to an honest static shell
+  pages:
+    - /secondary/system-performance-monitor-static-shell
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The hardcoded Core Web Vitals cards, performance-budget bars, trend placeholders, and optimization suggestion summaries in `PerformanceMonitor.vue` were all faces of the same defect family: a legacy system dashboard preserved pseudo-live truth even though no verified canonical performance-monitor owner existed."
+  primary_owner: web/frontend/src/views/system/PerformanceMonitor.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/system-performance-monitor-static-shell
+  dedupe_keys:
+    - /secondary/system-performance-monitor-static-shell:route-truth:systemPerformanceMonitorStaticShell
+  verification_scope:
+    routes:
+      - /secondary/system-performance-monitor-static-shell
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/system/PerformanceMonitor.vue
+      - web/frontend/src/views/system/__tests__/PerformanceMonitor.spec.ts
+    notes:
+      - "the legacy performance-monitor page now renders an honest static shell"
+      - "the repair removes local Core Web Vitals cards, budget bars, trend placeholders, and suggestion summaries instead of preserving pseudo-live system truth"
+      - "users are handed back to verified `/system/health`, `/system/resources`, and `/system/api` routes"
+  verification_surface: code-review-only

@@ -1,0 +1,43 @@
+- finding_id: blank-layout-functional-001
+  batch_id: blank-batch-01
+  page:
+    route: /:pathMatch(.*)*
+    page_key: blank-not-found
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/NotFound.vue
+  source_role: functional-audit
+  severity: Medium
+  issue_type: route
+  title: Blank-layout 404 recovery action used root redirect instead of canonical home-route truth
+  trigger:
+    steps:
+      - "Open an unmatched route such as `/__blank-layout-missing-route__`"
+      - "Confirm the blank-layout 404 shell is visible"
+      - "Click `返回首页`"
+      - "Inspect the route transition and recovery target"
+  expected: "The 404 recovery action should use canonical `HOME_ROUTE_PATH` truth so the blank-layout shell re-enters the authenticated route graph through the same home-route contract used elsewhere."
+  actual: "Before repair, `NotFound.vue` hardcoded `router.push('/')`, relying on a redirect hop instead of the canonical home-route constant."
+  evidence:
+    kind: code-review
+    note: "Source review and the new blank-layout smoke proof showed that the route recovered correctly but the owner action bypassed canonical home-route truth by pushing `/` directly."
+  repair_target:
+    files:
+      - web/frontend/src/views/NotFound.vue
+      - web/frontend/tests/unit/config/shell-route-runtime-guardrails.spec.ts
+      - web/frontend/tests/e2e/blank-layout-smoke.spec.ts
+      - .claude/skills/myweb-audit/references/route-truth-casebook.md
+      - .claude/skills/myweb-audit/references/route-truth-coverage-matrix.md
+    primary_owner: web/frontend/src/views/NotFound.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /login
+    - /dashboard
+  status: open
+  dependency: null
+  dedupe_key: /:pathMatch(.*)*:functional:canonical-home-route-recovery
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the blank-layout smoke proof and confirm `/login` and `404` stay inside the blank shell with no shared stats/request chrome, and that the 404 recovery action lands on the expected login redirect path."

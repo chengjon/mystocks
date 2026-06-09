@@ -1,0 +1,39 @@
+- consolidated_issue_id: strategy-signals-issue-01
+  severity: High
+  title: Strategy signals summary surfaces now render honest count-only cards and unresolved first-load placeholders instead of faux delta metrics or inherited zero tallies
+  pages:
+    - /strategy/signals
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The top strategy-signals tally strip and adjacent `COUNT` meta leaked the same route-truth defect across neighboring states: verified count-only tallies, natural empty-state zero counts, and unresolved first-load signal state were all delegated into shared numeric presentation before the canonical page distinguished them."
+  primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/signals
+    - /watchlist/signals
+  dedupe_keys:
+    - /strategy/signals:data-state:summaryCountAndFirstLoadTruth
+  verification_scope:
+    routes:
+      - /strategy/signals
+    states:
+      - default
+      - empty
+      - loading
+      - error
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/StrategySignalsTab.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    notes:
+      - "the routed strategy-signals surface now derives `showSummaryPlaceholders` from first-load and error-state evidence, so unresolved or failed first loads degrade the count-only tally strip to `-- / -- / -- / --` and `COUNT: --` instead of inherited zero values"
+      - "the same route now passes plain string values and `show-change=false` to every top tally card, so verified count-only states and natural empty-state zeros no longer inherit shared `+0%` chrome or decimal pseudo precision"
+      - "the new routed component regression and strengthened phase3 matrix now protect verified success tallies and hanging-first-load placeholders, while the shared watchlist wrapper also inherits the safer tally behavior"
+      - "this batch reuses existing `myweb-audit v1.32 + v1.38 + v1.39` rules rather than introducing a new skill version, because the defect was a direct combination of count-kpi delta truth, unresolved first-load summary truth, and browser-context verification practice"
+  verification_surface: code-review-plus-targeted-live-verification

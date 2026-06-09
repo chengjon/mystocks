@@ -1,0 +1,23 @@
+- consolidated_issue_id: data-concept-issue-01
+  severity: Medium
+  affected_routes:
+    - /data/concept
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/data/Concepts.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: The routed concept workbench now keeps the last successful rows visible and explicitly labels stale data when a manual refresh fails.
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: null
+    related_routes: []
+  approval_status: approved

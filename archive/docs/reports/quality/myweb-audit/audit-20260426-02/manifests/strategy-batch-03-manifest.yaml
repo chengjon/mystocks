@@ -1,0 +1,93 @@
+audit_run_id: audit-20260426-02
+batch_id: strategy-batch-03
+module: strategy
+scope:
+  requested_by: user
+  pages:
+    - route: /strategy/pos
+      page_key: strategy-pos
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoTradingPositions.vue
+    - route: /trade/positions
+      page_key: trade-positions
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/trade/Center.vue
+  compatibility_redirects: []
+batch_rationale: Positions workbench truth closure across the strategy wrapper route, the canonical trade route, and the remaining embedded ArtDeco consumer.
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: live-audit
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "/strategy/pos and /trade/positions remain the active router-truth position pages"
+    - "ArtDecoTradingCenter remains a legacy embedded consumer rather than a standalone routed truth source"
+    - "PM2 frontend/backend remain reusable for targeted verification"
+  fallback_log:
+    - "batch initialized from routed position workbench truth before shared embedded-consumer review started"
+verification_plan:
+  verification_strategy: chromium-only
+  browser_project: chromium
+  breakpoints: [1920, 1440, 1280]
+  required_states: [default]
+  notes:
+    - "treat /strategy/pos as a compatibility wrapper over Center.vue"
+    - "confirm /trade/positions still renders the canonical holdings ledger after the embedded consumer convergence"
+    - "embedded ArtDecoTradingCenter#trade-positions has no direct routed browser path, so wrapper regression coverage must carry that part of the verification truth"
+repair_approval:
+  status: approved
+  approved_findings:
+    - strategy-pos-issue-01
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - strategy-pos
+    - trade-positions
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoPositionMonitor.vue
+    - web/frontend/tests/unit/views/trade-wrapper-retention.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/trade/Center.vue
+      - web/frontend/src/views/artdeco-pages/ArtDecoTradingCenter.vue
+    confirmed:
+      - web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoPositionMonitor.vue
+      - web/frontend/tests/unit/views/trade-wrapper-retention.spec.ts
+  validation_status:
+    syntax: passed-via-vue-tsc
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-chromium-routes-2-of-2-plus-vitest-5-of-5
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contains previously staged audit artifacts from earlier batches; final GitNexus staged verdict may remain a mixed-staged observation"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` returned `risk_level: low`, `changed_files: 64`, `changed_count: 204`, and `affected_count: 0`"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-pos-audit.md
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/trade-positions-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-03-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-03-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-03-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/strategy-batch-03-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: route-repair-and-targeted-verification
+  next_action: finalize-batch-closeout
+  notes:
+    - "/strategy/pos remains a thin wrapper over Center.vue"
+    - "/trade/positions remains the canonical routed positions page"
+    - "ArtDecoPositionMonitor.vue now wraps Center.vue and activates embedded mode with :positions=\"[]\""
+    - "targeted Chromium route checks passed 2/2, with wrapper-retention tests passing 5/5"
+status: complete

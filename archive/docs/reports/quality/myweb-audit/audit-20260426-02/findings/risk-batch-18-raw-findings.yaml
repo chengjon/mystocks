@@ -1,0 +1,40 @@
+- finding_id: risk-stop-loss-data-state-018
+  batch_id: risk-batch-18
+  page:
+    route: /risk/stop-loss
+    page_key: risk-stop-loss
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/risk/StopLoss.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Risk stop-loss route kept the previous watchlist cards visible while a new primary watchlist selector was still unresolved
+  trigger:
+    steps:
+      - "Open `/risk/stop-loss`."
+      - "Let the first active watchlist resolve with verified stop-loss cards."
+      - "Refresh the route so `/api/v1/monitoring/watchlists` now promotes a different primary watchlist."
+      - "Keep the new `watchlists/:watchlistId/stocks` request unresolved and inspect hero provenance, top-strip counts, and the visible risk cards."
+  expected: "As soon as the routed owner switches to a new primary watchlist without its own verified snapshot, the page should enter a pending shell with `REQ_ID: N/A`, top-strip `-- / -- / -- / --`, and zero visible stop-loss cards."
+  actual: "Before repair, `/risk/stop-loss` already switched the shell to the new selector and placeholder counts, but it kept rendering the previous watchlist cards such as `贵州茅台` until the new `stocks` request resolved or failed."
+  evidence:
+    kind: live-observation
+    note: "A new owner red test failed with one stale `risk-card` still visible during a pending selector switch. After repair, targeted component regressions, routed Phase 4 assertions, and authenticated system-Chrome verification confirmed `REQ_ID: N/A`, placeholder stats, and zero cards while the new watchlist stayed unresolved."
+  repair_target:
+    files:
+      - web/frontend/src/views/risk/StopLoss.vue
+      - web/frontend/src/views/risk/__tests__/StopLoss.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/risk/StopLoss.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /risk/stop-loss
+  status: open
+  dependency: null
+  dedupe_key: /risk/stop-loss:data-state:selectorScopedPendingCardProvenance
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/risk/stop-loss` after repair and confirm a selector switch into an unresolved primary watchlist clears stale cards immediately while preserving the existing stale-retention behavior for refresh failures on verified selectors."

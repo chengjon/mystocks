@@ -1,0 +1,38 @@
+- finding_id: trade-portfolio-data-state-001
+  batch_id: trade-batch-01
+  page:
+    route: /trade/portfolio
+    page_key: trade-portfolio
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/trade/Portfolio.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Routed portfolio pages fabricated equal-weight rebalance advice from holdings-only payloads with no target-weight truth
+  trigger:
+    steps:
+      - Open `/trade/portfolio` or `/risk/pnl`
+      - Let the routed page load a live or intercepted `/api/v1/trade/positions` payload with positions but no `target_weight`
+      - Inspect the stats strip and `自动再平衡建议` panel
+  expected: "Rebalance counts, targets, and amount recommendations should only render when the current routed source exposes real target-weight or portfolio-policy inputs; otherwise the page should degrade the strategy surface to an explicit pending or unverified state."
+  actual: "Before repair, the canonical trade portfolio page used a synthetic equal-weight heuristic and rendered copy such as `当前 54.36% → 目标 25%` plus `建议减仓约 ...` even though the current positions payload did not expose any real `target_weight` or portfolio-constraint fields."
+  evidence:
+    kind: live-observation
+    note: "Route-intercepted browser verification showed both `/trade/portfolio` and `/risk/pnl` issuing `/api/v1/trade/positions` without target-weight inputs while the page still presented equal-weight rebalance advice as if it were real strategy truth."
+  repair_target:
+    files:
+      - web/frontend/src/views/trade/Portfolio.vue
+      - web/frontend/src/views/artdeco-pages/portfolio-tabs/portfolioOverviewData.ts
+    primary_owner: web/frontend/src/views/trade/Portfolio.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /risk/pnl
+  status: open
+  dependency: null
+  dedupe_key: /trade/portfolio:data-state:Portfolio
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check the canonical trade route and the routed risk wrapper route after fix to ensure both degrade rebalance advice to `待接入` when no target-weight truth exists.

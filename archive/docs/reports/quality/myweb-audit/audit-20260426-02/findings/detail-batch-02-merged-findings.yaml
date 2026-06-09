@@ -1,0 +1,42 @@
+- consolidated_issue_id: detail-news-issue-02
+  severity: High
+  title: Detail news route now keeps sibling announcement stat cards aligned to the verified stats contract
+  pages:
+    - /detail/news/:symbol
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The lone `公告总数` live count, the label-only sibling stat cards, and the unresolved `0` fallback were three expressions of the same routed truth defect: `/detail/news/:symbol` requested a multi-field stats contract but only surfaced one field while adjacent cards still looked partially live."
+  primary_owner: web/frontend/src/views/announcement/AnnouncementMonitor.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /risk/news
+  dedupe_keys:
+    - /detail/news/:symbol:data-state:siblingStatsContractTruth
+  verification_scope:
+    routes:
+      - /detail/news/:symbol
+    states:
+      - unresolved-stats-slice
+      - stats-slice-failure
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/announcement/AnnouncementMonitor.vue
+      - web/frontend/src/views/announcement/__tests__/AnnouncementMonitor.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/SKILL.md
+      - .claude/skills/myweb-audit/references/audit-checklist.md
+      - .claude/agents/myweb-audit-data-state-audit.md
+      - .claude/skills/myweb-audit/references/CHANGELOG.md
+    notes:
+      - "the canonical detail news owner now derives a page-local `displayStats` surface from the dedicated announcement stats contract instead of surfacing only `total_count`"
+      - "all four sibling stat cards now render verified count values when they exist and degrade to `--` when the stats slice has not yet verified"
+      - "the route no longer presents a lone live count beside label-only siblings or unresolved `0` fallbacks"
+      - "the routed component regression and the Phase 4 routed matrix now pin both the verified-stats path and the stats-slice-failure path"
+      - "this batch introduces `myweb-audit v1.50` sibling-stats contract guidance for routed pages that request dedicated live summary slices with multiple sibling count fields"
+  verification_surface: code-review-plus-targeted-live-verification

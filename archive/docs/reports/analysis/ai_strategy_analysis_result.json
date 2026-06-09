@@ -1,0 +1,196 @@
+{
+  "timestamp": "2025-11-18T08:39:19.511121",
+  "strategies_analyzed": 3,
+  "symbols_tested": [
+    "000001.SZ",
+    "000002.SZ",
+    "600000.SH",
+    "600036.SH",
+    "000858.SZ"
+  ],
+  "strategy_results": {
+    "Momentum Strategy": {
+      "strategy_info": {
+        "name": "Momentum Strategy",
+        "type": "momentum",
+        "signal_count": 805
+      },
+      "symbol_results": {
+        "000001.SZ": {
+          "total_return": -0.006854891140336986,
+          "sharpe_ratio": -1.3176650151374603,
+          "max_drawdown": 0.010888921301900991,
+          "win_rate": 0.0,
+          "total_trades": 11,
+          "profit_factor": 0.0
+        },
+        "000002.SZ": {
+          "total_return": -0.00306737819854141,
+          "sharpe_ratio": -0.1698151332506651,
+          "max_drawdown": 0.022017816878926566,
+          "win_rate": 0.2,
+          "total_trades": 11,
+          "profit_factor": 0.6637285949384785
+        },
+        "600000.SH": {
+          "total_return": 0.002266501078618021,
+          "sharpe_ratio": 0.7023305402394622,
+          "max_drawdown": 0.001639046163911925,
+          "win_rate": 0.3333333333333333,
+          "total_trades": 7,
+          "profit_factor": 0.0006553503657328312
+        },
+        "600036.SH": {
+          "total_return": -0.001791774942906486,
+          "sharpe_ratio": -0.1576551136173063,
+          "max_drawdown": 0.010194330248962066,
+          "win_rate": 0.4,
+          "total_trades": 11,
+          "profit_factor": 0.36935760914862364
+        },
+        "000858.SZ": {
+          "total_return": -0.004298010677695565,
+          "sharpe_ratio": -0.38849800408296153,
+          "max_drawdown": 0.009147066882503838,
+          "win_rate": 0.4,
+          "total_trades": 10,
+          "profit_factor": 0.35938018138289496
+        }
+      },
+      "aggregated_metrics": {
+        "avg_total_return": -0.002749110776172485,
+        "avg_sharpe_ratio": -0.26626054516978626,
+        "avg_max_drawdown": 0.010777436295241078,
+        "avg_win_rate": 0.2666666666666667,
+        "total_trades": 50,
+        "success_rate": 0.2
+      }
+    },
+    "Mean Reversion Strategy": {
+      "strategy_info": {
+        "name": "Mean Reversion Strategy",
+        "type": "mean_reversion",
+        "signal_count": 805
+      },
+      "symbol_results": {
+        "000001.SZ": {
+          "total_return": 0.0009429750805636286,
+          "sharpe_ratio": 0.2416086116585812,
+          "max_drawdown": 0.0039201522565157215,
+          "win_rate": 0.5,
+          "total_trades": 4,
+          "profit_factor": 2.038313989575063
+        },
+        "000002.SZ": {
+          "total_return": 0.024046828965312596,
+          "sharpe_ratio": 2.2347864250455123,
+          "max_drawdown": 0.004131868481210242,
+          "win_rate": 1.0,
+          "total_trades": 6,
+          "profit_factor": Infinity
+        },
+        "600000.SH": {
+          "total_return": 0.000586565959595755,
+          "sharpe_ratio": 0.27448285321773186,
+          "max_drawdown": 0.0010301618253787455,
+          "win_rate": 1.0,
+          "total_trades": 4,
+          "profit_factor": Infinity
+        },
+        "600036.SH": {
+          "total_return": 0.00940770242888626,
+          "sharpe_ratio": 1.6223294603446814,
+          "max_drawdown": 0.0035715622635780716,
+          "win_rate": 1.0,
+          "total_trades": 4,
+          "profit_factor": Infinity
+        },
+        "000858.SZ": {
+          "total_return": 0.0006670469882398902,
+          "sharpe_ratio": 0.0820836888111125,
+          "max_drawdown": 0.010337721314974731,
+          "win_rate": 1.0,
+          "total_trades": 5,
+          "profit_factor": Infinity
+        }
+      },
+      "aggregated_metrics": {
+        "avg_total_return": 0.007130223884519625,
+        "avg_sharpe_ratio": 0.891058207815524,
+        "avg_max_drawdown": 0.004598293228331503,
+        "avg_win_rate": 0.9,
+        "total_trades": 23,
+        "success_rate": 1.0
+      }
+    },
+    "ML-Based Strategy": {
+      "strategy_info": {
+        "name": "ML-Based Strategy",
+        "type": "ml_based",
+        "signal_count": 805
+      },
+      "symbol_results": {
+        "000001.SZ": {
+          "total_return": -0.000506743472033122,
+          "sharpe_ratio": -0.06589268377399023,
+          "max_drawdown": 0.006381569532450067,
+          "win_rate": 0,
+          "total_trades": 1,
+          "profit_factor": Infinity
+        },
+        "000002.SZ": {
+          "total_return": 0.03143466139313911,
+          "sharpe_ratio": 1.6403171635542828,
+          "max_drawdown": 0.011522756101567522,
+          "win_rate": 0,
+          "total_trades": 1,
+          "profit_factor": Infinity
+        },
+        "600000.SH": {
+          "total_return": 0.0033727174844936235,
+          "sharpe_ratio": 0.9308982032043567,
+          "max_drawdown": 0.002357440654033323,
+          "win_rate": 0,
+          "total_trades": 1,
+          "profit_factor": Infinity
+        },
+        "600036.SH": {
+          "total_return": 0.014243697605143097,
+          "sharpe_ratio": 1.1444326964400475,
+          "max_drawdown": 0.00900261746035505,
+          "win_rate": 0,
+          "total_trades": 1,
+          "profit_factor": Infinity
+        },
+        "000858.SZ": {
+          "total_return": -0.006438511807388131,
+          "sharpe_ratio": -0.46744105987213763,
+          "max_drawdown": 0.015633967968942904,
+          "win_rate": 0,
+          "total_trades": 1,
+          "profit_factor": Infinity
+        }
+      },
+      "aggregated_metrics": {
+        "avg_total_return": 0.008421164240670916,
+        "avg_sharpe_ratio": 0.6364628639105119,
+        "avg_max_drawdown": 0.008979670343469772,
+        "avg_win_rate": 0.0,
+        "total_trades": 5,
+        "success_rate": 0.6
+      }
+    }
+  },
+  "overall_performance": {
+    "best_strategy": "ML-Based Strategy",
+    "avg_portfolio_return": 0.004267425783006019,
+    "avg_sharpe_ratio": 0.42042017551874994,
+    "avg_max_drawdown": 0.008118466622347451,
+    "strategy_count": 3
+  },
+  "recommendations": [
+    "🏆 推荐策略: ML-Based Strategy (表现最佳)",
+    "✅ 风险控制良好: 平均回撤在可接受范围内",
+    "📉 收益风险比需改进: 夏普比率较低，建议优化策略"
+  ]
+}

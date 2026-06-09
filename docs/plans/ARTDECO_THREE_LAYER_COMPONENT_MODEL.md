@@ -1,7 +1,7 @@
 # ArtDeco Three-Layer Component Model
 
 > **说明**
-> 本文是在 [`ARTDECO_COMPONENT_LAYERING_DRAFT.md`](/opt/claude/mystocks_spec/docs/plans/ARTDECO_COMPONENT_LAYERING_DRAFT.md) 基础上的补充草案。
+> 本文是在 [`ARTDECO_COMPONENT_LAYERING_DRAFT.md`](ARTDECO_COMPONENT_LAYERING_DRAFT.md) 基础上的补充草案。
 > 它不推翻现有 `Base / Domain` 规则，而是为当前已经出现的页面骨架类组件正式补上 `Core Skeleton` 层定义。
 
 ---

@@ -1,0 +1,87 @@
+audit_run_id: audit-20260426-02
+batch_id: data-batch-06
+module: data
+scope:
+  requested_by: user
+  pages:
+    - route: /data/indicator
+      page_key: data-indicator
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/data/Advanced.vue
+  compatibility_redirects: []
+batch_rationale: Close the routed indicator workflow-truth gap so the page no longer presents hydrated stock-pool data as if screening has already been executed before the user triggers the screening workflow.
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+  - visual-artdeco-audit
+  - responsive-a11y-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - canonical route truth for `/data/indicator` remains `web/frontend/src/views/data/Advanced.vue`
+    - targeted browser verification can reuse the existing PM2 frontend with Playwright-library control of system `google-chrome`
+  fallback_log:
+    - the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1920, 1440, 1280]
+  required_states: [default, empty]
+  notes:
+    - verify that the routed indicator workbench distinguishes `未执行筛选`, `无匹配结果`, and `筛选已就绪`
+    - keep workflow-state ownership inside `useDataAnalysis.ts` plus the routed page rather than masking the issue with copy-only changes
+repair_approval:
+  status: approved
+  approved_findings:
+    - data-indicator-issue-02
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - data-indicator
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/composables/market/useDataAnalysis.ts
+    - web/frontend/src/composables/market/dataAnalysisData.ts
+    - web/frontend/src/views/data/Advanced.vue
+    - web/frontend/src/composables/market/__node_tests__/dataAnalysisData.test.ts
+    - web/frontend/tests/unit/views/data-advanced-screening-truth.spec.ts
+    - web/frontend/tests/unit/views/data-advanced-cutover.spec.ts
+    - web/frontend/tests/unit/views/data-indicator-details.spec.ts
+    - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-indicator-workflow-truth-1-of-1
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated frontend repair files before `data-batch-06` was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` is treated as observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/data-indicator-workflow-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-06-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-06-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-06-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/data-batch-06-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-data-batch-06-closeout
+  notes:
+    - "the routed indicator workbench now keeps pre-screening state idle until the user explicitly runs screening"
+    - "Phase 2 browser coverage now includes idle-vs-executed indicator workflow truth assertions"
+status: complete

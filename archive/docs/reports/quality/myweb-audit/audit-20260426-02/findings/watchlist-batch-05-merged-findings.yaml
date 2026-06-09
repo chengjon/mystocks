@@ -1,0 +1,46 @@
+- consolidated_issue_id: watchlist-manage-issue-05
+  severity: High
+  title: Watchlist manage now preserves failure truth and per-slice summary provenance on the canonical watchlist route
+  pages:
+    - /watchlist/manage
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The resolved `success:false` empty-success collapse and the pending stock-slice faux zero counts were two manifestations of the same routed summary-truth cluster: `/watchlist/manage` treated store-backed watchlist and stock slices as one shared verified surface instead of preserving envelope failure truth and per-slice summary provenance."
+  primary_owner: web/frontend/src/views/artdeco-pages/stock-management-tabs/WatchlistManager.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /watchlist/manage
+    - /dashboard
+  dedupe_keys:
+    - /watchlist/manage:data-state:firstLoadEnvelopeAndCompletionTruth
+    - /watchlist/manage:data-state:sliceLocalSummaryTruth
+  verification_scope:
+    routes:
+      - /watchlist/manage
+    states:
+      - first-load-failure
+      - partial-first-load-pending
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/artdeco-pages/stock-management-tabs/WatchlistManager.vue
+      - web/frontend/src/views/artdeco-pages/stock-management-tabs/stockManagementRouteData.ts
+      - web/frontend/src/views/watchlist/__tests__/Manage.spec.ts
+      - web/frontend/src/views/artdeco-pages/stock-management-tabs/__node_tests__/stockManagementRouteData.test.ts
+      - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/SKILL.md
+      - .claude/skills/myweb-audit/references/CHANGELOG.md
+      - .claude/skills/myweb-audit/references/audit-checklist.md
+      - .claude/agents/myweb-audit-data-state-audit.md
+    notes:
+      - "the shared watchlist extractors now reject resolved `success:false` envelopes instead of collapsing them into empty watchlist or stock arrays, so the route can preserve explicit failure truth before any empty-state mapping occurs"
+      - "the route-local `refreshWatchlistState()` flow now flips completion truth even when the first load fails, allowing the canonical page to enter a visible error shell instead of stranding itself between loading and empty semantics"
+      - "the top summary strip now derives watchlist and stock sibling cards from separate verified slices, so a verified watchlist count may render while unresolved stock-summary siblings remain on `--`"
+      - "the strengthened routed regressions now pin both the component and the Phase 2 matrix against resolved failure-envelope swallowing and slice-local summary provenance leakage"
+      - "this batch promotes `myweb-audit` to `v1.51` with explicit slice-local summary truth and first-load completion truth rules"
+  verification_surface: code-review-plus-targeted-live-verification

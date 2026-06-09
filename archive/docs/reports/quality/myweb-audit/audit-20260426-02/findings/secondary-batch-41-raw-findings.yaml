@@ -1,0 +1,40 @@
+- finding_id: secondary-shell-041-market-tdx
+  batch_id: secondary-batch-41
+  page:
+    route: /secondary/market-tdx-static-shell
+    page_key: secondary-market-tdx-static-shell
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/market/Tdx.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy market TDX page still exposed simulated connection and quote state without a verified canonical owner
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/market/Tdx.vue`"
+      - "Inspect the local `useTdx()` composable for simulated TDX connection, response time, sessions, quotes, and chart loading"
+      - "Confirm the current router does not expose `market/Tdx.vue` as an independent canonical route entry"
+  expected: "A legacy TDX data-interface page with no verified canonical owner should degrade to an honest static shell and should not preserve simulated connection, quote, or K-line state."
+  actual: "Before repair, `market/Tdx.vue` rendered refresh controls, connection status, random response time/session counts, mock quotes, bid/ask rows, K-line controls, and hardcoded server metadata through `useTdx()`."
+  evidence:
+    kind: code-review-plus-owner-regression
+    note: "RED regression failed because the page did not render `legacy-static-shell`; code review confirmed `useTdx()` generated simulated runtime state with TODO API comments."
+  repair_target:
+    files:
+      - web/frontend/src/views/market/Tdx.vue
+      - web/frontend/src/views/market/composables/useTdx.ts
+      - web/frontend/src/views/market/styles/Tdx.scss
+      - web/frontend/src/views/market/__tests__/Tdx.spec.ts
+    primary_owner: web/frontend/src/views/market/Tdx.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/market-tdx-static-shell
+  status: open
+  dependency: null
+  dedupe_key: /secondary/market-tdx-static-shell:route-truth:legacyTdxStaticShell
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner and market-domain regressions to confirm the page renders an honest static shell and no longer imports the page-local pseudo-live TDX composable or style."

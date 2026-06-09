@@ -1,0 +1,40 @@
+- consolidated_issue_id: detail-news-issue-03
+  severity: High
+  title: Detail news route now clears stale sibling stats cards when the announcement stats slice refresh fails
+  pages:
+    - /detail/news/:symbol
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The stale-count retention and the missing slice-local degraded state were two expressions of the same routed truth defect: `/detail/news/:symbol` let a failed later stats refresh masquerade as a successful summary refresh by silently preserving the previous sibling counts."
+  primary_owner: web/frontend/src/views/announcement/composables/useAnnouncementMonitor.ts
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact: []
+  dedupe_keys:
+    - /detail/news/:symbol:data-state:statsRefreshStaleSummaryTruth
+  verification_scope:
+    routes:
+      - /detail/news/:symbol
+    states:
+      - default
+      - stats-refresh-failure
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/announcement/composables/useAnnouncementMonitor.ts
+      - web/frontend/src/views/announcement/__tests__/useAnnouncementMonitor.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/SKILL.md
+      - .claude/skills/myweb-audit/references/audit-checklist.md
+      - .claude/agents/myweb-audit-data-state-audit.md
+      - .claude/skills/myweb-audit/references/CHANGELOG.md
+    notes:
+      - "the view-local announcement monitor composable now clears `stats.value` when `/api/announcement/stats` resolves `success: false` or throws on refresh"
+      - "the route therefore degrades the four sibling stat cards back to `--` on a failed later stats refresh instead of silently retaining stale counts"
+      - "verified announcement rows remain visible because they belong to a separate successfully retained slice"
+      - "the new composable regression and routed Phase 4 assertion pin the exact `success -> stats-refresh-fail` behavior"
+      - "this batch introduces `myweb-audit v1.53` stats-refresh stale-summary guidance for dedicated sibling stat clusters"
+  verification_surface: code-review-plus-targeted-live-verification

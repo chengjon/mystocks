@@ -1,7 +1,7 @@
 # ArtDeco Standardization P1 Tasks
 
 > **说明**
-> 本文是 [`ARTDECO_STANDARDIZATION_PLAN.md`](/opt/claude/mystocks_spec/docs/plans/ARTDECO_STANDARDIZATION_PLAN.md) 的 P1 可执行任务清单。
+> 本文是 [`ARTDECO_STANDARDIZATION_PLAN.md`](ARTDECO_STANDARDIZATION_PLAN.md) 的 P1 可执行任务清单。
 > P1 的定位是“样板组件批次治理”，前提是 P0 已经完成：
 > token 缺口已识别、Base / Domain 边界已冻结、首批高频组件样板已确定。
 

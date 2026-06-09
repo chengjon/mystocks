@@ -1,0 +1,24 @@
+- consolidated_issue_id: secondary-shell-issue-28
+  severity: Medium
+  affected_routes:
+    - /secondary/system-architecture-static-shell
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/system/Architecture.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "Legacy system architecture page now degrades to an honest static shell."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The repair stays scoped to the legacy architecture owner and its local regression; no new store, snapshot cache, shell-level provenance badge, or freshness strip was introduced."
+    related_routes:
+      - /secondary/system-architecture-static-shell
+  approval_status: approved

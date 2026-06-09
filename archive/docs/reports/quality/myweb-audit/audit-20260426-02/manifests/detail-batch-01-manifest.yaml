@@ -1,0 +1,88 @@
+audit_run_id: audit-20260426-02
+batch_id: detail-batch-01
+module: detail
+scope:
+  requested_by: user
+  pages:
+    - route: /detail/graphics/:symbol
+      page_key: detail-graphics
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/artdeco-pages/analysis-tabs/KLineAnalysis.vue
+  compatibility_redirects: []
+batch_rationale: "Close the canonical `/detail/graphics/:symbol` primary-snapshot provenance gap so unresolved or failed primary K-line requests cannot leak faux `REQ_ID / POINTS` truth into the visible detail shell, and so later failed refreshes preserve the last verified primary sample instead of overwriting hero metadata with failed retry provenance. This batch also codifies the new detail-route rule as `myweb-audit v1.45`."
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/detail/graphics/:symbol` remains `web/frontend/src/views/artdeco-pages/analysis-tabs/KLineAnalysis.vue`"
+    - "the approved repair should stay page-local inside `KLineAnalysis.vue` plus routed regressions rather than widening into shared `useArtDecoApi`, `dashboardService`, or `marketKlineData` transport helpers"
+    - "top-level detail request provenance on this route must follow the verified primary K-line snapshot rather than later secondary indicator requests or failed-later primary refreshes"
+    - "before any verified primary K-line snapshot exists, the route should degrade hero/request surfaces such as `REQ_ID` and `POINTS` to explicit placeholders rather than presenting `POINTS: 0` or failed request ids as if the primary detail sample had already resolved"
+    - "if a later `开始分析` refresh fails after success, the route should preserve the last verified primary request id, point count, and visible K-line sample while showing stale-refresh copy"
+    - "this batch introduces `myweb-audit v1.45` detail-primary snapshot provenance guidance for canonical detail routes that mix one primary snapshot request with secondary enrichment requests"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [loading, error, default]
+  notes:
+    - "verify unresolved first-load `/detail/graphics/600519` now renders `POINTS: --` and suppresses `REQ_ID` until a primary K-line snapshot is actually verified"
+    - "verify failed first-load `/detail/graphics/600519` now renders `POINTS: --` with no visible failed request id anywhere in the route shell"
+    - "verify a success-then-fail `开始分析` refresh path keeps the last verified primary `REQ_ID`, preserves the visible K-line sample, and shows stale-refresh copy"
+repair_approval:
+  status: approved
+  approved_findings:
+    - detail-graphics-issue-01
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - detail-graphics
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/artdeco-pages/analysis-tabs/KLineAnalysis.vue
+    - web/frontend/src/views/artdeco-pages/analysis-tabs/__tests__/KLineAnalysis.spec.ts
+    - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-detail-graphics-primary-provenance-3-state-plus-natural-pm2
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `detail-batch-01` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/detail-graphics-primary-snapshot-provenance-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-01-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-01-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/detail-batch-01-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/detail-batch-01-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-detail-batch-01-closeout
+  notes:
+    - "the canonical detail graphics route now keeps hero request and point-count provenance aligned to the verified primary K-line snapshot instead of unresolved, failed, or secondary request metadata"
+    - "this batch introduced `myweb-audit v1.45` so future detail routes audit primary-snapshot versus secondary-enrichment provenance explicitly"
+status: complete

@@ -1,0 +1,38 @@
+- consolidated_issue_id: secondary-shell-issue-48
+  severity: Medium
+  title: Settings child placeholders and orphan TestPage now degrade to honest static shells
+  pages:
+    - /secondary/settings-test-static-shells
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The five files were lightweight unrouted secondary surfaces that preserved placeholder or local test UI semantics without canonical ownership."
+  primary_owner: web/frontend/src/views/settings/General.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/settings-test-static-shells
+  dedupe_keys:
+    - /secondary/settings-test-static-shells:route-truth:settingsTestStaticShells
+  verification_scope:
+    routes:
+      - /secondary/settings-test-static-shells
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/settings/General.vue
+      - web/frontend/src/views/settings/Notifications.vue
+      - web/frontend/src/views/settings/Security.vue
+      - web/frontend/src/views/settings/Theme.vue
+      - web/frontend/src/views/TestPage.vue
+      - web/frontend/tests/unit/config/settings-style-normalization.spec.ts
+      - web/frontend/src/views/__tests__/TestPage.spec.ts
+    notes:
+      - "settings child pages now render `legacy-static-shell` with `/system/config` handoff links"
+      - "`TestPage.vue` no longer renders local test UI or console side effects"
+      - "secondary inventory high-priority count remains `0` after refreshing the M-batch"
+  verification_surface: code-review-only

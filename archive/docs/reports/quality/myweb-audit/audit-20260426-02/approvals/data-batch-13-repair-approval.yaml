@@ -1,0 +1,24 @@
+- consolidated_issue_id: data-concept-issue-02
+  severity: High
+  affected_routes:
+    - /data/concept
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/data/Concepts.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: The canonical concept route now keeps failed first-load and stale-refresh request ids out of the visible concept provenance surface unless they correspond to the currently displayed verified snapshot.
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: The repaired gap is fully contained in `Concepts.vue` plus routed regressions; no shared stat-card, request wrapper, or table primitive changed in this batch.
+    related_routes:
+      - /data/concept
+  approval_status: approved

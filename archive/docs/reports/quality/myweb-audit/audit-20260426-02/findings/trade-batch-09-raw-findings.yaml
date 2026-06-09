@@ -1,0 +1,39 @@
+- finding_id: trade-signals-data-state-003
+  batch_id: trade-batch-09
+  page:
+    route: /trade/signals
+    page_key: trade-signals
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/trade/Signals.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Trade signals route let shared-store refresh metadata overwrite verified signal snapshot provenance on manual refresh failure
+  trigger:
+    steps:
+      - "Open `/trade/signals`"
+      - "Allow the first `/api/v1/trade/signals?limit=20` payload to resolve successfully"
+      - "Click `刷新信号`"
+      - "Resolve the refresh request as `success: false` while the route is still showing the earlier verified signal snapshot"
+      - "Inspect the hero `COUNT / DATA / REQ_ID / TIME` meta, visible signal rows, and stale-state copy"
+  expected: "After at least one verified signal snapshot exists, a failed manual refresh should preserve the last verified rows plus the last verified `REQ_ID / TIME` provenance and show explicit stale-refresh messaging. The route must not downgrade the visible shell to faux unavailable or clear the current signal table."
+  actual: "Before repair, `/trade/signals` reused the shared store's latest refresh outcome directly. A resolved `success: false` refresh cleared the visible signal rows, downgraded hero meta to `COUNT: -- / DATA: UNAVAILABLE / REQ_ID: N/A / TIME: N/A`, and lost the previously verified signal snapshot even though the failed refresh had not replaced the currently visible truth."
+  evidence:
+    kind: live-observation
+    note: "System-`google-chrome` verification with browser-context interception reproduced a successful first signal sync followed by a resolved `success: false` manual refresh. After repair the same route keeps `COUNT: 3 / DATA: REAL / REQ_ID: REQ-LIVE-TRADE-SIGNALS-SUCCESS / TIME: 42.00MS`, retains the visible `贵州茅台` and `宁德时代` rows, and shows `trade signals refresh unavailable，当前仍显示上次成功同步的交易信号快照。`."
+  repair_target:
+    files:
+      - web/frontend/src/views/trade/Signals.vue
+    primary_owner: web/frontend/src/views/trade/Signals.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /trade/signals
+  status: open
+  dependency: null
+  dedupe_key: /trade/signals:data-state:storeRefreshSnapshotProvenanceTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/trade/signals` after repair and confirm first-load failure still stays unavailable while `success -> refresh fail` now retains the last verified request provenance and signal rows."

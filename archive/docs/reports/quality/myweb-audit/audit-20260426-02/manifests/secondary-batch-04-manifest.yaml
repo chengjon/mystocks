@@ -1,0 +1,90 @@
+audit_run_id: audit-20260426-02
+batch_id: secondary-batch-04
+module: secondary-embedded-shells
+scope:
+  requested_by: user
+  pages:
+    - route: /secondary/artdeco-trading-center-static-market-shells
+      page_key: secondary-artdeco-trading-center-static-market-shells
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/artdeco-pages/ArtDecoTradingCenter.vue
+  compatibility_redirects: []
+batch_rationale: >-
+  Continue the secondary inventory phase by replacing the remaining active
+  `ArtDecoTradingCenter.vue` market wrappers that still surfaced unimplemented
+  or placeholder shell truth, and degrade them to honest static shells because
+  no semantically matching canonical market owners currently exist.
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-only
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "the manifest route `/secondary/artdeco-trading-center-static-market-shells` is a synthetic secondary-inventory alias used for artifact indexing; the live parent shell remains `web/frontend/src/views/artdeco-pages/ArtDecoTradingCenter.vue` and is not a real router entry"
+    - "the repaired surfaces are the active `market-overview` and `market-analysis` wrapper panels imported by `ArtDecoTradingCenter.vue`"
+    - "no semantically matching canonical market owner currently exists for these two exact panels"
+    - "the wrapper repair must not add a new store, snapshot cache, request provenance badge, freshness strip, or remap to an unrelated canonical live route"
+  fallback_log: []
+verification_plan:
+  verification_strategy: code-review-only
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states:
+    - default
+    - empty
+    - disabled
+  notes:
+    - "verify both active market wrappers no longer render `Component Not Implemented` or `STATUS: PLACEHOLDER`"
+    - "verify both wrappers degrade to honest static shells with no request, sync, or summary-strip semantics"
+    - "verify secondary inventory tooling still passes after the governance write-back"
+repair_approval:
+  status: approved
+  approved_findings:
+    - secondary-shell-issue-04
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - secondary-artdeco-trading-center-static-market-shells
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoMarketOverview.vue
+    - web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoMarketAnalysis.vue
+    - web/frontend/src/views/artdeco-pages/market-data-tabs/__tests__/ArtDecoMarketOverview.spec.ts
+    - web/frontend/src/views/artdeco-pages/market-data-tabs/__tests__/ArtDecoMarketAnalysis.spec.ts
+    - .claude/skills/myweb-audit/references/route-truth-operations.md
+    - .claude/skills/myweb-audit/references/route-truth-casebook.md
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/artdeco-pages/ArtDecoTradingCenter.vue
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vitest
+    typecheck: failed-existing-frontend-debt-only
+    pm2: passed
+    e2e: not-run-unrouted-owner
+    gitnexus_staged_detect: mixed-observation-non-isolated
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "the staged index already contained many unrelated files before this micro-batch, so `gitnexus_detect_changes({scope: staged})` is recorded only as a mixed observation"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/artdeco-trading-center-static-market-shell-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/secondary-batch-04-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/secondary-batch-04-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/secondary-batch-04-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/secondary-batch-04-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: owner-regression
+  next_action: continue-secondary-inventory-triage
+  notes:
+    - "active wrappers without a semantically matching canonical owner should degrade to static shells instead of preserving placeholder truth or misrouting to unrelated live routes"
+status: complete

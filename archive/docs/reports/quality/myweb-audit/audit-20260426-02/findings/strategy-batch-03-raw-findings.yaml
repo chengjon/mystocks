@@ -1,0 +1,81 @@
+- finding_id: strategy-pos-route-truth-001
+  batch_id: strategy-batch-03
+  page:
+    route: /strategy/pos
+    page_key: strategy-pos
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoTradingPositions.vue
+  source_role: functional-audit
+  severity: Medium
+  issue_type: route
+  title: 持仓工作台家族仍保留 `ArtDecoPositionMonitor.vue` 占位分叉，`/strategy/pos` 与 `/trade/positions` 的 canonical truth 没有延续到嵌入式 ArtDeco 交易中心消费者
+  trigger:
+    steps:
+      - Open /strategy/pos and confirm it reuses `src/views/trade/Center.vue` through `ArtDecoTradingPositions.vue`
+      - Review `ArtDecoTradingCenter.vue` component map for `trade-positions`
+      - Compare `ArtDecoPositionMonitor.vue` with the routed canonical page
+  expected: "持仓工作台的 routed 与 embedded surfaces 都应复用 `src/views/trade/Center.vue` 或其薄包装层，不应继续保留独立 placeholder truth。"
+  actual: "`/strategy/pos` 通过 `ArtDecoTradingPositions.vue` 薄包装复用 `Center.vue`，但 `ArtDecoTradingCenter` 仍把 `trade-positions` 指向独立 placeholder `ArtDecoPositionMonitor.vue`。"
+  evidence:
+    kind: code-path-review
+    note: "`ArtDecoTradingPositions.vue` 仅转发到 `@/views/trade/Center.vue`；`ArtDecoPositionMonitor.vue` 在修复前仍渲染“头寸监控主面板整理中”的占位内容。"
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoPositionMonitor.vue
+      - web/frontend/tests/unit/views/trade-wrapper-retention.spec.ts
+    primary_owner: web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoPositionMonitor.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/pos
+    - /trade/positions
+    - ArtDecoTradingCenter#trade-positions
+  status: open
+  dependency: null
+  dedupe_key: /strategy/pos:route-truth:positionsEmbeddedPlaceholder
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that the embedded consumer becomes a thin wrapper over `Center.vue` instead of a parallel placeholder implementation.
+
+- finding_id: trade-positions-data-state-001
+  batch_id: strategy-batch-03
+  page:
+    route: /trade/positions
+    page_key: trade-positions
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/trade/Center.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: 交易中心内嵌持仓面板仍停留在 placeholder 状态，无法继承 `/v1/trade/positions` 的统一 empty or error rendering contract
+  trigger:
+    steps:
+      - Review `Center.vue` for current request, empty, and failure state rendering
+      - Compare the routed workbench with `ArtDecoPositionMonitor.vue`
+      - Check whether the embedded consumer can ever show the real position rows or failure copy
+  expected: "嵌入式持仓面板应沿用 `Center.vue` 的统一数据态 contract，包括真实 rows、empty state、loading copy 和 failure retry。"
+  actual: "修复前的 `ArtDecoPositionMonitor.vue` 只有静态 placeholder copy，不会触发 `/v1/trade/positions` 拉取，也不会继承 routed page 的真实数据态。"
+  evidence:
+    kind: code-path-review
+    note: "`Center.vue` 使用 `apiClient.get('/v1/trade/positions')` 和共享转换逻辑；placeholder 版本没有任何数据拉取或状态渲染。"
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoPositionMonitor.vue
+      - web/frontend/tests/unit/views/trade-wrapper-retention.spec.ts
+    primary_owner: web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoPositionMonitor.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/pos
+    - /trade/positions
+    - ArtDecoTradingCenter#trade-positions
+  status: open
+  dependency: null
+  dedupe_key: /trade/positions:data-state:positionsEmbeddedState
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that the embedded wrapper inherits the canonical page state contract instead of freezing on placeholder text.

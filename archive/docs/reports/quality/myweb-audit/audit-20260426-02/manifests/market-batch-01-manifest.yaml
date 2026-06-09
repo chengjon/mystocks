@@ -1,0 +1,133 @@
+audit_run_id: audit-20260426-02
+batch_id: market-batch-01
+module: market
+scope:
+  requested_by: user
+  pages:
+    - route: /market/realtime
+      page_key: market-realtime
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/market/Realtime.vue
+    - route: /market/technical
+      page_key: market-technical
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/market/Technical.vue
+    - route: /market/lhb
+      page_key: market-lhb
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/market/LHB.vue
+  compatibility_redirects:
+    - /market -> /market/realtime
+batch_rationale: Primary navigation market pages with dense quote, K-line, and leaderboard interaction surfaces.
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+  - visual-artdeco-audit
+  - responsive-a11y-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-only
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - router truth and current market page source are readable
+    - live verification can be added after route-inventory establishes current canonical entries
+  fallback_log:
+    - batch initialized from router truth and current page source before live-page verification started
+verification_plan:
+  verification_strategy: code-review-only
+  browser_project: chromium
+  breakpoints: [1920, 1440, 1280]
+  required_states: [default, loading, empty, error, disabled, extreme-data]
+  notes:
+    - treat current market page files as the routed canonical entrypoints
+    - record downstream helpers and components that carry the actual interaction logic before repair decisions
+repair_approval:
+  status: approved
+  approved_findings:
+    - market-technical-issue-01
+    - market-lhb-issue-01
+    - market-domain-issue-01
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - market-realtime
+    - market-technical
+    - market-lhb
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/market/Realtime.vue
+    - web/frontend/src/views/market/Technical.vue
+    - web/frontend/src/views/market/LHB.vue
+    - web/frontend/src/views/market/marketKlineData.ts
+    - web/frontend/src/views/market/dragonTigerData.ts
+    - web/frontend/src/components/market/ProKLineChart.vue
+    - web/frontend/src/components/market/composables/useProKLineChart.ts
+    - web/frontend/src/components/market/composables/useProKLineChart.types.ts
+    - web/frontend/src/views/market/__node_tests__/marketKlineData.test.ts
+    - web/frontend/src/views/market/__node_tests__/dragonTigerData.test.ts
+    - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/market/marketKlineData.ts
+      - web/frontend/src/views/market/dragonTigerData.ts
+      - web/frontend/src/components/market/ProKLineChart.vue
+    confirmed:
+      - web/frontend/src/components/market/ProKLineChart.vue
+      - web/frontend/src/components/market/composables/useProKLineChart.ts
+      - web/frontend/src/components/market/composables/useProKLineChart.types.ts
+  validation_status:
+    syntax: passed-via-vue-tsc
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-chromium-market-4-of-4-plus-node-tests-7-of-7
+    gitnexus_staged_detect: passed-low-risk-isolated-market-stage
+  staged_scope:
+    mode: isolated-target-files
+    files:
+      - docs/reports/quality/myweb-audit/audit-20260426-02/approvals/market-batch-01-repair-approval.yaml
+      - docs/reports/quality/myweb-audit/audit-20260426-02/batches/market-batch-01-audit.md
+      - docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+      - docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-01-merged-findings.yaml
+      - docs/reports/quality/myweb-audit/audit-20260426-02/manifests/market-batch-01-manifest.yaml
+      - docs/reports/quality/myweb-audit/audit-20260426-02/pages/market-lhb-audit.md
+      - docs/reports/quality/myweb-audit/audit-20260426-02/pages/market-realtime-audit.md
+      - docs/reports/quality/myweb-audit/audit-20260426-02/pages/market-technical-audit.md
+      - web/frontend/src/components/market/ProKLineChart.vue
+      - web/frontend/src/components/market/composables/useProKLineChart.ts
+      - web/frontend/src/components/market/composables/useProKLineChart.types.ts
+      - web/frontend/src/views/market/LHB.vue
+      - web/frontend/src/views/market/Realtime.vue
+      - web/frontend/src/views/market/Technical.vue
+      - web/frontend/src/views/market/__node_tests__/dragonTigerData.test.ts
+      - web/frontend/src/views/market/__node_tests__/marketKlineData.test.ts
+      - web/frontend/src/views/market/dragonTigerData.ts
+      - web/frontend/src/views/market/marketKlineData.ts
+      - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+    verdict_origin: isolated-batch-only
+    notes:
+      - "git diff --cached contains only the intended market batch files"
+      - "gitnexus_detect_changes({ scope: \"staged\" }) returned risk_level low with 19 changed files and 0 affected processes"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/market-realtime-audit.md
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/market-technical-audit.md
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/market-lhb-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-01-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-01-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/market-batch-01-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/market-batch-01-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: staged-scope-and-artifact-validation
+  next_action: finalize-market-batch-closeout
+  notes:
+    - "router truth redirects `/market` to `/market/realtime`"
+    - "`web/frontend/src/views/market/Realtime.vue`, `Technical.vue`, and `LHB.vue` are currently routed canonical entries, not wrapper-only compatibility routes"
+    - "page-owned K-line truth now feeds the embedded chart on `/market/technical`"
+    - "LHB date selection now drives trade-date-scoped `/v2/market/lhb` queries"
+    - "targeted Chromium market regression passed `4/4`, and node-level regression passed `7/7`"
+status: complete

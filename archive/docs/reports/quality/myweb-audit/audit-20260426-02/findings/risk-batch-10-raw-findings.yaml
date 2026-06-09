@@ -1,0 +1,40 @@
+- finding_id: risk-alerts-data-state-010
+  batch_id: risk-batch-10
+  page:
+    route: /risk/alerts
+    page_key: risk-alerts
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/risk/Alerts.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Risk alerts route bound hero request provenance and summary counts to the latest multi-request attempt and cleared verified rows on refresh failure
+  trigger:
+    steps:
+      - "Open `/risk/alerts`."
+      - "Force both `**/api/v1/monitoring/alert-rules**` and `**/api/v1/monitoring/alerts**` to resolve `success: false` before any verified alerts snapshot exists."
+      - "Repeat with one successful alerts sync followed by a failed manual refresh that also resolves `success: false` for the same routed slices."
+      - "Inspect hero `REQ_ID / UNREAD`, the top stats strip, the content-shell `RULES / ALERTS` meta, and the visible alert/rule table content."
+  expected: "Before `/risk/alerts` has any verified snapshot, a resolved first-load failure should render explicit unavailable truth such as `REQ_ID: N/A`, `UNREAD: --`, `RULES: --`, `ALERTS: --`, and stats `-- / -- / -- / --` instead of falling through to faux zero counts, failed request ids, or empty-state copy. If a later refresh fails after success, the route should keep the last verified request id and visible rules/alerts while showing stale-refresh copy."
+  actual: "Before repair, `/risk/alerts` bound hero provenance directly to `useArtDecoApi.lastRequestId`, so the final failed alerts request could replace the visible shell with `REQ_ID: <failed-id>` plus `UNREAD: 0`. The same route also bound sibling counts directly to empty-array lengths, so first-load failures looked like empty success, and refresh failures rewrote `alertRules` plus `alertRecords` to empty arrays instead of preserving the verified shell."
+  evidence:
+    kind: live-observation
+    note: "Targeted component regressions, routed Phase 4 assertions, and controlled system-Chrome verification pinned the defect and the repaired shape. After repair, the first-load failure path now renders `REQ_ID: N/A / UNREAD: --`, top-strip `-- / -- / -- / --`, and `RULES: -- / ALERTS: --`; the success-then-refresh-fail path now keeps the last verified request id plus visible rules/alerts while showing stale-refresh copy."
+  repair_target:
+    files:
+      - web/frontend/src/views/risk/Alerts.vue
+      - web/frontend/src/views/risk/__tests__/Alerts.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/risk/Alerts.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /risk/alerts
+  status: open
+  dependency: null
+  dedupe_key: /risk/alerts:data-state:multiRequestRefreshProvenanceAndPlaceholderTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/risk/alerts` after repair and confirm first-load failures no longer leak failed request ids, faux unread counts, or empty-success copy, while stale-refresh failures keep the last verified request id and visible rule/alert content."

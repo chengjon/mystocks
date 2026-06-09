@@ -1,0 +1,38 @@
+- finding_id: data-industry-data-state-003
+  batch_id: data-batch-11
+  page:
+    route: /data/industry
+    page_key: data-industry
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/data/Industry.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Data industry route presented hardcoded REAL provenance while the first board payload was still unresolved or had already failed without any verified snapshot
+  trigger:
+    steps:
+      - "Open `/data/industry`"
+      - "Observe the route while `/api/v2/market/sector/fund-flow?sector_type=行业...` is still unresolved on first load"
+      - "Repeat with the same first request returning `success: false` before any verified board snapshot exists"
+      - "Inspect the hero `DATA` metadata and the primary page state"
+  expected: "Before the route has any verified board snapshot, hero provenance should reflect real route state such as `DATA: PENDING` during the first unresolved load and `DATA: UNAVAILABLE` after a first-load failure, instead of hardcoding `DATA: REAL`."
+  actual: "Before repair, `/data/industry` hardcoded `DATA: REAL` in the hero meta even while the first board payload was still unresolved or had already failed before any verified rows existed."
+  evidence:
+    kind: live-observation
+    note: "Targeted routed component and system-Chrome verification reproduced `DATA: REAL` on the unresolved and first-failure path before repair; after repair the same route correctly shows `DATA: PENDING`, `DATA: UNAVAILABLE`, and `DATA: REAL` for pending, first-failure, and verified-success states respectively."
+  repair_target:
+    files:
+      - web/frontend/src/views/data/Industry.vue
+    primary_owner: web/frontend/src/views/data/Industry.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /data/industry
+  status: open
+  dependency: null
+  dedupe_key: /data/industry:data-state:firstLoadRouteProvenanceTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check that `/data/industry` now reports `DATA: PENDING` during an unresolved first load, `DATA: UNAVAILABLE` after a first-load failure with no verified snapshot, and `DATA: REAL` only after verified board rows exist."

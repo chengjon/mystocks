@@ -1,0 +1,35 @@
+- consolidated_issue_id: secondary-shell-issue-35
+  severity: Medium
+  title: Legacy advanced-analysis page now degrades to an honest static shell
+  pages:
+    - /secondary/advanced-analysis-static-shell
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The local analysis form, batch-run controls, Kronos prediction, health cards, and result panels in `AdvancedAnalysis.vue` were all faces of the same defect family: a legacy advanced-analysis workbench preserved pseudo-live truth even though no semantically matching canonical owner existed."
+  primary_owner: web/frontend/src/views/AdvancedAnalysis.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/advanced-analysis-static-shell
+  dedupe_keys:
+    - /secondary/advanced-analysis-static-shell:route-truth:advancedAnalysisStaticShell
+  verification_scope:
+    routes:
+      - /secondary/advanced-analysis-static-shell
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/AdvancedAnalysis.vue
+      - web/frontend/src/views/__tests__/AdvancedAnalysis.spec.ts
+      - web/frontend/src/views/composables/useAdvancedAnalysis.ts
+    notes:
+      - "the legacy advanced-analysis page now renders an honest static shell"
+      - "the repair removes local analysis configuration, batch-run, Kronos prediction, system health, and result panels instead of preserving pseudo-live advanced-analysis truth"
+      - "the now-unused local page-only composable chain was retired with the owner"
+      - "users are handed back to verified `/data/indicator`, `/detail/graphics/600519`, and `/strategy/signals` routes"
+  verification_surface: code-review-only

@@ -1,0 +1,40 @@
+- consolidated_issue_id: trade-terminal-issue-02
+  severity: High
+  title: Trade terminal risk-slice refresh now keeps the last verified risk panel snapshot instead of falling back to synthetic defaults
+  pages:
+    - /trade/terminal
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The visible drawdown, PnL, positions, and last-updated cells all leaked the same route-local risk-slice refresh defect on `/trade/terminal`, so they represent one canonical terminal workbench truth issue."
+  primary_owner: web/frontend/src/views/composables/useTradingDashboard.ts
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /trade/terminal
+  dedupe_keys:
+    - /trade/terminal:data-state:sliceRefreshFallbackRetentionTruth
+  verification_scope:
+    routes:
+      - /trade/terminal
+    states:
+      - default
+      - error
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/composables/useTradingDashboard.ts
+      - web/frontend/src/views/composables/__tests__/useTradingDashboard.spec.ts
+      - web/frontend/tests/e2e/trade-terminal.spec.ts
+      - .claude/skills/myweb-audit/SKILL.md
+      - .claude/skills/myweb-audit/references/CHANGELOG.md
+      - .claude/skills/myweb-audit/references/audit-checklist.md
+      - .claude/agents/myweb-audit-data-state-audit.md
+    notes:
+      - "the terminal workbench now records a page-local verified risk-slice boundary so later risk refresh failures no longer overwrite the visible risk panel with `FALLBACK_RISK_DATA`"
+      - "the strengthened owner regression now covers `success -> risk refresh fail` retention of drawdown, PnL, positions, and last-updated values"
+      - "the strengthened routed trade-terminal E2E regression now guards the same risk-slice stale-refresh path at the route surface"
+      - "this batch upgrades myweb-audit to `v1.55`, codifying that transport-backed multi-slice workbenches must not let later slice refresh failures replace already visible verified slices with synthetic fallback truth"
+  verification_surface: code-review-plus-targeted-live-verification

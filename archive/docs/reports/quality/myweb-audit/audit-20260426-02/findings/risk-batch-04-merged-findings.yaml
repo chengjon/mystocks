@@ -1,0 +1,41 @@
+- consolidated_issue_id: risk-stop-loss-issue-01
+  severity: Medium
+  title: Risk stop-loss now keeps quote-only watchlist rows in pending-policy mode until real thresholds exist
+  pages:
+    - /risk/stop-loss
+  source_roles:
+    - data-state-audit
+  why_consolidated: The misleading status copy, placeholder stop-price surface, and fake distance semantics were one threshold-policy truth defect centered on the canonical stop-loss route family.
+  primary_owner: web/frontend/src/views/artdeco-pages/risk-tabs/stopLossMonitorData.ts
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact: []
+  dedupe_keys:
+    - /risk/stop-loss:data-state:stopLossMonitorData
+  verification_scope:
+    routes:
+      - /risk/stop-loss
+    states:
+      - default
+      - empty
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/risk/StopLoss.vue
+      - web/frontend/src/views/artdeco-pages/risk-tabs/stopLossMonitorData.ts
+      - web/frontend/src/views/artdeco-pages/risk-tabs/__node_tests__/stopLossMonitorData.test.ts
+      - web/frontend/src/views/risk/__tests__/StopLoss.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/SKILL.md
+      - .claude/skills/myweb-audit/references/audit-checklist.md
+      - .claude/agents/myweb-audit-data-state-audit.md
+      - .claude/skills/myweb-audit/references/CHANGELOG.md
+    notes:
+      - "the shared stop-loss mapper now marks rows without `stop_loss_price` as pending-policy, emits `待接入` for threshold-dependent cells, and preserves numeric distance only when real threshold inputs exist"
+      - "the canonical stop-loss route now degrades to `策略待接入` and `当前仅同步观察标的与行情，止损参数待接入。` when watchlist rows lack real thresholds"
+      - "the routed card surface keeps watchlist symbol and current quote visible while removing fake `--%` distance math and active-monitoring status copy"
+      - "targeted node, component, route-matrix, and browser verification now encode the threshold-policy truth rule"
+  verification_surface: code-review-plus-targeted-live-verification

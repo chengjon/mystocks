@@ -1,0 +1,24 @@
+- consolidated_issue_id: secondary-shell-issue-41
+  severity: Medium
+  affected_routes:
+    - /secondary/market-tdx-static-shell
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/market/Tdx.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "Legacy market TDX page now degrades to an honest static shell."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The repair stays scoped to one unrouted legacy TDX page and removes a page-local pseudo-live composable/style instead of creating a new TDX snapshot or store."
+    related_routes:
+      - /secondary/market-tdx-static-shell
+  approval_status: approved

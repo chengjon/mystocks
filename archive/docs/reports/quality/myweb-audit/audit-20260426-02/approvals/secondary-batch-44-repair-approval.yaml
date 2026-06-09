@@ -1,0 +1,24 @@
+- consolidated_issue_id: secondary-shell-issue-44
+  severity: Medium
+  affected_routes:
+    - /secondary/stock-analysis-demo-static-shell
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/StockAnalysisDemo.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "Legacy stock-analysis demo may be degraded to an honest static shell because it has no verified one-to-one canonical owner."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The repair stays scoped to one unrouted legacy demo parent and its six page-local tab children; it does not create new stock-analysis stores, snapshots, or route truth."
+    related_routes:
+      - /secondary/stock-analysis-demo-static-shell
+  approval_status: approved

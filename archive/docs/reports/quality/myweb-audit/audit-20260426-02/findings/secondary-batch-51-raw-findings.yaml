@@ -1,0 +1,38 @@
+- finding_id: secondary-shell-051-stocks-portfolio-page
+  batch_id: secondary-batch-51
+  page:
+    route: /secondary/stocks-portfolio-static-shell
+    page_key: secondary-stocks-portfolio-static-shell
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/stocks/Portfolio.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Orphan stocks portfolio page preserved mock portfolio execution truth
+  trigger:
+    steps:
+      - "Inspect `views/stocks/Portfolio.vue`"
+      - "Confirm the file has no active route or importing owner"
+      - "Confirm it still exposes local mock portfolio metrics, example positions, random refresh, add-position messages, and performance-period state"
+  expected: "An unrouted orphan portfolio child page should degrade to an honest static shell and hand off users to canonical `/trade/portfolio`."
+  actual: "Before repair, the page preserved mock portfolio metrics, hardcoded positions, random price mutation, add-position toast semantics, and a performance chart placeholder."
+  evidence:
+    kind: code-review-plus-owner-regression
+    note: "RED regression failed because `Portfolio.vue` lacked `legacy-static-shell` and still exposed portfolio mock execution truth."
+  repair_target:
+    files:
+      - web/frontend/src/views/stocks/Portfolio.vue
+      - web/frontend/tests/unit/config/stocks-portfolio-static-shell.spec.ts
+    primary_owner: web/frontend/src/views/stocks/Portfolio.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/stocks-portfolio-static-shell
+  status: open
+  dependency: null
+  dedupe_key: /secondary/stocks-portfolio-static-shell:route-truth:orphanPortfolioPage
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run source regression to confirm the orphan portfolio page renders `legacy-static-shell` and no longer preserves portfolio metrics, random refresh, example positions, or add-position execution truth."

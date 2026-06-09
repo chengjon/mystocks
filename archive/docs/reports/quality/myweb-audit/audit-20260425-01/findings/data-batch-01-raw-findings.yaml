@@ -1,0 +1,197 @@
+- finding_id: data-indicator-functional-001
+  batch_id: data-batch-01
+  page:
+    route: /data/indicator
+    page_key: data-indicator
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/data/Advanced.vue
+  source_role: functional-audit
+  severity: High
+  issue_type: interaction
+  title: Indicator-condition controls do not affect screening results
+  trigger:
+    steps:
+      - Open Advanced.vue and follow the smart screener flow.
+      - Add one or more indicator conditions in AnalysisScreener.
+      - Run screening through useDataAnalysis.runScreening.
+  expected: Added indicator conditions should participate in the screening path and influence the result set.
+  actual: useDataAnalysis.applyScreening ignores screeningFilters.indicators entirely, so the UI exposes a non-functional control path.
+  evidence:
+    kind: code-path-review
+    note: web/frontend/src/composables/market/useDataAnalysis.ts applyScreening only forwards scalar filters and omits indicators.
+  repair_target:
+    files:
+      - web/frontend/src/composables/market/useDataAnalysis.ts
+      - web/frontend/src/views/artdeco-pages/components/AnalysisScreener.vue
+    primary_owner: web/frontend/src/composables/market/useDataAnalysis.ts
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /data/indicator
+  status: open
+  dependency: null
+  dedupe_key: /data/indicator:interaction:useDataAnalysis
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: Browser interaction was unavailable; conclusion is based on the disconnected code path.
+
+- finding_id: data-indicator-functional-002
+  batch_id: data-batch-01
+  page:
+    route: /data/indicator
+    page_key: data-indicator
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/data/Advanced.vue
+  source_role: functional-audit
+  severity: High
+  issue_type: interaction
+  title: Indicator-card selection and result-row click handlers are inert
+  trigger:
+    steps:
+      - Inspect Advanced.vue event handlers for selectIndicator and handleRowClick.
+      - Follow emitted events from AnalysisIndicators and AnalysisResults.
+  expected: Clicking an indicator or result row should trigger a meaningful next-step flow or explicit disabled-state handling.
+  actual: Both parent handlers are empty, creating dead-end interactions behind visible affordances.
+  evidence:
+    kind: code-path-review
+    note: Advanced.vue defines empty selectIndicator and handleRowClick functions while child components emit those events.
+  repair_target:
+    files:
+      - web/frontend/src/views/data/Advanced.vue
+      - web/frontend/src/views/artdeco-pages/components/AnalysisIndicators.vue
+      - web/frontend/src/views/artdeco-pages/components/AnalysisResults.vue
+    primary_owner: web/frontend/src/views/data/Advanced.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /data/indicator
+  status: open
+  dependency: null
+  dedupe_key: /data/indicator:interaction:Advanced
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: Live click testing was unavailable; issue is proven by empty event handlers.
+
+- finding_id: data-fund-flow-data-state-001
+  batch_id: data-batch-01
+  page:
+    route: /data/fund-flow
+    page_key: data-fund-flow
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/data/FundFlow.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Partial API failure clears unrelated successful fund-flow surfaces
+  trigger:
+    steps:
+      - Inspect fetchFundFlowData in FundFlow.vue.
+      - Follow the branch where either summary or bigDeal resolves to null.
+  expected: The page should preserve any successfully loaded data surface and degrade only the missing subsection.
+  actual: If either request fails, fund summary, trend data, and ranking are all reset to empty defaults.
+  evidence:
+    kind: code-path-review
+    note: FundFlow.vue resets internalFundData, internalTrendData, and internalStockRanking whenever summary === null or bigDeal === null.
+  repair_target:
+    files:
+      - web/frontend/src/views/data/FundFlow.vue
+      - web/frontend/src/views/data/fundFlowPageData.ts
+    primary_owner: web/frontend/src/views/data/fundFlowPageData.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /data/fund-flow:data-state:FundFlow
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: Runtime partial-failure behavior was inferred from the fetch branch only.
+
+- finding_id: data-indicator-data-state-001
+  batch_id: data-batch-01
+  page:
+    route: /data/indicator
+    page_key: data-indicator
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/data/Advanced.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: dependency
+  title: data-indicator API truth differs between router meta and generated page config
+  trigger:
+    steps:
+      - Compare router/index.ts route meta for data-indicator.
+      - Compare pageConfig.ts generated entry for data-indicator.
+  expected: Router truth, page config, and implementation should point to the same canonical API surface.
+  actual: router meta uses /api/v1/indicators/registry while pageConfig still lists /api/data/indicator.
+  evidence:
+    kind: code-path-review
+    note: router/index.ts and config/pageConfig.ts disagree on the canonical API endpoint for the same page.
+  repair_target:
+    files:
+      - web/frontend/src/config/pageConfig.ts
+      - web/frontend/src/router/index.ts
+    primary_owner: scripts/dev/tools/generate-page-config.js
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /data/indicator
+  status: open
+  dependency: generated-page-config regeneration may be required after source correction
+  dedupe_key: /data/indicator:dependency:pageConfig
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: This is a truth-source consistency issue, not a live network observation.
+
+- finding_id: data-domain-responsive-001
+  batch_id: data-batch-01
+  page:
+    route: /data/industry
+    page_key: data-industry
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/data/Industry.vue
+  source_role: responsive-a11y-audit
+  severity: Medium
+  issue_type: responsive
+  title: data-domain pages retain unsupported mobile-width media-query branches
+  trigger:
+    steps:
+      - Inspect style blocks in Industry.vue, Concepts.vue, FundFlow.vue, Advanced.vue, AnalysisIndicators.vue, and AnalysisScreener.vue.
+      - Search for width <= 48rem branches.
+  expected: Desktop-only pages should align with the supported width policy and avoid unsupported mobile breakpoint logic.
+  actual: Multiple data-domain pages and child components still define 48rem responsive branches.
+  evidence:
+    kind: code-path-review
+    note: Multiple files in the data domain include @media (width <= 48rem) rules despite the desktop-only support contract.
+  repair_target:
+    files:
+      - web/frontend/src/views/data/Industry.vue
+      - web/frontend/src/views/data/Concepts.vue
+      - web/frontend/src/views/data/FundFlow.vue
+      - web/frontend/src/views/data/Advanced.vue
+      - web/frontend/src/views/artdeco-pages/components/AnalysisIndicators.vue
+      - web/frontend/src/views/artdeco-pages/components/AnalysisScreener.vue
+    primary_owner: web/frontend/src/views/data/Industry.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /data/industry
+    - /data/concept
+    - /data/fund-flow
+    - /data/indicator
+  status: open
+  dependency: alignment with desktop-only frontend redline and any shared style cleanup plan
+  dedupe_key: /data/industry:responsive:Industry
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: This is an architecture-level responsive finding derived from style rules, not live viewport execution.

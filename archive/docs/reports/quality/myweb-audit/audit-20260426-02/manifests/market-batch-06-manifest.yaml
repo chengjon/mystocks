@@ -1,0 +1,83 @@
+audit_run_id: audit-20260426-02
+batch_id: market-batch-06
+module: market
+scope:
+  requested_by: user
+  pages:
+    - route: /market/lhb
+      page_key: market-lhb
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/market/LHB.vue
+  compatibility_redirects: []
+batch_rationale: Close the canonical `/market/lhb` leaderboard request-provenance defect so first-load failures and stale-refresh failures cannot leak failed `REQ` ids into visible hero metadata when the rendered leaderboard snapshot was never verified or still belongs to an earlier successful sync, while reusing existing `myweb-audit v1.41` route-truth and `v1.39` verification-method rules.
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/market/lhb` remains `web/frontend/src/views/market/LHB.vue`"
+    - "the approved repair should stay page-local inside `LHB.vue` and the Phase 1 routed regression matrix rather than altering shared ArtDeco defaults or the shared request wrapper"
+    - "before any verified leaderboard snapshot exists, routed hero request metadata must degrade to explicit placeholders such as `REQ: N/A / ROWS: --` instead of leaking failed request ids or faux zero-row truth"
+    - "if a refresh fails after a successful sync, the route should continue to expose the request id that produced the currently visible verified board rather than the failed retry request id"
+    - "the routed request-provenance truth rule already exists in `myweb-audit v1.41`, and browser verification should reuse `v1.39` context-level interception when failure-state proof depends on controlled requests"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [error, default, loading]
+  notes:
+    - "verify failed first-load `/market/lhb` now renders `REQ: N/A / ROWS: --` and top stat values `-- / 今日 / 买入榜 / --`"
+    - "verify the failed first-load route does not leak the failed request id anywhere in the visible route shell"
+    - "verify a success-then-fail refresh path keeps the last verified request id visible, preserves the previous leaderboard row, and still shows the refresh-error banner"
+repair_approval:
+  status: approved
+  approved_findings:
+    - market-lhb-issue-03
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - market-lhb
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/market/LHB.vue
+    - web/frontend/src/views/market/__tests__/LHB.spec.ts
+    - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-market-lhb-request-provenance-2-state
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `market-batch-06` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/market-lhb-request-provenance-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-06-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-06-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/market-batch-06-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/market-batch-06-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-market-batch-06-closeout
+  notes:
+    - "the canonical LHB route now renders failed first-load request metadata honestly as `REQ: N/A / ROWS: --` instead of leaking a failed leaderboard request id"
+    - "the same route now preserves the last verified request id when a refresh fails after a successful leaderboard sync"
+status: complete

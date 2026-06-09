@@ -1,0 +1,26 @@
+- consolidated_issue_id: secondary-shell-issue-25
+  severity: Medium
+  affected_routes:
+    - /secondary/trading-decision-portfolio-canonical-wrapper
+    - /secondary/trading-decision-positions-canonical-wrapper
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/trading-decision/DecisionPortfolio.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "Active trading-decision panels now delegate to canonical trade owners."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The repair stays scoped to the two trading-decision panel owners and their local regressions; no new store, snapshot cache, shell-level provenance badge, or freshness strip was introduced."
+    related_routes:
+      - /secondary/trading-decision-portfolio-canonical-wrapper
+      - /secondary/trading-decision-positions-canonical-wrapper
+  approval_status: approved

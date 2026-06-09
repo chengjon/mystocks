@@ -1,0 +1,93 @@
+audit_run_id: audit-20260426-02
+batch_id: risk-batch-05
+module: risk
+scope:
+  requested_by: user
+  pages:
+    - route: /risk/overview
+      page_key: risk-overview
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/risk/Overview.vue
+    - route: /risk/stop-loss
+      page_key: risk-stop-loss
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/risk/StopLoss.vue
+  compatibility_redirects: []
+batch_rationale: Reuse the strengthened `v1.32` count-kpi delta truth rule on remaining canonical risk routes so plain tally or label-only KPI cards no longer inherit fabricated `+0%` chrome or exact-decimal precision from shared stat-card defaults.
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/risk/overview` remains `web/frontend/src/views/risk/Overview.vue`"
+    - "canonical route truth for `/risk/stop-loss` remains `web/frontend/src/views/risk/StopLoss.vue`"
+    - "the current routed KPI strips expose integer tallies or label-style status values but no verified comparison baseline for shared stat-card delta semantics"
+    - "shared `ArtDecoStatCard.vue` still has a HIGH upstream blast radius, so the approved repair stays page-local on the current risk routes"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+    - "the natural PM2 `/risk/stop-loss` route exercised the honest empty-state branch rather than the missing-threshold branch, so count-kpi truth was browser-verified on the natural route while threshold-policy truth remains covered by the earlier targeted batch"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, empty]
+  notes:
+    - "verify `/risk/overview` and `/risk/stop-loss` no longer render `.artdeco-stat-change`, `+0%`, `1.00`, or `0.00` on their routed KPI strips"
+    - "verify the same routes still render their canonical titles, runtime copy, and live or honest-empty route states after the page-local opt-out"
+repair_approval:
+  status: approved
+  approved_findings:
+    - risk-overview-issue-02
+    - risk-stop-loss-issue-02
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - risk-overview
+    - risk-stop-loss
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/risk/Overview.vue
+    - web/frontend/src/views/risk/StopLoss.vue
+    - web/frontend/src/views/risk/__tests__/Overview.spec.ts
+    - web/frontend/src/views/risk/__tests__/StopLoss.spec.ts
+    - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/components/artdeco/base/ArtDecoStatCard.vue
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-risk-count-kpi-2-routes
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated frontend or backend files before `risk-batch-05` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` is treated as observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/risk-overview-count-kpi-truth-audit.md
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/risk-stop-loss-count-kpi-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-05-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-05-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-05-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/risk-batch-05-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-risk-batch-05-closeout
+  notes:
+    - "the current batch reuses the existing `v1.32` count-kpi delta truth rule rather than introducing a new failure-mode class"
+    - "both canonical risk routes now suppress shared stat-card change chrome locally while preserving their existing routed-truth semantics"
+status: complete

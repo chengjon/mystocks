@@ -1,0 +1,33 @@
+- consolidated_issue_id: secondary-shell-issue-13
+  severity: Medium
+  title: Legacy market page now delegates to the canonical trade-portfolio owner
+  pages:
+    - /secondary/legacy-market-portfolio-wrapper
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The local asset summary cards, pseudo refresh controls, and positions/history shell were all facets of the same defect: `Market.vue` preserved a forked pseudo-live asset and trade-history shell even though a semantically matching canonical trade-portfolio owner already exists."
+  primary_owner: web/frontend/src/views/Market.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-market-portfolio-wrapper
+  dedupe_keys:
+    - /secondary/legacy-market-portfolio-wrapper:route-truth:legacyMarketPortfolioCanonicalWrapper
+  verification_scope:
+    routes:
+      - /secondary/legacy-market-portfolio-wrapper
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/Market.vue
+      - web/frontend/src/views/__tests__/Market.spec.ts
+    notes:
+      - "the legacy market page now renders only the canonical `/trade/portfolio` owner instead of a forked pseudo-live asset and trade-history shell"
+      - "the page no longer fabricates local asset summary, refresh, position, or trade-history truth"
+      - "secondary inventory heuristics now drop `Market.vue` out of the high-priority shortlist"
+  verification_surface: code-review-only

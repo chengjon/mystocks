@@ -1,0 +1,35 @@
+- consolidated_issue_id: data-indicator-issue-06
+  severity: High
+  title: Data indicator route now keeps the selected-indicator context aligned with the current verified registry universe
+  pages:
+    - /data/indicator
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The stale `selected indicator` workspace and the refreshed registry universe drifting onto different entities both came from the same missing selected-indicator reconciliation path after `refreshData()` rebuilt the verified indicator registry."
+  primary_owner: web/frontend/src/composables/market/useDataAnalysis.ts
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /data/indicator
+  dedupe_keys:
+    - /data/indicator:data-state:selectedIndicatorContextAfterVerifiedRegistryRefresh
+  verification_scope:
+    routes:
+      - /data/indicator
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/composables/market/useDataAnalysis.ts
+      - web/frontend/tests/unit/views/data-advanced-screening-truth.spec.ts
+      - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+    notes:
+      - "the route-local data-analysis composable now reconciles `selectedIndicator` against each refreshed verified indicator registry"
+      - "if the previously selected indicator no longer exists in the refreshed verified registry universe, the canonical `/data/indicator` route now clears the `selected indicator` workspace instead of leaking the old indicator context beside the new registry truth"
+      - "if the selected indicator still exists, the route-local context is now positioned to rebind to the refreshed indicator snapshot instead of retaining stale field values"
+      - "this batch reuses existing `myweb-audit v1.71` selected-row context truth guidance"
+  verification_surface: code-review-plus-targeted-live-verification

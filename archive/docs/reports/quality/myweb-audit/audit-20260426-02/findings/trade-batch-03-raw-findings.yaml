@@ -1,0 +1,37 @@
+- finding_id: trade-history-data-state-001
+  batch_id: trade-batch-03
+  page:
+    route: /trade/history
+    page_key: trade-history
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/trade/History.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Trade history route cleared the last successful ledger after a failed manual refresh
+  trigger:
+    steps:
+      - Open `/trade/history`
+      - Reach a state where the routed page has already loaded at least one successful trade-history row
+      - Trigger `刷新历史`
+      - Let the next single trade-history request fail
+  expected: "A failed manual refresh after a successful load should keep the last-known-good trade ledger visible, label the page as a refresh warning, and show explicit stale-data messaging rather than collapsing into the first-load failure panel."
+  actual: "Before repair, `loadHistory()` cleared `internalHistory` to `[]` whenever `exec()` returned `null`, so a failed manual refresh after a prior success switched the routed page to its hard empty or error surface and hid the last successful trade-history rows."
+  evidence:
+    kind: code-path-review
+    note: "The pre-repair `loadHistory()` branch in `History.vue` assigned `internalHistory.value = []` on a failed refresh, and the new regression first reproduced that stale-refresh collapse before the fix was applied."
+  repair_target:
+    files:
+      - web/frontend/src/views/trade/History.vue
+    primary_owner: web/frontend/src/views/trade/History.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /trade/history:data-state:History
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check `/trade/history` after repair on the real routed page, including a controlled success-then-refresh-fail browser path that preserves the last successful ledger.

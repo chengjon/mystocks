@@ -1,0 +1,24 @@
+- consolidated_issue_id: market-lhb-issue-04
+  severity: High
+  affected_routes:
+    - /market/lhb
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/market/LHB.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: The canonical LHB route now scopes verified leaderboard rows, row counts, and hero `REQ` provenance to the active trade-date selector, so a same-instance switch into a new unresolved trade-date shell no longer inherits the previous trade-date snapshot.
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: The repair stays inside `LHB.vue` plus page-owned regressions; no shared table, request wrapper, or selector primitive changed in this batch.
+    related_routes:
+      - /market/lhb
+  approval_status: approved

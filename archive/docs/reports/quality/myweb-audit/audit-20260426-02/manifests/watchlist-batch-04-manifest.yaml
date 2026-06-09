@@ -1,0 +1,85 @@
+audit_run_id: audit-20260426-02
+batch_id: watchlist-batch-04
+module: watchlist
+scope:
+  requested_by: user
+  pages:
+    - route: /watchlist/screener
+      page_key: watchlist-screener
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/watchlist/Screener.vue
+  compatibility_redirects: []
+batch_rationale: Close the canonical `/watchlist/screener` stock-universe request-provenance and resolved-failure-envelope truth defect so `success:false` payloads cannot be swallowed as empty-universe success and failed request ids cannot leak into visible hero metadata before or after a verified stock-universe snapshot exists, while reusing existing `myweb-audit v1.40`, `v1.41`, and `v1.39` rules.
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/watchlist/screener` remains `web/frontend/src/views/watchlist/Screener.vue`, while the routed surface owner lives in `web/frontend/src/views/stocks/Screener.vue`"
+    - "the stock-universe transport can resolve failures as ordinary `success: false` payload envelopes, so the route must classify resolved failure truth before mapping rows, summary counts, or empty-state copy"
+    - "hero request provenance must reflect the currently visible verified stock-universe snapshot rather than the latest failed retry"
+    - "controlled browser-context fulfillment is required for the resolved-envelope and stale-refresh proofs even when the natural PM2 route is healthy, because those exact failure shapes are not reproducible on demand through the live backend"
+    - "the approved repair should stay page-local in `web/frontend/src/views/stocks/Screener.vue` and the Phase 2 routed regression matrix rather than altering shared ArtDeco defaults or a shared request wrapper"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+    - "the routed stock-universe request had to be intercepted at the browser-context level on `**/v1/data/stocks/basic**`, because page-scoped `/api/v1/data/stocks/basic` interception did not match the backend absolute-url transport used by the route"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [error, default, loading]
+  notes:
+    - "verify resolved `success:false` first-load `/watchlist/screener` now renders `REQ: N/A`, `UNIVERSE: --`, top-strip `-- / -- / -- / --`, and blocking failure copy instead of fake empty-universe success"
+    - "verify the same first-load failure route does not leak the failed request id anywhere in the visible page shell"
+    - "verify a success-then-fail refresh path keeps the last verified request id visible, preserves previous stock rows, and surfaces the stale-refresh warning banner"
+    - "verify the natural PM2 success path still renders a real request id and live stock-universe summary values from `/api/v1/data/stocks/basic?limit=200`"
+repair_approval:
+  status: approved
+  approved_findings:
+    - watchlist-screener-issue-02
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - watchlist-screener
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/stocks/Screener.vue
+    - web/frontend/src/views/watchlist/__tests__/Screener.spec.ts
+    - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-watchlist-screener-envelope-and-request-provenance-3-state
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `watchlist-batch-04` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/watchlist-screener-request-and-envelope-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/watchlist-batch-04-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/watchlist-batch-04-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/watchlist-batch-04-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/watchlist-batch-04-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-watchlist-batch-04-closeout
+  notes:
+    - "the canonical watchlist screener route now classifies resolved stock-universe failure envelopes honestly instead of treating them as empty-universe success"
+    - "the same route now preserves the last verified request id and visible rows when a later refresh fails"
+status: complete

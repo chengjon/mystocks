@@ -1,7 +1,7 @@
 # ArtDecoPageTemplate Test Matrix
 
 > **说明**
-> 本文用于把 [`ARTDECO_COMPONENT_GOVERNANCE_RECORD_ARTDECO_PAGE_TEMPLATE.md`](/opt/claude/mystocks_spec/docs/plans/ARTDECO_COMPONENT_GOVERNANCE_RECORD_ARTDECO_PAGE_TEMPLATE.md) 中的测试要求落成可执行矩阵。
+> 本文用于把 [`ARTDECO_COMPONENT_GOVERNANCE_RECORD_ARTDECO_PAGE_TEMPLATE.md`](ARTDECO_COMPONENT_GOVERNANCE_RECORD_ARTDECO_PAGE_TEMPLATE.md) 中的测试要求落成可执行矩阵。
 > 目标不是一次性写完所有测试，而是先定义 `ArtDecoPageTemplate` 进入 P1 治理时的最小保护网。
 
 ---
@@ -56,7 +56,7 @@
 
 优先参考现有页面：
 
-- [`web/frontend/src/views/risk/Center.vue`](/opt/claude/mystocks_spec/web/frontend/src/views/risk/Center.vue)
+- [`web/frontend/src/views/risk/Center.vue`](../../web/frontend/src/views/risk/Center.vue)
 
 它已经是当前最接近真实业务页的落地样例。
 

@@ -1,0 +1,25 @@
+- consolidated_issue_id: system-config-issue-03
+  severity: High
+  affected_routes:
+    - /system/config
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/system/Settings.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: true
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "The canonical system-config route now keeps source-dependent counts unresolved until the active source tab has a verified config snapshot, instead of implying a real empty inventory with `0 / 0`."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The repaired gap is fully contained in `Settings.vue` plus owner and routed regressions; no shared source-config normalizer or shared request wrapper changed."
+    related_routes:
+      - /system/config
+      - /system/data
+  approval_status: approved

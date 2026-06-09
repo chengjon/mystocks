@@ -1,0 +1,122 @@
+- consolidated_issue_id: market-technical-issue-01
+  severity: Medium
+  title: Market technical now keeps the chart and summary on one page-owned K-line request path
+  pages:
+    - /market/technical
+  source_roles:
+    - data-state-audit
+  why_consolidated: The chart/snapshot split was one shared state-boundary defect centered on the technical workbench and its embedded chart component.
+  primary_owner: web/frontend/src/views/market/Technical.vue
+  repair_bucket: fix-with-shared-impact-review
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /market/technical
+  dedupe_keys:
+    - /market/technical:data-state:Technical
+  verification_scope:
+    routes:
+      - /market/technical
+    states:
+      - default
+      - loading
+      - empty
+      - error
+    breakpoints:
+      - 1920
+      - 1440
+      - 1280
+  repair_summary:
+    files:
+      - web/frontend/src/views/market/Technical.vue
+      - web/frontend/src/views/market/marketKlineData.ts
+      - web/frontend/src/components/market/ProKLineChart.vue
+      - web/frontend/src/components/market/composables/useProKLineChart.ts
+      - web/frontend/src/components/market/composables/useProKLineChart.types.ts
+      - web/frontend/src/views/market/__node_tests__/marketKlineData.test.ts
+      - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+    notes:
+      - "`Technical.vue` now passes the page-owned K-line payload into `ProKLineChart` instead of letting the chart fetch a second copy."
+      - "`ProKLineChart` now supports external data mode and emits a page-level refresh request instead of silently reloading through `/api/market/kline`."
+  verification_surface: code-review-plus-targeted-live-verification
+
+- consolidated_issue_id: market-lhb-issue-01
+  severity: Medium
+  title: Market lhb date selection now drives a trade-date-scoped query instead of local payload slicing only
+  pages:
+    - /market/lhb
+  source_roles:
+    - functional-audit
+  why_consolidated: The misleading date-control behavior was one page-local interaction defect rooted in the LHB workbench fetch contract.
+  primary_owner: web/frontend/src/views/market/LHB.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact: []
+  dedupe_keys:
+    - /market/lhb:interaction:LHB
+  verification_scope:
+    routes:
+      - /market/lhb
+    states:
+      - default
+      - empty
+      - error
+    breakpoints:
+      - 1920
+      - 1440
+      - 1280
+  repair_summary:
+    files:
+      - web/frontend/src/views/market/LHB.vue
+      - web/frontend/src/views/market/dragonTigerData.ts
+      - web/frontend/src/views/market/__node_tests__/dragonTigerData.test.ts
+      - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+    notes:
+      - "the page now records a trade-date catalog and turns `今日/昨日/前日` into `/v2/market/lhb?start_date=...&end_date=...` requests"
+      - "internal single-date payloads are no longer misread as unavailable just because they contain one trade date"
+  verification_surface: code-review-plus-targeted-live-verification
+
+- consolidated_issue_id: market-domain-issue-01
+  severity: Medium
+  title: Market domain shared cleanup removed unsupported 48rem responsive branches from the primary market pages
+  pages:
+    - /market/realtime
+    - /market/technical
+    - /market/lhb
+  source_roles:
+    - responsive-a11y-audit
+  why_consolidated: The unsupported mobile-width branch was repeated across the routed market pages and belonged to one desktop-policy cleanup wave.
+  primary_owner: web/frontend/src/views/market/Realtime.vue
+  repair_bucket: fix-with-shared-impact-review
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /market/realtime
+    - /market/technical
+    - /market/lhb
+  dedupe_keys:
+    - /market/realtime:responsive:Realtime
+  verification_scope:
+    routes:
+      - /market/realtime
+      - /market/technical
+      - /market/lhb
+    states:
+      - default
+    breakpoints:
+      - 1920
+      - 1440
+      - 1280
+  repair_summary:
+    files:
+      - web/frontend/src/views/market/Realtime.vue
+      - web/frontend/src/views/market/Technical.vue
+      - web/frontend/src/views/market/LHB.vue
+    notes:
+      - "removed all `@media (width <= 48rem)` branches from the routed market pages"
+      - "retained the desktop-relevant `75rem` adjustments only"
+  verification_surface: code-review-only

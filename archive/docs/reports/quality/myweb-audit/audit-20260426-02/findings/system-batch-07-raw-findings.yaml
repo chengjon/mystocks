@@ -1,0 +1,40 @@
+- finding_id: system-health-data-state-003
+  batch_id: system-batch-07
+  page:
+    route: /system/health
+    page_key: system-health
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/system/Health.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Routed system-health page leaked failed request ids into hero metadata even when no verified health snapshot existed
+  trigger:
+    steps:
+      - "Open `/system/health`"
+      - "Force the first `/api/health` request to resolve `success: false` with a `request_id` before any verified health snapshot exists"
+      - "Repeat with one successful health snapshot followed by a failed manual refresh"
+      - "Inspect the hero `REQ_ID / STATUS / FOCUS` metadata and the visible health matrix shell"
+  expected: "Before `/system/health` has any verified health snapshot, the hero metadata should degrade to `REQ_ID: N/A`. If a later refresh fails while the route still displays the previous verified snapshot, the hero `REQ_ID` should continue to identify the visible verified snapshot instead of the failed retry."
+  actual: "Before repair, `/system/health` rendered `REQ_ID: req-health-first-fail` on first-load failure and could switch the hero request id to the failed refresh request even though the visible health matrix still came from the previous verified snapshot."
+  evidence:
+    kind: live-observation
+    note: "Component red tests reproduced both failure shapes before repair. Targeted Playwright-library verification with system `google-chrome` then confirmed the routed page now renders `REQ_ID: N/A` on first-load failure and keeps `REQ_ID: req-system-b07-success` on stale refresh failure while the previous service snapshot remains visible."
+  repair_target:
+    files:
+      - web/frontend/src/views/system/Health.vue
+      - web/frontend/src/views/system/__tests__/Health.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/system/Health.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /system/api
+  status: open
+  dependency: null
+  dedupe_key: /system/health:data-state:requestProvenanceTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/system/health` after repair and confirm first-load failure and stale-refresh failure both preserve honest hero request provenance."

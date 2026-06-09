@@ -1,0 +1,94 @@
+audit_run_id: audit-20260426-02
+batch_id: blank-batch-01
+module: blank-layout
+scope:
+  requested_by: user
+  pages:
+    - route: /login
+      page_key: blank-login
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/Login.vue
+    - route: /:pathMatch(.*)*
+      page_key: blank-not-found
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/NotFound.vue
+  compatibility_redirects: []
+batch_rationale: >-
+  Close the remaining routed blank-layout shell gap by auditing `/login` and
+  `404` as a lightweight mini batch: verify shell isolation, no snapshot
+  fallback chrome, and canonical 404 recovery route truth without forcing the
+  pages through the heavy business-route regression stack.
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "both `/login` and `/:pathMatch(.*)*` remain routed blank-layout entries with `meta.layout = Blank`"
+    - "blank-layout routes do not own business summary strips, request provenance badges, or selector-scoped live snapshots"
+    - "the 404 recovery action should use canonical home-route truth instead of a raw root redirect hop"
+  fallback_log: []
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states:
+    - default
+    - loading
+    - error
+  notes:
+    - "verify `/login` renders inside `.app-shell[data-layout=\"blank\"]` with no readiness banner or stats strip"
+    - "verify `404` renders inside the same blank shell and does not retain stale login content after same-tab route switching"
+    - "verify clicking `返回首页` on the 404 shell lands on the expected login redirect path"
+repair_approval:
+  status: approved
+  approved_findings:
+    - blank-layout-issue-01
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - blank-login
+    - blank-not-found
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/NotFound.vue
+    - web/frontend/tests/unit/config/shell-route-runtime-guardrails.spec.ts
+    - web/frontend/tests/e2e/blank-layout-smoke.spec.ts
+    - .claude/skills/myweb-audit/references/route-truth-casebook.md
+    - .claude/skills/myweb-audit/references/route-truth-coverage-matrix.md
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vitest-and-playwright
+    typecheck: failed-existing-frontend-debt-only
+    pm2: passed
+    e2e: passed-playwright-chromium-blank-layout-smoke
+    gitnexus_staged_detect: not-run
+  staged_scope:
+    mode: not-run
+    files: []
+    verdict_origin: none
+    notes:
+      - "no isolated staged batch was prepared in this turn; worktree remains mixed"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/blank-layout-login-and-404-shell-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/blank-batch-01-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/blank-batch-01-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/blank-batch-01-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/blank-batch-01-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-blank-batch-01-closeout
+  notes:
+    - "the remaining routed blank-layout shell routes are now explicitly closed outside the canonical business-route family matrix"
+    - "subsequent route selection should move into the generated secondary inventory phase instead of route-by-route mechanical continuation"
+status: complete

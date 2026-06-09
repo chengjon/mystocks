@@ -1,0 +1,39 @@
+- consolidated_issue_id: risk-stop-loss-issue-08
+  severity: High
+  title: Risk stop-loss now preserves resolved failure truth before shared store transforms and keeps verified request provenance aligned with visible cards
+  pages:
+    - /risk/stop-loss
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The resolved-envelope empty-success misclassification and the stale-refresh request-provenance overwrite were two faces of the same routed truth defect: `/risk/stop-loss` trusted shared watchlist-store transforms and latest request metadata instead of the currently visible verified stop-loss snapshot."
+  primary_owner: web/frontend/src/views/risk/StopLoss.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /risk/stop-loss
+  dedupe_keys:
+    - /risk/stop-loss:data-state:storeEnvelopeAndRequestTruth
+  verification_scope:
+    routes:
+      - /risk/stop-loss
+    states:
+      - first-load-failure
+      - stale-refresh-failure
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/risk/StopLoss.vue
+      - web/frontend/src/views/risk/__tests__/StopLoss.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+      - web/frontend/tests/unit/views/risk-wrapper-retention.spec.ts
+    notes:
+      - "the canonical risk stop-loss route now classifies resolved `success:false` watchlist-stock envelopes before any shared store transform can collapse them into empty monitoring success"
+      - "the same route now uses page-local verified-snapshot request provenance, so first-load failure renders `REQ_ID: N/A` and stale-refresh failure keeps the last verified request id aligned with the currently visible cards"
+      - "the route now keeps verified stop-loss cards visible during refresh-after-success failure and surfaces explicit stale-refresh copy instead of letting the failed retry become the active truth"
+      - "the strengthened routed regressions now pin both the component and the Phase 4 matrix against resolved failure envelopes and refresh-after-success provenance leakage"
+      - "this batch promotes a new `myweb-audit v1.42` rule: if shared Pinia-store transforms erase resolved failure envelopes, the routed owner must preserve failure truth before that transform boundary or switch to a page-local raw-contract path"
+  verification_surface: code-review-plus-targeted-live-verification

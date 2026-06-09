@@ -1,101 +1,104 @@
-# API Documentation Trunk
+# MyStocks API 文档中心
 
-> **导航说明**:
-> 本文件是导航页或索引页，不是当前仓库共享规则或实现状态的唯一事实来源。
-> 若涉及仓库级共享规则、审批门禁或治理口径，请优先阅读 `architecture/STANDARDS.md`；若涉及具体执行入口，再按职责分别参考根目录 `AGENTS.md` 与根目录 `CLAUDE.md`。
+> **定位说明**:
+> 本页是 API 文档中心首页，不是并行真相源。
+> 当前 API 契约唯一事实来源仍是 `architecture/STANDARDS.md` 定义的链路：FastAPI 路由 + Pydantic Schema + 导出的 OpenAPI。
 
-## Current Truth Precedence
+## 当前事实口径
+
+截至 `2026-04-24`，已按当前代码重新导出 OpenAPI：
+
+- `455` paths
+- `493` operations
+- 统计命令：`python scripts/generate_openapi.py --output /tmp/mystocks_openapi_current.json`
+
+以下旧说法不得再作为当前事实引用：
+
+- “571 个端点”
+- “469 个端点”
+- “所有 API 只由 VERSION_MAPPING.py 管理”
+
+## 真相源优先级
 
 1. `architecture/STANDARDS.md`
-2. FastAPI routes + Pydantic schema + exported OpenAPI
-3. `docs/api/README.md`
-4. retained supporting documents under `docs/api/`
+2. `web/backend/app/api/` 与相关 Pydantic schema
+3. `docs/api/openapi.json` / `docs/api/openapi.yaml`
+4. 本目录下的分析、指南、报告文档
 
-以下内容不得覆盖真实契约：
+## 快速开始
 
-- 历史报告
-- 旧计划
-- 历史兼容索引
-- 已退役的 legacy 文档
+如果你要核对当前 API，请按这个顺序：
 
-## Retained Canonical Surface
+1. 看路由实现与 schema
+2. 重新导出 OpenAPI
+3. 同步 `docs/api/openapi.json`
+4. 如涉及前端，执行 `scripts/generate_frontend_types.py`
+5. 再更新 Markdown 摘要文档
 
-### Contract Truth
+## 当前重点文档
 
-- `web/backend/app/api/`
-- `web/backend/app/schemas/`
-- [`openapi.json`](/opt/claude/mystocks_spec/docs/api/openapi.json)
-- [`openapi.yaml`](/opt/claude/mystocks_spec/docs/api/openapi.yaml)
+- [API 契约管理架构](API_CONTRACT_ARCHITECTURE_ANALYSIS.md)
+- [API 端点统计分析](API_ENDPOINTS_STATISTICS_REPORT.md)
+- [API 映射文档](MyStocks_API_Mapping_Document.md)
+- [API 开发指南](guides/development/api_development_guidelines.md)
+- [API 合规性测试框架](testing/compliance/api_compliance_testing_framework.md)
+- [API 架构分析报告](reports/analysis/api_endpoints_statistics_report.md)
+- [新增 API / 数据源集成指南](../guides/NEW_API_SOURCE_INTEGRATION_GUIDE.md)
 
-### Supporting API Navigation
+## 运行时可用性补充
 
-- [`guides/development/`](/opt/claude/mystocks_spec/docs/api/guides/development/)
-- [`guides/integration/INDEX.md`](/opt/claude/mystocks_spec/docs/api/guides/integration/INDEX.md)
-- [`specifications/INDEX.md`](/opt/claude/mystocks_spec/docs/api/specifications/INDEX.md)
-- [`testing/INDEX.md`](/opt/claude/mystocks_spec/docs/api/testing/INDEX.md)
+本轮 API 管理不仅核对了 OpenAPI，也核对了前端活跃业务页首屏主 API 的运行时请求。
 
-### Retained Root Reference Documents
+截至 `2026-04-24`，Chromium 下已稳定通过的受控页面子集为 `17` 页：
 
-- [`API_CONTRACT_ARCHITECTURE_ANALYSIS.md`](/opt/claude/mystocks_spec/docs/api/API_CONTRACT_ARCHITECTURE_ANALYSIS.md)
-- [`API_ENDPOINTS_STATISTICS_REPORT.md`](/opt/claude/mystocks_spec/docs/api/API_ENDPOINTS_STATISTICS_REPORT.md)
-- [`ERROR_CODE_GUIDE.md`](/opt/claude/mystocks_spec/docs/api/ERROR_CODE_GUIDE.md)
-- [`EXCEPTION_HANDLER_GUIDE.md`](/opt/claude/mystocks_spec/docs/api/EXCEPTION_HANDLER_GUIDE.md)
-- [`VALIDATION_GUIDE.md`](/opt/claude/mystocks_spec/docs/api/VALIDATION_GUIDE.md)
-- [`SWAGGER_UI_GUIDE.md`](/opt/claude/mystocks_spec/docs/api/SWAGGER_UI_GUIDE.md)
+- `Dashboard`
+- `Market-Realtime`
+- `Market-Technical`
+- `Market-LHB`
+- `Data-Industry`
+- `Data-Concept`
+- `Data-FundFlow`
+- `Data-Indicator`
+- `Watchlist-Manage`
+- `Watchlist-Signals`
+- `Watchlist-Screener`
+- `Strategy-Repo`
+- `Strategy-Parameters`
+- `Strategy-Backtest`
+- `Strategy-Pos`
+- `Strategy-Signals`
+- `System-API`
 
-这些文件属于 retained supporting/reference surface，可帮助理解 API 系统，但不替代 code contract truth。
+验证口径：
 
-## Reader Routing
+- 页面契约必须声明 `expectedSelectors`
+- 有稳定 `route meta.api` 的页面必须声明 `expectedApiPath`
+- 断言的是“首屏主 API 至少被请求一次”，不是全功能验收
 
-### If You Need Current API Truth
+## 交易域边界
 
-优先回到：
+当前主线对交易域只保留接口与契约口径，不在本轮文档中把它描述为已完成功能域。
 
-- FastAPI route definitions
-- Pydantic schema definitions
-- exported OpenAPI artifacts
+当前只确认这类内容：
 
-### If You Need Current OpenAPI Example Audit Status
+- 交易相关读接口路径存在
+- 契约可导出
+- 页面或系统文档可引用其接口口径
 
-优先回到：
+当前不应写成已完成的内容：
 
-- [`scripts/dev/openapi_success_example_audit.py`](/opt/claude/mystocks_spec/scripts/dev/openapi_success_example_audit.py)
-- [`web/backend/tests/test_api_documentation_validation.py`](/opt/claude/mystocks_spec/web/backend/tests/test_api_documentation_validation.py)
-- [`web/backend/tests/test_health_route_conflicts.py`](/opt/claude/mystocks_spec/web/backend/tests/test_health_route_conflicts.py)
+- 下单
+- 撤单
+- 撮合
+- 账户写操作
+- 完整交易工作流
 
-当前口径说明：
+## 推荐阅读路径
 
-- `application/json` 的成功响应必须提供 `example` 或 `examples`
-- `204` 成功响应不计入 example 缺口
-- Prometheus / OpenMetrics `text/plain` 成功响应不计入 JSON 契约债，作为非 JSON 观察项单独报告
+如果你是：
 
-### If You Need API Development Guidance
-
-优先阅读：
-
-- [`api_development_guidelines.md`](/opt/claude/mystocks_spec/docs/api/guides/development/api_development_guidelines.md)
-- [`INDEX.md`](/opt/claude/mystocks_spec/docs/api/guides/integration/INDEX.md)
-- [`api_acceptance_standards.md`](/opt/claude/mystocks_spec/docs/api/testing/compliance/api_acceptance_standards.md)
-- [`api_specification.md`](/opt/claude/mystocks_spec/docs/api/specifications/core/api_specification.md)
-
-### If You Need Historical Evidence
-
-进入：
-
-- `docs/api/reports/`
-- `docs/reports/`
-
-这些区域只应作为历史证据、里程碑记录或清理审计材料使用。
-
-## Wave 1 Cleanup Status
-
-- `docs/api/legacy-cn/` 已在 `2026-04-08` cleanup wave 中退役
-- `docs/api/INDEX.md` 保留为 supporting transition index，不再维护为并行主入口
-- 默认治理策略继续是 `delete/archive > rewrite`
-
-## Related Governance Artifacts
-
-- [documentation-system.md](/opt/claude/mystocks_spec/docs/overview/documentation-system.md)
-- [2026-04-08-first-pass-inventory.md](/opt/claude/mystocks_spec/docs/reports/documentation-governance/2026-04-08-first-pass-inventory.md)
-- [2026-04-08-decision-register.md](/opt/claude/mystocks_spec/docs/reports/documentation-governance/2026-04-08-decision-register.md)
-- [2026-04-08-openapi-contract-audit-followup.md](/opt/claude/mystocks_spec/docs/reports/documentation-governance/2026-04-08-openapi-contract-audit-followup.md)
+- 后端开发：先看 [API 开发指南](guides/development/api_development_guidelines.md)
+- 契约治理维护者：先看 [API 契约管理架构](API_CONTRACT_ARCHITECTURE_ANALYSIS.md)
+- 文档维护者：先看 [API 端点统计分析](API_ENDPOINTS_STATISTICS_REPORT.md)
+- 数据源接入维护者：先看 [新增 API / 数据源集成指南](../guides/NEW_API_SOURCE_INTEGRATION_GUIDE.md)
+- 合规测试维护者：先看 [API 合规性测试框架](testing/compliance/api_compliance_testing_framework.md)

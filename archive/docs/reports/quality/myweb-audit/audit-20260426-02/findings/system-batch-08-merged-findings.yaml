@@ -1,0 +1,37 @@
+- consolidated_issue_id: system-api-issue-03
+  severity: High
+  title: System API routed request metadata now tracks verified system-probe provenance instead of failed retry ids
+  pages:
+    - /system/api
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The first-load failure request-id leak and the stale-refresh request-id overwrite were two manifestations of the same routed request-provenance cluster: the canonical system API route treated `useArtDecoApi.lastRequestId` as if it always represented the currently visible verified system probe snapshot."
+  primary_owner: web/frontend/src/views/system/API.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /system/health
+  dedupe_keys:
+    - /system/api:data-state:requestProvenanceTruth
+  verification_scope:
+    routes:
+      - /system/api
+    states:
+      - first-load-failure
+      - stale-refresh-failure
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/system/API.vue
+      - web/frontend/src/views/system/__tests__/API.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    notes:
+      - "the canonical system-api route now derives visible `REQ_ID` from page-local verified-snapshot truth, so first-load failure renders `REQ_ID: N/A` instead of leaking a failed request id as if a probe snapshot had resolved"
+      - "the same route now retains the last verified request id during stale-refresh failure, so the visible health and telemetry shell stay aligned when a failed retry occurs after a successful sync"
+      - "the strengthened routed regressions now cover first-load failure and refresh-after-success failure, closing the exact `lastRequestId` provenance gap on both component and Phase 4 routed surfaces"
+      - "this batch intentionally reuses existing `myweb-audit v1.41` request-provenance truth and `v1.39` browser-context interception guidance; the project-level latest skill version remains `v1.43`"
+  verification_surface: code-review-plus-targeted-live-verification

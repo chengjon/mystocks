@@ -1,0 +1,35 @@
+- consolidated_issue_id: detail-news-issue-09
+  severity: High
+  title: Detail news route now keeps auxiliary rule and trigger rows aligned with the current detail symbol
+  pages:
+    - /detail/news/:symbol
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The canonical detail/news route had one auxiliary selector-truth defect: `监控规则管理` and `触发记录` rows were not filtered to the current detail symbol, so a same-instance route switch could leave old symbol rows visible under the new banner."
+  primary_owner: web/frontend/src/views/announcement/AnnouncementMonitor.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact: []
+  dedupe_keys:
+    - /detail/news/:symbol:data-state:selectorScopedAuxiliaryRowProvenance
+  verification_scope:
+    routes:
+      - /detail/news/:symbol
+    states:
+      - default
+      - selector-switch-first-load-failure
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/announcement/AnnouncementMonitor.vue
+      - web/frontend/src/views/announcement/__tests__/AnnouncementMonitor.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    notes:
+      - "the route-owned announcement detail view now derives `visibleMonitorRules` and `visibleTriggeredRecords` from the current `routeSymbol` instead of rendering raw auxiliary arrays directly"
+      - "rules whose `stock_codes` are empty remain visible as global rules, but symbol-specific rows now disappear once the same page instance switches to a new detail symbol"
+      - "triggered-record rows now clear for the new selector unless their `stock_code` matches the active route symbol"
+      - "this batch reuses existing `myweb-audit v1.66` selector-scoped row provenance guidance and `v1.60` auxiliary-slice truth guidance; no new skill version was required"
+  verification_surface: code-review-plus-targeted-live-verification

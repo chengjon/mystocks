@@ -1,0 +1,87 @@
+audit_run_id: audit-20260426-02
+batch_id: data-batch-08
+module: data
+scope:
+  requested_by: user
+  pages:
+    - route: /data/fund-flow
+      page_key: data-fund-flow
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/data/FundFlow.vue
+  compatibility_redirects: []
+batch_rationale: Close the routed fund-flow numeric-truth cluster so the canonical page no longer leaks zero-initialized first-load KPI cards or ordinal pseudo decimals, and fold the unresolved first-load numeric truth rule back into `myweb-audit v1.38`.
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/data/fund-flow` remains `web/frontend/src/views/data/FundFlow.vue`"
+    - "the live fund-flow route still combines shared stat cards with a shared table, so the approved repair should stay page-local in `FundFlow.vue` instead of changing shared ArtDeco defaults"
+    - "when the route is still unresolved on its first live load, zero-initialized summary cards must degrade to placeholders rather than presenting `0.00 / +0%` as live truth"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, loading]
+  notes:
+    - "verify the real PM2 `/data/fund-flow` route no longer shows `0.00`, `+0%`, or any `.artdeco-stat-change` nodes on the top KPI strip while the first live load is still unresolved"
+    - "verify the routed ranking surface renders ordinal rows such as `1` and `2` instead of `1.00` and `2.00` through routed regression coverage and strengthened phase2 matrix assertions"
+repair_approval:
+  status: approved
+  approved_findings:
+    - data-fund-flow-issue-01
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - data-fund-flow
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/data/FundFlow.vue
+    - web/frontend/src/views/data/__tests__/FundFlow.spec.ts
+    - web/frontend/tests/unit/views/data-fund-flow-partial-state.spec.ts
+    - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+  shared_impact:
+    candidates:
+      - web/frontend/src/components/artdeco/base/ArtDecoStatCard.vue
+      - web/frontend/src/components/artdeco/trading/ArtDecoTable.vue
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-data-fund-flow-live-placeholder-1-route
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `data-batch-08` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/data-fund-flow-unresolved-numeric-placeholder-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-08-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-08-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-08-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/data-batch-08-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-data-batch-08-closeout
+  notes:
+    - "the canonical fund-flow route now renders unresolved first-load KPI cards as explicit placeholders rather than faux zero metrics"
+    - "`myweb-audit v1.38` now treats zero-initialized first-load numeric surfaces as a distinct route-truth defect instead of allowing them to masquerade as live metrics"
+status: complete

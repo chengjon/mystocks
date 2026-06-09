@@ -1,0 +1,37 @@
+- consolidated_issue_id: trade-signals-issue-03
+  severity: High
+  title: Trade signals manual refresh now keeps verified snapshot rows and request provenance out of shared-store failure truth
+  pages:
+    - /trade/signals
+  source_roles:
+    - data-state-audit
+  why_consolidated: The hero `COUNT / DATA / REQ_ID / TIME` meta, routed signal rows, and stale-state messaging all leaked the same store-refresh snapshot-provenance defect, so they represent one canonical route-truth issue on `/trade/signals`.
+  primary_owner: web/frontend/src/views/trade/Signals.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /trade/signals
+  dedupe_keys:
+    - /trade/signals:data-state:storeRefreshSnapshotProvenanceTruth
+  verification_scope:
+    routes:
+      - /trade/signals
+    states:
+      - loading
+      - error
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/trade/Signals.vue
+      - web/frontend/src/views/trade/__tests__/Signals.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    notes:
+      - "the canonical trade-signals route now keeps page-local verified request and process metadata instead of binding hero provenance directly to the shared realtime store's latest refresh attempt"
+      - "the repaired route now preserves verified signal rows and shows stale-refresh messaging when a later manual refresh resolves as `success: false`"
+      - "the strengthened regression now guards `success -> refresh fail` request-provenance retention in both component tests and the Phase 3 routed matrix"
+      - "this batch introduces `myweb-audit v1.43` so future store-backed route audits must cover manual refresh failure after prior success"
+  verification_surface: code-review-plus-targeted-live-verification

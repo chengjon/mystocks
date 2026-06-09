@@ -4,33 +4,53 @@
 > 本文件是 `docs/reports/` 的 canonical historical-evidence entrypoint，用于把读者导向报告、复盘、审计材料和历史计划快照。
 > 它不是当前实施状态、当前能力真相或仓库共享规则的唯一事实来源；当前规则与主线仍分别以 `architecture/STANDARDS.md`、`openspec/specs/` 和已批准变更为准。
 
-## How To Use Reports
+## 2026-06-09 归档说明
 
-进入 `docs/reports/` 时，先判断你的目标：
+以下 35 个子目录已整体归档至 [`archive/docs/reports/`](../../archive/docs/reports/)：
 
-- 要看治理执行证据：
-  [`documentation-governance/`](/opt/claude/mystocks_spec/docs/reports/documentation-governance/)
-- 要看技术债、质量或代码审查材料：
-  [`technical_debt/`](/opt/claude/mystocks_spec/docs/reports/technical_debt/),
-  [`quality/`](/opt/claude/mystocks_spec/docs/reports/quality/),
-  [`reviews/`](/opt/claude/mystocks_spec/docs/reports/reviews/)
-- 要看测试与验证产物：
-  [`test-reports/`](/opt/claude/mystocks_spec/docs/reports/test-reports/),
-  [`test-reports-e2e/`](/opt/claude/mystocks_spec/docs/reports/test-reports-e2e/),
-  [`api_verification/`](/opt/claude/mystocks_spec/docs/reports/api_verification/)
-- 要看清理、迁移或阶段性交付材料：
-  [`cleanup/`](/opt/claude/mystocks_spec/docs/reports/cleanup/),
-  [`phase_reports/`](/opt/claude/mystocks_spec/docs/reports/phase_reports/),
-  [`completion_reports/`](/opt/claude/mystocks_spec/docs/reports/completion_reports/)
-- 要看历史工作日志或任务包：
-  [`worklogs/`](/opt/claude/mystocks_spec/docs/reports/worklogs/),
-  [`tasks/`](/opt/claude/mystocks_spec/docs/reports/tasks/)
+| 归档目录 | 说明 |
+|----------|------|
+| `analysis/` | 分析报告（TDX 可行性评估等） |
+| `api_split/` | API 拆分报告 |
+| `api_verification/` | API 验证产物 |
+| `architecture-governance/` | 架构治理证据 |
+| `artdeco-alignment/` | ArtDeco 对齐报告 |
+| `batch-coverage-html/` | HTML 覆盖率报告 |
+| `bugs/` | Bug 报告 |
+| `cleanup/` | 清理操作记录 |
+| `cli_reports/` | CLI 报告 |
+| `code_quality/` | 代码质量报告 |
+| `completion_reports/` | 完成报告 |
+| `data-classification-coverage-html/` | 数据分类覆盖率 |
+| `design/` | 设计报告 |
+| `documentation-governance/` | 文档治理证据 |
+| `evidence/` | 通用验证证据 |
+| `hooks/` | Hooks 相关报告 |
+| `load_test_reports/` | 负载测试报告 |
+| `misc/` | 杂项 |
+| `monitoring_reports/` | 监控报告 |
+| `performance/` | 性能报告 |
+| `phase4_6/` | Phase 4-6 报告 |
+| `phase_reports/` | 阶段报告 |
+| `plans/` | 历史计划 |
+| `quality/` | 质量审计（含 HTML5 migration 证据） |
+| `reviews/` | 代码审查记录 |
+| `screenshots/` | 截图 |
+| `security/` | 安全相关 |
+| `smart_analysis_reports/` | 智能分析报告 |
+| `tasks/` | 任务包 |
+| `technical_debt/` | 技术债报告 |
+| `test-reports/` | 测试报告 |
+| `test-reports-e2e/` | E2E 测试报告 |
+| `test_reports/` | 测试报告（旧） |
+| `wencai/` | Wencai 报告 |
+| `worklogs/` | 工作日志 |
+
+如需查找归档内容，请在 `archive/docs/reports/<目录名>/` 中查找。
 
 ## Root-Level Files
 
-`docs/reports/` 根目录下仍存在大量历史快照、报告、计划摘要和专题材料。
-
-这些 root-level markdown 默认应按 historical evidence 使用：
+`docs/reports/` 根目录下仍保留约 685 个历史报告文件。这些 root-level markdown 默认按 `report` 生命周期使用：
 
 - 可以阅读、检索、回溯
 - 不应被当作当前 canonical trunk
@@ -38,20 +58,16 @@
 
 ## Legacy And Archive
 
-- 历史中文 legacy cluster 已迁出 active tree：
-  [`archive/docs/reports/legacy-cn-2026-04-08/`](/opt/claude/mystocks_spec/archive/docs/reports/legacy-cn-2026-04-08/)
-- [`INDEX.md`](/opt/claude/mystocks_spec/docs/reports/INDEX.md) 仅作为旧链接兼容索引保留，不再维护为权威总览
+- 中文 legacy cluster 已迁出 active tree：`archive/docs/reports/legacy-cn-2026-04-08/`
+- 2026-06-09 批量归档：35 个子目录已移至 `archive/docs/reports/`
+- [`INDEX.md`](INDEX.md) 仅作为旧链接兼容索引保留，不再维护为权威总览
 
 ## Reader Routing
 
-- 当前规则、审批门禁、删除标准：
-  [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)
-- 当前 capability truth：
-  [`openspec/specs/`](/opt/claude/mystocks_spec/openspec/specs/)
-- 当前批准中的变更：
-  [`openspec/changes/`](/opt/claude/mystocks_spec/openspec/changes/)
-- 文档系统 trunk map：
-  [`docs/overview/documentation-system.md`](/opt/claude/mystocks_spec/docs/overview/documentation-system.md)
+- 当前规则、审批门禁、删除标准：[`architecture/STANDARDS.md`](../../architecture/STANDARDS.md)
+- 当前 capability truth：[`openspec/specs/`](../../openspec/specs/)
+- 当前批准中的变更：[`openspec/changes/`](../../openspec/changes/)
+- 文档系统 trunk map：[`docs/overview/documentation-system.md`](../overview/documentation-system.md)
 
 ## Governance Status
 

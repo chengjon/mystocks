@@ -1,0 +1,37 @@
+- consolidated_issue_id: trade-history-issue-01
+  severity: High
+  title: Trade history now preserves the last-known-good ledger when a manual refresh fails
+  pages:
+    - /trade/history
+  source_roles:
+    - data-state-audit
+  why_consolidated: The row wipe, ambiguous refresh status, and hard empty-state regression were one page-local stale-refresh truth defect on the canonical trade history workbench.
+  primary_owner: web/frontend/src/views/trade/History.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact: []
+  dedupe_keys:
+    - /trade/history:data-state:History
+  verification_scope:
+    routes:
+      - /trade/history
+    states:
+      - default
+      - empty
+      - error
+    breakpoints:
+      - 1920
+      - 1440
+      - 1280
+  repair_summary:
+    files:
+      - web/frontend/src/views/trade/History.vue
+      - web/frontend/src/views/trade/__tests__/History.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    notes:
+      - "removed the branch that wiped `internalHistory` after a failed refresh so last-known-good ledger rows stay mounted"
+      - "split refresh-failure messaging from first-load failure messaging by surfacing `刷新异常` and stale-data copy only when retained rows still exist"
+      - "restricted the hard empty-error panel to first-load or no-data failures and extended both unit and Phase 3 routed browser coverage for the stale-refresh path"
+  verification_surface: code-review-plus-targeted-live-verification

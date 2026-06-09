@@ -1,0 +1,50 @@
+- consolidated_issue_id: trade-portfolio-issue-01
+  severity: Medium
+  title: Portfolio routes now gate rebalance advice on real policy inputs instead of fabricating equal-weight targets
+  pages:
+    - /trade/portfolio
+    - /risk/pnl
+  source_roles:
+    - data-state-audit
+  why_consolidated: The canonical trade route and the risk wrapper route showed the same policy-derived action defect because both reused the same portfolio page family and holdings payload.
+  primary_owner: web/frontend/src/views/trade/Portfolio.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /risk/pnl
+  dedupe_keys:
+    - /trade/portfolio:data-state:Portfolio
+  verification_scope:
+    routes:
+      - /trade/portfolio
+      - /risk/pnl
+    states:
+      - default
+      - empty
+    breakpoints:
+      - 1920
+      - 1440
+      - 1280
+  repair_summary:
+    files:
+      - web/frontend/src/views/trade/Portfolio.vue
+      - web/frontend/src/views/artdeco-pages/portfolio-tabs/portfolioOverviewData.ts
+      - web/frontend/src/views/artdeco-pages/portfolio-tabs/__tests__/portfolioOverviewData.spec.ts
+      - web/frontend/src/views/trade/__tests__/Portfolio.spec.ts
+      - web/frontend/tests/unit/views/trade-wrapper-retention.spec.ts
+      - web/frontend/tests/unit/config/trade-route-canonical-paths.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+      - web/frontend/tests/e2e/risk-pnl.spec.ts
+      - .claude/skills/myweb-audit/SKILL.md
+      - .claude/skills/myweb-audit/references/audit-checklist.md
+      - .claude/agents/myweb-audit-data-state-audit.md
+      - .claude/skills/myweb-audit/references/CHANGELOG.md
+    notes:
+      - "the canonical portfolio mapper now carries `target_weight` through normalized route data and exposes `rebalance_policy_ready` explicitly"
+      - "the canonical trade portfolio page now renders rebalance counts and rows only when current routed data exposes real target-weight inputs"
+      - "both `/trade/portfolio` and `/risk/pnl` now show `待接入` plus explicit pending-policy copy instead of fabricated equal-weight rebalance targets or amount advice"
+      - "targeted unit, route-family regression, and live wrapper-route verification now encode the policy-derived action truth rule"
+  verification_surface: code-review-plus-targeted-live-verification

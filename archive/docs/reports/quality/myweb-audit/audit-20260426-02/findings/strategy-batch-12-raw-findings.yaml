@@ -1,0 +1,40 @@
+- finding_id: strategy-repo-data-state-003
+  batch_id: strategy-batch-12
+  page:
+    route: /strategy/repo
+    page_key: strategy-repo
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyManagement.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Strategy repository route let later transport refresh metadata overwrite verified repository snapshot provenance and treated failed first loads as verified empty success
+  trigger:
+    steps:
+      - "Open `/strategy/repo`"
+      - "For the first-load path, resolve the initial `/api/v1/strategy/strategies` request as a failure before any verified snapshot exists"
+      - "For the refresh path, allow one verified repository response, then click `刷新仓库` and resolve the next request as a failure"
+      - "Inspect the hero `REQ_ID / PROCESS`, summary strip, visible repository rows, and stale-state copy"
+  expected: "Before any verified repository snapshot exists, a failed first load should degrade hero provenance to `REQ_ID: N/A / PROCESS: N/A ms` and keep summary counts at `--`. After at least one verified repository snapshot exists, a failed manual refresh should preserve the last verified rows plus the last verified `REQ_ID / PROCESS` provenance and show explicit stale-refresh messaging."
+  actual: "Before repair, `/strategy/repo` bound visible header provenance directly to the latest `useStrategy` transport metadata and treated `source === real` as if it already proved an empty verified snapshot. A failed first load could leak failed request provenance or collapse into `0 / 0 / 0`, and a later manual refresh failure could replace the visible `REQ_ID / PROCESS` truth instead of preserving the last verified snapshot."
+  evidence:
+    kind: live-observation
+    note: "System-`google-chrome` verification with browser-context interception reproduced both states. After repair the first-load failure path renders `REQ_ID: N/A / PROCESS: N/A ms` with `-- / -- / -- / 全部状态`, and the `success -> refresh fail` path keeps `REQ_ID: req-live-strategy-repo-success`, `PROCESS: 36.00 ms`, visible repository rows, and `当前仍显示上次成功同步的策略仓库快照。`."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyManagement.vue
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyManagement.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyManagement.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/repo
+  status: open
+  dependency: null
+  dedupe_key: /strategy/repo:data-state:refreshSnapshotRequestProvenanceTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check that failed first loads no longer leak request provenance or faux zero summaries, and that a later failed manual refresh retains the last verified `REQ_ID / PROCESS` plus the visible repository rows."

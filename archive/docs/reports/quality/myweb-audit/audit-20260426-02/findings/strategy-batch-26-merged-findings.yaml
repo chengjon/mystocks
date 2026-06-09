@@ -1,0 +1,38 @@
+- consolidated_issue_id: strategy-backtest-issue-11
+  severity: High
+  title: Strategy backtest now keys KPI summary values to the current strategy query's verified task context
+  pages:
+    - /strategy/backtest
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The leaked KPI totals and same-instance query-switch mismatch came from one selector-owned KPI-summary defect on the canonical strategy-backtest owner route, so they are treated as one consolidated route-truth issue."
+  primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/backtest
+  dedupe_keys:
+    - /strategy/backtest:data-state:selectorOwnedKpiSummaryTruth
+  verification_scope:
+    routes:
+      - /strategy/backtest
+    states:
+      - baseline-kpi-before-run
+      - post-run-kpi-for-verified-strategy
+      - selector-switch-without-new-verified-kpi-context
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    notes:
+      - "the canonical strategy-backtest route now caches KPI summary values by `strategyId` instead of mutating one route-global summary surface for every selector"
+      - "same-instance route switches now restore the neutral baseline summary when the new selector has no verified KPI snapshot of its own"
+      - "running a backtest still persists the incremented KPI summary for the active selector so switching away and back can restore the correct selector-owned values"
+      - "the strengthened regressions now lock the same-instance `strategyId=101 -> 202` KPI-summary path in both owner tests and the routed Phase 3 matrix"
+      - "this batch reuses existing `myweb-audit v1.71 + v1.68`, because the failure mode is selector-owned snapshot truth rather than a new route-truth category"
+  verification_surface: code-review-plus-targeted-live-verification

@@ -1,0 +1,25 @@
+- consolidated_issue_id: system-data-issue-02
+  severity: High
+  affected_routes:
+    - /system/data
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/system/DataSource.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: true
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "The canonical system-data route now keeps missing or failed refresh request ids out of the visible provenance surface unless they correspond to the currently displayed verified config snapshot."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The repaired gap is fully contained in `DataSource.vue` plus routed regressions; no shared request wrapper, shared stat-card primitive, or shared config mapper changed in this batch."
+    related_routes:
+      - /system/data
+      - /system/config
+  approval_status: approved

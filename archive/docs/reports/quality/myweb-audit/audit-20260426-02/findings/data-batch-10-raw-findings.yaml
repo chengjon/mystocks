@@ -1,0 +1,37 @@
+- finding_id: data-indicator-data-state-001
+  batch_id: data-batch-10
+  page:
+    route: /data/indicator
+    page_key: data-indicator
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/data/Advanced.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Data indicator route presented unverified summary cards and updated-at metadata as faux resolved metrics on failed or unresolved first load
+  trigger:
+    steps:
+      - Open `/data/indicator`
+      - Observe the route while the indicator registry is unresolved or fails before any verified summary has been loaded
+      - Inspect the header `UPDATED` metadata and the five summary stat cards
+  expected: "Before the route has any verified summary data, header freshness and summary cards should render explicit placeholders such as `UPDATED: --` and `--` stat values rather than local current time, `0.00`, or shared `+0%` chrome. Once the route does have verified summary data, tally cards should render plain strings without delta chrome or pseudo decimals."
+  actual: "Before repair, the route rendered a local current-time `UPDATED` stamp and five shared stat cards showing `0.00 ● +0%` even when the indicator registry had failed or no verified summary existed yet."
+  evidence:
+    kind: live-observation
+    note: "System-`google-chrome` verification with the routed indicator registry forced into failure reproduced `UPDATED: 2026/...` plus `0.00 / +0%` on all five summary cards before repair. Browser-context success fulfillment also confirmed the same route rendered verified tally cards through shared flat-change chrome and decimal precision."
+  repair_target:
+    files:
+      - web/frontend/src/views/data/Advanced.vue
+    primary_owner: web/frontend/src/views/data/Advanced.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /data/indicator
+  status: open
+  dependency: null
+  dedupe_key: /data/indicator:data-state:unverifiedSummaryAndCountKpiTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that unverified header freshness and summary cards degrade to placeholders, and that verified tally cards render plain strings without `.artdeco-stat-change`, `+0%`, or `x.00`.

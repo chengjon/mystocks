@@ -1,0 +1,24 @@
+- consolidated_issue_id: watchlist-signals-issue-02
+  severity: High
+  affected_routes:
+    - /watchlist/signals
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue
+  page_scope: shared-impact
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: true
+    page_config: false
+    shared_composable: false
+    shared_component: true
+    generated_artifact: false
+  summary: The canonical watchlist signals route should not inherit strategy-workbench titles, focus labels, or workflow promises from a shared strategy page surface when the current route still relies on a broader global signals feed.
+  dependency: null
+  shared_impact:
+    candidate: true
+    basis: The visible defect was isolated to `/watchlist/signals`, but the repair landed in shared `StrategySignalsTab.vue` and required preservation verification on `/strategy/signals`.
+    related_routes:
+      - /strategy/signals
+  approval_status: approved

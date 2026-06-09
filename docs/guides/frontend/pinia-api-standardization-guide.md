@@ -6,7 +6,7 @@
 
 > **文档边界说明**:
 > 本文用于说明当前仓库中 Pinia API 标准化模式的推荐用法、迁移步骤与验证要求，不是仓库共享规则或运行时事实的唯一来源。
-> 执行前请同时核对 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)、[`openspec/specs/api-integration/spec.md`](/opt/claude/mystocks_spec/openspec/specs/api-integration/spec.md)、当前代码与最新验证结果。
+> 执行前请同时核对 [`architecture/STANDARDS.md`](../../../architecture/STANDARDS.md)、[`openspec/specs/api-integration/spec.md`](../../../openspec/specs/api-integration/spec.md)、当前代码与最新验证结果。
 
 ## 1. Canonical Files
 

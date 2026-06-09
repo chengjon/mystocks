@@ -1,0 +1,33 @@
+- consolidated_issue_id: secondary-shell-issue-19
+  severity: Medium
+  title: Legacy stock-detail page now degrades to an honest static shell
+  pages:
+    - /secondary/legacy-stock-detail-static-shell
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The local quote header, chart, technical analysis, trading summary, and trade-operation shell were all facets of the same defect: `StockDetail.vue` preserved a forked pseudo-live stock-detail workbench even though no one-to-one canonical owner existed for delegation."
+  primary_owner: web/frontend/src/views/StockDetail.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-stock-detail-static-shell
+  dedupe_keys:
+    - /secondary/legacy-stock-detail-static-shell:route-truth:legacyStockDetailStaticShell
+  verification_scope:
+    routes:
+      - /secondary/legacy-stock-detail-static-shell
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/StockDetail.vue
+      - web/frontend/src/views/__tests__/StockDetail.spec.ts
+    notes:
+      - "the legacy stock-detail page now renders an honest static shell instead of a forked pseudo-live detail and trading workbench"
+      - "the page no longer fabricates local quote, chart, technical, summary, or trade-operation shell truth"
+      - "secondary inventory heuristics now drop `StockDetail.vue` out of the high-priority shortlist"
+  verification_surface: code-review-only

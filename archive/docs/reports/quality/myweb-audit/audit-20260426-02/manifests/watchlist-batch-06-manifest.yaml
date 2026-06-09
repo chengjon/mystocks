@@ -1,0 +1,88 @@
+audit_run_id: audit-20260426-02
+batch_id: watchlist-batch-06
+module: watchlist
+scope:
+  requested_by: user
+  pages:
+    - route: /watchlist/manage
+      page_key: watchlist-manage
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/watchlist/Manage.vue
+  compatibility_redirects: []
+batch_rationale: "Close the canonical `/watchlist/manage` selector-scoped row-provenance truth gap so a later stock-slice refresh failure cannot leave the previous verified rows visible under a newly selected watchlist. This batch also codifies the new selector-provenance guidance as `myweb-audit v1.66`."
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/watchlist/manage` remains `web/frontend/src/views/watchlist/Manage.vue`, while the routed surface owner lives in `web/frontend/src/views/artdeco-pages/stock-management-tabs/WatchlistManager.vue`"
+    - "the watchlist tabs are selector-scoped UI chrome, so the active tab label must stay aligned with whichever watchlist snapshot currently owns the visible stock rows"
+    - "controlled browser-context fulfillment is acceptable for the later watchlist-stock refresh failure proof because the natural PM2 route is healthy and does not reproduce the selector-refresh failure on demand"
+    - "this repair intentionally stays route-local and does not widen into shared watchlist route mappers because the defect is visible tab/row provenance inside the canonical owner"
+  fallback_log:
+    - "the default local Playwright Chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome` with browser-context interception"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, error]
+  notes:
+    - "verify a controlled success path first reaches the default verified `核心组合` watchlist rows before the later selector-refresh failure is triggered"
+    - "verify a later failing `watchlists/:watchlistId/stocks` request does not leave the previous verified rows under the newly requested watchlist label"
+    - "verify the stale route path reverts or preserves the last verified active watchlist tab and pairs that retained table with explicit stale-refresh copy"
+repair_approval:
+  status: approved
+  approved_findings:
+    - watchlist-manage-issue-06
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - watchlist-manage
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/artdeco-pages/stock-management-tabs/WatchlistManager.vue
+    - web/frontend/src/views/watchlist/__tests__/Manage.spec.ts
+    - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-watchlist-manage-selector-refresh-proof
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `watchlist-batch-06` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+      - "latest staged observation returned `risk_level: low`, `changed_files: 126`, `changed_count: 317`, and `affected_count: 0`"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/watchlist-manage-selector-row-provenance-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/watchlist-batch-06-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/watchlist-batch-06-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/watchlist-batch-06-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/watchlist-batch-06-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-watchlist-batch-06-closeout
+  notes:
+    - "the canonical watchlist manage route now preserves selector-to-row provenance on later stock-refresh failure by keeping or reverting the active tab to the last verified watchlist snapshot"
+    - "this batch introduces `myweb-audit v1.66` so future selector-scoped row audits treat stale-row-under-new-tab behavior as a route-truth defect, not a harmless refresh error"
+status: complete

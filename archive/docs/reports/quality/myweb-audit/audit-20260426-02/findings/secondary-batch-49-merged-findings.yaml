@@ -1,0 +1,37 @@
+- consolidated_issue_id: secondary-shell-issue-49
+  severity: Medium
+  title: Orphan trade-management child components now degrade to honest static shells
+  pages:
+    - /secondary/trade-management-orphan-components
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The five files were orphan child components under the retired trade-management component tree and preserved independent live trading semantics without active canonical ownership."
+  primary_owner: web/frontend/src/views/trade-management/components/PortfolioOverview.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/trade-management-orphan-components
+  dedupe_keys:
+    - /secondary/trade-management-orphan-components:route-truth:orphanTradeManagementComponents
+  verification_scope:
+    routes:
+      - /secondary/trade-management-orphan-components
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/trade-management/components/PortfolioOverview.vue
+      - web/frontend/src/views/trade-management/components/PositionsTab.vue
+      - web/frontend/src/views/trade-management/components/StatisticsTab.vue
+      - web/frontend/src/views/trade-management/components/TradeHistoryTab.vue
+      - web/frontend/src/views/trade-management/components/TradeDialog.vue
+      - web/frontend/tests/unit/config/trade-management-components-normalization.spec.ts
+    notes:
+      - "each orphan child component now renders `legacy-static-shell` with canonical `/trade/*` handoff copy"
+      - "local portfolio fixtures, direct `tradeApi` calls, fallback position rows, chart synthesis, pagination truth, and order submission semantics were removed"
+      - "secondary inventory refreshed to `H=0 / M=129 / L=100`"
+  verification_surface: code-review-only

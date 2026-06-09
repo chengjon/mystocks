@@ -1,0 +1,34 @@
+- consolidated_issue_id: secondary-shell-issue-52
+  severity: Medium
+  title: Orphan risk child pages now degrade to honest static shells
+  pages:
+    - /secondary/risk-orphan-static-shells
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The two files were orphan risk child pages that preserved Phase roadmap placeholder truth without active canonical ownership."
+  primary_owner: web/frontend/src/views/risk/Portfolio.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/risk-orphan-static-shells
+  dedupe_keys:
+    - /secondary/risk-orphan-static-shells:route-truth:orphanRiskPages
+  verification_scope:
+    routes:
+      - /secondary/risk-orphan-static-shells
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/risk/Portfolio.vue
+      - web/frontend/src/views/risk/Positions.vue
+      - web/frontend/tests/unit/config/risk-orphan-static-shells.spec.ts
+    notes:
+      - "both orphan pages now render `legacy-static-shell` with canonical `/risk/*` handoff links"
+      - "`Coming Soon`, `Phase 7`, Element Plus alert placeholder, and standalone risk-analysis title copy were removed"
+      - "secondary inventory refreshed and remains `H=0 / M=124 / L=105` because the generator still classifies these compatibility shells as M candidates"
+  verification_surface: code-review-only

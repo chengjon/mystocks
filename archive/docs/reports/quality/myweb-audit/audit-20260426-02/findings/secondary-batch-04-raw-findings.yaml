@@ -1,0 +1,42 @@
+- finding_id: secondary-shell-004
+  batch_id: secondary-batch-04
+  page:
+    route: /secondary/artdeco-trading-center-static-market-shells
+    page_key: secondary-artdeco-trading-center-static-market-shells
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/artdeco-pages/ArtDecoTradingCenter.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Active trading-center market wrappers still exposed unimplemented or placeholder shells without a matching canonical market truth contract
+  trigger:
+    steps:
+      - "Open `ArtDecoTradingCenter.vue` and select the active `market-overview` and `market-analysis` function panels"
+      - "Inspect `ArtDecoMarketOverview.vue` and `ArtDecoMarketAnalysis.vue`"
+      - "Compare those live wrappers against the current canonical market routes and verify that no semantically matching owner already exists for those exact surfaces"
+  expected: "Active wrappers without a semantically matching canonical truth owner should degrade to an honest static shell that explicitly avoids request, freshness, and summary-strip semantics."
+  actual: "Before repair, `ArtDecoMarketOverview.vue` still rendered a raw `Component Not Implemented` shell and `ArtDecoMarketAnalysis.vue` still rendered a `STATUS: PLACEHOLDER` migration panel even though neither surface had a matching canonical market route to reuse."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green wrapper tests confirmed the live parent shell still fronted unimplemented or placeholder market panels instead of an honest static shell."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoMarketOverview.vue
+      - web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoMarketAnalysis.vue
+      - web/frontend/src/views/artdeco-pages/market-data-tabs/__tests__/ArtDecoMarketOverview.spec.ts
+      - web/frontend/src/views/artdeco-pages/market-data-tabs/__tests__/ArtDecoMarketAnalysis.spec.ts
+      - .claude/skills/myweb-audit/references/route-truth-operations.md
+      - .claude/skills/myweb-audit/references/route-truth-casebook.md
+    primary_owner: web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoMarketOverview.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/artdeco-trading-center-static-market-shells
+  status: open
+  dependency: null
+  dedupe_key: /secondary/artdeco-trading-center-static-market-shells:data-state:activeMarketWrapperStaticShellTruth
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run owner wrapper regressions and secondary inventory tooling to confirm the active market panels now present only static explanatory shells with no fake live semantics."

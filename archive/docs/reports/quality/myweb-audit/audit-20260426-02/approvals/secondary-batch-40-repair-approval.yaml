@@ -1,0 +1,24 @@
+- consolidated_issue_id: secondary-shell-issue-40
+  severity: Medium
+  affected_routes:
+    - /secondary/advanced-analysis-child-static-shells
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/advanced-analysis/
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "Orphan advanced-analysis child pages now degrade to honest static shells."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The repair stays scoped to six unrouted legacy child pages and removes local pseudo-analysis state instead of creating a new advanced-analysis truth source."
+    related_routes:
+      - /secondary/advanced-analysis-child-static-shells
+  approval_status: approved

@@ -2,7 +2,7 @@
 
 > **导航说明**:
 > 本文件是 `docs/guides/pm2/` 的 transition index，不是当前仓库统一运行基线、E2E 主入口或共享规则的唯一事实来源。
-> 若涉及环境一致性、默认服务地址、审批门禁或仓库级共享规则，请优先阅读 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)；若涉及当前运维主线，再结合 [`docs/operations/README.md`](/opt/claude/mystocks_spec/docs/operations/README.md) 与 [`docs/testing/TESTING_GUIDE.md`](/opt/claude/mystocks_spec/docs/testing/TESTING_GUIDE.md)。
+> 若涉及环境一致性、默认服务地址、审批门禁或仓库级共享规则，请优先阅读 [`architecture/STANDARDS.md`](../../../architecture/STANDARDS.md)；若涉及当前运维主线，再结合 [`docs/operations/README.md`](../../operations/README.md) 与 [`docs/testing/TESTING_GUIDE.md`](../../testing/TESTING_GUIDE.md)。
 
 ## Current Entry Order
 

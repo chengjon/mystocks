@@ -1,0 +1,39 @@
+- finding_id: data-indicator-data-state-004
+  batch_id: data-batch-17
+  page:
+    route: /data/indicator
+    page_key: data-indicator
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/data/Advanced.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Data indicator local screening action fabricated verified freshness after the first load failed
+  trigger:
+    steps:
+      - "Open `/data/indicator` with a controlled first-load indicator-registry failure so the route has no verified analysis snapshot."
+      - "After the route settles on the failed-first-load shell, click `执行筛选`."
+      - "Inspect the visible header `STATUS / UPDATED`, the top summary strip, and the results panel."
+  expected: "Local screening actions should not clear the failed-first-load state or stamp header freshness unless a verified analysis snapshot already exists."
+  actual: "Before repair, `runScreening()` incremented screening counters, cleared the error state, switched the route to `筛选已就绪`, and wrote `lastUpdateTime = new Date().toLocaleString('zh-CN')` even though the first load had never produced a verified analysis snapshot."
+  evidence:
+    kind: live-observation
+    note: "The owner regression first reproduced `STATUS: 筛选已就绪 / UPDATED: 2026/5/3 11:20:00` immediately after clicking `执行筛选` on a failed-first-load shell. After repair, the same controlled browser proof keeps `STATUS: 同步异常 / UPDATED: --`, preserves `-- / -- / -- / -- / --`, and leaves the results panel absent."
+  repair_target:
+    files:
+      - web/frontend/src/composables/market/useDataAnalysis.ts
+      - web/frontend/tests/unit/views/data-advanced-screening-truth.spec.ts
+      - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/composables/market/useDataAnalysis.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /data/indicator
+  status: open
+  dependency: null
+  dedupe_key: /data/indicator:data-state:actionTriggeredFirstLoadFreshnessTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check that failed-first-load `/data/indicator` keeps placeholder summary truth after `执行筛选` and does not promote local action metadata into verified freshness."

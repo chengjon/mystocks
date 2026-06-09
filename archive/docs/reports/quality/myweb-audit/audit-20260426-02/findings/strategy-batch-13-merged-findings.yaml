@@ -1,0 +1,36 @@
+- consolidated_issue_id: strategy-backtest-issue-02
+  severity: High
+  title: Strategy backtest failed first loads now keep freshness metadata on explicit placeholder truth until a verified snapshot exists
+  pages:
+    - /strategy/backtest
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The hero `最后更新` field and the route-local empty workbench builder leaked the same freshness-provenance defect, so they represent one canonical failed-first-load truth issue on `/strategy/backtest`."
+  primary_owner: web/frontend/src/mock/backtestWorkbenchMock.ts
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/backtest
+  dedupe_keys:
+    - /strategy/backtest:data-state:initialFreshnessPlaceholderTruth
+  verification_scope:
+    routes:
+      - /strategy/backtest
+    states:
+      - error
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/mock/backtestWorkbenchMock.ts
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    notes:
+      - "the route-local empty backtest workbench builder now keeps `lastUpdated` on `--` until a verified strategy snapshot exists"
+      - "the canonical `/strategy/backtest` route no longer presents the local current clock as if a failed first-load shell had already synchronized real data"
+      - "the strengthened regressions now lock both the owner component and the routed Phase 3 matrix against fabricated first-load freshness timestamps"
+      - "this batch extends `myweb-audit` to `v1.47`, clarifying initial freshness placeholder truth for routed pages and fallback builders"
+  verification_surface: code-review-plus-targeted-live-verification

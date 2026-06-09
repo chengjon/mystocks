@@ -1,0 +1,26 @@
+- consolidated_issue_id: trade-reconciliation-issue-03
+  severity: High
+  affected_routes:
+    - /trade/reconciliation
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/trade/composables/useTradeReconciliation.ts
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: true
+    page_config: false
+    shared_composable: true
+    shared_component: false
+    generated_artifact: false
+  summary: "The canonical trade-reconciliation route now clears previous account request provenance and verified freshness as soon as the visible selector switches to a new unresolved account."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The repaired gap stays inside reconciliation payload normalization, the route-local composable, owner rendering, and routed proof updates; no shared request chrome component changed."
+    related_routes:
+      - /trade/reconciliation
+      - /strategy/signals
+      - /detail/news/:symbol
+  approval_status: approved

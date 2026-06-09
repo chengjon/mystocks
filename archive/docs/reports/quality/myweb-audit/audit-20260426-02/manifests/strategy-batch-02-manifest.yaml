@@ -1,0 +1,124 @@
+audit_run_id: audit-20260426-02
+batch_id: strategy-batch-02
+module: strategy
+scope:
+  requested_by: user
+  pages:
+    - route: /strategy/signals
+      page_key: strategy-signals
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue
+    - route: /strategy/gpu
+      page_key: strategy-gpu
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/strategy/BacktestGPU.vue
+    - route: /strategy/opt
+      page_key: strategy-opt
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/strategy/Optimization.vue
+  compatibility_redirects: []
+batch_rationale: Secondary strategy workbench routes covering signal monitoring, GPU acceleration monitoring, and optimization writeback flows.
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+  - visual-artdeco-audit
+  - responsive-a11y-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: live-audit
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - secondary strategy routes remain reachable from current router truth
+    - PM2 frontend/backend remain reusable for targeted verification
+  fallback_log:
+    - batch initialized from routed secondary strategy workbench truth before targeted live verification started
+verification_plan:
+  verification_strategy: chromium-only
+  browser_project: chromium
+  breakpoints: [1920, 1440, 1280]
+  required_states: [default, loading, empty, error, disabled, extreme-data]
+  notes:
+    - treat `/strategy/signals` as a canonical route using the shared strategy-tab implementation directly
+    - inspect `/strategy/gpu` for true runtime/API boundaries before trusting local controls or telemetry text
+    - inspect `/strategy/opt` for real-vs-mock fallback boundaries before approving cross-tab writeback fixes
+repair_approval:
+  status: approved
+  approved_findings:
+    - strategy-gpu-issue-01
+    - strategy-opt-issue-01
+    - strategy-secondary-domain-issue-01
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - strategy-signals
+    - strategy-gpu
+    - strategy-opt
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/strategy/composables/gpuMonitorData.ts
+    - web/frontend/src/views/strategy/composables/__node_tests__/gpuMonitorData.test.ts
+    - web/frontend/src/views/strategy/composables/useBacktestGPU.ts
+    - web/frontend/src/views/strategy/BacktestGPU.vue
+    - web/frontend/src/views/strategy/styles/BacktestGPU.scss
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/strategyOptimizationSourcePolicy.ts
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/strategyOptimizationViewModel.ts
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/__node_tests__/strategyOptimizationSourcePolicy.test.ts
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/styles/ArtDecoStrategyOptimization.scss
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/styles/StrategySignalsTab.scss
+    - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/styles/StrategySignalsTab.scss
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/styles/ArtDecoStrategyOptimization.scss
+      - web/frontend/src/views/strategy/styles/BacktestGPU.scss
+      - web/frontend/src/views/strategy/composables/useBacktestGPU.ts
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue
+    confirmed:
+      - web/frontend/src/views/strategy/composables/gpuMonitorData.ts
+      - web/frontend/src/views/strategy/composables/useBacktestGPU.ts
+      - web/frontend/src/views/strategy/BacktestGPU.vue
+      - web/frontend/src/views/strategy/styles/BacktestGPU.scss
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/strategyOptimizationSourcePolicy.ts
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/styles/ArtDecoStrategyOptimization.scss
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/styles/StrategySignalsTab.scss
+  validation_status:
+    syntax: passed-via-vue-tsc
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-system-chromium-route-checks-2-of-2-plus-node-tests-7-of-7
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contains previously staged audit artifacts from earlier batches; final GitNexus staged verdict may remain a mixed-staged observation"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` returned `risk_level: low`, `changed_files: 55`, `changed_count: 201`, and `affected_count: 0`"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-signals-audit.md
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-gpu-audit.md
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-opt-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-02-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-02-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-02-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/strategy-batch-02-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: staged-scope-and-artifact-validation
+  next_action: finalize-strategy-batch-closeout
+  notes:
+    - "`/strategy/signals` is currently the direct canonical route using `StrategySignalsTab.vue`"
+    - "`/strategy/gpu` is currently routed to `BacktestGPU.vue` and depends on `useBacktestGPU.ts` for runtime behavior"
+    - "`/strategy/opt` is a thin wrapper over `ArtDecoStrategyOptimization.vue`"
+    - "`/strategy/gpu` now renders unknown monitor state before sync and no longer exposes fake runtime controls"
+    - "`/strategy/opt` now blocks route-level mock fallback and disables writeback unless the source is real"
+    - "targeted system-Chromium route checks passed `2/2`, with supporting node tests passing `7/7`"
+    - "GitNexus staged detect returned low risk, but the staged set remained mixed with earlier batch artifacts"
+status: complete

@@ -1,0 +1,83 @@
+audit_run_id: audit-20260426-02
+batch_id: secondary-batch-15
+module: secondary-legacy-surfaces
+scope:
+  requested_by: user
+  pages:
+    - route: /secondary/legacy-trade-management-canonical-wrapper
+      page_key: secondary-legacy-trade-management-canonical-wrapper
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/TradeManagement.vue
+  compatibility_redirects: []
+batch_rationale: >-
+  Continue the secondary inventory phase by collapsing the high-priority legacy
+  `TradeManagement.vue` page into a thin orchestration wrapper over the active
+  trading orchestration shell instead of preserving a forked pseudo-live
+  trade-management workbench.
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-only
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "the manifest route `/secondary/legacy-trade-management-canonical-wrapper` is a synthetic secondary-inventory alias used for artifact indexing; `web/frontend/src/views/TradeManagement.vue` is not a current router entry"
+    - "the page already has a semantically matching active trading orchestration shell that should be delegated to instead of duplicated"
+    - "the repair must not add a new store, snapshot cache, request provenance badge, freshness strip, or fake live trading-workbench rows"
+  fallback_log: []
+verification_plan:
+  verification_strategy: code-review-only
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states:
+    - default
+  notes:
+    - "verify the page no longer renders hardcoded pseudo-live trade-management header, positions, trade-history, or statistics shell surfaces"
+    - "verify the owner degrades to a thin orchestration wrapper over the active trading orchestration shell with no fabricated live semantics"
+    - "verify secondary inventory tooling still passes after the precedent write-back"
+repair_approval:
+  status: approved
+  approved_findings:
+    - secondary-shell-issue-15
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - secondary-legacy-trade-management-canonical-wrapper
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/TradeManagement.vue
+    - web/frontend/src/views/__tests__/TradeManagement.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/TradeManagement.vue
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vitest
+    typecheck: failed-existing-frontend-debt-only
+    pm2: passed
+    e2e: not-run-unrouted-owner
+    gitnexus_staged_detect: mixed-observation-non-isolated
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "the staged index already contained many unrelated files before this micro-batch, so `gitnexus_detect_changes({scope: staged})` is recorded only as a mixed observation"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/trade-management-legacy-orchestration-wrapper-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/secondary-batch-15-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/secondary-batch-15-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/secondary-batch-15-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/secondary-batch-15-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: owner-regression
+  next_action: continue-secondary-inventory-triage
+  notes:
+    - "unrouted legacy pages with a matching active owner should become thin orchestration wrappers instead of forked pseudo-live shells"
+status: complete

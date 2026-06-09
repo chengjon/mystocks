@@ -1,0 +1,41 @@
+- finding_id: risk-stop-loss-data-state-004
+  batch_id: risk-batch-15
+  page:
+    route: /risk/stop-loss
+    page_key: risk-stop-loss
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/risk/StopLoss.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Risk stop-loss leaked the previous verified watchlist snapshot after the derived primary watchlist switched to a new selector without its own verified rows
+  trigger:
+    steps:
+      - "Open `/risk/stop-loss`."
+      - "Let the route verify one primary watchlist snapshot such as `watchlist:101` and its stop-loss cards."
+      - "Trigger a later refresh where `/api/v1/monitoring/watchlists` changes the derived primary watchlist to a different selector such as `watchlist:202`."
+      - "Let `/api/v1/monitoring/watchlists/202/stocks` fail before any `watchlist:202` stop-loss snapshot verifies."
+      - "Inspect hero `REQ_ID`, tally cards, runtime copy, and visible stop-loss cards."
+  expected: "Once the derived primary watchlist switches to a new selector that has no verified stop-loss snapshot yet, the route must either keep the visible selector chrome pinned to the last verified selector snapshot or degrade selector-owned surfaces to placeholder or unavailable truth such as `REQ_ID: N/A`, `--`, and zero cards until the new selector verifies."
+  actual: "Before repair, `web/frontend/src/views/risk/StopLoss.vue` tracked only one route-global verified snapshot. After `/v1/monitoring/watchlists` promoted a new primary watchlist, a later failure of `/v1/monitoring/watchlists/:id/stocks` for that new selector still left the old verified `watchlist:101` cards, counts, and request provenance visible. The route therefore rebound the previous selector's stop-loss snapshot under the newly derived selector context."
+  evidence:
+    kind: code-path-review
+    note: "A new owner-level RED test and targeted browser-context proof reproduced the same path: after a verified `watchlist:101` load, the route switched its derived primary watchlist to `watchlist:202`, `watchlist:202/stocks` failed, and the page still showed `REQ_ID: req-stoploss-101-success` plus `贵州茅台` until the selector-scoped verification gate was added."
+  repair_target:
+    files:
+      - web/frontend/src/views/risk/StopLoss.vue
+      - web/frontend/src/views/risk/__tests__/StopLoss.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/risk/StopLoss.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /risk/stop-loss
+  status: open
+  dependency: null
+  dedupe_key: /risk/stop-loss:data-state:implicitDerivedSelectorSnapshotTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check a controlled success-then-derived-selector-failure proof after repair and confirm the new implicit selector no longer inherits the old verified cards, request provenance, or tally surfaces before its own snapshot verifies."

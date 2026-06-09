@@ -1,0 +1,42 @@
+- consolidated_issue_id: data-industry-issue-02
+  severity: Medium
+  title: Industry routed numeric surfaces now render honest board tallies and ordinal ranks instead of fabricated shared precision or delta semantics
+  pages:
+    - /data/industry
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The top KPI strip and board-rank column were two manifestations of the same routed numeric-truth cluster: shared numeric renderers leaked delta chrome and exact-decimal precision onto plain counts and ordinal values on the same canonical page."
+  primary_owner: web/frontend/src/views/data/Industry.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /data/fund-flow
+    - /market/lhb
+  dedupe_keys:
+    - /data/industry:data-state:count-kpi-delta-truth
+    - /data/industry:data-state:industryRankOrdinalPrecision
+  verification_scope:
+    routes:
+      - /data/industry
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/data/Industry.vue
+      - web/frontend/src/views/data/__tests__/Industry.spec.ts
+      - web/frontend/tests/unit/views/data-industry-refresh-fallback.spec.ts
+      - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/SKILL.md
+      - .claude/skills/myweb-audit/references/audit-checklist.md
+      - .claude/agents/myweb-audit-data-state-audit.md
+      - .claude/skills/myweb-audit/references/CHANGELOG.md
+    notes:
+      - "the canonical industry route now passes plain string tally values and explicitly disables `show-change` on the top KPI strip so board counts no longer inherit shared stat-card delta chrome or decimal precision"
+      - "the canonical industry route now overrides shared table formatting for the discrete `rank` field so the board table renders `1/2/3` rather than `1.00/2.00/3.00`"
+      - "the new routed component regression mounts the real `ArtDecoStatCard` and `ArtDecoTable` path so the test fails if either faux delta chrome or ordinal pseudo precision leaks back"
+      - "the strengthened Phase 1 matrix assertion and the new `v1.37` numeric-coherence cluster guidance now force same-pass review of sibling shared numeric surfaces on one route"
+  verification_surface: code-review-plus-targeted-live-verification

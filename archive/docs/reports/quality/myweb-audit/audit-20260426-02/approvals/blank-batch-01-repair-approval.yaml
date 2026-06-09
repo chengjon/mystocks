@@ -1,0 +1,28 @@
+- consolidated_issue_id: blank-layout-issue-01
+  severity: Medium
+  affected_routes:
+    - /login
+    - /:pathMatch(.*)*
+  source_roles:
+    - functional-audit
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/NotFound.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: true
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "The blank-layout 404 recovery action now uses canonical home-route truth, and the smoke proof locks `/login` plus `404` shell isolation with no shared request or summary chrome leakage."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The repair stays inside the 404 owner page plus blank-layout-specific test coverage; no shared layout primitive changed."
+    related_routes:
+      - /login
+      - /:pathMatch(.*)*
+      - /dashboard
+  approval_status: approved

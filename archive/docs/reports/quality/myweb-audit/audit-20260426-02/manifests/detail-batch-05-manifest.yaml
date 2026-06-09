@@ -1,0 +1,84 @@
+audit_run_id: audit-20260426-02
+batch_id: detail-batch-05
+module: detail
+scope:
+  requested_by: user
+  pages:
+    - route: /detail/news/:symbol
+      page_key: stock-news
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/announcement/AnnouncementMonitor.vue
+  compatibility_redirects: []
+batch_rationale: "Repair the canonical `/detail/news/:symbol` route so auxiliary `monitor-rules` and `triggered-records` table slices no longer collapse into silent empty-success or unlabeled stale tables when they fail independently of the verified announcement list, reusing `myweb-audit v1.65 + v1.60`."
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "the canonical `/detail/news/:symbol` route remains owned by `web/frontend/src/views/announcement/AnnouncementMonitor.vue`"
+    - "the approved repair should stay page-local inside the routed detail/news composable and owner view instead of widening into shared announcement transport or shared detail widgets"
+    - "the announcement list is the primary verified slice for the route, while `monitor-rules` and `triggered-records` are auxiliary live slices that must surface their own unavailable or stale truth without obscuring the verified announcement list"
+    - "browser-context fulfillment with auth-seeded system `google-chrome` is an acceptable verification harness for controlled later auxiliary-slice refresh failures on this machine"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, error]
+  notes:
+    - "verify first-load auxiliary slice failure now degrades to explicit unavailable notes instead of silent empty tables"
+    - "verify later auxiliary refresh failure retains the last verified rules and trigger rows with slice-local stale notes"
+    - "verify the primary announcement list remains visible across the same auxiliary-slice failure path"
+repair_approval:
+  status: approved
+  approved_findings:
+    - detail-news-issue-05
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - stock-news
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/announcement/composables/useAnnouncementMonitor.ts
+    - web/frontend/src/views/announcement/AnnouncementMonitor.vue
+    - web/frontend/src/views/announcement/styles/AnnouncementMonitor.scss
+    - web/frontend/src/views/announcement/__tests__/AnnouncementMonitor.spec.ts
+    - web/frontend/src/views/announcement/__tests__/useAnnouncementMonitor.spec.ts
+    - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed-pm2-online
+    e2e: passed-custom-system-chrome-detail-news-auxiliary-slice-verification
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contains earlier staged audit artifacts and unrelated files, so any staged GitNexus output remains observation-only unless an isolated staged scope is prepared later"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/detail-news-auxiliary-table-slice-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-05-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-05-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/detail-batch-05-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/detail-batch-05-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-detail-batch-05-closeout
+  notes:
+    - "the canonical detail news route now distinguishes auxiliary table first-load failure from later stale retention while preserving the verified announcement list"
+    - "future detail-route audits should reuse `v1.65 + v1.60` whenever auxiliary live tables or enrichment slices fail independently of a verified primary list or snapshot"
+status: complete

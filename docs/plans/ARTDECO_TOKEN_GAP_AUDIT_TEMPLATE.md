@@ -1,7 +1,7 @@
 # ArtDeco Token Gap Audit Template
 
 > **说明**
-> 本模板用于执行 [`ARTDECO_STANDARDIZATION_P0_TASKS.md`](/opt/claude/mystocks_spec/docs/plans/ARTDECO_STANDARDIZATION_P0_TASKS.md) 中的 token 缺口盘点工作。
+> 本模板用于执行 [`ARTDECO_STANDARDIZATION_P0_TASKS.md`](ARTDECO_STANDARDIZATION_P0_TASKS.md) 中的 token 缺口盘点工作。
 > 目标不是直接修改 token，而是先统一审视口径，识别哪些视觉语义：
 > - 已有 token 可复用
 > - 当前缺失，需要新增

@@ -1,0 +1,36 @@
+- consolidated_issue_id: strategy-gpu-issue-01
+  severity: High
+  title: Strategy GPU route now degrades partial runtime payload gaps to explicit unverified and pending-benchmark truth
+  pages:
+    - /strategy/gpu
+  source_roles:
+    - data-state-audit
+  why_consolidated: The misleading zero thermals, benchmark, clock, fan-speed, and power surfaces were one partial-runtime metric truth defect on the canonical GPU monitoring route.
+  primary_owner: web/frontend/src/views/strategy/composables/gpuMonitorData.ts
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact: []
+  dedupe_keys:
+    - /strategy/gpu:data-state:gpuMonitorData
+  verification_scope:
+    routes:
+      - /strategy/gpu
+    states:
+      - default
+      - metrics
+    breakpoints:
+      - 1280
+  repair_summary:
+    files:
+      - web/frontend/src/views/strategy/composables/gpuMonitorData.ts
+      - web/frontend/src/views/strategy/composables/useBacktestGPU.ts
+      - web/frontend/src/views/strategy/BacktestGPU.vue
+      - web/frontend/src/views/strategy/composables/__node_tests__/gpuMonitorData.test.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    notes:
+      - "changed the GPU mapper so missing or placeholder thermals, benchmark fields, clocks, fan-speed, and power fields normalize to explicit nullable or pending states instead of zero-valued runtime truth"
+      - "updated the GPU routed surface so thermals, metrics-tab sensors, and benchmark cards now degrade to `未校验` or `待接入` while verified availability and utilization remain visible"
+      - "extended both mapper regression coverage and the routed phase-3 E2E matrix file so future audits cover partial-runtime metric gaps explicitly"
+  verification_surface: code-review-plus-targeted-live-verification

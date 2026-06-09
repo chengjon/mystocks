@@ -1,0 +1,38 @@
+- finding_id: secondary-shell-027-wencai
+  batch_id: secondary-batch-27
+  page:
+    route: /secondary/wencai-live-truth-wrapper
+    page_key: secondary-wencai-live-truth-wrapper
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/Wencai.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Wencai legacy page still fronted the live Wencai panel with a pseudo overview, fake statistics, and wrapper-local summary fetch
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/Wencai.vue`"
+      - "Inspect the page-level overview hero, pseudo statistics strip, extra tabs, and wrapper-local `loadStatistics()` fetch"
+      - "Confirm `WencaiPanel.vue` already owns the real Wencai query, results, export, and history contract for the live feature"
+  expected: "An unrouted legacy page whose inner component already owns the real Wencai query and result contract should become a thin wrapper over that live truth component instead of duplicating pseudo overview and statistics truth."
+  actual: "Before repair, `Wencai.vue` still wrapped `WencaiPanel.vue` with a local overview card, fake API status, pseudo statistics tabs, and a wrapper-local fetch for `totalRecords`, creating a second shell-level truth source in front of the real query panel."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green regression confirmed the wrapper still rendered pseudo overview, fake statistics, and wrapper-local fetch state before the thin-wrapper repair."
+  repair_target:
+    files:
+      - web/frontend/src/views/Wencai.vue
+      - web/frontend/src/views/__tests__/Wencai.spec.ts
+    primary_owner: web/frontend/src/views/Wencai.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/wencai-live-truth-wrapper
+  status: open
+  dependency: null
+  dedupe_key: /secondary/wencai-live-truth-wrapper:route-truth:wencaiLiveTruthWrapper
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner regression to confirm the wrapper preserves `WencaiPanel` but removes the outer pseudo overview, statistics tabs, and wrapper-local summary fetch semantics."

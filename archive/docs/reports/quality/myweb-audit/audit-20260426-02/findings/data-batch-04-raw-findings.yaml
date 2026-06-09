@@ -1,0 +1,39 @@
+- finding_id: data-concept-data-state-001
+  batch_id: data-batch-04
+  page:
+    route: /data/concept
+    page_key: data-concept
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/data/Concepts.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Routed concept page lost its refresh-truth contract by clearing or obscuring last-known-good data after a manual refresh failure
+  trigger:
+    steps:
+      - Open `/data/concept`
+      - Allow the initial concept request to succeed
+      - Click `刷新板块`
+      - Force the second concept request to fail
+  expected: "A failed manual refresh should keep the last successful concept rows visible and explicitly warn that the page is showing stale data."
+  actual: "Before repair, the page had no explicit stale-data warning path for refresh failure after prior success, so the refresh contract degraded into an ambiguous error state rather than an honest `still showing last successful data` state."
+  evidence:
+    kind: live-observation
+    note: "Unit reproduction and targeted system-Chrome verification both confirmed that the routed concept page needed a page-local stale-refresh warning path tied to the refresh action."
+  repair_target:
+    files:
+      - web/frontend/src/views/data/Concepts.vue
+      - web/frontend/tests/unit/views/data-concept-refresh-fallback.spec.ts
+      - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/data/Concepts.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /data/concept:data-state:conceptRefreshStaleWarning
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Reproduce a success-then-refresh-fail concept path and confirm the warning panel appears while the old concept rows remain visible.

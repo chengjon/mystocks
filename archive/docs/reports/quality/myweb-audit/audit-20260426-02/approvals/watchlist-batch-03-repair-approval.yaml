@@ -1,0 +1,24 @@
+- consolidated_issue_id: watchlist-screener-issue-01
+  severity: High
+  affected_routes:
+    - /watchlist/screener
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/stocks/Screener.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: The canonical watchlist-screener route now renders verified count-only summary cards honestly and degrades unresolved or failed first-load universe state to placeholders instead of faux zero metrics.
+  dependency: null
+  shared_impact:
+    candidate: true
+    basis: Shared `ArtDecoStatCard.vue` defaults amplified the faux precision, but the approved repair remains page-local in `web/frontend/src/views/stocks/Screener.vue`.
+    related_routes:
+      - /watchlist/screener
+  approval_status: approved

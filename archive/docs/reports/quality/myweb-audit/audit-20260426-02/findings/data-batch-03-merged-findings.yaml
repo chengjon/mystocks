@@ -1,0 +1,36 @@
+- consolidated_issue_id: data-fund-flow-issue-01
+  severity: Medium
+  title: Fund-flow partial refresh states now surface missing ranking data instead of masquerading as full success
+  pages:
+    - /data/fund-flow
+  source_roles:
+    - data-state-audit
+  why_consolidated: The hidden ranking failure, misleading status state, and missing partial-refresh explanation were one page-local truthfulness defect in the dual-request fund-flow workbench.
+  primary_owner: web/frontend/src/views/data/FundFlow.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact: []
+  dedupe_keys:
+    - /data/fund-flow:data-state:fundFlowPartialRefreshState
+  verification_scope:
+    routes:
+      - /data/fund-flow
+    states:
+      - default
+      - error
+    breakpoints:
+      - 1920
+      - 1440
+      - 1280
+  repair_summary:
+    files:
+      - web/frontend/src/views/data/FundFlow.vue
+      - web/frontend/tests/unit/views/data-fund-flow-partial-state.spec.ts
+      - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+    notes:
+      - "added page-local summary/ranking failure tracking so multi-request partial success can be rendered honestly"
+      - "inserted a visible warning panel and `部分同步异常` status when only one of the two data surfaces fails"
+      - "extended Phase 2 browser coverage with a ranking-only failure path"
+  verification_surface: code-review-plus-targeted-live-verification

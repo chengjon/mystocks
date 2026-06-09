@@ -1,0 +1,36 @@
+- consolidated_issue_id: secondary-shell-issue-50
+  severity: Medium
+  title: Orphan stocks child pages now degrade to honest static shells
+  pages:
+    - /secondary/stocks-orphan-static-shells
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The four files were orphan stocks child pages that preserved mock selector, refresh, and row truth without active canonical ownership."
+  primary_owner: web/frontend/src/views/stocks/Activity.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/stocks-orphan-static-shells
+  dedupe_keys:
+    - /secondary/stocks-orphan-static-shells:route-truth:orphanStocksPages
+  verification_scope:
+    routes:
+      - /secondary/stocks-orphan-static-shells
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/stocks/Activity.vue
+      - web/frontend/src/views/stocks/Concept.vue
+      - web/frontend/src/views/stocks/Industry.vue
+      - web/frontend/src/views/stocks/Watchlist.vue
+      - web/frontend/tests/unit/config/stocks-orphan-static-shells.spec.ts
+    notes:
+      - "each orphan page now renders `legacy-static-shell` with canonical handoff links"
+      - "mock trading rows, concept/industry stock pools, watchlist filters, local mutations, and refresh success messages were removed"
+      - "secondary inventory refreshed to `H=0 / M=125 / L=104`"
+  verification_surface: code-review-only

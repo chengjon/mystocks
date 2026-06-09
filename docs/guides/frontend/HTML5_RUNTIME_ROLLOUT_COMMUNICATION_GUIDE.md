@@ -1,6 +1,6 @@
 > **参考指南说明**:
 > 本文件是补充指南、命令参考、操作说明或使用手册，不是当前仓库共享规则、当前实现边界或当前主线流程的唯一事实来源。
-> 若涉及仓库级共享规则、审批门禁或治理口径，请优先阅读 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)；若涉及具体执行入口，再结合根目录 `AGENTS.md`、根目录 `CLAUDE.md`、当前代码与验证结果核对。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先阅读 [`architecture/STANDARDS.md`](../../../architecture/STANDARDS.md)；若涉及具体执行入口，再结合根目录 `AGENTS.md`、根目录 `CLAUDE.md`、当前代码与验证结果核对。
 
 # HTML5 Runtime Rollout Communication Guide
 
@@ -29,7 +29,7 @@
 截至当前仓库事实，可对外使用的口径应固定为：
 
 - 浏览器入口已统一到 `index.html -> src/main-standard.ts`
-- 基础 PWA 安装面、manifest、service worker 注册、IndexedDB 包装层、Web Workers 协议面都已存在
+- 基础 PWA 安装面、manifest、service worker 注册、IndexedDB 包装层和 Web Workers 文件 / 协议 / manager façade 都已存在
 - 但 `vite-plugin-pwa` 仍未启用
 - 多个 Playwright spec 仍显式使用 `serviceWorkers: 'block'`
 - 当前离线能力属于 `best-effort cache / fallback`
@@ -50,7 +50,7 @@
 
 可直接复用的短说明：
 
-> 本次前端 HTML5 runtime 优化已完成基础能力整理，包括浏览器入口统一、PWA 基础安装面、缓存与离线兜底、IndexedDB 存储能力、以及部分 Web Workers 支撑能力。  
+> 本次前端 HTML5 runtime 优化已完成基础能力整理，包括浏览器入口统一、PWA 基础安装面、缓存与离线兜底、IndexedDB 存储能力，以及 Web Workers 文件 / 协议 / manager façade 的当前边界说明。
 > 当前版本的安装与离线体验仍属于渐进式启用阶段，部分能力会继续通过后续灰度和兼容性验证完善。
 
 ### What Users May Reliably Expect
@@ -58,7 +58,7 @@
 - 页面仍通过当前常规浏览器访问
 - 在支持环境下可看到基础安装入口和 manifest 能力
 - 部分静态资源与数据请求具备缓存和离线兜底
-- IndexedDB 与 Web Workers 相关底层能力已存在，为后续体验优化提供基础
+- IndexedDB 相关能力已存在；Web Workers 仍处于文件 / 协议 / manager façade 边界，不应承诺性能收益或完整 worker orchestration
 
 ### What Users Must Not Be Promised Yet
 
@@ -111,14 +111,63 @@
 3. [`HTML5_RUNTIME_OPERATIONS_GUIDE.md`](./HTML5_RUNTIME_OPERATIONS_GUIDE.md)
 4. 本文档作为统一沟通口径
 
+## Training Session Template
+
+本模板用于后续真实组织团队培训或技术分享时记录执行证据。
+
+它不是培训完成证明；只有填入真实议程、参会、问题和 follow-up 后，才能作为 `3.4.4` 的候选验收材料。
+
+```markdown
+## HTML5 Runtime Training Record
+
+- Date:
+- Facilitator:
+- Audience:
+- Scope:
+- Related change: implement-html5-migration-experience-optimization
+
+### Agenda
+- Desktop-only scope and non-goals
+- Current PWA / Service Worker / IndexedDB / Web Worker repo-truth
+- User-facing communication boundaries
+- Operations and rollback handoff
+- Open tasks and known blockers
+
+### Materials Used
+- HTML5_RUNTIME_CAPABILITY_GUIDE.md
+- HTML5_RUNTIME_USER_GUIDE.md
+- HTML5_RUNTIME_OPERATIONS_GUIDE.md
+- HTML5_RUNTIME_ROLLBACK_RUNBOOK.md
+- HTML5_RUNTIME_ROLLOUT_COMMUNICATION_GUIDE.md
+
+### Attendance
+- Name / role:
+
+### Questions And Decisions
+- Question:
+- Answer / decision:
+- Follow-up owner:
+
+### Validation Notes
+- Confirmed no mobile/tablet rollout commitment:
+- Confirmed no full PWA/offline/notification commitment:
+- Confirmed rollback and operations owner:
+
+### Closeout
+- Recording / notes location:
+- Follow-up tasks:
+- Accepted by:
+```
+
 ## Closeout Boundary
 
 本文档的完成只意味着：
 
 - `3.3.4` 的“材料准备”有了 repo-local current-state 成果物
+- `3.4.4` 的后续执行记录模板已经准备好
 
 本文档**不**意味着：
 
-- `3.3.1-3.3.3` 已完成
+- `3.3.2-3.3.3` 已完成
 - `3.4.4` 已完成
 - 任意 PWA / offline / notification success metric 已达标

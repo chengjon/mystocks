@@ -1,0 +1,39 @@
+- finding_id: risk-management-data-state-001
+  batch_id: risk-batch-02
+  page:
+    route: /risk/management
+    page_key: risk-management
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/risk/Center.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Routed risk-management page mixed live positions truth with static sector mix, concentration thresholds, and unsupported risk-ratio placeholders
+  trigger:
+    steps:
+      - Open `/risk/management`
+      - Let the routed page load its real `/api/v1/trade/positions` payload
+      - Inspect the stats grid plus the overview route's sector-distribution and concentration panels
+  expected: "Each derived holdings slice should either compute from fields actually present in the current live payload or degrade to explicit pending or unverified states when the needed sector or risk-analytic inputs are absent."
+  actual: "Before repair, the routed page requested real `/api/v1/trade/positions` data but still showed embedded sector rows such as `科技股 35%`, static concentration rows such as `前10大重仓股占比 65 / 70`, and unsupported ratio placeholders such as `贝塔值 1` on the same primary routed surface."
+  evidence:
+    kind: live-observation
+    note: "Logged-in live verification showed the route issuing only `/api/v1/trade/positions` while the page still rendered embedded sector and concentration samples plus placeholder risk ratios; that live payload did not provide sector fields or higher-order risk analytics."
+  repair_target:
+    files:
+      - web/frontend/src/views/risk/Center.vue
+      - web/frontend/src/views/artdeco-pages/risk-tabs/riskManagementData.ts
+      - web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskOverviewPanel.vue
+      - web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskStatsGrid.vue
+    primary_owner: web/frontend/src/views/artdeco-pages/risk-tabs/riskManagementData.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /risk/management:data-state:riskManagementData
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that the routed page keeps static sector and unsupported analytics out of the primary surface when the live positions payload lacks those fields.

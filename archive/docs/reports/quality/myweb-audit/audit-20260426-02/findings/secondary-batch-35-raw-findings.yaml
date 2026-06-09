@@ -1,0 +1,39 @@
+- finding_id: secondary-shell-035-advanced-analysis
+  batch_id: secondary-batch-35
+  page:
+    route: /secondary/advanced-analysis-static-shell
+    page_key: secondary-advanced-analysis-static-shell
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/AdvancedAnalysis.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy advanced-analysis page still exposed local analysis configuration, batch-run, Kronos prediction, and result semantics without a semantically matching canonical owner
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/AdvancedAnalysis.vue`"
+      - "Inspect the local analysis form, batch-run actions, Kronos prediction area, system health cards, and result panels"
+      - "Confirm there is no routed or otherwise active canonical advanced-analysis owner that validates those combined shell-level semantics"
+  expected: "An unrouted legacy advanced-analysis workbench with no semantically matching canonical owner should degrade to an honest static shell instead of preserving local pseudo-live configuration, prediction, and result truth."
+  actual: "Before repair, `AdvancedAnalysis.vue` still rendered local analysis configuration, batch-run chrome, Kronos prediction, health cards, and result views as if they were verified advanced-analysis truth."
+  evidence:
+    kind: code-review
+    note: "Owner review plus regression confirmed the legacy advanced-analysis page still rendered pseudo-live analysis semantics before static-shell degradation."
+  repair_target:
+    files:
+      - web/frontend/src/views/AdvancedAnalysis.vue
+      - web/frontend/src/views/__tests__/AdvancedAnalysis.spec.ts
+      - web/frontend/src/views/composables/useAdvancedAnalysis.ts
+    primary_owner: web/frontend/src/views/AdvancedAnalysis.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/advanced-analysis-static-shell
+  status: open
+  dependency: null
+  dedupe_key: /secondary/advanced-analysis-static-shell:route-truth:advancedAnalysisStaticShell
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner regression to confirm the analysis form, batch-run controls, Kronos prediction, health cards, and result panels are gone and replaced by a static shell."

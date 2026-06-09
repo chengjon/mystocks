@@ -1,0 +1,39 @@
+- finding_id: strategy-backtest-data-state-005
+  batch_id: strategy-batch-16
+  page:
+    route: /strategy/backtest
+    page_key: strategy-backtest
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Strategy backtest KPI wrapper leaked shared delta chrome and exact-decimal pseudo precision onto absolute KPI cards
+  trigger:
+    steps:
+      - "Open `/strategy/backtest?strategyId=101`."
+      - "Inspect the visible top stats strip before or without any backtest result mutation."
+      - "Check whether count-only and absolute KPI cards still show shared change chrome or exact-decimal pseudo precision."
+  expected: "Absolute KPI cards should render plain values only; count-only cards such as `总回测次数` should stay on whole-count semantics, and the routed strip should not leak shared `+0%`, flat-change dots, or `0.00` pseudo precision without a verified comparison baseline."
+  actual: "Before repair, `BacktestKpiGrid.vue` passed raw `items` into shared `ArtDecoStatCard` defaults, so the canonical `/strategy/backtest` strip rendered inherited `.artdeco-stat-change` chrome and exact-decimal pseudo precision such as `总回测次数 0.00`."
+  evidence:
+    kind: live-observation
+    note: "The red-green cycle first reproduced `4` visible `.artdeco-stat-change` nodes, then a second red proof confirmed same-strip pseudo precision such as `12.00`. After repair, targeted live verification on `/strategy/backtest?strategyId=101` reported `changeCount: 0`, `hasPlusZero: false`, and `stripText: 总回测次数 0 策略胜率 0% 年化收益 0% 最大回撤 0`."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/components/BacktestKpiGrid.vue
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/components/__tests__/BacktestKpiGrid.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/components/BacktestKpiGrid.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/backtest
+  status: open
+  dependency: null
+  dedupe_key: /strategy/backtest:data-state:kpiWrapperNumericTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check that the routed stats strip renders zero `.artdeco-stat-change` nodes and does not leak `+0%` or `0.00` after the page-local KPI wrapper repair."

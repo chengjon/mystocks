@@ -1,0 +1,358 @@
+{
+  "errors": [],
+  "generated_at": "2025-12-05T09:59:49Z",
+  "metrics": {
+    "_totals": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 13,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 13,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 916,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/data_access/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 15,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/data_access/postgresql_access.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 7,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 7,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 512,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/data_access/tdengine_access.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 6,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 6,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 389,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "171             # \u6784\u5efa\u63d2\u5165SQL\n172             sql = f\"INSERT INTO {table_name} ({columns_str}) VALUES %s\"\n173 \n",
+      "col_offset": 20,
+      "end_col_offset": 32,
+      "filename": "src/data_access/postgresql_access.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 172,
+      "line_range": [
+        172
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "236             # Upsert SQL\n237             sql = f\"\"\"\n238                 INSERT INTO {table_name} ({columns_str})\n239                 VALUES %s\n240                 ON CONFLICT ({conflict_str})\n241                 DO UPDATE SET {update_str}\n242             \"\"\"\n243 \n",
+      "col_offset": 22,
+      "end_col_offset": 28,
+      "filename": "src/data_access/postgresql_access.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 237,
+      "line_range": [
+        237,
+        238,
+        239,
+        240,
+        241,
+        242
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "320             # SECURITY FIX: Build SQL with proper validation\n321             sql = f\"SELECT {cols} FROM {table_name}\"\n322 \n",
+      "col_offset": 20,
+      "end_col_offset": 27,
+      "filename": "src/data_access/postgresql_access.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 321,
+      "line_range": [
+        321
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "469                 # Parameterized query - safe\n470                 sql = f\"DELETE FROM {table_name} WHERE {where}\"\n471                 cursor = conn.cursor()\n",
+      "col_offset": 24,
+      "end_col_offset": 36,
+      "filename": "src/data_access/postgresql_access.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 470,
+      "line_range": [
+        470
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "479                         raise ValueError(f\"Potentially dangerous SQL pattern detected: {pattern}\")\n480                 sql = f\"DELETE FROM {table_name} WHERE {where}\"\n481                 cursor = conn.cursor()\n",
+      "col_offset": 24,
+      "end_col_offset": 36,
+      "filename": "src/data_access/postgresql_access.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 480,
+      "line_range": [
+        480
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "598                 # \u81ea\u5b9a\u4e49where\u6761\u4ef6\n599                 sql = f\"SELECT * FROM {table_name} WHERE {filters['where']}\"\n600                 if \"limit\" in filters:\n",
+      "col_offset": 24,
+      "end_col_offset": 38,
+      "filename": "src/data_access/postgresql_access.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 599,
+      "line_range": [
+        599
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "606                 # \u67e5\u8be2\u5168\u8868\uff08\u5e26limit\uff09\n607                 sql = f\"SELECT * FROM {table_name}\"\n608                 if \"limit\" in filters:\n",
+      "col_offset": 24,
+      "end_col_offset": 38,
+      "filename": "src/data_access/postgresql_access.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 607,
+      "line_range": [
+        607
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "165             batch = rows[i : i + batch_size]\n166             sql = f\"INSERT INTO {table_name} ({columns}) VALUES {', '.join(batch)}\"\n167 \n",
+      "col_offset": 20,
+      "end_col_offset": 32,
+      "filename": "src/data_access/tdengine_access.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 166,
+      "line_range": [
+        166
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "212         cols = \", \".join(columns) if columns else \"*\"\n213         sql = f\"\"\"\n214             SELECT {cols}\n215             FROM {table_name}\n216             WHERE ts >= '{start_time.strftime('%Y-%m-%d %H:%M:%S')}'\n217               AND ts < '{end_time.strftime('%Y-%m-%d %H:%M:%S')}'\n218             ORDER BY ts ASC\n219         \"\"\"\n220 \n",
+      "col_offset": 18,
+      "end_col_offset": 19,
+      "filename": "src/data_access/tdengine_access.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 213,
+      "line_range": [
+        213,
+        214,
+        215,
+        216,
+        217,
+        218,
+        219
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "256 \n257         sql = f\"\"\"\n258             SELECT *\n259             FROM {table_name}\n260             ORDER BY ts DESC\n261             LIMIT {limit}\n262         \"\"\"\n263 \n",
+      "col_offset": 18,
+      "end_col_offset": 17,
+      "filename": "src/data_access/tdengine_access.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 257,
+      "line_range": [
+        257,
+        258,
+        259,
+        260,
+        261,
+        262
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "311 \n312         sql = f\"\"\"\n313             SELECT\n314                 _wstart as ts,\n315                 FIRST({price_col}) as open,\n316                 MAX({price_col}) as high,\n317                 MIN({price_col}) as low,\n318                 LAST({price_col}) as close,\n319                 SUM({volume_col}) as volume\n320             FROM {table_name}\n321             WHERE ts >= '{start_time.strftime('%Y-%m-%d %H:%M:%S')}'\n322               AND ts < '{end_time.strftime('%Y-%m-%d %H:%M:%S')}'\n323             INTERVAL({interval})\n324         \"\"\"\n325 \n",
+      "col_offset": 18,
+      "end_col_offset": 22,
+      "filename": "src/data_access/tdengine_access.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 312,
+      "line_range": [
+        312,
+        313,
+        314,
+        315,
+        316,
+        317,
+        318,
+        319,
+        320,
+        321,
+        322,
+        323,
+        324
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "356 \n357         sql = f\"\"\"\n358             DELETE FROM {table_name}\n359             WHERE ts >= '{start_time.strftime('%Y-%m-%d %H:%M:%S')}'\n360               AND ts < '{end_time.strftime('%Y-%m-%d %H:%M:%S')}'\n361         \"\"\"\n362 \n",
+      "col_offset": 18,
+      "end_col_offset": 24,
+      "filename": "src/data_access/tdengine_access.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 357,
+      "line_range": [
+        357,
+        358,
+        359,
+        360,
+        361
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "386 \n387         sql = f\"\"\"\n388             SELECT\n389                 COUNT(*) as row_count,\n390                 MIN(ts) as start_time,\n391                 MAX(ts) as end_time\n392             FROM {table_name}\n393         \"\"\"\n394 \n",
+      "col_offset": 18,
+      "end_col_offset": 17,
+      "filename": "src/data_access/tdengine_access.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 387,
+      "line_range": [
+        387,
+        388,
+        389,
+        390,
+        391,
+        392,
+        393
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    }
+  ]
+}

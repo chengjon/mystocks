@@ -1,0 +1,24 @@
+- consolidated_issue_id: risk-stop-loss-issue-08
+  severity: High
+  affected_routes:
+    - /risk/stop-loss
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/risk/StopLoss.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: The canonical risk stop-loss route now preserves resolved failure-envelope truth before any shared watchlist-store transform boundary and keeps hero request provenance aligned with the currently visible verified stop-loss snapshot.
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: The approved repair stayed page-local in `web/frontend/src/views/risk/StopLoss.vue` and its routed regressions, with only a retention-test evidence update outside the route owner.
+    related_routes:
+      - /risk/stop-loss
+  approval_status: approved

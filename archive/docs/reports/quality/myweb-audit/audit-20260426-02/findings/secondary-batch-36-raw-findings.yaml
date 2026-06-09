@@ -1,0 +1,40 @@
+- finding_id: secondary-shell-036-industry-concept-analysis
+  batch_id: secondary-batch-36
+  page:
+    route: /secondary/industry-concept-analysis-static-shell
+    page_key: secondary-industry-concept-analysis-static-shell
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/IndustryConceptAnalysis.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy industry-concept analysis page still exposed local tabs, stats, charts, stock tables, and export semantics without a semantically matching canonical owner
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/IndustryConceptAnalysis.vue`"
+      - "Inspect the local industry/concept tabs, selector filters, summary cards, charts, stock table, and export action"
+      - "Confirm there is no routed or otherwise active canonical industry-concept owner that validates those combined shell-level semantics"
+  expected: "An unrouted legacy industry-concept analysis workbench with no semantically matching canonical owner should degrade to an honest static shell instead of preserving local pseudo-live tabs, stats, and export truth."
+  actual: "Before repair, `IndustryConceptAnalysis.vue` still rendered local tabs, selector filters, summary cards, charts, stock tables, and export actions as if they were verified analysis truth."
+  evidence:
+    kind: code-review
+    note: "Owner review plus regression confirmed the legacy industry-concept analysis page still rendered pseudo-live analysis semantics before static-shell degradation."
+  repair_target:
+    files:
+      - web/frontend/src/views/IndustryConceptAnalysis.vue
+      - web/frontend/src/views/__tests__/IndustryConceptAnalysis.spec.ts
+      - web/frontend/src/views/composables/useIndustryConceptAnalysis.ts
+      - web/frontend/src/views/styles/IndustryConceptAnalysis.scss
+    primary_owner: web/frontend/src/views/IndustryConceptAnalysis.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/industry-concept-analysis-static-shell
+  status: open
+  dependency: null
+  dedupe_key: /secondary/industry-concept-analysis-static-shell:route-truth:industryConceptAnalysisStaticShell
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner regression to confirm the tabs, filters, summary cards, charts, stock table, and export action are gone and replaced by a static shell."

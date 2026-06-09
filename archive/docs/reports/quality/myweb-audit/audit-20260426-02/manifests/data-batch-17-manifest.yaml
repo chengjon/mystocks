@@ -1,0 +1,83 @@
+audit_run_id: audit-20260426-02
+batch_id: data-batch-17
+module: data
+scope:
+  requested_by: user
+  pages:
+    - route: /data/indicator
+      page_key: data-indicator
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/data/Advanced.vue
+  compatibility_redirects: []
+batch_rationale: "Close the canonical `/data/indicator` first-load action-triggered freshness gap so clicking `执行筛选` after an unverified first-load failure cannot fabricate local `UPDATED`, `筛选已就绪`, or screening-count truth. This batch reuses existing `myweb-audit v1.54` guidance instead of introducing a new rule version."
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/data/indicator` remains `web/frontend/src/views/data/Advanced.vue`"
+    - "the approved repair should stay page-local inside `useDataAnalysis` rather than widening into shared stat-card defaults, global request wrappers, or unrelated data-analysis family routes"
+    - "manual screening actions from a failed-first-load shell must not advance `UPDATED`, screening counters, or route status until a verified analysis snapshot exists"
+    - "existing stale-refresh handling from `data-batch-16` remains in force and is not reworked in this batch"
+    - "this batch reuses `myweb-audit v1.54` action-triggered freshness truth rather than minting a new skill version"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+    - "a natural PM2 deep-link attempt in an auth-seeded browser-context settled on `/dashboard`, so the repaired route was proven via controlled browser-context fulfillment instead of a natural PM2 success proof"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [error]
+  notes:
+    - "verify `/data/indicator` keeps `STATUS: 同步异常 / UPDATED: --` after `执行筛选` is clicked from a failed-first-load shell"
+    - "verify the same path keeps `-- / -- / -- / -- / --`, preserves the error shell, and does not mount the results panel"
+repair_approval:
+  status: approved
+  approved_findings:
+    - data-indicator-issue-04
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - data-indicator
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/composables/market/useDataAnalysis.ts
+    - web/frontend/tests/unit/views/data-advanced-screening-truth.spec.ts
+    - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-data-indicator-first-load-action-truth-and-phase2-list
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contains earlier staged audit artifacts and unrelated files, so any staged GitNexus output remains observation-only unless an isolated staged scope is prepared later"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` remains a mixed observation and is not used as an isolated verdict for `data-batch-17`"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/data-indicator-action-triggered-first-load-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-17-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-17-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-17-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/data-batch-17-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-data-batch-17-closeout
+  notes:
+    - "the canonical data-indicator route now keeps failed-first-load screening clicks from fabricating local freshness or faux-ready status"
+    - "this batch reuses existing `myweb-audit v1.54` guidance for unresolved-context action-triggered freshness"
+status: complete

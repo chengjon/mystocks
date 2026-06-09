@@ -1,0 +1,39 @@
+- finding_id: secondary-shell-007
+  batch_id: secondary-batch-07
+  page:
+    route: /secondary/legacy-analysis-static-shell
+    page_key: secondary-legacy-analysis-static-shell
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/Analysis.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy analysis workbench still exposed pseudo-live analysis configuration, signal summaries, and export surfaces without a semantically matching canonical owner
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/Analysis.vue`"
+      - "Inspect the analysis configuration panel, signal summary, recent signals, and export sections"
+      - "Confirm the page is not mounted by the current router and does not delegate to any semantically matching canonical analysis owner"
+  expected: "An unrouted legacy analysis page that has no semantically matching canonical truth contract should degrade to an honest static shell instead of presenting fake live analysis controls, signals, or export surfaces."
+  actual: "Before repair, `Analysis.vue` still rendered a pseudo-live technical analysis workbench with local form state, mock signal cards, recent signals, and export actions even though the page had no router-backed contract or semantically matching canonical owner."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green tests confirmed the legacy page still rendered a fabricated analysis workbench instead of an honest static shell."
+  repair_target:
+    files:
+      - web/frontend/src/views/Analysis.vue
+      - web/frontend/src/views/__tests__/Analysis.spec.ts
+      - .claude/skills/myweb-audit/references/route-truth-casebook.md
+    primary_owner: web/frontend/src/views/Analysis.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-analysis-static-shell
+  status: open
+  dependency: null
+  dedupe_key: /secondary/legacy-analysis-static-shell:data-state:legacyAnalysisStaticShellTruth
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run owner regression and secondary inventory tooling to confirm the legacy analysis page now presents only a static explanatory shell with no fake live analysis, signal, or export semantics."

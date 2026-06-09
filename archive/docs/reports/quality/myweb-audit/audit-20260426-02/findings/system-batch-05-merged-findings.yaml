@@ -1,0 +1,121 @@
+- consolidated_issue_id: system-health-family-issue-01
+  severity: Medium
+  title: System health-family routes now normalize plain probe payloads and render honest top KPI strips
+  pages:
+    - /system/health
+    - /system/api
+  source_roles:
+    - data-state-audit
+  why_consolidated: The successful plain `/api/health` payload mismatch and the top-strip count-kpi leakage were both routed health-family truth defects repaired by one shared probe adapter plus page-local stat-card overrides on the canonical system health pages.
+  primary_owner: web/frontend/src/views/system/healthProbeContract.ts
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact: []
+  dedupe_keys:
+    - /system/health:data-state:health-probe-contract
+    - /system/health:data-state:stats-strip-count-kpi-truth
+    - /system/api:data-state:health-probe-contract
+    - /system/api:data-state:stats-strip-count-kpi-truth
+  verification_scope:
+    routes:
+      - /system/health
+      - /system/api
+    states:
+      - default
+      - refresh
+    breakpoints:
+      - 1920
+      - 1440
+      - 1280
+  repair_summary:
+    files:
+      - web/frontend/src/views/system/API.vue
+      - web/frontend/src/views/system/Health.vue
+      - web/frontend/src/views/system/healthProbeContract.ts
+      - web/frontend/src/views/system/__tests__/API.spec.ts
+      - web/frontend/src/views/system/__tests__/Health.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/SKILL.md
+      - .claude/skills/myweb-audit/references/audit-checklist.md
+      - .claude/agents/myweb-audit-data-state-audit.md
+      - .claude/skills/myweb-audit/references/CHANGELOG.md
+    notes:
+      - "the system health-family pages now normalize successful plain `/api/health` payloads into page-local `UnifiedResponse` shape before generic wrapper handling"
+      - "both routed pages now render `HEALTHY / N/A / 1.0.0 / 3` on live PM2 verification instead of collapsing to `UNKNOWN / N/A / N/A / 3`"
+      - "both routed KPI strips now suppress shared stat-card delta chrome and pseudo precision"
+      - "unit test doubles for the health-family pages now preserve real wrapper semantics so plain payload mismatches cannot be masked by permissive mocks"
+  verification_surface: code-review-plus-targeted-live-verification
+
+- consolidated_issue_id: system-data-issue-01
+  severity: Medium
+  title: System data route now renders an honest plain KPI strip without fabricated delta chrome
+  pages:
+    - /system/data
+  source_roles:
+    - data-state-audit
+  why_consolidated: The routed data-source top strip had one page-local count-kpi truth defect caused by shared stat-card defaults on plain counts and labels.
+  primary_owner: web/frontend/src/views/system/DataSource.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact: []
+  dedupe_keys:
+    - /system/data:data-state:stats-strip-count-kpi-truth
+  verification_scope:
+    routes:
+      - /system/data
+    states:
+      - default
+      - loading
+    breakpoints:
+      - 1920
+      - 1440
+      - 1280
+  repair_summary:
+    files:
+      - web/frontend/src/views/system/DataSource.vue
+      - web/frontend/src/views/system/__tests__/DataSource.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    notes:
+      - "the routed page now renders plain string counts and labels on its top KPI strip"
+      - "the shared stat-card default delta chrome is explicitly suppressed for the routed data-source surface"
+      - "targeted browser verification confirmed `19 / 19 / ON / <REQ_ID>` with zero `.artdeco-stat-change` nodes on the live PM2 route"
+  verification_surface: code-review-plus-targeted-live-verification
+
+- consolidated_issue_id: system-config-issue-01
+  severity: Medium
+  title: System config monitor fallback now preserves plain health-summary truth instead of collapsing to unavailable
+  pages:
+    - /system/config
+  source_roles:
+    - data-state-audit
+  why_consolidated: The routed monitor tab had one fallback-contract defect where the plain `/api/health` summary path was being dropped by generic wrapper expectations during the detailed-to-summary degradation flow.
+  primary_owner: web/frontend/src/views/system/healthProbeContract.ts
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact: []
+  dedupe_keys:
+    - /system/config:data-state:health-summary-fallback-contract
+  verification_scope:
+    routes:
+      - /system/config
+    states:
+      - fallback-summary
+    breakpoints:
+      - 1920
+      - 1440
+      - 1280
+  repair_summary:
+    files:
+      - web/frontend/src/views/system/Settings.vue
+      - web/frontend/src/views/system/healthProbeContract.ts
+      - web/frontend/src/views/system/__tests__/Settings.spec.ts
+    notes:
+      - "the routed settings fallback path now normalizes plain `/api/health` payloads before wrapper success checks"
+      - "faithful wrapper-contract regression coverage now proves the monitor tab downgrades to `SUMMARY` and `/api/health` instead of `UNAVAILABLE` when only the summary path is live"
+  verification_surface: code-review-only

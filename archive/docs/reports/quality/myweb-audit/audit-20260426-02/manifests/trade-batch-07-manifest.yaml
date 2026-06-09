@@ -1,0 +1,87 @@
+audit_run_id: audit-20260426-02
+batch_id: trade-batch-07
+module: trade
+scope:
+  requested_by: user
+  pages:
+    - route: /trade/signals
+      page_key: trade-signals
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/trade/Signals.vue
+  compatibility_redirects: []
+batch_rationale: "Reuse the existing `v1.40` route-provenance rule and upgrade the audit method to `v1.41` so the canonical trade-signals route no longer collapses store-backed resolved `success: false` envelopes or unresolved first-load counts into faux REAL or EMPTY signal truth."
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/trade/signals` remains `web/frontend/src/views/trade/Signals.vue`"
+    - "the approved repair should stay page-local in `Signals.vue` instead of widening into `storeFactory.ts`, because the current batch only needs one routed owner fix plus stronger mock parity"
+    - "browser-context interception with `serviceWorkers: block` is an acceptable verification fallback for pending, resolved-envelope failure, and controlled-success signal states on this route"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [loading, error, default]
+  notes:
+    - "verify `/trade/signals` no longer renders `COUNT: 0 / DATA: REAL` while the first signal payload is unresolved"
+    - "verify the same route no longer collapses resolved `success: false` envelopes into `COUNT: 0 / DATA: EMPTY` before any verified signal snapshot exists"
+    - "verify the same route still renders verified signal counts and request metadata once a successful signal snapshot resolves"
+repair_approval:
+  status: approved
+  approved_findings:
+    - trade-signals-issue-03
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - trade-signals
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/trade/Signals.vue
+    - web/frontend/src/views/trade/__tests__/Signals.spec.ts
+    - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+  shared_impact:
+    candidates:
+      - web/frontend/src/stores/storeFactory.ts
+      - web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoSignalsView.vue
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-trade-signals-pending-failure-success-verification
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `trade-batch-07` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/trade-signals-store-envelope-provenance-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-07-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-07-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-07-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/trade-batch-07-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-trade-batch-07-closeout
+  notes:
+    - "the repaired trade-signals route now distinguishes pending, unavailable, empty, and verified signal truth on store-backed first-load paths"
+    - "this batch raises the skill baseline to `v1.41` so reject-only mocks are no longer accepted for store-backed resolved-envelope routes"
+status: complete

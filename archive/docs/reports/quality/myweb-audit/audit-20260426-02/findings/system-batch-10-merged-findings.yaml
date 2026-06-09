@@ -1,0 +1,37 @@
+- consolidated_issue_id: system-data-issue-02
+  severity: High
+  title: System data routed request metadata now tracks verified config-snapshot provenance instead of fabricated or failed refresh ids
+  pages:
+    - /system/data
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The synthetic `cfg-*` request-id fallback and the stale-refresh request-id overwrite were two manifestations of the same routed request-provenance cluster: the canonical system-data route treated transport freshness as if it always proved the currently visible verified config snapshot."
+  primary_owner: web/frontend/src/views/system/DataSource.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /system/config
+  dedupe_keys:
+    - /system/data:data-state:requestProvenanceTruth
+  verification_scope:
+    routes:
+      - /system/data
+    states:
+      - success-without-request-id
+      - stale-refresh-failure
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/system/DataSource.vue
+      - web/frontend/src/views/system/__tests__/DataSource.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    notes:
+      - "the canonical system-data route now derives visible `REQ_ID` from page-local verified config-snapshot truth instead of synthesizing `cfg-*` when request metadata is missing"
+      - "the same route now preserves the last verified request id and visible config rows during stale-refresh failure, so the visible shell stays aligned when a failed retry occurs after a successful sync"
+      - "strengthened routed regressions now cover both missing-request-id success and refresh-after-success failure on component and Phase 4 routed surfaces"
+      - "this batch reuses existing `myweb-audit v1.45` route-provenance guidance without introducing a new skill version; the project-level latest skill version remains `v1.45`"
+  verification_surface: code-review-plus-targeted-live-verification

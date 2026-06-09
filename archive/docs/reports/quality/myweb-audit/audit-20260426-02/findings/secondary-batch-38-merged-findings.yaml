@@ -1,0 +1,39 @@
+- consolidated_issue_id: secondary-shell-issue-38
+  severity: Medium
+  title: Legacy market auction and ETF pages now degrade to honest static shells
+  pages:
+    - /secondary/market-auction-static-shell
+    - /secondary/market-etf-static-shell
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The hardcoded auction and ETF metrics, refresh controls, selector surfaces, and sample rows in `market/Auction.vue` and `market/Etf.vue` were both faces of the same secondary defect family: legacy market-domain pages preserved pseudo-live truth without a semantically matching verified canonical owner."
+  primary_owner: web/frontend/src/views/market/Auction.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/market-auction-static-shell
+    - /secondary/market-etf-static-shell
+  dedupe_keys:
+    - /secondary/market-auction-static-shell:route-truth:legacyStaticShell
+    - /secondary/market-etf-static-shell:route-truth:legacyStaticShell
+  verification_scope:
+    routes:
+      - /secondary/market-auction-static-shell
+      - /secondary/market-etf-static-shell
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/market/Auction.vue
+      - web/frontend/src/views/market/Etf.vue
+      - web/frontend/src/views/market/__tests__/Auction.spec.ts
+      - web/frontend/src/views/market/__tests__/Etf.spec.ts
+    notes:
+      - "the legacy market auction page now renders an honest static shell with no local auction metrics, refresh simulation, or hardcoded rows"
+      - "the legacy market ETF page now renders an honest static shell with no local ETF metrics, auto-refresh controls, category selectors, ranking tables, or hardcoded ETF rows"
+      - "no new secondary snapshot, store, request provenance badge, selector shell, or wrapper-local market truth was introduced"
+  verification_surface: code-review-only

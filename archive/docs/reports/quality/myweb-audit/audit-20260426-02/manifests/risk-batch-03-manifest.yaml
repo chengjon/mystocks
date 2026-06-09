@@ -1,0 +1,91 @@
+audit_run_id: audit-20260426-02
+batch_id: risk-batch-03
+module: risk
+scope:
+  requested_by: user
+  pages:
+    - route: /risk/management
+      page_key: risk-management
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/risk/Center.vue
+  compatibility_redirects: []
+batch_rationale: Close the routed risk-management alert-policy truth gap so live positions or exposure data cannot be mislabeled as true alerts, stop-loss states, or action recommendations when no alert-policy inputs exist, and fold that pattern back into myweb-audit.
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/risk/management` remains `web/frontend/src/views/risk/Center.vue`"
+    - "the routed page continues to load holdings exposure from `/api/v1/trade/positions` rather than a dedicated risk-alert or stop-loss policy contract"
+    - "when the live payload lacks alert-policy inputs, stop-loss states and action buttons must degrade to observation or review mode instead of presenting inferred heuristics as true alerts"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+    - "targeted live verification blocked service workers and fulfilled `/api/v1/trade/positions` directly so the routed alert-policy truth path could be isolated from unrelated browser-runtime noise"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1920, 1440, 1280]
+  required_states: [default, empty]
+  notes:
+    - "verify `/risk/management` no longer labels holdings-derived rows as `风险预警列表`, `止损状态`, or `操作建议` when the current payload only contains positions exposure truth"
+    - "verify the routed page degrades to observation or review language such as `风险观察列表`, `策略状态`, `复核状态`, `未校验`, and `待复核`"
+repair_approval:
+  status: approved
+  approved_findings:
+    - risk-management-issue-02
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - risk-management
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/risk/Center.vue
+    - web/frontend/src/views/artdeco-pages/risk-tabs/riskManagementData.ts
+    - web/frontend/src/views/artdeco-pages/risk-tabs/riskManagementHelpers.ts
+    - web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskOverviewPanel.vue
+    - web/frontend/src/views/artdeco-pages/risk-tabs/__node_tests__/riskManagementData.test.ts
+    - web/frontend/src/views/artdeco-pages/risk-tabs/__node_tests__/riskManagementHelpers.test.ts
+    - web/frontend/src/views/artdeco-pages/risk-tabs/__tests__/ArtDecoRiskOverviewPanel.spec.ts
+    - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-risk-management-1-route
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated frontend or backend files before `risk-batch-03` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` is treated as observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/risk-management-alert-policy-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-03-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-03-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-03-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/risk-batch-03-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-risk-batch-03-closeout
+  notes:
+    - "`/risk/management` now keeps live holdings exposure visible while degrading alert-style rows to observation or review states when no policy inputs are present"
+    - "stop-loss and action semantics now require explicit alert-policy inputs instead of being inferred from position size or PnL alone"
+status: complete

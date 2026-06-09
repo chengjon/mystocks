@@ -267,7 +267,7 @@ bash scripts/run_e2e_pm2.sh
 
 - [ARTDECO_MASTER_INDEX](./ARTDECO_MASTER_INDEX.md)
 - [ARTDECO_FINTECH_UNIFIED_SPEC](./ARTDECO_FINTECH_UNIFIED_SPEC.md)
-- [DESIGN.md](/opt/claude/mystocks_spec/DESIGN.md)
+- [DESIGN.md](../../../DESIGN.md)
 - [ARTDECO_SCSS_GOVERNANCE_BASELINE](./ARTDECO_SCSS_GOVERNANCE_BASELINE.md)
 - [ARTDECO_COMPONENT_GUIDE](./ARTDECO_COMPONENT_GUIDE.md)
 
@@ -276,9 +276,9 @@ bash scripts/run_e2e_pm2.sh
 - [ARTDECO_FINTECH_IMPLEMENTATION_AUDIT](./ARTDECO_FINTECH_IMPLEMENTATION_AUDIT.md)
 - [ARTDECO_FINTECH_PAGE_COMPOSITION_AUDIT](./ARTDECO_FINTECH_PAGE_COMPOSITION_AUDIT.md)
 - [ARTDECO_PAGE_TEMPLATE_GUIDE](./ARTDECO_PAGE_TEMPLATE_GUIDE.md)
-- [ArtDeco System Architecture Summary](/opt/claude/mystocks_spec/docs/api/ArtDeco_System_Architecture_Summary.md)
-- [ARTDECO_COMPONENTS_CATALOG](/opt/claude/mystocks_spec/web/frontend/ARTDECO_COMPONENTS_CATALOG.md)
-- [ARTDECO_V3_COMPLETE_SUMMARY](/opt/claude/mystocks_spec/docs/reports/ARTDECO_V3_COMPLETE_SUMMARY.md)
+- [ArtDeco System Architecture Summary](../../api/ArtDeco_System_Architecture_Summary.md)
+- [ARTDECO_COMPONENTS_CATALOG](../../../web/frontend/ARTDECO_COMPONENTS_CATALOG.md)
+- [ARTDECO_V3_COMPLETE_SUMMARY](../../reports/ARTDECO_V3_COMPLETE_SUMMARY.md)
 
 ## 10. 一句话结论
 

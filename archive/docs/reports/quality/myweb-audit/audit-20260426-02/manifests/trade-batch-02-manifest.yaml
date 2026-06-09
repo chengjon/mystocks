@@ -1,0 +1,96 @@
+audit_run_id: audit-20260426-02
+batch_id: trade-batch-02
+module: trade
+scope:
+  requested_by: user
+  pages:
+    - route: /trade/signals
+      page_key: trade-signals
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/trade/Signals.vue
+  compatibility_redirects: []
+batch_rationale: Close the routed signal-surface truth gap so the live trade signals workspace cannot fabricate row IDs, reasons, confidence, strength, HOLD actions, or execution analytics from a signals-only payload, and fold that pattern back into myweb-audit.
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/trade/signals` remains `web/frontend/src/views/trade/Signals.vue`"
+    - "the current live `/api/v1/trade/signals` surface may return only current signal rows and may omit `signal_id`, `reason`, `confidence`, `strength`, or execution-outcome analytics"
+    - "`HOLD` rows must remain observational when the current live payload does not expose executable order intent"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+    - "targeted routed verification used two passes: a real PM2 page load to confirm route health and a controlled `/api/v1/trade/signals` fulfillment to isolate the old signals-only truth defect path"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1920, 1440, 1280]
+  required_states: [default, empty, error]
+  notes:
+    - "verify `/trade/signals` no longer fabricates `88%`, `76%`, `${strategy} 信号触发`, synthetic signal IDs, or win-loss history when the current payload only contains signal rows"
+    - "verify `HOLD` rows render as observational and non-executable instead of being relabeled as `卖出`"
+    - "the signals-only controlled verification path is tracked as a targeted live-check note rather than a manifest enum state because the schema only accepts default/loading/empty/error/disabled/extreme-data"
+repair_approval:
+  status: approved
+  approved_findings:
+    - trade-signals-issue-01
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - trade-signals
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/trade/Signals.vue
+    - web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoTradingSignals.vue
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/strategySignalsData.ts
+    - web/frontend/src/views/trade/__tests__/Signals.spec.ts
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/__node_tests__/strategySignalsData.test.ts
+    - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/trade/Signals.vue
+      - web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoTradingSignals.vue
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/strategySignalsData.ts
+    confirmed:
+      - web/frontend/src/views/trade/Signals.vue
+      - web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoTradingSignals.vue
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/strategySignalsData.ts
+  validation_status:
+    syntax: passed-via-vue-tsc
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-trade-signals-actual-plus-controlled-2-modes
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated frontend or backend files before `trade-batch-02` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` is treated as observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/trade-signals-signal-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-02-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-02-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-02-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/trade-batch-02-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-trade-batch-02-closeout
+  notes:
+    - "`/trade/signals` now preserves real signal-row truth, keeps `HOLD` rows observational, and degrades unsupported execution analytics to pending or unverified states"
+    - "signal-list surfaces now require current live signal detail before showing confidence, strength, or reason as if they were verified execution truth"
+status: complete

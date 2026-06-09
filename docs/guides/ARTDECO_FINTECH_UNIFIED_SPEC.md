@@ -8,7 +8,7 @@
 
 当前规范正文位于：
 
-- [docs/guides/web/ARTDECO_FINTECH_UNIFIED_SPEC.md](/opt/claude/mystocks_spec/docs/guides/web/ARTDECO_FINTECH_UNIFIED_SPEC.md)
+- [docs/guides/web/ARTDECO_FINTECH_UNIFIED_SPEC.md](web/ARTDECO_FINTECH_UNIFIED_SPEC.md)
 
 保留原因：
 

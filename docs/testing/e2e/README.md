@@ -14,11 +14,11 @@ MyStocks Web 前端当前测试主线分为 5 层：
 4. Playwright + `@axe-core/playwright` a11y smoke
 5. Lighthouse CI authenticated performance smoke
 
-当前阻塞式 PR 门禁落在 [frontend-testing.yml](/opt/claude/mystocks_spec/.github/workflows/frontend-testing.yml)。
-跨浏览器执行落在 [e2e-testing.yml](/opt/claude/mystocks_spec/.github/workflows/e2e-testing.yml)。
-视觉回归执行落在 [visual-testing.yml](/opt/claude/mystocks_spec/.github/workflows/visual-testing.yml)。
-reviewer 速查表见 [PR_GATE_QUICK_REFERENCE](/opt/claude/mystocks_spec/docs/guides/frontend/PR_GATE_QUICK_REFERENCE.md)。
-共享 PM2 集成测试的标准执行顺序见 [PM2_INTEGRATION_TEST_WORKFLOW](/opt/claude/mystocks_spec/docs/guides/pm2/PM2_INTEGRATION_TEST_WORKFLOW.md)。
+当前阻塞式 PR 门禁落在 [frontend-testing.yml](../../../.github/workflows/frontend-testing.yml)。
+跨浏览器执行落在 [e2e-testing.yml](../../../.github/workflows/e2e-testing.yml)。
+视觉回归执行落在 [visual-testing.yml](../../../.github/workflows/visual-testing.yml)。
+reviewer 速查表见 [PR_GATE_QUICK_REFERENCE](../../guides/frontend/PR_GATE_QUICK_REFERENCE.md)。
+共享 PM2 集成测试的标准执行顺序见 [PM2_INTEGRATION_TEST_WORKFLOW](../../guides/pm2/PM2_INTEGRATION_TEST_WORKFLOW.md)。
 
 ## 入口命令
 

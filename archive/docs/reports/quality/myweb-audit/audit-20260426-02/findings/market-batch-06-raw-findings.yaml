@@ -1,0 +1,40 @@
+- finding_id: market-lhb-data-state-004
+  batch_id: market-batch-06
+  page:
+    route: /market/lhb
+    page_key: market-lhb
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/market/LHB.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: LHB route leaked failed request ids into hero metadata even when no verified leaderboard snapshot existed
+  trigger:
+    steps:
+      - "Open `/market/lhb`"
+      - "Force the first `/api/v2/market/lhb` request to resolve `success: false` with a `request_id` before any verified leaderboard snapshot exists"
+      - "Repeat with one successful leaderboard load followed by a failed manual refresh"
+      - "Inspect the hero `REQ / DATE / FILTER / ROWS` metadata and the visible leaderboard shell"
+  expected: "Before `/market/lhb` has any verified leaderboard snapshot, the hero metadata should degrade to explicit placeholders such as `REQ: N/A / ROWS: --`. If a later refresh fails while the route still displays the previous verified board, the hero `REQ` should continue to identify the visible verified snapshot instead of the failed retry."
+  actual: "Before repair, `/market/lhb` rendered `REQ: lhb-fail-first-load / ROWS: 0` on first-load failure and switched the hero request id to the failed refresh request after a successful initial sync, even though the visible leaderboard rows still came from the previous verified snapshot."
+  evidence:
+    kind: live-observation
+    note: "Component red tests reproduced both failure shapes before repair. Targeted Playwright-library verification with system `google-chrome` then confirmed the routed page now renders `REQ: N/A / ROWS: --` on first-load failure and keeps `REQ: req-market-b06-success` on stale refresh failure while the previous row remains visible."
+  repair_target:
+    files:
+      - web/frontend/src/views/market/LHB.vue
+    primary_owner: web/frontend/src/views/market/LHB.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /market/technical
+    - /data/concept
+    - /stocks/screener
+  status: open
+  dependency: null
+  dedupe_key: /market/lhb:data-state:leaderboardRequestProvenanceTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/market/lhb` after repair and confirm first-load failure and stale-refresh failure both preserve honest hero request provenance."

@@ -5,7 +5,7 @@
 > 目录项和链接关系仅反映整理时结构；判断当前事实时，仍应以 `architecture/STANDARDS.md`、当前实现与最新主线文档为准。
 
 
-**最后更新**: 2026-01-02
+**最后更新**: 2026-04-25
 **维护者**: Main CLI (Claude Code)
 
 ---
@@ -16,9 +16,10 @@
 
 | 需求 | 推荐文档 |
 |------|---------|
-| 了解如何切换Mock/Real模式 | [Mock/Real数据切换指南](#mockreal数据切换指南) |
+| 了解当前 Mock 使用边界 | [Mock数据使用规则](#1-mock数据使用规则) |
+| 了解如何切换Mock/Real模式 | [Mock/Real数据切换指南](#2-mockreal数据切换指南) |
 | 了解前端环境切换 | [前端环境切换指南](#前端环境切换指南) |
-| 了解Mock数据使用规范 | [Mock数据使用规则](#mock数据使用规则) |
+| 了解Mock数据使用规范 | [Mock数据使用规则](#1-mock数据使用规则) |
 | 查看所有相关文档列表 | [本文档](#mockreal数据文档索引) |
 | 了解环境切换实现细节 | [环境切换实现报告](#环境切换实现报告) |
 | 了解Real数据集成原则 | [Real数据集成原则](#real数据集成原则-历史参考) |
@@ -27,22 +28,32 @@
 
 ## 📚 核心文档
 
-### 1. Mock/Real数据切换指南
+### 1. Mock数据使用规则
+
+**路径**: `docs/guides/mock-data/MOCK_DATA_USAGE_RULES.md`
+**类型**: 当前专题执行细则
+**适用人群**: 开发人员、评审人员、文档维护者
+
+**内容概览**:
+- ✅ Mock 的允许场景与禁止场景
+- ✅ `verified / pending` 页面行为边界
+- ✅ 为什么 Mock 不能作为默认静默兜底
+- ✅ 当前仓库中多层 Mock 资产的角色划分
+
+---
+
+### 2. Mock/Real数据切换指南
 
 **路径**: `docs/guides/mock-data/MOCK_REAL_DATA_SWITCHING_GUIDE.md`
 **类型**: 核心用户指南
-**大小**: 13KB
-**最后更新**: 2026-01-01
-**阅读时间**: 10分钟
 **适用人群**: 开发人员、测试人员、运维人员
 
 **内容概览**:
-- ✅ 三层数据源架构设计
-- ✅ 环境变量驱动的数据源切换机制
+- ✅ 当前 Mock/Real 运行模式说明
 - ✅ 后端数据源切换（USE_MOCK_DATA）
-- ✅ 前端API端点切换（VITE_APP_MODE）
-- ✅ 实战示例和最佳实践
-- ✅ 常见问题解答
+- ✅ 前端切换与 readiness / `VITE_USE_MOCK_DATA`
+- ✅ 真实联调与显式 Mock 验收的判定边界
+- ✅ `verified / pending` 页面与切换策略关系
 
 **快速链接**:
 ```bash
@@ -51,37 +62,6 @@ cat docs/guides/mock-data/MOCK_REAL_DATA_SWITCHING_GUIDE.md
 
 # 或使用代码编辑器打开
 code docs/guides/mock-data/MOCK_REAL_DATA_SWITCHING_GUIDE.md
-```
-
----
-
-### 2. Mock数据使用规则
-
-**路径**: `docs/guides/mock-data/MOCK_DATA_USAGE_RULES.md`
-**类型**: 开发规范
-**大小**: 13KB
-**最后更新**: 2025-12-21
-**阅读时间**: 8分钟
-**适用人群**: 开发人员
-
-**内容概览**:
-- ✅ Mock数据核心原则
-- ✅ 正确的Mock数据使用方式
-- ✅ 禁止的硬编码数据模式
-- ✅ Mock数据工厂使用说明
-- ✅ 常见错误示例和修正方法
-
-**核心规则**:
-```python
-# ✅ 正确: 通过工厂函数获取Mock数据
-from src.data_sources.factory import get_timeseries_source
-source = get_timeseries_source(source_type="mock")
-data = source.get_kline_data(symbol, start_time, end_time, interval)
-
-# ❌ 错误: 直接硬编码数据
-historical_data = [
-    {"date": "2025-01-01", "close": 10.5},  # 严禁!
-]
 ```
 
 ---
@@ -96,12 +76,10 @@ historical_data = [
 **适用人群**: 前端开发人员
 
 **内容概览**:
-- ✅ Mock模式和Real模式对比
-- ✅ 快速切换方法
-- ✅ 验证当前模式
-- ✅ 配置对比
-- ✅ 使用场景
-- ✅ 故障排除
+- ✅ 前端本地切换方法
+- ✅ 当前模式验证
+- ✅ `VITE_USE_MOCK_DATA` 与后端 `USE_MOCK_DATA` 的配合
+- ✅ 常见排障
 
 **快速切换**:
 ```bash
@@ -137,10 +115,9 @@ npm run dev
 - ✅ 测试验证结果
 
 **技术亮点**:
-- 后端通过 `USE_MOCK_DATA` 控制Mock API注册
-- 前端通过 `VITE_APP_MODE` 动态选择API端点
-- 保留所有功能，不降级、不取消功能
-- 完整的测试验证
+- 后端通过 `USE_MOCK_DATA` 控制 Mock API 注册
+- 前端文档存在历史 `VITE_APP_MODE` 口径，执行时应回到当前代码复核
+- 文内结论属于历史实现报告，不应直接替代当前 repo-truth
 
 ---
 
@@ -155,7 +132,7 @@ npm run dev
 **状态**: ⚠️ 部分内容已被新指南替代
 
 **说明**:
-本文档包含Real数据集成的架构原则和设计思路，部分内容已被新的环境切换指南更新和替代。建议优先阅读 `MOCK_REAL_DATA_SWITCHING_GUIDE.md`，本文档保留作为历史参考。
+本文档包含更早期的 Real 数据集成设想与架构思路。建议优先阅读 `MOCK_DATA_USAGE_RULES.md` 与 `MOCK_REAL_DATA_SWITCHING_GUIDE.md`，本文档仅保留作为历史参考。
 
 **相关内容**:
 - 数据分类体系
@@ -168,17 +145,19 @@ npm run dev
 ## 🎓 按角色分类的文档推荐
 
 ### 前端开发人员
-1. **必读**: [前端环境切换指南](../web/frontend/ENVIRONMENT_SWITCHING_GUIDE.md)
-2. **推荐**: [Mock/Real数据切换指南](./MOCK_REAL_DATA_SWITCHING_GUIDE.md) - 第4节"前端配置"
+1. **必读**: [Mock数据使用规则](./MOCK_DATA_USAGE_RULES.md)
+2. **必读**: [前端环境切换指南](../web/frontend/ENVIRONMENT_SWITCHING_GUIDE.md)
+3. **推荐**: [Mock/Real数据切换指南](./MOCK_REAL_DATA_SWITCHING_GUIDE.md)
 
 ### 后端开发人员
-1. **必读**: [Mock/Real数据切换指南](./MOCK_REAL_DATA_SWITCHING_GUIDE.md)
-2. **必读**: [Mock数据使用规则](./MOCK_DATA_USAGE_RULES.md)
+1. **必读**: [Mock数据使用规则](./MOCK_DATA_USAGE_RULES.md)
+2. **必读**: [Mock/Real数据切换指南](./MOCK_REAL_DATA_SWITCHING_GUIDE.md)
 3. **推荐**: [环境切换实现报告](../reports/ENVIRONMENT_SWITCHING_IMPLEMENTATION_REPORT.md)
 
 ### 测试人员
-1. **必读**: [前端环境切换指南](../web/frontend/ENVIRONMENT_SWITCHING_GUIDE.md)
-2. **推荐**: [Mock/Real数据切换指南](./MOCK_REAL_DATA_SWITCHING_GUIDE.md) - 第5节"验证方法"
+1. **必读**: [Mock数据使用规则](./MOCK_DATA_USAGE_RULES.md)
+2. **必读**: [前端环境切换指南](../web/frontend/ENVIRONMENT_SWITCHING_GUIDE.md)
+3. **推荐**: [Mock/Real数据切换指南](./MOCK_REAL_DATA_SWITCHING_GUIDE.md)
 
 ### 运维人员
 1. **必读**: [Mock/Real数据切换指南](./MOCK_REAL_DATA_SWITCHING_GUIDE.md)
@@ -208,11 +187,14 @@ npm run dev
 
 | 关键词 | 相关文档 | 章节 |
 |--------|---------|------|
-| 环境切换 | Mock/Real数据切换指南 | 第3节 |
-| USE_MOCK_DATA | Mock/Real数据切换指南 | 第3.1节 |
-| VITE_APP_MODE | 前端环境切换指南 | 第3节 |
+| Mock 使用边界 | Mock数据使用规则 | 全文 |
+| 环境切换 | Mock/Real数据切换指南 | 全文 |
+| USE_MOCK_DATA | Mock/Real数据切换指南 | 当前主要开关 |
+| VITE_USE_MOCK_DATA | Mock/Real数据切换指南 | 当前主要开关 |
+| VITE_APP_MODE | 前端环境切换指南 | 历史口径，需与当前代码复核 |
 | Mock数据规范 | Mock数据使用规则 | 全文 |
-| API端点切换 | 环境切换实现报告 | 第3.3节 |
+| verified / pending | Mock数据使用规则 | 当前主线规则 |
+| API端点切换 | 环境切换实现报告 | 历史实现说明 |
 | 故障排除 | 前端环境切换指南 | 第6节 |
 | 数据源架构 | Mock/Real数据切换指南 | 第2节 |
 | 实现细节 | 环境切换实现报告 | 全文 |
@@ -232,6 +214,10 @@ npm run dev
 ---
 
 ## 🔄 文档更新历史
+### 2026-04-25
+- ✅ 调整 family 入口顺序为“规则优先，切换其次”
+- ✅ 将旧 `README_MOCK_DATA.md` 明确降级为历史快照
+- ✅ 更新索引文案，避免继续把旧主指南表述成“当前最新真相”
 
 ### 2026-01-02
 - ✅ 创建前端环境切换指南
@@ -250,8 +236,11 @@ npm run dev
 
 ## ❓ 常见问题
 
+### Q: 如何判断某个页面还能不能继续用 Mock 兜底？
+**A**: 先看[Mock数据使用规则](./MOCK_DATA_USAGE_RULES.md)。如果该页面已经进入 `verified` 主线，默认不允许对同一路径静默回退 mock。
+
 ### Q: 如何快速切换到Mock模式？
-**A**: 参考[前端环境切换指南](../web/frontend/ENVIRONMENT_SWITCHING_GUIDE.md)的"快速切换"章节。
+**A**: 先看[Mock/Real数据切换指南](./MOCK_REAL_DATA_SWITCHING_GUIDE.md)，再结合[前端环境切换指南](../web/frontend/ENVIRONMENT_SWITCHING_GUIDE.md)执行当前代码支持的切换方式。
 
 ### Q: Mock数据使用有哪些规则？
 **A**: 参考[Mock数据使用规则](./MOCK_DATA_USAGE_RULES.md)的核心原则章节。
@@ -275,4 +264,4 @@ npm run dev
 
 **文档版本**: 1.0
 **维护周期**: 按需更新
-**文档状态**: ✅ 最新
+**文档状态**: supporting family index

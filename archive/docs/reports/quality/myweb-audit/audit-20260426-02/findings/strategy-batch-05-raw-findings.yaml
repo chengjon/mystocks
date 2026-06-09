@@ -1,0 +1,39 @@
+- finding_id: strategy-parameters-data-state-001
+  batch_id: strategy-batch-05
+  page:
+    route: /strategy/parameters
+    page_key: strategy-parameters
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/strategy/Parameters.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Strategy parameters route presented count-only summary cards as faux delta metrics and rendered failed first-load tallies as resolved zero values
+  trigger:
+    steps:
+      - Open `/strategy/parameters?strategyId=101`
+      - Inspect the top summary cards after a verified strategy payload resolves
+      - Re-run the same route with the first `/api/v1/strategy/strategies` request failing before any verified strategy payload exists
+  expected: "Count-only strategy summary cards should render plain strings without shared delta chrome or pseudo-decimal precision, and failed first-load tallies should degrade to placeholders such as `-- / -- / -- / 101` until verified strategy summary evidence exists."
+  actual: "Before repair, the route rendered verified count-only tallies as `1.00 / 2.00 / 0.00` with shared `● +0%` chrome, and a failed first `/api/v1/strategy/strategies` request still left the same summary strip at `0.00 / 0.00 / 0.00 / 101`."
+  evidence:
+    kind: live-observation
+    note: "System-`google-chrome` verification with browser-context fulfillment reproduced both states before repair: a verified success path showing `1.00 / 2.00 / 0.00` plus `+0%`, and a first-load failure path showing `0.00 / 0.00 / 0.00 / 101` instead of placeholders."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/StrategyParametersTab.vue
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/StrategyParametersTab.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/StrategyParametersTab.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/parameters
+  status: open
+  dependency: null
+  dedupe_key: /strategy/parameters:data-state:summaryCountAndFirstLoadTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that verified count cards render as plain strings without `.artdeco-stat-change`, and that failed first-load summary tallies degrade to placeholders while natural empty-state zero counts remain honest.

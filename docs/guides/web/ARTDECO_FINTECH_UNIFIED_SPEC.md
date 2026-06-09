@@ -106,9 +106,12 @@
 - `data`
 - `watchlist`
 - `strategy`
+- `ai`
 - `trade`
 - `risk`
 - `system`
+
+此外，`detail/*` 是独立于主业务域菜单之外的详情页路由组，不应误记为 `data` 域子路由。
 
 当前已知 ArtDeco 例外入口：
 
@@ -116,6 +119,7 @@
 - `/strategy/signals` -> `views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue`
 - `/strategy/pos` -> `views/artdeco-pages/trading-tabs/ArtDecoTradingPositions.vue`
 - `/risk/pnl` -> `views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue`
+- `/detail/graphics/:symbol` -> `views/artdeco-pages/analysis-tabs/KLineAnalysis.vue`
 - `/dashboard` header summary metrics 由 `views/artdeco-pages/composables/useArtDecoDashboard.ts` 推送到 `src/composables/useHeaderSummary.ts`，再由 `layouts/ArtDecoLayoutEnhanced.vue` 统一渲染
 
 这意味着：ArtDeco 体系仍是前端核心视觉与工作台承载体系，但它不等于“所有业务路由都继续直接落在 `artdeco-pages/**`”。
@@ -260,7 +264,7 @@
 - 通过 / 失败 / 跳过数量
 - PM2 服务地址与状态
 
-### 6.1 当前实施基线快照（2026-04-19）
+### 6.1 历史实施基线快照（2026-04-19，下次引用前需重新验证）
 
 - `PM2`
   - `mystocks-backend` -> `http://localhost:8020`
@@ -269,6 +273,8 @@
   - `PLAYWRIGHT_EXTERNAL_FRONTEND=1 npm run test:e2e:stable`
   - `chromium`
   - `10 passed / 0 failed / 0 skipped`
+
+以上结果仅代表 2026-04-19 当天的验证快照；若要声明“当前可运行”或“当前稳定”，必须重新执行并报告最新命令输出。
 
 ## 7. 与其他文档的关系
 

@@ -1,0 +1,25 @@
+- consolidated_issue_id: market-lhb-issue-02
+  severity: Medium
+  affected_routes:
+    - /market/lhb
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/market/LHB.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: The canonical LHB route now renders unresolved first-load leaderboard row counters honestly as pending placeholders instead of presenting faux zero board truth.
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: The repair remains page-local in `LHB.vue`; only sibling route families are noted as pattern-related follow-up, not shared-owner impact.
+    related_routes:
+      - /market/realtime
+      - /market/technical
+  approval_status: approved

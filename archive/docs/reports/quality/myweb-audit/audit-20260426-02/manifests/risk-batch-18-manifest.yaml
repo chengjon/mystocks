@@ -1,0 +1,82 @@
+audit_run_id: audit-20260426-02
+batch_id: risk-batch-18
+module: risk
+scope:
+  requested_by: user
+  pages:
+    - route: /risk/stop-loss
+      page_key: risk-stop-loss
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/risk/StopLoss.vue
+  compatibility_redirects: []
+batch_rationale: "Close the canonical `/risk/stop-loss` selector-pending truth gap so a new primary watchlist without its own verified stocks slice cannot keep the previous watchlist cards visible."
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/risk/stop-loss` remains `web/frontend/src/views/risk/StopLoss.vue` and the route owns both primary watchlist resolution and stop-loss card rendering in one routed shell"
+    - "the defect is page-local selector-pending truth rather than shared mapper truth because the visible leak occurs when the active primary watchlist changes before the new selector has any verified stocks snapshot"
+    - "controlled browser-context fulfillment is acceptable for the `watchlist 101 success -> watchlist 202 pending` proof because the natural PM2 route is healthy and does not expose that unresolved selector mismatch on demand"
+    - "this repair intentionally stays route-local and does not widen into shared watchlist helpers because the bug is the page-owned visible-card reset boundary inside the canonical route owner"
+  fallback_log:
+    - "the default local Playwright Chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome` with an authenticated browser context"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, loading, error]
+  notes:
+    - "verify a controlled watchlist-101 success path first reaches verified stop-loss cards before the primary selector is switched"
+    - "verify the routed shell clears visible cards as soon as the new primary watchlist becomes active but still unresolved"
+repair_approval:
+  status: approved
+  approved_findings:
+    - risk-stop-loss-issue-18
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - risk-stop-loss
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/risk/StopLoss.vue
+    - web/frontend/src/views/risk/__tests__/StopLoss.spec.ts
+    - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-targeted-vitest
+    typecheck: failed-pre-existing-frontend-debt
+    pm2: passed
+    e2e: passed-custom-system-chrome-stop-loss-selector-pending-proof
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `risk-batch-18` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+      - "latest staged observation returned `risk_level: low`, `changed_files: 126`, `changed_count: 317`, and `affected_count: 0`"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/risk-stop-loss-selector-pending-card-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-18-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-18-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-18-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/risk-batch-18-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-risk-batch-18-closeout
+  notes:
+    - "the canonical risk stop-loss route now clears previous watchlist cards as soon as the active primary selector changes away from the last verified selector key"
+status: complete

@@ -1,0 +1,86 @@
+audit_run_id: audit-20260426-02
+batch_id: system-batch-13
+module: system
+scope:
+  requested_by: user
+  pages:
+    - route: /system/resources
+      page_key: system-resources
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/system/Resources.vue
+  compatibility_redirects: []
+batch_rationale: Close the routed `/system/resources` pending-count truth gap so the visible resource shell no longer presents `0 / 0 / 0` before any verified resource snapshot exists.
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+  - visual-artdeco-audit
+  - responsive-a11y-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - canonical route truth for `/system/resources` remains under `web/frontend/src/views/system/Resources.vue`
+    - top-level and section-level resource counts should stay unresolved until the route has a verified resource snapshot, even if the shell already knows its node-level placeholder state
+    - targeted browser verification can run on the repo default Playwright Chromium runner for this pending-first-load proof
+  fallback_log: []
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, loading]
+  notes:
+    - "verify that unresolved `/api/v1/system/resources` first load renders `UNKNOWN / N/A / -- / -- / --` on `/system/resources` instead of `UNKNOWN / N/A / 0 / 0 / 0`"
+    - "verify that the same delayed resource request later promotes the shell to real counts and a real request id"
+repair_approval:
+  status: approved
+  approved_findings:
+    - system-resources-issue-01
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - system-resources
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/system/Resources.vue
+    - web/frontend/src/views/system/__tests__/Resources.spec.ts
+    - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    - .claude/skills/myweb-audit/references/route-truth-families.md
+    - .claude/skills/myweb-audit/references/route-truth-casebook.md
+    - .claude/skills/myweb-audit/references/route-truth-coverage-matrix.md
+  shared_impact:
+    candidates:
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    confirmed:
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+  validation_status:
+    syntax: passed-via-vitest-and-playwright
+    typecheck: failed-existing-frontend-debt-only
+    pm2: passed
+    e2e: passed-playwright-chromium-system-resources-pending-count-proof
+    gitnexus_staged_detect: not-run
+  staged_scope:
+    mode: not-run
+    files: []
+    verdict_origin: none
+    notes:
+      - "no isolated staged batch was prepared in this turn; dirty worktree remained mixed with earlier audit files"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/system-resources-pending-count-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-13-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-13-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-13-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/system-batch-13-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-system-batch-13-closeout
+  notes:
+    - "the canonical system-resources route now keeps resource-dependent counts unresolved until the first verified snapshot exists"
+    - "owner and Phase 4 regressions both pin the delayed-first-load route shell for `/system/resources`"
+status: complete

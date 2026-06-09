@@ -1,0 +1,86 @@
+audit_run_id: audit-20260426-02
+batch_id: system-batch-10
+module: system
+scope:
+  requested_by: user
+  pages:
+    - route: /system/data
+      page_key: system-data
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/system/DataSource.vue
+  compatibility_redirects: []
+batch_rationale: Close the remaining routed `/system/data` request-provenance truth gap so visible `REQ_ID` follows the currently visible verified config snapshot instead of a fabricated `cfg-*` fallback or failed refresh request id.
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+  - visual-artdeco-audit
+  - responsive-a11y-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - canonical route truth for `/system/data` remains under `web/frontend/src/views/system/DataSource.vue`
+    - the route may issue more than one `/api/v1/data-sources/config/` request during initial shell hydration, so stale-refresh verification must distinguish shell boot requests from the manual refresh path
+    - targeted browser verification can reuse the existing PM2 frontend with authenticated browser-context interception and Playwright-library control of system `google-chrome`
+  fallback_log:
+    - the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, loading, error]
+  notes:
+    - "verify that a successful config snapshot with no request metadata renders `REQ_ID: N/A` instead of fabricating `cfg-*`"
+    - "verify that a failed manual refresh after successful config sync keeps the last verified hero request id aligned with the visible config rows"
+    - "verify that the natural PM2 route still renders a live request id and live config rows"
+repair_approval:
+  status: approved
+  approved_findings:
+    - system-data-issue-02
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - system-data
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/system/DataSource.vue
+    - web/frontend/src/views/system/__tests__/DataSource.spec.ts
+    - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/composables/artdeco/useArtDecoApi.ts
+      - web/frontend/src/views/artdeco-pages/system-tabs/dataManagementData.ts
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-system-data-3-states
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated frontend or backend files before `system-batch-10` was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` is treated as observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/system-data-refresh-request-provenance-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-10-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-10-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-10-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/system-batch-10-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-system-batch-10-closeout
+  notes:
+    - "the routed `/system/data` page now derives visible `REQ_ID` from page-local verified config-snapshot truth, so missing request metadata degrades to `N/A` and stale-refresh failure preserves the last verified request id"
+    - "routed component and Phase 4 regressions now both pin this exact request-provenance failure mode"
+status: complete

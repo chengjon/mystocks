@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/quote",
+  "total_endpoints": 2,
+  "endpoints": [
+    {
+      "path": "/quote/{symbol}",
+      "method": "GET",
+      "file": "stock_search.py",
+      "function": "get_stock_quote",
+      "return_model": "Dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 388
+    },
+    {
+      "path": "/quote/{symbol}",
+      "method": "GET",
+      "file": "tdx.py",
+      "function": "get_stock_quote",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 33
+    }
+  ]
+}

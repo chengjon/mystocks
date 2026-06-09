@@ -1,0 +1,38 @@
+- finding_id: secondary-shell-017
+  batch_id: secondary-batch-17
+  page:
+    route: /secondary/legacy-technical-analysis-static-shell
+    page_key: secondary-legacy-technical-analysis-static-shell
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/TechnicalAnalysis.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy top-level technical analysis page still exposed a forked pseudo-live technical analysis workbench even though no semantically matching canonical owner exists
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/TechnicalAnalysis.vue`"
+      - "Inspect the local search form, indicator overview, chart, details table, and batch calculation shell"
+      - "Confirm the page is not a current router-backed owner and does not have an active semantically matching canonical contract"
+  expected: "An unrouted legacy page with no semantically matching canonical owner should degrade to an honest static shell instead of preserving a forked pseudo-live technical-analysis workbench."
+  actual: "Before repair, `TechnicalAnalysis.vue` rendered its own pseudo-live technical-analysis shell with local indicator totals, chart, and batch-calculation surfaces even though no active canonical owner existed for direct delegation."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green regression confirmed the top-level legacy technical-analysis page still rendered its own fake workbench shell before the static-shell repair."
+  repair_target:
+    files:
+      - web/frontend/src/views/TechnicalAnalysis.vue
+      - web/frontend/src/views/__tests__/TechnicalAnalysis.spec.ts
+    primary_owner: web/frontend/src/views/TechnicalAnalysis.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-technical-analysis-static-shell
+  status: open
+  dependency: null
+  dedupe_key: /secondary/legacy-technical-analysis-static-shell:route-truth:legacyTechnicalAnalysisStaticShell
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner static-shell regression and secondary inventory tooling to confirm the legacy technical-analysis page no longer exposes pseudo-live indicator, chart, or batch-calculation truth."

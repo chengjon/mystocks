@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/clear",
+  "total_endpoints": 1,
+  "endpoints": [
+    {
+      "path": "/clear",
+      "method": "DELETE",
+      "file": "watchlist.py",
+      "function": "clear_watchlist",
+      "return_model": "Dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 356
+    }
+  ]
+}

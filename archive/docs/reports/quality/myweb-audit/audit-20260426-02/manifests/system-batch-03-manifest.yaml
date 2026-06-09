@@ -1,0 +1,96 @@
+audit_run_id: audit-20260426-02
+batch_id: system-batch-03
+module: system
+scope:
+  requested_by: user
+  pages:
+    - route: /system/api
+      page_key: system-api
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/system/API.vue
+    - route: /system/health
+      page_key: system-health
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/system/Health.vue
+  compatibility_redirects: []
+batch_rationale: Close the routed system runtime-status truth gap so middleware rows on `/system/api` and `/system/health` degrade to explicit unverified states when the health probe is unavailable or unhealthy, and fold that rule back into myweb-audit.
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+  - visual-artdeco-audit
+  - responsive-a11y-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - canonical route truth for `/system/api` remains `web/frontend/src/views/system/API.vue`
+    - canonical route truth for `/system/health` remains `web/frontend/src/views/system/Health.vue`
+    - targeted browser verification can reuse the existing PM2 frontend with real-login navigation and Playwright-library control of system `google-chrome`
+  fallback_log:
+    - the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1920, 1440, 1280]
+  required_states: [default, loading, error]
+  notes:
+    - verify that failed or unavailable health probes do not leave middleware runtime labels in `启用`, `活跃`, `ENABLED`, or `ACTIVE` states
+    - verify that routed observability pages degrade those runtime labels to explicit unverified wording while keeping the runtime failure message visible
+repair_approval:
+  status: approved
+  approved_findings:
+    - system-api-issue-02
+    - system-health-issue-01
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - system-api
+    - system-health
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/system/API.vue
+    - web/frontend/src/views/system/Health.vue
+    - web/frontend/src/views/system/styles/API.scss
+    - web/frontend/src/views/system/__tests__/API.spec.ts
+    - web/frontend/src/views/system/__tests__/Health.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-runtime-status-2-routes
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated frontend repair files before `system-batch-03` was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` is treated as observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/system-api-runtime-status-truth-audit.md
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/system-health-runtime-status-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-03-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-03-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-03-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/system-batch-03-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-system-batch-03-closeout
+  notes:
+    - "the routed `/system/api` page now derives middleware labels from runtime verification and degrades them to `未校验` when the health probe is unavailable"
+    - "the routed `/system/health` page now derives middleware labels from runtime verification and degrades them to `UNVERIFIED` when the health probe is unavailable"
+status: complete

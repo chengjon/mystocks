@@ -1,0 +1,36 @@
+- consolidated_issue_id: data-indicator-issue-05
+  severity: High
+  title: Data indicator now scopes selected-indicator detail context to the active category
+  pages:
+    - /data/indicator
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The canonical data-indicator route already exposed an active category selector, but its editor detail panel still trusted one route-global `selectedIndicator`. The stale detail card and stale editor metadata were both symptoms of the same category-scoped selector truth defect."
+  primary_owner: web/frontend/src/composables/market/useDataAnalysis.ts
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /data/indicator
+  dedupe_keys:
+    - /data/indicator:data-state:activeCategorySelectedIndicatorTruth
+  verification_scope:
+    routes:
+      - /data/indicator
+    states:
+      - default
+      - same-instance-category-switch
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/composables/market/useDataAnalysis.ts
+      - web/frontend/tests/unit/views/data-advanced-screening-truth.spec.ts
+      - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+    notes:
+      - "the route now clears `selectedIndicator` whenever the active category changes away from the selected indicator's category"
+      - "reopening `指标详情` after a same-instance `趋势指标 -> 动量指标` switch now reaches the neutral empty editor state instead of the stale `MA` detail"
+      - "owner regressions and Phase 2 routed assertions now lock the same-instance category-switch proof"
+      - "this batch reuses existing `myweb-audit v1.71` and `v1.68` selector-owned snapshot guidance; no new skill version was required"
+  verification_surface: code-review-plus-targeted-live-verification

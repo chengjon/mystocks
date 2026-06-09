@@ -1,0 +1,39 @@
+- finding_id: risk-management-data-state-002
+  batch_id: risk-batch-03
+  page:
+    route: /risk/management
+    page_key: risk-management
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/risk/Center.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Routed risk-management page mislabeled holdings-derived rows as true alerts, stop-loss states, and action recommendations without alert-policy inputs
+  trigger:
+    steps:
+      - Open `/risk/management`
+      - Let the routed page load a live or intercepted `/api/v1/trade/positions` payload with position exposure fields only
+      - Inspect the overview tab's alert-style table, stop-status column, and action buttons
+  expected: "If the routed page only has holdings or exposure truth, alert-style rows should degrade to observation, review, or unverified states until explicit alert-policy inputs such as stop-loss status or action recommendations exist."
+  actual: "Before repair, the routed page labeled holdings-derived rows as `风险预警列表`, inferred `止损状态` values such as `已触发` or `接近`, and rendered action buttons such as `止损`, `减仓`, or `监控` even though the current positions payload did not expose any alert-policy fields."
+  evidence:
+    kind: live-observation
+    note: "Code-path review and routed browser verification showed `/risk/management` issuing only `/api/v1/trade/positions` while the page still presented alert-engine semantics derived locally from position weights and PnL."
+  repair_target:
+    files:
+      - web/frontend/src/views/risk/Center.vue
+      - web/frontend/src/views/artdeco-pages/risk-tabs/riskManagementData.ts
+      - web/frontend/src/views/artdeco-pages/risk-tabs/riskManagementHelpers.ts
+      - web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskOverviewPanel.vue
+    primary_owner: web/frontend/src/views/artdeco-pages/risk-tabs/riskManagementData.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /risk/management:data-state:riskManagementData
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that the routed page now shows observation or review language instead of true alert or stop-loss semantics when the live positions payload lacks alert-policy inputs.

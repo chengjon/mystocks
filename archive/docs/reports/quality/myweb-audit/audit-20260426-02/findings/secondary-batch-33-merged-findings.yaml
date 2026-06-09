@@ -1,0 +1,36 @@
+- consolidated_issue_id: secondary-shell-issue-33
+  severity: Medium
+  title: Legacy portfolio-management page now degrades to an honest static shell
+  pages:
+    - /secondary/portfolio-management-static-shell
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The local score cards, watchlist tabs, alert summaries, stock-edit actions, and radar/detail dialogs in `PortfolioManagement.vue` were all faces of the same defect family: a legacy portfolio-management workbench preserved pseudo-live truth even though no semantically matching canonical owner existed."
+  primary_owner: web/frontend/src/views/PortfolioManagement.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/portfolio-management-static-shell
+  dedupe_keys:
+    - /secondary/portfolio-management-static-shell:route-truth:portfolioManagementStaticShell
+  verification_scope:
+    routes:
+      - /secondary/portfolio-management-static-shell
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/PortfolioManagement.vue
+      - web/frontend/src/views/__tests__/PortfolioManagement.spec.ts
+      - web/frontend/src/views/composables/usePortfolioManagement.ts
+      - web/frontend/src/views/styles/PortfolioManagement.scss
+    notes:
+      - "the legacy portfolio-management page now renders an honest static shell"
+      - "the repair removes local score cards, watchlist tabs, alert summaries, stock-edit actions, and radar/detail dialogs instead of preserving pseudo-live portfolio-management truth"
+      - "the now-unused local pseudo-live composable and style chain were retired with the owner"
+      - "users are handed back to verified `/watchlist/manage`, `/trade/portfolio`, and `/risk/management` routes"
+  verification_surface: code-review-only

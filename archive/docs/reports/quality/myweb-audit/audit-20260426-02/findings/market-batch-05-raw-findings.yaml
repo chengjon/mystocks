@@ -1,0 +1,38 @@
+- finding_id: market-lhb-data-state-002
+  batch_id: market-batch-05
+  page:
+    route: /market/lhb
+    page_key: market-lhb
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/market/LHB.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Routed LHB first-load leaderboard counts presented unresolved board state as faux zero truth
+  trigger:
+    steps:
+      - Open `/market/lhb`
+      - Delay `/api/v2/market/lhb` before the first successful payload resolves
+      - Inspect hero meta and top KPI strip while the route still shows the loading state
+  expected: "Before the first successful leaderboard payload arrives, unresolved row-count surfaces should render explicit pending placeholders such as `ROWS: --` and `榜单条目 --` rather than presenting `0` as live board truth."
+  actual: "Before repair, the canonical LHB route rendered `ROWS: 0` in hero meta and `榜单条目 0` in the stat strip while the page was still on its first unresolved leaderboard request."
+  evidence:
+    kind: live-observation
+    note: "Targeted system-`google-chrome` verification with browser-context interception and `serviceWorkers: block` showed the delayed route still loading while it previously rendered `0` row counts. Post-fix verification now shows `-- / 今日 / 买入榜 / --` and `ROWS: --`."
+  repair_target:
+    files:
+      - web/frontend/src/views/market/LHB.vue
+    primary_owner: web/frontend/src/views/market/LHB.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /market/realtime
+    - /market/technical
+  status: open
+  dependency: null
+  dedupe_key: /market/lhb:data-state:unresolvedFirstLeaderboardCountTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that delayed first-load leaderboard count surfaces render pending placeholders instead of faux zero truth.

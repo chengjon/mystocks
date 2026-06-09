@@ -1,0 +1,39 @@
+- finding_id: system-config-data-state-001
+  batch_id: system-batch-01
+  page:
+    route: /system/config
+    page_key: system-config
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/system/Settings.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Routed system-config monitor tab kept embedded example API metrics on the primary surface after real monitor requests failed
+  trigger:
+    steps:
+      - Open `/system/config`
+      - Switch to the `系统监控` tab
+      - Force both `/api/health/detailed` and `/api/health` to fail
+      - Inspect the visible monitor table and source label
+  expected: "When real monitor requests fail, the page should clearly enter an unavailable state and must not keep embedded example QPS/P95 rows on the same primary surface as live runtime telemetry."
+  actual: "Before repair, the page labeled the surface `DATA: MOCK` but still rendered embedded `/api/v1/market/quotes`, `/api/v1/auth/login`, and `/api/v1/strategy/backtest` metric rows in the main monitor table."
+  evidence:
+    kind: live-observation
+    note: "Targeted system-Chrome verification and unit reproduction confirmed that `/system/config` mixed runtime failure messaging with still-visible example telemetry rows."
+  repair_target:
+    files:
+      - web/frontend/src/views/system/Settings.vue
+      - web/frontend/src/views/system/__tests__/Settings.spec.ts
+      - web/frontend/src/views/artdeco-pages/system-tabs/__tests__/ArtDecoSystemSettings.spec.ts
+    primary_owner: web/frontend/src/views/system/Settings.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /system/config:data-state:Settings
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check both the summary-fallback path and the fully unavailable path, and confirm example telemetry rows no longer remain on the primary monitor table.

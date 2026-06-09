@@ -1,0 +1,24 @@
+- consolidated_issue_id: secondary-shell-issue-27
+  severity: Medium
+  affected_routes:
+    - /secondary/wencai-live-truth-wrapper
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/Wencai.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "Wencai legacy page now delegates directly to the live WencaiPanel truth component."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The repair stays scoped to the Wencai wrapper and its local owner regression; no new store, snapshot cache, wrapper-local summary fetch, or shell-level provenance/freshness strip was introduced."
+    related_routes:
+      - /secondary/wencai-live-truth-wrapper
+  approval_status: approved

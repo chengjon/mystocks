@@ -1,7 +1,7 @@
 # ArtDeco Standardization P0 Tasks
 
 > **说明**
-> 本文是 [`ARTDECO_STANDARDIZATION_PLAN.md`](/opt/claude/mystocks_spec/docs/plans/ARTDECO_STANDARDIZATION_PLAN.md) 的 P0 可执行任务清单。
+> 本文是 [`ARTDECO_STANDARDIZATION_PLAN.md`](ARTDECO_STANDARDIZATION_PLAN.md) 的 P0 可执行任务清单。
 > 它聚焦“标准冻结前的最小收口”，目标不是完成整套 ArtDeco 平台化，而是为后续 P1 / P2 建立稳定前提。
 
 ---

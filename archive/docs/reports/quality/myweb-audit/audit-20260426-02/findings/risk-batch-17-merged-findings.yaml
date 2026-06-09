@@ -1,0 +1,36 @@
+- consolidated_issue_id: risk-alerts-issue-17
+  severity: High
+  title: Risk alerts route now keeps verified rules visible while alert records stay unresolved on the first load
+  pages:
+    - /risk/alerts
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The canonical risk alerts route had one remaining partial-slice truth defect: `alert-rules` could verify successfully while the first `alerts` payload still failed, yet the route collapsed both tables and summary counts back to a generic no-snapshot shell."
+  primary_owner: web/frontend/src/views/risk/Alerts.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact: []
+  dedupe_keys:
+    - /risk/alerts:data-state:firstLoadPartialSliceTruth
+  verification_scope:
+    routes:
+      - /risk/alerts
+    states:
+      - default
+      - first-load-rules-success-alerts-fail
+      - refresh-fail-after-success
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/risk/Alerts.vue
+      - web/frontend/src/views/risk/__tests__/Alerts.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    notes:
+      - "the routed owner now tracks verified rules and alert-record snapshots separately instead of treating both primary slices as one route-global verified shell"
+      - "hero request provenance stays unresolved until a full route snapshot exists, while `RULES`, the rules stats, and the rules table can still expose verified partial truth"
+      - "alert-record empty text and runtime copy now distinguish `当前告警记录暂不可用` from generic no-snapshot copy"
+      - "this batch reused existing `myweb-audit v1.71`; no new skill version was required"
+  verification_surface: code-review-plus-targeted-live-verification

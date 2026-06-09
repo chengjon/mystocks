@@ -12,11 +12,11 @@
 
 ## 当前应查看的文档
 
-- [上手入口](/opt/claude/mystocks_spec/docs/guides/web/ARTDECO_START_HERE.md)
-- [总目录](/opt/claude/mystocks_spec/docs/guides/web/ARTDECO_MASTER_INDEX.md)
-- [统一规格](/opt/claude/mystocks_spec/docs/guides/web/ARTDECO_FINTECH_UNIFIED_SPEC.md)
-- [组件开发指南](/opt/claude/mystocks_spec/docs/guides/web/ARTDECO_COMPONENT_GUIDE.md)
-- [Grid 快速参考](/opt/claude/mystocks_spec/docs/guides/web/ARTDECO_GRID_QUICK_REFERENCE.md)
+- [上手入口](ARTDECO_START_HERE.md)
+- [总目录](ARTDECO_MASTER_INDEX.md)
+- [统一规格](ARTDECO_FINTECH_UNIFIED_SPEC.md)
+- [组件开发指南](ARTDECO_COMPONENT_GUIDE.md)
+- [Grid 快速参考](ARTDECO_GRID_QUICK_REFERENCE.md)
 
 ## 为什么降级
 

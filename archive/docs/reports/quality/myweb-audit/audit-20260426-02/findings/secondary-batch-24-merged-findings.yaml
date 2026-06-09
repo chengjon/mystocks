@@ -1,0 +1,33 @@
+- consolidated_issue_id: secondary-shell-issue-24
+  severity: Medium
+  title: Legacy enhanced risk monitor page now delegates to the canonical risk-management owner
+  pages:
+    - /secondary/legacy-enhanced-risk-monitor-canonical-wrapper
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The local stop-loss, alert, websocket, GPU, and tabbed risk-monitor shell surfaces in `EnhancedRiskMonitor.vue` were all faces of the same defect family: a top-level legacy risk page preserved pseudo-live truth even though a semantically matching canonical `/risk/management` owner already existed."
+  primary_owner: web/frontend/src/views/EnhancedRiskMonitor.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-enhanced-risk-monitor-canonical-wrapper
+  dedupe_keys:
+    - /secondary/legacy-enhanced-risk-monitor-canonical-wrapper:route-truth:legacyEnhancedRiskMonitorCanonicalWrapper
+  verification_scope:
+    routes:
+      - /secondary/legacy-enhanced-risk-monitor-canonical-wrapper
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/EnhancedRiskMonitor.vue
+      - web/frontend/src/views/__tests__/EnhancedRiskMonitor.spec.ts
+    notes:
+      - "the legacy enhanced risk monitor page now renders a thin orchestration wrapper over the canonical `/risk/management` owner"
+      - "the repair removes local stop-loss, alert, websocket, GPU, and tabbed risk shell semantics instead of preserving a second pseudo-live risk surface"
+      - "all visible live truth is now owned by the canonical risk-management route entrypoint"
+  verification_surface: code-review-only

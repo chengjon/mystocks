@@ -1,0 +1,36 @@
+- consolidated_issue_id: trade-history-issue-03
+  severity: High
+  title: Trade history first-load summary surfaces now keep pending and unavailable ledger truth out of faux zero-row semantics
+  pages:
+    - /trade/history
+  source_roles:
+    - data-state-audit
+  why_consolidated: The hero `REQ_ID / TIME / ROWS` meta, top KPI strip, content-shell `COMPLETED / CANCELLED` summary, and first-load empty copy all leaked the same verified-empty interpretation before any ledger snapshot existed, so they represent one first-load provenance truth issue on the canonical trade-history route.
+  primary_owner: web/frontend/src/views/trade/History.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /trade/history
+  dedupe_keys:
+    - /trade/history:data-state:firstLoadLedgerProvenanceTruth
+  verification_scope:
+    routes:
+      - /trade/history
+    states:
+      - loading
+      - error
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/trade/History.vue
+      - web/frontend/src/views/trade/__tests__/History.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    notes:
+      - "the canonical trade-history route now gates hero request meta, row counts, KPI tallies, content-shell counts, and empty-copy surfaces on the same verified-ledger boundary"
+      - "the strengthened routed regression now guards against `ROWS: 0`, zero-valued KPI tallies, and empty-history copy on unresolved or first-load failure paths"
+      - "the strengthened Phase 3 matrix now guards pending and unavailable first-load provenance on `/trade/history` without introducing a new `myweb-audit` version branch"
+  verification_surface: code-review-plus-targeted-live-verification

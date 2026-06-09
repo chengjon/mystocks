@@ -1,0 +1,40 @@
+- finding_id: system-api-data-state-003
+  batch_id: system-batch-08
+  page:
+    route: /system/api
+    page_key: system-api
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/system/API.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Routed system-api page leaked failed request ids into visible telemetry metadata before any verified probe snapshot existed and could overwrite visible provenance on stale refresh
+  trigger:
+    steps:
+      - "Open `/system/api`"
+      - "Force the first `/api/health` request to resolve `success: false` with a `request_id` before any verified system probe snapshot exists"
+      - "Repeat with one successful system probe snapshot followed by a failed manual refresh"
+      - "Inspect the visible hero and content-shell `REQ_ID` metadata along with the retained system probe surface"
+  expected: "Before `/system/api` has any verified probe snapshot, the visible telemetry metadata should degrade to `REQ_ID: N/A`. If a later refresh fails while the route still displays the previous verified probe snapshot, the visible `REQ_ID` should continue to identify the visible verified snapshot instead of the failed retry."
+  actual: "Before repair, `/system/api` rendered a failed request id into the visible hero and content-shell metadata on first-load failure and could switch `REQ_ID` to a failed refresh request even while the visible probe snapshot still came from the previous successful sync."
+  evidence:
+    kind: live-observation
+    note: "Component red tests reproduced both failure shapes before repair. Targeted Playwright-library verification with system `google-chrome` then confirmed the routed page now renders `REQ_ID: N/A` on first-load failure and keeps `REQ_ID: req-live-system-api-success` on stale refresh failure while the previous `mystocks-backend / 2.0.0` snapshot remains visible."
+  repair_target:
+    files:
+      - web/frontend/src/views/system/API.vue
+      - web/frontend/src/views/system/__tests__/API.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/system/API.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /system/health
+  status: open
+  dependency: null
+  dedupe_key: /system/api:data-state:requestProvenanceTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/system/api` after repair and confirm first-load failure and stale-refresh failure both preserve honest request provenance on the visible route shell."

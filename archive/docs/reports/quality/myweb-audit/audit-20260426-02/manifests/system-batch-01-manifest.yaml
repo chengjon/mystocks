@@ -1,0 +1,86 @@
+audit_run_id: audit-20260426-02
+batch_id: system-batch-01
+module: system
+scope:
+  requested_by: user
+  pages:
+    - route: /system/config
+      page_key: system-config
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/system/Settings.vue
+  compatibility_redirects: []
+batch_rationale: Close the routed system-config telemetry-truth gap so monitor failures no longer leave embedded example API metrics on the primary runtime surface, and fold that example-telemetry rule back into myweb-audit.
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+  - visual-artdeco-audit
+  - responsive-a11y-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - canonical route truth for `/system/config` remains `web/frontend/src/views/system/Settings.vue`
+    - targeted browser verification can reuse the existing PM2 frontend with Playwright-library control of system `google-chrome`
+  fallback_log:
+    - the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1920, 1440, 1280]
+  required_states: [default, empty, error]
+  notes:
+    - verify that `/system/config` distinguishes live metrics, health-summary fallback, and unavailable monitor states honestly
+    - example or embedded API metric rows must not remain on the primary monitor table when both monitor endpoints fail
+repair_approval:
+  status: approved
+  approved_findings:
+    - system-config-issue-01
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - system-config
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/system/Settings.vue
+    - web/frontend/src/views/system/__tests__/Settings.spec.ts
+    - web/frontend/src/views/artdeco-pages/system-tabs/__tests__/ArtDecoSystemSettings.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-system-config-telemetry-truth-2-scenarios
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated frontend repair files before `system-batch-01` was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` is treated as observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/system-config-telemetry-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-01-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/system-batch-01-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/system-batch-01-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/system-batch-01-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-system-batch-01-closeout
+  notes:
+    - "the routed system-config monitor tab now distinguishes `REAL`, `SUMMARY`, and `UNAVAILABLE` telemetry states"
+    - "example API metric rows are no longer rendered on the primary monitor table when the real runtime endpoints are unavailable"
+status: complete

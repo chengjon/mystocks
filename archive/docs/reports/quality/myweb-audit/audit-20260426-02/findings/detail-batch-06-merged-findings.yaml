@@ -1,0 +1,37 @@
+- consolidated_issue_id: detail-news-issue-06
+  severity: High
+  title: Detail news route now keeps selector-scoped primary announcement rows aligned with the current detail symbol
+  pages:
+    - /detail/news/:symbol
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The canonical detail/news route had one routed truth defect: its primary verified announcement rows were not selector-scoped, so a new failing symbol could inherit the previous symbol snapshot."
+  primary_owner: web/frontend/src/views/announcement/composables/useAnnouncementMonitor.ts
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact: []
+  dedupe_keys:
+    - /detail/news/:symbol:data-state:selectorScopedPrimaryRowProvenance
+  verification_scope:
+    routes:
+      - /detail/news/:symbol
+    states:
+      - default
+      - selector-switch-first-load-failure
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/announcement/composables/useAnnouncementMonitor.ts
+      - web/frontend/src/views/announcement/AnnouncementMonitor.vue
+      - web/frontend/src/views/announcement/__tests__/AnnouncementMonitor.spec.ts
+      - web/frontend/src/views/announcement/__tests__/useAnnouncementMonitor.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    notes:
+      - "the route-owned announcement composable now tracks a selector-scoped primary `announcementSliceState` and the last verified selector key"
+      - "same-selector refresh failures keep the last verified rows as stale truth, but a new selector with no verified snapshot now clears the old rows instead of leaking them into the new route"
+      - "the owner view now renders route-local unavailable copy for the primary list when the current symbol has no verified announcement snapshot"
+      - "this batch reuses existing `myweb-audit v1.66` selector-scoped provenance guidance and does not introduce a new skill version"
+  verification_surface: code-review-plus-targeted-live-verification

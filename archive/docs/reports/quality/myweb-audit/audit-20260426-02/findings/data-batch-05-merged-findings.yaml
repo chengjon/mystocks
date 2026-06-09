@@ -1,0 +1,36 @@
+- consolidated_issue_id: data-industry-issue-01
+  severity: Medium
+  title: Industry refresh failures now preserve last-known-good board and rotation surfaces with explicit stale-data messaging
+  pages:
+    - /data/industry
+  source_roles:
+    - data-state-audit
+  why_consolidated: The missing stale-data warning, ambiguous refresh status, and retained-content contract gap were one page-local refresh-truth defect on the routed industry workbench.
+  primary_owner: web/frontend/src/views/data/Industry.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact: []
+  dedupe_keys:
+    - /data/industry:data-state:industryRefreshStaleWarning
+  verification_scope:
+    routes:
+      - /data/industry
+    states:
+      - default
+      - error
+    breakpoints:
+      - 1920
+      - 1440
+      - 1280
+  repair_summary:
+    files:
+      - web/frontend/src/views/data/Industry.vue
+      - web/frontend/tests/unit/views/data-industry-refresh-fallback.spec.ts
+      - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+    notes:
+      - "added a page-local stale-refresh warning path so manual refresh failures no longer clear or replace the routed industry workbench truth"
+      - "kept the last successful board table and rotation snapshot visible while labeling the page `刷新异常`"
+      - "extended Phase 1 browser coverage with a success-then-refresh-fail industry scenario"
+  verification_surface: code-review-plus-targeted-live-verification

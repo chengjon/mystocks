@@ -1,0 +1,85 @@
+audit_run_id: audit-20260426-02
+batch_id: strategy-batch-10
+module: strategy
+scope:
+  requested_by: user
+  pages:
+    - route: /strategy/parameters
+      page_key: strategy-parameters
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/artdeco-pages/strategy-tabs/StrategyParametersTab.vue
+  compatibility_redirects: []
+batch_rationale: "Reuse the existing `v1.43` verified-snapshot request-provenance rule on the canonical strategy-parameters owner so failed first loads no longer leak transport metadata and later manual refresh failures no longer overwrite visible `REQ_ID / PROCESS` truth or clear verified parameter cards."
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "the routed `/strategy/parameters` shell is still provided by `web/frontend/src/views/artdeco-pages/strategy-tabs/StrategyParametersTab.vue` behind `web/frontend/src/views/strategy/Parameters.vue`"
+    - "the approved repair should stay page-local in `StrategyParametersTab.vue` instead of widening into `useArtDecoApi`, `strategyApi`, or shared stat-card behavior"
+    - "the route exposes visible `REQ_ID / PROCESS` hero metadata plus manual refresh, so verification must cover both first-load failure and `success -> refresh fail` provenance retention rather than only honest summary placeholders"
+    - "auth-seeded browser contexts plus browser-context interception with `serviceWorkers: block` are acceptable verification harnesses for controlled first-load failure and refresh-failure truth on this route"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [error, default, empty]
+  notes:
+    - "verify `/strategy/parameters?strategyId=101` now renders `REQ_ID: N/A` and `PROCESS: N/A ms` when the first strategies request fails before any verified snapshot exists"
+    - "verify the same route keeps the last verified `REQ_ID`, `PROCESS`, and parameter card when a later manual refresh fails"
+    - "verify the natural PM2 route still renders an honest live shell with a real request id and empty-state `0 / 0 / 0 / 101` after the page-local provenance repair lands"
+repair_approval:
+  status: approved
+  approved_findings:
+    - strategy-parameters-issue-02
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - strategy-parameters
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/StrategyParametersTab.vue
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/StrategyParametersTab.spec.ts
+    - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/strategy/Parameters.vue
+    confirmed:
+      - web/frontend/src/views/strategy/Parameters.vue
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-strategy-parameters-refresh-provenance-verification
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `strategy-batch-10` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-parameters-refresh-provenance-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-10-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-10-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-10-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/strategy-batch-10-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-strategy-batch-10-closeout
+  notes:
+    - "the repaired strategy-parameters route now keeps page-local verified request metadata instead of binding visible header provenance directly to the latest transport attempt"
+    - "this batch reuses existing `myweb-audit v1.43`, so future transport-backed parameter-route audits should continue checking `success -> refresh fail` retention in addition to first-load failure"
+status: complete

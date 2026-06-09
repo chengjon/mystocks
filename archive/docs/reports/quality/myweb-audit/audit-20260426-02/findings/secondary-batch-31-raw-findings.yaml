@@ -1,0 +1,38 @@
+- finding_id: secondary-shell-031-task-management
+  batch_id: secondary-batch-31
+  page:
+    route: /secondary/task-management-static-shell
+    page_key: secondary-task-management-static-shell
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/TaskManagement.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy task-management page still exposed pseudo task stats, task-list, and import-export history surfaces without any semantically matching canonical owner
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/TaskManagement.vue`"
+      - "Inspect the local task stats cards, task table, import/export actions, and history dialogs"
+      - "Confirm there is no routed or otherwise active canonical task-management owner that validates those shell-level semantics"
+  expected: "An unrouted legacy task-management workbench with no semantically matching canonical owner should degrade to an honest static shell instead of preserving pseudo task-management truth."
+  actual: "Before repair, `TaskManagement.vue` still rendered local task stats, task tables, import/export controls, and history dialogs as if they were live verified task-management truth."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green regression confirmed the legacy task-management page still rendered pseudo task-management shell semantics before static-shell degradation."
+  repair_target:
+    files:
+      - web/frontend/src/views/TaskManagement.vue
+      - web/frontend/src/views/__tests__/TaskManagement.spec.ts
+    primary_owner: web/frontend/src/views/TaskManagement.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/task-management-static-shell
+  status: open
+  dependency: null
+  dedupe_key: /secondary/task-management-static-shell:route-truth:taskManagementStaticShell
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner regression to confirm the pseudo task stats, task list, import/export, and history surfaces are gone and replaced by a static shell."

@@ -1,0 +1,24 @@
+- consolidated_issue_id: secondary-shell-issue-22
+  severity: Medium
+  affected_routes:
+    - /secondary/legacy-tdx-market-static-shell
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/TdxMarket.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "Legacy TDX market page now degrades to an honest static shell."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The repair stays scoped to the top-level legacy TDX owner and its local regression; no new store, snapshot cache, or shell-level truth surface was introduced."
+    related_routes:
+      - /secondary/legacy-tdx-market-static-shell
+  approval_status: approved

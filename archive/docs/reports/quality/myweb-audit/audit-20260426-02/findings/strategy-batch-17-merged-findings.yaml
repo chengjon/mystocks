@@ -1,0 +1,42 @@
+- consolidated_issue_id: strategy-gpu-issue-02
+  severity: High
+  title: Strategy GPU route now distinguishes partial primary-slice sync from full recent route sync
+  pages:
+    - /strategy/gpu
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The performance-only and status-only route-truth defects came from the same page-local runtime banner contract inside `useBacktestGPU`, so they are treated as one partial-sync freshness issue on `/strategy/gpu`."
+  primary_owner: web/frontend/src/views/strategy/composables/useBacktestGPU.ts
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /strategy/gpu
+  dedupe_keys:
+    - /strategy/gpu:data-state:partialSyncBannerTruth
+  verification_scope:
+    routes:
+      - /strategy/gpu
+    states:
+      - performance-only-first-load
+      - status-only-first-load
+      - full-success
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/strategy/composables/useBacktestGPU.ts
+      - web/frontend/src/views/strategy/BacktestGPU.vue
+      - web/frontend/src/views/strategy/composables/__tests__/useBacktestGPU.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/SKILL.md
+      - .claude/skills/myweb-audit/references/CHANGELOG.md
+      - .claude/skills/myweb-audit/references/audit-checklist.md
+      - .claude/agents/myweb-audit-data-state-audit.md
+    notes:
+      - "the page-local composable now tracks `partialSyncNotice` and derives a route-owned `runtimeStatusMessage` instead of letting any partial success collapse into generic `最近同步` copy"
+      - "partial primary-slice refreshes now render `部分同步` plus slice-specific pending or retained messaging such as `GPU 状态待同步`"
+      - "owner and routed regressions now lock both performance-only and status-only partial-sync paths while preserving full-success `最近同步` wording"
+      - "this batch promotes `myweb-audit` to `v1.59`, formalizing partial-sync banner truth for routed runtime, monitoring, and workbench pages"
+  verification_surface: code-review-plus-targeted-live-verification

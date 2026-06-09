@@ -1,0 +1,42 @@
+- finding_id: detail-news-data-state-06
+  batch_id: detail-batch-06
+  page:
+    route: /detail/news/:symbol
+    page_key: stock-news
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/announcement/AnnouncementMonitor.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Detail news primary announcement rows leaked the previous verified symbol into a new detail route when the new selector failed before its first verified snapshot
+  trigger:
+    steps:
+      - "Open `/detail/news/600519` and let the primary announcement list verify successfully."
+      - "Navigate to `/detail/news/000001`."
+      - "Force the new `/api/announcement/list?stock_code=000001` request to fail before any verified `000001` snapshot exists."
+      - "Inspect the route banner and the primary `公告列表` card together."
+  expected: "A selector-scoped primary list on the canonical detail news route must never keep the previous symbol rows visible under a new route selector. If the new symbol fails before its first verified snapshot, the route should clear the old rows and render explicit route-local unavailable copy instead."
+  actual: "Before repair, `fetchAnnouncements()` only raised a toast on failure. When the route changed from `600519` to a new symbol and that new list request failed before any verified snapshot existed, the page still kept the old `600519` announcement rows visible under the new route banner."
+  evidence:
+    kind: code-path-review
+    note: "New RED tests reproduced the missing primary `announcementSliceState` and the absence of route-local unavailable copy after a selector change from `600519` to `000001`."
+  repair_target:
+    files:
+      - web/frontend/src/views/announcement/composables/useAnnouncementMonitor.ts
+      - web/frontend/src/views/announcement/AnnouncementMonitor.vue
+      - web/frontend/src/views/announcement/__tests__/AnnouncementMonitor.spec.ts
+      - web/frontend/src/views/announcement/__tests__/useAnnouncementMonitor.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/announcement/composables/useAnnouncementMonitor.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /detail/news/:symbol
+  status: open
+  dependency: null
+  dedupe_key: /detail/news/:symbol:data-state:selectorScopedPrimaryRowProvenance
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check the canonical detail/news route after repair and confirm that a failing new selector clears the old primary rows, shows route-local unavailable copy, and does not leak the previous symbol into the current detail route."

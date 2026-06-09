@@ -1,0 +1,128 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/{symbol}",
+  "total_endpoints": 11,
+  "endpoints": [
+    {
+      "path": "/{symbol}/indicators",
+      "method": "GET",
+      "file": "technical_analysis.py",
+      "function": "get_all_indicators",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 228
+    },
+    {
+      "path": "/{symbol}/trend",
+      "method": "GET",
+      "file": "technical_analysis.py",
+      "function": "get_trend_indicators",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 329
+    },
+    {
+      "path": "/{symbol}/momentum",
+      "method": "GET",
+      "file": "technical_analysis.py",
+      "function": "get_momentum_indicators",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 395
+    },
+    {
+      "path": "/{symbol}/volatility",
+      "method": "GET",
+      "file": "technical_analysis.py",
+      "function": "get_volatility_indicators",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 446
+    },
+    {
+      "path": "/{symbol}/volume",
+      "method": "GET",
+      "file": "technical_analysis.py",
+      "function": "get_volume_indicators",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 496
+    },
+    {
+      "path": "/{symbol}/signals",
+      "method": "GET",
+      "file": "technical_analysis.py",
+      "function": "get_trading_signals",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 546
+    },
+    {
+      "path": "/{symbol}/history",
+      "method": "GET",
+      "file": "technical_analysis.py",
+      "function": "get_stock_history",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 604
+    },
+    {
+      "path": "/{symbol}/{data_type}",
+      "method": "GET",
+      "file": "cache.py",
+      "function": "get_cached_data",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 93
+    },
+    {
+      "path": "/{symbol}/{data_type}",
+      "method": "POST",
+      "file": "cache.py",
+      "function": "write_cache_data",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 180
+    },
+    {
+      "path": "/{symbol}",
+      "method": "DELETE",
+      "file": "cache.py",
+      "function": "invalidate_symbol_cache",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 282
+    },
+    {
+      "path": "/{symbol}/{data_type}/fresh",
+      "method": "GET",
+      "file": "cache.py",
+      "function": "check_cache_freshness",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 393
+    }
+  ]
+}

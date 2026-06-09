@@ -1,0 +1,86 @@
+audit_run_id: audit-20260426-02
+batch_id: detail-batch-04
+module: detail
+scope:
+  requested_by: user
+  pages:
+    - route: /detail/graphics/:symbol
+      page_key: stock-graphics
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/artdeco-pages/analysis-tabs/KLineAnalysis.vue
+  compatibility_redirects: []
+batch_rationale: "Promote `myweb-audit` to `v1.60` and repair the canonical `/detail/graphics/:symbol` route so a failed indicators enrichment slice no longer collapses into generic empty-state truth or clears previously verified indicators while the primary K-line snapshot remains visible."
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "the canonical `/detail/graphics/:symbol` route remains owned by `web/frontend/src/views/artdeco-pages/analysis-tabs/KLineAnalysis.vue`"
+    - "the approved repair should stay page-local inside the routed detail owner and its routed regressions instead of widening into shared technical-indicators transport or shared detail widgets"
+    - "the K-line request is the primary detail snapshot and the technical indicators request is a sibling enrichment slice, so indicators failures must degrade the enrichment surface without obscuring the verified K-line trend snapshot"
+    - "browser-context fulfillment with auth-seeded system `google-chrome` is an acceptable verification harness for controlled `success -> indicators refresh fail` detail-route proofs on this machine"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, error]
+  notes:
+    - "verify indicators first-load failure shows explicit partial-failure copy while the K-line trend snapshot remains visible"
+    - "verify a later indicators refresh failure retains the last verified `RSI` indicator with stale-enrichment messaging"
+    - "verify the route no longer falls back to `暂无技术指标结果。` when the indicators slice is the only failed sibling surface"
+repair_approval:
+  status: approved
+  approved_findings:
+    - detail-graphics-issue-04
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - stock-graphics
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/artdeco-pages/analysis-tabs/KLineAnalysis.vue
+    - web/frontend/src/views/artdeco-pages/analysis-tabs/__tests__/KLineAnalysis.spec.ts
+    - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-detail-graphics-indicators-slice-verification
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contains earlier staged audit artifacts and unrelated files, so any staged GitNexus output remains observation-only unless an isolated staged scope is prepared later"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` remains a mixed observation and is not used as an isolated verdict for `detail-batch-04`"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/detail-graphics-indicators-slice-refresh-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-04-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-04-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/detail-batch-04-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/detail-batch-04-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-detail-batch-04-closeout
+  notes:
+    - "the canonical detail graphics route now distinguishes indicators first-load failure from stale-indicator retention while keeping the primary K-line snapshot visible"
+    - "future detail-route audits should reuse `v1.60` whenever one enrichment slice fails while the primary detail snapshot remains verified"
+status: complete

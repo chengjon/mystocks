@@ -1,0 +1,39 @@
+- finding_id: dashboard-home-data-state-005
+  batch_id: dashboard-batch-05
+  page:
+    route: /dashboard
+    page_key: dashboard-home
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Dashboard later industry refresh failure cleared the verified industry slice and obscured aggregate degraded truth
+  trigger:
+    steps:
+      - "Open `/dashboard` with a controlled successful first industry load so the route already shows verified market breadth, heat-map, and sector-radar surfaces."
+      - "Trigger a later dashboard refresh where quotes and fund-flow still verify successfully but the industry slice resolves as failed."
+      - "Inspect the visible market-status card, heat-map, sector-radar, and aggregate request-meta bar."
+  expected: "After at least one verified industry snapshot exists, a later industry refresh failure should preserve the visible industry slice while the aggregate shell degrades to explicit partial-failure truth such as `DATA: MIXED`, `SYNC: DEGRADED`, and a matching route-level alert."
+  actual: "Before repair, `fetchIndustryFlow()` always reset `marketHeat` to `[]` and `marketData.stocks` to `0↑/0↓` on any failure. A later industry refresh failure therefore cleared the verified industry slice and risked leaving the aggregate dashboard shell inconsistent with the real partial-failure state."
+  evidence:
+    kind: live-observation
+    note: "The red-green owner regression first reproduced `涨跌家数 0↑/0↓` after a later industry refresh failure. After repair, controlled Playwright-library verification with system `google-chrome` and browser-context interception confirmed the settled route now renders `DATA: MIXED`, `SYNC: DEGRADED`, alert `行业热度数据暂不可用`, and still keeps `涨跌家数 2↑/0↓` with no heat-map or sector-radar fallback note."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+      - web/frontend/tests/unit/components/ArtDecoDashboardLogic.spec.ts
+      - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /dashboard
+  status: open
+  dependency: null
+  dedupe_key: /dashboard:data-state:industrySliceRefreshRetentionAggregateTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/dashboard` after repair and confirm a later industry refresh failure preserves the last verified industry slice while the aggregate route shell degrades to explicit mixed/degraded truth."

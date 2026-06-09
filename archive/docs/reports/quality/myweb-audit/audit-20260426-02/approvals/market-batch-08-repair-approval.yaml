@@ -1,0 +1,24 @@
+- consolidated_issue_id: market-realtime-issue-02
+  severity: High
+  affected_routes:
+    - /market/realtime
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/market/Realtime.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: The canonical realtime route now keeps failed first-load and stale-refresh quote request ids out of the visible hero provenance surface unless they correspond to the currently displayed verified snapshot, and it no longer claims a retained snapshot exists before any verified quote load has completed.
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: The repaired gap is fully contained in `Realtime.vue` plus routed regressions; no shared stat-card, request wrapper, or table primitive changed in this batch.
+    related_routes:
+      - /market/realtime
+  approval_status: approved

@@ -289,9 +289,9 @@ chmod +x /opt/claude/mystocks_spec/scripts/stocks_spec.sh
 ## 相关文档
 
 - [API 文档](http://localhost:8020/docs) - 启动后端后访问
-- [WEB_PAGES_DOCUMENTATION.md](/opt/claude/mystocks_spec/docs/guides/web/WEB_PAGES_DOCUMENTATION.md) - 前端页面文档
-- [WEB_PAGES_API_MAPPING.md](/opt/claude/mystocks_spec/docs/api/WEB_PAGES_API_MAPPING.md) - API 映射文档
-- [PORT_CONFIGURATION.md](/opt/claude/mystocks_spec/docs/operations/deployment/PORT_CONFIGURATION.md) - 端口配置说明
+- [WEB_PAGES_DOCUMENTATION.md](../guides/web/WEB_PAGES_DOCUMENTATION.md) - 前端页面文档
+- [WEB_PAGES_API_MAPPING.md](../api/WEB_PAGES_API_MAPPING.md) - API 映射文档
+- [PORT_CONFIGURATION.md](deployment/PORT_CONFIGURATION.md) - 端口配置说明
 
 ## 支持
 

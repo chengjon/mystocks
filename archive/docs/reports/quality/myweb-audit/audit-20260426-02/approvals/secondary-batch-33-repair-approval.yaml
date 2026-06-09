@@ -1,0 +1,24 @@
+- consolidated_issue_id: secondary-shell-issue-33
+  severity: Medium
+  affected_routes:
+    - /secondary/portfolio-management-static-shell
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/PortfolioManagement.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "Legacy portfolio-management page now degrades to an honest static shell."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The repair stays scoped to the legacy portfolio-management owner and its local pseudo-live composable chain; no new shared truth surface was introduced."
+    related_routes:
+      - /secondary/portfolio-management-static-shell
+  approval_status: approved

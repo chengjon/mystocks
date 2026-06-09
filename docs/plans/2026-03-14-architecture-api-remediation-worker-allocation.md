@@ -141,7 +141,7 @@ If the branch has no worker-local commits and the rebase path is awkward, resett
 **Must not touch:**
 - `.claude/worktrees/**`
 - `.config/**`
-- `.omc/**`
+- retired session-state directories
 - `src/adapters/legacy_adapter.py`
 - any file unless code-path and function-tree status both justify cleanup
 

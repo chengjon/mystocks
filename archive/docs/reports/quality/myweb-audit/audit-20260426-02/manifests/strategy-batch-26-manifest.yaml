@@ -1,0 +1,86 @@
+audit_run_id: audit-20260426-02
+batch_id: strategy-batch-26
+module: strategy
+scope:
+  requested_by: user
+  pages:
+    - route: /strategy/backtest
+      page_key: strategy-backtest
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue
+  compatibility_redirects: []
+batch_rationale: "Extend selector-owned route truth to the canonical strategy-backtest KPI strip so same-instance `strategyId` query switches no longer leak the earlier strategy's incremented summary into a new selector without its own verified KPI context."
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "the routed `/strategy/backtest` shell remains owned by `web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue` and `web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts` behind `web/frontend/src/views/strategy/Backtest.vue`"
+    - "the approved repair should stay page-local in the backtest owner/view-model instead of widening into shared KPI stores or shared selector-state redesign"
+    - "query-driven selector changes on the same mounted `/strategy/backtest` route are a first-class verification path because the route already exposes `selectedStrategyId` context and can accumulate selector-owned KPI summary values"
+    - "auth-seeded browser contexts plus browser-context interception with `serviceWorkers: block` are acceptable verification harnesses for the controlled `/strategy/backtest?strategyId=101 -> 202` KPI-summary proof on this route"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, error]
+  notes:
+    - "verify `/strategy/backtest?strategyId=101` first renders the baseline KPI strip `2 / 50% / 3.2% / -2%`"
+    - "verify a controlled completed run on the same selector advances the KPI strip to `总回测次数:3`"
+    - "verify the same mounted route then reaches `当前策略上下文ID 202` with the KPI strip restored to the neutral baseline summary when the new selector has no verified KPI context"
+repair_approval:
+  status: approved
+  approved_findings:
+    - strategy-backtest-issue-11
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - strategy-backtest
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts
+    - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/strategy/Backtest.vue
+      - web/frontend/src/views/artdeco-pages/ArtDecoTradingCenter.vue
+    confirmed:
+      - web/frontend/src/views/strategy/Backtest.vue
+      - web/frontend/src/views/artdeco-pages/ArtDecoTradingCenter.vue
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: pre-existing-dirty-worktree-errors-only
+    pm2: passed
+    e2e: passed-custom-system-chrome-strategy-backtest-selector-kpi-verification
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `strategy-batch-26` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-backtest-selector-kpi-summary-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-26-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-26-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-26-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/strategy-batch-26-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-strategy-batch-26-closeout
+  notes:
+    - "the repaired strategy-backtest route now keys visible KPI summary values to the current selector's verified task context instead of one route-global summary surface"
+    - "future query-scoped workbench audits should treat KPI strips the same way as selector-owned task rows, report rows, and execution panels whenever a mounted route can switch entities without remounting"
+status: complete

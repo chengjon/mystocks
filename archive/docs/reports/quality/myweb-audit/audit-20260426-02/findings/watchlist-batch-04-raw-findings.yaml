@@ -1,0 +1,40 @@
+- finding_id: watchlist-screener-data-state-002
+  batch_id: watchlist-batch-04
+  page:
+    route: /watchlist/screener
+    page_key: watchlist-screener
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/watchlist/Screener.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Watchlist screener route swallowed resolved `success:false` stock-universe failures as empty-universe success and leaked failed request ids into hero metadata
+  trigger:
+    steps:
+      - "Open `/watchlist/screener`"
+      - "Force the first `**/v1/data/stocks/basic**` request to resolve `success: false` with a `request_id` before any verified stock-universe snapshot exists"
+      - "Repeat with one successful stock-universe sync followed by a failed manual refresh that also resolves `success: false`"
+      - "Inspect the hero `REQ / UNIVERSE / FILTERS / RUNS` metadata, the top summary strip, and the visible table rows"
+  expected: "Before `/watchlist/screener` has any verified stock-universe snapshot, a resolved failure envelope should render explicit failure truth such as `REQ: N/A`, `UNIVERSE: --`, and `-- / -- / -- / --` instead of pretending an empty universe succeeded. If a later refresh fails after success, the route should preserve the last verified request id and the visible rows while showing a stale-refresh warning."
+  actual: "Before repair, `/watchlist/screener` treated a resolved `success: false` first-load payload as an empty-universe success, leaked the failed `request_id` into hero metadata, and later refresh failures could replace the visible request provenance and drop the previously verified stock rows."
+  evidence:
+    kind: live-observation
+    note: "Component red tests and targeted Playwright-library verification with system `google-chrome` reproduced both failure shapes before repair. After repair, the first-load failure path now shows `REQ: N/A / UNIVERSE: --`, and the success-then-refresh-fail path keeps `REQ: req-watchlist-b04-success` together with the visible `贵州茅台` row."
+  repair_target:
+    files:
+      - web/frontend/src/views/stocks/Screener.vue
+      - web/frontend/src/views/watchlist/__tests__/Screener.spec.ts
+      - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/stocks/Screener.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /watchlist/screener
+  status: open
+  dependency: null
+  dedupe_key: /watchlist/screener:data-state:requestAndEnvelopeTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/watchlist/screener` after repair and confirm resolved `success:false` first-load failures no longer fake an empty universe, while stale-refresh failures keep the last verified request provenance and rows."

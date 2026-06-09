@@ -40,7 +40,7 @@
   - 为上述 Grok 模型补充 metadata，解决 `LLM Provider NOT provided`
 
 - `/.aiderignore`
-  - 当前排除：`.omc/**`
+  - 当前排除：retired session-state 目录模式
   - 目的：避免 `repo-map` 扫描项目内临时状态/会话文件
 
 - `/.env`
@@ -115,11 +115,11 @@
 
 ---
 
-### 4. `Repo-map can't include .omc/state/subagent-tracking.json`
+### 4. `Repo-map can't include a retired session-state file`
 
 表现：
 
-- repo-map 扫描时提示 `.omc/state/subagent-tracking.json` 不能包含
+- repo-map 扫描时提示某个 retired session-state file 不能包含
 
 根因：
 
@@ -129,7 +129,7 @@
 处理：
 
 - 未恢复该文件
-- 改用 `/.aiderignore` 排除整个 `.omc/**`
+- 改用 `/.aiderignore` 排除整个 retired session-state 目录
 
 原因：
 
@@ -287,4 +287,3 @@ curl -sS https://fucaixie.xyz/v1/chat/completions \
 1. 项目内配置文件
 2. 本文档
 3. 安装目录补丁内容
-

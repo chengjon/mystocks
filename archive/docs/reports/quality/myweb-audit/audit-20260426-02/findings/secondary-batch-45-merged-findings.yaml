@@ -1,0 +1,41 @@
+- consolidated_issue_id: secondary-shell-issue-45
+  severity: Medium
+  title: Legacy strategy execution/query pages now degrade to honest static shells
+  pages:
+    - /secondary/legacy-strategy-workbench-static-shell
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The four high-priority strategy pages were an unrouted legacy workbench family that shared retired strategy execution/query API assumptions."
+  primary_owner: web/frontend/src/views/strategy/BatchScan.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-strategy-workbench-static-shell
+  dedupe_keys:
+    - /secondary/legacy-strategy-workbench-static-shell:route-truth:legacyStrategyWorkbenchStaticShell
+  verification_scope:
+    routes:
+      - /secondary/legacy-strategy-workbench-static-shell
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/strategy/BatchScan.vue
+      - web/frontend/src/views/strategy/ResultsQuery.vue
+      - web/frontend/src/views/strategy/SingleRun.vue
+      - web/frontend/src/views/strategy/StatsAnalysis.vue
+      - web/frontend/src/views/strategy/styles/BatchScan.scss
+      - web/frontend/src/views/strategy/styles/ResultsQuery.scss
+      - web/frontend/src/views/strategy/styles/SingleRun.scss
+      - web/frontend/src/views/strategy/styles/StatsAnalysis.scss
+      - web/frontend/src/views/strategy/__tests__/LegacyStrategyWorkbench.spec.ts
+      - web/frontend/tests/unit/config/legacy-strategy-workbench-decommission.spec.ts
+    notes:
+      - "the four pages now render `legacy-static-shell` and link to verified `/strategy/repo`, `/strategy/backtest`, and `/strategy/opt` handoff routes"
+      - "page-local SCSS entrypoints were removed because the pages no longer own executable workbench UI"
+      - "the secondary inventory high-priority shortlist dropped from 5 to 1 after the repair"
+  verification_surface: code-review-only

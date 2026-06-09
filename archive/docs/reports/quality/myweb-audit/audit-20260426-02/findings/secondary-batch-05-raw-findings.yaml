@@ -1,0 +1,40 @@
+- finding_id: secondary-shell-005
+  batch_id: secondary-batch-05
+  page:
+    route: /secondary/legacy-monitoring-dashboard-static-shell
+    page_key: secondary-legacy-monitoring-dashboard-static-shell
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/monitoring/MonitoringDashboard.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy monitoring dashboard still exposed hardcoded pseudo-live summary, alert, and dragon-tiger surfaces without any reusable canonical truth contract
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/monitoring/MonitoringDashboard.vue`"
+      - "Inspect the summary cards, realtime panel, alert panels, and dragon-tiger panel"
+      - "Confirm the page is not mounted by the current router and does not delegate to any semantically matching canonical monitoring owner"
+  expected: "An unrouted legacy page that only carries hardcoded pseudo-live monitoring data and no reusable canonical truth contract should degrade to an honest static shell instead of presenting fake summary, alerts, or dragon-tiger records as live truth."
+  actual: "Before repair, `MonitoringDashboard.vue` still hardcoded faux live counts (`5216 / 45 / 12 / 8`), realtime stocks, alert records, and dragon-tiger rows even though the page had no router-backed contract or semantically matching canonical owner to verify those surfaces."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green tests confirmed the legacy page still rendered hardcoded pseudo-live monitoring data instead of an honest static shell."
+  repair_target:
+    files:
+      - web/frontend/src/views/monitoring/MonitoringDashboard.vue
+      - web/frontend/src/views/monitoring/__tests__/MonitoringDashboard.spec.ts
+      - .claude/skills/myweb-audit/references/route-truth-operations.md
+      - .claude/skills/myweb-audit/references/route-truth-casebook.md
+    primary_owner: web/frontend/src/views/monitoring/MonitoringDashboard.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-monitoring-dashboard-static-shell
+  status: open
+  dependency: null
+  dedupe_key: /secondary/legacy-monitoring-dashboard-static-shell:data-state:legacyMonitoringDashboardStaticShellTruth
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run owner regression and secondary inventory tooling to confirm the legacy monitoring page now presents only a static explanatory shell with no fake live summary, alert, or dragon-tiger semantics."

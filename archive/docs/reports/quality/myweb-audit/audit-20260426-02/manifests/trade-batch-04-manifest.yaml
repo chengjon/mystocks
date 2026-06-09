@@ -1,0 +1,86 @@
+audit_run_id: audit-20260426-02
+batch_id: trade-batch-04
+module: trade
+scope:
+  requested_by: user
+  pages:
+    - route: /trade/terminal
+      page_key: trade-terminal
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/TradingDashboard.vue
+  compatibility_redirects: []
+batch_rationale: Close the routed lightweight-runtime demo truth gap on `/trade/terminal` so successful availability/demo runtime payloads cannot be presented as live trading-session truth, and fold that pattern back into myweb-audit.
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/trade/terminal` remains `web/frontend/src/views/TradingDashboard.vue`"
+    - "the current backend `/api/trading/*` runtime endpoints intentionally provide a lightweight availability surface for non-trading environments and may return demo rows plus no active session"
+    - "a successful `200` from those runtime endpoints does not by itself prove a live trading session, healthy risk engine, or production market linkage"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, empty]
+  notes:
+    - "verify the actual PM2 `/trade/terminal` route no longer shows `fallback-offline`, live `已停止` semantics, `风险监控 正常`, or `系统运行正常，继续监控` when the backend only returns lightweight runtime demo payloads"
+    - "verify the routed page instead shows `当前展示轻量运行时占位数据`, `待接入`, and explicit pending-runtime copy while preserving the route shell and risk-report dialog path"
+repair_approval:
+  status: approved
+  approved_findings:
+    - trade-terminal-issue-01
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - trade-terminal
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/TradingDashboard.vue
+    - web/frontend/src/views/composables/useTradingDashboard.ts
+    - web/frontend/src/views/composables/__tests__/useTradingDashboard.spec.ts
+    - web/frontend/tests/e2e/trade-terminal.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-trade-terminal-demo-truth-1-route
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated frontend or backend files before `trade-batch-04` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` is treated as observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/trade-terminal-lightweight-runtime-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-04-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-04-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-04-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/trade-batch-04-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-trade-batch-04-closeout
+  notes:
+    - "`/trade/terminal` now treats the current lightweight runtime payload as non-live truth and degrades session, KPI, risk, and guidance surfaces to explicit pending-runtime copy"
+    - "successful availability/demo responses no longer inject `fallback-offline` or healthy live-trading semantics into the primary terminal surface"
+status: complete

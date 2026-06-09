@@ -1,0 +1,39 @@
+- finding_id: strategy-opt-data-state-001
+  batch_id: strategy-batch-07
+  page:
+    route: /strategy/opt
+    page_key: strategy-opt
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/strategy/Optimization.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Strategy optimization route presented count-only summary cards as faux delta metrics and reused zero or missing-state semantics before verified candidate inventory existed
+  trigger:
+    steps:
+      - Open `/strategy/opt?strategyId=101`
+      - Inspect the top summary cards and sibling `VISIBLE / TOTAL` meta after a verified strategy payload resolves
+      - Re-run the same route while the first `/api/v1/strategy/strategies` request is still unresolved before any verified candidate payload exists
+  expected: "Count-only optimization summary cards should render plain strings without shared delta chrome or pseudo-decimal precision, and unresolved first-load tally surfaces should degrade to placeholders such as `-- / -- / -- / ID 101` plus `VISIBLE: -- / TOTAL: --` until verified candidate evidence exists."
+  actual: "Before repair, the route delegated verified count-only tallies directly into shared stat-card defaults, and the same route reused zero-valued counts plus a false `未找到策略 101 的优化候选` empty-state message while the first strategy payload was still unresolved."
+  evidence:
+    kind: code-review-plus-targeted-verification
+    note: "Code review of the pre-repair `ArtDecoStrategyOptimization.vue` showed raw numeric counts and empty-state derivation from unresolved empty arrays, while targeted routed regression and browser-context verification confirmed the repaired states."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyOptimization.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/opt
+  status: open
+  dependency: null
+  dedupe_key: /strategy/opt:data-state:summaryCountAndFirstLoadTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that verified tally cards render as plain strings without `.artdeco-stat-change`, that unresolved first-load tally surfaces degrade to placeholders, and that the page no longer claims the selected strategy is missing before any verified inventory exists.

@@ -1,0 +1,160 @@
+- finding_id: strategy-gpu-functional-001
+  batch_id: strategy-batch-02
+  page:
+    route: /strategy/gpu
+    page_key: strategy-gpu
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/strategy/BacktestGPU.vue
+  source_role: functional-audit
+  severity: Medium
+  issue_type: interaction
+  title: GPU 工作台暴露“运行基准测试”“重置 GPU 状态”和模式切换等控制，但这些动作并未调用任何真实控制接口
+  trigger:
+    steps:
+      - Open /strategy/gpu
+      - Inspect the control panel actions and related handlers in `useBacktestGPU.ts`
+      - Compare the visible controls with actual outbound runtime calls
+  expected: "GPU 控制面板中的显式控制应调用真实后端控制接口，或降级为说明性只读状态而不是伪可执行按钮。"
+  actual: "`runBenchmark` 和 `resetGPU` 都只是 `setTimeout` 本地模拟；`handleComputeModeChange` 与监控频率切换只弹出提示，不会把模式或控制请求发往后端。"
+  evidence:
+    kind: code-path-review
+    note: "`useBacktestGPU.ts` 只有 `/api/gpu/status` 与 `/api/gpu/performance` 的读取请求；基准测试、重置和模式切换没有任何控制 API。"
+  repair_target:
+    files:
+      - web/frontend/src/views/strategy/composables/useBacktestGPU.ts
+      - web/frontend/src/views/strategy/BacktestGPU.vue
+    primary_owner: web/frontend/src/views/strategy/composables/useBacktestGPU.ts
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/gpu
+  status: open
+  dependency: null
+  dedupe_key: /strategy/gpu:interaction:useBacktestGPU
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that fake control actions are either downgraded or explicitly bounded after repair.
+
+- finding_id: strategy-gpu-data-state-001
+  batch_id: strategy-batch-02
+  page:
+    route: /strategy/gpu
+    page_key: strategy-gpu
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/strategy/BacktestGPU.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: GPU 工作台在实时拉取失败时仍保留硬编码 RTX4090 与高性能指标，导致错误态下继续展示伪实时遥测
+  trigger:
+    steps:
+      - Open /strategy/gpu
+      - Review `DEFAULT_GPU_STATUS` and initial KPI values in `useBacktestGPU.ts`
+      - Compare failure handling of `refreshGPUStatus` with the rendered cards after an API error
+  expected: "若 GPU 状态接口未成功返回，页面应进入明确的未知/空态或错误态，而不是继续展示硬编码硬件和性能指标。"
+  actual: "`gpuStatus`、`accelerationRatio`、`performanceGain` 和实时日志都以硬编码高性能基线初始化；当接口报错时只新增错误 banner 和日志，卡片主体仍保留默认 RTX4090/52x 等值。"
+  evidence:
+    kind: code-path-review
+    note: "`DEFAULT_GPU_STATUS`、`accelerationRatio = 52`、`performanceGain = 5100` 在请求前就写死，`refreshGPUStatus` 失败时不会把主体切到未知态。"
+  repair_target:
+    files:
+      - web/frontend/src/views/strategy/composables/useBacktestGPU.ts
+      - web/frontend/src/views/strategy/BacktestGPU.vue
+    primary_owner: web/frontend/src/views/strategy/composables/useBacktestGPU.ts
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/gpu
+  status: open
+  dependency: null
+  dedupe_key: /strategy/gpu:data-state:useBacktestGPU
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that runtime failure no longer leaves fake GPU telemetry on screen after repair.
+
+- finding_id: strategy-opt-data-state-001
+  batch_id: strategy-batch-02
+  page:
+    route: /strategy/opt
+    page_key: strategy-opt
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/strategy/Optimization.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: 策略优化页在 REAL 拉取失败或载荷异常时会静默切到 mock 候选，并继续允许回写操作
+  trigger:
+    steps:
+      - Open /strategy/opt
+      - Review `refreshOptimizationRows` and `applyMockFallback`
+      - Compare fallback behavior with available writeback actions
+  expected: "REAL 优化链路失败时应明确进入降级/阻断态，避免把 mock 候选继续当作可回写的真实优化结果。"
+  actual: "`refreshOptimizationRows` 在请求失败或数据格式异常时直接调用 `applyMockFallback()`，把 `createMockStrategyManagementList()` 与 `createMockOptimizationRows()` 塞入页面，并保留管理/参数/回测回写按钮。"
+  evidence:
+    kind: code-path-review
+    note: "`applyMockFallback` 会把 `dataSource` 设为 `mock` 并重建可写回候选；页面状态仅变为“本地保底视图”，但回写动作仍然启用。"
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/strategyOptimizationViewModel.ts
+    primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/opt
+    - /strategy/repo
+    - /strategy/parameters
+    - /strategy/backtest
+  status: open
+  dependency: null
+  dedupe_key: /strategy/opt:data-state:optimization-mock-fallback
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that mock fallback no longer masquerades as safe writeback state after repair.
+
+- finding_id: strategy-secondary-domain-responsive-001
+  batch_id: strategy-batch-02
+  page:
+    route: /strategy/signals
+    page_key: strategy-signals
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue
+  source_role: responsive-a11y-audit
+  severity: Medium
+  issue_type: responsive
+  title: 策略 secondary routes 的 signals/gpu/opt 页面仍保留不符合当前 desktop-first 基线的 48rem 分支
+  trigger:
+    steps:
+      - Inspect `StrategySignalsTab.scss`, `ArtDecoStrategyOptimization.scss`, and `BacktestGPU.scss`
+      - Review responsive branches below the current supported desktop baseline
+  expected: "次级 strategy 主路由页面也应按当前支持的桌面断点组织，不应继续保留 48rem 主动布局分支。"
+  actual: "`StrategySignalsTab.scss`、`ArtDecoStrategyOptimization.scss` 和 `BacktestGPU.scss` 仍定义 `@media (width <= 48rem)` 分支。"
+  evidence:
+    kind: code-path-review
+    note: "本批三个 secondary strategy 页面各自保留一个 `48rem` 分支，重复违背当前 desktop-first 支持基线。"
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/styles/StrategySignalsTab.scss
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/styles/ArtDecoStrategyOptimization.scss
+      - web/frontend/src/views/strategy/styles/BacktestGPU.scss
+    primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/styles/StrategySignalsTab.scss
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/signals
+    - /strategy/gpu
+    - /strategy/opt
+  status: open
+  dependency: null
+  dedupe_key: /strategy/secondary:responsive:48rem
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: Re-check 1920, 1440, and 1280 layouts after removing unsupported mobile-width branches from the secondary strategy routes.

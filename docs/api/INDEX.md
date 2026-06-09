@@ -12,12 +12,12 @@
 
 ## Preferred Entrypoints
 
-- [README.md](/opt/claude/mystocks_spec/docs/api/README.md)
-- [guides/development/](/opt/claude/mystocks_spec/docs/api/guides/development/)
-- [guides/integration/INDEX.md](/opt/claude/mystocks_spec/docs/api/guides/integration/INDEX.md)
-- [specifications/INDEX.md](/opt/claude/mystocks_spec/docs/api/specifications/INDEX.md)
-- [testing/INDEX.md](/opt/claude/mystocks_spec/docs/api/testing/INDEX.md)
-- [reports/milestones/README.md](/opt/claude/mystocks_spec/docs/api/reports/milestones/README.md)
+- [README.md](README.md)
+- [guides/development/](guides/development)
+- [guides/integration/INDEX.md](guides/integration/INDEX.md)
+- [specifications/INDEX.md](specifications/INDEX.md)
+- [testing/INDEX.md](testing/INDEX.md)
+- [reports/milestones/README.md](reports/milestones/README.md)
 
 ## Retired Paths
 
@@ -28,6 +28,6 @@
 
 ## Governance
 
-- Canonical trunk: [`README.md`](/opt/claude/mystocks_spec/docs/api/README.md)
+- Canonical trunk: [`README.md`](README.md)
 - Contract truth: FastAPI routes + Pydantic schema + OpenAPI exports
 - Default cleanup bias: `delete/archive > rewrite`

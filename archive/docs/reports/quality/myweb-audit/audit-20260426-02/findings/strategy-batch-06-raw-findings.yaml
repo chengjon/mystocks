@@ -1,0 +1,40 @@
+- finding_id: strategy-signals-data-state-001
+  batch_id: strategy-batch-06
+  page:
+    route: /strategy/signals
+    page_key: strategy-signals
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Strategy signals route presented count-only summary cards as faux delta metrics and reused zero tallies during unresolved first-load state
+  trigger:
+    steps:
+      - Open `/strategy/signals`
+      - Inspect the top summary cards after a verified signal payload resolves
+      - Re-run the same route while the first `/api/v1/trade/signals` request is still unresolved before any verified signal payload exists
+  expected: "Count-only strategy signal summary cards should render plain strings without shared delta chrome or pseudo-decimal precision, and unresolved first-load tallies should degrade to placeholders such as `-- / -- / -- / --` with `COUNT: --` until verified signal evidence exists."
+  actual: "Before repair, the route delegated verified count-only tallies directly into shared stat-card defaults, so the top strip surfaced them as precise-decimal cards with inherited `+0%`; the same route also reused zero-valued `signals.length` tallies while the first signal payload was still unresolved."
+  evidence:
+    kind: code-review-plus-targeted-verification
+    note: "Code review of the pre-repair `StrategySignalsTab.vue` showed raw numeric counts being passed directly to `ArtDecoStatCard` and to `COUNT`, while targeted routed regression and browser-context verification now confirm the repaired states."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/StrategySignalsTab.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/signals
+    - /watchlist/signals
+  status: open
+  dependency: null
+  dedupe_key: /strategy/signals:data-state:summaryCountAndFirstLoadTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that verified count cards render as plain strings without `.artdeco-stat-change`, that unresolved first-load tally surfaces degrade to placeholders, and that natural empty-state zero counts remain honest.

@@ -1,0 +1,39 @@
+- finding_id: data-indicator-data-state-005
+  batch_id: data-batch-18
+  page:
+    route: /data/indicator
+    page_key: data-indicator
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/data/Advanced.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Data indicator leaked the previous selected indicator detail into a different active category editor shell
+  trigger:
+    steps:
+      - "Open `/data/indicator` and wait for the verified indicator registry shell."
+      - "Select `移动平均线` from the default `趋势指标` category so the editor shows its detail context."
+      - "Return to the indicator library, switch the same mounted route to `动量指标`, then reopen `指标详情` without selecting a new indicator."
+  expected: "The editor should be owned by the current active category. If the route switches to a different category without a newly selected indicator in that category, the editor must degrade to the neutral empty state."
+  actual: "Before repair, `selectedIndicator` stayed route-global inside `useDataAnalysis`, so reopening the editor after `趋势指标 -> 动量指标` still rendered the old `移动平均线 / MA` detail under the new category shell."
+  evidence:
+    kind: live-observation
+    note: "The owner red test first reproduced the leak, then a controlled system-Chrome same-instance proof confirmed the repaired route now shows `从指标库选择一个指标` after the category switch instead of the old `MA` detail."
+  repair_target:
+    files:
+      - web/frontend/src/composables/market/useDataAnalysis.ts
+      - web/frontend/tests/unit/views/data-advanced-screening-truth.spec.ts
+      - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/composables/market/useDataAnalysis.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /data/indicator
+  status: open
+  dependency: null
+  dedupe_key: /data/indicator:data-state:activeCategorySelectedIndicatorTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check that the editor empties after a same-instance `趋势指标 -> 动量指标` switch when the new category has no freshly selected indicator context."

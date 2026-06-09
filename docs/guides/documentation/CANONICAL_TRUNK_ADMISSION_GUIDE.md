@@ -2,7 +2,7 @@
 
 > **参考指南说明**:
 > 本文件是文档准入与治理执行的 lightweight operating guide，不是仓库共享规则或当前 trunk map 的唯一事实来源。
-> 若涉及审批门禁、删除判定或共享规则，请优先遵循 `architecture/STANDARDS.md` 与 [`docs/overview/documentation-system.md`](/opt/claude/mystocks_spec/docs/overview/documentation-system.md)。
+> 若涉及审批门禁、删除判定或共享规则，请优先遵循 `architecture/STANDARDS.md` 与 [`docs/overview/documentation-system.md`](../../overview/documentation-system.md)。
 
 ## Purpose
 
@@ -85,7 +85,7 @@ openspec validate <change-id> --strict
 
 ## Related Files
 
-- [`docs/README.md`](/opt/claude/mystocks_spec/docs/README.md)
-- [`docs/overview/documentation-system.md`](/opt/claude/mystocks_spec/docs/overview/documentation-system.md)
-- [`config/governance/documentation-taxonomy.yaml`](/opt/claude/mystocks_spec/config/governance/documentation-taxonomy.yaml)
-- [`scripts/governance/audit_documentation_system.py`](/opt/claude/mystocks_spec/scripts/governance/audit_documentation_system.py)
+- [`docs/README.md`](../../README.md)
+- [`docs/overview/documentation-system.md`](../../overview/documentation-system.md)
+- [`config/governance/documentation-taxonomy.yaml`](../../../config/governance/documentation-taxonomy.yaml)
+- [`scripts/governance/audit_documentation_system.py`](../../../scripts/governance/audit_documentation_system.py)

@@ -1,0 +1,77 @@
+- finding_id: market-lhb-data-state-002
+  batch_id: market-batch-02
+  page:
+    route: /market/lhb
+    page_key: market-lhb
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/market/LHB.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Routed LHB count-only KPI card inherited shared exact-decimal formatting and rendered the leaderboard tally as a faux metric
+  trigger:
+    steps:
+      - Open `/market/lhb`
+      - Wait for the canonical route to finish loading live leaderboard rows
+      - Inspect the top KPI strip
+  expected: "The count-only `榜单条目` card should render a plain integer such as `44`, because the route only proves a current tally rather than a fractional metric."
+  actual: "Before repair, the routed KPI strip rendered the top tally as `44.00`, implying unsupported exact-decimal precision on a plain row count."
+  evidence:
+    kind: live-observation
+    note: "System-`google-chrome` verification of the real PM2 route showed `榜单条目44.00` before the fix. Post-fix verification now shows `44` with zero `.artdeco-stat-change` nodes."
+  repair_target:
+    files:
+      - web/frontend/src/views/market/LHB.vue
+    primary_owner: web/frontend/src/views/market/LHB.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /data/industry
+    - /trade/history
+  status: open
+  dependency: null
+  dedupe_key: /market/lhb:data-state:countOnlyKpiPrecisionTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that the live LHB KPI strip renders `榜单条目` as a plain integer without `44.00`.
+
+- finding_id: market-lhb-data-state-003
+  batch_id: market-batch-02
+  page:
+    route: /market/lhb
+    page_key: market-lhb
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/market/LHB.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Routed LHB rank column inherited shared exact-decimal table formatting and rendered ordinal rows as faux metrics
+  trigger:
+    steps:
+      - Open `/market/lhb`
+      - Wait for the canonical route to finish loading live leaderboard rows
+      - Inspect the `排名` column in the routed table
+  expected: "The `排名` column should render live ordinal values as plain whole numbers such as `1` and `2`, because leaderboard order is discrete rather than fractional."
+  actual: "Before repair, the routed table delegated rank cells to the shared numeric formatter and rendered `1.00`, `2.00`, and `3.00`, implying unsupported pseudo precision."
+  evidence:
+    kind: live-observation
+    note: "System-`google-chrome` verification of the real PM2 route showed the first rows as `1.00 / 2.00 / 3.00` before the page-local formatter landed."
+  repair_target:
+    files:
+      - web/frontend/src/views/market/LHB.vue
+    primary_owner: web/frontend/src/views/market/LHB.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /data/fund-flow
+    - /risk/overview
+  status: open
+  dependency: null
+  dedupe_key: /market/lhb:data-state:lhbRankOrdinalPrecision
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that the live leaderboard rank column renders ordinal values without `1.00` or `2.00`.

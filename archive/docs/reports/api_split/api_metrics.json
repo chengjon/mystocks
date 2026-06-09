@@ -1,0 +1,106 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/metrics",
+  "total_endpoints": 9,
+  "endpoints": [
+    {
+      "path": "/metrics",
+      "method": "GET",
+      "file": "metrics.py",
+      "function": "prometheus_metrics",
+      "return_model": "Response",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 272
+    },
+    {
+      "path": "/metrics",
+      "method": "GET",
+      "file": "data_quality.py",
+      "function": "get_data_quality_metrics",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 71
+    },
+    {
+      "path": "/metrics/trends",
+      "method": "GET",
+      "file": "data_quality.py",
+      "function": "get_quality_trends",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 406
+    },
+    {
+      "path": "/metrics",
+      "method": "GET",
+      "file": "gpu_monitoring.py",
+      "function": "get_prometheus_metrics",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 152
+    },
+    {
+      "path": "/metrics",
+      "method": "GET",
+      "file": "prometheus_exporter.py",
+      "function": "metrics",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 353
+    },
+    {
+      "path": "/metrics/health",
+      "method": "GET",
+      "file": "prometheus_exporter.py",
+      "function": "metrics_health",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 380
+    },
+    {
+      "path": "/metrics/list",
+      "method": "GET",
+      "file": "prometheus_exporter.py",
+      "function": "metrics_list",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 408
+    },
+    {
+      "path": "/metrics/history",
+      "method": "GET",
+      "file": "risk_management.py",
+      "function": "get_risk_metrics_history",
+      "return_model": "List[Dict[str, Any]]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 456
+    },
+    {
+      "path": "/metrics/calculate",
+      "method": "POST",
+      "file": "risk_management.py",
+      "function": "calculate_risk_metrics",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 658
+    }
+  ]
+}

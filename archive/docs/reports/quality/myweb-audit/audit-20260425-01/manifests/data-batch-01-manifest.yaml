@@ -1,0 +1,134 @@
+audit_run_id: audit-20260425-01
+batch_id: data-batch-01
+module: data
+scope:
+  requested_by: user
+  pages:
+    - route: /data/industry
+      page_key: data-industry
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/data/Industry.vue
+    - route: /data/concept
+      page_key: data-concept
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/data/Concepts.vue
+    - route: /data/fund-flow
+      page_key: data-fund-flow
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/data/FundFlow.vue
+    - route: /data/indicator
+      page_key: data-indicator
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/data/Advanced.vue
+  compatibility_redirects: []
+batch_rationale: Canonical data-domain routed pages with shared ArtDeco workbench patterns and related data-analysis responsibilities.
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+  - visual-artdeco-audit
+  - responsive-a11y-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright-external-frontend
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - router truth and page source are readable
+  fallback_log:
+    - Playwright/browser surface unavailable, downgraded to code-review-only
+    - stable Playwright E2E later reused the existing PM2 frontend via PLAYWRIGHT_EXTERNAL_FRONTEND=1
+    - targeted Playwright matrix later reused the existing PM2 frontend for `/data/fund-flow` and `/data/indicator`
+    - focused interaction verification later reused the existing PM2 frontend for selected-indicator and selected-stock context flows on `/data/indicator`
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  breakpoints: [1920, 1440, 1280]
+  required_states: [default, loading, empty, error, disabled, extreme-data]
+  notes:
+    - prioritize canonical route truth and code-path evidence
+    - record live interaction coverage only for routes and flows that were actually exercised
+repair_approval:
+  status: approved
+  approved_findings:
+    - data-indicator-issue-01
+    - data-fund-flow-issue-01
+    - data-indicator-issue-02
+    - data-domain-issue-01
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - data-industry
+    - data-concept
+    - data-fund-flow
+    - data-indicator
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/composables/market/useDataAnalysis.ts
+    - web/frontend/src/views/data/Advanced.vue
+    - web/frontend/src/views/data/fundFlowPageData.ts
+    - web/frontend/src/views/data/FundFlow.vue
+    - web/frontend/src/views/data/Industry.vue
+    - web/frontend/src/views/data/Concepts.vue
+    - scripts/dev/tools/generate-page-config.js
+    - web/frontend/src/config/pageConfig.ts
+    - web/frontend/src/views/artdeco-pages/market-data-tabs/fundFlowPageData.ts
+    - web/frontend/src/views/artdeco-pages/market-data-tabs/__node_tests__/fundFlowPageData.test.ts
+    - web/frontend/src/views/artdeco-pages/components/AnalysisIndicators.vue
+    - web/frontend/src/views/artdeco-pages/components/AnalysisScreener.vue
+  shared_impact:
+    candidates:
+      - data-indicator-issue-01
+      - data-indicator-issue-02
+      - data-domain-issue-01
+    confirmed:
+      - data-indicator-issue-01
+      - data-indicator-issue-02
+      - data-domain-issue-01
+  validation_status:
+    syntax: passed-via-vue-tsc
+    typecheck: passed
+    pm2: passed
+    e2e: passed-chromium-stable-10-of-10-plus-targeted-data-routes-4-of-4-plus-indicator-interactions-2-of-2
+    gitnexus_staged_detect: passed-low-risk
+  staged_scope:
+    mode: isolated-target-files
+    files:
+      - web/frontend/src/composables/market/useDataAnalysis.ts
+      - web/frontend/src/views/data/Advanced.vue
+      - web/frontend/src/views/data/fundFlowPageData.ts
+      - web/frontend/src/views/data/FundFlow.vue
+      - web/frontend/src/views/data/Industry.vue
+      - web/frontend/src/views/data/Concepts.vue
+      - scripts/dev/tools/generate-page-config.js
+      - web/frontend/src/config/pageConfig.ts
+      - web/frontend/src/views/artdeco-pages/market-data-tabs/fundFlowPageData.ts
+      - web/frontend/src/views/artdeco-pages/market-data-tabs/__node_tests__/fundFlowPageData.test.ts
+      - web/frontend/src/views/artdeco-pages/components/AnalysisIndicators.vue
+      - web/frontend/src/views/artdeco-pages/components/AnalysisScreener.vue
+    verdict_origin: isolated-batch-only
+    notes:
+      - original staged state was restored after the isolated batch-scope verification
+      - a later follow-up attempt during documentation-only closeout encountered unrelated staged files and was treated as mixed-staged observation only, not as the batch verdict
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260425-01/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260425-01/pages/data-industry-audit.md
+    - docs/reports/quality/myweb-audit/audit-20260425-01/pages/data-concept-audit.md
+    - docs/reports/quality/myweb-audit/audit-20260425-01/pages/data-fund-flow-audit.md
+    - docs/reports/quality/myweb-audit/audit-20260425-01/pages/data-indicator-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260425-01/findings/data-batch-01-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260425-01/findings/data-batch-01-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260425-01/approvals/data-batch-01-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260425-01/batches/data-batch-01-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260425-01/closeout/audit-20260425-01-closeout.md
+resume:
+  last_completed_step: closeout
+  next_action: expand-desktop-breakpoint-proof-if-a-later-batch-needs-deeper-responsive-verification
+  notes:
+    - high-priority data repairs were applied after user approved the data batch repair path
+    - responsive desktop-policy cleanup was applied as a shared-impact wave after the initial data fixes
+    - runtime gate evidence now includes PM2 online status, reachable frontend/backend URLs, vue-tsc pass, and stable Chromium E2E pass
+    - targeted live verification now covers `/data/fund-flow` success/empty states and `/data/indicator` success/error states
+    - focused live verification now also covers `/data/indicator` selected-indicator and selected-stock context flows
+status: complete

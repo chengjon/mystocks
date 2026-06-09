@@ -1,0 +1,39 @@
+- consolidated_issue_id: data-concept-issue-02
+  severity: High
+  title: Concept routed hero request metadata now tracks verified concept provenance instead of failed retry ids
+  pages:
+    - /data/concept
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The first-load failure request-id leak and the stale-refresh request-id overwrite were two manifestations of the same routed request-provenance cluster: the canonical concept route treated `useArtDecoApi.lastRequestId` as if it always represented the currently visible concept snapshot."
+  primary_owner: web/frontend/src/views/data/Concepts.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /stocks/screener
+    - /market/technical
+    - /market/lhb
+  dedupe_keys:
+    - /data/concept:data-state:conceptRequestProvenanceTruth
+  verification_scope:
+    routes:
+      - /data/concept
+    states:
+      - first-load-failure
+      - stale-refresh-failure
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/data/Concepts.vue
+      - web/frontend/src/views/data/__tests__/Concepts.spec.ts
+      - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+    notes:
+      - "the canonical concept route now derives `REQ` from page-local verified-snapshot truth, so first-load failure renders `REQ: N/A` and summary placeholders instead of leaking a failed request id as if a concept snapshot had resolved"
+      - "the same route now retains the last verified request id during stale-refresh failure, so visible rows and hero metadata stay aligned when a failed retry occurs after a successful sync"
+      - "the strengthened routed regressions now cover first-load failure and refresh-after-success failure, closing the exact `lastRequestId` provenance regression on both component and Phase 2 routed surfaces"
+      - "this batch intentionally reuses existing `myweb-audit v1.41` route-truth and `v1.39` browser-context interception guidance instead of introducing a new skill version"
+  verification_surface: code-review-plus-targeted-live-verification

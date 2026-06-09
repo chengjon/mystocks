@@ -1,0 +1,33 @@
+- consolidated_issue_id: secondary-shell-issue-46
+  severity: Medium
+  title: Legacy trading-decision header now degrades to an honest static shell
+  pages:
+    - /secondary/trading-decision-header-static-shell
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The remaining high-priority secondary asset was the trading-decision header that still owned local action and refresh truth after sibling panels had been closed."
+  primary_owner: web/frontend/src/views/trading-decision/DecisionHeader.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/trading-decision-header-static-shell
+  dedupe_keys:
+    - /secondary/trading-decision-header-static-shell:route-truth:decisionHeaderStaticShell
+  verification_scope:
+    routes:
+      - /secondary/trading-decision-header-static-shell
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/trading-decision/DecisionHeader.vue
+      - web/frontend/src/views/trading-decision/__tests__/DecisionHeader.spec.ts
+    notes:
+      - "the header now renders `decision-header-legacy-shell` and links to verified `/trade/*` handoff routes"
+      - "local quick actions, tab scroll state, custom auto-refresh events, and missing component imports were removed"
+      - "the secondary inventory high-priority shortlist dropped from 1 to 0 after the repair"
+  verification_surface: code-review-only

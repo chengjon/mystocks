@@ -1,0 +1,43 @@
+- finding_id: secondary-shell-002
+  batch_id: secondary-batch-02
+  page:
+    route: /secondary/artdeco-trading-center
+    page_key: secondary-artdeco-trading-center
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/artdeco-pages/ArtDecoTradingCenter.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Active trading-center wrappers kept placeholder migration shells instead of reusing canonical trade truth
+  trigger:
+    steps:
+      - "Open `ArtDecoTradingCenter.vue` and select the active `trade-history` and `trade-portfolio` function panels"
+      - "Inspect `ArtDecoHistoryView.vue` and `ArtDecoPerformanceAnalysis.vue`"
+      - "Compare those wrapper shells against existing canonical `/trade/history` and `/trade/portfolio` verified-truth owners"
+  expected: "Active trading-center wrappers should either embed canonical `/trade/*` pages directly or degrade to a static shell when no verified truth exists; they should not keep local placeholder migration cards when canonical truth already exists."
+  actual: "Before repair, both wrappers rendered local `STATUS: PLACEHOLDER` migration shells and next-step cards even though the active trading center already had a live import chain to canonical `/trade/history` and `/trade/portfolio` truth."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green wrapper tests confirmed the live parent shell still surfaced local placeholder panels instead of delegating to existing canonical trade owners."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoHistoryView.vue
+      - web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoPerformanceAnalysis.vue
+      - web/frontend/src/views/artdeco-pages/trading-tabs/__tests__/ArtDecoHistoryView.spec.ts
+      - web/frontend/src/views/artdeco-pages/trading-tabs/__tests__/ArtDecoPerformanceAnalysis.spec.ts
+      - web/frontend/src/views/trade/__tests__/History.spec.ts
+      - .claude/skills/myweb-audit/references/route-truth-operations.md
+      - .claude/skills/myweb-audit/references/route-truth-casebook.md
+    primary_owner: web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoHistoryView.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/artdeco-trading-center
+  status: open
+  dependency: null
+  dedupe_key: /secondary/artdeco-trading-center:data-state:activeWrapperPlaceholderTruth
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run owner wrapper regressions and the canonical trade history/portfolio regression subset to confirm the live parent shell now delegates to canonical truth."

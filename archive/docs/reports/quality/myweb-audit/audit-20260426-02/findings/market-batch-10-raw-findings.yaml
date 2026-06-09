@@ -1,0 +1,41 @@
+- finding_id: market-lhb-data-state-005
+  batch_id: market-batch-10
+  page:
+    route: /market/lhb
+    page_key: market-lhb
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/market/LHB.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Market LHB leaked the previous trade-date leaderboard rows into a newly selected trade-date shell without its own verified snapshot
+  trigger:
+    steps:
+      - "Open `/market/lhb` and let the default `今日` leaderboard request verify successfully."
+      - "Keep the same mounted route instance alive, then switch the local `交易日筛选` selector from `今日` to `前日`."
+      - "Force the first `/api/v2/market/lhb?start_date=2026-04-01&end_date=2026-04-01` request to fail before any verified `前日` snapshot exists."
+      - "Inspect the active `DATE / REQ / ROWS` hero metadata and the visible leaderboard rows without remounting the route."
+  expected: "Visible rows and hero provenance must be scoped to the active trade-date selector. If `前日` has no verified snapshot yet, the same mounted route should degrade to `REQ: N/A / DATE: 前日 / ROWS: --` and must not keep the earlier `今日` rows visible under the new shell."
+  actual: "Before repair, the same mounted `/market/lhb` instance could switch to active `前日` while the first `前日` request failed and still keep the previous verified `今日` rows or route-global request provenance visible under the new selector shell."
+  evidence:
+    kind: live-observation
+    note: "The new owner red test first failed with `DATE: 前日` while hero metadata still showed the earlier verified request provenance. After repair, targeted Playwright-library verification with system `google-chrome` confirmed the same-instance selector switch now reaches `REQ: N/A / DATE: 前日 / ROWS: --`, clears the old `贵州茅台` row, and keeps the route in the selector-local error shell."
+  repair_target:
+    files:
+      - web/frontend/src/views/market/LHB.vue
+      - web/frontend/src/views/market/__tests__/LHB.spec.ts
+      - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/market/LHB.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /market/realtime
+    - /detail/graphics/:symbol
+  status: open
+  dependency: null
+  dedupe_key: /market/lhb:data-state:tradeDateSelectorSnapshotTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check the same mounted `/market/lhb` instance after repair and confirm `今日 -> 前日` no longer leaks the previous trade-date rows or request provenance when the new trade-date request has not verified."

@@ -1,0 +1,24 @@
+- consolidated_issue_id: data-industry-issue-03
+  severity: High
+  affected_routes:
+    - /data/industry
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/data/Industry.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: The canonical industry route now keeps failed first-load and stale-refresh board request ids out of the visible hero provenance surface unless they correspond to the currently displayed verified board snapshot.
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: The repaired gap is fully contained in `Industry.vue` plus routed regressions; no shared stat-card, request wrapper, or table primitive changed in this batch.
+    related_routes:
+      - /data/industry
+  approval_status: approved

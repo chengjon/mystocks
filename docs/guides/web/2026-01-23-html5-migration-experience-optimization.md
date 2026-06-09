@@ -6,6 +6,16 @@
 >
 > 文内步骤、示例、命令和说明应视为补充参考；若与当前代码、`architecture/STANDARDS.md` 或主线治理文档不一致，应以 `architecture/STANDARDS.md`、当前代码实现及主线治理文档为准。
 
+> **Current Repo-Truth Disposition（2026-05-11）**:
+> 本文件保留 2026-01-23 HTML5 migration experience optimization 的历史计划/阶段性实现记录，不代表当前 `implement-html5-migration-experience-optimization` OpenSpec 变更的已闭合事实。
+> 当前执行状态必须以 `openspec/changes/implement-html5-migration-experience-optimization/tasks.md`、`tasks-review.md`、实际代码和验证命令为准。
+>
+> 当前已确认边界：
+> - 产品范围为 **Desktop-only**；Geolocation / Vibration / Battery、移动端响应式体验、移动端使用率等历史伸展项已去作用域。
+> - 当前 canonical 菜单结构为 `web/frontend/src/layouts/MenuConfig.ts` 的 Market / Data / Watchlist / Strategy / Trade / Risk / System 7 个业务域；本文 6-domain 完成表述不能作为当前完成判定。
+> - 当前 Web Workers 只能按 worker files / protocol source / manager façade 描述；本文中的 `new Worker(...)` 示例或性能收益表述不能作为当前真实业务编排、Worker + IndexedDB 数据流或 benchmark 证据。
+> - PWA / offline / push / accessibility / rollout 等能力仍需按当前 tasks 的勾选状态和实测证据分别判断，不能因本文历史 `COMPLETED` 标记视为当前已完成。
+
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 

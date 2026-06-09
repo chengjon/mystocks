@@ -1,0 +1,93 @@
+audit_run_id: audit-20260426-02
+batch_id: secondary-batch-25
+module: secondary-legacy-surfaces
+scope:
+  requested_by: user
+  pages:
+    - route: /secondary/trading-decision-portfolio-canonical-wrapper
+      page_key: secondary-trading-decision-portfolio-canonical-wrapper
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/trading-decision/DecisionPortfolio.vue
+    - route: /secondary/trading-decision-positions-canonical-wrapper
+      page_key: secondary-trading-decision-positions-canonical-wrapper
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/trading-decision/DecisionPositions.vue
+  compatibility_redirects: []
+batch_rationale: >-
+  Continue the secondary inventory phase by collapsing two active
+  `TradingDecisionCenter.vue` panels into thin wrappers over the existing
+  canonical `/trade/*` owners instead of preserving local pseudo-live portfolio
+  and positions shells.
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-only
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "the manifest routes are synthetic secondary-inventory aliases used for artifact indexing; `web/frontend/src/views/trading-decision/DecisionPortfolio.vue` and `DecisionPositions.vue` are not current router entries"
+    - "the live parent `TradingDecisionCenter.vue` already imports these panels directly, so they must reuse canonical trade truth instead of preserving local pseudo-live shell chrome"
+    - "the active router already exposes semantically matching canonical owners at `/trade/portfolio` and `/trade/positions`"
+    - "the repair must not add a new store, snapshot cache, request provenance badge, shell-level freshness strip, or local refresh shell"
+  fallback_log: []
+verification_plan:
+  verification_strategy: code-review-only
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states:
+    - default
+  notes:
+    - "verify the decision portfolio panel no longer renders local asset cards or quick-action shell semantics"
+    - "verify the decision positions panel no longer renders a local refresh button, positions grid wiring, or empty-state shell"
+    - "verify both panels now delegate directly to the canonical trade owners"
+    - "verify secondary inventory tooling still passes after the precedent write-back"
+repair_approval:
+  status: approved
+  approved_findings:
+    - secondary-shell-issue-25
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - secondary-trading-decision-portfolio-canonical-wrapper
+    - secondary-trading-decision-positions-canonical-wrapper
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/trading-decision/DecisionPortfolio.vue
+    - web/frontend/src/views/trading-decision/DecisionPositions.vue
+    - web/frontend/src/views/trading-decision/__tests__/DecisionPortfolio.spec.ts
+    - web/frontend/src/views/trading-decision/__tests__/DecisionPositions.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/trading-decision/DecisionPortfolio.vue
+      - web/frontend/src/views/trading-decision/DecisionPositions.vue
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vitest
+    typecheck: failed-existing-frontend-debt-only
+    pm2: passed
+    e2e: not-run-unrouted-owner
+    gitnexus_staged_detect: mixed-observation-non-isolated
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "the staged index already contained many unrelated files before this micro-batch, so `gitnexus_detect_changes({scope: staged})` is recorded only as a mixed observation"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/trading-decision-active-panel-canonical-wrapper-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/secondary-batch-25-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/secondary-batch-25-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/secondary-batch-25-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/secondary-batch-25-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: verification
+  next_action: continue-secondary-inventory-triage
+  notes:
+    - "active embedded decision panels with clean canonical trade owners should delegate directly to those owners instead of preserving local pseudo-live cards or refresh shells"
+status: complete

@@ -1,0 +1,39 @@
+- consolidated_issue_id: secondary-shell-issue-20
+  severity: Medium
+  title: Legacy nested trading placeholder pages now delegate to canonical trade owners
+  pages:
+    - /secondary/legacy-trading-history-wrapper
+    - /secondary/legacy-trading-positions-wrapper
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The local titles, subtitles, and `Coming Soon` alerts in `trading/History.vue` and `trading/Positions.vue` were two faces of the same defect family: nested legacy trading pages preserved their own placeholder shells even though semantically matching canonical `/trade/*` owners already existed."
+  primary_owner: web/frontend/src/views/trading/History.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-trading-history-wrapper
+    - /secondary/legacy-trading-positions-wrapper
+  dedupe_keys:
+    - /secondary/legacy-trading-history-wrapper:route-truth:legacyTradingHistoryWrapper
+    - /secondary/legacy-trading-positions-wrapper:route-truth:legacyTradingPositionsWrapper
+  verification_scope:
+    routes:
+      - /secondary/legacy-trading-history-wrapper
+      - /secondary/legacy-trading-positions-wrapper
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/trading/History.vue
+      - web/frontend/src/views/trading/Positions.vue
+      - web/frontend/src/views/trading/__tests__/History.spec.ts
+      - web/frontend/src/views/trading/__tests__/Positions.spec.ts
+    notes:
+      - "the nested legacy trading history page now renders a thin wrapper over the canonical `/trade/history` owner"
+      - "the nested legacy trading positions page now renders a thin wrapper over the canonical `/trade/positions` owner"
+      - "both pages no longer expose standalone `Coming Soon` placeholder shells"
+  verification_surface: code-review-only

@@ -1,0 +1,75 @@
+- finding_id: system-api-data-state-002
+  batch_id: system-batch-03
+  page:
+    route: /system/api
+    page_key: system-api
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/system/API.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Routed system-api page kept middleware rows in active runtime states after the health probe failed
+  trigger:
+    steps:
+      - Open `/system/api`
+      - Let the health probe fail or return unavailable runtime data
+      - Inspect the visible middleware rows on the primary live runtime surface
+  expected: "Middleware rows should degrade to an explicit unverified state when no current runtime evidence exists."
+  actual: "Before repair, the page still showed `性能追踪 启用`, `统一响应 启用`, and `Redis 缓存 活跃` while also reporting a runtime failure message."
+  evidence:
+    kind: live-observation
+    note: "Targeted routed-page verification confirmed that `/system/api` could show a runtime failure message while still presenting middleware labels as if the runtime had been positively verified."
+  repair_target:
+    files:
+      - web/frontend/src/views/system/API.vue
+      - web/frontend/src/views/system/styles/API.scss
+      - web/frontend/src/views/system/__tests__/API.spec.ts
+    primary_owner: web/frontend/src/views/system/API.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /system/api:data-state:API-runtime-status
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check failed health-probe rendering so middleware rows degrade to `未校验` instead of remaining verified-running labels.
+- finding_id: system-health-data-state-001
+  batch_id: system-batch-03
+  page:
+    route: /system/health
+    page_key: system-health
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/system/Health.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Routed system-health page kept middleware rows in verified runtime states after the health probe failed
+  trigger:
+    steps:
+      - Open `/system/health`
+      - Let the health probe fail or return unavailable runtime data
+      - Inspect the visible middleware rows on the primary live runtime surface
+  expected: "Middleware rows should degrade to an explicit unverified state when no current runtime evidence exists."
+  actual: "Before repair, the page still showed `Performance Tracing ENABLED`, `Unified Response ENABLED`, and `Redis Caching ACTIVE` while the page reported that the backend service could not be reached."
+  evidence:
+    kind: live-observation
+    note: "Targeted routed-page verification confirmed that `/system/health` could render a failure-state shell while leaving middleware labels in verified-running states."
+  repair_target:
+    files:
+      - web/frontend/src/views/system/Health.vue
+      - web/frontend/src/views/system/__tests__/Health.spec.ts
+    primary_owner: web/frontend/src/views/system/Health.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /system/health:data-state:Health-runtime-status
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check failed health-probe rendering so middleware rows degrade to `UNVERIFIED` instead of remaining verified-running labels.

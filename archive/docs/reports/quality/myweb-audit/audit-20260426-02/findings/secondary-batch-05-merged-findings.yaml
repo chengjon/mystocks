@@ -1,0 +1,35 @@
+- consolidated_issue_id: secondary-shell-issue-05
+  severity: Medium
+  title: Legacy monitoring dashboard now degrades to an honest static shell when no canonical monitoring truth exists
+  pages:
+    - /secondary/legacy-monitoring-dashboard-static-shell
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The summary cards, realtime panel, alerts, and dragon-tiger sections were all facets of the same defect: `MonitoringDashboard.vue` presented hardcoded pseudo-live monitoring truth even though the legacy page had no semantically matching canonical owner or router-backed contract."
+  primary_owner: web/frontend/src/views/monitoring/MonitoringDashboard.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-monitoring-dashboard-static-shell
+  dedupe_keys:
+    - /secondary/legacy-monitoring-dashboard-static-shell:data-state:legacyMonitoringDashboardStaticShellTruth
+  verification_scope:
+    routes:
+      - /secondary/legacy-monitoring-dashboard-static-shell
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/monitoring/MonitoringDashboard.vue
+      - web/frontend/src/views/monitoring/__tests__/MonitoringDashboard.spec.ts
+      - .claude/skills/myweb-audit/references/route-truth-operations.md
+      - .claude/skills/myweb-audit/references/route-truth-casebook.md
+    notes:
+      - "the legacy monitoring dashboard now renders an honest static shell instead of hardcoded pseudo-live summary, alert, and dragon-tiger data"
+      - "the page no longer implies refreshable or runtime-backed monitoring truth where no canonical owner exists"
+      - "the repair keeps the page available as a legacy reference point without fabricating request provenance, freshness, or live metrics"
+  verification_surface: code-review-only

@@ -1,0 +1,37 @@
+- consolidated_issue_id: system-health-issue-02
+  severity: High
+  title: System-health routed hero request metadata now tracks verified health-snapshot provenance instead of failed retry ids
+  pages:
+    - /system/health
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The first-load failure request-id leak and the stale-refresh request-id overwrite were two manifestations of the same routed request-provenance cluster: the canonical system-health route treated `useArtDecoApi.lastRequestId` as if it always represented the currently visible verified health snapshot."
+  primary_owner: web/frontend/src/views/system/Health.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /system/api
+  dedupe_keys:
+    - /system/health:data-state:requestProvenanceTruth
+  verification_scope:
+    routes:
+      - /system/health
+    states:
+      - first-load-failure
+      - stale-refresh-failure
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/system/Health.vue
+      - web/frontend/src/views/system/__tests__/Health.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    notes:
+      - "the canonical system-health route now derives hero `REQ_ID` from page-local verified-snapshot truth, so first-load failure renders `REQ_ID: N/A` instead of leaking a failed request id as if a health snapshot had resolved"
+      - "the same route now retains the last verified request id during stale-refresh failure, so the visible health matrix and hero metadata stay aligned when a failed retry occurs after a successful sync"
+      - "the strengthened routed regressions now cover first-load failure and refresh-after-success failure, closing the exact `lastRequestId` provenance gap on both component and Phase 4 routed surfaces"
+      - "this batch intentionally reuses existing `myweb-audit v1.41` request-provenance truth and `v1.39` browser-context interception guidance instead of introducing a new skill version"
+  verification_surface: code-review-plus-targeted-live-verification

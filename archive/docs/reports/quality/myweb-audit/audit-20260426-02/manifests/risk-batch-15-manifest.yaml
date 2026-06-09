@@ -1,0 +1,88 @@
+audit_run_id: audit-20260426-02
+batch_id: risk-batch-15
+module: risk
+scope:
+  requested_by: user
+  pages:
+    - route: /risk/stop-loss
+      page_key: risk-stop-loss
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/risk/StopLoss.vue
+  compatibility_redirects: []
+batch_rationale: "Close the canonical `/risk/stop-loss` implicit selector-truth gap so a later primary-watchlist switch cannot leave the previous verified stop-loss cards, tally counts, or request provenance visible when the newly derived selector has no verified stock snapshot. This batch also codifies the new selector-discovery guidance as `myweb-audit v1.69`."
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/risk/stop-loss` remains `web/frontend/src/views/risk/StopLoss.vue` and the route derives its active selector indirectly from the current primary watchlist returned by `/v1/monitoring/watchlists`"
+    - "the defect is selector-scoped route truth rather than shared mapper truth because the visible leak occurs only after the derived primary watchlist switches to a new selector that has no verified stock snapshot yet"
+    - "controlled browser-context fulfillment is acceptable for the selector-switch refresh-failure proof because the natural PM2 route is healthy and does not expose that second-request failure on demand"
+    - "this repair intentionally stays route-local and does not widen into shared stop-loss row builders because the bug is the route-owned selector verification gate inside the canonical page owner"
+  fallback_log:
+    - "the default local Playwright Chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome` with browser-context interception"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, error]
+  notes:
+    - "verify a controlled success path first reaches one derived primary watchlist snapshot before the later selector-switch failure is triggered"
+    - "verify a later primary-watchlist switch followed by `watchlists/:watchlistId/stocks` failure does not leave the previous selector's request id, counts, or stop-loss cards visible under the new derived selector"
+    - "verify the stale route path either keeps the visible selector pinned to the last verified selector snapshot or degrades selector-owned surfaces to placeholder truth for the new derived selector"
+repair_approval:
+  status: approved
+  approved_findings:
+    - risk-stop-loss-issue-15
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - risk-stop-loss
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/risk/StopLoss.vue
+    - web/frontend/src/views/risk/__tests__/StopLoss.spec.ts
+    - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-stop-loss-selector-refresh-proof
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `risk-batch-15` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+      - "latest staged observation returned `risk_level: low`, `changed_files: 126`, `changed_count: 317`, and `affected_count: 0`"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/risk-stop-loss-implicit-selector-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-15-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-15-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-15-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/risk-batch-15-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-risk-batch-15-closeout
+  notes:
+    - "the canonical stop-loss route now keys request provenance, tally cards, and visible rows to the currently derived primary watchlist selector instead of letting a route-global verified flag leak the previous selector snapshot"
+    - "this batch introduces `myweb-audit v1.69` so future implicit selector-discovery audits treat old selector rows under a newly derived selector as a route-truth defect"
+status: complete

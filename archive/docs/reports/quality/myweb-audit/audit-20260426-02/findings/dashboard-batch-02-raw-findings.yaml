@@ -1,0 +1,40 @@
+- finding_id: dashboard-home-data-state-002
+  batch_id: dashboard-batch-02
+  page:
+    route: /dashboard
+    page_key: dashboard-home
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Dashboard later fund-flow refresh failure replaced the visible verified fund-flow slice with blocking error truth
+  trigger:
+    steps:
+      - "Open `/dashboard`"
+      - "Wait until the route shows a verified fund-flow slice with visible `沪股通净流入` and `18.5亿`"
+      - "Trigger a later dashboard refresh through the page-owned refresh path"
+      - "Resolve `/api/akshare/market/fund-flow/hsgt-summary` as failed while the other dashboard slices remain verified"
+      - "Inspect `.enhanced-fund-flow`, `.dashboard-alerts`, and the visible fund-flow stat cards"
+  expected: "After at least one verified fund-flow slice exists, a later failing fund-flow refresh should preserve the visible verified fund-flow cards and chart while pairing the route with explicit degraded-state messaging. Blocking inline error truth such as `.enhanced-fund-flow .error-message` is only acceptable before the first verified fund-flow snapshot exists."
+  actual: "Before repair, `fetchFundFlow()` always set `error.fundFlow` on any later failure. The dashboard template branches on that blocking error state, so a later failing refresh hid the already verified fund-flow cards behind `.error-message` even though the current visible slice had not been replaced."
+  evidence:
+    kind: mixed-evidence
+    note: "A new dashboard logic regression reproduced `success -> fund-flow refresh fail` in a composable harness and showed the verified `沪股通净流入 / 18.5亿` slice being replaced by blocking error rendering. The routed phase1 matrix was extended with the same stale-refresh assertion."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+      - web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+    primary_owner: web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /dashboard
+  status: open
+  dependency: null
+  dedupe_key: /dashboard:data-state:fundFlowRefreshBlockingErrorOverridesVerifiedSlice
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/dashboard` after repair and confirm a later fund-flow refresh failure now preserves the visible verified fund-flow slice while keeping the route-level degraded alert."

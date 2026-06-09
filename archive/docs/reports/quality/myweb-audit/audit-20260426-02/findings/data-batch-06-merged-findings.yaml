@@ -1,0 +1,39 @@
+- consolidated_issue_id: data-indicator-issue-02
+  severity: Medium
+  title: Indicator screening workflow now distinguishes idle, executed-empty, and executed-success result states honestly
+  pages:
+    - /data/indicator
+  source_roles:
+    - data-state-audit
+  why_consolidated: The auto-screened default results, misleading status copy, and pre-run result-surface collapse were one routed indicator workflow-truth defect owned by the local data-analysis state flow.
+  primary_owner: web/frontend/src/composables/market/useDataAnalysis.ts
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact: []
+  dedupe_keys:
+    - /data/indicator:data-state:useDataAnalysis
+  verification_scope:
+    routes:
+      - /data/indicator
+    states:
+      - default
+      - empty
+    breakpoints:
+      - 1920
+      - 1440
+      - 1280
+  repair_summary:
+    files:
+      - web/frontend/src/composables/market/useDataAnalysis.ts
+      - web/frontend/src/composables/market/dataAnalysisData.ts
+      - web/frontend/src/views/data/Advanced.vue
+      - web/frontend/src/composables/market/__node_tests__/dataAnalysisData.test.ts
+      - web/frontend/tests/unit/views/data-advanced-screening-truth.spec.ts
+      - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+    notes:
+      - "added explicit `hasExecutedScreening` workflow state so hydration no longer impersonates an executed screening run"
+      - "kept pre-run result surfaces in an idle state until the user explicitly runs screening"
+      - "distinguished idle, empty, and success states in both routed page copy and Phase 2 browser assertions"
+  verification_surface: code-review-plus-targeted-live-verification

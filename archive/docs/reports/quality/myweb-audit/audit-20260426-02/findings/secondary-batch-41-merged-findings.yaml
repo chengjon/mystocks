@@ -1,0 +1,35 @@
+- consolidated_issue_id: secondary-shell-issue-41
+  severity: Medium
+  title: Legacy market TDX page now degrades to an honest static shell
+  pages:
+    - /secondary/market-tdx-static-shell
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The simulated connection, server, quote, and K-line state in `market/Tdx.vue` came from one page-local legacy TDX interface surface with no verified canonical owner."
+  primary_owner: web/frontend/src/views/market/Tdx.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/market-tdx-static-shell
+  dedupe_keys:
+    - /secondary/market-tdx-static-shell:route-truth:legacyTdxStaticShell
+  verification_scope:
+    routes:
+      - /secondary/market-tdx-static-shell
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/market/Tdx.vue
+      - web/frontend/src/views/market/composables/useTdx.ts
+      - web/frontend/src/views/market/styles/Tdx.scss
+      - web/frontend/src/views/market/__tests__/Tdx.spec.ts
+    notes:
+      - "the legacy TDX interface now renders an honest static shell with no refresh control, connection badge, response time, active sessions, server IP, quote table, or K-line controls"
+      - "the page-local pseudo-live composable and page-only style file were removed after confirming they had no remaining references"
+      - "the secondary inventory high-priority shortlist dropped from 14 to 13 after the repair"
+  verification_surface: code-review-only

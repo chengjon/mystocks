@@ -6,7 +6,7 @@
 
 > **用途说明**:
 > 本文件用于记录当前主线下 MOCK 数据治理与页面状态对齐情况，服务于 `verified/pending` 审计与实现收口。
-> 仓库共享规则仍以 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md) 为准，页面级 API 行为仍以 [`openspec/specs/api-integration/spec.md`](/opt/claude/mystocks_spec/openspec/specs/api-integration/spec.md) 为准。
+> 仓库共享规则仍以 [`architecture/STANDARDS.md`](../../../architecture/STANDARDS.md) 为准，页面级 API 行为仍以 [`openspec/specs/api-integration/spec.md`](../../../openspec/specs/api-integration/spec.md) 为准。
 
 ## 当前审计结论
 

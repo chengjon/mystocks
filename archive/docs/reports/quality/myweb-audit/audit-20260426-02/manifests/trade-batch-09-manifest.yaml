@@ -1,0 +1,85 @@
+audit_run_id: audit-20260426-02
+batch_id: trade-batch-09
+module: trade
+scope:
+  requested_by: user
+  pages:
+    - route: /trade/signals
+      page_key: trade-signals
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/trade/Signals.vue
+  compatibility_redirects: []
+batch_rationale: "Apply the new `v1.43` store-refresh snapshot-provenance rule to the canonical trade-signals route so a resolved `success: false` manual refresh can no longer clear verified signal rows or replace visible `REQ_ID / TIME` provenance with the failed shared-store request."
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/trade/signals` remains `web/frontend/src/views/trade/Signals.vue`"
+    - "the approved repair should stay page-local in `Signals.vue` instead of widening into shared realtime-store or wrapper-level redesign"
+    - "the route is store-backed and may resolve `success: false` envelopes as ordinary values, so browser verification must include a controlled `success -> refresh fail` path instead of only first-load failure"
+    - "auth-seeded browser contexts plus browser-context interception with `serviceWorkers: block` are acceptable verification harnesses for controlled first-load failure and refresh-failure truth on this route"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [loading, error, default]
+  notes:
+    - "verify `/trade/signals` still renders `COUNT: -- / DATA: UNAVAILABLE / REQ_ID: N/A` when the first signal payload resolves as `success: false` before any verified snapshot exists"
+    - "verify the same route keeps the last verified `REQ_ID / TIME`, `COUNT`, and signal rows when a later manual refresh resolves as `success: false`"
+    - "verify the natural PM2 route still renders an honest live shell with a real request id after the page-local verified-snapshot repair lands"
+repair_approval:
+  status: approved
+  approved_findings:
+    - trade-signals-issue-03
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - trade-signals
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/trade/Signals.vue
+    - web/frontend/src/views/trade/__tests__/Signals.spec.ts
+    - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoSignalsView.vue
+    confirmed:
+      - web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoSignalsView.vue
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-trade-signals-refresh-provenance-verification
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `trade-batch-09` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/trade-signals-store-refresh-provenance-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-09-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-09-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-09-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/trade-batch-09-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-trade-batch-09-closeout
+  notes:
+    - "the repaired trade-signals route now distinguishes first-load unavailable truth from stale-refresh truth on the canonical store-backed owner page"
+    - "this batch introduces `myweb-audit v1.43` so future store-backed route audits must cover `success -> refresh fail` request-provenance retention rather than only first-load failure"
+status: complete

@@ -1,0 +1,46 @@
+- finding_id: dashboard-home-data-state-008
+  batch_id: dashboard-batch-08
+  page:
+    route: /dashboard
+    page_key: dashboard-home
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Dashboard auxiliary live slices degraded real indicators and monitoring panels into fake integration copy instead of explicit unavailable or stale truth
+  trigger:
+    steps:
+      - "Open `/dashboard` with core overview slices resolving successfully while the technical-indicator slice and the monitoring slice are each exercised under controlled first-load failure and later refresh-failure paths."
+      - "Inspect the technical-indicator panel and system-monitoring panel before any verified auxiliary snapshot exists, then rerun with one verified auxiliary snapshot followed by a later slice refresh that resolves failure."
+      - "Compare the visible slice copy and whether previously verified auxiliary rows remain visible after the later refresh failure settles."
+  expected: "Auxiliary live slices that already have real route contracts should render explicit unavailable-plus-no-verified-snapshot truth before their first verified snapshot exists, and later slice refresh failures should retain the last verified auxiliary rows while explicitly saying the current refresh is unavailable."
+  actual: "Before repair, the indicator panel degraded to placeholder rows and the monitoring panel degraded to faux capability copy such as `系统监控真实接口待接入...`; later refresh failures could also collapse back to fake integration notes instead of keeping last verified auxiliary values with explicit stale or unavailable truth."
+  evidence:
+    kind: live-observation
+    note: "Targeted Playwright-library verification with system `google-chrome` and browser-context interception confirmed first-load auxiliary failure now renders `技术指标暂不可用，当前暂无已验证指标快照。` and `系统监控暂不可用，当前暂无已验证监控快照。`; later refresh failures retain verified `RSI 61.2 偏强` and verified `HEALTHY / mystocks-backend / 2.0.0` rows while rendering explicit stale messages."
+  repair_target:
+    files:
+      - web/frontend/src/api/services/dashboardService.ts
+      - web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+      - web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+      - web/frontend/tests/unit/components/ArtDecoDashboardLogic.spec.ts
+      - web/frontend/src/api/services/__tests__/dashboardService.spec.ts
+      - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/SKILL.md
+      - .claude/skills/myweb-audit/references/CHANGELOG.md
+      - .claude/skills/myweb-audit/references/audit-checklist.md
+      - .claude/agents/myweb-audit-data-state-audit.md
+    primary_owner: web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /dashboard
+  status: open
+  dependency: null
+  dedupe_key: /dashboard:data-state:auxiliaryLiveSliceSyncTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/dashboard` and confirm indicators and monitoring slices both distinguish first-load unavailable truth from later stale-refresh retention truth without falling back to faux integration copy."

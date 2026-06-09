@@ -1,0 +1,40 @@
+- finding_id: risk-alerts-data-state-017
+  batch_id: risk-batch-17
+  page:
+    route: /risk/alerts
+    page_key: risk-alerts
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/risk/Alerts.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Risk alerts route collapsed a verified rules slice when alert records failed before the first full route snapshot existed
+  trigger:
+    steps:
+      - "Open `/risk/alerts`."
+      - "Resolve `**/api/v1/monitoring/alert-rules**` successfully with visible rule rows."
+      - "Resolve `**/api/v1/monitoring/alerts?page=1&page_size=50**` as `success: false` before any full routed snapshot is verified."
+      - "Inspect hero `REQ_ID / UNREAD`, the top stats strip, content-shell `RULES / ALERTS` meta, and the visible `规则列表` table."
+  expected: "A first-load alerts failure must not hide a verified rules slice. The route should remain partial with `REQ_ID: N/A`, `UNREAD: --`, `RULES: <verified-count>`, `ALERTS: --`, top-strip `rules counts + -- alert counts`, and the verified rules table still visible."
+  actual: "Before repair, `/risk/alerts` treated rules and alerts as one global verified shell. When `alert-rules` succeeded but `alerts` failed before the first full route snapshot, the route rewrote `RULES / ALERTS` plus the top-strip to `--`, emitted `当前暂无已验证告警快照。`, and hid the verified rules slice from the visible shell."
+  evidence:
+    kind: live-observation
+    note: "A new owner red test failed with `RULES: --ALERTS: --` instead of `RULES: 1 / ALERTS: --`. After repair, targeted component regressions, routed Phase 4 assertions, and authenticated system-Chrome verification confirmed `REQ_ID: N/A / RULES: 2 / ALERTS: --`, visible rule rows, and no leaked alert-record content."
+  repair_target:
+    files:
+      - web/frontend/src/views/risk/Alerts.vue
+      - web/frontend/src/views/risk/__tests__/Alerts.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/risk/Alerts.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /risk/alerts
+  status: open
+  dependency: null
+  dedupe_key: /risk/alerts:data-state:firstLoadPartialSliceTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/risk/alerts` after repair and confirm a verified rules slice remains visible while alert records stay unresolved on the first load, without leaking failed request ids or generic no-snapshot copy."

@@ -1,0 +1,84 @@
+audit_run_id: audit-20260426-02
+batch_id: strategy-batch-08
+module: strategy
+scope:
+  requested_by: user
+  pages:
+    - route: /strategy/repo
+      page_key: strategy-repo
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/strategy/List.vue
+  compatibility_redirects: []
+batch_rationale: Reuse the existing `v1.32 + v1.37 + v1.38 + v1.39` rules on the canonical strategy-repo route so count-only repository tally cards and sibling `MATCHED / PAGE` meta stop leaking shared faux delta chrome, and unresolved first repository payloads no longer present fabricated zero counts or false real-empty semantics before any verified inventory exists.
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/strategy/repo` remains `web/frontend/src/views/strategy/List.vue`, while the routed surface owner is `web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyManagement.vue`"
+    - "the approved repair should stay page-local in `ArtDecoStrategyManagement.vue` instead of changing shared `ArtDecoStatCard.vue` defaults"
+    - "the natural PM2 route may resolve to a real empty strategy inventory, so unavailable and unresolved-first-load repository states should be confirmed through browser-context interception"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, empty, loading, error]
+  notes:
+    - "verify `/strategy/repo` no longer renders `2.00`, `1.00`, `0.00`, or shared `+0%` chrome on count-only repository tally cards"
+    - "verify the same route now degrades unresolved or failed first `/api/v1/strategy/strategies` summary surfaces to `-- / -- / -- / 全部状态` plus `MATCHED: -- / PAGE: -- / --` until verified inventory exists"
+    - "verify the same route no longer mislabels unresolved first-load state as `REAL 数据为空，请先创建策略。`"
+    - "verify the natural PM2 empty-state path still renders honest `0 / 0 / 0 / 全部状态` plus `MATCHED: 0 / PAGE: 1 / 1` when the backend returns a real empty strategy inventory"
+repair_approval:
+  status: approved
+  approved_findings:
+    - strategy-repo-issue-01
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - strategy-repo
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyManagement.vue
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyManagement.spec.ts
+    - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/components/artdeco/base/ArtDecoStatCard.vue
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-strategy-repo-default-error-and-loading-verification
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `strategy-batch-08` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` is treated as observation-only in this run because the staged set is not isolated to the current batch"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` remains a low-risk mixed observation and is not used as an isolated `strategy-batch-08` verdict"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-repo-summary-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-08-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-08-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-08-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/strategy-batch-08-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-strategy-batch-08-closeout
+  notes:
+    - "the current batch reuses the existing `v1.32 + v1.37 + v1.38 + v1.39` rule set rather than introducing a new failure-mode class"
+    - "the canonical strategy-repo route now distinguishes verified count-only tally cards, real empty-state zero counts, unavailable placeholders, and unresolved first-load pending copy"
+status: complete

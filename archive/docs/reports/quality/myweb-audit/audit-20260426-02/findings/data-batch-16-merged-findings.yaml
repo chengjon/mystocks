@@ -1,0 +1,44 @@
+- consolidated_issue_id: data-indicator-issue-03
+  severity: High
+  title: Data indicator route now keeps UPDATED freshness metadata aligned to the visible verified analysis snapshot during stale refreshes
+  pages:
+    - /data/indicator
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The failed-refresh timestamp jump and the visible indicator-workspace mismatch were two expressions of the same freshness-provenance defect: the canonical data-indicator route treated the latest refresh attempt time as if it always represented the currently visible verified analysis snapshot."
+  primary_owner: web/frontend/src/composables/market/useDataAnalysis.ts
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /data/indicator
+  dedupe_keys:
+    - /data/indicator:data-state:refreshTimestampProvenanceTruth
+  verification_scope:
+    routes:
+      - /data/indicator
+    states:
+      - stale-refresh-failure
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/composables/market/useDataAnalysis.ts
+      - web/frontend/src/views/data/Advanced.vue
+      - web/frontend/tests/unit/views/data-advanced-screening-truth.spec.ts
+      - web/frontend/src/views/data/__tests__/Advanced.spec.ts
+      - web/frontend/tests/unit/views/data-advanced-cutover.spec.ts
+      - web/frontend/tests/unit/views/data-indicator-details.spec.ts
+      - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/SKILL.md
+      - .claude/skills/myweb-audit/references/audit-checklist.md
+      - .claude/agents/myweb-audit-data-state-audit.md
+      - .claude/skills/myweb-audit/references/CHANGELOG.md
+    notes:
+      - "the canonical data-indicator route now records stale-refresh failure separately from first-load failure and only updates `lastUpdateTime` after a verified refresh succeeds"
+      - "the same route now preserves the last verified `UPDATED` value and visible indicator workspace when a later manual refresh fails, while surfacing explicit `部分刷新失败` copy"
+      - "the routed regression and strengthened Phase 2 matrix now pin the exact freshness-provenance failure mode without widening the repair into shared stat-card defaults or unrelated wrappers"
+      - "this batch introduces `myweb-audit v1.46` refresh-timestamp provenance guidance so future routed pages keep hero freshness metadata aligned with the currently visible verified snapshot"
+  verification_surface: code-review-plus-targeted-live-verification

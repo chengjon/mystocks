@@ -1,7 +1,7 @@
 # ArtDeco Component Governance Record Template
 
 > **说明**
-> 本模板用于承接 [`ARTDECO_STANDARDIZATION_P1_TASKS.md`](/opt/claude/mystocks_spec/docs/plans/ARTDECO_STANDARDIZATION_P1_TASKS.md) 中的样板组件批次治理工作。
+> 本模板用于承接 [`ARTDECO_STANDARDIZATION_P1_TASKS.md`](ARTDECO_STANDARDIZATION_P1_TASKS.md) 中的样板组件批次治理工作。
 > 目标不是写“完成报告”，而是统一记录每个样板组件在治理时的判断、改动范围、token 影响和测试要求。
 
 ---

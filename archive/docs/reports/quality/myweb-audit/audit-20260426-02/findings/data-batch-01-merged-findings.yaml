@@ -1,0 +1,36 @@
+- consolidated_issue_id: data-indicator-issue-01
+  severity: Medium
+  title: Routed indicator selection now opens a truthful detail workspace instead of a pseudo-editor placeholder
+  pages:
+    - /data/indicator
+  source_roles:
+    - functional-audit
+  why_consolidated: The misleading editor title, placeholder copy, and object-parameter stringification were all one routed detail-surface defect centered on `Advanced.vue`.
+  primary_owner: web/frontend/src/views/data/Advanced.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact: []
+  dedupe_keys:
+    - /data/indicator:interaction:advancedIndicatorDetails
+  verification_scope:
+    routes:
+      - /data/indicator
+    states:
+      - default
+      - selected-indicator-detail
+    breakpoints:
+      - 1920
+      - 1440
+      - 1280
+  repair_summary:
+    files:
+      - web/frontend/src/views/data/Advanced.vue
+      - web/frontend/tests/unit/views/data-indicator-details.spec.ts
+      - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+    notes:
+      - "renamed the routed `editor` surface to `指标详情` while preserving the existing tab key and panel id"
+      - "replaced the upgrade placeholder with a real indicator detail workspace and empty-state prompt"
+      - "formatted registry parameter objects as `name(default)` strings instead of generic object stringification"
+  verification_surface: code-review-plus-targeted-live-verification

@@ -1,0 +1,39 @@
+- consolidated_issue_id: secondary-shell-issue-21
+  severity: Medium
+  title: Legacy nested trading placeholder pages now degrade to honest static shells
+  pages:
+    - /secondary/legacy-trading-orders-static-shell
+    - /secondary/legacy-trading-execution-static-shell
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The local titles, subtitles, and `Coming Soon` alerts in `trading/Orders.vue` and `trading/Execution.vue` were two faces of the same defect family: nested legacy trading pages preserved placeholder shells even though no semantically matching canonical owners existed for direct delegation."
+  primary_owner: web/frontend/src/views/trading/Orders.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-trading-orders-static-shell
+    - /secondary/legacy-trading-execution-static-shell
+  dedupe_keys:
+    - /secondary/legacy-trading-orders-static-shell:route-truth:legacyTradingOrdersStaticShell
+    - /secondary/legacy-trading-execution-static-shell:route-truth:legacyTradingExecutionStaticShell
+  verification_scope:
+    routes:
+      - /secondary/legacy-trading-orders-static-shell
+      - /secondary/legacy-trading-execution-static-shell
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/trading/Orders.vue
+      - web/frontend/src/views/trading/Execution.vue
+      - web/frontend/src/views/trading/__tests__/Orders.spec.ts
+      - web/frontend/src/views/trading/__tests__/Execution.spec.ts
+    notes:
+      - "the nested legacy trading orders page now renders an honest static shell instead of a local order-management placeholder surface"
+      - "the nested legacy trading execution page now renders an honest static shell instead of a local trade-execution placeholder surface"
+      - "both pages now hand users off to neighboring canonical `/trade/*` routes without fabricating local execution or order truth"
+  verification_surface: code-review-only

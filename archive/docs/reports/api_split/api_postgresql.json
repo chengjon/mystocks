@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/postgresql",
+  "total_endpoints": 1,
+  "endpoints": [
+    {
+      "path": "/postgresql/stats",
+      "method": "GET",
+      "file": "v1/pool_monitoring.py",
+      "function": "get_postgresql_pool_stats",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 24
+    }
+  ]
+}

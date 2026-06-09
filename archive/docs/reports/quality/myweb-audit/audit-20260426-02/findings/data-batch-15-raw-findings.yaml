@@ -1,0 +1,41 @@
+- finding_id: data-fund-flow-data-state-004
+  batch_id: data-batch-15
+  page:
+    route: /data/fund-flow
+    page_key: data-fund-flow
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/data/FundFlow.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Fund-flow route let failed ranking refresh request ids overwrite the visible verified hero request metadata
+  trigger:
+    steps:
+      - "Open `/data/fund-flow`"
+      - "Allow the first summary and ranking requests to resolve successfully with visible ranking rows"
+      - "Trigger a manual refresh and force the next `/api/akshare/market/fund-flow/big-deal` request to resolve `success: false` with a `request_id`"
+      - "Inspect the hero `WINDOW / RANKING / ROWS / REQ` metadata, the ranking summary, and the visible warning state"
+  expected: "If `/data/fund-flow` still displays the previous verified ranking snapshot after a failed refresh, hero `REQ` should continue to identify the request that produced the visible ranking rows instead of switching to the failed retry request id."
+  actual: "Before repair, `/data/fund-flow` switched hero `REQ` to the failed ranking refresh request id even though the page still displayed the previous verified `贵州茅台 / 宁德时代` ranking rows and the same `2`-row summary."
+  evidence:
+    kind: live-observation
+    note: "A new routed red test reproduced `REQ: fund-ranking-refresh-fail` before repair. Controlled Playwright-library verification with system `google-chrome` then confirmed the repaired route now keeps `REQ: req-data-b15-ranking-success` visible after the ranking refresh fails while the `2` visible rows remain mounted."
+  repair_target:
+    files:
+      - web/frontend/src/views/data/FundFlow.vue
+    primary_owner: web/frontend/src/views/data/FundFlow.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /data/fund-flow
+    - /data/industry
+    - /market/lhb
+    - /trade/history
+  status: open
+  dependency: null
+  dedupe_key: /data/fund-flow:data-state:refreshRequestProvenanceTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/data/fund-flow` after repair and confirm stale refresh failure preserves the last verified request provenance instead of the failed retry request id."

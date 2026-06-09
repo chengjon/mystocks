@@ -1,0 +1,33 @@
+- consolidated_issue_id: secondary-shell-issue-23
+  severity: Medium
+  title: Legacy phase-4 dashboard page now delegates to the canonical dashboard owner
+  pages:
+    - /secondary/legacy-phase4-dashboard-wrapper
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The local stats cards, market overview tabs, watchlist table, and risk-alert shell surfaces in `Phase4Dashboard.vue` were all faces of the same defect family: an unrouted dashboard variant preserved forked pseudo-live truth even though a semantically matching canonical dashboard owner already existed."
+  primary_owner: web/frontend/src/views/Phase4Dashboard.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-phase4-dashboard-wrapper
+  dedupe_keys:
+    - /secondary/legacy-phase4-dashboard-wrapper:route-truth:legacyPhase4DashboardWrapper
+  verification_scope:
+    routes:
+      - /secondary/legacy-phase4-dashboard-wrapper
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/Phase4Dashboard.vue
+      - web/frontend/src/views/__tests__/Phase4Dashboard.spec.ts
+    notes:
+      - "the legacy phase-4 dashboard page now renders a thin wrapper over the canonical dashboard owner"
+      - "the page no longer preserves local stats cards, tabs, watchlist, or alert shell semantics"
+      - "the repair reuses existing canonical dashboard truth instead of inventing another dashboard snapshot layer"
+  verification_surface: code-review-only

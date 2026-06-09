@@ -1,0 +1,89 @@
+audit_run_id: audit-20260426-02
+batch_id: risk-batch-14
+module: risk
+scope:
+  requested_by: user
+  pages:
+    - route: /risk/management
+      page_key: risk-management
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/risk/Center.vue
+  compatibility_redirects: []
+batch_rationale: "Close the canonical `/risk/management` refresh-cadence truth gap so the routed footer no longer promises a fixed five-minute auto-refresh cadence without an owned scheduler, while codifying `myweb-audit v1.52`."
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/risk/management` remains `web/frontend/src/views/risk/Center.vue`"
+    - "the approved repair should stay page-local in `Center.vue` instead of widening into shared ArtDeco page-template behavior or unrelated risk-family routes"
+    - "the footer surface `风险数据每5分钟自动更新 · 最后一次更新：...` was the user-visible cadence claim under review, because the route does not expose a separate hero-level refresh interval surface"
+    - "static review over `Center.vue` and the active page-template path found no route-owned scheduler, push subscription, or equivalent cadence mechanism backing the fixed five-minute claim"
+    - "natural PM2 browser reuse is healthy enough to confirm the canonical route now renders honest footer copy while still advancing `最后一次更新` after a verified positions snapshot succeeds"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, loading]
+  notes:
+    - "verify `/risk/management` no longer renders `每5分钟自动更新` in the footer"
+    - "verify the repaired footer now renders `按当前页同步结果更新` and still advances `最后一次更新` after a verified live positions snapshot succeeds"
+repair_approval:
+  status: approved
+  approved_findings:
+    - risk-management-issue-14
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - risk-management
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/risk/Center.vue
+    - web/frontend/src/views/risk/__tests__/Center.spec.ts
+    - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/artdeco-pages/ArtDecoRiskManagement.vue
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-risk-management-refresh-cadence-proof-and-phase4-list
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `risk-batch-14` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+      - "latest staged observation returned `risk_level: low`, `changed_files: 126`, `changed_count: 317`, and `affected_count: 0`"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/risk-management-refresh-cadence-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-14-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-14-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-14-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/risk-batch-14-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-risk-batch-14-closeout
+  notes:
+    - "the canonical risk-management footer now uses honest page-sync wording instead of promising a fixed five-minute auto-refresh cadence"
+    - "this batch promotes `myweb-audit` to `v1.52` with explicit refresh-cadence truth guidance"
+status: complete

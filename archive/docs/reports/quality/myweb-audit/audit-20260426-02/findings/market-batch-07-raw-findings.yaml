@@ -1,0 +1,40 @@
+- finding_id: market-technical-data-state-002
+  batch_id: market-batch-07
+  page:
+    route: /market/technical
+    page_key: market-technical
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/market/Technical.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Technical route leaked failed request ids into hero metadata even when no verified K-line snapshot existed
+  trigger:
+    steps:
+      - "Open `/market/technical`"
+      - "Force the first `/api/v1/market/kline` request to resolve `success: false` with a `request_id` before any verified K-line snapshot exists"
+      - "Repeat with one successful K-line load followed by a failed manual refresh"
+      - "Inspect the hero `REQ / SYMBOL / POINTS` metadata and the visible K-line shell"
+  expected: "Before `/market/technical` has any verified K-line snapshot, hero metadata should degrade to explicit placeholders such as `REQ: N/A / POINTS: --`. If a later refresh fails while the route still displays the previous verified sample, hero `REQ` should continue to identify the visible verified snapshot instead of the failed retry."
+  actual: "Before repair, `/market/technical` rendered `REQ: kline-first-fail / POINTS: 0` on first-load failure and switched the hero request id to the failed refresh request after a successful initial sync, even though the visible K-line rows still came from the previous verified snapshot."
+  evidence:
+    kind: live-observation
+    note: "Component red tests reproduced both failure shapes before repair. Targeted Playwright-library verification with system `google-chrome` then confirmed the routed page now renders `REQ: N/A / POINTS: --` on first-load failure and keeps `REQ: req-market-b07-success` on stale refresh failure while the previous K-line row remains visible."
+  repair_target:
+    files:
+      - web/frontend/src/views/market/Technical.vue
+    primary_owner: web/frontend/src/views/market/Technical.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /market/lhb
+    - /data/concept
+    - /stocks/screener
+  status: open
+  dependency: null
+  dedupe_key: /market/technical:data-state:klineRequestProvenanceTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/market/technical` after repair and confirm first-load failure and stale-refresh failure both preserve honest hero request provenance."

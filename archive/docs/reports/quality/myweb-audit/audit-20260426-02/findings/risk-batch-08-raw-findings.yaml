@@ -1,0 +1,41 @@
+- finding_id: risk-stop-loss-data-state-003
+  batch_id: risk-batch-08
+  page:
+    route: /risk/stop-loss
+    page_key: risk-stop-loss
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/risk/StopLoss.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Risk stop-loss route swallowed resolved watchlist-store failure envelopes as empty monitoring success and leaked failed request provenance into the hero shell
+  trigger:
+    steps:
+      - "Open `/risk/stop-loss`"
+      - "Force the first `**/v1/monitoring/watchlists/101/stocks` request to resolve `success: false` with a `request_id` before any verified stop-loss snapshot exists"
+      - "Repeat with one successful stop-loss sync followed by a failed manual refresh that also resolves `success: false`"
+      - "Inspect hero `REQ_ID / CRITICAL / TRIGGERED`, the top stats strip, and the visible stop-loss cards"
+  expected: "Before `/risk/stop-loss` has any verified snapshot, a resolved failure envelope should render explicit unavailable truth such as `REQ_ID: N/A`, `CRITICAL: --`, `TRIGGERED: --`, and `-- / -- / -- / --` instead of falling through to empty monitoring success. If a later refresh fails after success, the route should keep the last verified request id and visible stop-loss cards while showing stale-refresh copy."
+  actual: "Before repair, `/risk/stop-loss` relied on shared watchlist-store transforms that collapsed resolved `success: false` payloads into empty arrays, so first-load failures could look like empty monitoring success while still leaking failed request ids. Later refresh failures could also replace the visible request provenance even when the currently visible cards still belonged to an earlier verified snapshot."
+  evidence:
+    kind: live-observation
+    note: "Targeted component regressions and Playwright-library verification with system `google-chrome` reproduced both the resolved first-load failure and the success-then-refresh-fail paths before repair. After repair, the first-load failure path now shows `REQ_ID: N/A / CRITICAL: -- / TRIGGERED: --`, while the stale-refresh path keeps `REQ_ID: req-live-stoploss-success` together with the visible `贵州茅台` and `宁德时代` cards."
+  repair_target:
+    files:
+      - web/frontend/src/views/risk/StopLoss.vue
+      - web/frontend/src/views/risk/__tests__/StopLoss.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+      - web/frontend/tests/unit/views/risk-wrapper-retention.spec.ts
+    primary_owner: web/frontend/src/views/risk/StopLoss.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /risk/stop-loss
+  status: open
+  dependency: null
+  dedupe_key: /risk/stop-loss:data-state:storeEnvelopeAndRequestTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/risk/stop-loss` after repair and confirm resolved watchlist-stock failure envelopes no longer collapse into empty monitoring success, while stale-refresh failures keep the last verified request provenance and visible cards."

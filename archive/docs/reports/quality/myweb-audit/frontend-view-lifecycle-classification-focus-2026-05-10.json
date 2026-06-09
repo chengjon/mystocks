@@ -1,0 +1,450 @@
+{
+  "summary": {
+    "generatedAt": "2026-05-10T02:42:10.069Z",
+    "scope": "zero-router-reference focus set",
+    "total": 24,
+    "byLifecycle": {
+      "candidate-review": 19,
+      "compat-retained": 5
+    },
+    "byRouteStatus": {
+      "dead": 19,
+      "redirect": 5
+    },
+    "byGuardStatus": {
+      "mainline-guarded": 18,
+      "spec-guarded": 6
+    }
+  },
+  "records": [
+    {
+      "pagePath": "web/frontend/src/views/settings/General.vue",
+      "lifecycle": "candidate-review",
+      "routeStatus": "dead",
+      "guardStatus": "mainline-guarded",
+      "lineCount": 35,
+      "initialClass": "候选待审",
+      "priority": "M",
+      "assetHints": [
+        "static-closed-shell"
+      ],
+      "successor": "",
+      "runtimeRefs": 0,
+      "specRefs": 4,
+      "mainlineRefs": 2,
+      "docsRefs": 12,
+      "decision": "Static closed shell with guard/doc references; can only become archive-candidate after guard retirement/migration and checklist evidence."
+    },
+    {
+      "pagePath": "web/frontend/src/views/settings/Notifications.vue",
+      "lifecycle": "candidate-review",
+      "routeStatus": "dead",
+      "guardStatus": "mainline-guarded",
+      "lineCount": 35,
+      "initialClass": "候选待审",
+      "priority": "M",
+      "assetHints": [
+        "static-closed-shell"
+      ],
+      "successor": "",
+      "runtimeRefs": 0,
+      "specRefs": 4,
+      "mainlineRefs": 2,
+      "docsRefs": 12,
+      "decision": "Static closed shell with guard/doc references; can only become archive-candidate after guard retirement/migration and checklist evidence."
+    },
+    {
+      "pagePath": "web/frontend/src/views/settings/Security.vue",
+      "lifecycle": "candidate-review",
+      "routeStatus": "dead",
+      "guardStatus": "mainline-guarded",
+      "lineCount": 35,
+      "initialClass": "候选待审",
+      "priority": "M",
+      "assetHints": [
+        "static-closed-shell"
+      ],
+      "successor": "",
+      "runtimeRefs": 0,
+      "specRefs": 4,
+      "mainlineRefs": 2,
+      "docsRefs": 14,
+      "decision": "Static closed shell with guard/doc references; can only become archive-candidate after guard retirement/migration and checklist evidence."
+    },
+    {
+      "pagePath": "web/frontend/src/views/settings/Theme.vue",
+      "lifecycle": "candidate-review",
+      "routeStatus": "dead",
+      "guardStatus": "mainline-guarded",
+      "lineCount": 35,
+      "initialClass": "候选待审",
+      "priority": "M",
+      "assetHints": [
+        "static-closed-shell"
+      ],
+      "successor": "",
+      "runtimeRefs": 0,
+      "specRefs": 4,
+      "mainlineRefs": 2,
+      "docsRefs": 12,
+      "decision": "Static closed shell with guard/doc references; can only become archive-candidate after guard retirement/migration and checklist evidence."
+    },
+    {
+      "pagePath": "web/frontend/src/views/stocks/Activity.vue",
+      "lifecycle": "candidate-review",
+      "routeStatus": "dead",
+      "guardStatus": "spec-guarded",
+      "lineCount": 51,
+      "initialClass": "内嵌壳层",
+      "priority": "L",
+      "assetHints": [
+        "static-closed-shell"
+      ],
+      "successor": "",
+      "runtimeRefs": 2,
+      "specRefs": 6,
+      "mainlineRefs": 0,
+      "docsRefs": 41,
+      "decision": "Static closed shell with guard/doc references; can only become archive-candidate after guard retirement/migration and checklist evidence."
+    },
+    {
+      "pagePath": "web/frontend/src/views/stocks/Concept.vue",
+      "lifecycle": "candidate-review",
+      "routeStatus": "dead",
+      "guardStatus": "spec-guarded",
+      "lineCount": 51,
+      "initialClass": "内嵌壳层",
+      "priority": "L",
+      "assetHints": [
+        "static-closed-shell"
+      ],
+      "successor": "",
+      "runtimeRefs": 6,
+      "specRefs": 17,
+      "mainlineRefs": 0,
+      "docsRefs": 116,
+      "decision": "Static closed shell with guard/doc references; can only become archive-candidate after guard retirement/migration and checklist evidence."
+    },
+    {
+      "pagePath": "web/frontend/src/views/stocks/Industry.vue",
+      "lifecycle": "candidate-review",
+      "routeStatus": "dead",
+      "guardStatus": "spec-guarded",
+      "lineCount": 51,
+      "initialClass": "内嵌壳层",
+      "priority": "L",
+      "assetHints": [
+        "static-closed-shell"
+      ],
+      "successor": "",
+      "runtimeRefs": 4,
+      "specRefs": 14,
+      "mainlineRefs": 0,
+      "docsRefs": 106,
+      "decision": "Static closed shell with guard/doc references; can only become archive-candidate after guard retirement/migration and checklist evidence."
+    },
+    {
+      "pagePath": "web/frontend/src/views/stocks/Portfolio.vue",
+      "lifecycle": "candidate-review",
+      "routeStatus": "dead",
+      "guardStatus": "spec-guarded",
+      "lineCount": 51,
+      "initialClass": "内嵌壳层",
+      "priority": "L",
+      "assetHints": [
+        "static-closed-shell"
+      ],
+      "successor": "",
+      "runtimeRefs": 9,
+      "specRefs": 17,
+      "mainlineRefs": 0,
+      "docsRefs": 197,
+      "decision": "Static closed shell with guard/doc references; can only become archive-candidate after guard retirement/migration and checklist evidence."
+    },
+    {
+      "pagePath": "web/frontend/src/views/stocks/Screener.vue",
+      "lifecycle": "compat-retained",
+      "routeStatus": "redirect",
+      "guardStatus": "spec-guarded",
+      "lineCount": 909,
+      "initialClass": "内嵌壳层",
+      "priority": "M",
+      "assetHints": [
+        "implementation-assets",
+        "stats-strip",
+        "selector",
+        "fallback-literal"
+      ],
+      "successor": "views/watchlist/Screener.vue wraps this implementation",
+      "runtimeRefs": 4,
+      "specRefs": 6,
+      "mainlineRefs": 0,
+      "docsRefs": 68,
+      "decision": "Indirect active implementation; do not archive before implementation is moved or successor absorbs it."
+    },
+    {
+      "pagePath": "web/frontend/src/views/stocks/Watchlist.vue",
+      "lifecycle": "candidate-review",
+      "routeStatus": "dead",
+      "guardStatus": "mainline-guarded",
+      "lineCount": 51,
+      "initialClass": "内嵌壳层",
+      "priority": "L",
+      "assetHints": [
+        "static-closed-shell"
+      ],
+      "successor": "",
+      "runtimeRefs": 3,
+      "specRefs": 10,
+      "mainlineRefs": 2,
+      "docsRefs": 76,
+      "decision": "Static closed shell with guard/doc references; can only become archive-candidate after guard retirement/migration and checklist evidence."
+    },
+    {
+      "pagePath": "web/frontend/src/views/technical/TechnicalAnalysis.vue",
+      "lifecycle": "candidate-review",
+      "routeStatus": "dead",
+      "guardStatus": "spec-guarded",
+      "lineCount": 136,
+      "initialClass": "候选待审",
+      "priority": "M",
+      "assetHints": [],
+      "successor": "",
+      "runtimeRefs": 0,
+      "specRefs": 5,
+      "mainlineRefs": 0,
+      "docsRefs": 30,
+      "decision": "Needs manual functional coverage review."
+    },
+    {
+      "pagePath": "web/frontend/src/views/trade-management/components/PortfolioOverview.vue",
+      "lifecycle": "candidate-review",
+      "routeStatus": "dead",
+      "guardStatus": "mainline-guarded",
+      "lineCount": 51,
+      "initialClass": "内嵌壳层",
+      "priority": "L",
+      "assetHints": [
+        "static-closed-shell"
+      ],
+      "successor": "",
+      "runtimeRefs": 1,
+      "specRefs": 7,
+      "mainlineRefs": 4,
+      "docsRefs": 31,
+      "decision": "Static closed shell with guard/doc references; can only become archive-candidate after guard retirement/migration and checklist evidence."
+    },
+    {
+      "pagePath": "web/frontend/src/views/trade-management/components/PositionsTab.vue",
+      "lifecycle": "candidate-review",
+      "routeStatus": "dead",
+      "guardStatus": "mainline-guarded",
+      "lineCount": 51,
+      "initialClass": "内嵌壳层",
+      "priority": "L",
+      "assetHints": [
+        "static-closed-shell"
+      ],
+      "successor": "",
+      "runtimeRefs": 0,
+      "specRefs": 6,
+      "mainlineRefs": 4,
+      "docsRefs": 16,
+      "decision": "Static closed shell with guard/doc references; can only become archive-candidate after guard retirement/migration and checklist evidence."
+    },
+    {
+      "pagePath": "web/frontend/src/views/trade-management/components/StatisticsTab.vue",
+      "lifecycle": "candidate-review",
+      "routeStatus": "dead",
+      "guardStatus": "mainline-guarded",
+      "lineCount": 51,
+      "initialClass": "内嵌壳层",
+      "priority": "L",
+      "assetHints": [
+        "static-closed-shell"
+      ],
+      "successor": "",
+      "runtimeRefs": 0,
+      "specRefs": 6,
+      "mainlineRefs": 4,
+      "docsRefs": 16,
+      "decision": "Static closed shell with guard/doc references; can only become archive-candidate after guard retirement/migration and checklist evidence."
+    },
+    {
+      "pagePath": "web/frontend/src/views/trade-management/components/TradeDialog.vue",
+      "lifecycle": "candidate-review",
+      "routeStatus": "dead",
+      "guardStatus": "mainline-guarded",
+      "lineCount": 51,
+      "initialClass": "内嵌壳层",
+      "priority": "L",
+      "assetHints": [
+        "static-closed-shell"
+      ],
+      "successor": "",
+      "runtimeRefs": 0,
+      "specRefs": 6,
+      "mainlineRefs": 4,
+      "docsRefs": 16,
+      "decision": "Static closed shell with guard/doc references; can only become archive-candidate after guard retirement/migration and checklist evidence."
+    },
+    {
+      "pagePath": "web/frontend/src/views/trade-management/components/TradeHistoryTab.vue",
+      "lifecycle": "candidate-review",
+      "routeStatus": "dead",
+      "guardStatus": "mainline-guarded",
+      "lineCount": 51,
+      "initialClass": "内嵌壳层",
+      "priority": "L",
+      "assetHints": [
+        "static-closed-shell"
+      ],
+      "successor": "",
+      "runtimeRefs": 0,
+      "specRefs": 6,
+      "mainlineRefs": 4,
+      "docsRefs": 16,
+      "decision": "Static closed shell with guard/doc references; can only become archive-candidate after guard retirement/migration and checklist evidence."
+    },
+    {
+      "pagePath": "web/frontend/src/views/trading-decision/DecisionHeader.vue",
+      "lifecycle": "candidate-review",
+      "routeStatus": "dead",
+      "guardStatus": "mainline-guarded",
+      "lineCount": 65,
+      "initialClass": "候选待审",
+      "priority": "M",
+      "assetHints": [
+        "static-closed-shell"
+      ],
+      "successor": "",
+      "runtimeRefs": 0,
+      "specRefs": 2,
+      "mainlineRefs": 2,
+      "docsRefs": 45,
+      "decision": "Static closed shell with guard/doc references; can only become archive-candidate after guard retirement/migration and checklist evidence."
+    },
+    {
+      "pagePath": "web/frontend/src/views/trading-decision/DecisionOrders.vue",
+      "lifecycle": "candidate-review",
+      "routeStatus": "dead",
+      "guardStatus": "mainline-guarded",
+      "lineCount": 133,
+      "initialClass": "候选待审",
+      "priority": "M",
+      "assetHints": [],
+      "successor": "",
+      "runtimeRefs": 0,
+      "specRefs": 2,
+      "mainlineRefs": 2,
+      "docsRefs": 45,
+      "decision": "Needs manual functional coverage review."
+    },
+    {
+      "pagePath": "web/frontend/src/views/trading-decision/DecisionPortfolio.vue",
+      "lifecycle": "compat-retained",
+      "routeStatus": "redirect",
+      "guardStatus": "mainline-guarded",
+      "lineCount": 8,
+      "initialClass": "候选待审",
+      "priority": "M",
+      "assetHints": [
+        "thin-wrapper"
+      ],
+      "successor": "@/views/trade/Portfolio.vue",
+      "runtimeRefs": 0,
+      "specRefs": 2,
+      "mainlineRefs": 2,
+      "docsRefs": 45,
+      "decision": "Thin compatibility wrapper; archive only after historical imports/tests/docs are migrated."
+    },
+    {
+      "pagePath": "web/frontend/src/views/trading-decision/DecisionPositions.vue",
+      "lifecycle": "compat-retained",
+      "routeStatus": "redirect",
+      "guardStatus": "mainline-guarded",
+      "lineCount": 8,
+      "initialClass": "候选待审",
+      "priority": "M",
+      "assetHints": [
+        "thin-wrapper"
+      ],
+      "successor": "@/views/trade/Center.vue",
+      "runtimeRefs": 0,
+      "specRefs": 2,
+      "mainlineRefs": 2,
+      "docsRefs": 45,
+      "decision": "Thin compatibility wrapper; archive only after historical imports/tests/docs are migrated."
+    },
+    {
+      "pagePath": "web/frontend/src/views/trading/Execution.vue",
+      "lifecycle": "candidate-review",
+      "routeStatus": "dead",
+      "guardStatus": "mainline-guarded",
+      "lineCount": 133,
+      "initialClass": "候选待审",
+      "priority": "M",
+      "assetHints": [],
+      "successor": "",
+      "runtimeRefs": 1,
+      "specRefs": 6,
+      "mainlineRefs": 4,
+      "docsRefs": 81,
+      "decision": "Needs manual functional coverage review."
+    },
+    {
+      "pagePath": "web/frontend/src/views/trading/History.vue",
+      "lifecycle": "compat-retained",
+      "routeStatus": "redirect",
+      "guardStatus": "mainline-guarded",
+      "lineCount": 11,
+      "initialClass": "候选待审",
+      "priority": "M",
+      "assetHints": [
+        "implementation-assets",
+        "thin-wrapper"
+      ],
+      "successor": "@/views/trade/History.vue",
+      "runtimeRefs": 5,
+      "specRefs": 15,
+      "mainlineRefs": 4,
+      "docsRefs": 178,
+      "decision": "Thin compatibility wrapper; archive only after historical imports/tests/docs are migrated."
+    },
+    {
+      "pagePath": "web/frontend/src/views/trading/Orders.vue",
+      "lifecycle": "candidate-review",
+      "routeStatus": "dead",
+      "guardStatus": "mainline-guarded",
+      "lineCount": 133,
+      "initialClass": "候选待审",
+      "priority": "M",
+      "assetHints": [],
+      "successor": "",
+      "runtimeRefs": 0,
+      "specRefs": 6,
+      "mainlineRefs": 4,
+      "docsRefs": 81,
+      "decision": "Needs manual functional coverage review."
+    },
+    {
+      "pagePath": "web/frontend/src/views/trading/Positions.vue",
+      "lifecycle": "compat-retained",
+      "routeStatus": "redirect",
+      "guardStatus": "mainline-guarded",
+      "lineCount": 11,
+      "initialClass": "候选待审",
+      "priority": "M",
+      "assetHints": [
+        "implementation-assets",
+        "thin-wrapper"
+      ],
+      "successor": "@/views/artdeco-pages/trading-tabs/ArtDecoTradingPositions.vue",
+      "runtimeRefs": 2,
+      "specRefs": 10,
+      "mainlineRefs": 4,
+      "docsRefs": 96,
+      "decision": "Thin compatibility wrapper; archive only after historical imports/tests/docs are migrated."
+    }
+  ]
+}

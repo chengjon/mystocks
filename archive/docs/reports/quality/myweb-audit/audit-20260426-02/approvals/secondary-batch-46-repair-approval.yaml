@@ -1,0 +1,24 @@
+- consolidated_issue_id: secondary-shell-issue-46
+  severity: Medium
+  affected_routes:
+    - /secondary/trading-decision-header-static-shell
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/trading-decision/DecisionHeader.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "Legacy trading-decision header may be degraded to an honest static shell because it has no verified canonical owner and its sibling panels already own their canonical/static truth."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The repair is scoped to the secondary header component and does not create new trade stores, snapshots, route entries, or API contracts."
+    related_routes:
+      - /secondary/trading-decision-header-static-shell
+  approval_status: approved

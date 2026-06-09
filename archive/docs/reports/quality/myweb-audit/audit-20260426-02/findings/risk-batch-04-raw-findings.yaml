@@ -1,0 +1,37 @@
+- finding_id: risk-stop-loss-data-state-001
+  batch_id: risk-batch-04
+  page:
+    route: /risk/stop-loss
+    page_key: risk-stop-loss
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/risk/StopLoss.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Routed risk stop-loss page treated quote-only watchlist rows as active stop-loss monitoring without real threshold inputs
+  trigger:
+    steps:
+      - Open `/risk/stop-loss`
+      - Let the routed page load watchlist rows and quote data where the stock row has `stock_code` and `entry_price` but no `stop_loss_price`
+      - Inspect the page status, stop-loss card, and distance label
+  expected: "If the current routed payload lacks real threshold inputs such as `stop_loss_price`, the page should degrade to explicit pending-policy or unverified wording instead of presenting active stop-loss monitoring semantics."
+  actual: "Before repair, the routed page rendered `止损观察中`, showed `STOP LOSS --`, and displayed `Distance to Stop --%` even though the watchlist row only proved symbol and quote truth and exposed no real stop-loss threshold."
+  evidence:
+    kind: live-observation
+    note: "Code-path review and targeted browser verification showed `buildStopLossRows()` returning rows with placeholder stop-price and distance strings while the canonical page still labeled the route as an active stop-loss radar."
+  repair_target:
+    files:
+      - web/frontend/src/views/risk/StopLoss.vue
+      - web/frontend/src/views/artdeco-pages/risk-tabs/stopLossMonitorData.ts
+    primary_owner: web/frontend/src/views/artdeco-pages/risk-tabs/stopLossMonitorData.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /risk/stop-loss:data-state:stopLossMonitorData
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that the routed page now degrades to pending-policy wording and keeps quote truth visible when watchlist stocks lack `stop_loss_price`.

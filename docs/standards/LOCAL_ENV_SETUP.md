@@ -164,7 +164,7 @@ env:
 # 凭证存储在 Settings → Secrets，不在代码中
 ```
 
-详见：[SECURITY_FOLLOWUP_PLAN_20251130.md](/opt/claude/mystocks_spec/docs/standards/SECURITY_FOLLOWUP_PLAN_20251130.md) 中的 "CI/CD Secret Management"
+详见：[SECURITY_FOLLOWUP_PLAN_20251130.md](SECURITY_FOLLOWUP_PLAN_20251130.md) 中的 "CI/CD Secret Management"
 
 ---
 

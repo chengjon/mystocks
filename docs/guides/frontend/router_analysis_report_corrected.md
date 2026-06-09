@@ -6,6 +6,15 @@
 >
 > 文内问题分级、差距判断、风险结论和建议动作如未重新复核，应视为历史分析结果，不得直接当作当前事实。
 
+> **Current Repo-Truth Disposition（2026-05-11）**:
+> 本报告中的 6 类 ArtDeco 组件、6 个功能域 Layout、占位符替换建议等内容均为历史分析口径，不代表当前路由和菜单真相源。
+> 当前前端路由与菜单判断应优先回到 `docs/guides/frontend-structure.md`、`web/frontend/src/router/index.ts` 与 `web/frontend/src/layouts/MenuConfig.ts`。
+>
+> 当前已确认边界：
+> - 当前 canonical 菜单结构为 Market / Data / Watchlist / Strategy / Trade / Risk / System 7 个业务域。
+> - 不应基于本文恢复“6-domain”完成判定，也不应把历史占位符替换建议扩写成当前低风险待办。
+> - 涉及 OpenSpec `implement-html5-migration-experience-optimization` 时，以该 change 的 `tasks.md`、`tasks-review.md` 与实际验证结果为准。
+
 
 ## 📋 分析概览
 

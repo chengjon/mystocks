@@ -1,0 +1,41 @@
+- consolidated_issue_id: dashboard-home-issue-07
+  severity: High
+  title: Dashboard trend slice now uses honest pending and stale-refresh copy instead of fake integration or retention-only truth
+  pages:
+    - /dashboard
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The false `待接入` pending note and the later refresh path that omitted `暂不可用` both came from the same route-owned trend-slice sync-state logic on the canonical dashboard route, so they form one chart-slice truth issue."
+  primary_owner: web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /dashboard
+  dedupe_keys:
+    - /dashboard:data-state:trendSliceSyncStateTruth
+  verification_scope:
+    routes:
+      - /dashboard
+    states:
+      - default
+      - error
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+      - web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+      - web/frontend/tests/unit/components/ArtDecoDashboardLogic.spec.ts
+      - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/SKILL.md
+      - .claude/skills/myweb-audit/references/CHANGELOG.md
+      - .claude/skills/myweb-audit/references/audit-checklist.md
+      - .claude/agents/myweb-audit-data-state-audit.md
+    notes:
+      - "the dashboard composable now tracks trend-slice sync state explicitly, so unresolved first load renders `分时趋势同步中...` instead of fake integration copy"
+      - "the trend fetch path now gates resolved `success:false` envelopes before kline row extraction, so later refresh failure enters the unavailable-plus-stale branch instead of falling through as empty rows"
+      - "the dashboard template now renders route-owned trend state copy above the chart and keeps the verified chart visible while the stale note explains the failed refresh"
+      - "this batch upgrades `myweb-audit` to `v1.64`, adding chart-slice sync-state truth checks for routed live trend or time-series surfaces"
+  verification_surface: code-review-plus-targeted-live-verification

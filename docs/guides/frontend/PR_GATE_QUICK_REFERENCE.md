@@ -18,9 +18,9 @@ Use this sheet when a change touches any of these:
 
 Primary references:
 
-- [Frontend test and CI gate overview](/opt/claude/mystocks_spec/docs/testing/e2e/README.md)
-- [PM2 integration workflow](/opt/claude/mystocks_spec/docs/guides/pm2/PM2_INTEGRATION_TEST_WORKFLOW.md)
-- [PR template](/opt/claude/mystocks_spec/.github/pull_request_template.md)
+- [Frontend test and CI gate overview](../../testing/e2e/README.md)
+- [PM2 integration workflow](../pm2/PM2_INTEGRATION_TEST_WORKFLOW.md)
+- [PR template](../../../.github/pull_request_template.md)
 
 ## Runtime Gate Entry Points
 
@@ -131,7 +131,7 @@ Always report service availability explicitly:
 - `mystocks-frontend`: `http://localhost:3020`
 - Docker smoke must remain on备用端口，不得把容器结果冒充为 PM2 正式门禁：`http://localhost:8021` / `http://localhost:3021`
 
-If the verification reuses a shared PM2 session, follow the save and restore sequence in [PM2 integration workflow](/opt/claude/mystocks_spec/docs/guides/pm2/PM2_INTEGRATION_TEST_WORKFLOW.md) instead of manually mixing `run_e2e_pm2.sh` with a long-running PM2 chain.
+If the verification reuses a shared PM2 session, follow the save and restore sequence in [PM2 integration workflow](../pm2/PM2_INTEGRATION_TEST_WORKFLOW.md) instead of manually mixing `run_e2e_pm2.sh` with a long-running PM2 chain.
 
 ## Reviewer Heuristics
 

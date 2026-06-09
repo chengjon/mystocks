@@ -1,0 +1,42 @@
+- consolidated_issue_id: risk-management-issue-03
+  severity: High
+  title: Risk management stock tab now switches reliably and degrades unsupported single-name analysis to explicit pending-integration copy
+  pages:
+    - /risk/management
+  source_roles:
+    - functional-audit
+  why_consolidated: The live tab-switch failure and the unsupported single-name action promise were one routed stock-tab truth defect centered on the canonical risk-management page.
+  primary_owner: web/frontend/src/views/risk/Center.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact: []
+  dedupe_keys:
+    - /risk/management:route:riskCenter
+  verification_scope:
+    routes:
+      - /risk/management
+    states:
+      - default
+      - stock-tab
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/risk/Center.vue
+      - web/frontend/src/views/artdeco-pages/risk-tabs/riskManagementHelpers.ts
+      - web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskStockPanel.vue
+      - web/frontend/src/views/artdeco-pages/risk-tabs/__node_tests__/riskManagementHelpers.test.ts
+      - web/frontend/src/views/artdeco-pages/risk-tabs/__tests__/ArtDecoRiskStockPanel.spec.ts
+      - web/frontend/tests/unit/views/risk-center-template-retention.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/SKILL.md
+      - .claude/skills/myweb-audit/references/audit-checklist.md
+      - .claude/agents/myweb-audit-data-state-audit.md
+      - .claude/skills/myweb-audit/references/CHANGELOG.md
+    notes:
+      - "the canonical risk center now declares the custom tab buttons as `type=\"button\"`, preventing the live browser from sticking on the default overview tab"
+      - "the stock-tab subtitle, panel title, CTA, and toast now all state that single-name analysis is only an entry surface and that the actual contract is still pending integration"
+      - "targeted node, component, source-level, phase4 structural, and live browser verification now encode this unsupported-tab slice truth rule"
+  verification_surface: code-review-plus-targeted-live-verification

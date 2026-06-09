@@ -1,0 +1,39 @@
+- finding_id: strategy-backtest-data-state-003
+  batch_id: strategy-batch-14
+  page:
+    route: /strategy/backtest
+    page_key: strategy-backtest
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Strategy backtest report rows fabricated local generation time when synced results omitted completion metadata
+  trigger:
+    steps:
+      - "Open `/strategy/backtest?strategyId=101`"
+      - "Run a controlled successful backtest chain where `/api/v1/strategy/backtest/results/*` returns a valid result row without `completed_at`, `completedAt`, `updated_at`, or `updatedAt`"
+      - "Switch to `报告中心` and inspect the visible `生成时间` cell in the synced report row"
+  expected: "When the visible backtest result row has no verified completion metadata, the `生成时间` cell should degrade to explicit placeholder truth such as `--` instead of claiming a precise generation time."
+  actual: "Before repair, `formatUpdatedAtLabel()` fell back to `new Date().toLocaleString()` whenever the synced backtest result payload omitted completion metadata, so `/strategy/backtest` could present a local current-time report row as if the backend had provided verified completion freshness."
+  evidence:
+    kind: live-observation
+    note: "Owner regression reproduced the issue with a completed backtest result payload that omitted completion metadata and observed a local current-time `生成时间`. After repair, the same path renders `--`. A targeted system-`google-chrome` verification additionally confirmed the canonical route now shows `Momentum Alpha ... --` in `报告中心` for the same controlled result payload."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/backtest
+  status: open
+  dependency: null
+  dedupe_key: /strategy/backtest:data-state:resultRowFreshnessProvenance
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check that routed report rows degrade to `--` when synced backtest results omit completion metadata."

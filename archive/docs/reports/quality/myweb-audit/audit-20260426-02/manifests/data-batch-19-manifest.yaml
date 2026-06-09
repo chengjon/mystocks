@@ -1,0 +1,83 @@
+audit_run_id: audit-20260426-02
+batch_id: data-batch-19
+module: data
+scope:
+  requested_by: user
+  pages:
+    - route: /data/indicator
+      page_key: data-indicator
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/data/Advanced.vue
+  compatibility_redirects: []
+batch_rationale: "Close the canonical `/data/indicator` selected-indicator context leak so a later verified refresh that replaces the indicator registry cannot leave the old `selected indicator` workspace visible beside the new verified registry universe. This batch reuses existing `myweb-audit v1.71` selected-row context truth guidance."
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/data/indicator` remains `web/frontend/src/views/data/Advanced.vue`"
+    - "the approved repair should stay page-local inside `useDataAnalysis`, without widening into shared stat-card defaults, auth transport, or unrelated data routes"
+    - "the `selected indicator` workspace is selector-owned by the current verified indicator registry and must clear or rebind when that verified registry universe changes"
+    - "selected-stock reconciliation from `data-batch-18` remains in force and is not reworked in this batch"
+    - "this batch reuses existing `myweb-audit v1.71` selected-row context truth guidance"
+  fallback_log:
+    - "the default local Playwright Chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+    - "the selected-indicator proof was executed with controlled browser-context fulfillment for the indicator-registry slice because that same-instance refresh path needs deterministic registry replacement evidence"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default]
+  notes:
+    - "verify `/data/indicator` can first mount a `selected indicator` workspace for `移动平均线 / MA`, then clear that workspace after a later verified refresh replaces the registry with only `相对强弱指标 / RSI`"
+    - "verify the refreshed route keeps neutral indicator-empty baseline truth visible instead of the stale selected-indicator workspace"
+repair_approval:
+  status: approved
+  approved_findings:
+    - data-indicator-issue-06
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - data-indicator
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/composables/market/useDataAnalysis.ts
+    - web/frontend/tests/unit/views/data-advanced-screening-truth.spec.ts
+    - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-data-indicator-selected-indicator-context-and-phase2-list
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contains earlier staged audit artifacts and unrelated files, so any staged GitNexus output remains observation-only unless an isolated staged scope is prepared later"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` remains a mixed observation and is not used as an isolated verdict for `data-batch-19`"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/data-indicator-selected-indicator-context-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-19-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-19-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-19-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/data-batch-19-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-data-batch-19-closeout
+  notes:
+    - "the canonical data-indicator route now keeps selected-indicator context aligned with the current verified registry universe"
+    - "this batch reuses existing `myweb-audit v1.71` selected-row context truth guidance"
+status: complete

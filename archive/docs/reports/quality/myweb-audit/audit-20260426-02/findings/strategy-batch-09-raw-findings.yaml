@@ -1,0 +1,40 @@
+- finding_id: strategy-signals-data-state-002
+  batch_id: strategy-batch-09
+  page:
+    route: /strategy/signals
+    page_key: strategy-signals
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Strategy signals route let shared-store refresh metadata overwrite verified signal snapshot provenance on manual refresh failure
+  trigger:
+    steps:
+      - "Open `/strategy/signals`"
+      - "Allow the first `/api/v1/trade/signals?limit=10` payload to resolve successfully"
+      - "Click `刷新信号`"
+      - "Resolve the refresh request as `success: false` while the route is still showing the earlier verified signal snapshot"
+      - "Inspect the hero `REQ_ID`, adjacent `COUNT` meta, visible signal rows, and stale-state copy"
+  expected: "After at least one verified signal snapshot exists, a failed manual refresh should preserve the last verified rows plus the last verified `REQ_ID` provenance and show explicit stale-refresh messaging. The route must not downgrade the visible shell to faux unavailable or clear the current signal timeline."
+  actual: "Before repair, `/strategy/signals` reused the shared store's latest refresh outcome directly. A resolved `success: false` refresh could replace the visible `REQ_ID` provenance, clear routed signal rows, and collapse the route toward faux unavailable truth even though the failed refresh had not replaced the current verified snapshot."
+  evidence:
+    kind: live-observation
+    note: "System-`google-chrome` verification with browser-context interception reproduced a successful first signal sync followed by a resolved `success: false` manual refresh. After repair the same route keeps `REQ_ID: req-live-strategy-signals-success`, retains `COUNT: 2` plus the visible `贵州茅台` and `宁德时代` rows, and shows `strategy signals refresh unavailable，当前仍显示上次成功同步的策略信号快照。`."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue
+    primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/signals
+    - /watchlist/signals
+  status: open
+  dependency: null
+  dedupe_key: /strategy/signals:data-state:storeRefreshSnapshotProvenanceTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/strategy/signals` after repair and confirm first-load failure still stays unavailable while `success -> refresh fail` now retains the last verified request provenance and signal rows."

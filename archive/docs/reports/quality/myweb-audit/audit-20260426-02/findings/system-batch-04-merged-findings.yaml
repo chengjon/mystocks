@@ -1,0 +1,42 @@
+- consolidated_issue_id: system-data-issue-01
+  severity: Medium
+  title: System data config rows now preserve endpoint-level identity when friendly name or url fields are absent
+  pages:
+    - /system/data
+  source_roles:
+    - data-state-audit
+  why_consolidated: The misleading repeated source rows and the missing endpoint-level fallback were one routed payload-normalization truth defect owned by the shared system data mapper for the canonical page family.
+  primary_owner: web/frontend/src/views/artdeco-pages/system-tabs/dataManagementData.ts
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact: []
+  dedupe_keys:
+    - /system/data:data-state:dataManagementData-endpoint-normalization
+  verification_scope:
+    routes:
+      - /system/data
+    states:
+      - default
+      - loading
+    breakpoints:
+      - 1920
+      - 1440
+      - 1280
+  repair_summary:
+    files:
+      - web/frontend/src/views/artdeco-pages/system-tabs/dataManagementData.ts
+      - web/frontend/src/views/system/__tests__/DataSource.spec.ts
+      - web/frontend/src/views/artdeco-pages/system-tabs/__node_tests__/dataManagementData.test.ts
+      - web/frontend/src/views/artdeco-pages/system-tabs/__tests__/ArtDecoDataManagement.spec.ts
+      - web/frontend/tests/unit/views/system-wrapper-retention.spec.ts
+      - .claude/skills/myweb-audit/SKILL.md
+      - .claude/skills/myweb-audit/references/audit-checklist.md
+      - .claude/agents/myweb-audit-data-state-audit.md
+      - .claude/skills/myweb-audit/references/CHANGELOG.md
+    notes:
+      - "the shared mapper now prefers live `description` for the row name before falling back to `source_name`"
+      - "the endpoint column now falls back to `endpoint_name` when the live contract omits `endpoint` and `url`"
+      - "canonical routed-page and mapper regressions now cover the live payload shape that previously collapsed into repeated `akshare / N/A` rows"
+  verification_surface: code-review-plus-targeted-live-verification

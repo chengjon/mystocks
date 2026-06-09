@@ -1,0 +1,24 @@
+- consolidated_issue_id: secondary-shell-issue-43
+  severity: Medium
+  affected_routes:
+    - /secondary/realtime-monitor-static-shell
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/RealTimeMonitor.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "Legacy realtime monitor page may be degraded to an honest static shell because it has no verified one-to-one canonical SSE owner."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The repair stays scoped to one unrouted legacy realtime monitor page and removes its page-local style and SSE demo orchestration instead of creating a new realtime snapshot or store."
+    related_routes:
+      - /secondary/realtime-monitor-static-shell
+  approval_status: approved

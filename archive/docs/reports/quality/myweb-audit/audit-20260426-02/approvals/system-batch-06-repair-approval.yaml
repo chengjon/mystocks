@@ -1,0 +1,23 @@
+- consolidated_issue_id: system-config-issue-02
+  severity: Medium
+  affected_routes:
+    - /system/config
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/system/Settings.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: The canonical system-config source tab now uses the live `/api/v1/data-sources/config/` contract and reports honest tab-local provenance instead of embedded sample KPI cards and sample source inventory.
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: null
+    related_routes: []
+  approval_status: approved

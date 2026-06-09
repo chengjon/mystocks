@@ -1,0 +1,38 @@
+- consolidated_issue_id: risk-overview-issue-09
+  severity: High
+  title: Risk overview now preserves multi-request verified snapshot truth for request provenance, summary counts, and stale refresh behavior
+  pages:
+    - /risk/overview
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The failed first-load request-id leak, faux zero-count summary surfaces, and refresh-after-success row clearing were one routed truth cluster: `/risk/overview` trusted the latest `useArtDecoApi` request metadata and failure-null arrays instead of a page-local verified overview snapshot boundary."
+  primary_owner: web/frontend/src/views/risk/Overview.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /risk/overview
+  dedupe_keys:
+    - /risk/overview:data-state:multiRequestRefreshProvenanceAndPlaceholderTruth
+  verification_scope:
+    routes:
+      - /risk/overview
+    states:
+      - first-load-failure
+      - stale-refresh-failure
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/risk/Overview.vue
+      - web/frontend/src/views/risk/__tests__/Overview.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    notes:
+      - "the canonical risk overview owner now keeps page-local verified snapshot state for request provenance instead of binding hero `REQ_ID` to the latest failed refresh attempt"
+      - "the same route now gates sibling count surfaces such as `ALERTS`, `RULES`, and the top stats strip behind first-load placeholder truth, so unresolved or failed first loads render `--` instead of faux zero counts"
+      - "a later failed refresh now preserves verified rules and alerts with stale-refresh copy instead of clearing the routed shell to empty arrays"
+      - "the strengthened routed regressions now pin both the component and the Phase 4 matrix against first-load provenance leaks and refresh-after-success retention regressions"
+      - "this batch reuses existing `myweb-audit v1.43` plus the already-promoted first-load numeric placeholder rules, so no new skill-version bump was required"
+  verification_surface: code-review-plus-targeted-live-verification

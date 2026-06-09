@@ -69,8 +69,8 @@
 
 被测对象：
 
-- [`web/frontend/src/components/artdeco/base/ArtDecoCard.vue`](/opt/claude/mystocks_spec/web/frontend/src/components/artdeco/base/ArtDecoCard.vue)
-- [`web/frontend/src/components/artdeco/base/ArtDecoButton.vue`](/opt/claude/mystocks_spec/web/frontend/src/components/artdeco/base/ArtDecoButton.vue)
+- [`web/frontend/src/components/artdeco/base/ArtDecoCard.vue`](../../web/frontend/src/components/artdeco/base/ArtDecoCard.vue)
+- [`web/frontend/src/components/artdeco/base/ArtDecoButton.vue`](../../web/frontend/src/components/artdeco/base/ArtDecoButton.vue)
 
 推荐测试目录：
 
@@ -91,8 +91,8 @@
 
 被测对象：
 
-- [`web/frontend/src/views/artdeco-pages/_templates/ArtDecoPageTemplate.vue`](/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/_templates/ArtDecoPageTemplate.vue)
-- [`web/frontend/src/views/artdeco-pages/_templates/composables/useArtDecoPageTemplate.ts`](/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/_templates/composables/useArtDecoPageTemplate.ts)
+- [`web/frontend/src/views/artdeco-pages/_templates/ArtDecoPageTemplate.vue`](../../web/frontend/src/views/artdeco-pages/_templates/ArtDecoPageTemplate.vue)
+- [`web/frontend/src/views/artdeco-pages/_templates/composables/useArtDecoPageTemplate.ts`](../../web/frontend/src/views/artdeco-pages/_templates/composables/useArtDecoPageTemplate.ts)
 
 推荐测试目录：
 
@@ -113,8 +113,8 @@
 
 被测对象：
 
-- [`web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskOverviewPanel.vue`](/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskOverviewPanel.vue)
-- [`web/frontend/src/views/artdeco-pages/risk-tabs/riskManagementHelpers.ts`](/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/risk-tabs/riskManagementHelpers.ts)
+- [`web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskOverviewPanel.vue`](../../web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskOverviewPanel.vue)
+- [`web/frontend/src/views/artdeco-pages/risk-tabs/riskManagementHelpers.ts`](../../web/frontend/src/views/artdeco-pages/risk-tabs/riskManagementHelpers.ts)
 
 推荐测试目录：
 
@@ -209,7 +209,7 @@
 
 ## 9. 与批次计划的关系
 
-这份草案服务于 [`ARTDECO_P1_TEST_IMPLEMENTATION_BATCH_PLAN.md`](/opt/claude/mystocks_spec/docs/plans/ARTDECO_P1_TEST_IMPLEMENTATION_BATCH_PLAN.md)。
+这份草案服务于 [`ARTDECO_P1_TEST_IMPLEMENTATION_BATCH_PLAN.md`](ARTDECO_P1_TEST_IMPLEMENTATION_BATCH_PLAN.md)。
 
 两者关系是：
 

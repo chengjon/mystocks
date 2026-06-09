@@ -1,0 +1,112 @@
+- finding_id: watchlist-screener-functional-001
+  batch_id: watchlist-batch-01
+  page:
+    route: /watchlist/screener
+    page_key: watchlist-screener
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/watchlist/Screener.vue
+  source_role: functional-audit
+  severity: High
+  issue_type: interaction
+  title: Run-screening action does not control result computation and only updates feedback text
+  trigger:
+    steps:
+      - Open /watchlist/screener
+      - Change one or more filter fields
+      - Observe the result table before clicking `运行筛选`
+      - Click `运行筛选`
+  expected: Filter changes should either be applied only through the explicit run action, or the explicit run action should perform a meaningful new step in the user flow.
+  actual: Result rows are recomputed immediately from reactive filters, while the `运行筛选` button only changes banner text and run counters.
+  evidence:
+    kind: code-path-review
+    note: filteredStocks is computed directly from filters and allStocks, while runScreening only mutates feedbackMessage, feedbackTone, screeningRuns, hasRunScreening, and lastRunTime.
+  repair_target:
+    files:
+      - web/frontend/src/views/watchlist/Screener.vue
+      - web/frontend/src/views/stocks/stockScreenerData.ts
+    primary_owner: web/frontend/src/views/watchlist/Screener.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /watchlist/screener:interaction:Screener
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: Re-check whether filtering becomes explicit-run driven or the redundant action is removed after repair.
+
+- finding_id: watchlist-manage-responsive-001
+  batch_id: watchlist-batch-01
+  page:
+    route: /watchlist/manage
+    page_key: watchlist-manage
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/watchlist/Manage.vue
+  source_role: responsive-a11y-audit
+  severity: Medium
+  issue_type: responsive
+  title: Watchlist manager keeps unsupported mobile-width layout branch below the desktop baseline
+  trigger:
+    steps:
+      - Inspect the stylesheet used by /watchlist/manage
+      - Review responsive branches below the declared desktop support baseline
+  expected: Routed watchlist pages should optimize for supported desktop widths and avoid carrying unsupported mobile-width layout behavior as if it were an active requirement.
+  actual: The page includes an `@media (width <= 48rem)` branch that rewrites major layout regions for sub-1280 widths even though the audit policy treats those widths as informational only.
+  evidence:
+    kind: code-path-review
+    note: WatchlistManager.vue defines a mobile-width media query that collapses the overview grid and wraps header, tab, and action layouts below 48rem.
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/stock-management-tabs/WatchlistManager.vue
+      - web/frontend/src/views/watchlist/Manage.vue
+    primary_owner: web/frontend/src/views/artdeco-pages/stock-management-tabs/WatchlistManager.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /watchlist/manage:responsive:WatchlistManager
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: Re-check 1920, 1440, and 1280 layouts after responsive policy cleanup.
+
+- finding_id: watchlist-signals-data-state-001
+  batch_id: watchlist-batch-01
+  page:
+    route: /watchlist/signals
+    page_key: watchlist-signals
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/watchlist/Signals.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Signal ordering ignores date context and sorts only by HH:MM:SS strings
+  trigger:
+    steps:
+      - Inspect the signal normalization and sort path for /watchlist/signals
+      - Compare how items are ordered when signals can span more than one trading day
+  expected: Signal ordering should preserve full temporal context so older-day entries cannot outrank newer-day entries solely because of time-of-day text.
+  actual: The timeline sort converts only `HH:MM:SS` into seconds and drops any day-level context, making the sort fragile when data spans multiple dates or non-standard timestamps.
+  evidence:
+    kind: code-path-review
+    note: StrategySignalsTab.vue sorts by toSeconds(time) using only a strict `HH:MM:SS` parser, while strategySignalsData.ts normalizes missing or unexpected values to placeholder strings.
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/strategySignalsData.ts
+    primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /watchlist/signals:data-state:StrategySignalsTab
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: Re-check timeline ordering with same-day and cross-day signal fixtures after repair.

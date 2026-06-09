@@ -1,0 +1,45 @@
+- consolidated_issue_id: trade-signals-issue-01
+  severity: High
+  title: Trade signals route now preserves signal-row truth and degrades unsupported execution analytics instead of fabricating actionable detail
+  pages:
+    - /trade/signals
+  source_roles:
+    - data-state-audit
+  why_consolidated: The routed signal list, quality panels, and execution history all derived from the same canonical trade signals owner and reflected one shared signal-surface truth defect.
+  primary_owner: web/frontend/src/views/trade/Signals.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact: []
+  dedupe_keys:
+    - /trade/signals:data-state:Signals
+  verification_scope:
+    routes:
+      - /trade/signals
+    states:
+      - default
+      - empty
+      - signals-only
+    breakpoints:
+      - 1920
+      - 1440
+      - 1280
+  repair_summary:
+    files:
+      - web/frontend/src/views/trade/Signals.vue
+      - web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoTradingSignals.vue
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/strategySignalsData.ts
+      - web/frontend/src/views/trade/__tests__/Signals.spec.ts
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/__node_tests__/strategySignalsData.test.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/SKILL.md
+      - .claude/skills/myweb-audit/references/audit-checklist.md
+      - .claude/agents/myweb-audit-data-state-audit.md
+      - .claude/skills/myweb-audit/references/CHANGELOG.md
+    notes:
+      - "the shared strategy signal mapper now preserves optional `signal_id`, `reason`, `confidence`, and `strength` fields when the live payload actually provides them"
+      - "the canonical trade signals page now degrades missing signal detail to `未提供`, `策略来源`, `未校验`, or pending analytics states instead of fabricating IDs, reasons, confidence, strength, or history"
+      - "`HOLD` rows now render as observational `观望` items with disabled action controls instead of being relabeled as `卖出`"
+      - "the secondary panels now keep only direct live direction counts while execution history, quality metrics, and type-accuracy claims degrade honestly to pending or unverified states"
+  verification_surface: code-review-plus-targeted-live-verification

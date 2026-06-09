@@ -1,0 +1,107 @@
+audit_run_id: audit-20260426-02
+batch_id: surface-batch-01
+module: surface
+scope:
+  requested_by: user
+  pages:
+    - route: /risk/alerts
+      page_key: risk-alerts
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/risk/Alerts.vue
+    - route: /risk/news
+      page_key: risk-news
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/risk/News.vue
+    - route: /watchlist/manage
+      page_key: watchlist-manage
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/watchlist/Manage.vue
+  compatibility_redirects: []
+batch_rationale: Close the shared stat-card count-kpi truth gap so canonical routes that only expose counts or labels no longer inherit fabricated delta chrome or exact-decimal precision from shared KPI defaults, and fold that routed-surface rule back into myweb-audit.
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth remains `web/frontend/src/views/risk/Alerts.vue` for `/risk/alerts`, `web/frontend/src/views/risk/News.vue` for `/risk/news`, and `web/frontend/src/views/watchlist/Manage.vue` for `/watchlist/manage`"
+    - "the shared `ArtDecoStatCard.vue` defaults currently present exact-decimal number formatting and delta chrome unless a routed page opts out explicitly"
+    - "these three routed pages currently use count or label KPI cards without a verified comparison baseline, so delta chrome and pseudo precision should be suppressed at the route surface"
+  fallback_log:
+    - "the shared `ArtDecoStatCard.vue` file had a HIGH GitNexus upstream blast radius with 96 impacted files, so this batch intentionally chose page-local routed repairs instead of changing the shared default"
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+    - "targeted browser verification used a real backend login token from `/api/v1/auth/login` because fake localStorage auth was not sufficient for all affected routes"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, empty]
+  notes:
+    - "verify `/risk/alerts`, `/risk/news`, and `/watchlist/manage` no longer show `.artdeco-stat-change`, `+0%`, or exact-decimal count formatting on count-only KPI strips"
+    - "verify routed KPI values still reflect the live counts and keep real request IDs or route content intact after the page-local stat-card opt-out"
+repair_approval:
+  status: approved
+  approved_findings:
+    - risk-alerts-issue-05
+    - risk-news-issue-05
+    - watchlist-manage-issue-03
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - risk-alerts
+    - risk-news
+    - watchlist-manage
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/risk/Alerts.vue
+    - web/frontend/src/views/risk/News.vue
+    - web/frontend/src/views/artdeco-pages/stock-management-tabs/WatchlistManager.vue
+    - web/frontend/src/views/risk/__tests__/Alerts.spec.ts
+    - web/frontend/src/views/risk/__tests__/News.spec.ts
+    - web/frontend/src/views/watchlist/__tests__/Manage.spec.ts
+    - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+  shared_impact:
+    candidates:
+      - web/frontend/src/components/artdeco/base/ArtDecoStatCard.vue
+    confirmed: []
+  validation_status:
+    syntax: passed-via-targeted-vitest-and-playwright-list
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-phase2-and-phase4-structural-list-plus-system-chrome-route-verification-3-of-3
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated frontend or backend files before `surface-batch-01` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` is treated as observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/risk-alerts-count-kpi-truth-audit.md
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/risk-news-count-kpi-truth-audit.md
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/watchlist-manage-count-kpi-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/surface-batch-01-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/surface-batch-01-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/surface-batch-01-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/surface-batch-01-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-surface-batch-01-closeout
+  notes:
+    - "all three routed pages now suppress stat-card delta chrome and pseudo precision on count-only KPI strips"
+    - "the shared stat-card owner remains a candidate for a later dedicated shared-surface batch, but the current repair intentionally stayed page-local because the shared blast radius was high"
+status: complete

@@ -1,0 +1,40 @@
+- consolidated_issue_id: system-resources-issue-02
+  severity: High
+  title: System resources now keeps first-load node labels unresolved until the first verified snapshot exists
+  pages:
+    - /system/resources
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The route exposed one unresolved-first-load route-truth cluster: node labels implied a resolved empty snapshot before any verified system-resources payload existed."
+  primary_owner: web/frontend/src/views/system/Resources.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /system/health
+    - /system/api
+  dedupe_keys:
+    - /system/resources:data-state:resourcePendingNodeLabelTruth
+  verification_scope:
+    routes:
+      - /system/resources
+    states:
+      - first-load-pending
+      - verified-resource-success
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/system/Resources.vue
+      - web/frontend/src/views/system/composables/useSystemResourcesPage.ts
+      - web/frontend/src/views/system/__tests__/Resources.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/references/route-truth-casebook.md
+      - .claude/skills/myweb-audit/references/route-truth-coverage-matrix.md
+    notes:
+      - "resource-dependent node labels now stay at `--` until the first verified resource snapshot exists"
+      - "hero metadata now keeps `NODE: --` while the delayed resource request is still in flight"
+      - "owner and routed Phase 4 regressions now pin the delayed-first-load node-label shell for `/system/resources`"
+      - "the stable `myweb-audit v2.0` numeric family is reused; only route references and artifacts were updated"
+  verification_surface: code-review-plus-targeted-live-verification

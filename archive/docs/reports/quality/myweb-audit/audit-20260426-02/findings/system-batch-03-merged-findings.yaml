@@ -1,0 +1,81 @@
+- consolidated_issue_id: system-api-issue-02
+  severity: Medium
+  title: System API middleware runtime labels now degrade honestly when runtime verification is unavailable
+  pages:
+    - /system/api
+  source_roles:
+    - data-state-audit
+  why_consolidated: The misleading active middleware labels and the missing runtime-status degradation were one routed observability truth defect owned by the canonical system API page.
+  primary_owner: web/frontend/src/views/system/API.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact: []
+  dedupe_keys:
+    - /system/api:data-state:API-runtime-status
+  verification_scope:
+    routes:
+      - /system/api
+    states:
+      - default
+      - loading
+      - error
+    breakpoints:
+      - 1920
+      - 1440
+      - 1280
+  repair_summary:
+    files:
+      - web/frontend/src/views/system/API.vue
+      - web/frontend/src/views/system/styles/API.scss
+      - web/frontend/src/views/system/__tests__/API.spec.ts
+      - .claude/skills/myweb-audit/SKILL.md
+      - .claude/skills/myweb-audit/references/audit-checklist.md
+      - .claude/agents/myweb-audit-data-state-audit.md
+      - .claude/skills/myweb-audit/references/CHANGELOG.md
+    notes:
+      - "replaced hardcoded active middleware labels with runtime-derived rows that degrade to `未校验` when the health probe is unavailable or unhealthy"
+      - "kept the runtime failure message visible while preventing the primary live runtime surface from implying a verified-running backend state"
+      - "added canonical routed-page regression coverage for the failed health-probe path"
+  verification_surface: code-review-plus-targeted-live-verification
+- consolidated_issue_id: system-health-issue-01
+  severity: Medium
+  title: System health middleware runtime labels now degrade honestly when runtime verification is unavailable
+  pages:
+    - /system/health
+  source_roles:
+    - data-state-audit
+  why_consolidated: The misleading active middleware labels and the missing runtime-status degradation were one routed observability truth defect owned by the canonical system health page.
+  primary_owner: web/frontend/src/views/system/Health.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact: []
+  dedupe_keys:
+    - /system/health:data-state:Health-runtime-status
+  verification_scope:
+    routes:
+      - /system/health
+    states:
+      - default
+      - loading
+      - error
+    breakpoints:
+      - 1920
+      - 1440
+      - 1280
+  repair_summary:
+    files:
+      - web/frontend/src/views/system/Health.vue
+      - web/frontend/src/views/system/__tests__/Health.spec.ts
+      - .claude/skills/myweb-audit/SKILL.md
+      - .claude/skills/myweb-audit/references/audit-checklist.md
+      - .claude/agents/myweb-audit-data-state-audit.md
+      - .claude/skills/myweb-audit/references/CHANGELOG.md
+    notes:
+      - "replaced hardcoded active middleware labels with runtime-derived rows that degrade to `UNVERIFIED` when the health probe is unavailable or unhealthy"
+      - "kept the runtime failure message visible while preventing the primary live runtime surface from implying a verified-running backend state"
+      - "added canonical routed-page regression coverage for the failed health-probe path"
+  verification_surface: code-review-plus-targeted-live-verification

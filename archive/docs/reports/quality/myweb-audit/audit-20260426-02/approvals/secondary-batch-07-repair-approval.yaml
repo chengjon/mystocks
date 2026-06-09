@@ -1,0 +1,24 @@
+- consolidated_issue_id: secondary-shell-issue-07
+  severity: Medium
+  affected_routes:
+    - /secondary/legacy-analysis-static-shell
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/Analysis.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "Legacy analysis workbench now degrades to an honest static shell when no semantically matching canonical owner exists."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The repair stays scoped to the legacy analysis owner plus precedent documentation; no new snapshot store, request provenance surface, or shared live-truth contract was introduced."
+    related_routes:
+      - /secondary/legacy-analysis-static-shell
+  approval_status: approved

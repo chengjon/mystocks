@@ -1,0 +1,42 @@
+- finding_id: secondary-shell-049-trade-management-orphan-components
+  batch_id: secondary-batch-49
+  page:
+    route: /secondary/trade-management-orphan-components
+    page_key: secondary-trade-management-orphan-components
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/trade-management/components/PortfolioOverview.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Orphan trade-management child components preserved independent live trading state
+  trigger:
+    steps:
+      - "Inspect `views/trade-management/components/{PortfolioOverview,PositionsTab,StatisticsTab,TradeHistoryTab,TradeDialog}.vue`"
+      - "Confirm the active trading orchestration shell no longer imports these components"
+      - "Confirm the components still exposed local sample portfolio data, direct trade API calls, chart synthesis, fallback rows, or order execution state"
+  expected: "Unrouted orphan trade-management child components should degrade to honest static shells and hand off users to canonical `/trade/*` owners."
+  actual: "Before repair, the components preserved local portfolio numbers, independent API fetches, fallback position rows, chart-generated statistics, trade-history pagination, and order submission semantics."
+  evidence:
+    kind: code-review-plus-owner-regression
+    note: "RED regression failed because `PortfolioOverview.vue` did not render `legacy-static-shell` and still exposed local portfolio stat cards."
+  repair_target:
+    files:
+      - web/frontend/src/views/trade-management/components/PortfolioOverview.vue
+      - web/frontend/src/views/trade-management/components/PositionsTab.vue
+      - web/frontend/src/views/trade-management/components/StatisticsTab.vue
+      - web/frontend/src/views/trade-management/components/TradeHistoryTab.vue
+      - web/frontend/src/views/trade-management/components/TradeDialog.vue
+      - web/frontend/tests/unit/config/trade-management-components-normalization.spec.ts
+    primary_owner: web/frontend/src/views/trade-management/components/PortfolioOverview.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/trade-management-orphan-components
+  status: open
+  dependency: null
+  dedupe_key: /secondary/trade-management-orphan-components:route-truth:orphanTradeManagementComponents
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run source regression to confirm the orphan components render `legacy-static-shell` and no longer import `tradeApi`, synthesize fallback rows, or submit orders."

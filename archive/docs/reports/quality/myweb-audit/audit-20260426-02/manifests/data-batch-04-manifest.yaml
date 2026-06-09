@@ -1,0 +1,82 @@
+audit_run_id: audit-20260426-02
+batch_id: data-batch-04
+module: data
+scope:
+  requested_by: user
+  pages:
+    - route: /data/concept
+      page_key: data-concept
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/data/Concepts.vue
+  compatibility_redirects: []
+batch_rationale: Stale-refresh truthfulness repair for the routed concept workbench, which previously dropped users into a data wipe or ambiguous status after a manual refresh failure.
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+  - visual-artdeco-audit
+  - responsive-a11y-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - canonical route truth for `/data/concept` remains `web/frontend/src/views/data/Concepts.vue`
+    - targeted browser verification can reuse the existing PM2 frontend with Playwright-library control of system `google-chrome`
+  fallback_log:
+    - the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1920, 1440, 1280]
+  required_states: [default, error]
+  notes:
+    - verify that a failed manual refresh keeps the last successful concept rows visible while surfacing a stale-data warning
+    - keep the refresh-failure handling local to `Concepts.vue` rather than changing the shared ArtDeco API composable
+repair_approval:
+  status: approved
+  approved_findings:
+    - data-concept-issue-01
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - data-concept
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/data/Concepts.vue
+    - web/frontend/tests/unit/views/data-concept-refresh-fallback.spec.ts
+    - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-concept-refresh-warning-1-of-1
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated frontend repair files before `data-batch-04` was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` is treated as observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/data-concept-refresh-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-04-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-04-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-04-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/data-batch-04-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: staged-scope-and-artifact-validation
+  next_action: finalize-data-batch-04-closeout
+  notes:
+    - "the routed concept workbench now preserves the last successful board table on refresh failure and labels the state as stale instead of silently resetting the page truth"
+    - "Phase 2 browser coverage now includes a success-then-refresh-fail concept path"
+status: complete

@@ -1,0 +1,32 @@
+- consolidated_issue_id: secondary-shell-issue-26
+  severity: Medium
+  title: Trading decision orders panel now degrades to an honest static shell
+  pages:
+    - /secondary/trading-decision-orders-static-shell
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The local order-entry form, buy/sell actions, refresh button, and order-history table in `DecisionOrders.vue` were all faces of the same defect family: an active embedded decision panel preserved pseudo-live order semantics even though no semantically matching canonical `/trade/orders` or `/trade/execution` owner exists."
+  primary_owner: web/frontend/src/views/trading-decision/DecisionOrders.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/trading-decision-orders-static-shell
+  dedupe_keys:
+    - /secondary/trading-decision-orders-static-shell:route-truth:tradingDecisionOrdersStaticShell
+  verification_scope:
+    routes:
+      - /secondary/trading-decision-orders-static-shell
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/trading-decision/DecisionOrders.vue
+      - web/frontend/src/views/trading-decision/__tests__/DecisionOrders.spec.ts
+    notes:
+      - "the decision orders panel now renders an honest static shell because no semantically matching canonical order owner exists"
+      - "the repair removes local pseudo-live search, submit, refresh, and order-history chrome instead of inventing a new secondary truth source"
+  verification_surface: code-review-only

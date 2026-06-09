@@ -1,0 +1,33 @@
+- consolidated_issue_id: secondary-shell-issue-34
+  severity: Medium
+  title: Legacy stocks page now degrades to an honest static shell
+  pages:
+    - /secondary/stocks-static-shell
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The local filter bar, stock-list rows, refresh affordances, and detail-analysis actions in `Stocks.vue` were all faces of the same defect family: a legacy stocks workbench preserved pseudo-live truth even though no semantically matching canonical owner existed."
+  primary_owner: web/frontend/src/views/Stocks.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/stocks-static-shell
+  dedupe_keys:
+    - /secondary/stocks-static-shell:route-truth:stocksStaticShell
+  verification_scope:
+    routes:
+      - /secondary/stocks-static-shell
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/Stocks.vue
+      - web/frontend/src/views/__tests__/Stocks.spec.ts
+    notes:
+      - "the legacy stocks page now renders an honest static shell"
+      - "the repair removes local filters, faux stock rows, refresh chrome, and detail-analysis actions instead of preserving pseudo-live stock-list truth"
+      - "users are handed back to verified `/watchlist/screener`, `/market/realtime`, and `/detail/graphics/600519` routes"
+  verification_surface: code-review-only

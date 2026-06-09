@@ -1,0 +1,24 @@
+- consolidated_issue_id: strategy-gpu-issue-02
+  severity: High
+  affected_routes:
+    - /strategy/gpu
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/strategy/composables/useBacktestGPU.ts
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: true
+    shared_component: false
+    generated_artifact: false
+  summary: "The canonical strategy-gpu route now degrades its top runtime banner to explicit partial-sync wording whenever only one primary slice refreshes, so performance-only or status-only shells no longer masquerade as a full recent route sync."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The repaired gap is fully contained in the route-owned composable `useBacktestGPU`, the canonical route template `BacktestGPU.vue`, and routed regressions; no shared dashboard primitive or sibling strategy route was widened in this batch."
+    related_routes:
+      - /strategy/gpu
+  approval_status: approved

@@ -1,0 +1,120 @@
+- finding_id: strategy-backtest-functional-001
+  batch_id: strategy-batch-01
+  page:
+    route: /strategy/backtest
+    page_key: strategy-backtest
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/strategy/Backtest.vue
+  source_role: functional-audit
+  severity: Medium
+  issue_type: interaction
+  title: 回测执行面板暴露了“生成参数快照”和“分配 GPU 资源”按钮，但这两个动作没有任何处理逻辑
+  trigger:
+    steps:
+      - Open /strategy/backtest
+      - Switch to the `execution` tab
+      - Inspect the action row around `生成参数快照` and `分配 GPU 资源`
+  expected: "执行面板中的显式动作应绑定真实处理逻辑，或降级为只读状态展示而不是伪可执行按钮。"
+  actual: "`ArtDecoBacktestAnalysis.vue` 为两个按钮提供了完整的 disabled gating 和执行语境，但没有 `@click` 处理，因此它们是纯展示按钮。"
+  evidence:
+    kind: code-path-review
+    note: "执行面板只有 `立即执行` 绑定了 `handleRunBacktest`；前两个动作按钮没有任何 click handler。"
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+    primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /strategy/backtest:interaction:ArtDecoBacktestAnalysis
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: Re-check whether execution-row actions are now real or explicitly downgraded to non-action status.
+
+- finding_id: strategy-backtest-data-state-001
+  batch_id: strategy-batch-01
+  page:
+    route: /strategy/backtest
+    page_key: strategy-backtest
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/strategy/Backtest.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: 回测工作台把“REAL”状态文案与基于策略列表推导的合成任务/KPI混在一起
+  trigger:
+    steps:
+      - Open /strategy/backtest
+      - Review `loadRealConfig` and the workbench data fed into KPI, task, and ops surfaces
+      - Compare displayed REAL labels with actual fetch paths
+  expected: "标注为 REAL 的回测任务、KPI 和运营面板应来自真实回测/任务状态接口，或明确声明它们只是基于策略列表推导的占位摘要。"
+  actual: "`useBacktestAnalysisViewModel` 只调用 `strategyApi.getStrategies({})`，随后 `createBacktestWorkbenchRealConfig` 用策略列表数量和状态合成 `backtestTasks`、`summary`、`opsOverview` 等多块内容，但页面仍整体使用 REAL 在线语义。"
+  evidence:
+    kind: code-path-review
+    note: "`loadRealConfig` -> `createBacktestWorkbenchRealConfig(extractStrategiesFromPayload(payload))`；mock builder 内部用策略数量/状态直接推导任务、年化、回撤与风险告警。"
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+      - web/frontend/src/mock/backtestWorkbenchMock.ts
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue
+    primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/backtest
+  status: open
+  dependency: null
+  dedupe_key: /strategy/backtest:data-state:backtestAnalysisViewModel
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that REAL labeling and task/KPI truth boundaries are aligned after repair.
+
+- finding_id: strategy-domain-responsive-001
+  batch_id: strategy-batch-01
+  page:
+    route: /strategy/repo
+    page_key: strategy-repo
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/strategy/List.vue
+  source_role: responsive-a11y-audit
+  severity: Medium
+  issue_type: responsive
+  title: 策略仓库、参数、回测三页及其共享 tab 样式仍保留不符合当前 desktop-first 基线的 48rem 分支
+  trigger:
+    steps:
+      - Inspect routed strategy wrappers and their canonical downstream style files
+      - Review responsive branches below the current supported desktop baseline
+  expected: "主导航 strategy 页及其共享 tab 布局应按当前支持的桌面断点组织，不应继续保留 48rem 主动布局分支。"
+  actual: "`ArtDecoStrategyManagement.scss`、`StrategyParametersTab.scss`、`ArtDecoBacktestAnalysis.scss` 以及 `BacktestWorkbenchTabs.scss`、`BacktestKpiGrid.scss` 仍定义 `@media (width <= 48rem)` 分支。"
+  evidence:
+    kind: code-path-review
+    note: "当前 strategy 主链路的 routed wrapper 本身很薄，但 downstream canonical styles 和共享组件样式仍重复出现 `48rem` 分支。"
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/styles/ArtDecoStrategyManagement.scss
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/styles/StrategyParametersTab.scss
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/styles/ArtDecoBacktestAnalysis.scss
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/components/styles/BacktestWorkbenchTabs.scss
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/components/styles/BacktestKpiGrid.scss
+    primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/styles/ArtDecoStrategyManagement.scss
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/repo
+    - /strategy/parameters
+    - /strategy/backtest
+  status: open
+  dependency: null
+  dedupe_key: /strategy/repo:responsive:strategy-tabs
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: Re-check 1920, 1440, and 1280 layouts after removing unsupported mobile-width branches from the strategy batch.

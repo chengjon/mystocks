@@ -2,7 +2,7 @@
 
 > **导航说明**:
 > 本文件是 `docs/guides/ai-tools/` 的 transition index，不是仓库共享规则、当前 agent 执行口径或唯一事实来源。
-> 若涉及仓库级共享规则、审批门禁或治理口径，请优先阅读 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)；若涉及具体执行入口，再结合根目录 `AGENTS.md`、根目录 `CLAUDE.md` 与当前代码核对。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先阅读 [`architecture/STANDARDS.md`](../../../architecture/STANDARDS.md)；若涉及具体执行入口，再结合根目录 `AGENTS.md`、根目录 `CLAUDE.md` 与当前代码核对。
 
 ## Current Entry Order
 
@@ -14,8 +14,8 @@
 4. [`GEMINI.md`](./GEMINI.md)
 5. [`GRAPHITI_MCP_WORKFLOW.md`](./GRAPHITI_MCP_WORKFLOW.md)
 6. [`ZREAD_GUIDE.md`](./ZREAD_GUIDE.md)
-7. [`OMC_WORKFLOW_GUIDE.md`](./OMC_WORKFLOW_GUIDE.md)
-8. [`OMO_SETUP_GUIDE.md`](./OMO_SETUP_GUIDE.md)
+7. [`OMO_SETUP_GUIDE.md`](./OMO_SETUP_GUIDE.md)
+8. [`CONTEXT_MODE_MCP_CONFIGURATION.md`](./CONTEXT_MODE_MCP_CONFIGURATION.md)
 9. [`OpenCode生产级配置与固化指南.md`](./OpenCode生产级配置与固化指南.md)
 
 ## Active Supporting Guides
@@ -30,10 +30,10 @@
   - Gemini CLI 质量保证工作流参考
 - [`GRAPHITI_MCP_WORKFLOW.md`](./GRAPHITI_MCP_WORKFLOW.md)
   - Graphiti 记忆工作流说明
+- [`CONTEXT_MODE_MCP_CONFIGURATION.md`](./CONTEXT_MODE_MCP_CONFIGURATION.md)
+  - context-mode MCP 本地安装、Codex hooks、升级与验证说明
 - [`ZREAD_GUIDE.md`](./ZREAD_GUIDE.md)
   - AI 阅读仓库 wiki、定位入口与安全使用 zread 的指南
-- [`OMC_WORKFLOW_GUIDE.md`](./OMC_WORKFLOW_GUIDE.md)
-  - OMC 使用与故障排查入口
 - [`OMO_SETUP_GUIDE.md`](./OMO_SETUP_GUIDE.md)
   - OMO/OpenCode 本地配置入口
 - [`OpenCode生产级配置与固化指南.md`](./OpenCode生产级配置与固化指南.md)
@@ -71,5 +71,5 @@
 ## Retention Rule
 
 - 该 family 当前保留为 `supporting`，不升级为新的 canonical docs trunk
-- 根导航只保留当前仍有较高直接使用价值的 agent 入口、快速路由和 OMC/OMO 主流程说明，其余专题化材料统一通过本 index 进入
+- 根导航只保留当前仍有较高直接使用价值的 agent 入口、快速路由和 OMO 主流程说明，其余专题化材料统一通过本 index 进入
 - 若后续专题化修复与 training 材料的实际入链继续下降，可继续按 bounded batch 单独评估 archive/delete

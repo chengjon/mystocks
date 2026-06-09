@@ -6,245 +6,102 @@
 >
 > 文内统计值、完成状态、修复结论和验收结果如未重新复核，应视为历史快照，不得直接当作当前事实。
 
+> **当前统计口径**:
+> 本报告已在 `2026-04-24` 通过 `python scripts/generate_openapi.py --output /tmp/mystocks_openapi_current.json` 重新测量。旧文档中“469 个端点”的表述已不再代表当前仓库状态。
 
-> **历史统计快照更新日期**: 2026-02-16 | **API版本管理**: `web/backend/app/api/VERSION_MAPPING.py` (Single Source of Truth)
-> **API版本**: v1（主要版本）、v2（增强市场数据）| **响应格式**: UnifiedResponse
+## 1. 当前总体统计
 
-## 📊 总体统计
+| 指标 | 当前值 | 来源 |
+|------|--------|------|
+| Paths | `455` | 当前导出的 OpenAPI `paths` |
+| Operations | `493` | 当前导出的全部 HTTP 方法数 |
+| GET | `313` | 当前导出结果 |
+| POST | `143` | 当前导出结果 |
+| PUT | `13` | 当前导出结果 |
+| DELETE | `22` | 当前导出结果 |
+| PATCH | `2` | 当前导出结果 |
 
-- **总端点数量**: 469个
-- **API文件数量**: 47个
-- **覆盖功能模块**: 15个主要功能模块
+## 2. 核心前缀观察
 
-## 🔍 HTTP方法分布统计
+下表只统计本轮重点核对的主前缀，不代表全部路径分类：
 
-| HTTP方法 | 数量 | 占比 | 主要用途 |
-|----------|------|------|----------|
-| **GET** | 320+ | 68.2% | 数据查询、状态检查、列表获取 |
-| **POST** | 110+ | 23.5% | 数据创建、计算执行、操作触发 |
-| **PUT** | 25+ | 5.3% | 数据更新、配置修改 |
-| **DELETE** | 14+ | 3.0% | 数据删除、资源清理 |
+| 前缀族 | Operation 数 | 说明 |
+|--------|--------------|------|
+| `/api/v1/data/*` | `38` | 数据中心与行情基础数据 |
+| `/api/v1/risk/*` | `36` | 风险规则、止损、告警 |
+| `/api/v1/monitoring/*` | `35` | 监控与告警 |
+| `/api/v1/strategy/*` | `22` | 策略管理与执行 |
+| `/api/v1/market/*` | `13` | v1 市场数据 |
+| `/api/v2/market/*` | `13` | v2 增强市场数据 |
+| `/api/contracts/*` | `12` | 契约治理接口 |
+| `/api/v1/technical/*` | `10` | 技术分析与批量指标 |
+| `/api/v1/system/*` | `10` | 系统设置与系统能力 |
+| `/api/v1/auth/*` | `9` | 登录、用户、密码、CSRF |
+| `/api/v1/trade/*` | `7` | 交易相关 |
+| `/health` + `/api/health/*` | `5` | 健康与详细巡检 |
 
-## 🎯 功能分类分布统计
+## 3. 本轮重点确认的可用路径
 
-### 1. **市场数据类** (Market Data) - 95个端点
-**文件**: `market.py`, `market_v2.py`, `akshare_market.py`, `efinance.py`
-**核心功能**: 股票行情、K线数据、资金流向、龙虎榜等
+以下路径已在当前 OpenAPI 中明确存在：
 
-| 模块 | 文件 | 端点数 | HTTP方法 | 主要功能 |
-|------|------|--------|----------|----------|
-| 基础市场 | `market.py` | 10 | GET(7)/POST(3) | 行情、K线、龙虎榜、资金流向 |
-| 增强市场 | `market_v2.py` | 10 | GET(7)/POST(3) | ETF、大宗交易、分红配送 |
-| AkShare集成 | `akshare_market.py` | 40+ | GET | 交易所数据、个股信息、板块数据 |
-| EFinance集成 | `efinance.py` | 25+ | GET(22)/POST(3) | 股票、基金、期货、可转债数据 |
+| 路径 | 方法 | 用途 |
+|------|------|------|
+| `/api/v1/auth/login` | `POST` | 登录 |
+| `/api/v1/market/quotes` | `GET` | 行情查询 |
+| `/api/v1/data/stocks/basic` | `GET` | 股票基础列表 |
+| `/api/v1/strategy/strategies` | `GET,POST` | 策略列表与创建 |
+| `/api/v1/monitoring/alert-rules` | `GET,POST` | 告警规则读写 |
+| `/api/v1/data-sources/config/` | `GET,POST` | 数据源配置 |
+| `/api/v1/technical/{symbol}/indicators` | `GET` | 单标的技术指标概览 |
+| `/api/v1/technical/{symbol}/signals` | `GET` | 单标的技术信号 |
+| `/api/v1/technical/batch/indicators` | `POST` | 批量技术指标 |
+| `/api/contracts/validate` | `POST` | 契约校验 |
+| `/api/health/detailed` | `GET` | 详细健康巡检 |
+| `/health` | `GET` | 服务存活检查 |
 
-### 2. **策略管理类** (Strategy Management) - 65个端点
-**文件**: `strategy_management.py`, `strategy_mgmt.py`, `strategy.py`
-**核心功能**: 策略创建、执行、回测、模型管理
+## 4. 需要明确的治理结论
 
-| 模块 | 文件 | 端点数 | HTTP方法 | 主要功能 |
-|------|------|--------|----------|----------|
-| 策略管理 | `strategy_management.py` | 12 | GET(7)/POST(4)/PUT/DELETE | 策略CRUD、模型训练、回测 |
-| 策略执行 | `strategy_mgmt.py` | 10 | GET(7)/POST(2)/PUT/DELETE | 策略配置、执行控制 |
-| 策略运行 | `strategy.py` | 6 | GET(4)/POST(2) | 策略定义、批量运行、结果查询 |
+### 4.1 旧统计值应退役
 
-### 3. **风险管理类** (Risk Management) - 35个端点
-**文件**: `risk_management.py`
-**核心功能**: VaR计算、止损管理、风险监控、告警系统
+以下说法不应再写成“当前事实”：
 
-| 功能模块 | 端点数 | HTTP方法 | 详细功能 |
-|----------|--------|----------|----------|
-| VaR/CVaR计算 | 2 | POST | 风险价值计算 |
-| Beta系数计算 | 1 | POST | 系统性风险评估 |
-| 止损管理 | 15+ | POST/PUT/DELETE/GET | 止损规则、状态监控、历史分析 |
-| 风险监控 | 5+ | GET | 实时风险指标、历史数据 |
-| 告警系统 | 10+ | POST/GET | 告警规则、通知管理 |
+- “总端点数量 469”
+- “所有版本化路由都只由 `VERSION_MAPPING.py` 管理”
 
-### 4. **数据源管理类** (Data Source Management) - 25个端点
-**文件**: `data_source_registry.py`, `data_source_config.py`
-**核心功能**: 数据源注册、健康检查、配置管理
+原因：
 
-| 模块 | 文件 | 端点数 | HTTP方法 | 主要功能 |
-|------|------|--------|----------|----------|
-| 数据源注册表 | `data_source_registry.py` | 7 | GET(5)/POST(2) | 搜索、测试、健康检查 |
-| 配置管理 | `data_source_config.py` | 11 | GET(6)/POST(3)/PUT/DELETE | CRUD操作、版本管理 |
+- 当前运行时导出的 OpenAPI 已显示为 `455 paths / 493 operations`
+- 运行时注册链路还涉及 `router_registry.py` 与 `api/v1/router.py`
 
-### 5. **监控告警类** (Monitoring & Alerting) - 50个端点
-**文件**: `monitoring.py`, `monitoring_analysis.py`, `monitoring_watchlists.py`, `signal_monitoring.py`
-**核心功能**: 实时监控、组合分析、信号监控
+### 4.2 文档统计必须与导出绑定
 
-| 模块 | 文件 | 端点数 | HTTP方法 | 主要功能 |
-|------|------|--------|----------|----------|
-| 基础监控 | `monitoring.py` | 15 | GET(11)/POST(4) | 告警规则、实时数据、龙虎榜 |
-| 组合分析 | `monitoring_analysis.py` | 8 | GET(5)/POST(3) | 健康评分、持仓分析、再平衡建议 |
-| 清单管理 | `monitoring_watchlists.py` | 7 | GET(4)/POST(2)/PUT/DELETE | 自选股管理 |
-| 信号监控 | `signal_monitoring.py` | 10 | GET | 信号历史、质量报告、实时监控 |
+以后更新本报告时，必须至少附带：
 
-### 6. **技术分析类** (Technical Analysis) - 45个端点
-**文件**: `technical_analysis.py`, `indicators.py`
-**核心功能**: 技术指标计算、趋势分析、信号生成
+- 生成日期
+- 生成命令
+- 统计口径（按 `paths` 还是按 `operations`）
 
-| 模块 | 文件 | 端点数 | HTTP方法 | 主要功能 |
-|------|------|--------|----------|----------|
-| 技术指标 | `technical_analysis.py` | 9 | GET(8)/POST | 26个技术指标、趋势动量波动性分析 |
-| 指标管理 | `indicators.py` | 11 | GET(8)/POST(2)/PUT/DELETE | 指标注册表、配置管理、批量计算 |
+## 5. 当前 API 管理建议
 
-### 7. **数据质量类** (Data Quality) - 15个端点
-**文件**: `data_quality.py`
-**核心功能**: 数据验证、质量监控、告警处理
+- 把 `docs/api/openapi.json` 视为随代码同步更新的快照工件
+- 把本报告视为“OpenAPI 的文字摘要”，而不是平行真相源
+- 继续优先清理“前端调用旧路径、文档仍写旧路径、OpenAPI 已经变更”的漂移问题
 
-| 功能模块 | 端点数 | HTTP方法 | 详细功能 |
-|----------|--------|----------|----------|
-| 健康检查 | 2 | GET | 服务状态检查 |
-| 质量指标 | 3 | GET | 质量统计、趋势分析 |
-| 告警管理 | 3 | GET/POST | 告警列表、确认、解决 |
-| 配置管理 | 1 | GET | 质量检查模式配置 |
-| 测试功能 | 1 | POST | 质量测试执行 |
+## 6. 2026-04-24 运行时页面子集验证口径
 
-### 8. **认证授权类** (Authentication) - 9个端点
-**文件**: `auth.py`
-**核心功能**: 用户管理、登录认证、密码重置
+除 OpenAPI 统计外，本轮还对前端活跃业务页做了受控 runtime API 观测。当前已稳定通过的页面子集为 `17` 页，验证方式为：
 
-| 功能模块 | 端点数 | HTTP方法 | 详细功能 |
-|----------|--------|----------|----------|
-| 用户认证 | 3 | POST | 登录、登出、令牌刷新 |
-| 用户管理 | 2 | GET/POST | 用户注册、用户信息查询 |
-| 密码管理 | 2 | POST | 密码重置请求、确认 |
-| 安全功能 | 1 | GET | CSRF令牌获取 |
-| 权限管理 | 1 | GET | 用户列表查询 |
+- 命令：`npx playwright test tests/e2e/comprehensive-all-pages.spec.ts --project=chromium --grep "Dashboard|Market-Realtime|Market-Technical|Market-LHB|Data-Industry|Data-Concept|Data-FundFlow|Data-Indicator|Watchlist-Manage|Watchlist-Signals|Watchlist-Screener|Strategy-Repo|Strategy-Parameters|Strategy-Backtest|Strategy-Pos|Strategy-Signals|System-API"`
+- 浏览器项目：`chromium`
+- 结果：`17 passed`
 
-### 9. **缓存管理类** (Cache Management) - 15个端点
-**文件**: `cache.py`
-**核心功能**: 数据缓存、预热、监控、清理
+这组验证只说明“页面首屏主 API 在当前环境下至少被请求一次”，不等于：
 
-| 功能模块 | 端点数 | HTTP方法 | 详细功能 |
-|----------|--------|----------|----------|
-| 缓存操作 | 4 | GET/POST/DELETE | 数据存取、删除、清空 |
-| 缓存监控 | 3 | GET | 状态、统计、监控指标 |
-| 缓存预热 | 2 | GET/POST | 预热触发、状态查询 |
-| 缓存清理 | 3 | POST/GET | 手动清理、统计、监控 |
+- 这些接口都已完成全功能验收
+- 交易域功能已可交付
+- 所有页面都已纳入同等级别的 runtime API 断言
 
-### 10. **备份恢复类** (Backup & Recovery) - 20个端点
-**文件**: `backup_recovery.py`, `backup_recovery_secure.py`
-**核心功能**: 数据库备份、恢复、完整性验证
+当前边界说明：
 
-| 模块 | 文件 | 端点数 | HTTP方法 | 主要功能 |
-|------|------|--------|----------|----------|
-| 基础备份 | `backup_recovery.py` | 12 | GET(4)/POST(8) | 全量备份、增量备份、恢复、调度 |
-| 安全备份 | `backup_recovery_secure.py` | 13 | GET(5)/POST(8) | 安全备份、PITR恢复、完整性验证 |
-
-### 11. **数据管理类** (Data Management) - 30个端点
-**文件**: `data.py`
-**核心功能**: 股票数据查询、财务数据、期货数据
-
-| 功能模块 | 端点数 | HTTP方法 | 详细功能 |
-|----------|--------|----------|----------|
-| 股票基础数据 | 5 | GET | 基本信息、行业概念分类 |
-| 市场数据 | 8 | GET | 市场概览、价格分布、热门板块 |
-| 交易数据 | 3 | GET | 融资融券、龙虎榜、大宗交易 |
-| 衍生品数据 | 4 | GET | 期货指数、基差分析 |
-| 其他功能 | 2 | GET | 工厂测试、搜索功能 |
-
-### 12. **机器学习类** (Machine Learning) - 10个端点
-**文件**: `ml.py`
-**核心功能**: 模型训练、预测、特征工程
-
-| 功能模块 | 端点数 | HTTP方法 | 详细功能 |
-|----------|--------|----------|----------|
-| 数据准备 | 2 | GET/POST | TDX数据获取、股票列表查询 |
-| 特征工程 | 1 | POST | 特征生成 |
-| 模型管理 | 4 | GET/POST | 模型训练、预测、超参数搜索 |
-| 模型评估 | 2 | POST | 模型评估、性能分析 |
-
-### 13. **系统管理类** (System Management) - 15个端点
-**文件**: `system.py`
-**核心功能**: 系统监控、数据库状态、日志查询
-
-| 功能模块 | 端点数 | HTTP方法 | 详细功能 |
-|----------|--------|----------|----------|
-| 健康检查 | 2 | GET | 系统健康、数据库健康 |
-| 适配器状态 | 1 | GET | 数据源适配器健康状态 |
-| 数据库监控 | 2 | GET | 数据库统计、连接信息 |
-| 日志管理 | 2 | GET | 日志查询、摘要统计 |
-| 系统信息 | 1 | GET | 系统架构信息 |
-| 连接测试 | 1 | POST | 数据库连接测试 |
-
-### 14. **其他功能类** (Miscellaneous) - 45个端点
-**涵盖文件**: `tasks.py`, `notification.py`, `watchlist.py`, `announcement.py`, `tradingview.py`, `websocket.py`, `health.py`, `prometheus_exporter.py` 等
-
-| 模块 | 文件 | 端点数 | 主要功能 |
-|------|------|--------|----------|
-| 任务管理 | `tasks.py` | 15 | 后台任务注册、执行、监控 |
-| 通知服务 | `notification.py` | 8 | 邮件发送、偏好设置 |
-| 自选股管理 | `watchlist.py` | 12 | 自选股CRUD、分组管理 |
-| 公告监控 | `announcement.py` | 12 | 公告获取、规则配置 |
-| TradingView | `tradingview.py` | 5 | 图表配置、数据转换 |
-| WebSocket | `websocket.py` | 2 | 连接统计、频道信息 |
-| 健康监控 | `health.py` | 3 | 健康检查、详细报告 |
-| 指标导出 | `prometheus_exporter.py` | 3 | 监控指标导出 |
-
-## 📈 详细模块排序 (按端点数量降序)
-
-| 排名 | 模块名称 | 文件数量 | 端点总数 | 占比 | 主要功能 |
-|------|----------|----------|----------|------|----------|
-| 1 | 市场数据 | 4 | 95+ | 20.3% | 股票行情、K线、资金流向、龙虎榜 |
-| 2 | 策略管理 | 3 | 65+ | 13.9% | 策略CRUD、回测、模型训练 |
-| 3 | 风险管理 | 1 | 35+ | 7.5% | VaR计算、止损管理、风险监控 |
-| 4 | 技术分析 | 2 | 45+ | 9.6% | 技术指标、趋势分析、信号生成 |
-| 5 | 其他功能 | 8 | 45+ | 9.6% | 任务管理、通知、公告监控等 |
-| 6 | 数据源管理 | 2 | 25+ | 5.3% | 数据源注册、健康检查、配置 |
-| 7 | 监控告警 | 4 | 50+ | 10.7% | 实时监控、组合分析、信号监控 |
-| 8 | 备份恢复 | 2 | 20+ | 4.3% | 数据库备份、恢复、完整性验证 |
-| 9 | 数据管理 | 1 | 30+ | 6.4% | 股票数据、财务数据、期货数据 |
-| 10 | 缓存管理 | 1 | 15+ | 3.2% | 数据缓存、预热、监控 |
-| 11 | 系统管理 | 1 | 15+ | 3.2% | 系统监控、数据库状态 |
-| 12 | 数据质量 | 1 | 15+ | 3.2% | 数据验证、质量监控 |
-| 13 | 认证授权 | 1 | 9 | 1.9% | 用户管理、登录认证 |
-| 14 | 机器学习 | 1 | 10 | 2.1% | 模型训练、预测、特征工程 |
-| 15 | 基础服务 | 5 | 15+ | 3.2% | 健康检查、指标导出、WebSocket |
-
-## 🔧 API 前缀统计
-
-> **注意**: 所有版本化路由通过 `VERSION_MAPPING.py` 统一管理，其他路由在 `main.py` 中直接注册。
-
-| 前缀 | 端点数 | 版本 | 主要功能模块 | 路由来源 |
-|------|--------|------|--------------|----------|
-| `/api/v1/auth` | 9 | v1 | 用户认证、权限管理 | VERSION_MAPPING |
-| `/api/v1/data` | 35+ | v1 | 股票基础数据、市场概览、财务数据 | VERSION_MAPPING |
-| `/api/v1/market` | 15+ | v1 | K线、行情报价、资金流向、ETF、龙虎榜 | VERSION_MAPPING |
-| `/api/v2/market` | 14+ | v2 | 增强市场数据（资金流向、ETF、大宗交易、分红） | VERSION_MAPPING |
-| `/api/v1/strategy` | 10+ | v1 | 策略定义、运行、结果查询 | VERSION_MAPPING |
-| `/api/v1/monitoring` | 20+ | v1 | 告警规则、实时监控、龙虎榜 | VERSION_MAPPING |
-| `/api/v1/technical` | 10+ | v1 | 技术指标（趋势/动量/波动/成交量）、交易信号 | VERSION_MAPPING |
-| `/api/v1/system` | 10+ | v1 | 系统健康、数据库状态、日志查询 | VERSION_MAPPING |
-| `/api/v1/indicators` | 15+ | v1 | 指标注册表、配置管理、批量计算 | VERSION_MAPPING |
-| `/api/v1/trade` | 10+ | v1 | 交易管理 | VERSION_MAPPING |
-| `/api/v1/announcement` | 12+ | v1 | 公告获取、规则配置 | VERSION_MAPPING |
-| `/api/v1/tdx` | 5+ | v1 | 通达信数据接口 | VERSION_MAPPING |
-| `/api/stock-search` | 5+ | - | 股票搜索 | main.py |
-| `/api/watchlist` | 12+ | - | 自选股管理 | main.py |
-| `/api/tradingview` | 5+ | - | TradingView图表集成 | main.py |
-| `/api/notification` | 8+ | - | 通知服务 | main.py |
-| `/api` (其他) | 80+ | - | 缓存、数据质量、ML、备份、风险管理、健康检查等 | main.py |
-
-## 📋 总结
-
-MyStocks系统提供了**469个API端点**，涵盖了量化交易系统的完整功能栈：
-
-- **数据获取**: 95+端点支持多种数据源的市场数据获取
-- **策略交易**: 65+端点提供完整的策略生命周期管理
-- **风险控制**: 35+端点实现全面的风险管理和监控
-- **技术分析**: 45+端点支持26个技术指标和信号生成
-- **系统运维**: 100+端点保障系统稳定运行和监控
-
-### 架构要点
-
-- **版本管理**: 通过 `VERSION_MAPPING.py` 统一管理 API 版本前缀，v1 为主要版本，v2 用于增强市场数据
-- **响应格式**: 所有端点统一使用 `UnifiedResponse` 封装（含 success, code, message, data, timestamp, request_id）
-- **认证机制**: JWT Bearer Token + CSRF Protection
-- **三数据库架构**: PostgreSQL（主数据库）+ TDengine（高频时序）+ Redis（缓存/消息/锁）
-
----
-
-**Historical Statistics Snapshot Last Updated**: 2026-02-16
-**权威来源**: `web/backend/app/api/VERSION_MAPPING.py`
+- 交易域暂时只保留接口与契约口径，例如 `/api/v1/trade/positions`、`/api/v1/trade/signals`
+- 下单、撤单、撮合、账户写操作等交易功能由另一条线继续推进

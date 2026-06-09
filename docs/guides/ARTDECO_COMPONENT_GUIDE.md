@@ -11,7 +11,7 @@
 
 当前规范正文位于：
 
-- [docs/guides/web/ARTDECO_COMPONENT_GUIDE.md](/opt/claude/mystocks_spec/docs/guides/web/ARTDECO_COMPONENT_GUIDE.md)
+- [docs/guides/web/ARTDECO_COMPONENT_GUIDE.md](web/ARTDECO_COMPONENT_GUIDE.md)
 
 保留原因：
 

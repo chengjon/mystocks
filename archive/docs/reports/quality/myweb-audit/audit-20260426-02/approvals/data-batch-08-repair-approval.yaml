@@ -1,0 +1,24 @@
+- consolidated_issue_id: data-fund-flow-issue-01
+  severity: Medium
+  affected_routes:
+    - /data/fund-flow
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/data/FundFlow.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: The canonical fund-flow route now renders unresolved first-load KPI cards and ordinal rank cells honestly without inheriting shared faux zero metrics, delta chrome, or exact-decimal numeric formatting.
+  dependency: null
+  shared_impact:
+    candidate: true
+    basis: Shared numeric renderer defaults in `ArtDecoStatCard.vue` and `ArtDecoTable.vue` were the source of the leak, but the approved repair remains page-local in `FundFlow.vue`.
+    related_routes:
+      - /market/lhb
+  approval_status: approved

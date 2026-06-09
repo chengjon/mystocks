@@ -1,0 +1,36 @@
+- consolidated_issue_id: data-concept-issue-01
+  severity: Medium
+  title: Concept routed first-load surfaces now render honest placeholders instead of faux zero tallies, fallback leader labels, or shared delta chrome
+  pages:
+    - /data/concept
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The hero tally, top KPI strip, and content meta were three manifestations of the same routed first-load truth defect: unresolved concept surfaces delegated empty-array values into shared numeric and fallback-label rendering before the canonical page had any resolved payload."
+  primary_owner: web/frontend/src/views/data/Concepts.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /data/fund-flow
+  dedupe_keys:
+    - /data/concept:data-state:unresolvedFirstLoadConceptPlaceholderTruth
+  verification_scope:
+    routes:
+      - /data/concept
+    states:
+      - default
+      - loading
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/data/Concepts.vue
+      - web/frontend/src/views/data/__tests__/Concepts.spec.ts
+      - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+    notes:
+      - "the canonical concept route now derives pending display values for sector count, positive count, negative count, and leader so unresolved first-load surfaces render `--` instead of `0`, `0.00`, or `N/A`"
+      - "the top KPI strip now passes plain string placeholders and `show-change=false`, so shared `ArtDecoStatCard` delta chrome no longer leaks onto unresolved concept tallies"
+      - "the new routed component regression and strengthened Phase 2 matrix hang-path assertion now protect hero meta, KPI strip, and content meta against future first-load placeholder regressions"
+      - "this batch reuses existing `myweb-audit v1.37 + v1.38` rules rather than introducing a new skill version, because the defect was an exact match for the existing numeric-cluster and unresolved-first-load truth patterns"
+  verification_surface: code-review-plus-targeted-live-verification

@@ -1,0 +1,93 @@
+audit_run_id: audit-20260426-02
+batch_id: trade-batch-05
+module: trade
+scope:
+  requested_by: user
+  pages:
+    - route: /trade/signals
+      page_key: trade-signals
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/trade/Signals.vue
+    - route: /trade/history
+      page_key: trade-history
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/trade/History.vue
+  compatibility_redirects: []
+batch_rationale: Reuse the strengthened `v1.32` count-kpi delta truth rule on remaining canonical trade routes so tally or label-only KPI cards stop inheriting fabricated `+0%` chrome and exact-decimal precision from shared stat-card defaults.
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/trade/signals` remains `web/frontend/src/views/trade/Signals.vue`"
+    - "canonical route truth for `/trade/history` remains `web/frontend/src/views/trade/History.vue`"
+    - "the current routed KPI strips expose tally, cumulative, or pending-analysis values but no verified comparison baseline for shared stat-card delta semantics"
+    - "shared `ArtDecoStatCard.vue` still has a HIGH upstream blast radius, so the approved repair stays page-local on the selected trade routes"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, empty]
+  notes:
+    - "verify `/trade/signals` no longer renders `.artdeco-stat-change`, `+0%`, `3.00`, `1.00`, or `0.00` on either the top KPI strip or the pending-analysis overview cards"
+    - "verify `/trade/history` no longer renders `.artdeco-stat-change`, `+0%`, `2.00`, or `1.00` on its top KPI strip"
+    - "verify the same routes still render canonical titles, honest runtime copy, and actual trade API request behavior after the page-local opt-out"
+repair_approval:
+  status: approved
+  approved_findings:
+    - trade-signals-issue-02
+    - trade-history-issue-02
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - trade-signals
+    - trade-history
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/trade/Signals.vue
+    - web/frontend/src/views/trade/History.vue
+    - web/frontend/src/views/trade/__tests__/Signals.spec.ts
+    - web/frontend/src/views/trade/__tests__/History.spec.ts
+    - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/components/artdeco/base/ArtDecoStatCard.vue
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-trade-count-kpi-2-routes
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated frontend or backend files before `trade-batch-05` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` is treated as observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/trade-signals-count-kpi-truth-audit.md
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/trade-history-count-kpi-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-05-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-05-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-05-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/trade-batch-05-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-trade-batch-05-closeout
+  notes:
+    - "the current batch reuses the existing `v1.32` count-kpi delta truth rule rather than introducing a new failure-mode class"
+    - "both canonical trade routes now suppress shared stat-card change chrome locally while preserving their earlier signal-truth and stale-refresh repairs"
+status: complete

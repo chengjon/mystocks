@@ -1,7 +1,7 @@
 # ArtDeco Component Layering Draft
 
 > **说明**
-> 本文是 ArtDeco 组件 `Base / Domain` 分层规则草案，用于支撑 [`ARTDECO_STANDARDIZATION_P0_TASKS.md`](/opt/claude/mystocks_spec/docs/plans/ARTDECO_STANDARDIZATION_P0_TASKS.md) 中的组件边界冻结工作。
+> 本文是 ArtDeco 组件 `Base / Domain` 分层规则草案，用于支撑 [`ARTDECO_STANDARDIZATION_P0_TASKS.md`](ARTDECO_STANDARDIZATION_P0_TASKS.md) 中的组件边界冻结工作。
 > 它的作用不是立刻迁移全部组件，而是先建立统一判断标准。
 
 ---

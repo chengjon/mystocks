@@ -1,0 +1,41 @@
+- finding_id: strategy-opt-data-state-002
+  batch_id: strategy-batch-11
+  page:
+    route: /strategy/opt
+    page_key: strategy-opt
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Strategy optimization route let later transport refresh metadata overwrite verified optimization snapshot provenance and cleared visible rows on manual refresh failure
+  trigger:
+    steps:
+      - "Open `/strategy/opt?strategyId=101`"
+      - "Allow the first `/api/v1/strategy/strategies` payload to resolve successfully"
+      - "Click `刷新候选`"
+      - "Resolve the refresh request as a failure while the route is still showing the earlier verified optimization snapshot"
+      - "Inspect the hero `REQ_ID / PROCESS`, visible optimization rows, and stale-state copy"
+  expected: "After at least one verified optimization snapshot exists, a failed manual refresh should preserve the last verified row plus the last verified `REQ_ID / PROCESS` provenance and show explicit stale-refresh messaging. Before any verified snapshot exists, a failed first load should degrade header provenance to `REQ_ID: N/A / PROCESS: N/A`."
+  actual: "Before repair, `/strategy/opt` bound visible header provenance directly to the latest `useArtDecoApi` transport metadata. A failed first load could leak failed request provenance, and a later manual refresh failure could replace the visible `REQ_ID / PROCESS` truth and clear the currently visible optimization row instead of preserving the last verified snapshot."
+  evidence:
+    kind: live-observation
+    note: "System-`google-chrome` verification with browser-context interception reproduced both states. After repair the first-load failure path renders `REQ_ID: N/A / PROCESS: N/A` with `-- / -- / -- / ID 101`, and the `success -> refresh fail` path keeps `REQ_ID: req-live-strategy-opt-success`, `PROCESS: 42.00`, visible `Momentum Alpha` content, and `当前仍显示上次成功同步的优化候选快照。`."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyOptimization.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/opt
+  status: open
+  dependency: null
+  dedupe_key: /strategy/opt:data-state:refreshSnapshotRequestProvenanceTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check that failed first loads no longer leak request provenance, and that a later failed manual refresh retains the last verified `REQ_ID / PROCESS` plus the visible optimization row."

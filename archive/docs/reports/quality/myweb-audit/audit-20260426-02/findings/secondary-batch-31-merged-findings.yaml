@@ -1,0 +1,33 @@
+- consolidated_issue_id: secondary-shell-issue-31
+  severity: Medium
+  title: Legacy task-management page now degrades to an honest static shell
+  pages:
+    - /secondary/task-management-static-shell
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The local task stats cards, task tables, import/export controls, and history dialog surfaces in `TaskManagement.vue` were all faces of the same defect family: a legacy workbench preserved pseudo-live truth even though no semantically matching canonical task-management owner existed."
+  primary_owner: web/frontend/src/views/TaskManagement.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/task-management-static-shell
+  dedupe_keys:
+    - /secondary/task-management-static-shell:route-truth:taskManagementStaticShell
+  verification_scope:
+    routes:
+      - /secondary/task-management-static-shell
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/TaskManagement.vue
+      - web/frontend/src/views/__tests__/TaskManagement.spec.ts
+    notes:
+      - "the legacy task-management page now renders an honest static shell"
+      - "the repair removes local task stats, task tables, import/export controls, and history surfaces instead of preserving pseudo-live task-management truth"
+      - "users are handed back to verified `/strategy/backtest`, `/trade/terminal`, and `/system/health` routes"
+  verification_surface: code-review-only

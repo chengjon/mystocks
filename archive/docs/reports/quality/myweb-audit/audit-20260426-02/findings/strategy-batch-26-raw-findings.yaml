@@ -1,0 +1,41 @@
+- finding_id: strategy-backtest-data-state-011
+  batch_id: strategy-batch-26
+  page:
+    route: /strategy/backtest
+    page_key: strategy-backtest
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Strategy backtest leaked the previous strategy KPI summary after the route query switched to a new strategy without its own verified task context
+  trigger:
+    steps:
+      - "Open `/strategy/backtest?strategyId=101` with a controlled successful strategies payload for strategy `101`."
+      - "Verify the initial KPI strip shows the baseline summary `总回测次数:2 / 策略胜率:50% / 年化收益:3.2% / 最大回撤:-2%`."
+      - "Start a controlled completed backtest run so the KPI strip advances to `总回测次数:3` for strategy `101`."
+      - "Switch the same mounted route instance to `/strategy/backtest?strategyId=202` before strategy `202` has any verified KPI summary of its own."
+      - "Inspect the same visible KPI strip without remounting the routed owner."
+  expected: "Selector-owned KPI summary values should belong only to the current `strategyId` query. If the new selector has no verified KPI summary, the mounted `/strategy/backtest` route should keep `当前策略上下文ID 202` while the KPI strip falls back to the neutral baseline summary instead of leaking the earlier strategy's incremented totals."
+  actual: "Before repair, the same mounted `/strategy/backtest` instance kept showing `总回测次数:3` after switching from `strategyId=101` to `strategyId=202`, so the new selector shell inherited the prior strategy's verified KPI summary even though `202` had never verified its own KPI context."
+  evidence:
+    kind: live-observation
+    note: "The owner red-green regression reproduced the leak with the `202` selector still showing `总回测次数:3`. After repair, targeted Playwright-library verification with system `google-chrome` confirmed the same mounted route first shows `101` as `2 -> 3`, then reaches `202` with the baseline KPI strip restored to `2 / 50% / 3.2% / -2%` and no stale increment remaining."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/backtest
+  status: open
+  dependency: null
+  dedupe_key: /strategy/backtest:data-state:selectorOwnedKpiSummaryTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check that the same mounted `/strategy/backtest` instance first shows `101` as `总回测次数:2 -> 3`, then reaches `当前策略上下文ID 202` with the baseline KPI strip restored to `2 / 50% / 3.2% / -2%`, and confirm the stale prior increment no longer remains visible under the new selector shell."

@@ -1,0 +1,23 @@
+- consolidated_issue_id: data-indicator-issue-02
+  severity: Medium
+  affected_routes:
+    - /data/indicator
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/composables/market/useDataAnalysis.ts
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: true
+    shared_component: false
+    generated_artifact: false
+  summary: The routed indicator workbench now keeps pre-screening state idle and only labels results as screening output after the user executes screening.
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: null
+    related_routes: []
+  approval_status: approved

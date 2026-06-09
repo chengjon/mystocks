@@ -1,0 +1,76 @@
+- finding_id: secondary-shell-039-market-data-top
+  batch_id: secondary-batch-39
+  page:
+    route: /secondary/market-data-static-shell
+    page_key: secondary-market-data-static-shell
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/MarketData.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Top-level legacy MarketData page still exposed a multi-tab pseudo-live market aggregate without a one-to-one canonical owner
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/MarketData.vue`"
+      - "Inspect the local fund-flow, ETF, chip-race, and LHB tabs"
+      - "Confirm the page imports legacy market components that perform component-local direct requests"
+  expected: "A legacy market-data aggregate page with no one-to-one verified canonical owner should degrade to an honest static shell instead of preserving a second aggregate market truth."
+  actual: "Before repair, `MarketData.vue` rendered local tabs and mounted legacy market components for fund-flow, ETF, chip-race, and LHB semantics as if the aggregate shell were verified route truth."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green static-shell regression confirmed the page still mounted the legacy aggregate component path before repair."
+  repair_target:
+    files:
+      - web/frontend/src/views/MarketData.vue
+      - web/frontend/src/views/__tests__/MarketData.spec.ts
+    primary_owner: web/frontend/src/views/MarketData.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/market-data-static-shell
+  status: open
+  dependency: null
+  dedupe_key: /secondary/market-data-static-shell:route-truth:legacyAggregateStaticShell
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner regression to confirm the top-level market-data page renders an honest static shell and no longer mounts local tabs or legacy market components."
+- finding_id: secondary-shell-039-market-data-nested
+  batch_id: secondary-batch-39
+  page:
+    route: /secondary/market-data-view-static-shell
+    page_key: secondary-market-data-view-static-shell
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/market/MarketDataView.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Nested legacy MarketDataView page still exposed a multi-tab pseudo-live market aggregate without a one-to-one canonical owner
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/market/MarketDataView.vue`"
+      - "Inspect the local realtime badge, clock, back action, and fund-flow/ETF/chip-race/LHB tabs"
+      - "Confirm the page imports legacy market table components that perform component-local direct requests"
+  expected: "A nested legacy market-data aggregate page with no one-to-one verified canonical owner should degrade to an honest static shell instead of preserving a second aggregate market truth."
+  actual: "Before repair, `MarketDataView.vue` rendered local runtime chrome, tabs, and legacy market tables as if the aggregate shell were verified route truth."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green static-shell regression confirmed the page still mounted the nested legacy aggregate component path before repair."
+  repair_target:
+    files:
+      - web/frontend/src/views/market/MarketDataView.vue
+      - web/frontend/src/views/market/__tests__/MarketDataView.spec.ts
+    primary_owner: web/frontend/src/views/market/MarketDataView.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/market-data-view-static-shell
+  status: open
+  dependency: null
+  dedupe_key: /secondary/market-data-view-static-shell:route-truth:legacyAggregateStaticShell
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner regression to confirm the nested market-data page renders an honest static shell and no longer mounts runtime chrome, local tabs, or legacy market table components."

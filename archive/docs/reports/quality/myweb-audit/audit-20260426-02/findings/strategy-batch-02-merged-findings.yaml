@@ -1,0 +1,122 @@
+- consolidated_issue_id: strategy-gpu-issue-01
+  severity: Medium
+  title: Strategy GPU workbench should stop presenting simulated control and hardcoded telemetry as live runtime capability
+  pages:
+    - /strategy/gpu
+  source_roles:
+    - functional-audit
+    - data-state-audit
+  why_consolidated: The GPU page exposes local-only control actions while also seeding hardcoded high-end telemetry that survives API failures; both defects come from the same false runtime-capability boundary.
+  primary_owner: web/frontend/src/views/strategy/composables/useBacktestGPU.ts
+  repair_bucket: fix-with-shared-impact-review
+  repair_decision: approval-pending
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/gpu
+  dedupe_keys:
+    - /strategy/gpu:interaction:useBacktestGPU
+    - /strategy/gpu:data-state:useBacktestGPU
+  verification_scope:
+    routes:
+      - /strategy/gpu
+    states:
+      - default
+      - loading
+      - error
+      - disabled
+    breakpoints:
+      - 1920
+      - 1440
+      - 1280
+  repair_summary:
+    files:
+      - web/frontend/src/views/strategy/composables/useBacktestGPU.ts
+      - web/frontend/src/views/strategy/BacktestGPU.vue
+    notes:
+      - "local-only benchmark/reset/mode controls should be downgraded or explicitly bounded as non-runtime controls"
+      - "default GPU telemetry should not keep claiming RTX4090-class live state after refresh failures"
+  verification_surface: code-review-only
+
+- consolidated_issue_id: strategy-opt-issue-01
+  severity: Medium
+  title: Strategy optimization workbench should not silently fall back to mock candidates while preserving real writeback actions
+  pages:
+    - /strategy/opt
+  source_roles:
+    - data-state-audit
+  why_consolidated: One root cause controls both the false fallback state and the unsafe continuation of writeback actions.
+  primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue
+  repair_bucket: fix-with-shared-impact-review
+  repair_decision: approval-pending
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/opt
+    - /strategy/repo
+    - /strategy/parameters
+    - /strategy/backtest
+  dedupe_keys:
+    - /strategy/opt:data-state:optimization-mock-fallback
+  verification_scope:
+    routes:
+      - /strategy/opt
+    states:
+      - default
+      - empty
+      - error
+      - disabled
+    breakpoints:
+      - 1920
+      - 1440
+      - 1280
+  repair_summary:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/strategyOptimizationViewModel.ts
+    notes:
+      - "REAL fetch failure should move the page into an explicit degraded or blocked state"
+      - "mock fallback rows must not keep real writeback affordances enabled"
+  verification_surface: code-review-only
+
+- consolidated_issue_id: strategy-secondary-domain-issue-01
+  severity: Medium
+  title: Secondary strategy routes should remove unsupported 48rem responsive branches from signals, gpu, and optimization pages
+  pages:
+    - /strategy/signals
+    - /strategy/gpu
+    - /strategy/opt
+  source_roles:
+    - responsive-a11y-audit
+  why_consolidated: The unsupported mobile-width branch is repeated across the current secondary strategy workbench family.
+  primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/styles/StrategySignalsTab.scss
+  repair_bucket: fix-with-shared-impact-review
+  repair_decision: approval-pending
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/signals
+    - /strategy/gpu
+    - /strategy/opt
+  dedupe_keys:
+    - /strategy/secondary:responsive:48rem
+  verification_scope:
+    routes:
+      - /strategy/signals
+      - /strategy/gpu
+      - /strategy/opt
+    states:
+      - default
+    breakpoints:
+      - 1920
+      - 1440
+      - 1280
+  repair_summary:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/styles/StrategySignalsTab.scss
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/styles/ArtDecoStrategyOptimization.scss
+      - web/frontend/src/views/strategy/styles/BacktestGPU.scss
+    notes:
+      - "remove unsupported `@media (width <= 48rem)` branches from the secondary strategy routed family"
+      - "keep only desktop-relevant breakpoints that still matter at 1920, 1440, and 1280"
+  verification_surface: code-review-only

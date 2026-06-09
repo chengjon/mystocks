@@ -2,14 +2,14 @@
 
 > **导航说明**:
 > 本文件是 `docs/guides/governance/` 的 transition index，不是仓库共享规则、审批门禁或当前治理口径的唯一事实来源。
-> 若需确认当前仓库级治理规则，请优先阅读 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)；若需确认文档系统 trunk 与 lifecycle，请优先阅读 [`docs/overview/documentation-system.md`](/opt/claude/mystocks_spec/docs/overview/documentation-system.md)。
+> 若需确认当前仓库级治理规则，请优先阅读 [`architecture/STANDARDS.md`](../../../architecture/STANDARDS.md)；若需确认文档系统 trunk 与 lifecycle，请优先阅读 [`docs/overview/documentation-system.md`](../../overview/documentation-system.md)。
 
 ## Current Trunk First
 
 这一 family 只保留 focused workflow helpers，不再承担并行 governance trunk 的角色。当前阅读顺序是：
 
-1. [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)
-2. [`docs/overview/documentation-system.md`](/opt/claude/mystocks_spec/docs/overview/documentation-system.md)
+1. [`architecture/STANDARDS.md`](../../../architecture/STANDARDS.md)
+2. [`docs/overview/documentation-system.md`](../../overview/documentation-system.md)
 3. 再按需进入本 family 的专题执行指南
 
 ## Active Supporting Guides

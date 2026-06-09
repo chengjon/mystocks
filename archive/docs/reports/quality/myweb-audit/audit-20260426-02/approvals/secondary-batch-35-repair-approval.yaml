@@ -1,0 +1,24 @@
+- consolidated_issue_id: secondary-shell-issue-35
+  severity: Medium
+  affected_routes:
+    - /secondary/advanced-analysis-static-shell
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/AdvancedAnalysis.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "Legacy advanced-analysis page now degrades to an honest static shell."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The repair stays scoped to the legacy advanced-analysis owner and its page-only composable chain; no new shared truth surface was introduced."
+    related_routes:
+      - /secondary/advanced-analysis-static-shell
+  approval_status: approved

@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/calculate",
+  "total_endpoints": 2,
+  "endpoints": [
+    {
+      "path": "/calculate",
+      "method": "POST",
+      "file": "indicators.py",
+      "function": "calculate_indicators",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 403
+    },
+    {
+      "path": "/calculate/batch",
+      "method": "POST",
+      "file": "indicators.py",
+      "function": "calculate_indicators_batch",
+      "return_model": "Dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 659
+    }
+  ]
+}

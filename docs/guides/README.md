@@ -2,36 +2,36 @@
 
 > **导航说明**:
 > 本文件是 `docs/guides/` 的 transition index，不是仓库共享规则、当前实现状态或单一 canonical trunk。
-> Guides 目录按 concern 分流；当前主干入口仍是 [`docs/README.md`](/opt/claude/mystocks_spec/docs/README.md)。
+> Guides 目录按 concern 分流；当前主干入口仍是 [`docs/README.md`](../README.md)。
 
 ## How To Use Guides
 
 按 concern 进入对应 guide family，而不是把 `docs/guides/` 当成统一真相层：
 
 - AI / agent workflows:
-  - [`ai-tools/`](/opt/claude/mystocks_spec/docs/guides/ai-tools/)
-  - [`superpowers/`](/opt/claude/mystocks_spec/docs/guides/superpowers/)
+  - [`ai-tools/`](ai-tools)
+  - [`superpowers/`](superpowers)
 - frontend / web:
-  - [`frontend/`](/opt/claude/mystocks_spec/docs/guides/frontend/)
-  - [`web/`](/opt/claude/mystocks_spec/docs/guides/web/)
-  - [`typescript/`](/opt/claude/mystocks_spec/docs/guides/typescript/)
+  - [`frontend/`](frontend)
+  - [`web/`](web)
+  - [`typescript/`](typescript)
 - operational workflows:
-  - [`pm2/`](/opt/claude/mystocks_spec/docs/guides/pm2/)
-  - [`openspec-cmd/`](/opt/claude/mystocks_spec/docs/guides/openspec-cmd/)
-  - [`multi-cli-tasks/`](/opt/claude/mystocks_spec/docs/guides/multi-cli-tasks/)
-  - [`onboarding/`](/opt/claude/mystocks_spec/docs/guides/onboarding/)
+  - [`pm2/`](pm2)
+  - [`openspec-cmd/`](openspec-cmd)
+  - [`multi-cli-tasks/`](multi-cli-tasks)
+  - [`onboarding/`](onboarding)
 - governance helpers:
-  - [`governance/`](/opt/claude/mystocks_spec/docs/guides/governance/)
-  - [`documentation/`](/opt/claude/mystocks_spec/docs/guides/documentation/)
+  - [`governance/`](governance)
+  - [`documentation/`](documentation)
 
 ## Root-Level Compatibility Entries
 
 以下 root-level guide files 仍保留为 compatibility/supporting entries，不构成并行 trunk：
 
-- [`ARTDECO_MASTER_INDEX.md`](/opt/claude/mystocks_spec/docs/guides/ARTDECO_MASTER_INDEX.md)
-- [`ARTDECO_COMPONENT_GUIDE.md`](/opt/claude/mystocks_spec/docs/guides/ARTDECO_COMPONENT_GUIDE.md)
-- [`frontend-structure.md`](/opt/claude/mystocks_spec/docs/guides/frontend-structure.md)
-- [`web-redesign-requirements.md`](/opt/claude/mystocks_spec/docs/guides/web-redesign-requirements.md)
+- [`ARTDECO_MASTER_INDEX.md`](ARTDECO_MASTER_INDEX.md)
+- [`ARTDECO_COMPONENT_GUIDE.md`](ARTDECO_COMPONENT_GUIDE.md)
+- [`frontend-structure.md`](frontend-structure.md)
+- [`web-redesign-requirements.md`](web-redesign-requirements.md)
 
 ## Governance Status
 

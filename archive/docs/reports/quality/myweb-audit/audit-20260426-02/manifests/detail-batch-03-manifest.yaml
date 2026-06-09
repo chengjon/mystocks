@@ -1,0 +1,89 @@
+audit_run_id: audit-20260426-02
+batch_id: detail-batch-03
+module: detail
+scope:
+  requested_by: user
+  pages:
+    - route: /detail/news/:symbol
+      page_key: detail-news
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/announcement/AnnouncementMonitor.vue
+  compatibility_redirects: []
+batch_rationale: "Close the canonical `/detail/news/:symbol` stats-refresh stale-summary truth gap so a later failure of the dedicated announcement stats slice no longer leaves old sibling counts looking current. This batch also codifies the new stale-summary guidance as `myweb-audit v1.53`."
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/detail/news/:symbol` remains `web/frontend/src/views/announcement/AnnouncementMonitor.vue`"
+    - "the approved repair may stay inside the view-local single-consumer composable `web/frontend/src/views/announcement/composables/useAnnouncementMonitor.ts` rather than widening into shared announcement infrastructure"
+    - "the announcement list and the announcement stats strip are independent slices, so a stats-refresh failure may honestly degrade the stat cards while keeping previously verified announcement rows visible"
+    - "because the route has no explicit slice-local stale-summary UX, a later stats refresh failure should degrade the sibling stat cards back to `--` instead of silently preserving old counts as if current truth"
+    - "controlled browser-context fulfillment is acceptable for proving the `success -> stats-refresh-fail` route behavior because it isolates the dedicated announcement stats slice from the still-visible announcement list slice"
+    - "natural PM2 browser reuse is healthy enough to provide a live zero-count observation for this route, but controlled browser-context proof remains the primary evidence for the repaired stale-summary behavior"
+  fallback_log:
+    - "the default local Playwright Chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, error]
+  notes:
+    - "verify a first successful `/api/announcement/stats` snapshot renders `2 / 2 / 1 / 0`"
+    - "verify a later failing stats refresh clears those sibling stat cards back to `-- / -- / -- / --`"
+    - "verify the verified announcement row remains visible while the stats slice degrades"
+repair_approval:
+  status: approved
+  approved_findings:
+    - detail-news-issue-03
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - detail-news
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/announcement/composables/useAnnouncementMonitor.ts
+    - web/frontend/src/views/announcement/__tests__/useAnnouncementMonitor.spec.ts
+    - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-detail-news-stats-refresh-proof
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `detail-batch-03` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/detail-news-stats-refresh-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-03-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-03-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/detail-batch-03-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/detail-batch-03-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-detail-batch-03-closeout
+  notes:
+    - "the canonical detail news route now clears sibling announcement stat cards back to `--` when the dedicated stats slice refresh fails after prior success"
+    - "this batch introduces `myweb-audit v1.53` so future routed summary audits treat silent stale-stat retention as a data-state truth defect, not an acceptable default"
+status: complete

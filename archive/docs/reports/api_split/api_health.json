@@ -1,0 +1,227 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/health",
+  "total_endpoints": 20,
+  "endpoints": [
+    {
+      "path": "/health",
+      "method": "GET",
+      "file": "metrics.py",
+      "function": "health_check",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 140
+    },
+    {
+      "path": "/health",
+      "method": "GET",
+      "file": "data_quality.py",
+      "function": "get_sources_health",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 24
+    },
+    {
+      "path": "/health",
+      "method": "GET",
+      "file": "market.py",
+      "function": "health_check",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 855
+    },
+    {
+      "path": "/health",
+      "method": "GET",
+      "file": "system.py",
+      "function": "system_health",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 21
+    },
+    {
+      "path": "/health",
+      "method": "GET",
+      "file": "health.py",
+      "function": "check_system_health",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 43
+    },
+    {
+      "path": "/health/detailed",
+      "method": "GET",
+      "file": "health.py",
+      "function": "detailed_health_check",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 292
+    },
+    {
+      "path": "/health",
+      "method": "GET",
+      "file": "wencai.py",
+      "function": "health_check",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 378
+    },
+    {
+      "path": "/health",
+      "method": "GET",
+      "file": "dashboard.py",
+      "function": "health_check",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 639
+    },
+    {
+      "path": "/health",
+      "method": "GET",
+      "file": "multi_source.py",
+      "function": "get_all_data_sources_health",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 56
+    },
+    {
+      "path": "/health/{source_type}",
+      "method": "GET",
+      "file": "multi_source.py",
+      "function": "get_data_source_health",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 74
+    },
+    {
+      "path": "/health",
+      "method": "GET",
+      "file": "tdx.py",
+      "function": "health_check",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 302
+    },
+    {
+      "path": "/health",
+      "method": "GET",
+      "file": "tasks.py",
+      "function": "tasks_health",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 644
+    },
+    {
+      "path": "/health",
+      "method": "GET",
+      "file": "backup_recovery_secure.py",
+      "function": "backup_service_health",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 999
+    },
+    {
+      "path": "/health",
+      "method": "GET",
+      "file": "strategy_mgmt.py",
+      "function": "health_check",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 451
+    },
+    {
+      "path": "/health",
+      "method": "GET",
+      "file": "trade/routes.py",
+      "function": "health_check",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 39
+    },
+    {
+      "path": "/health",
+      "method": "GET",
+      "file": "monitoring/routes.py",
+      "function": "health_check",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 10
+    },
+    {
+      "path": "/health",
+      "method": "GET",
+      "file": "technical/routes.py",
+      "function": "health_check",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 10
+    },
+    {
+      "path": "/health",
+      "method": "GET",
+      "file": "v1/pool_monitoring.py",
+      "function": "connection_pools_health_check",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 140
+    },
+    {
+      "path": "/health",
+      "method": "GET",
+      "file": "announcement/routes.py",
+      "function": "health_check",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 25
+    },
+    {
+      "path": "/health",
+      "method": "GET",
+      "file": "multi_source/routes.py",
+      "function": "health_check",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 10
+    }
+  ]
+}

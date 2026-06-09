@@ -1,0 +1,24 @@
+- consolidated_issue_id: risk-alerts-issue-17
+  severity: High
+  affected_routes:
+    - /risk/alerts
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/risk/Alerts.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: The canonical risk alerts route now preserves a verified rules slice as partial routed truth instead of collapsing the whole shell when alert records fail before the first full snapshot exists.
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: The approved repair stayed page-local in `web/frontend/src/views/risk/Alerts.vue`; the legacy `ArtDecoRiskAlerts.vue` consumer only inherits the owner fix.
+    related_routes:
+      - /risk/alerts
+  approval_status: approved

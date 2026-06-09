@@ -1,0 +1,85 @@
+audit_run_id: audit-20260426-02
+batch_id: dashboard-batch-02
+module: dashboard
+scope:
+  requested_by: user
+  pages:
+    - route: /dashboard
+      page_key: dashboard-home
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+  compatibility_redirects: []
+batch_rationale: "Apply the existing `v1.55` multi-slice refresh-retention rule to `/dashboard` so a later fund-flow refresh failure no longer replaces an already verified fund-flow slice with blocking inline error truth."
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/dashboard` remains `web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue`, with slice state owned by `web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts`"
+    - "the approved repair should stay dashboard-family local in `useArtDecoDashboard.ts` and `ArtDecoDashboard.vue` instead of widening into shared transport or shared stat-card layers"
+    - "the current PM2 dashboard shell still exposes a separate out-of-scope observation: the visible `刷新数据` control does not currently trigger a second fund-flow request in the natural browser path on this machine"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so route verification continues to use Playwright-library control of system `google-chrome`"
+    - "because the natural PM2 dashboard refresh control did not trigger a second fund-flow request, the stale-refresh proof for this batch relies on the strengthened composable harness regression and routed phase1 matrix coverage"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, error]
+  notes:
+    - "verify `/dashboard` still renders the verified `沪股通净流入 / 18.5亿` slice after a later fund-flow refresh failure"
+    - "verify a later fund-flow refresh failure still emits route-level degraded messaging instead of silently swallowing the error"
+    - "record the current natural PM2 observation that the dashboard refresh control did not trigger a second fund-flow request, and do not treat that control-path issue as part of the current batch verdict"
+repair_approval:
+  status: approved
+  approved_findings:
+    - dashboard-home-issue-02
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - dashboard-home
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+    - web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+    - web/frontend/tests/unit/components/ArtDecoDashboardLogic.spec.ts
+    - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+      - web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-dashboard-logic-plus-routed-phase1-coverage-with-controlled-system-chrome-observation
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `dashboard-batch-02` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` is treated as observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/dashboard-fund-flow-slice-refresh-retention-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-02-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-02-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/dashboard-batch-02-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/dashboard-batch-02-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: closeout-finalized-and-validated
+  next_action: none-batch-complete
+  notes:
+    - "the repaired dashboard route now keeps the verified fund-flow slice visible after a later fund-flow refresh failure while preserving route-level degraded alerts"
+    - "a separate natural-browser observation remains for later work: the visible dashboard refresh control did not trigger a second fund-flow request in the current PM2 path on this machine"
+status: complete

@@ -1,0 +1,38 @@
+- finding_id: secondary-shell-016
+  batch_id: secondary-batch-16
+  page:
+    route: /secondary/legacy-strategy-list-canonical-wrapper
+    page_key: secondary-legacy-strategy-list-canonical-wrapper
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/strategy/StrategyList.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy nested strategy list page still exposed a forked pseudo-live strategy definition shell even though the canonical strategy-repo owner already exists
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/strategy/StrategyList.vue`"
+      - "Inspect the local strategy grid, refresh button, filter bar, and run-results shell"
+      - "Confirm the page does not delegate to `web/frontend/src/views/strategy/List.vue`"
+  expected: "A legacy nested strategy-list page that is semantically covered by the canonical strategy-repo owner should collapse to a thin wrapper instead of preserving a forked pseudo-live strategy-definition workbench."
+  actual: "Before repair, `StrategyList.vue` rendered its own pseudo-live strategy-definition shell with local refresh, filter, and action surfaces instead of delegating to the canonical strategy-repo owner."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green regression confirmed the nested legacy strategy-list page still rendered its own fake strategy-definition shell before the wrapper repair."
+  repair_target:
+    files:
+      - web/frontend/src/views/strategy/StrategyList.vue
+      - web/frontend/src/views/strategy/__tests__/StrategyList.spec.ts
+    primary_owner: web/frontend/src/views/strategy/StrategyList.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-strategy-list-canonical-wrapper
+  status: open
+  dependency: null
+  dedupe_key: /secondary/legacy-strategy-list-canonical-wrapper:route-truth:legacyStrategyListCanonicalWrapper
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner wrapper regression, canonical strategy-repo regression, and secondary inventory tooling to confirm the nested legacy strategy-list page now delegates entirely to the canonical strategy-repo owner."

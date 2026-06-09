@@ -1,0 +1,25 @@
+- consolidated_issue_id: trade-positions-issue-02
+  severity: High
+  affected_routes:
+    - /trade/positions
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/trade/Center.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: true
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "The canonical trade-positions route now keeps the last verified holdings snapshot and request provenance visible when a later transport refresh resolves as `success: false`."
+  dependency: null
+  shared_impact:
+    candidate: true
+    basis: "The stale-refresh provenance gap is repaired page-locally in `Center.vue`; the shared `/strategy/pos` consumer inherits the safer owner behavior without requiring a broader `useArtDecoApi` redesign in this batch."
+    related_routes:
+      - /trade/positions
+      - /strategy/pos
+  approval_status: approved

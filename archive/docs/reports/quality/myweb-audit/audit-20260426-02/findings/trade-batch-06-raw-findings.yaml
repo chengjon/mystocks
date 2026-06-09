@@ -1,0 +1,39 @@
+- finding_id: trade-portfolio-data-state-002
+  batch_id: trade-batch-06
+  page:
+    route: /trade/portfolio
+    page_key: trade-portfolio
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/trade/Portfolio.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Trade portfolio summary surfaces reused faux zero balances and false real-empty semantics before any verified holdings snapshot existed
+  trigger:
+    steps:
+      - Open `/trade/portfolio`
+      - Re-run the route while the first `/api/v1/trade/positions` request is still unresolved or explicitly fails before any verified portfolio snapshot exists
+      - Compare the top summary cards, hero meta, hero totals, and dependent section empty states with the natural PM2 empty-state route after a verified empty portfolio snapshot resolves
+  expected: "Before any verified portfolio snapshot exists, summary cards, hero meta, hero totals, and dependent empty panels should degrade to `--` placeholders or explicit pending/unavailable copy instead of showing zero balances or real-empty messages. After a verified empty snapshot resolves, the same route may render honest zero-valued totals and empty-state copy."
+  actual: "Before repair, the canonical route fed zero-valued portfolio totals, counts, and rebalance tallies directly into shared summary surfaces and empty-state branches even when the first positions payload was still unresolved or had failed, so the page looked like a real zero-balance portfolio instead of an unverified or unavailable first-load state."
+  evidence:
+    kind: code-review-plus-targeted-verification
+    note: "Code review of the pre-repair `Portfolio.vue` showed first-load state derived from the default empty mapper payload, while targeted routed regression plus browser-context failure and hanging verification confirmed the repaired route now distinguishes verified empty, unavailable, and unresolved-first-load states."
+  repair_target:
+    files:
+      - web/frontend/src/views/trade/Portfolio.vue
+      - web/frontend/src/views/trade/__tests__/Portfolio.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/trade/Portfolio.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /risk/pnl
+  status: open
+  dependency: null
+  dedupe_key: /trade/portfolio:data-state:firstLoadPortfolioSummaryTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check the canonical trade route and its thin risk wrapper to confirm unresolved or failed first-load summary surfaces degrade to placeholders, while the natural PM2 empty-state path still renders honest zero-valued totals after a verified empty snapshot resolves.

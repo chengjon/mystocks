@@ -1,0 +1,89 @@
+audit_run_id: audit-20260426-02
+batch_id: trade-batch-03
+module: trade
+scope:
+  requested_by: user
+  pages:
+    - route: /trade/history
+      page_key: trade-history
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/trade/History.vue
+  compatibility_redirects: []
+batch_rationale: Close the single-request stale-refresh truth gap on the canonical trade history route and fold the discovered mock-transport verification technique back into myweb-audit so future agents do not misread bypassed browser interception as a page failure.
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/trade/history` remains `web/frontend/src/views/trade/History.vue`"
+    - "a failed manual refresh after a successful history load must preserve the last-known-good ledger and show explicit stale-data messaging instead of collapsing into a first-load failure panel"
+    - "the current PM2 frontend may route `/trade/history` through env-level mock transport, so browser request interception may be inapplicable for the controlled stale-refresh verification path"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+    - "the actual PM2 `/trade/history` route was first checked for route health as loaded, then the stale-refresh path was verified on the same routed page via an in-page `apiClient.get` override because the current runtime short-circuits this surface through `mockApiClient` generic fallback rather than browser-observable network transport"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1920, 1440, 1280]
+  required_states: [default, empty, error]
+  notes:
+    - "verify the actual PM2 `/trade/history` route loads successfully and reports a real `REQ_ID` even when the current runtime shows no real trade ledger rows"
+    - "verify the routed stale-refresh path retains the last successful `600519` ledger row, labels the page `刷新异常`, and shows `当前仍展示上次成功同步的交易历史记录。` after a controlled failed manual refresh"
+    - "the controlled stale-refresh proof for this route uses a documented in-page `apiClient.get` override on the live routed page because env-level mock transport bypasses normal browser request interception here"
+repair_approval:
+  status: approved
+  approved_findings:
+    - trade-history-issue-01
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - trade-history
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/trade/History.vue
+    - web/frontend/src/views/trade/__tests__/History.spec.ts
+    - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/trade/History.vue
+    confirmed:
+      - web/frontend/src/views/trade/History.vue
+  validation_status:
+    syntax: passed-via-vue-tsc
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-system-chrome-live-route-plus-controlled-module-override
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated frontend or backend files before `trade-batch-03` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` is treated as observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/trade-history-stale-refresh-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-03-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-03-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-03-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/trade-batch-03-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-trade-batch-03-closeout
+  notes:
+    - "`/trade/history` now preserves the last successful ledger when a manual refresh fails and distinguishes refresh-failure messaging from first-load failure messaging"
+    - "myweb-audit now records the mock-transport verification rule so future live audits switch to an in-page override when env-level mock routing bypasses browser interception"
+status: complete

@@ -1,0 +1,84 @@
+audit_run_id: audit-20260426-02
+batch_id: strategy-batch-06
+module: strategy
+scope:
+  requested_by: user
+  pages:
+    - route: /strategy/signals
+      page_key: strategy-signals
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue
+  compatibility_redirects: []
+batch_rationale: Reuse the existing `v1.32 + v1.38 + v1.39` rules on the canonical strategy-signals route so count-only signal tally cards stop leaking shared faux delta chrome and unresolved first-load signal tallies stop presenting resolved zero counts before any verified signal evidence exists.
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/strategy/signals` remains `web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue`, while the same shared routed surface is also imported by `web/frontend/src/views/watchlist/Signals.vue`"
+    - "the approved repair should stay page-local in `StrategySignalsTab.vue` instead of changing shared `ArtDecoStatCard.vue` defaults"
+    - "the natural PM2 route may resolve to an honest empty signal timeline, so the verified non-empty tally path should be confirmed through browser-context fulfillment"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, empty, loading, error]
+  notes:
+    - "verify `/strategy/signals` no longer renders `3.00`, `1.00`, or shared `+0%` chrome on count-only signal tally cards"
+    - "verify the same route now degrades unresolved first `/api/v1/trade/signals` state to `-- / -- / -- / --` and `COUNT: --` instead of inherited zero tallies before verified signal evidence exists"
+    - "verify the natural PM2 empty-state path still renders honest `0 / 0 / 0 / 0` with zero `.artdeco-stat-change` nodes when the backend returns a real empty signal list"
+repair_approval:
+  status: approved
+  approved_findings:
+    - strategy-signals-issue-01
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - strategy-signals
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/StrategySignalsTab.spec.ts
+    - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/watchlist/Signals.vue
+      - web/frontend/src/components/artdeco/base/ArtDecoStatCard.vue
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-strategy-signals-empty-success-and-loading-verification
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `strategy-batch-06` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` is treated as observation-only in this run because the staged set is not isolated to the current batch"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` remains a low-risk mixed observation and is not used as an isolated `strategy-batch-06` verdict"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-signals-summary-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-06-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-06-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-06-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/strategy-batch-06-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-strategy-batch-06-closeout
+  notes:
+    - "the current batch reuses the existing `v1.32 + v1.38 + v1.39` rule set rather than introducing a new failure-mode class"
+    - "the canonical strategy-signals route now distinguishes verified count-only tally cards, natural empty-state zero counts, and unresolved first-load placeholders"
+status: complete

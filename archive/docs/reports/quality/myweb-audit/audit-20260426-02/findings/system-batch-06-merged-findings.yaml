@@ -1,0 +1,43 @@
+- consolidated_issue_id: system-config-issue-02
+  severity: Medium
+  title: System config source tab now uses the live data-source contract and honest tab-local provenance
+  pages:
+    - /system/config
+  source_roles:
+    - data-state-audit
+  why_consolidated: The routed source-tab sample KPI cards, sample inventory rows, and inherited `DATA` provenance all came from one tab-slice contract-truth defect on the canonical system-config page.
+  primary_owner: web/frontend/src/views/system/Settings.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact: []
+  dedupe_keys:
+    - /system/config:data-state:source-tab-contract-truth
+  verification_scope:
+    routes:
+      - /system/config
+    states:
+      - default
+      - loading
+      - error
+    breakpoints:
+      - 1920
+      - 1440
+      - 1280
+  repair_summary:
+    files:
+      - web/frontend/src/views/system/Settings.vue
+      - web/frontend/src/views/system/__tests__/Settings.spec.ts
+      - web/frontend/src/views/artdeco-pages/system-tabs/__tests__/ArtDecoSystemSettings.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/SKILL.md
+      - .claude/skills/myweb-audit/references/audit-checklist.md
+      - .claude/agents/myweb-audit-data-state-audit.md
+      - .claude/skills/myweb-audit/references/CHANGELOG.md
+    notes:
+      - "the default `/system/config` source tab now loads the live `/api/v1/data-sources/config/` contract and renders endpoint-level descriptions plus stable `endpoint_name` values"
+      - "the source-tab header now reports tab-local provenance and the default strip now shows honest plain values with zero `.artdeco-stat-change` nodes"
+      - "sample KPI values `4.00`, `3/4`, `28,412`, `2.00` and sample inventory rows such as `Wind` were removed from the routed source-tab surface"
+      - "the strengthened `myweb-audit v1.34` rule now treats leftover sample tab slices on multi-tab routed pages as contract-truth defects"
+  verification_surface: code-review-plus-targeted-live-verification

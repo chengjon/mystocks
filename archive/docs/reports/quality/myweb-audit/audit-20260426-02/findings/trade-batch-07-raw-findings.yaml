@@ -1,0 +1,38 @@
+- finding_id: trade-signals-data-state-003
+  batch_id: trade-batch-07
+  page:
+    route: /trade/signals
+    page_key: trade-signals
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/trade/Signals.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Trade signals route collapsed first-load resolved failure envelopes and unresolved count surfaces into faux REAL or EMPTY signal truth
+  trigger:
+    steps:
+      - "Open `/trade/signals`"
+      - "Observe the route while the first `/api/v1/trade/signals` payload is still unresolved"
+      - "Repeat with the same first request resolving as `success: false` before any verified signal snapshot exists"
+      - "Inspect the hero `COUNT / DATA / REQ_ID / TIME` metadata, top KPI strip, and content-shell `VISIBLE` summary"
+  expected: "Before the route has any verified signal snapshot, top-level count and provenance surfaces should degrade to explicit placeholders and `DATA: PENDING` or `DATA: UNAVAILABLE`. A resolved `success: false` envelope must stay failure truth instead of collapsing into `EMPTY` or zero-count semantics."
+  actual: "Before repair, `/trade/signals` rendered `COUNT: 0 / DATA: REAL` on the unresolved first load and collapsed a resolved `success: false` signal response into `COUNT: 0 / DATA: EMPTY`, with zero-valued KPI cards and `VISIBLE: 0` as if the route had completed a verified empty load."
+  evidence:
+    kind: live-observation
+    note: "System-`google-chrome` verification with browser-context interception reproduced `COUNT: 0 / DATA: REAL` on the hanging-first-load path and `COUNT: 0 / DATA: EMPTY` on the resolved `success: false` path before repair. After repair the same route renders `COUNT: -- / DATA: PENDING`, `COUNT: -- / DATA: UNAVAILABLE`, and verified `COUNT: 3 / DATA: REAL` across pending, failure, and success states."
+  repair_target:
+    files:
+      - web/frontend/src/views/trade/Signals.vue
+    primary_owner: web/frontend/src/views/trade/Signals.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /trade/signals
+  status: open
+  dependency: null
+  dedupe_key: /trade/signals:data-state:storeBackedResolvedEnvelopeProvenanceTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check that `/trade/signals` now reports `DATA: PENDING` on unresolved first load, `DATA: UNAVAILABLE` on resolved `success: false` first-load failure, and `DATA: REAL` only after a verified signal snapshot exists."

@@ -1,0 +1,81 @@
+audit_run_id: audit-20260426-02
+batch_id: secondary-batch-27
+module: secondary-legacy-surfaces
+scope:
+  requested_by: user
+  pages:
+    - route: /secondary/wencai-live-truth-wrapper
+      page_key: secondary-wencai-live-truth-wrapper
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/Wencai.vue
+  compatibility_redirects: []
+batch_rationale: >-
+  Continue the secondary inventory phase by collapsing the legacy `Wencai.vue`
+  page into a thin wrapper over the already-live `WencaiPanel.vue` truth
+  component instead of preserving a second pseudo overview and statistics shell.
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-only
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "the manifest route is a synthetic secondary-inventory alias used for artifact indexing; `web/frontend/src/views/Wencai.vue` is not a current router entry"
+    - "`web/frontend/src/components/market/WencaiPanel.vue` already owns the live Wencai query, results, export, and history contract even though it is not a routed page owner"
+    - "the repair must not add a new store, snapshot cache, wrapper-local summary fetch, request provenance badge, or shell-level freshness strip"
+  fallback_log: []
+verification_plan:
+  verification_strategy: code-review-only
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states:
+    - default
+  notes:
+    - "verify the owner now preserves the live Wencai panel but removes the outer pseudo overview, statistics tabs, and wrapper-local fetch summary"
+    - "verify secondary inventory tooling still passes after the wrapper-to-live-panel precedent write-back"
+repair_approval:
+  status: approved
+  approved_findings:
+    - secondary-shell-issue-27
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - secondary-wencai-live-truth-wrapper
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/Wencai.vue
+    - web/frontend/src/views/__tests__/Wencai.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/Wencai.vue
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vitest
+    typecheck: failed-existing-frontend-debt-only
+    pm2: passed
+    e2e: not-run-unrouted-owner
+    gitnexus_staged_detect: mixed-observation-non-isolated
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "the staged index already contained many unrelated files before this micro-batch, so `gitnexus_detect_changes({scope: staged})` is recorded only as a mixed observation"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/wencai-legacy-live-panel-wrapper-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/secondary-batch-27-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/secondary-batch-27-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/secondary-batch-27-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/secondary-batch-27-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: verification
+  next_action: continue-secondary-inventory-triage
+  notes:
+    - "if an unrouted legacy page already wraps a single active live-truth component, preserve that component and delete only the outer pseudo shell semantics instead of degrading the page to a static shell"
+status: complete

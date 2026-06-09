@@ -11,7 +11,7 @@
 
 当前规范正文位于：
 
-- [docs/guides/web/ARTDECO_MASTER_INDEX.md](/opt/claude/mystocks_spec/docs/guides/web/ARTDECO_MASTER_INDEX.md)
+- [docs/guides/web/ARTDECO_MASTER_INDEX.md](web/ARTDECO_MASTER_INDEX.md)
 
 保留原因：
 

@@ -1,0 +1,24 @@
+- consolidated_issue_id: secondary-shell-issue-34
+  severity: Medium
+  affected_routes:
+    - /secondary/stocks-static-shell
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/Stocks.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "Legacy stocks page now degrades to an honest static shell."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The repair stays scoped to the legacy stocks owner; no new shared truth surface or shell-level snapshot was introduced."
+    related_routes:
+      - /secondary/stocks-static-shell
+  approval_status: approved

@@ -1,0 +1,38 @@
+- finding_id: trade-signals-data-state-001
+  batch_id: trade-batch-02
+  page:
+    route: /trade/signals
+    page_key: trade-signals
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/trade/Signals.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Routed signal workspace fabricated per-row signal detail and execution analytics from a signals-only payload
+  trigger:
+    steps:
+      - Open `/trade/signals`
+      - Let the route load a live or intercepted `/api/v1/trade/signals` payload that contains only current signal rows and includes a `HOLD` row
+      - Inspect the primary list plus the quality and history panels
+  expected: "The routed page should preserve only the signal fields actually present in the current payload; missing row IDs, reasons, confidence, strength, or execution analytics should degrade to explicit source-only, observation, or unverified states, and `HOLD` rows should stay non-executable."
+  actual: "Before repair, the canonical trade signals page generated synthetic IDs such as `1000`, local reasons such as `${strategy} 信号触发`, confidence values `88%` or `76%`, star-based strength labels, rendered `HOLD` rows as `卖出`, and fabricated win-loss history plus quality metrics from the current signal list alone."
+  evidence:
+    kind: live-observation
+    note: "Targeted browser verification with a controlled signals-only route fulfillment showed `/trade/signals` treating a `HOLD` row as a sell action and presenting synthetic confidence, reason, and execution-analytics surfaces even though the payload only carried current signal rows."
+  repair_target:
+    files:
+      - web/frontend/src/views/trade/Signals.vue
+      - web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoTradingSignals.vue
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/strategySignalsData.ts
+    primary_owner: web/frontend/src/views/trade/Signals.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /trade/signals:data-state:Signals
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check `/trade/signals` after repair against both the actual PM2 route load and a controlled signals-only payload so the truth degradation path and the real route health are both verified.

@@ -1,0 +1,38 @@
+- finding_id: secondary-shell-034-stocks
+  batch_id: secondary-batch-34
+  page:
+    route: /secondary/stocks-static-shell
+    page_key: secondary-stocks-static-shell
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/Stocks.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy stocks page still exposed local filter, stock-list, refresh, and analysis semantics without a semantically matching canonical owner
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/Stocks.vue`"
+      - "Inspect the local filter bar, stock list, refresh button, row actions, and detail-analysis affordances"
+      - "Confirm there is no routed or otherwise active canonical stocks owner that validates those combined shell-level semantics"
+  expected: "An unrouted legacy stocks workbench with no semantically matching canonical owner should degrade to an honest static shell instead of preserving local pseudo-live filter, list, and action truth."
+  actual: "Before repair, `Stocks.vue` still rendered local filters, a faux stock table, refresh chrome, and detail-analysis actions as if they were verified stock-list truth."
+  evidence:
+    kind: code-review
+    note: "Owner review plus regression confirmed the legacy stocks page still rendered pseudo-live stock workbench semantics before static-shell degradation."
+  repair_target:
+    files:
+      - web/frontend/src/views/Stocks.vue
+      - web/frontend/src/views/__tests__/Stocks.spec.ts
+    primary_owner: web/frontend/src/views/Stocks.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/stocks-static-shell
+  status: open
+  dependency: null
+  dedupe_key: /secondary/stocks-static-shell:route-truth:stocksStaticShell
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner regression to confirm the stock list, filter bar, refresh chrome, and action affordances are gone and replaced by a static shell."

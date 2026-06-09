@@ -2,7 +2,7 @@
 
 > **补充规范说明**:
 > 本文件是 Mock 数据专题的当前执行细则，不是仓库共享规则的唯一事实来源。
-> Mock 相关共享治理口径仍以 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md) 为准；页面级 API 行为与 `verified/pending` 规则以 [`openspec/specs/api-integration/spec.md`](/opt/claude/mystocks_spec/openspec/specs/api-integration/spec.md) 为准。
+> Mock 相关共享治理口径仍以 [`architecture/STANDARDS.md`](../../../architecture/STANDARDS.md) 为准；页面级 API 行为与 `verified/pending` 规则以 [`openspec/specs/api-integration/spec.md`](../../../openspec/specs/api-integration/spec.md) 为准。
 
 ## 目的
 

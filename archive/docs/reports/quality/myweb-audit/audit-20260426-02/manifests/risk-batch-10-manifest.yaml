@@ -1,0 +1,88 @@
+audit_run_id: audit-20260426-02
+batch_id: risk-batch-10
+module: risk
+scope:
+  requested_by: user
+  pages:
+    - route: /risk/alerts
+      page_key: risk-alerts
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/risk/Alerts.vue
+  compatibility_redirects: []
+batch_rationale: "Reuse existing `myweb-audit v1.43` verified-snapshot provenance rules on the canonical `/risk/alerts` route so first-load failures no longer leak failed request ids, faux unread/count summary truth, or empty-success copy, and refresh-after-success failures no longer clear verified rules or alerts from the visible shell."
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/risk/alerts` remains `web/frontend/src/views/risk/Alerts.vue`, while `web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskAlerts.vue` stays the legacy consumer wrapper"
+    - "the approved repair should stay page-local in `Alerts.vue` instead of widening into shared `useArtDecoApi` behavior"
+    - "the route aggregates multiple primary slices (`alert-rules` plus `alerts`), so visible `REQ_ID`, `UNREAD`, `RULES`, `ALERTS`, and top-strip counts must follow a page-local verified snapshot boundary rather than the latest individual request attempt"
+    - "controlled browser-context fulfillment is acceptable for first-load failure and refresh-after-success proof on this route because the auth shell still blocks a stable natural PM2 route proof in this environment"
+    - "natural PM2 browser reuse may still redirect through `/dashboard -> /login`, so any failed natural-path proof must be recorded as observation-only instead of being promoted to a product verdict"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+    - "controlled headless verification reproduced both the first-load failure path and the success-then-refresh-fail path, but natural PM2 browser reuse still redirected through the auth shell and is therefore recorded as observation-only"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [loading, error, default]
+  notes:
+    - "verify a resolved first-load failure now renders `REQ_ID: N/A`, `UNREAD: --`, `RULES: --`, `ALERTS: --`, and top-strip `-- / -- / -- / --` without leaking failed request ids"
+    - "verify a later manual refresh failure keeps the last verified request id and visible rules/alerts instead of clearing the route shell"
+    - "verify first-load failure does not fall through to `暂无告警记录` or `暂无风险告警规则` before any verified snapshot exists"
+    - "verify the natural PM2 route still remains reachable or, if auth redirect timing interferes, record that observation explicitly instead of claiming a natural live success proof"
+repair_approval:
+  status: approved
+  approved_findings:
+    - risk-alerts-issue-10
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - risk-alerts
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/risk/Alerts.vue
+    - web/frontend/src/views/risk/__tests__/Alerts.spec.ts
+    - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskAlerts.vue
+    confirmed:
+      - web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskAlerts.vue
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: partial-custom-system-chrome-risk-alerts-live-proof-natural-path-observation-only
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `risk-batch-10` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` returned `risk_level: low`, `changed_files: 94`, `changed_count: 0`, and `affected_count: 0`, but it must remain observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/risk-alerts-refresh-provenance-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-10-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-10-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-10-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/risk-batch-10-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-risk-batch-10-closeout
+  notes:
+    - "the repaired risk alerts route now distinguishes first-load unavailable truth from verified empty state across request provenance and sibling count surfaces"
+    - "refresh-after-success retention is now pinned by both routed component regressions and controlled browser verification even though natural PM2 browser reuse still fell back through the auth shell on this machine"
+status: complete

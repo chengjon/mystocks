@@ -1,0 +1,24 @@
+- consolidated_issue_id: secondary-shell-issue-48
+  severity: Medium
+  affected_routes:
+    - /secondary/settings-test-static-shells
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/settings/General.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "Settings child placeholders and orphan test pages may be degraded to honest static shells because they are not active canonical route truth."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The repair is scoped to page-local secondary surfaces and tests; it does not create new settings routes, stores, snapshots, or API contracts."
+    related_routes:
+      - /secondary/settings-test-static-shells
+  approval_status: approved

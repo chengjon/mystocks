@@ -1,0 +1,85 @@
+audit_run_id: audit-20260426-02
+batch_id: trade-batch-16
+module: trade
+scope:
+  requested_by: user
+  pages:
+    - route: /trade/reconciliation
+      page_key: trade-reconciliation
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/trade/Reconciliation.vue
+  compatibility_redirects: []
+batch_rationale: "Close the selector-scoped `/trade/reconciliation` import-context truth gap so same-instance account switches no longer leak previous account `IMPORT_BATCH / ROWS` metadata into a newly selected unresolved account shell."
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/trade/reconciliation` remains `web/frontend/src/views/trade/Reconciliation.vue`"
+    - "local import metadata (`importBatchId`, `importRowCount`) is selector-owned by `selectedAccountId` and must clear as soon as the visible account changes to a new unresolved selector"
+    - "Phase 3 routed verification may reuse the promoted reconciliation mocks in `stubPhase3Apis()`"
+  fallback_log: []
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, loading]
+  notes:
+    - "verify `/trade/reconciliation` first loads `backtest:7` with verified import metadata and visible reconciliation rows"
+    - "verify the same page instance clears old `IMPORT_BATCH / ROWS` immediately when the account selector switches to unresolved `backtest:8`"
+    - "verify the full Phase 3 matrix still passes after the routed proof is tightened"
+repair_approval:
+  status: approved
+  approved_findings:
+    - trade-reconciliation-issue-02
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - trade-reconciliation
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/trade/composables/useTradeReconciliation.ts
+    - web/frontend/src/views/trade/__tests__/Reconciliation.spec.ts
+    - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    - .claude/skills/myweb-audit/references/route-truth-casebook.md
+    - .claude/skills/myweb-audit/references/route-truth-coverage-matrix.md
+  shared_impact:
+    candidates:
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    confirmed:
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+  validation_status:
+    syntax: passed-via-vitest-and-playwright
+    typecheck: failed-existing-frontend-debt-only
+    pm2: passed
+    e2e: passed-playwright-chromium-trade-reconciliation-import-context-proof
+    gitnexus_staged_detect: mixed-staged-observation-medium-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree remained mixed with earlier audit artifacts before the current reconciliation import-context batch was summarized"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` reported `risk_level: medium`, `changed_files: 122`, `changed_count: 323`, `affected_count: 3`, so the staged scope remains observation-only and cannot serve as an isolated `trade-batch-16` verdict"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/trade-reconciliation-selector-import-context-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-16-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-16-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-16-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/trade-batch-16-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-trade-batch-16-closeout
+  notes:
+    - "the canonical reconciliation route now clears stale account-scoped import metadata during unresolved same-instance account switches"
+    - "Phase 3 routed proof now verifies the same account-switch path across rows and hero metadata together"
+status: complete

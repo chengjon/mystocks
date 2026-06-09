@@ -1,0 +1,39 @@
+- finding_id: secondary-shell-043-realtime-monitor
+  batch_id: secondary-batch-43
+  page:
+    route: /secondary/realtime-monitor-static-shell
+    page_key: secondary-realtime-monitor-static-shell
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/RealTimeMonitor.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy realtime monitor page still mounted SSE demo widgets and fallback connection counts without a verified owner
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/RealTimeMonitor.vue`"
+      - "Inspect the page imports for SSE demo components and the direct `/api/v1/sse/status` request"
+      - "Confirm the current router does not expose `RealTimeMonitor.vue` as an independent canonical route entry"
+  expected: "A legacy realtime monitor page with no verified one-to-one canonical SSE owner should degrade to an honest static shell and should not preserve EventSource widgets, test buttons, backend status calls, or fallback connection counts."
+  actual: "Before repair, `RealTimeMonitor.vue` mounted DashboardMetrics, RiskAlerts, TrainingProgress, and BacktestProgress widgets, requested `/api/v1/sse/status`, displayed connection counts with `|| 0` fallbacks, and exposed test action buttons."
+  evidence:
+    kind: code-review-plus-owner-regression
+    note: "RED regression failed before repair because the page did not render `legacy-static-shell`; mounting the old page also attempted EventSource and backend axios work in the unit environment."
+  repair_target:
+    files:
+      - web/frontend/src/views/RealTimeMonitor.vue
+      - web/frontend/src/views/styles/RealTimeMonitor.scss
+      - web/frontend/src/views/__tests__/RealTimeMonitor.spec.ts
+    primary_owner: web/frontend/src/views/RealTimeMonitor.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/realtime-monitor-static-shell
+  status: open
+  dependency: null
+  dedupe_key: /secondary/realtime-monitor-static-shell:route-truth:legacyRealtimeMonitorStaticShell
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run owner and config regressions to confirm the page renders an honest static shell and no longer imports page-local realtime monitor style or SSE demo widgets."

@@ -1,0 +1,46 @@
+- finding_id: trade-reconciliation-data-state-004
+  batch_id: trade-batch-18
+  page:
+    route: /trade/reconciliation
+    page_key: trade-reconciliation
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/trade/Reconciliation.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Trade reconciliation leaked faux zero result metrics while a newly selected account snapshot was still unresolved
+  trigger:
+    steps:
+      - "Open `/trade/reconciliation`"
+      - "Load verified statement rows and imported reconciliation results for account `backtest:7`"
+      - "Confirm the stats strip shows verified result metrics for the current account"
+      - "Switch the same page instance to account `backtest:8` while its first statement/results snapshot is still unresolved"
+      - "Inspect the stats strip under the new unresolved account shell"
+  expected: "When the newly selected account has no verified reconciliation result snapshot yet, selector-owned result metrics should reset immediately so the stats strip degrades to `-- / -- / --` instead of leaking faux zero reconciliation truth."
+  actual: "Before repair, the visible shell changed to `ACCOUNT: backtest:8`, cleared rows, and cleared import metadata, but the result-metric cards still rendered `0 / 0 / 0`."
+  evidence:
+    kind: live-observation
+    note: "A new owner red test first reproduced the same-instance account-switch metric leak, then a routed Phase 3 Chromium proof confirmed the unresolved `backtest:8` shell now clears the old metrics immediately."
+  repair_target:
+    files:
+      - web/frontend/src/views/trade/composables/useTradeReconciliation.ts
+      - web/frontend/src/views/trade/Reconciliation.vue
+      - web/frontend/src/views/trade/__tests__/Reconciliation.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/references/route-truth-casebook.md
+      - .claude/skills/myweb-audit/references/route-truth-coverage-matrix.md
+    primary_owner: web/frontend/src/views/trade/composables/useTradeReconciliation.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /strategy/opt
+    - /strategy/backtest
+    - /trade/history
+  status: open
+  dependency: null
+  dedupe_key: /trade/reconciliation:data-state:accountSelectorPendingResultMetrics
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check the same-instance `backtest:7 -> backtest:8` unresolved switch after repair and confirm the stats strip shows `-- / -- / -- / -- / -- / --` instead of leaving reconciliation result metrics at `0 / 0 / 0`."

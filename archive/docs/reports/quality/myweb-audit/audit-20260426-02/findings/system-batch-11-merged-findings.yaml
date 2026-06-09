@@ -1,0 +1,39 @@
+- consolidated_issue_id: system-config-issue-03
+  severity: High
+  title: System config source-tab counts now stay unresolved until a verified source-config snapshot exists
+  pages:
+    - /system/config
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The routed issue was a single first-load numeric-truth cluster: source-dependent counts on the default tab were rendered as if the route had already verified an empty source inventory."
+  primary_owner: web/frontend/src/views/system/Settings.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /system/data
+  dedupe_keys:
+    - /system/config:data-state:sourcePendingCountTruth
+  verification_scope:
+    routes:
+      - /system/config
+    states:
+      - source-first-load-pending
+      - source-first-load-success
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/system/Settings.vue
+      - web/frontend/src/views/system/__tests__/Settings.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/references/route-truth-casebook.md
+      - .claude/skills/myweb-audit/references/route-truth-coverage-matrix.md
+    notes:
+      - "the default `数据源` tab now gates source-dependent stat-card counts on a verified source-config snapshot instead of rendering `0 / 0` during unresolved first-load"
+      - "static write-capability truth remains visible, so the route now shows `-- / -- / ON / N/A` while the first source-config request is still pending"
+      - "owner and Phase 4 regressions now lock both the pending shell and the later verified success transition"
+      - "this batch reuses the existing stable `myweb-audit v2.0` route-truth families and updates the casebook plus coverage matrix instead of introducing another micro-version"
+  verification_surface: code-review-plus-targeted-live-verification

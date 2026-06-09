@@ -1,0 +1,46 @@
+- finding_id: secondary-shell-045-legacy-strategy-workbench
+  batch_id: secondary-batch-45
+  page:
+    route: /secondary/legacy-strategy-workbench-static-shell
+    page_key: secondary-legacy-strategy-workbench-static-shell
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/strategy/BatchScan.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy strategy execution/query pages preserved selector-owned execution state against retired API contracts
+  trigger:
+    steps:
+      - "Inspect `web/frontend/src/views/strategy/BatchScan.vue`, `SingleRun.vue`, `ResultsQuery.vue`, and `StatsAnalysis.vue`"
+      - "Confirm none of the four files are registered in `web/frontend/src/router/index.ts`"
+      - "Confirm their `strategyApi.*` calls only resolve through the deprecated API module"
+  expected: "Unrouted secondary strategy workbench pages with no verified canonical owner should not keep executable selectors, result tables, export actions, polling state, or stats cards."
+  actual: "Before repair, the four pages rendered local strategy selectors, execution buttons, query/export actions, auto-refresh state, and derived metrics while their API facade lived only in deprecated frontend API code."
+  evidence:
+    kind: code-review-plus-owner-regression
+    note: "RED regression failed before repair while importing the legacy pages; the old `BatchScan.vue` template also exposed a structural `v-else` adjacency error."
+  repair_target:
+    files:
+      - web/frontend/src/views/strategy/BatchScan.vue
+      - web/frontend/src/views/strategy/ResultsQuery.vue
+      - web/frontend/src/views/strategy/SingleRun.vue
+      - web/frontend/src/views/strategy/StatsAnalysis.vue
+      - web/frontend/src/views/strategy/styles/BatchScan.scss
+      - web/frontend/src/views/strategy/styles/ResultsQuery.scss
+      - web/frontend/src/views/strategy/styles/SingleRun.scss
+      - web/frontend/src/views/strategy/styles/StatsAnalysis.scss
+      - web/frontend/src/views/strategy/__tests__/LegacyStrategyWorkbench.spec.ts
+      - web/frontend/tests/unit/config/legacy-strategy-workbench-decommission.spec.ts
+    primary_owner: web/frontend/src/views/strategy/BatchScan.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-strategy-workbench-static-shell
+  status: open
+  dependency: null
+  dedupe_key: /secondary/legacy-strategy-workbench-static-shell:route-truth:legacyStrategyWorkbenchStaticShell
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run owner and config regressions to confirm the four pages render static shells and retired style files remain absent."

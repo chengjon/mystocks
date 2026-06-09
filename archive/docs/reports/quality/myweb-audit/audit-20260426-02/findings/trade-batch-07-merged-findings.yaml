@@ -1,0 +1,42 @@
+- consolidated_issue_id: trade-signals-issue-03
+  severity: High
+  title: Trade signals route now preserves resolved failure-envelope truth and honest first-load provenance on store-backed signal surfaces
+  pages:
+    - /trade/signals
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The unresolved first-load and resolved `success: false` first-load behaviors were one route-truth defect: the canonical trade-signals page treated store-backed refresh results as verified empty or real state before any verified signal snapshot existed."
+  primary_owner: web/frontend/src/views/trade/Signals.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /trade/signals
+  dedupe_keys:
+    - /trade/signals:data-state:storeBackedResolvedEnvelopeProvenanceTruth
+  verification_scope:
+    routes:
+      - /trade/signals
+    states:
+      - loading
+      - error
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/trade/Signals.vue
+      - web/frontend/src/views/trade/__tests__/Signals.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/SKILL.md
+      - .claude/agents/myweb-audit-data-state-audit.md
+      - .claude/skills/myweb-audit/references/audit-checklist.md
+      - .claude/skills/myweb-audit/references/CHANGELOG.md
+    notes:
+      - "the canonical trade-signals route now derives `DATA`, `COUNT`, `VISIBLE`, and top KPI counts from first-load evidence instead of defaulting to real or empty semantics before any verified signal snapshot exists"
+      - "the page now explicitly classifies resolved `success: false` signal envelopes as failure truth before mapping signal rows, preventing store-backed failure payloads from collapsing into empty-success rendering"
+      - "the routed component regression now models the real resolved-envelope failure behavior instead of relying only on rejected-promise mocks"
+      - "the phase3 route matrix now guards pending and unavailable provenance on the canonical `/trade/signals` route"
+      - "this batch upgrades `myweb-audit` to `v1.41` so future store-backed routed pages must verify resolved `success: false` transport behavior, not only thrown failures"
+  verification_surface: code-review-plus-targeted-live-verification

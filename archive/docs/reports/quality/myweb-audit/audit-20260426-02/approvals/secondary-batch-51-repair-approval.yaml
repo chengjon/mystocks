@@ -1,0 +1,24 @@
+- consolidated_issue_id: secondary-shell-issue-51
+  severity: Medium
+  affected_routes:
+    - /secondary/stocks-portfolio-static-shell
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/stocks/Portfolio.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "The orphan stocks portfolio page may be degraded to an honest static shell because it is not active canonical route truth and preserves only local mock portfolio execution semantics."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The repair is scoped to one unrouted secondary page and source regression; it does not create new trade portfolio APIs, stores, snapshots, or provenance/freshness rules."
+    related_routes:
+      - /secondary/stocks-portfolio-static-shell
+  approval_status: approved

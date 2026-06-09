@@ -1,0 +1,81 @@
+audit_run_id: audit-20260426-02
+batch_id: data-batch-10
+module: data
+scope:
+  requested_by: user
+  pages:
+    - route: /data/indicator
+      page_key: data-indicator
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/data/Advanced.vue
+  compatibility_redirects: []
+batch_rationale: Reuse the existing `v1.32 + v1.38` rules on the canonical data-indicator route so unverified summary surfaces stop leaking fake freshness metadata, zero-initialized tallies, and shared stat-card delta chrome.
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/data/indicator` remains `web/frontend/src/views/data/Advanced.vue`"
+    - "the route summary shell combines freshness metadata and count-only stat cards, so the approved repair should stay page-local in `Advanced.vue` instead of changing shared ArtDeco defaults"
+    - "natural PM2 success responses for `/api/v1/indicators/registry` and `/api/v1/data/stocks/basic` may be unavailable in this environment, so browser-context fulfillment is an acceptable verification fallback for the verified-success summary path"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [error, default]
+  notes:
+    - "verify `/data/indicator` no longer renders `UPDATED: <local current time>`, `0.00`, or `+0%` on summary surfaces before any verified summary exists"
+    - "verify the same route renders plain verified tally strings without `.artdeco-stat-change` when browser-context fulfillment supplies a successful registry and stock-universe contract"
+repair_approval:
+  status: approved
+  approved_findings:
+    - data-indicator-issue-01
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - data-indicator
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/data/Advanced.vue
+    - web/frontend/src/views/data/__tests__/Advanced.spec.ts
+    - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/components/artdeco/base/ArtDecoStatCard.vue
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-data-indicator-failure-and-success-summary-verification
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `data-batch-10` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` is treated as observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/data-indicator-unverified-summary-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-10-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-10-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-10-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/data-batch-10-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-data-batch-10-closeout
+  notes:
+    - "the current batch reuses the existing `v1.32 + v1.38` rule set rather than introducing a new failure-mode class"
+    - "the canonical data-indicator route now distinguishes unverified summary placeholders from verified tally presentation"
+status: complete

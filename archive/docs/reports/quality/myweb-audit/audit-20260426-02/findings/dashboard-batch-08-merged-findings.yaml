@@ -1,0 +1,43 @@
+- consolidated_issue_id: dashboard-home-issue-08
+  severity: High
+  title: Dashboard auxiliary live slices now use honest unavailable and stale-refresh truth instead of fake integration copy
+  pages:
+    - /dashboard
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The technical-indicator and monitoring failures came from the same route-owned auxiliary-slice sync-state pattern on the canonical dashboard route, so they form one consolidated auxiliary live-slice truth issue."
+  primary_owner: web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /dashboard
+  dedupe_keys:
+    - /dashboard:data-state:auxiliaryLiveSliceSyncTruth
+  verification_scope:
+    routes:
+      - /dashboard
+    states:
+      - default
+      - error
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/api/services/dashboardService.ts
+      - web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+      - web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+      - web/frontend/tests/unit/components/ArtDecoDashboardLogic.spec.ts
+      - web/frontend/src/api/services/__tests__/dashboardService.spec.ts
+      - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/SKILL.md
+      - .claude/skills/myweb-audit/references/CHANGELOG.md
+      - .claude/skills/myweb-audit/references/audit-checklist.md
+      - .claude/agents/myweb-audit-data-state-audit.md
+    notes:
+      - "the dashboard composable now tracks indicator and monitoring verification state independently, so first-load auxiliary failures render explicit unavailable-plus-no-verified-snapshot truth"
+      - "the dashboard route now retains the last verified indicator and monitoring rows on later refresh failure and pairs them with explicit stale or unavailable copy instead of faux integration notes"
+      - "dashboard service health normalization now preserves resolved unified error envelopes as failure truth, preventing monitoring rows from masquerading as empty-success data"
+      - "this batch upgrades `myweb-audit` to `v1.65`, adding auxiliary-slice sync-state truth checks for routed dashboards and workbenches with real secondary live contracts"
+  verification_surface: code-review-plus-targeted-live-verification

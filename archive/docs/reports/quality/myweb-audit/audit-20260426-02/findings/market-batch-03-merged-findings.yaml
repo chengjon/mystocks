@@ -1,0 +1,36 @@
+- consolidated_issue_id: market-realtime-issue-01
+  severity: Medium
+  title: Market realtime routed first-load surfaces now render honest placeholders and pending copy instead of faux zero quote metrics
+  pages:
+    - /market/realtime
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The unresolved first-load KPI strip, hero meta, and distribution panel were three manifestations of the same routed first-load truth cluster: the canonical realtime page treated unresolved quote surfaces as if a live snapshot had already resolved and therefore leaked zero-valued metrics across adjacent numeric surfaces."
+  primary_owner: web/frontend/src/views/market/Realtime.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /data/fund-flow
+  dedupe_keys:
+    - /market/realtime:data-state:unresolvedFirstQuoteSnapshotTruth
+  verification_scope:
+    routes:
+      - /market/realtime
+    states:
+      - loading
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/market/Realtime.vue
+      - web/frontend/src/views/market/__tests__/Realtime.spec.ts
+      - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+    notes:
+      - "the canonical realtime route now gates unresolved first-load KPI cards behind `isAwaitingFirstSnapshot`, so the top strip renders `-- / -- / 核心蓝筹样本 / --` instead of `0亿 / 0% / 0只`"
+      - "the same first-load gate now propagates honest placeholders into hero-meta and content-shell numeric surfaces, so the page shows `SAMPLE: --`, `MOOD: --`, and `UP / DOWN: --` until the first quote snapshot resolves"
+      - "the distribution card now renders explicit pending copy, `首份样本快照同步中，涨跌分布待接入。`, rather than pretending a zero-valued breadth snapshot already exists"
+      - "the new routed regression mounts the real stat-card and table path, and the strengthened Phase 1 matrix now exercises a hanging-quote first-load state on `/market/realtime`"
+  verification_surface: code-review-plus-targeted-live-verification

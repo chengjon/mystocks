@@ -1,0 +1,33 @@
+- consolidated_issue_id: secondary-shell-issue-22
+  severity: Medium
+  title: Legacy TDX market workbench now degrades to an honest static shell
+  pages:
+    - /secondary/legacy-tdx-market-static-shell
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The local quote, index-monitoring, K-line, and refresh shell surfaces in `TdxMarket.vue` were all faces of the same defect family: a top-level legacy TDX page preserved pseudo-live truth even though no verified canonical owner existed, and the only same-domain sibling was itself an unresolved pseudo-live surface."
+  primary_owner: web/frontend/src/views/TdxMarket.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-tdx-market-static-shell
+  dedupe_keys:
+    - /secondary/legacy-tdx-market-static-shell:route-truth:legacyTdxMarketStaticShell
+  verification_scope:
+    routes:
+      - /secondary/legacy-tdx-market-static-shell
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/TdxMarket.vue
+      - web/frontend/src/views/__tests__/TdxMarket.spec.ts
+    notes:
+      - "the legacy TDX market page now renders an honest static shell instead of a pseudo-live quote, index, and K-line workbench"
+      - "the repair explicitly avoids delegating to `market/Tdx.vue` because that sibling still relies on simulated transport and TODO APIs"
+      - "the page now hands users off to verified canonical market and system routes without fabricating shell-level request, sync, or refresh truth"
+  verification_surface: code-review-only

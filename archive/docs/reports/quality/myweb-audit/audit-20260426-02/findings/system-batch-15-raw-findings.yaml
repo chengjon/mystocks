@@ -1,0 +1,43 @@
+- finding_id: system-api-data-state-001
+  batch_id: system-batch-15
+  page:
+    route: /system/api
+    page_key: system-api
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/system/API.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Routed system-api page presented unresolved first-load summary labels as faux probe facts before any verified system probe snapshot existed
+  trigger:
+    steps:
+      - "Open `/system/api`"
+      - "Keep the first `/api/health` request unresolved before any verified system probe snapshot lands"
+      - "Inspect the visible stats strip, content-shell meta, and backend status card while the route is still in the pending shell"
+  expected: "While the first system probe snapshot is still unresolved, summary labels that depend on the probe should stay degraded to `-- / -- / --`, and the hero should keep unresolved provenance (`REQ_ID: N/A`) until the first verified system probe snapshot exists."
+  actual: "Before repair, `/system/api` rendered `服务名称: N/A / 版本: N/A / 中间件项: 3` and `content-shell-meta MIDDLEWARE: 3` even though the route had not yet verified any system probe payload. The shell therefore looked like a real probe snapshot instead of an in-flight sync."
+  evidence:
+    kind: live-observation
+    note: "A new owner red test first reproduced the faux-label `N/A / N/A / 3` shell, then targeted Phase 4 Chromium proof confirmed the routed page now stays at `UNKNOWN / -- / -- / --` until the delayed system probe request resolves."
+  repair_target:
+    files:
+      - web/frontend/src/views/system/API.vue
+      - web/frontend/src/views/system/__tests__/API.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/references/route-truth-families.md
+      - .claude/skills/myweb-audit/references/route-truth-casebook.md
+      - .claude/skills/myweb-audit/references/route-truth-coverage-matrix.md
+    primary_owner: web/frontend/src/views/system/API.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /system/health
+    - /system/config
+  status: open
+  dependency: null
+  dedupe_key: /system/api:data-state:pendingSummaryLabelTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/system/api` after repair and confirm unresolved summary labels stay at `-- / -- / --` until the first verified system probe snapshot lands."

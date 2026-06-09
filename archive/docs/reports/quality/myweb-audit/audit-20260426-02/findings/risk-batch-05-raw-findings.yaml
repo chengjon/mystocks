@@ -1,0 +1,79 @@
+- finding_id: risk-overview-data-state-002
+  batch_id: risk-batch-05
+  page:
+    route: /risk/overview
+    page_key: risk-overview
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/risk/Overview.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Risk overview tally cards inherited fabricated delta chrome and decimal precision from shared stat-card defaults
+  trigger:
+    steps:
+      - Open `/risk/overview`
+      - Inspect the routed KPI strip for `规则总数`, `启用规则`, `今日告警`, and `仓位集中度`
+      - Compare the visible card presentation with the actual routed surface, which exposes tallies plus an unverified label but no comparison baseline
+  expected: "The routed KPI strip should render plain counts and label-style values with no delta affordance because this surface does not expose verified movement semantics."
+  actual: "Before repair, the canonical route rendered exact-decimal tallies such as `1.00` or `0.00` and fabricated flat-change chrome such as `● +0%` on the same cards."
+  evidence:
+    kind: live-observation
+    note: Targeted PM2 browser verification and the strengthened routed regression both reproduced `.artdeco-stat-change` chrome and decimal-formatted tally values on `/risk/overview` before the page-local opt-out landed.
+  repair_target:
+    files:
+      - web/frontend/src/views/risk/Overview.vue
+    primary_owner: web/frontend/src/views/risk/Overview.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /risk/stop-loss
+    - /risk/alerts
+    - /risk/news
+  status: open
+  dependency: null
+  dedupe_key: /risk/overview:data-state:count-kpi-delta-truth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check the routed KPI strip after repair and confirm the route still reaches live monitoring endpoints while keeping plain counts and label-style values.
+
+- finding_id: risk-stop-loss-data-state-002
+  batch_id: risk-batch-05
+  page:
+    route: /risk/stop-loss
+    page_key: risk-stop-loss
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/risk/StopLoss.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Risk stop-loss KPI strip inherited fabricated delta chrome and decimal precision on tally and label-only cards
+  trigger:
+    steps:
+      - Open `/risk/stop-loss`
+      - Inspect the routed KPI strip for `观察标的`, `已触发`, `临界标的`, and `最近距离`
+      - Compare the visible stat-card presentation with the actual routed surface, which exposes counts and a nearest-distance label but no verified delta baseline
+  expected: "The routed KPI strip should render honest count or label values only, with no flat-change chrome or pseudo precision when the page lacks comparison-baseline truth."
+  actual: "Before repair, the canonical route rendered exact-decimal count values such as `1.00` or `0.00` plus fabricated flat-change chrome such as `● +0%`, even on honest empty or pending-policy states."
+  evidence:
+    kind: live-observation
+    note: The new routed regression reproduced four `.artdeco-stat-change` nodes on the stop-loss KPI strip before repair, and targeted PM2 verification confirmed the natural route still showed the same shared-card chrome on honest empty-state data.
+  repair_target:
+    files:
+      - web/frontend/src/views/risk/StopLoss.vue
+    primary_owner: web/frontend/src/views/risk/StopLoss.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /risk/overview
+    - /risk/alerts
+    - /risk/news
+  status: open
+  dependency: null
+  dedupe_key: /risk/stop-loss:data-state:count-kpi-delta-truth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check the routed KPI strip after repair and confirm the natural empty-state route still reaches live watchlist endpoints without rendering `+0%` or decimal-formatted tallies.

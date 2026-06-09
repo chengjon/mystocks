@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/group",
+  "total_endpoints": 1,
+  "endpoints": [
+    {
+      "path": "/group/{group_id}",
+      "method": "GET",
+      "file": "watchlist.py",
+      "function": "get_watchlist_by_group",
+      "return_model": "List[Dict]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 470
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+- finding_id: trade-positions-data-state-001
+  batch_id: trade-batch-10
+  page:
+    route: /trade/positions
+    page_key: trade-positions
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/trade/Center.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Trade positions route let transport refresh metadata overwrite verified holdings snapshot provenance on manual refresh failure
+  trigger:
+    steps:
+      - "Open `/trade/positions`"
+      - "Allow the first `/api/v1/trade/positions` payload to resolve successfully"
+      - "Click `刷新持仓`"
+      - "Resolve the refresh request as `success: false` while the route is still showing the earlier verified holdings snapshot"
+      - "Inspect the hero `REQ_ID / TIME / ROWS` meta, visible position rows, and stale-state copy"
+  expected: "After at least one verified holdings snapshot exists, a failed manual refresh should preserve the last verified rows plus the last verified `REQ_ID / TIME` provenance and show explicit stale-refresh messaging. The route must not downgrade the visible shell to faux unavailable or clear the current holdings table."
+  actual: "Before repair, `/trade/positions` reused `useArtDecoApi`'s latest transport metadata directly. A resolved `success: false` refresh replaced the visible `REQ_ID / TIME` provenance, cleared the routed holdings rows, and downgraded the route to faux unavailable truth even though the failed refresh had not replaced the current verified snapshot."
+  evidence:
+    kind: live-observation
+    note: "System-`google-chrome` verification with browser-context interception reproduced a successful first holdings sync followed by a resolved `success: false` manual refresh. After repair the same route keeps `REQ_ID: req-live-trade-positions-success / TIME: 31.00ms / ROWS: 2`, retains the visible `贵州茅台` and `宁德时代` rows, and shows `positions refresh unavailable，当前仍显示上次成功同步的持仓快照。`."
+  repair_target:
+    files:
+      - web/frontend/src/views/trade/Center.vue
+    primary_owner: web/frontend/src/views/trade/Center.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /trade/positions
+    - /strategy/pos
+  status: open
+  dependency: null
+  dedupe_key: /trade/positions:data-state:storeRefreshSnapshotProvenanceTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/trade/positions` after repair and confirm first-load failure still stays unavailable while `success -> refresh fail` now retains the last verified request provenance, process time, and holdings rows."

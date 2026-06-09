@@ -1,0 +1,41 @@
+- finding_id: detail-news-data-state-11
+  batch_id: detail-batch-11
+  page:
+    route: /detail/news/:symbol
+    page_key: stock-news
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/announcement/AnnouncementMonitor.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Detail news stats cards kept the previous symbol counts visible while a newly selected detail symbol remained unresolved before its first verified stats snapshot
+  trigger:
+    steps:
+      - "Open `/detail/news/600519` and let `/api/announcement/stats` verify with visible counts."
+      - "Navigate within the same page instance to `/detail/news/000001`."
+      - "Keep the first `/api/announcement/stats` request for `000001` unresolved so the new selector has not verified its own stats slice yet."
+      - "Inspect the route banner and the four top stat cards together."
+  expected: "A selector-scoped summary slice on the canonical detail news route must clear the previous symbol counts as soon as the shell switches to a new symbol that has not yet verified its own stats snapshot. A pending first load must not keep the old `2 / 2 / 1 / 0` counts visible under the new symbol banner."
+  actual: "Before repair, `fetchStats()` only tracked a route-global `stats` object. During a same-instance switch from `600519` to `000001`, the old `600519` counts stayed visible while the first `000001` stats request remained unresolved, even though the route banner had already changed to the new symbol."
+  evidence:
+    kind: live-observation
+    note: "A new RED selector-switch test first proved that the `000001` shell still rendered the previous `2 / 2 / 1 / 0` stat cluster until the new stats request settled. Controlled Playwright-library verification with system `google-chrome` then confirmed the repaired route now degrades those cards to `-- / -- / -- / --` during the unresolved selector switch."
+  repair_target:
+    files:
+      - web/frontend/src/views/announcement/composables/useAnnouncementMonitor.ts
+      - web/frontend/src/views/announcement/AnnouncementMonitor.vue
+      - web/frontend/src/views/announcement/__tests__/useAnnouncementMonitor.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/announcement/composables/useAnnouncementMonitor.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /detail/news/:symbol
+  status: open
+  dependency: null
+  dedupe_key: /detail/news/:symbol:data-state:selectorScopedPendingStatsSummaryProvenance
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check the canonical detail/news route after repair and confirm that a same-instance symbol switch into an unresolved first stats load clears the previous selector counts immediately and does not leak the old stat cluster under the new detail banner."

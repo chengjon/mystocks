@@ -1,0 +1,91 @@
+audit_run_id: audit-20260426-02
+batch_id: risk-batch-01
+module: risk
+scope:
+  requested_by: user
+  pages:
+    - route: /risk/overview
+      page_key: risk-overview
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/risk/Overview.vue
+  compatibility_redirects: []
+batch_rationale: Close the routed risk-overview hybrid live-surface truth gap so live rule data is not mixed with embedded alert messages or placeholder KPI numbers on the same primary workbench surface, and fold that pattern back into myweb-audit.
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+  - visual-artdeco-audit
+  - responsive-a11y-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - canonical route truth for `/risk/overview` remains `web/frontend/src/views/risk/Overview.vue`
+    - live rules continue to load from `/api/v1/monitoring/alert-rules` and live alert records continue to load from `/api/v1/monitoring/alerts?page=1&page_size=50`
+    - the routed overview page does not yet expose a dedicated live risk-summary metric endpoint, so KPI cards and overview metrics must degrade honestly until one exists
+  fallback_log:
+    - the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`
+    - fake-token same-tab automation could loop through the login guard, so targeted live verification used a real backend login token plus system `google-chrome` to confirm routed page truth
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1920, 1440, 1280]
+  required_states: [default, loading, empty]
+  notes:
+    - verify `/risk/overview` requests both alert rules and alert records on first load
+    - verify the alert tab shows a truthful empty state when live alert records are empty instead of embedded placeholder alert copy
+    - verify KPI cards and overview metrics degrade to `未校验` or `待接入` rather than fabricated runtime numbers
+repair_approval:
+  status: approved
+  approved_findings:
+    - risk-overview-issue-01
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - risk-overview
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/risk/Overview.vue
+    - web/frontend/src/views/risk/__tests__/Overview.spec.ts
+    - web/frontend/tests/unit/views/risk-wrapper-retention.spec.ts
+    - web/frontend/tests/e2e/risk-overview.spec.ts
+    - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-playwright-list
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-risk-overview-1-route
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated frontend or backend files before `risk-batch-01` was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` is treated as observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/risk-overview-hybrid-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-01-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-01-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-01-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/risk-batch-01-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-risk-batch-01-closeout
+  notes:
+    - "the routed `/risk/overview` page now derives its alert tab from live alert-record data instead of embedded placeholder messages"
+    - "the routed `/risk/overview` KPI cards and overview table now degrade to `未校验` and `待接入` until a real risk-summary metric source is wired"
+status: complete

@@ -1,0 +1,120 @@
+audit_run_id: audit-20260426-02
+batch_id: strategy-batch-01
+module: strategy
+scope:
+  requested_by: user
+  pages:
+    - route: /strategy/repo
+      page_key: strategy-repo
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/strategy/List.vue
+    - route: /strategy/parameters
+      page_key: strategy-parameters
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/strategy/Parameters.vue
+    - route: /strategy/backtest
+      page_key: strategy-backtest
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/strategy/Backtest.vue
+  compatibility_redirects:
+    - /strategy -> /strategy/repo
+batch_rationale: Primary strategy workflow routes covering repository management, parameter handoff, and backtest execution.
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+  - visual-artdeco-audit
+  - responsive-a11y-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-only
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - strategy routed entrypoints and downstream canonical owners are readable from router truth
+    - live verification can be added after wrapper-to-owner mapping is confirmed
+  fallback_log:
+    - batch initialized from routed wrapper truth before live interaction started
+verification_plan:
+  verification_strategy: code-review-only
+  browser_project: chromium
+  breakpoints: [1920, 1440, 1280]
+  required_states: [default, loading, empty, error, disabled, extreme-data]
+  notes:
+    - record wrapper-to-canonical split points before assigning repair owners
+    - treat shared strategy-tab styles and helper view-models as likely shared-impact candidates
+repair_approval:
+  status: approved
+  approved_findings:
+    - strategy-backtest-issue-01
+    - strategy-domain-issue-01
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - strategy-repo
+    - strategy-parameters
+    - strategy-backtest
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+    - web/frontend/src/mock/backtestWorkbenchMock.ts
+    - web/frontend/src/mock/__tests__/backtestWorkbenchMock.spec.ts
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/__node_tests__/backtestModulePresence.test.ts
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/styles/ArtDecoStrategyManagement.scss
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/styles/StrategyParametersTab.scss
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/styles/ArtDecoBacktestAnalysis.scss
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/components/styles/BacktestWorkbenchTabs.scss
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/components/styles/BacktestKpiGrid.scss
+    - web/frontend/tests/e2e/strategy-backtest.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/styles/ArtDecoStrategyManagement.scss
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/styles/StrategyParametersTab.scss
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/styles/ArtDecoBacktestAnalysis.scss
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+      - web/frontend/src/mock/backtestWorkbenchMock.ts
+    confirmed:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+      - web/frontend/src/mock/backtestWorkbenchMock.ts
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/styles/ArtDecoStrategyManagement.scss
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/styles/StrategyParametersTab.scss
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/styles/ArtDecoBacktestAnalysis.scss
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/components/styles/BacktestWorkbenchTabs.scss
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/components/styles/BacktestKpiGrid.scss
+  validation_status:
+    syntax: passed-via-vue-tsc
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-chromium-strategy-backtest-6-of-6-plus-targeted-tests-5-of-5
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "staged scope already included previously staged `market-batch-01` files, so the result was not treated as an isolated strategy-only verdict"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` returned `risk_level: low`, `changed_files: 38`, and `affected_count: 0`"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-repo-audit.md
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-parameters-audit.md
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-backtest-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-01-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-01-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-01-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/strategy-batch-01-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: staged-scope-and-artifact-validation
+  next_action: finalize-strategy-batch-closeout
+  notes:
+    - "router truth redirects `/strategy` to `/strategy/repo`"
+    - "`/strategy/repo`, `/strategy/parameters`, and `/strategy/backtest` are routed wrappers over canonical strategy-tab implementations"
+    - "likely shared owners include `ArtDecoStrategyManagement.vue`, `StrategyParametersTab.vue`, `ArtDecoBacktestAnalysis.vue`, and `backtestAnalysisViewModel.ts`"
+    - "execution-row pseudo-actions are now explicit bounded handlers, and only `立即执行` triggers real runtime work"
+    - "targeted Chromium backtest regression passed `6/6`, with supporting targeted tests passing `5/5`"
+    - "staged-scope GitNexus detect returned low risk but used a mixed staged set that also included previously staged market-batch files"
+status: complete

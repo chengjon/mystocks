@@ -1,14 +1,14 @@
 # ArtDecoCard Callsite Drift Inventory
 
 > **说明**
-> 本文用于补充 [`ARTDECO_COMPONENT_GOVERNANCE_RECORD_ARTDECO_CARD.md`](/opt/claude/mystocks_spec/docs/plans/ARTDECO_COMPONENT_GOVERNANCE_RECORD_ARTDECO_CARD.md)，聚焦 `ArtDecoCard` 的调用侧漂移问题。
+> 本文用于补充 [`ARTDECO_COMPONENT_GOVERNANCE_RECORD_ARTDECO_CARD.md`](ARTDECO_COMPONENT_GOVERNANCE_RECORD_ARTDECO_CARD.md)，聚焦 `ArtDecoCard` 的调用侧漂移问题。
 > 目标不是立即修复，而是先把“已确认的接口漂移”和“待进一步核查项”分开记录。
 
 ---
 
 ## 1. 当前组件真实 props
 
-当前 [`ArtDecoCard.vue`](/opt/claude/mystocks_spec/web/frontend/src/components/artdeco/base/ArtDecoCard.vue) 明确声明的 props 为：
+当前 [`ArtDecoCard.vue`](../../web/frontend/src/components/artdeco/base/ArtDecoCard.vue) 明确声明的 props 为：
 
 - `title`
 - `subtitle`
@@ -27,8 +27,8 @@
 
 已确认以下文件仍向 `ArtDecoCard` 传入 `:decorated="true"`：
 
-- [`web/frontend/src/views/Analysis.vue`](/opt/claude/mystocks_spec/web/frontend/src/views/Analysis.vue)
-- [`web/frontend/src/views/Stocks.vue`](/opt/claude/mystocks_spec/web/frontend/src/views/Stocks.vue)
+- [`web/frontend/src/views/Analysis.vue`](../../web/frontend/src/views/Analysis.vue)
+- [`web/frontend/src/views/Stocks.vue`](../../web/frontend/src/views/Stocks.vue)
 
 判断：
 

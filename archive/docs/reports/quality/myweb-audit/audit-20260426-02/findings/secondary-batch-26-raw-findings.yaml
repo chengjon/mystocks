@@ -1,0 +1,38 @@
+- finding_id: secondary-shell-026-orders
+  batch_id: secondary-batch-26
+  page:
+    route: /secondary/trading-decision-orders-static-shell
+    page_key: secondary-trading-decision-orders-static-shell
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/trading-decision/DecisionOrders.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Trading decision orders panel still exposed a local pseudo-live order-entry shell even though no semantically matching canonical order owner exists
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/trading-decision/DecisionOrders.vue`"
+      - "Inspect the local order-entry form, search action, buy/sell buttons, refresh action, and order-history table"
+      - "Confirm the live parent `web/frontend/src/views/TradingDecisionCenter.vue` imports this panel directly while the current router exposes no semantically matching `/trade/orders` or `/trade/execution` owner"
+  expected: "An active embedded decision panel with no semantically matching canonical order owner should degrade to an honest static shell instead of preserving local pseudo-live order-entry semantics."
+  actual: "Before repair, `DecisionOrders.vue` still rendered its own local search form, buy/sell actions, refresh button, and order-history table even though no semantically matching canonical order owner existed to validate those semantics."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green regression confirmed the decision orders panel still rendered local pseudo-live order-entry chrome before static-shell degradation."
+  repair_target:
+    files:
+      - web/frontend/src/views/trading-decision/DecisionOrders.vue
+      - web/frontend/src/views/trading-decision/__tests__/DecisionOrders.spec.ts
+    primary_owner: web/frontend/src/views/trading-decision/DecisionOrders.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/trading-decision-orders-static-shell
+  status: open
+  dependency: null
+  dedupe_key: /secondary/trading-decision-orders-static-shell:route-truth:tradingDecisionOrdersStaticShell
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner static-shell regression to confirm the local order-entry form, buy/sell actions, refresh button, and order-history chrome are gone."

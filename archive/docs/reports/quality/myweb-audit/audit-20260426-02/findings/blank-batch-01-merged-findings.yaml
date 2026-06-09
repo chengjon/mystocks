@@ -1,0 +1,42 @@
+- consolidated_issue_id: blank-layout-issue-01
+  severity: Medium
+  title: Blank-layout 404 recovery action now uses canonical home-route truth without leaking shared shell chrome
+  pages:
+    - /login
+    - /:pathMatch(.*)*
+  source_roles:
+    - functional-audit
+    - data-state-audit
+  why_consolidated: "The blank-layout mini batch only surfaced one route-local repair: the 404 recovery action should use canonical home-route truth while the same smoke proof also locks shell isolation and no-snapshot-fallback behavior for both blank routes."
+  primary_owner: web/frontend/src/views/NotFound.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /login
+    - /dashboard
+  dedupe_keys:
+    - /:pathMatch(.*)*:functional:canonical-home-route-recovery
+  verification_scope:
+    routes:
+      - /login
+      - /:pathMatch(.*)*
+    states:
+      - blank-login-shell
+      - blank-404-shell
+      - 404-recovery-to-login-redirect
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/NotFound.vue
+      - web/frontend/tests/unit/config/shell-route-runtime-guardrails.spec.ts
+      - web/frontend/tests/e2e/blank-layout-smoke.spec.ts
+      - .claude/skills/myweb-audit/references/route-truth-casebook.md
+      - .claude/skills/myweb-audit/references/route-truth-coverage-matrix.md
+    notes:
+      - "the 404 recovery action now routes through `HOME_ROUTE_PATH` instead of a raw `/` redirect hop"
+      - "blank-layout smoke now proves `/login` and `404` remain inside the blank shell with no shared request or summary chrome"
+      - "the lightweight blank-layout batch intentionally avoids the heavy business-route regression matrix and uses only shell-isolation, no-snapshot-fallback, type-check, and smoke gates"
+  verification_surface: code-review-plus-targeted-live-verification

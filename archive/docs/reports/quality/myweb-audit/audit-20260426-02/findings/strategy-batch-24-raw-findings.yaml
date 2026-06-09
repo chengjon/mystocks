@@ -1,0 +1,40 @@
+- finding_id: strategy-backtest-data-state-009
+  batch_id: strategy-batch-24
+  page:
+    route: /strategy/backtest
+    page_key: strategy-backtest
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Strategy backtest leaked the previous strategy execution progress after the route query switched to a new strategy without its own verified task context
+  trigger:
+    steps:
+      - "Open `/strategy/backtest?strategyId=101` with a controlled successful strategies payload for strategy `101`."
+      - "Start a controlled completed backtest run so the execution panel reaches `100%` and the log panel records `回测结果已同步到报告中心。`."
+      - "Switch the same mounted route instance to `/strategy/backtest?strategyId=202` before strategy `202` has any verified task or execution context."
+      - "Inspect the execution panel without remounting the routed owner."
+  expected: "Selector-owned execution surfaces should belong only to the current `strategyId` query. If the new selector has no verified execution context, the mounted `/strategy/backtest` route should keep `ID 202` in the context strip while the progress panel drops back to neutral baseline truth such as `等待任务 / 0%` and the stale success log disappears."
+  actual: "Before repair, the same mounted `/strategy/backtest` instance kept showing the earlier strategy's completed execution state after switching from `strategyId=101` to `strategyId=202`, including `回测完成 / 100%` and the stale `回测结果已同步到报告中心。` log line, even though the new selector had never verified its own task context."
+  evidence:
+    kind: live-observation
+    note: "Owner red-green regression reproduced the leak with `ID 202` plus `100%` progress and the stale sync log still visible. After repair, targeted Playwright-library verification with system `google-chrome` confirmed the same mounted route first shows the completed `101` execution state and then restores neutral baseline execution truth after the `101 -> 202` selector switch."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/backtest
+  status: open
+  dependency: null
+  dedupe_key: /strategy/backtest:data-state:selectorOwnedExecutionStateTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check that the same mounted `/strategy/backtest` instance drops from `回测完成 / 100%` back to `等待任务 / 0%` after switching from `strategyId=101` to `202`, and confirm the stale `回测结果已同步到报告中心。` log line no longer remains visible under the new selector shell."

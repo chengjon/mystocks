@@ -1,0 +1,75 @@
+- consolidated_issue_id: risk-overview-issue-02
+  severity: High
+  title: Risk overview KPI strip now renders honest tallies and label values instead of fabricated delta chrome or decimal precision
+  pages:
+    - /risk/overview
+  source_roles:
+    - data-state-audit
+  why_consolidated: The routed `规则总数`, `启用规则`, `今日告警`, and `仓位集中度` cards all leaked the same shared stat-card delta semantics and pseudo precision, so they represent one count-kpi truth issue on the canonical risk overview route.
+  primary_owner: web/frontend/src/views/risk/Overview.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /risk/stop-loss
+    - /risk/alerts
+    - /risk/news
+  dedupe_keys:
+    - /risk/overview:data-state:count-kpi-delta-truth
+  verification_scope:
+    routes:
+      - /risk/overview
+    states:
+      - default
+      - empty
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/risk/Overview.vue
+      - web/frontend/src/views/risk/__tests__/Overview.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    notes:
+      - "the routed overview KPI strip now passes plain string tallies and explicitly disables `show-change`, so count or label cards no longer inherit shared stat-card delta chrome"
+      - "the strengthened routed regression and Phase 4 matrix assertion now guard against `.artdeco-stat-change`, `+0%`, `1.00`, and `0.00` on `/risk/overview`"
+      - "the current repair reuses the existing `myweb-audit v1.32` count-kpi delta truth rule rather than adding a new skill-version branch"
+  verification_surface: code-review-plus-targeted-live-verification
+
+- consolidated_issue_id: risk-stop-loss-issue-02
+  severity: High
+  title: Risk stop-loss KPI strip now renders honest count or label values instead of fabricated delta chrome or decimal precision
+  pages:
+    - /risk/stop-loss
+  source_roles:
+    - data-state-audit
+  why_consolidated: The routed `观察标的`, `已触发`, `临界标的`, and `最近距离` cards all inherited the same shared stat-card delta defaults, so they represent one count-kpi truth issue on the canonical stop-loss route.
+  primary_owner: web/frontend/src/views/risk/StopLoss.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /risk/overview
+    - /risk/alerts
+    - /risk/news
+  dedupe_keys:
+    - /risk/stop-loss:data-state:count-kpi-delta-truth
+  verification_scope:
+    routes:
+      - /risk/stop-loss
+    states:
+      - default
+      - empty
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/risk/StopLoss.vue
+      - web/frontend/src/views/risk/__tests__/StopLoss.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    notes:
+      - "the routed stop-loss KPI strip now passes plain string tallies and explicitly disables `show-change`, so honest empty-state or pending-policy cards no longer leak shared flat-change chrome"
+      - "the strengthened routed regression and Phase 4 matrix assertions now guard against `.artdeco-stat-change`, `+0%`, `1.00`, and `0.00` on `/risk/stop-loss`"
+      - "the earlier threshold-policy truth repair remains intact; this batch only closes the independent count-kpi presentation gap on the same canonical route"
+  verification_surface: code-review-plus-targeted-live-verification

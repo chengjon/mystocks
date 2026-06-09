@@ -1,0 +1,39 @@
+- finding_id: detail-graphics-data-state-01
+  batch_id: detail-batch-01
+  page:
+    route: /detail/graphics/:symbol
+    page_key: detail-graphics
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/artdeco-pages/analysis-tabs/KLineAnalysis.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Detail graphics route leaked failed or secondary request provenance into the visible primary K-line shell
+  trigger:
+    steps:
+      - "Open `/detail/graphics/600519`"
+      - "Observe the first-load state while the primary `/api/v1/market/kline` request is unresolved"
+      - "Force the first `/api/v1/market/kline` request to resolve `success: false` before any verified K-line snapshot exists"
+      - "Repeat with one successful K-line sync followed by a failed `开始分析` refresh"
+      - "Inspect hero `REQ_ID`, `POINTS`, and the visible K-line sample shell"
+  expected: "Before `/detail/graphics/:symbol` has any verified primary K-line snapshot, hero metadata should degrade to explicit placeholders such as `REQ_ID: N/A` and `POINTS: --` even if secondary indicator requests succeed. If a later primary refresh fails after a successful sync, the route should preserve the last verified request id, point count, and visible K-line sample while showing stale-refresh copy."
+  actual: "Before repair, the detail route rendered `POINTS: 0` while the first K-line request was unresolved, leaked `REQ_ID: <failed-id>` on first-load failure, and replaced the visible primary shell with `REQ_ID: <refresh-failed-id> / POINTS: 0` after a later analyze refresh failed even though the currently visible primary sample still belonged to the earlier verified sync."
+  evidence:
+    kind: live-observation
+    note: "New routed component red tests reproduced unresolved first-load, first-load failure, and success-then-refresh-fail provenance defects before repair. Targeted Playwright-library verification with system `google-chrome` then confirmed the repaired route now renders `POINTS: --` with no `REQ_ID` on unresolved or failed first load, keeps `REQ_ID: req-live-kline-success / POINTS: 2` after a later failed refresh, and still reaches natural PM2 `/detail/graphics/600519` with a real request id and live point count."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/analysis-tabs/KLineAnalysis.vue
+    primary_owner: web/frontend/src/views/artdeco-pages/analysis-tabs/KLineAnalysis.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /market/technical
+  status: open
+  dependency: null
+  dedupe_key: /detail/graphics/:symbol:data-state:primarySnapshotProvenanceTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/detail/graphics/:symbol` after repair and confirm unresolved first-load, first-load failure, and stale-refresh failure all preserve honest primary-snapshot provenance."

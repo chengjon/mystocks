@@ -1,0 +1,81 @@
+audit_run_id: audit-20260426-02
+batch_id: secondary-batch-31
+module: secondary-legacy-surfaces
+scope:
+  requested_by: user
+  pages:
+    - route: /secondary/task-management-static-shell
+      page_key: secondary-task-management-static-shell
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/TaskManagement.vue
+  compatibility_redirects: []
+batch_rationale: >-
+  Continue the secondary inventory phase by degrading the legacy
+  `TaskManagement.vue` workbench to an honest static shell because no semantically
+  matching canonical owner exists.
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-only
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "the manifest route is a synthetic secondary-inventory alias used for artifact indexing; `web/frontend/src/views/TaskManagement.vue` is not a current router entry"
+    - "no routed or otherwise active canonical task-management owner exists to validate task stats, task-list surfaces, import-export controls, or history dialogs"
+    - "the repair must not add a new store, snapshot cache, request provenance badge, or shell-level freshness strip"
+  fallback_log: []
+verification_plan:
+  verification_strategy: code-review-only
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states:
+    - default
+  notes:
+    - "verify the owner now degrades to an honest static shell and removes task stats, task tables, import-export controls, and history surfaces"
+    - "verify secondary inventory tooling still passes after the static-shell precedent write-back"
+repair_approval:
+  status: approved
+  approved_findings:
+    - secondary-shell-issue-31
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - secondary-task-management-static-shell
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/TaskManagement.vue
+    - web/frontend/src/views/__tests__/TaskManagement.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/TaskManagement.vue
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vitest
+    typecheck: failed-existing-frontend-debt-only
+    pm2: passed
+    e2e: not-run-unrouted-owner
+    gitnexus_staged_detect: mixed-observation-non-isolated
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "the staged index already contained many unrelated files before this micro-batch, so `gitnexus_detect_changes({scope: staged})` is recorded only as a mixed observation"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/task-management-legacy-static-shell-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/secondary-batch-31-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/secondary-batch-31-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/secondary-batch-31-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/secondary-batch-31-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: verification
+  next_action: continue-secondary-inventory-triage
+  notes:
+    - "legacy task-management workbenches with only local task stats, table, import-export, and history surfaces should degrade to honest static shells when no canonical truth contract exists"
+status: complete

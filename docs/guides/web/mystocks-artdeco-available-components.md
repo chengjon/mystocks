@@ -13,9 +13,9 @@
 
 如果你要查“现在仓库里到底有哪些 ArtDeco 组件 / 页面块”，请直接看：
 
-- [ARTDECO_COMPONENTS_CATALOG](/opt/claude/mystocks_spec/web/frontend/ARTDECO_COMPONENTS_CATALOG.md)
-- [ARTDECO_COMPONENT_GUIDE](/opt/claude/mystocks_spec/docs/guides/web/ARTDECO_COMPONENT_GUIDE.md)
-- [ARTDECO_FINTECH_UNIFIED_SPEC](/opt/claude/mystocks_spec/docs/guides/web/ARTDECO_FINTECH_UNIFIED_SPEC.md)
+- [ARTDECO_COMPONENTS_CATALOG](../../../web/frontend/ARTDECO_COMPONENTS_CATALOG.md)
+- [ARTDECO_COMPONENT_GUIDE](ARTDECO_COMPONENT_GUIDE.md)
+- [ARTDECO_FINTECH_UNIFIED_SPEC](ARTDECO_FINTECH_UNIFIED_SPEC.md)
 
 ## 为什么本文件降级为兼容摘要
 

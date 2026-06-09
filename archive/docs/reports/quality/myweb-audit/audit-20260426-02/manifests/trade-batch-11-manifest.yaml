@@ -1,0 +1,88 @@
+audit_run_id: audit-20260426-02
+batch_id: trade-batch-11
+module: trade
+scope:
+  requested_by: user
+  pages:
+    - route: /trade/terminal
+      page_key: trade-terminal
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/TradingDashboard.vue
+  compatibility_redirects: []
+batch_rationale: "Close the terminal workbench stale risk-slice fallback gap on `/trade/terminal` so a later `/api/trading/risk/metrics` refresh failure can no longer replace the visible verified risk panel with synthetic fallback truth, and fold that pattern back into myweb-audit as `v1.55`."
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/trade/terminal` remains `web/frontend/src/views/TradingDashboard.vue`"
+    - "the approved repair should stay page-local inside `useTradingDashboard.ts` instead of widening into a shared terminal transport framework"
+    - "the targeted failure mode is a later single-slice refresh failure after at least one verified risk snapshot exists, not the already-closed lightweight-runtime demo shell"
+    - "auth-seeded browser contexts plus browser-context interception with `serviceWorkers: block` are acceptable verification harnesses for controlled `success -> risk refresh fail` truth on `/trade/terminal`"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, error]
+  notes:
+    - "verify `/trade/terminal` still preserves its existing first-load fallback and lightweight-runtime behavior"
+    - "verify a controlled `success -> risk refresh fail` path keeps the last verified drawdown, PnL, positions, and last-updated values visible on the risk panel"
+    - "verify the same route shows explicit degraded-state messaging instead of replacing the verified risk slice with synthetic fallback values such as `0`, `待接入`, or `未知`"
+    - "verify the natural PM2 `/trade/terminal` route still reaches its current honest lightweight runtime shell after the risk-slice repair lands"
+repair_approval:
+  status: approved
+  approved_findings:
+    - trade-terminal-issue-02
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - trade-terminal
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/composables/useTradingDashboard.ts
+    - web/frontend/src/views/composables/__tests__/useTradingDashboard.spec.ts
+    - web/frontend/tests/e2e/trade-terminal.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-trade-terminal-risk-refresh-verification
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `trade-batch-11` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/trade-terminal-risk-slice-refresh-retention-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-11-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-11-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-11-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/trade-batch-11-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-trade-batch-11-closeout
+  notes:
+    - "the repaired trade-terminal route now keeps the last verified risk panel snapshot visible during later risk-slice refresh failures"
+    - "future multi-slice workbench audits should reuse `v1.55` to distinguish never-verified fallback paths from stale refresh retention paths on independent live slices"
+status: complete

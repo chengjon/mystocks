@@ -1,0 +1,41 @@
+- finding_id: dashboard-home-data-state-009
+  batch_id: dashboard-batch-09
+  page:
+    route: /dashboard
+    page_key: dashboard-home
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Dashboard capital-flow tab leaked the previous verified ranking rows into a different tab while the new tab still had no verified snapshot
+  trigger:
+    steps:
+      - "Open `/dashboard` with a controlled successful `1day` capital-flow ranking response so the ranking card shows verified rows such as `贵州茅台` and `宁德时代`."
+      - "Keep the same mounted dashboard instance alive, then switch the ranking tabs from `1日` to `3日`."
+      - "Leave the `3day` `/api/akshare/market/fund-flow/big-deal?period=3day` request unresolved before any verified `3day` snapshot exists."
+      - "Inspect the `资金流向持续排名` card and the active tab chrome without remounting the route."
+  expected: "Capital-flow rows are selector-owned by the active flow tab. If `3day` has no verified snapshot yet, the same mounted dashboard instance should either render pending skeletons or an empty selector-local shell for `3日`, but it must not keep the earlier `1day` rows visible under the `3日` tab."
+  actual: "Before repair, `/dashboard` kept rendering the previous verified `1day` rows after the active tab switched to `3日` and the new tab's first load remained unresolved, so the same route instance could still show `贵州茅台 / 宁德时代` under the wrong tab shell."
+  evidence:
+    kind: live-observation
+    note: "The new red unit test first failed with `3日` active while `.capital-flow-card` still contained `贵州茅台`. After repair, targeted Playwright-library verification with system `google-chrome` and `serviceWorkers: block` confirmed the same mounted dashboard instance switches to `3日` with no old `1day` rows or false unavailable copy while the `3day` request is still unresolved."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+      - web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+      - web/frontend/tests/unit/components/ArtDecoDashboardLogic.spec.ts
+      - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /dashboard
+  status: open
+  dependency: null
+  dedupe_key: /dashboard:data-state:capitalFlowTabSelectorSnapshotTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check that the same mounted `/dashboard` instance first shows verified `1day` rows, then reaches active `3日` with no visible stale `1day` ranking rows while the new tab still has no verified snapshot."

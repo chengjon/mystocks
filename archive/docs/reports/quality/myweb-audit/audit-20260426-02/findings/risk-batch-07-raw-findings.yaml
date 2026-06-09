@@ -1,0 +1,37 @@
+- finding_id: risk-overview-data-state-004
+  batch_id: risk-batch-07
+  page:
+    route: /risk/overview
+    page_key: risk-overview
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/risk/Overview.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Routed risk-overview rule priorities inherited shared exact-decimal table formatting and rendered discrete ordinal values as faux metrics
+  trigger:
+    steps:
+      - Open `/risk/overview`
+      - Wait for the canonical route to finish loading the live alert-rules contract
+      - Click the `规则清单` tab
+      - Inspect the `优先级` column in the rendered rules table
+  expected: "The `优先级` column should render the live integer ordering semantics as plain whole numbers such as `4`, `3`, and `2`, because rule priority is a discrete ordinal field rather than a fractional metric."
+  actual: "Before repair, the routed rules tab passed the live integer priority values through shared exact-decimal table formatting and rendered `4.00`, `3.00`, and `2.00`, implying unsupported fractional precision on a discrete policy field."
+  evidence:
+    kind: live-observation
+    note: "System-`google-chrome` verification showed the live `/v1/monitoring/alert-rules` contract rendering real rows like `龙虎榜上榜`, but the `优先级` column displayed `4.00/3.00/2.00`; source review confirmed the routed page delegated `priority` to `ArtDecoTable`'s generic two-decimal numeric formatter."
+  repair_target:
+    files:
+      - web/frontend/src/views/risk/Overview.vue
+    primary_owner: web/frontend/src/views/risk/Overview.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /risk/overview:data-state:riskOverviewPriorityPrecision
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that the live rules tab still renders real rule rows and now shows integer priorities without fabricated decimal precision.

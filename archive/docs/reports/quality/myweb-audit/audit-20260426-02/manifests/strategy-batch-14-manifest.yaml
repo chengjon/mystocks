@@ -1,0 +1,91 @@
+audit_run_id: audit-20260426-02
+batch_id: strategy-batch-14
+module: strategy
+scope:
+  requested_by: user
+  pages:
+    - route: /strategy/backtest
+      page_key: strategy-backtest
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue
+  compatibility_redirects: []
+batch_rationale: "Promote `myweb-audit` to `v1.48` and repair the canonical strategy-backtest route so report rows no longer backfill missing completion metadata with the local current clock."
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "the canonical `/strategy/backtest` route is still owned by `web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue` through `web/frontend/src/views/strategy/Backtest.vue`"
+    - "the approved repair should stay route-local in `web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts` instead of widening into strategy service transport or backend backtest schemas"
+    - "the user-facing `报告中心` table exposes a row-level freshness surface through the `生成时间` column, so verification must cover successful result sync where completion metadata is intentionally omitted"
+    - "auth-seeded browser contexts plus browser-context interception with `serviceWorkers: block` are acceptable verification harnesses for the missing-completion-metadata report-row proof on this route"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, error]
+  notes:
+    - "verify `/strategy/backtest` now renders `报告中心 / 生成时间 / --` when the synced backtest result row omits completion metadata"
+    - "verify the natural PM2 route still reaches `/strategy/backtest` and does not regress its surrounding workbench shell while this row-level freshness repair remains route-local"
+repair_approval:
+  status: approved
+  approved_findings:
+    - strategy-backtest-issue-03
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - strategy-backtest
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts
+    - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/strategy/Backtest.vue
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+    confirmed:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+      - web/frontend/src/views/strategy/Backtest.vue
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-strategy-backtest-report-timestamp-verification
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `strategy-batch-14` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-backtest-report-timestamp-provenance-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-14-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-14-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-14-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/strategy-batch-14-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-strategy-batch-14-closeout
+  notes:
+    - "the repaired strategy-backtest route now keeps row-level `生成时间` on explicit placeholder truth when synced result rows omit completion metadata"
+    - "future routed report-table audits should treat row-level result freshness cells as separate provenance surfaces from hero freshness metadata"
+status: complete

@@ -1,0 +1,24 @@
+- consolidated_issue_id: trade-history-issue-03
+  severity: High
+  affected_routes:
+    - /trade/history
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/trade/History.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: true
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "The canonical trade-history route now keeps first-load pending and unavailable ledger truth out of faux zero-row and faux empty-history summary semantics."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The first-load provenance gap is repaired page-locally in `History.vue`; the embedded wrapper continues to consume the same owner without requiring a shared-layer redesign."
+    related_routes:
+      - /trade/history
+  approval_status: approved

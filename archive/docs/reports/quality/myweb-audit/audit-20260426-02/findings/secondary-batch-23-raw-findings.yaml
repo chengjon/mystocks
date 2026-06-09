@@ -1,0 +1,38 @@
+- finding_id: secondary-shell-023-phase4-dashboard
+  batch_id: secondary-batch-23
+  page:
+    route: /secondary/legacy-phase4-dashboard-wrapper
+    page_key: secondary-legacy-phase4-dashboard-wrapper
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/Phase4Dashboard.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy phase-4 dashboard page still exposed a forked pseudo-live dashboard shell despite a semantically matching canonical owner already existing
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/Phase4Dashboard.vue`"
+      - "Inspect the local stats cards, market overview tabs, watchlist, and risk-alert shell surfaces"
+      - "Confirm a semantically matching canonical dashboard owner already exists at `web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue`"
+  expected: "An unrouted legacy dashboard page with a semantically matching canonical owner should delegate to that canonical owner instead of preserving a forked pseudo-live dashboard shell."
+  actual: "Before repair, `Phase4Dashboard.vue` still rendered its own phase-specific pseudo-live dashboard shell with local cards, tabs, and chart workbench semantics."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green regression confirmed the legacy phase-4 dashboard page still rendered a forked pseudo-live shell before canonical-wrapper delegation."
+  repair_target:
+    files:
+      - web/frontend/src/views/Phase4Dashboard.vue
+      - web/frontend/src/views/__tests__/Phase4Dashboard.spec.ts
+    primary_owner: web/frontend/src/views/Phase4Dashboard.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-phase4-dashboard-wrapper
+  status: open
+  dependency: null
+  dedupe_key: /secondary/legacy-phase4-dashboard-wrapper:route-truth:legacyPhase4DashboardWrapper
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner wrapper regression to confirm the phase-4 dashboard shell is gone and the page now delegates directly to the canonical dashboard owner."

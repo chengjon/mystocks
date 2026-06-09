@@ -1,0 +1,83 @@
+audit_run_id: audit-20260426-02
+batch_id: data-batch-14
+module: data
+scope:
+  requested_by: user
+  pages:
+    - route: /data/industry
+      page_key: data-industry
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/data/Industry.vue
+  compatibility_redirects: []
+batch_rationale: Close the canonical `/data/industry` request-provenance defect so first-load failures and stale-refresh failures cannot leak failed `REQ_ID` values into visible hero metadata when the rendered board snapshot was never verified or still belongs to an earlier successful sync, while reusing existing `myweb-audit v1.41`, `v1.40`, and `v1.39` rules.
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/data/industry` remains `web/frontend/src/views/data/Industry.vue`"
+    - "the approved repair should stay page-local inside `Industry.vue` and the Phase 1 routed regression matrix rather than altering shared ArtDeco defaults or the shared request wrapper"
+    - "before any verified board snapshot exists, routed hero request metadata must degrade to explicit placeholders such as `REQ_ID: N/A` instead of leaking failed request ids"
+    - "if a refresh fails after a successful sync, the route should continue to expose the request id that produced the currently visible verified board snapshot rather than the failed retry request id"
+    - "the routed request-provenance truth rule already exists in `myweb-audit v1.41`, and browser verification should reuse `v1.39` context-level interception when failure-state proof depends on controlled requests"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [error, default, loading]
+  notes:
+    - "verify failed first-load `/data/industry` now renders `REQ_ID: N/A` and does not leak the failed request id anywhere in the visible route shell"
+    - "verify a success-then-fail refresh path keeps the last verified request id visible, preserves the previous board rows, and still shows the refresh warning"
+    - "verify natural PM2 `/data/industry` still renders a live success shell with a real request id and unchanged stat values"
+repair_approval:
+  status: approved
+  approved_findings:
+    - data-industry-issue-03
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - data-industry
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/data/Industry.vue
+    - web/frontend/src/views/data/__tests__/Industry.spec.ts
+    - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-data-industry-request-provenance-3-state
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `data-batch-14` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/data-industry-request-provenance-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-14-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-14-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-14-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/data-batch-14-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-data-batch-14-closeout
+  notes:
+    - "the canonical industry route now renders failed first-load request metadata honestly as `REQ_ID: N/A` instead of leaking a failed board request id"
+    - "the same route now preserves the last verified request id when a refresh fails after a successful board sync"
+status: complete

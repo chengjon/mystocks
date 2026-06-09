@@ -1,0 +1,39 @@
+- finding_id: watchlist-screener-data-state-001
+  batch_id: watchlist-batch-03
+  page:
+    route: /watchlist/screener
+    page_key: watchlist-screener
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/watchlist/Screener.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Watchlist screener route presented count-only summary cards as faux precise metrics and rendered unresolved stock-universe state as resolved zeros
+  trigger:
+    steps:
+      - Open `/watchlist/screener`
+      - Inspect the hero `UNIVERSE` meta and the top summary cards before the first `/api/v1/data/stocks/basic` payload is verified or after the first request fails
+      - Inspect the same summary cards again when a verified non-empty stock-universe payload resolves
+  expected: "Before the route has verified stock-universe evidence, the hero universe count and the top summary cards should render explicit placeholders such as `UNIVERSE: --` and `-- / -- / -- / --`. Once the route has verified count-only stock-universe data, the same cards should render plain strings without shared `+0%` chrome or pseudo-decimal precision."
+  actual: "Before repair, the route rendered `UNIVERSE: 0` with top summary cards `0.00 / 0.00 / 0.00 / --` under failed or unresolved first-load state, and rendered verified count-only summary cards as `3.00 / 3.00 / 2.00 / 1.61亿`."
+  evidence:
+    kind: live-observation
+    note: "System-`google-chrome` verification reproduced both states before repair: the natural PM2 error path and a hanging first request both showed `UNIVERSE: 0` with `0.00` summary cards, while browser-context success fulfillment showed `3.00 / 3.00 / 2.00 / 1.61亿`."
+  repair_target:
+    files:
+      - web/frontend/src/views/stocks/Screener.vue
+      - web/frontend/src/views/watchlist/__tests__/Screener.spec.ts
+      - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/stocks/Screener.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /watchlist/screener
+  status: open
+  dependency: null
+  dedupe_key: /watchlist/screener:data-state:summaryCountAndFirstLoadTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that hero universe count and top summary cards now degrade to placeholders before verification, while verified count-only summaries render plain strings without `.artdeco-stat-change`.

@@ -340,7 +340,11 @@ historical_data = [
 4. **Complete Monitoring Integration**: Separate monitoring database tracks all operations
    - `MonitoringDatabase` logs all operations independent of business databases
    - `PerformanceMonitor` tracks query performance and alerts on slow operations
-   - `DataQualityMonitor` ensures data completeness, freshness, and accuracy
+   - `DataQualityMonitor` is the canonical monitoring surface for data-quality freshness,
+     alerting, and persistence
+   - Q2 closure note: canonical data-quality vocabulary distinguishes validation,
+     monitoring, governance/reporting, and repair/backfill gap handling rather than
+     treating all quality concerns as one blended module
 
 5. **Historical Redis Integration Features** (New in Week 4):
    - **L2 Distributed Cache** (`redis_cache`): Indicator results, API responses, market data

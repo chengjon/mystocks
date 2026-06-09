@@ -1,0 +1,166 @@
+- consolidated_issue_id: data-indicator-issue-01
+  severity: High
+  title: data-indicator now disables unsupported indicator-condition screening and replaces inert click paths with real context flows
+  pages:
+    - /data/indicator
+  source_roles:
+    - functional-audit
+  why_consolidated: The misleading indicator-condition path and inert click affordances were both rooted in the same data-analysis page family and shared composable ownership.
+  primary_owner: web/frontend/src/composables/market/useDataAnalysis.ts
+  repair_bucket: fix-with-shared-impact-review
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /data/indicator
+    - wrapper consumers of Advanced.vue
+  dedupe_keys:
+    - /data/indicator:interaction:useDataAnalysis
+    - /data/indicator:interaction:Advanced
+  verification_scope:
+    routes:
+      - /data/indicator
+    states:
+      - default
+      - empty
+      - error
+    breakpoints:
+      - 1920
+      - 1440
+      - 1280
+  repair_summary:
+    files:
+      - web/frontend/src/composables/market/useDataAnalysis.ts
+      - web/frontend/src/views/data/Advanced.vue
+      - web/frontend/src/views/artdeco-pages/components/AnalysisIndicators.vue
+      - web/frontend/src/views/artdeco-pages/components/AnalysisScreener.vue
+    notes:
+      - indicator-condition controls are now explicitly unsupported instead of silently ignored
+      - indicator-card and results-row clicks now set visible indicator/stock context
+      - indicator cards now opt into `ArtDecoCard` clickable behavior so the selected-indicator flow is actually reachable
+  verification_surface: code-review-plus-targeted-live-verification
+
+- consolidated_issue_id: data-fund-flow-issue-01
+  severity: High
+  title: data-fund-flow preserves partial success instead of collapsing to a global empty state
+  pages:
+    - /data/fund-flow
+  source_roles:
+    - data-state-audit
+  why_consolidated: The page previously treated any failed subrequest as a reason to clear all fund-flow surfaces, even when one response had succeeded.
+  primary_owner: web/frontend/src/views/data/fundFlowPageData.ts
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact: []
+  dedupe_keys:
+    - /data/fund-flow:data-state:fundFlowPageData
+  verification_scope:
+    routes:
+      - /data/fund-flow
+    states:
+      - loading
+      - error
+      - empty
+    breakpoints:
+      - 1920
+      - 1440
+      - 1280
+  repair_summary:
+    files:
+      - web/frontend/src/views/data/fundFlowPageData.ts
+      - web/frontend/src/views/data/FundFlow.vue
+      - web/frontend/src/views/artdeco-pages/market-data-tabs/fundFlowPageData.ts
+      - web/frontend/src/views/artdeco-pages/market-data-tabs/__node_tests__/fundFlowPageData.test.ts
+    notes:
+      - overview data now merges successful summary and big-deal surfaces independently
+      - node test coverage was added for partial-merge behavior
+  verification_surface: code-review-only
+
+- consolidated_issue_id: data-indicator-issue-02
+  severity: Medium
+  title: data-indicator API truth is aligned between router meta and generated page config
+  pages:
+    - /data/indicator
+  source_roles:
+    - data-state-audit
+    - route-inventory
+  why_consolidated: Router truth and generated config previously disagreed on the page's canonical API, creating one cross-source truth mismatch.
+  primary_owner: scripts/dev/tools/generate-page-config.js
+  repair_bucket: fix-with-shared-impact-review
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /data/indicator
+    - generated consumers of web/frontend/src/config/pageConfig.ts
+  dedupe_keys:
+    - /data/indicator:dependency:generate-page-config
+  verification_scope:
+    routes:
+      - /data/indicator
+    states:
+      - default
+    breakpoints:
+      - 1920
+      - 1440
+      - 1280
+  repair_summary:
+    files:
+      - scripts/dev/tools/generate-page-config.js
+      - web/frontend/src/config/pageConfig.ts
+    notes:
+      - generator input now emits `/api/v1/indicators/registry` for `data-indicator`
+      - generated page config was regenerated in the same repair wave
+  verification_surface: code-review-only
+
+- consolidated_issue_id: data-domain-issue-01
+  severity: Medium
+  title: data-domain shared cleanup removed unsupported mobile-width responsive branches
+  pages:
+    - /data/industry
+    - /data/concept
+    - /data/fund-flow
+    - /data/indicator
+  source_roles:
+    - responsive-a11y-audit
+  why_consolidated: Multiple pages and shared child components repeat the same unsupported 48rem responsive pattern under a desktop-only contract.
+  primary_owner: web/frontend/src/views/data/Industry.vue
+  repair_bucket: fix-with-shared-impact-review
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /data/industry
+    - /data/concept
+    - /data/fund-flow
+    - /data/indicator
+    - web/frontend/src/views/artdeco-pages/components/AnalysisIndicators.vue
+    - web/frontend/src/views/artdeco-pages/components/AnalysisScreener.vue
+  dedupe_keys:
+    - /data/industry:responsive:Industry
+  verification_scope:
+    routes:
+      - /data/industry
+      - /data/concept
+      - /data/fund-flow
+      - /data/indicator
+    states:
+      - default
+    breakpoints:
+      - 1920
+      - 1440
+      - 1280
+  repair_summary:
+    files:
+      - web/frontend/src/views/data/Industry.vue
+      - web/frontend/src/views/data/Concepts.vue
+      - web/frontend/src/views/data/FundFlow.vue
+      - web/frontend/src/views/data/Advanced.vue
+      - web/frontend/src/views/artdeco-pages/components/AnalysisIndicators.vue
+      - web/frontend/src/views/artdeco-pages/components/AnalysisScreener.vue
+    notes:
+      - removed unsupported `@media (width <= 48rem)` branches from routed data pages and shared analysis child components
+      - retained only desktop-relevant layout adjustments such as the 75rem workbench breakpoint
+  verification_surface: code-review-only

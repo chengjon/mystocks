@@ -1,0 +1,38 @@
+- finding_id: secondary-shell-029-system-database-monitor
+  batch_id: secondary-batch-29
+  page:
+    route: /secondary/system-database-monitor-static-shell
+    page_key: secondary-system-database-monitor-static-shell
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/system/DatabaseMonitor.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy system database monitor page still exposed pseudo health counts, routing distribution, and migration summaries without any verified canonical owner
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/system/DatabaseMonitor.vue`"
+      - "Inspect the local health counters, routing-distribution cards, and architecture simplification summary"
+      - "Confirm there is no routed or otherwise active canonical database-monitor owner that validates those shell-level metrics"
+  expected: "An unrouted legacy database-monitor dashboard with no verified canonical owner should degrade to an honest static shell instead of preserving pseudo health, routing, and migration truth."
+  actual: "Before repair, `DatabaseMonitor.vue` still rendered hardcoded database-health counters, classification totals, routing-distribution counts, and migration-history summaries as if they were live verified system truth."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green regression confirmed the legacy database-monitor page still rendered pseudo health and migration shell semantics before static-shell degradation."
+  repair_target:
+    files:
+      - web/frontend/src/views/system/DatabaseMonitor.vue
+      - web/frontend/src/views/system/__tests__/DatabaseMonitor.spec.ts
+    primary_owner: web/frontend/src/views/system/DatabaseMonitor.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/system-database-monitor-static-shell
+  status: open
+  dependency: null
+  dedupe_key: /secondary/system-database-monitor-static-shell:route-truth:systemDatabaseMonitorStaticShell
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner regression to confirm the pseudo health counts, routing summaries, and migration-history surfaces are gone and replaced by a static shell."

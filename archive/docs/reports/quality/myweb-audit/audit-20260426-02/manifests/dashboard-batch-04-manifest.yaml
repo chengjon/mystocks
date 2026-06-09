@@ -1,0 +1,88 @@
+audit_run_id: audit-20260426-02
+batch_id: dashboard-batch-04
+module: dashboard
+scope:
+  requested_by: user
+  pages:
+    - route: /dashboard
+      page_key: dashboard-home
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+  compatibility_redirects: []
+batch_rationale: "Close the retained fund-flow summary delta-chrome gap on `/dashboard` so description-only summary cards no longer inherit shared `● +0%` surfaces, and fold that route-truth pattern back into myweb-audit as `v1.57`."
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/dashboard` remains `web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue`"
+    - "the approved repair should stay dashboard-page local inside `ArtDecoDashboard.vue` instead of widening into the shared `ArtDecoStatCard.vue` default behavior"
+    - "the two real delta cards (`沪股通净流入`, `深股通净流入`) should keep shared change chrome, while `北向资金总额` and `主力净流入` must degrade to plain value-plus-description surfaces"
+    - "auth-seeded browser contexts plus browser-context interception with `serviceWorkers: block` are acceptable verification harnesses for controlled change-chrome truth on `/dashboard`"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default]
+  notes:
+    - "verify `/dashboard` still renders the fund-flow overview cards"
+    - "verify `.enhanced-fund-flow` renders exactly two `.artdeco-stat-change` nodes"
+    - "verify the same section no longer shows `+0%` on `北向资金总额` or `主力净流入`"
+repair_approval:
+  status: approved
+  approved_findings:
+    - dashboard-home-issue-04
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - dashboard-home
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+    - web/frontend/tests/unit/components/ArtDecoDashboardLogic.spec.ts
+    - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-dashboard-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-dashboard-summary-delta-red-green-plus-controlled-system-chrome-live-proof
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `dashboard-batch-04` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` is treated as observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/dashboard-fund-flow-summary-delta-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-04-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-04-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/dashboard-batch-04-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/dashboard-batch-04-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: closeout-finalized-and-validated
+  next_action: none-batch-complete
+  notes:
+    - "the dashboard fund-flow overview now suppresses shared delta chrome on the description-only summary cards"
+    - "future routed audits should reuse `v1.57` whenever a live summary slice mixes real delta cards with description-only totals or ratios on the same shared stat-card family"
+status: complete

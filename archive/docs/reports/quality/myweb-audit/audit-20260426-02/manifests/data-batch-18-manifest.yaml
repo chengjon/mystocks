@@ -1,0 +1,82 @@
+audit_run_id: audit-20260426-02
+batch_id: data-batch-18
+module: data
+scope:
+  requested_by: user
+  pages:
+    - route: /data/indicator
+      page_key: data-indicator
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/data/Advanced.vue
+  compatibility_redirects: []
+batch_rationale: "Repair the canonical `/data/indicator` route so category-owned indicator detail context cannot remain visible after a same-instance `趋势指标 -> 动量指标` switch without a newly selected indicator, reusing existing `myweb-audit v1.71` and `v1.68` guidance."
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/data/indicator` remains `web/frontend/src/views/data/Advanced.vue`"
+    - "the approved repair should stay page-local inside `useDataAnalysis` rather than widening into shared indicator-card components or global editor state"
+    - "the `指标详情` panel must be owned by the current `activeCategory` when no newly selected indicator exists in the new category"
+    - "same-instance category switches on the mounted `/data/indicator` route are a first-class verification path because the page already exposes a local category selector and a persistent editor panel"
+    - "this batch reuses existing `myweb-audit v1.71` and `v1.68` selector-owned snapshot truth instead of minting a new skill version"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default]
+  notes:
+    - "verify `/data/indicator` first shows `移动平均线 / MA` after a trend-category selection"
+    - "verify returning to the library, switching to `动量指标`, and reopening the editor produces the neutral empty state rather than the old trend indicator detail"
+repair_approval:
+  status: approved
+  approved_findings:
+    - data-indicator-issue-05
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - data-indicator
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/composables/market/useDataAnalysis.ts
+    - web/frontend/tests/unit/views/data-advanced-screening-truth.spec.ts
+    - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-targeted-vitest-and-scoped-git-diff-check
+    typecheck: failed-existing-unrelated-technical-debt
+    pm2: passed-pm2-online
+    e2e: passed-system-chrome-data-indicator-category-selector-proof
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contains earlier staged audit artifacts and unrelated files, so any staged GitNexus output remains observation-only unless an isolated staged scope is prepared later"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` remains a mixed observation and is not used as an isolated verdict for `data-batch-18`"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/data-indicator-category-selector-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-18-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-18-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-18-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/data-batch-18-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-data-batch-18-closeout
+  notes:
+    - "the canonical data-indicator route now resets category-owned detail context when the same mounted route switches to a different active category"
+    - "future local-selector audits should treat editor/detail panels the same way as selector-owned rows whenever the route can reopen a detail shell without a fresh per-selector selection"
+status: complete

@@ -1,0 +1,38 @@
+- finding_id: secondary-shell-012
+  batch_id: secondary-batch-12
+  page:
+    route: /secondary/legacy-risk-monitor-canonical-wrapper
+    page_key: secondary-legacy-risk-monitor-canonical-wrapper
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/RiskMonitor.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy top-level risk monitor page still exposed a forked pseudo-live risk workbench even though a semantically matching canonical risk-management owner already exists
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/RiskMonitor.vue`"
+      - "Inspect the local risk summary cards, distribution placeholders, position-risk table, and alert shell"
+      - "Confirm the page is not the current router-backed `/risk/management` owner and does not delegate to `web/frontend/src/views/risk/Center.vue`"
+  expected: "An unrouted legacy page that already has a semantically matching canonical risk-management owner should collapse to a thin orchestration wrapper instead of preserving a forked pseudo-live risk workbench shell."
+  actual: "Before repair, `RiskMonitor.vue` rendered its own pseudo-live risk-monitoring workbench with local summary cards, chart placeholders, table shells, and alerts instead of delegating to the canonical `/risk/management` owner."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green regression confirmed the legacy top-level risk monitor page still rendered its own fake risk workbench shell before the wrapper repair."
+  repair_target:
+    files:
+      - web/frontend/src/views/RiskMonitor.vue
+      - web/frontend/src/views/__tests__/RiskMonitor.spec.ts
+    primary_owner: web/frontend/src/views/RiskMonitor.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-risk-monitor-canonical-wrapper
+  status: open
+  dependency: null
+  dedupe_key: /secondary/legacy-risk-monitor-canonical-wrapper:route-truth:legacyRiskMonitorCanonicalWrapper
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner wrapper regression and secondary inventory tooling to confirm the legacy risk monitor page now delegates entirely to the canonical `/risk/management` owner."

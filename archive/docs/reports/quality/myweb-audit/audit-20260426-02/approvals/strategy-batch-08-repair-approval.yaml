@@ -1,0 +1,24 @@
+- consolidated_issue_id: strategy-repo-issue-01
+  severity: High
+  affected_routes:
+    - /strategy/repo
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyManagement.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: The canonical strategy-repo route now renders verified count-only tally cards honestly, preserves real empty-state zero counts, and degrades unresolved or unavailable first-load repository surfaces to placeholders instead of inherited faux delta metrics or false real-empty copy.
+  dependency: null
+  shared_impact:
+    candidate: true
+    basis: Shared `ArtDecoStatCard.vue` defaults amplified the leak, but the approved repair remains local to the routed strategy-repo owner.
+    related_routes:
+      - /strategy/repo
+  approval_status: approved

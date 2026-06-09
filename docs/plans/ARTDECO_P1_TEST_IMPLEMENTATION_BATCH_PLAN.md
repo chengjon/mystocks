@@ -4,9 +4,9 @@
 > 本文用于把现有测试矩阵收敛成 P1 可执行批次。
 > 它服务于以下文档的落地：
 >
-> - [`ARTDECO_PAGE_TEMPLATE_TEST_MATRIX.md`](/opt/claude/mystocks_spec/docs/plans/ARTDECO_PAGE_TEMPLATE_TEST_MATRIX.md)
-> - [`ARTDECO_RISK_OVERVIEW_PANEL_TEST_MATRIX.md`](/opt/claude/mystocks_spec/docs/plans/ARTDECO_RISK_OVERVIEW_PANEL_TEST_MATRIX.md)
-> - [`ARTDECO_STANDARDIZATION_P1_TASKS.md`](/opt/claude/mystocks_spec/docs/plans/ARTDECO_STANDARDIZATION_P1_TASKS.md)
+> - [`ARTDECO_PAGE_TEMPLATE_TEST_MATRIX.md`](ARTDECO_PAGE_TEMPLATE_TEST_MATRIX.md)
+> - [`ARTDECO_RISK_OVERVIEW_PANEL_TEST_MATRIX.md`](ARTDECO_RISK_OVERVIEW_PANEL_TEST_MATRIX.md)
+> - [`ARTDECO_STANDARDIZATION_P1_TASKS.md`](ARTDECO_STANDARDIZATION_P1_TASKS.md)
 
 ---
 
@@ -81,7 +81,7 @@ Base
 
 来源：
 
-- [`ARTDECO_PAGE_TEMPLATE_TEST_MATRIX.md`](/opt/claude/mystocks_spec/docs/plans/ARTDECO_PAGE_TEMPLATE_TEST_MATRIX.md)
+- [`ARTDECO_PAGE_TEMPLATE_TEST_MATRIX.md`](ARTDECO_PAGE_TEMPLATE_TEST_MATRIX.md)
 
 退出标准：
 
@@ -117,7 +117,7 @@ Base
 
 来源：
 
-- [`ARTDECO_RISK_OVERVIEW_PANEL_TEST_MATRIX.md`](/opt/claude/mystocks_spec/docs/plans/ARTDECO_RISK_OVERVIEW_PANEL_TEST_MATRIX.md)
+- [`ARTDECO_RISK_OVERVIEW_PANEL_TEST_MATRIX.md`](ARTDECO_RISK_OVERVIEW_PANEL_TEST_MATRIX.md)
 
 退出标准：
 
@@ -240,7 +240,7 @@ Base
 
 ## 6. 与 P1 主任务的关系
 
-这份批次清单应被视为 [`ARTDECO_STANDARDIZATION_P1_TASKS.md`](/opt/claude/mystocks_spec/docs/plans/ARTDECO_STANDARDIZATION_P1_TASKS.md) 中“工作包 C：为样板组件补最小测试保护”的执行细化。
+这份批次清单应被视为 [`ARTDECO_STANDARDIZATION_P1_TASKS.md`](ARTDECO_STANDARDIZATION_P1_TASKS.md) 中“工作包 C：为样板组件补最小测试保护”的执行细化。
 
 它的价值在于把“补测试”从抽象要求变成分批次、可排序、可停顿的任务流。
 

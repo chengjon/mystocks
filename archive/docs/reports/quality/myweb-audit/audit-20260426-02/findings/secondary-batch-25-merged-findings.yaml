@@ -1,0 +1,39 @@
+- consolidated_issue_id: secondary-shell-issue-25
+  severity: Medium
+  title: Active trading-decision panels now delegate to canonical trade owners
+  pages:
+    - /secondary/trading-decision-portfolio-canonical-wrapper
+    - /secondary/trading-decision-positions-canonical-wrapper
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The local pseudo-live portfolio cards, positions refresh action, and empty-state shell in the trading-decision workbench were all faces of the same defect family: active embedded decision panels preserved local pseudo-live truth even though semantically matching canonical `/trade/*` owners already existed."
+  primary_owner: web/frontend/src/views/trading-decision/DecisionPortfolio.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/trading-decision-portfolio-canonical-wrapper
+    - /secondary/trading-decision-positions-canonical-wrapper
+  dedupe_keys:
+    - /secondary/trading-decision-portfolio-canonical-wrapper:route-truth:tradingDecisionPortfolioCanonicalWrapper
+    - /secondary/trading-decision-positions-canonical-wrapper:route-truth:tradingDecisionPositionsCanonicalWrapper
+  verification_scope:
+    routes:
+      - /secondary/trading-decision-portfolio-canonical-wrapper
+      - /secondary/trading-decision-positions-canonical-wrapper
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/trading-decision/DecisionPortfolio.vue
+      - web/frontend/src/views/trading-decision/DecisionPositions.vue
+      - web/frontend/src/views/trading-decision/__tests__/DecisionPortfolio.spec.ts
+      - web/frontend/src/views/trading-decision/__tests__/DecisionPositions.spec.ts
+    notes:
+      - "the decision portfolio panel now renders a thin wrapper over the canonical `/trade/portfolio` owner"
+      - "the decision positions panel now renders a thin wrapper over the canonical `/trade/positions` owner via the current route entrypoint"
+      - "no new secondary snapshot, store, request provenance badge, or local refresh shell was introduced"
+  verification_surface: code-review-only

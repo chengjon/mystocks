@@ -1,0 +1,82 @@
+audit_run_id: audit-20260426-02
+batch_id: market-batch-09
+module: market
+scope:
+  requested_by: user
+  pages:
+    - route: /market/realtime
+      page_key: market-realtime
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/market/Realtime.vue
+  compatibility_redirects: []
+batch_rationale: "Close the canonical `/market/realtime` preset-selector truth gap so same-instance preset switches no longer leak the previous preset's verified quote rows or request provenance into a new unresolved preset shell."
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/market/realtime` remains `web/frontend/src/views/market/Realtime.vue`"
+    - "the local preset selector `核心蓝筹样本 / 金融权重样本 / 消费白马样本` remains route-owned inside `Realtime.vue`"
+    - "the approved repair should stay page-local in the canonical owner instead of widening into shared request-wrapper or shared table redesign"
+    - "auth-seeded browser contexts plus browser-context interception with `serviceWorkers: block` are acceptable verification harnesses for the controlled `/market/realtime` preset-switch proof"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, loading]
+  notes:
+    - "verify `/market/realtime` first renders a verified `核心蓝筹样本` snapshot with visible rows"
+    - "verify the same mounted route then switches to active `金融权重样本` with no stale `核心蓝筹样本` rows visible while the finance-preset request is still unresolved"
+repair_approval:
+  status: approved
+  approved_findings:
+    - market-realtime-issue-03
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - market-realtime
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/market/Realtime.vue
+    - web/frontend/src/views/market/__tests__/Realtime.spec.ts
+    - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/market/Realtime.vue
+    confirmed: []
+  validation_status:
+    syntax: passed-via-market-vitest
+    typecheck: failed-preexisting-useKLinePatternOverlays-errors-outside-batch
+    pm2: passed
+    e2e: passed-market-realtime-preset-selector-system-chrome-live-proof
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `market-batch-09` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/market-realtime-preset-selector-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-09-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-09-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/market-batch-09-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/market-batch-09-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-market-batch-09-closeout
+  notes:
+    - "the repaired realtime route now keys verified quote snapshots and request provenance to the active preset instead of one route-global `overview`"
+    - "future market or dashboard audits should treat local selector-owned samples the same way as route-query selectors whenever a mounted route can switch sample groups without remounting"
+status: complete

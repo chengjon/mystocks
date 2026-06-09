@@ -1,0 +1,88 @@
+audit_run_id: audit-20260426-02
+batch_id: secondary-batch-48
+module: secondary-legacy-surfaces
+scope:
+  requested_by: user
+  pages:
+    - route: /secondary/settings-test-static-shells
+      page_key: secondary-settings-test-static-shells
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/settings/General.vue
+  compatibility_redirects: []
+batch_rationale: >-
+  Close lightweight M-priority placeholder/test surfaces that still preserved
+  non-canonical settings or test UI semantics.
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-only
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "the manifest route is a synthetic secondary-inventory alias used for artifact indexing"
+    - "the repair must not add new settings API contracts, snapshots, stores, request provenance badges, selector shells, freshness strips, or execution truth"
+    - "canonical `/system/config` and `/dashboard` may be linked as handoff targets"
+  fallback_log: []
+verification_plan:
+  verification_strategy: code-review-only
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states:
+    - default
+  notes:
+    - "verify settings child pages render `legacy-static-shell` and do not include Element Plus placeholders"
+    - "verify `TestPage.vue` renders `legacy-static-shell` and does not include test buttons/cards or console side effects"
+repair_approval:
+  status: approved
+  approved_findings:
+    - secondary-shell-issue-48
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - secondary-settings-test-static-shells
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/settings/General.vue
+    - web/frontend/src/views/settings/Notifications.vue
+    - web/frontend/src/views/settings/Security.vue
+    - web/frontend/src/views/settings/Theme.vue
+    - web/frontend/src/views/TestPage.vue
+    - web/frontend/tests/unit/config/settings-style-normalization.spec.ts
+    - web/frontend/src/views/__tests__/TestPage.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/settings/General.vue
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vitest-and-diff-check
+    typecheck: failed-existing-and-unrelated-frontend-debt-only
+    pm2: passed
+    e2e: not-run-unrouted-owner
+    gitnexus_staged_detect: mixed-staged-observation-medium-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files:
+      - "GitNexus staged detect observed 254 staged files and 505 changed symbols across the dirty index"
+      - "GitNexus staged detect observed 3 affected processes, all outside the isolated settings/TestPage static-shell scope"
+    verdict_origin: isolated-batch-only
+    notes:
+      - "the staged index already contained many unrelated files before this micro-batch, so `gitnexus_detect_changes({scope: staged})` must be recorded only as a mixed observation"
+      - "pre-edit impact was LOW for settings/General.vue, settings/Notifications.vue, settings/Security.vue, settings/Theme.vue, and TestPage.vue"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/settings-test-static-shells-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/secondary-batch-48-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/secondary-batch-48-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/secondary-batch-48-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/secondary-batch-48-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: verification
+  next_action: continue-secondary-m-priority-triage
+  notes:
+    - "unrouted settings children and orphan test pages should not preserve placeholder or local test UI truth"
+status: complete

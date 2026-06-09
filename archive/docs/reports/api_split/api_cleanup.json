@@ -1,0 +1,40 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/cleanup",
+  "total_endpoints": 3,
+  "endpoints": [
+    {
+      "path": "/cleanup/old-backups",
+      "method": "POST",
+      "file": "backup_recovery.py",
+      "function": "cleanup_old_backups",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 576
+    },
+    {
+      "path": "/cleanup/audit",
+      "method": "POST",
+      "file": "tasks.py",
+      "function": "cleanup_audit_logs",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 776
+    },
+    {
+      "path": "/cleanup/old-backups",
+      "method": "POST",
+      "file": "backup_recovery_secure.py",
+      "function": "cleanup_old_backups",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 888
+    }
+  ]
+}

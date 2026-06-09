@@ -1,0 +1,40 @@
+- finding_id: detail-news-data-state-09
+  batch_id: detail-batch-09
+  page:
+    route: /detail/news/:symbol
+    page_key: stock-news
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/announcement/AnnouncementMonitor.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Detail news auxiliary rule and trigger rows leaked the previous symbol context into a new detail symbol shell during same-instance route switches
+  trigger:
+    steps:
+      - "Open `/detail/news/600519` and let the announcement detail route verify its auxiliary rules and triggered-record slices."
+      - "Navigate within the same page instance to `/detail/news/000001`."
+      - "Let the new primary announcement selector fail before any verified `000001` announcement snapshot exists."
+      - "Inspect `监控规则管理` and `触发记录` under the new route banner."
+  expected: "Selector-specific auxiliary rows on the canonical detail news route must stay aligned with the current detail symbol. When the page shell switches to a new symbol, rows that only belong to the previous symbol must not remain visible under the new symbol banner."
+  actual: "Before repair, `AnnouncementMonitor.vue` bound `monitorRules` and `triggeredRecords` directly into the auxiliary tables without route-symbol filtering. The same page instance could therefore show `600519`-specific auxiliary rows under `/detail/news/000001` after the route switch."
+  evidence:
+    kind: code-path-review
+    note: "New RED selector-switch tests showed `高重要性公告` and `2026 年第一季度经营数据公告` still rendered in `.rules-card` and `.records-card` after the route banner changed to `000001`."
+  repair_target:
+    files:
+      - web/frontend/src/views/announcement/AnnouncementMonitor.vue
+      - web/frontend/src/views/announcement/__tests__/AnnouncementMonitor.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/announcement/AnnouncementMonitor.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /detail/news/:symbol
+  status: open
+  dependency: null
+  dedupe_key: /detail/news/:symbol:data-state:selectorScopedAuxiliaryRowProvenance
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check the canonical detail news route after repair and confirm that a same-instance symbol switch no longer leaks previous-symbol auxiliary rules or triggered records under the new detail banner."

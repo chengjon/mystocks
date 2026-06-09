@@ -1,0 +1,24 @@
+- consolidated_issue_id: risk-news-issue-11
+  severity: High
+  affected_routes:
+    - /risk/news
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/risk/News.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: The canonical risk news route now keeps request provenance, summary counts, and visible announcement rows aligned with the currently visible verified announcement snapshot instead of the latest failed refresh attempt.
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: The approved repair stayed page-local in `web/frontend/src/views/risk/News.vue` and its routed regressions; the legacy `ArtDecoAnnouncementMonitor.vue` consumer only inherits the owner fix.
+    related_routes:
+      - /risk/news
+  approval_status: approved

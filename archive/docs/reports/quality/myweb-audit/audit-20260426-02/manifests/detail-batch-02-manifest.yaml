@@ -1,0 +1,90 @@
+audit_run_id: audit-20260426-02
+batch_id: detail-batch-02
+module: detail
+scope:
+  requested_by: user
+  pages:
+    - route: /detail/news/:symbol
+      page_key: detail-news
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/announcement/AnnouncementMonitor.vue
+  compatibility_redirects: []
+batch_rationale: "Close the canonical `/detail/news/:symbol` sibling-stats contract truth gap so a routed page that already requests a dedicated live announcement stats slice no longer shows one live total beside label-only sibling cards or unresolved `0` fallbacks. This batch also codifies the new sibling-stats contract guidance as `myweb-audit v1.50`."
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/detail/news/:symbol` remains `web/frontend/src/views/announcement/AnnouncementMonitor.vue`"
+    - "the approved repair should stay page-local in `AnnouncementMonitor.vue` and routed regressions instead of widening into shared `useAnnouncementMonitor` behavior"
+    - "the route already requests a dedicated live stats slice that exposes sibling fields `total_count`, `today_count`, `important_count`, and `triggered_count`, so the visible stat strip must either render those verified counts or degrade every sibling card to placeholder truth"
+    - "before the stats slice has verified, the route must not present one live count beside label-only siblings or unresolved `0` fallbacks"
+    - "controlled browser-context fulfillment is acceptable for proving both the verified-stats path and the stats-slice-failure path because it isolates the announcement stats contract from the announcement list contract"
+    - "natural PM2 browser reuse is healthy enough to provide a live zero-count observation for this route, but controlled browser-context proof remains the primary evidence for the repaired sibling-stats contract behavior"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [loading, error, default]
+  notes:
+    - "verify unresolved or failed stats slices now render `-- / -- / -- / --` instead of one `0` plus label-only siblings"
+    - "verify a verified stats payload now renders all four sibling counts instead of only `公告总数`"
+    - "verify the announcements list can still succeed while the stats slice fails, and the route keeps the list content visible while degrading the stat cards honestly"
+repair_approval:
+  status: approved
+  approved_findings:
+    - detail-news-issue-02
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - detail-news
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/announcement/AnnouncementMonitor.vue
+    - web/frontend/src/views/announcement/__tests__/AnnouncementMonitor.spec.ts
+    - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-detail-news-sibling-stats-proof
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `detail-batch-02` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+      - "latest staged observation returned `risk_level: low`, `changed_files: 126`, `changed_count: 317`, and `affected_count: 0`"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/detail-news-sibling-stats-contract-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-02-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-02-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/detail-batch-02-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/detail-batch-02-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-detail-batch-02-closeout
+  notes:
+    - "the canonical detail news route now renders either all verified sibling announcement counts or explicit `--` placeholders instead of one live total beside label-only or faux-zero sibling cards"
+    - "this batch introduced `myweb-audit v1.50` so future routed stats-slice audits treat partial sibling-count wiring as a data-state truth defect"
+status: complete

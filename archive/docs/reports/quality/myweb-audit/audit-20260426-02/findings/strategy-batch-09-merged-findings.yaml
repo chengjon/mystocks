@@ -1,0 +1,41 @@
+- consolidated_issue_id: strategy-signals-issue-02
+  severity: High
+  title: Strategy signals manual refresh now keeps verified snapshot rows and request provenance out of shared-store failure truth
+  pages:
+    - /strategy/signals
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The hero `REQ_ID`, routed signal rows, and stale-state messaging all leaked the same shared-store refresh provenance defect, so they represent one canonical route-truth issue on `/strategy/signals`."
+  primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/signals
+    - /watchlist/signals
+  dedupe_keys:
+    - /strategy/signals:data-state:storeRefreshSnapshotProvenanceTruth
+  verification_scope:
+    routes:
+      - /strategy/signals
+      - /watchlist/signals
+    states:
+      - error
+      - default
+      - empty
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/StrategySignalsTab.spec.ts
+      - web/frontend/src/views/watchlist/__tests__/Signals.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    notes:
+      - "the canonical strategy-signals route now keeps page-local verified request metadata instead of binding hero provenance directly to the shared realtime store's latest refresh attempt"
+      - "the repaired route now preserves verified signal rows and shows stale-refresh messaging when a later manual refresh resolves as `success: false`"
+      - "the strengthened regression now guards resolved first-load failure and `success -> refresh fail` request-provenance retention in both component tests and the Phase 3 routed matrix"
+      - "the shared `/watchlist/signals` consumer inherits the same repaired owner surface and was spot-checked to keep route-specific watchlist semantics intact"
+      - "this batch reuses existing `myweb-audit v1.43` rather than introducing a new skill version, because the defect directly matches the current store-refresh snapshot-provenance rule"
+  verification_surface: code-review-plus-targeted-live-verification

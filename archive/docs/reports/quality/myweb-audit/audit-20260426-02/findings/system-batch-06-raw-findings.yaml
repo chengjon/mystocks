@@ -1,0 +1,39 @@
+- finding_id: system-config-data-state-002
+  batch_id: system-batch-06
+  page:
+    route: /system/config
+    page_key: system-config
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/system/Settings.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Routed system-config source tab kept sample inventory KPIs and rows instead of the live data-source config contract
+  trigger:
+    steps:
+      - Open `/system/config`
+      - Stay on the default `数据源` tab
+      - Inspect the top KPI strip, routed table, and the live request log for the source-tab surface
+  expected: "The routed source tab should issue the live `/api/v1/data-sources/config/` request, render endpoint-level rows from the returned contract, and report tab-local `DATA` provenance instead of sample inventory truth."
+  actual: "Before repair, the routed source tab never requested `/api/v1/data-sources/config/`, inherited `DATA: SUMMARY` from the monitor slice, and still rendered sample KPI values such as `4.00`, `3/4`, `28,412`, `2.00` plus sample rows like `AKShare`, `Tushare`, `TDX`, and `Wind`."
+  evidence:
+    kind: live-observation
+    note: "Fresh authenticated browser verification on the PM2 route showed no source-config network request and confirmed the default tab still exposed embedded sample KPI cards and sample inventory rows until the page loaded the real contract."
+  repair_target:
+    files:
+      - web/frontend/src/views/system/Settings.vue
+      - web/frontend/src/views/system/__tests__/Settings.spec.ts
+      - web/frontend/src/views/artdeco-pages/system-tabs/__tests__/ArtDecoSystemSettings.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/system/Settings.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /system/config:data-state:source-tab-contract-truth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check that the routed source tab shows `DATA: REAL`, zero `.artdeco-stat-change` nodes, and live endpoint rows from `/api/v1/data-sources/config/`."

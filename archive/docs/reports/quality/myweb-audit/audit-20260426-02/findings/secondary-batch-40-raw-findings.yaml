@@ -1,0 +1,43 @@
+- finding_id: secondary-shell-040-advanced-analysis-children
+  batch_id: secondary-batch-40
+  page:
+    route: /secondary/advanced-analysis-child-static-shells
+    page_key: secondary-advanced-analysis-child-static-shells
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/advanced-analysis/
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Orphan advanced-analysis child pages still exposed local pseudo-analysis state without a verified owner
+  trigger:
+    steps:
+      - "Open the high-priority secondary inventory entries under `web/frontend/src/views/advanced-analysis/`"
+      - "Inspect `FundamentalAnalysisView.vue`, `TechnicalAnalysisView.vue`, `RadarAnalysisView.vue`, and `TradingSignalsView.vue` for local fallback values, default scores, or default signal state"
+      - "Confirm the current router does not expose these child pages as independent canonical route entries"
+  expected: "Orphan advanced-analysis child pages with no verified canonical owner should degrade to honest static shells and should not preserve local default metrics, ratings, signals, or fallback literals."
+  actual: "Before repair, the child pages still rendered local financial ratios, indicator cards, radar scores, investment advice, and signal counts from component-local props/default state even though the parent advanced-analysis workbench had already been degraded to a static shell."
+  evidence:
+    kind: code-review-plus-owner-regression
+    note: "RED regression failed on all six child pages because none rendered `legacy-static-shell`; several also retained local default scoring or signal semantics."
+  repair_target:
+    files:
+      - web/frontend/src/views/advanced-analysis/FundamentalAnalysisView.vue
+      - web/frontend/src/views/advanced-analysis/MarketPanoramaView.vue
+      - web/frontend/src/views/advanced-analysis/RadarAnalysisView.vue
+      - web/frontend/src/views/advanced-analysis/TechnicalAnalysisView.vue
+      - web/frontend/src/views/advanced-analysis/TimeSeriesView.vue
+      - web/frontend/src/views/advanced-analysis/TradingSignalsView.vue
+      - web/frontend/src/views/advanced-analysis/__tests__/legacyStaticShells.spec.ts
+    primary_owner: web/frontend/src/views/advanced-analysis/
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/advanced-analysis-child-static-shells
+  status: open
+  dependency: null
+  dedupe_key: /secondary/advanced-analysis-child-static-shells:route-truth:orphanAdvancedChildStaticShell
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner regression to confirm every repaired child page renders an honest static shell and no longer exposes fallback literals, default scores, or local signal counts."

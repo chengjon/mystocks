@@ -1,0 +1,26 @@
+- consolidated_issue_id: secondary-shell-issue-38
+  severity: Medium
+  affected_routes:
+    - /secondary/market-auction-static-shell
+    - /secondary/market-etf-static-shell
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/market/Auction.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "Legacy market auction and ETF pages now degrade to honest static shells."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The repair stays scoped to two unrouted legacy market pages and removes local pseudo-live state instead of introducing new shared truth."
+    related_routes:
+      - /secondary/market-auction-static-shell
+      - /secondary/market-etf-static-shell
+  approval_status: approved

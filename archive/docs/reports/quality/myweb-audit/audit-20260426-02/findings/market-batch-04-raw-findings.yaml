@@ -1,0 +1,36 @@
+- finding_id: market-technical-data-state-001
+  batch_id: market-batch-04
+  page:
+    route: /market/technical
+    page_key: market-technical
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/market/Technical.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Routed technical first-load surfaces presented unresolved K-line sample state as faux zero-point truth
+  trigger:
+    steps:
+      - Open `/market/technical`
+      - Delay `/api/v1/market/kline` before the first successful payload resolves
+      - Inspect hero meta, content meta, and chart placeholder copy while the route still shows the loading state
+  expected: "Before the first successful K-line sample arrives, unresolved point counters and placeholder copy should render explicit pending semantics such as `POINTS: --` and `Synchronizing K-Line Sample` rather than presenting `POINTS: 0` or generic empty-state copy as if route truth had already resolved."
+  actual: "Before repair, the canonical technical route rendered `POINTS: 0` in hero and content meta, and showed `Waiting For K-Line Sample`, while the page was still on its first unresolved K-line request."
+  evidence:
+    kind: live-observation
+    note: "Targeted system-`google-chrome` verification with browser-context interception and `serviceWorkers: block` showed the delayed route still loading while it previously rendered `POINTS: 0` and generic empty placeholder copy. Post-fix verification now shows `000001 / -- / -- / --`, `POINTS: --`, and `Synchronizing K-Line Sample`."
+  repair_target:
+    files:
+      - web/frontend/src/views/market/Technical.vue
+    primary_owner: web/frontend/src/views/market/Technical.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /market/technical:data-state:unresolvedFirstKlineSnapshotTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that delayed first-load technical surfaces render placeholder counters and pending copy instead of faux zero-point truth.

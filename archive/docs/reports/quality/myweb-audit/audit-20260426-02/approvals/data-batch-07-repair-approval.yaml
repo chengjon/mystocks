@@ -1,0 +1,25 @@
+- consolidated_issue_id: data-industry-issue-02
+  severity: Medium
+  affected_routes:
+    - /data/industry
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/data/Industry.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: The canonical industry route now renders board KPI tallies and ordinal ranks honestly without inheriting shared faux delta chrome or exact-decimal numeric formatting.
+  dependency: null
+  shared_impact:
+    candidate: true
+    basis: Shared numeric renderer defaults in `ArtDecoStatCard.vue` and `ArtDecoTable.vue` were the source of the leak, but the approved repair remains page-local in `Industry.vue`.
+    related_routes:
+      - /data/fund-flow
+      - /market/lhb
+  approval_status: approved

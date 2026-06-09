@@ -1,0 +1,38 @@
+- consolidated_issue_id: watchlist-screener-issue-02
+  severity: High
+  title: Watchlist screener now preserves verified stock-universe provenance and classifies resolved failure envelopes honestly
+  pages:
+    - /watchlist/screener
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The first-load `success:false` empty-universe misclassification and the refresh-after-success provenance overwrite were two manifestations of the same routed truth defect: `/watchlist/screener` treated the latest resolved payload and request id as if they always represented the currently visible verified stock-universe snapshot."
+  primary_owner: web/frontend/src/views/stocks/Screener.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /watchlist/screener
+  dedupe_keys:
+    - /watchlist/screener:data-state:requestAndEnvelopeTruth
+  verification_scope:
+    routes:
+      - /watchlist/screener
+    states:
+      - first-load-failure
+      - stale-refresh-failure
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/stocks/Screener.vue
+      - web/frontend/src/views/watchlist/__tests__/Screener.spec.ts
+      - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+    notes:
+      - "the canonical watchlist screener route now classifies resolved `success:false` stock-universe envelopes as explicit failure truth before mapping them into row arrays, summary cards, or empty-state copy"
+      - "the same route now derives hero `REQ` from page-local verified-snapshot state, so first-load failure renders `REQ: N/A` and later refresh failures keep the last verified request id aligned with the currently visible rows"
+      - "stale-refresh failure now preserves the last verified stock rows and surfaces a warning banner instead of dropping the visible universe as if the failed retry had become the active truth"
+      - "the strengthened routed regressions now pin both the component and the Phase 2 matrix against resolved failure envelopes and refresh-after-success request-provenance leakage"
+      - "this batch intentionally reuses existing `myweb-audit v1.40` envelope-truth, `v1.41` request-provenance truth, and `v1.39` browser-context interception guidance instead of introducing a new skill version"
+  verification_surface: code-review-plus-targeted-live-verification

@@ -1,0 +1,42 @@
+{
+  "base_url": null,
+  "expected": {
+    "bridge_contract_version": "1",
+    "contract_profile": "kernel-phase-a",
+    "provider_mode": "mock",
+    "source_name": null
+  },
+  "generated_at": "2026-04-30T16:52:47.089301+00:00",
+  "health": null,
+  "issues": [
+    "base_url is required; provide --base-url or set TRADING_QMT_BRIDGE_BASE_URL"
+  ],
+  "levels": {
+    "l1_process_ready": {
+      "issues": [
+        "base_url is required; provide --base-url or set TRADING_QMT_BRIDGE_BASE_URL"
+      ],
+      "passed": false,
+      "verified_fields": []
+    },
+    "l2_contract_ready": {
+      "issues": [],
+      "passed": false,
+      "verified_fields": []
+    },
+    "l3_acceptance_ready": {
+      "issues": [],
+      "passed": false,
+      "verified_fields": []
+    }
+  },
+  "local_config": {
+    "base_url_configured": false,
+    "bridge_token_configured": true
+  },
+  "ok": false,
+  "recommended_exit_code": 2,
+  "runtime_environment": "wsl-ubuntu-24.04.4-lts",
+  "status_label": "configuration_invalid",
+  "summary_schema_version": 1
+}

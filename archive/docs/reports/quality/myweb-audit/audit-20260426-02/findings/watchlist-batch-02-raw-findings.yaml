@@ -1,0 +1,38 @@
+- finding_id: watchlist-signals-route-002
+  batch_id: watchlist-batch-02
+  page:
+    route: /watchlist/signals
+    page_key: watchlist-signals
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/watchlist/Signals.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: route
+  title: Watchlist signals route leaked strategy-workbench semantics from a shared strategy surface
+  trigger:
+    steps:
+      - Open `/watchlist/signals`
+      - Inspect the routed page title, subtitle, focus label, and timeline description
+      - Compare the visible copy with the canonical watchlist route purpose and the actual shared `/api/v1/trade/signals` feed currently backing the page
+  expected: "The canonical watchlist route should present watchlist-local radar semantics, and if it still reuses a broader global signal feed without real watchlist linkage, the copy should explicitly say that the watchlist association or filtering is pending."
+  actual: "Before repair, `/watchlist/signals` rendered the shared strategy page title `策略信号工作台`, strategy-workflow subtitle, `FOCUS: ALL`, and strategy timeline description even though the canonical route is watchlist-scoped and the current payload does not prove route-local strategy context."
+  evidence:
+    kind: live-observation
+    note: Targeted PM2 browser verification showed `/watchlist/signals` loading successfully but surfacing donor-route strategy workbench copy from `StrategySignalsTab.vue` instead of watchlist-local or explicitly pending-integration route semantics.
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue
+      - web/frontend/src/views/watchlist/Signals.vue
+    primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/signals
+  status: open
+  dependency: null
+  dedupe_key: /watchlist/signals:route:StrategySignalsTab
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check both `/watchlist/signals` and `/strategy/signals` after repair so the watchlist route gains route-local semantics while the strategy route retains its original strategy-workbench copy.

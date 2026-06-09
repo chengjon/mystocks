@@ -1,0 +1,91 @@
+audit_run_id: audit-20260426-02
+batch_id: risk-batch-06
+module: risk
+scope:
+  requested_by: user
+  pages:
+    - route: /risk/management
+      page_key: risk-management
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/risk/Center.vue
+  compatibility_redirects: []
+batch_rationale: Apply the strengthened `v1.35` unsupported-tab slice truth rule to the canonical risk-management stock tab so unsupported single-name analysis no longer promises executable actions and the real routed tab remains switchable in a live browser.
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/risk/management` remains `web/frontend/src/views/risk/Center.vue`"
+    - "the overview tab is still backed by the live `/v1/trade/positions` route-level contract"
+    - "the stock tab still has no separate live single-name analysis contract, so the approved repair must stay page-local and truth-preserving"
+    - "slot-replaced tab controls require live-browser verification because component or source-level coverage can miss implicit-submit browser behavior"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default]
+  notes:
+    - "verify `/risk/management` can switch from `风险概览` to `个股分析` in a real browser after the tab-control repair"
+    - "verify the stock tab subtitle, panel title, CTA, and toast all degrade to explicit pending-integration copy instead of promising executable single-name actions"
+repair_approval:
+  status: approved
+  approved_findings:
+    - risk-management-issue-03
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - risk-management
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/risk/Center.vue
+    - web/frontend/src/views/artdeco-pages/risk-tabs/riskManagementHelpers.ts
+    - web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskStockPanel.vue
+    - web/frontend/src/views/artdeco-pages/risk-tabs/__node_tests__/riskManagementHelpers.test.ts
+    - web/frontend/src/views/artdeco-pages/risk-tabs/__node_tests__/riskManagementModulePresence.test.ts
+    - web/frontend/src/views/artdeco-pages/risk-tabs/__tests__/ArtDecoRiskStockPanel.spec.ts
+    - web/frontend/tests/unit/views/risk-center-template-retention.spec.ts
+    - web/frontend/tests/unit/views/risk-wrapper-retention.spec.ts
+    - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-risk-stock-tab-1-route
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `risk-batch-06` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` is treated as observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/risk-management-stock-tab-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-06-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-06-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-06-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/risk-batch-06-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-risk-batch-06-closeout
+  notes:
+    - "this batch introduced `v1.35` because the real defect combined unsupported single-name tab semantics with a live-browser tab-switch failure that code-review-only checks would not catch"
+status: complete

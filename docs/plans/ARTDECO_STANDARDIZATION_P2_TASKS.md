@@ -1,7 +1,7 @@
 # ArtDeco Standardization P2 Tasks
 
 > **说明**
-> 本文是 [`ARTDECO_STANDARDIZATION_PLAN.md`](/opt/claude/mystocks_spec/docs/plans/ARTDECO_STANDARDIZATION_PLAN.md) 的 P2 可执行任务清单。
+> 本文是 [`ARTDECO_STANDARDIZATION_PLAN.md`](ARTDECO_STANDARDIZATION_PLAN.md) 的 P2 可执行任务清单。
 > P2 的定位不是继续做样板组件治理，而是把已经稳定下来的结构、样式和测试规则固化为 ArtDeco CLI 脚手架能力。
 
 ---

@@ -1,0 +1,36 @@
+- consolidated_issue_id: data-concept-issue-01
+  severity: Medium
+  title: Concept refresh failures now preserve last-known-good rows with explicit stale-data messaging
+  pages:
+    - /data/concept
+  source_roles:
+    - data-state-audit
+  why_consolidated: The missing refresh warning, ambiguous status text, and stale-data contract gap were one page-local refresh-truth defect on the routed concept workbench.
+  primary_owner: web/frontend/src/views/data/Concepts.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact: []
+  dedupe_keys:
+    - /data/concept:data-state:conceptRefreshStaleWarning
+  verification_scope:
+    routes:
+      - /data/concept
+    states:
+      - default
+      - error
+    breakpoints:
+      - 1920
+      - 1440
+      - 1280
+  repair_summary:
+    files:
+      - web/frontend/src/views/data/Concepts.vue
+      - web/frontend/tests/unit/views/data-concept-refresh-fallback.spec.ts
+      - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+    notes:
+      - "added a page-local stale-refresh warning path so manual refresh failures no longer erase the routed concept workbench truth"
+      - "kept the last successful concept table visible while labeling the page `刷新异常`"
+      - "extended Phase 2 browser coverage with a success-then-refresh-fail concept scenario"
+  verification_surface: code-review-plus-targeted-live-verification

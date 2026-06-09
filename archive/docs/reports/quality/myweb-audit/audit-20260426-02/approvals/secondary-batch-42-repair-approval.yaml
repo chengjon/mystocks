@@ -1,0 +1,24 @@
+- consolidated_issue_id: secondary-shell-issue-42
+  severity: Medium
+  affected_routes:
+    - /secondary/monitor-static-shell
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/monitor.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "Legacy system monitor page may be degraded to an honest static shell because it has no verified one-to-one canonical monitoring owner."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The page-local composable and style are only consumed by `monitor.vue`; deleting them removes orphan pseudo-live monitoring truth without changing shared monitoring contracts."
+    related_routes:
+      - /secondary/monitor-static-shell
+  approval_status: approved

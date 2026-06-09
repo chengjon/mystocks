@@ -1,0 +1,40 @@
+- finding_id: data-concept-data-state-002
+  batch_id: data-batch-13
+  page:
+    route: /data/concept
+    page_key: data-concept
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/data/Concepts.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Concept route leaked failed request ids and faux empty summary truth before any verified concept snapshot existed
+  trigger:
+    steps:
+      - "Open `/data/concept`"
+      - "Force the first `/api/v2/market/sector/fund-flow?sector_type=概念...` request to resolve `success: false` with a `request_id` before any verified concept snapshot exists"
+      - "Repeat with one successful concept load followed by a failed manual refresh"
+      - "Inspect the hero `REQ / SECTORS / LEADER` metadata, the content summary, and the visible concept table shell"
+  expected: "Before `/data/concept` has any verified concept snapshot, hero and summary metadata should degrade to explicit placeholders such as `REQ: N/A / SECTORS: -- / LEADER: -- / POSITIVE: -- / NEGATIVE: --`. If a later refresh fails while the route still displays the previous verified concept board, hero `REQ` should continue to identify the visible verified snapshot instead of the failed retry."
+  actual: "Before repair, `/data/concept` rendered `REQ: concept-first-fail / SECTORS: 0 / LEADER: N/A` on first-load failure and switched the hero request id to the failed refresh request after a successful initial sync, even though the visible concept rows still came from the previous verified snapshot."
+  evidence:
+    kind: live-observation
+    note: "Component red tests reproduced both failure shapes before repair. Targeted Playwright-library verification with system `google-chrome` then confirmed the routed page now renders `REQ: N/A / SECTORS: -- / LEADER: -- / POSITIVE: -- / NEGATIVE: --` on first-load failure and keeps `REQ: req-data-b13-success` on stale refresh failure while the previous concept rows remain visible."
+  repair_target:
+    files:
+      - web/frontend/src/views/data/Concepts.vue
+    primary_owner: web/frontend/src/views/data/Concepts.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /stocks/screener
+    - /market/technical
+    - /market/lhb
+  status: open
+  dependency: null
+  dedupe_key: /data/concept:data-state:conceptRequestProvenanceTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/data/concept` after repair and confirm first-load failure, stale-refresh failure, and verified success all preserve honest request provenance and summary truth."

@@ -1,0 +1,40 @@
+- consolidated_issue_id: dashboard-aggregate-provenance-issue-01
+  severity: High
+  title: Dashboard now derives aggregate provenance from real core-slice truth instead of hardcoded optimistic meta or swallowed failure envelopes
+  pages:
+    - /dashboard
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The request-meta header drift and the swallowed core-slice `success: false` envelopes are one route-local provenance issue because both defects lived on the same canonical dashboard owner path and distorted the same aggregate health semantics."
+  primary_owner: web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /dashboard
+  dedupe_keys:
+    - /dashboard:data-state:aggregateProvenanceEnvelopeTruth
+  verification_scope:
+    routes:
+      - /dashboard
+    states:
+      - default
+      - loading
+      - error
+      - partial-success
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+      - web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+      - web/frontend/src/api/services/dashboardService.ts
+      - web/frontend/tests/unit/components/ArtDecoDashboardLogic.spec.ts
+      - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+    notes:
+      - "the request-meta bar now derives `DATA` and `SYNC` from the current truth of the primary dashboard slices instead of hardcoding optimistic all-green semantics"
+      - "the dashboard service now restores failure semantics for core-slice `success: false` envelopes, and the dashboard composable keeps a mock-compatible guard so unit transport doubles cannot be more permissive than the real runtime"
+      - "dashboard unit regression plus browser-context pending, success, industry-failure, and fund-flow-failure verification now guard the repaired aggregate provenance state machine"
+      - "the current repair introduced `myweb-audit v1.40` aggregate-provenance and resolved-error-envelope truth guidance"
+  verification_surface: code-review-plus-targeted-live-verification

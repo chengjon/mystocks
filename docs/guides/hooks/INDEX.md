@@ -2,13 +2,13 @@
 
 > **导航说明**:
 > 本文件是 `docs/guides/hooks/` 的 transition index，不是仓库共享规则、当前 trunk map 或当前实现状态的唯一事实来源。
-> 若需确认文档系统主干与 reader routing，请优先阅读 [`docs/overview/documentation-system.md`](/opt/claude/mystocks_spec/docs/overview/documentation-system.md)；若涉及审批门禁、删除判定或共享治理规则，请回到 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)。
+> 若需确认文档系统主干与 reader routing，请优先阅读 [`docs/overview/documentation-system.md`](../../overview/documentation-system.md)；若涉及审批门禁、删除判定或共享治理规则，请回到 [`architecture/STANDARDS.md`](../../../architecture/STANDARDS.md)。
 
 ## Current Entry Order
 
 这一 family 当前角色是 `supporting`，用于 hook / workflow 专题说明，不承担仓库级治理 trunk。推荐阅读顺序：
 
-1. [`docs/overview/documentation-system.md`](/opt/claude/mystocks_spec/docs/overview/documentation-system.md)
+1. [`docs/overview/documentation-system.md`](../../overview/documentation-system.md)
 2. [`WEB_DEV_HOOKS_GUIDE.md`](./WEB_DEV_HOOKS_GUIDE.md) 或 [`web-dev-hooks-guide.md`](./web-dev-hooks-guide.md)
 3. [`pre_commit_hook_setup_guide.md`](./pre_commit_hook_setup_guide.md)
 4. 再按需进入本 family 的诊断、历史分析与补充使用说明

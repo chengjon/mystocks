@@ -1,0 +1,93 @@
+audit_run_id: audit-20260426-02
+batch_id: strategy-batch-19
+module: strategy
+scope:
+  requested_by: user
+  pages:
+    - route: /strategy/backtest
+      page_key: strategy-backtest
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue
+  compatibility_redirects: []
+batch_rationale: "Promote `myweb-audit` to `v1.67` and repair the canonical strategy-backtest route so selector-local generated snapshot hints no longer leak across `strategyId` query switches when the new strategy has no verified local context of its own."
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "the canonical `/strategy/backtest` route is still owned by `web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue` through `web/frontend/src/views/strategy/Backtest.vue`"
+    - "the approved repair should stay route-local in `web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts` and its routed owner regressions instead of widening into strategy transport, shared page shells, or backend backtest schemas"
+    - "generated snapshot hints such as `最近快照：Momentum Alpha` are selector-local action artifacts and therefore belong only to the current `strategyId` query if that strategy has its own verified local snapshot"
+    - "when the same route instance switches from one `strategyId` query to another without a new verified local snapshot, the page should degrade back to neutral selector-local baseline copy and may pair it with explicit context-switched messaging"
+    - "auth-seeded browser contexts plus same-instance router-driven route switching are acceptable verification harnesses for the controlled `/strategy/backtest?strategyId=101 -> 202` proof on this route"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default]
+  notes:
+    - "verify `/strategy/backtest?strategyId=101` can generate a local context snapshot and surface `最近快照：Momentum Alpha`"
+    - "verify the same routed page instance can switch to `strategyId=202` and clear the old `Momentum Alpha` hint when no verified generated snapshot exists for strategy `202`"
+    - "verify the route restores neutral selector-local baseline copy and updates the context strip to `ID 202` instead of leaking the old strategy-local artifact"
+repair_approval:
+  status: approved
+  approved_findings:
+    - strategy-backtest-issue-07
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - strategy-backtest
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+    - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts
+    - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/strategy/Backtest.vue
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+    confirmed:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+      - web/frontend/src/views/strategy/Backtest.vue
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-strategy-backtest-selector-local-action-verification
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `strategy-batch-19` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/strategy-backtest-selector-local-action-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-19-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/strategy-batch-19-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/strategy-batch-19-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/strategy-batch-19-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-strategy-batch-19-closeout
+  notes:
+    - "the repaired strategy-backtest route now clears previous strategy-local generated snapshot hints after same-instance `strategyId` query switches when the new strategy lacks its own verified local snapshot"
+    - "future selector/query-scoped workbench audits should treat local generated hints, banners, and lightweight artifacts as selector-owned surfaces rather than global route-local memory"
+status: complete

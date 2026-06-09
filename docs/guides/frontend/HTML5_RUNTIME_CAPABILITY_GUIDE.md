@@ -6,7 +6,7 @@
 
 > **边界说明**:
 > 本文档是 `docs/guides/frontend/` 下的 current-state supporting guide，用于记录当前前端 HTML5 runtime capability 真相，不是仓库共享规则、OpenSpec 验收结论或部署完成证明。
-> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)；若涉及任务完成状态，请回到对应 OpenSpec task 与验证结果核对。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 [`architecture/STANDARDS.md`](../../../architecture/STANDARDS.md)；若涉及任务完成状态，请回到对应 OpenSpec task 与验证结果核对。
 
 > **当前状态说明**:
 > 本文档记录 `implement-html5-migration-experience-optimization` 在线仓库中的 HTML5 runtime capability 真相，包括 PWA runtime surface、IndexedDB 使用面和 Web Workers 当前接线。
@@ -26,25 +26,25 @@
 
 ## 1. Canonical Runtime Entry
 
-- 当前浏览器入口是 [index.html](/opt/claude/mystocks_spec/web/frontend/index.html)，加载：
+- 当前浏览器入口是 [index.html](../../../web/frontend/index.html)，加载：
   - `/src/main-standard.ts`
-- 当前活跃运行时入口是 [main-standard.ts](/opt/claude/mystocks_spec/web/frontend/src/main-standard.ts)。
+- 当前活跃运行时入口是 [main-standard.ts](../../../web/frontend/src/main-standard.ts)。
 - `src/_entry-archive/` 下的 `main.js`、`main-debug.js`、`main-original.js` 等变体属于保留档案，不是当前 runtime entry。
 
 ## 2. PWA Runtime Surface
 
 ### 2.1 Current Wiring
 
-- [index.html](/opt/claude/mystocks_spec/web/frontend/index.html)
+- [index.html](../../../web/frontend/index.html)
   - 已接入 `manifest.json`
-  - 已配置 `theme-color`、Apple mobile web app meta、touch icon 和 `msapplication` meta
+  - 已配置 `theme-color`、web app compatibility meta、touch icon 和 `msapplication` meta
   - 上述 meta 目前仅代表保留的浏览器安装/展示兼容面，不代表移动端产品化范围
-- [main-standard.ts](/opt/claude/mystocks_spec/web/frontend/src/main-standard.ts)
+- [main-standard.ts](../../../web/frontend/src/main-standard.ts)
   - 在 `window.load` 后手动注册 `/sw.js`
-  - 在检测到 `controllerchange` 时触发页面刷新
-- [manifest.json](/opt/claude/mystocks_spec/web/frontend/public/manifest.json)
-  - 已声明 `name`、`short_name`、`display`、`theme_color`、`icons`、`shortcuts`
-- [sw.js](/opt/claude/mystocks_spec/web/frontend/public/sw.js)
+  - 在检测到 `controllerchange` 时仅对“页面加载前已有 controller”的更新场景执行一次刷新；首次安装 / 首次接管不强制刷新当前交互页面
+- [manifest.json](../../../web/frontend/public/manifest.json)
+  - 已声明 `name`、`short_name`、`display`、`theme_color`、`icons`
+- [sw.js](../../../web/frontend/public/sw.js)
   - 已实现静态资源缓存
   - API 采用 network-first + cache fallback
   - 字体与静态资源采用 cache-first
@@ -52,27 +52,26 @@
 
 ### 2.2 Current Boundaries
 
-- [vite.config.mts](/opt/claude/mystocks_spec/web/frontend/vite.config.mts) 中 `vite-plugin-pwa` 仍然处于注释禁用状态。
+- [vite.config.mts](../../../web/frontend/vite.config.mts) 中 `vite-plugin-pwa` 仍然处于注释禁用状态。
 - 因此当前 PWA 是“手动 manifest + 手动 service worker 注册”模式，不是插件托管的完整构建链路。
 - 同时在 **Desktop-only** 口径下，当前 PWA 能力应理解为“桌面浏览器安装/缓存表面”，而不是移动端优先特性。
-- `manifest.json` 引用的截图资源当前并不完整：
-  - `public/screenshots/dashboard.png` 不存在
-  - `public/screenshots/analysis.png` 不存在
+- `manifest.json` 当前只引用 `public/` 下实际存在的核心 PWA icons。
+- `screenshots/*`、`shortcut-*.png` 与 `form_factor: "narrow"` 移动端截图声明不属于当前 Desktop-only manifest 引用面。
 - 所以本 guide 不能被解读成：
-  - `2.1.2 Add PWA icons and splash screens` 已完成
+  - 生产级品牌图标、移动端 screenshots / splash screens 或 shortcut 图标设计已完成
   - `3.2.x` 的离线 / 跨浏览器 PWA 验证已完成
 
 ### 2.3 Testing Caveat
 
 - 多个 Playwright spec 当前显式使用 `serviceWorkers: 'block'`。
 - 这意味着仓库里的 Chromium 绿灯，不能自动等价为“PWA 离线能力已验收”。
-- 当前 full Chromium 基线主要证明的是页面交互稳定，不是 service worker 安装 / 离线缓存全闭环。
+- 当前普通 Chromium smoke / mainline 结果主要证明页面交互稳定；只有显式允许 service worker 的 runtime acceptance 记录，才可作为 service worker 安装、缓存或离线行为的候选证据。
 
 ## 3. IndexedDB Runtime Surface
 
 ### 3.1 Canonical Implementation
 
-- 当前 IndexedDB wrapper 是 [indexedDB.ts](/opt/claude/mystocks_spec/web/frontend/src/utils/indexedDB.ts)
+- 当前 IndexedDB wrapper 是 [indexedDB.ts](../../../web/frontend/src/utils/indexedDB.ts)
 - 对外暴露 singleton：
   - `indexedDBManager`
   - `indexedDB`
@@ -96,7 +95,7 @@
 
 ### 3.3 Active Consumer
 
-- 当前活跃消费点是 [marketData.ts](/opt/claude/mystocks_spec/web/frontend/src/stores/marketData.ts)
+- 当前活跃消费点是 [marketData.ts](../../../web/frontend/src/stores/marketData.ts)
 - 该 store 当前实际使用 IndexedDB 做：
   - `market_overview` 缓存
   - `market_analysis` 缓存
@@ -105,17 +104,17 @@
 
 ### 3.4 Validation Surface
 
-- 当前直接单测入口是 [indexedDB.spec.ts](/opt/claude/mystocks_spec/web/frontend/tests/unit/utils/indexedDB.spec.ts)
+- 当前直接单测入口是 [indexedDB.spec.ts](../../../web/frontend/tests/unit/utils/indexedDB.spec.ts)
 - 这能证明 wrapper 与主要 API surface 存在 repo-local 验证，但不等于 IndexedDB 迁移、升级、跨浏览器持久化全部完成。
 
 ## 4. Web Workers Runtime Surface
 
 ### 4.1 Canonical Files
 
-- 协议层：[protocol.ts](/opt/claude/mystocks_spec/web/frontend/src/workers/protocol.ts)
-- 指标 worker：[indicatorDataWorker.worker.ts](/opt/claude/mystocks_spec/web/frontend/src/workers/indicatorDataWorker.worker.ts)
-- 管理器实现：[workers-manager.ts](/opt/claude/mystocks_spec/web/frontend/src/utils/workersManager/workers-manager.ts)
-- 兼容导出 shim：[workersManager.ts](/opt/claude/mystocks_spec/web/frontend/src/utils/workersManager.ts)
+- 协议层：[protocol.ts](../../../web/frontend/src/workers/protocol.ts)
+- 指标 worker：[indicatorDataWorker.worker.ts](../../../web/frontend/src/workers/indicatorDataWorker.worker.ts)
+- 管理器实现：[workers-manager.ts](../../../web/frontend/src/utils/workersManager/workers-manager.ts)
+- 兼容导出 shim：[workersManager.ts](../../../web/frontend/src/utils/workersManager.ts)
 
 ### 4.2 Current Capability
 
@@ -131,7 +130,7 @@
 
 ### 4.3 Current Limitation
 
-- [workers-manager.ts](/opt/claude/mystocks_spec/web/frontend/src/utils/workersManager/workers-manager.ts) 当前仍是轻量 façade。
+- [workers-manager.ts](../../../web/frontend/src/utils/workersManager/workers-manager.ts) 当前仍是轻量 façade。
 - 文件内注释和实现都表明：
   - 当前 `calculateIndicator()` 返回的是 placeholder 风格管理层结果
   - 健康状态也是简化版
@@ -143,5 +142,5 @@
 ## 5. Practical Developer Guidance
 
 - 讨论当前 HTML5 runtime 能力时，优先引用本文档与实际代码，不再默认引用历史总结。
-- 讨论“是否已经完成 PWA / 离线 / 安装 / 跨浏览器验收”时，必须回到 OpenSpec `2.1.x / 3.2.x / 3.3.x` 的未闭合任务，不能用本文替代验收记录。
+- 讨论“是否已经完成 PWA / 离线 / 安装 / 跨浏览器验收”时，必须回到 OpenSpec `2.1.x / 3.2.x / 3.3.2-3.3.3` 的未闭合任务，不能用本文替代验收记录。
 - 若要继续推进 HTML5 迁移线，优先按低风险 repo-local truth 收口；涉及完整 PWA 构建链、跨浏览器离线验证或生产部署支持时，必须单独按对应 task 推进。

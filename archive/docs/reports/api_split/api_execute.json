@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/execute",
+  "total_endpoints": 1,
+  "endpoints": [
+    {
+      "path": "/execute",
+      "method": "POST",
+      "file": "trade/routes.py",
+      "function": "execute_trade",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 295
+    }
+  ]
+}

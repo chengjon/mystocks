@@ -1,0 +1,86 @@
+audit_run_id: audit-20260426-02
+batch_id: trade-batch-15
+module: trade
+scope:
+  requested_by: user
+  pages:
+    - route: /trade/reconciliation
+      page_key: trade-reconciliation
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/trade/Reconciliation.vue
+  compatibility_redirects: []
+batch_rationale: "Close the selector-scoped `/trade/reconciliation` pending-row truth gap so same-instance account switches no longer leak previous account statement and result rows into a newly selected unresolved account shell."
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/trade/reconciliation` remains `web/frontend/src/views/trade/Reconciliation.vue`"
+    - "statement rows and imported reconciliation result rows are selector-owned by `selectedAccountId` and must clear as soon as the visible account changes to a new unresolved selector"
+    - "Phase 3 routed verification may promote reconciliation mocks into the shared harness if local page-route overrides are bypassed by the suite-level stub"
+  fallback_log: []
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, loading]
+  notes:
+    - "verify `/trade/reconciliation` first loads `backtest:7` with verified statement and result rows"
+    - "verify the same page instance clears old rows immediately when the account selector switches to unresolved `backtest:8`"
+    - "verify the routed Phase 3 harness still passes after reconciliation mocks are promoted into `stubPhase3Apis()`"
+repair_approval:
+  status: approved
+  approved_findings:
+    - trade-reconciliation-issue-01
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - trade-reconciliation
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/api/trade.ts
+    - web/frontend/src/views/trade/composables/useTradeReconciliation.ts
+    - web/frontend/src/views/trade/__tests__/Reconciliation.spec.ts
+    - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    - .claude/skills/myweb-audit/references/route-truth-casebook.md
+    - .claude/skills/myweb-audit/references/route-truth-coverage-matrix.md
+  shared_impact:
+    candidates:
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    confirmed:
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+  validation_status:
+    syntax: passed-via-vitest-and-playwright
+    typecheck: failed-existing-frontend-debt-only
+    pm2: passed
+    e2e: passed-playwright-chromium-trade-reconciliation-selector-proof
+    gitnexus_staged_detect: mixed-staged-observation-medium-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree remained mixed with earlier audit artifacts before the current reconciliation batch was summarized"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` reported `risk_level: medium`, `changed_files: 122`, `changed_count: 323`, `affected_count: 3`, so the staged scope remains observation-only and cannot serve as an isolated `trade-batch-15` verdict"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/trade-reconciliation-selector-pending-row-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-15-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-15-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-15-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/trade-batch-15-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-trade-batch-15-closeout
+  notes:
+    - "the canonical reconciliation route now clears stale account-scoped statement and result rows during unresolved same-instance account switches"
+    - "Phase 3 harness now includes reconciliation mocks and blocks service workers, so future reconciliation truth proofs can reuse the shared suite instead of local route overrides"
+status: complete

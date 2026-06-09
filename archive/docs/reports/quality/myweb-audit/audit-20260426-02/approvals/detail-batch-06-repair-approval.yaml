@@ -1,0 +1,24 @@
+- consolidated_issue_id: detail-news-issue-06
+  severity: High
+  affected_routes:
+    - /detail/news/:symbol
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/announcement/composables/useAnnouncementMonitor.ts
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: The canonical detail news route now keeps the primary announcement rows selector-scoped, so a new failing symbol clears the old rows and shows explicit route-local unavailable copy instead of leaking the previous verified symbol snapshot.
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: The approved repair stays inside the route-owned detail/news composable, owner view, and routed regressions; no shared announcement transport or cross-route table wrapper changed in this batch.
+    related_routes:
+      - /detail/news/:symbol
+  approval_status: approved

@@ -1,0 +1,75 @@
+- finding_id: data-fund-flow-data-state-001
+  batch_id: data-batch-08
+  page:
+    route: /data/fund-flow
+    page_key: data-fund-flow
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/data/FundFlow.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Routed fund-flow KPI strip presented zero-initialized first-load placeholders as faux live metrics with shared delta chrome
+  trigger:
+    steps:
+      - Open `/data/fund-flow`
+      - Observe the route before its first successful live load completes
+      - Inspect the top KPI strip while the page still shows the loading panel
+  expected: "Before the first successful payload arrives, unresolved summary cards should render explicit placeholders such as `--` and suppress shared delta chrome instead of presenting `0.00`, `+0%`, or flat-change dots as live metric truth."
+  actual: "Before repair, the routed KPI strip rendered `0.00` values with `+0%` and shared flat-change chrome even though the page was still in unresolved first-load state and had not yet completed its first successful live data load."
+  evidence:
+    kind: live-observation
+    note: "System-`google-chrome` verification of the real PM2 route showed the page still on `资金流向同步中` while the top strip rendered faux zero metrics before the repair. Post-fix live verification now shows `-- / -- / -- / --` with zero `.artdeco-stat-change` nodes."
+  repair_target:
+    files:
+      - web/frontend/src/views/data/FundFlow.vue
+    primary_owner: web/frontend/src/views/data/FundFlow.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /market/lhb
+  status: open
+  dependency: null
+  dedupe_key: /data/fund-flow:data-state:unresolvedFirstLoadNumericTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that unresolved first-load KPI cards render placeholders and suppress `.artdeco-stat-change`, `+0%`, and `0.00`.
+
+- finding_id: data-fund-flow-data-state-002
+  batch_id: data-batch-08
+  page:
+    route: /data/fund-flow
+    page_key: data-fund-flow
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/data/FundFlow.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Routed fund-flow rank column inherited shared exact-decimal table formatting and rendered ordinal rows as faux metrics
+  trigger:
+    steps:
+      - Open `/data/fund-flow`
+      - Wait for a resolved ranking surface under routed mock or regression coverage
+      - Inspect the `排名` column in the routed ranking table
+  expected: "The `排名` column should render ordinal values as plain whole numbers such as `1` and `2`, because ranking order is discrete rather than fractional."
+  actual: "Before repair, the routed table delegated `rank` to the shared exact-decimal formatter and therefore rendered `1.00` and `2.00`, implying unsupported fractional precision."
+  evidence:
+    kind: code-path-review
+    note: "Source review confirmed `FundFlow.vue` passed `rank` through the generic shared numeric formatter before the fix, and the routed component regression failed red on `1.00 / 2.00` until the page-local ordinal formatter landed."
+  repair_target:
+    files:
+      - web/frontend/src/views/data/FundFlow.vue
+    primary_owner: web/frontend/src/views/data/FundFlow.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /market/lhb
+  status: open
+  dependency: null
+  dedupe_key: /data/fund-flow:data-state:fundFlowRankOrdinalPrecision
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that the routed ranking surface shows ordinal ranks without `1.00` or `2.00` when the resolved table path is exercised.

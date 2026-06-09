@@ -1,0 +1,24 @@
+- consolidated_issue_id: strategy-backtest-issue-02
+  severity: High
+  affected_routes:
+    - /strategy/backtest
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/mock/backtestWorkbenchMock.ts
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "The strategy-backtest route now keeps hero freshness metadata at `--` until a verified strategy snapshot exists, so failed first loads cannot masquerade as a just-synced workbench through a local current-time timestamp."
+  dependency: null
+  shared_impact:
+    candidate: true
+    basis: "The freshness boundary is repaired inside the route-local backtest workbench builder used by the canonical `/strategy/backtest` owner path; downstream wrapper consumers inherit the safer placeholder truth without widening into strategy transport or backtest runtime API redesign."
+    related_routes:
+      - /strategy/backtest
+  approval_status: approved

@@ -1,0 +1,88 @@
+audit_run_id: audit-20260426-02
+batch_id: dashboard-batch-03
+module: dashboard
+scope:
+  requested_by: user
+  pages:
+    - route: /dashboard
+      page_key: dashboard-home
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+  compatibility_redirects: []
+batch_rationale: "Close the shared-header refresh binding gap on `/dashboard` so bootstrap summary resets can no longer leave the visible `刷新数据` control as a no-op, and fold that route-truth pattern back into myweb-audit as `v1.56`."
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/dashboard` remains `web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue`, with slice state owned by `web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts`"
+    - "the approved repair should stay dashboard-family local inside `useArtDecoDashboard.ts` instead of widening into the shared `useHeaderSummary.ts` store semantics"
+    - "the target defect is the visible shared-header refresh control becoming a no-op after bootstrap summary reset, not the already-closed fund-flow stale-refresh retention issue itself"
+    - "auth-seeded browser contexts plus browser-context interception with `serviceWorkers: block` are acceptable verification harnesses for controlled header-refresh truth on `/dashboard`"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, error]
+  notes:
+    - "verify `/dashboard` still renders its verified fund-flow slice before the manual refresh"
+    - "verify clicking the visible shared-header `刷新数据` control now issues a second `/api/akshare/market/fund-flow/hsgt-summary` request"
+    - "verify the same controlled refresh path can surface fund-flow degraded messaging while preserving the verified fund-flow slice"
+repair_approval:
+  status: approved
+  approved_findings:
+    - dashboard-home-issue-03
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - dashboard-home
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+    - web/frontend/tests/unit/components/ArtDecoDashboardLogic.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+      - web/frontend/src/composables/useHeaderSummary.ts
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-dashboard-header-refresh-red-green-plus-controlled-system-chrome-live-proof
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `dashboard-batch-03` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` is treated as observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/dashboard-refresh-binding-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-03-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-03-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/dashboard-batch-03-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/dashboard-batch-03-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: closeout-finalized-and-validated
+  next_action: none-batch-complete
+  notes:
+    - "the repaired dashboard route now keeps the visible shared-header refresh control bound after bootstrap summary resets"
+    - "future routed audits should reuse `v1.56` whenever a shared header or layout renders a visible page-owned refresh control"
+status: complete

@@ -1,0 +1,34 @@
+- consolidated_issue_id: secondary-shell-issue-08
+  severity: Medium
+  title: Legacy top-level settings page now delegates to the canonical `/system/config` owner
+  pages:
+    - /secondary/legacy-settings-canonical-wrapper
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The local forms, faux database table, and log-summary cards were all facets of the same defect: `Settings.vue` preserved a forked pseudo-live settings shell even though a semantically matching canonical system-config owner already exists."
+  primary_owner: web/frontend/src/views/Settings.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-settings-canonical-wrapper
+  dedupe_keys:
+    - /secondary/legacy-settings-canonical-wrapper:route-truth:legacySettingsCanonicalWrapper
+  verification_scope:
+    routes:
+      - /secondary/legacy-settings-canonical-wrapper
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/Settings.vue
+      - web/frontend/src/views/__tests__/Settings.spec.ts
+      - .claude/skills/myweb-audit/references/route-truth-casebook.md
+    notes:
+      - "the legacy top-level settings page now renders only the canonical `/system/config` owner instead of a forked pseudo-live shell"
+      - "the page no longer fabricates local settings forms, faux database connectivity rows, or faux log-summary cards"
+      - "secondary inventory heuristics now drop `Settings.vue` out of the high-priority shortlist"
+  verification_surface: code-review-only

@@ -1,0 +1,43 @@
+- finding_id: secondary-shell-048-settings-test-placeholders
+  batch_id: secondary-batch-48
+  page:
+    route: /secondary/settings-test-static-shells
+    page_key: secondary-settings-test-static-shells
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/settings/General.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Settings child placeholders and orphan TestPage preserved non-canonical UI/test semantics
+  trigger:
+    steps:
+      - "Inspect `views/settings/{General,Notifications,Security,Theme}.vue`"
+      - "Inspect `views/TestPage.vue`"
+      - "Confirm none of these files are current router truth or imported by active canonical owners"
+  expected: "Unrouted settings child placeholders and orphan test pages should degrade to honest static shells instead of preserving Element Plus placeholders, local test buttons, or console side effects."
+  actual: "Before repair, the settings children rendered Element Plus `Coming Soon` placeholders and `TestPage.vue` rendered local test UI plus a console.log side effect."
+  evidence:
+    kind: code-review-plus-owner-regression
+    note: "RED regressions failed because the settings pages did not render `legacy-static-shell` and `TestPage.vue` still logged to stdout while rendering test UI."
+  repair_target:
+    files:
+      - web/frontend/src/views/settings/General.vue
+      - web/frontend/src/views/settings/Notifications.vue
+      - web/frontend/src/views/settings/Security.vue
+      - web/frontend/src/views/settings/Theme.vue
+      - web/frontend/src/views/TestPage.vue
+      - web/frontend/tests/unit/config/settings-style-normalization.spec.ts
+      - web/frontend/src/views/__tests__/TestPage.spec.ts
+    primary_owner: web/frontend/src/views/settings/General.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/settings-test-static-shells
+  status: open
+  dependency: null
+  dedupe_key: /secondary/settings-test-static-shells:route-truth:settingsTestStaticShells
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run settings and TestPage regressions to confirm placeholders, Element Plus alert tags, and console side effects remain removed."

@@ -1,0 +1,37 @@
+- finding_id: trade-terminal-data-state-001
+  batch_id: trade-batch-04
+  page:
+    route: /trade/terminal
+    page_key: trade-terminal
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/TradingDashboard.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Trade terminal route presented lightweight runtime demo payloads as live trading-monitoring truth
+  trigger:
+    steps:
+      - Open `/trade/terminal`
+      - Let the routed page load against the current PM2 backend runtime endpoints
+      - Observe the successful `200` responses from `/api/trading/status`, `/api/trading/strategies/performance`, `/api/trading/market/snapshot`, and `/api/trading/risk/metrics`
+  expected: "A successful lightweight availability payload should keep the route honest about non-live status by degrading session IDs, KPI cards, risk labels, and action guidance to explicit demo or pending-runtime semantics."
+  actual: "Before repair, the routed page normalized a success-path `session_id: null` into `fallback-offline`, kept the hero surface on live terminal wording, showed `风险监控 正常`, and returned `系统运行正常，继续监控` even though the backend contract only proved a lightweight demo runtime state with no active session."
+  evidence:
+    kind: live-page-and-code-path-review
+    note: "The PM2 route reproduced `fallback-offline`, `Demo Momentum`, demo market rows, and healthy risk copy on successful runtime responses, while `useTradingDashboard.ts` injected a fallback session ID on the success path and had no demo-runtime degradation branch."
+  repair_target:
+    files:
+      - web/frontend/src/views/composables/useTradingDashboard.ts
+      - web/frontend/src/views/TradingDashboard.vue
+    primary_owner: web/frontend/src/views/composables/useTradingDashboard.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /trade/terminal:data-state:useTradingDashboard
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check the actual PM2 `/trade/terminal` route after repair and confirm the risk-report dialog also degrades to explicit pending-runtime guidance.

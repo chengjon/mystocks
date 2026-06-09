@@ -1,0 +1,42 @@
+- finding_id: dashboard-home-data-state-006
+  batch_id: dashboard-batch-06
+  page:
+    route: /dashboard
+    page_key: dashboard-home
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Dashboard later capital-flow refresh failure was normalized into empty-success before route-local stale-slice retention could run
+  trigger:
+    steps:
+      - "Open `/dashboard` with a controlled successful first load so `capitalFlowData` already contains verified ranking rows such as `贵州茅台` and `宁德时代`."
+      - "Trigger a later refresh where `/api/akshare/market/fund-flow/big-deal` resolves as `success:false` while the other primary dashboard slices still settle."
+      - "Inspect the ranking list, capital-flow heatmap, and route-level meta after the refresh settles."
+  expected: "The canonical dashboard route should keep the last verified capital-flow ranking slice visible, show explicit stale-slice copy such as `资金流向持续排名暂不可用，当前仍显示上次成功同步的排名快照。`, and preserve the heatmap note while the aggregate shell degrades honestly if the shared fund-flow family also loses one slice."
+  actual: "Before repair, `dashboardService.getStockFlowRanking()` never gated resolved `success:false` envelopes. The API client therefore handed the dashboard an error payload that the service normalized into `data: []`, causing `/dashboard` to collapse the verified capital-flow ranking and heatmap slice back to empty-success truth even though the route-local later-failure retention branch existed."
+  evidence:
+    kind: live-observation
+    note: "Targeted system-`google-chrome` verification first reproduced the broken route state: after a later `big-deal` refresh failure, `.capital-flow-card` lost `贵州茅台 / 宁德时代`, `.capital-heatmap-card .chart-state-note` was absent, and runtime Vue state showed `capitalFlowData: []` with `capitalFlowDegradedMessage: ''`. After repair, the same controlled path rendered the stale note, preserved both ranking rows, preserved the heatmap note, and still showed aggregate `DATA: MIXED / SYNC: DEGRADED` plus dashboard alert `资金流向数据暂不可用`."
+  repair_target:
+    files:
+      - web/frontend/src/api/services/dashboardService.ts
+      - web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+      - web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+      - web/frontend/src/api/services/__tests__/dashboardService.spec.ts
+      - web/frontend/tests/unit/components/ArtDecoDashboardLogic.spec.ts
+      - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/api/services/dashboardService.ts
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /dashboard
+  status: open
+  dependency: null
+  dedupe_key: /dashboard:data-state:capitalFlowServiceEnvelopeRefreshRetentionTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/dashboard` after repair and confirm a later `big-deal` refresh failure keeps the last verified capital-flow ranking slice visible with stale-slice messaging instead of collapsing to empty-success truth."

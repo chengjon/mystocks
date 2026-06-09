@@ -1,0 +1,40 @@
+- finding_id: risk-news-data-state-011
+  batch_id: risk-batch-11
+  page:
+    route: /risk/news
+    page_key: risk-news
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/risk/News.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Risk news route bound hero request provenance and summary counts to the latest announcements attempt and cleared verified rows on refresh failure
+  trigger:
+    steps:
+      - "Open `/risk/news`."
+      - "Force `**/api/announcement/list?page=1&page_size=50` to resolve `success: false` before any verified announcement snapshot exists."
+      - "Repeat with one successful announcement sync followed by a failed manual refresh that also resolves `success: false`."
+      - "Inspect hero `REQ_ID / TODAY`, the top stats strip, the content-shell `ANNOUNCEMENTS / LINKED` meta, and the visible announcement table content."
+  expected: "Before `/risk/news` has any verified snapshot, a resolved first-load failure should render explicit unavailable truth such as `REQ_ID: N/A`, `TODAY: --`, `ANNOUNCEMENTS: --`, `LINKED: --`, and stats `-- / -- / -- / --` instead of falling through to faux zero counts, failed request ids, or empty-state copy. If a later refresh fails after success, the route should keep the last verified request id and visible announcement rows while showing stale-refresh copy."
+  actual: "Before repair, `/risk/news` bound hero provenance directly to `useArtDecoApi.lastRequestId`, so the failed announcements request could replace the visible shell with `REQ_ID: <failed-id>` plus `TODAY: 0`. The same route also bound sibling counts directly to empty-array lengths, so first-load failures looked like empty success, and refresh failures rewrote `announcements` to empty arrays instead of preserving the verified shell."
+  evidence:
+    kind: live-observation
+    note: "Targeted component regressions, routed Phase 4 assertions, and controlled system-Chrome verification pinned the defect and the repaired shape. After repair, the first-load failure path now renders `REQ_ID: N/A / TODAY: --`, top-strip `-- / -- / -- / --`, and `ANNOUNCEMENTS: -- / LINKED: --`; the success-then-refresh-fail path now keeps the last verified request id plus visible announcement rows while showing stale-refresh copy."
+  repair_target:
+    files:
+      - web/frontend/src/views/risk/News.vue
+      - web/frontend/src/views/risk/__tests__/News.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/risk/News.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /risk/news
+  status: open
+  dependency: null
+  dedupe_key: /risk/news:data-state:announcementRefreshProvenanceAndPlaceholderTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/risk/news` after repair and confirm first-load failures no longer leak failed request ids, faux announcement counts, or empty-success copy, while stale-refresh failures keep the last verified request id and visible announcement content."

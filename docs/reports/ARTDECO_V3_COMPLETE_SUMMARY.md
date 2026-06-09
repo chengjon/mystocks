@@ -17,13 +17,13 @@
 
 当前要理解 ArtDeco V3 / V3.1，建议这样使用本文件：
 
-- 先看 [ARTDECO_MASTER_INDEX](/opt/claude/mystocks_spec/docs/guides/web/ARTDECO_MASTER_INDEX.md)
-- 再看 [ARTDECO_FINTECH_UNIFIED_SPEC](/opt/claude/mystocks_spec/docs/guides/web/ARTDECO_FINTECH_UNIFIED_SPEC.md)
+- 先看 [ARTDECO_MASTER_INDEX](../guides/web/ARTDECO_MASTER_INDEX.md)
+- 再看 [ARTDECO_FINTECH_UNIFIED_SPEC](../guides/web/ARTDECO_FINTECH_UNIFIED_SPEC.md)
 - 需要历史背景时，再回到本文件
 
 如果本文件与源码或活跃治理文档冲突，以 **源码 + 活跃治理文档** 为准。
 
-## 2. 截至 2026-04-19 的当前基线
+## 2. 截至 2026-04-19 的历史基线快照
 
 | 维度 | 当前基线 |
 |------|----------|
@@ -33,13 +33,13 @@
 | 金融颜色 | A 股强制 `红涨绿跌` |
 | 间距体系 | `13` 个编号级别：`1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24, 32` |
 | Reusable assets | `73` 个 `src/components/artdeco/**` Vue 组件 |
-| Page-level assets | `89` 个 `views/artdeco-pages/**` Vue 页面/块/模板 |
+| Page-level assets | `90` 个 `views/artdeco-pages/**` Vue 页面/块/模板 |
 | Shared runtime bridge | `src/composables/useHeaderSummary.ts` |
 | 运行时模式 | 模板化工作台、直接 Tab 容器、功能树驱动总控容器并存 |
 | Layout 摘要模式 | Dashboard 摘要由 `useHeaderSummary -> ArtDecoLayoutEnhanced` 统一承载 |
-| 路由真相 | 主业务路由以 `router/index.ts` + `views/<domain>/*.vue` 为主，保留少量 ArtDeco 例外入口 |
+| 路由真相 | 主业务路由以 `router/index.ts` + `views/<domain>/*.vue` 为主，包含 `ai` 域并保留 `detail/*` 与少量 ArtDeco 例外入口 |
 | 规范入口 | `ARTDECO_MASTER_INDEX` + `ARTDECO_FINTECH_UNIFIED_SPEC` + `DESIGN.md` |
-| 运行验证基线 | `PM2 backend/frontend online` + stable E2E `10/10` 通过 |
+| 运行验证快照 | `PM2 backend/frontend online` + stable E2E `10/10` 通过（仅代表 2026-04-19） |
 
 ## 3. 哪些 V3 资产仍然有效
 
@@ -122,6 +122,8 @@
 - `chromium`
 - `10 passed / 0 failed / 0 skipped`
 - `mystocks-backend` 与 `mystocks-frontend` 均由 PM2 在线承载
+
+这些结果在本文档中的角色是**历史快照**，不是当前会话的自动继承结论。后续若引用它们作为“当前验证状态”，必须重新执行并报告最新输出。
 
 ## 5. 作为“交易中心深度优化最终验收依据”时应看什么
 

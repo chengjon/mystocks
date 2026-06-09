@@ -1,0 +1,24 @@
+- consolidated_issue_id: data-fund-flow-issue-02
+  severity: High
+  affected_routes:
+    - /data/fund-flow
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/data/FundFlow.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: true
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "The canonical fund-flow route now keeps first-load pending and unavailable hero-row truth out of faux zero-row and leaked request-id semantics."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The new gap is repaired page-locally in `FundFlow.vue`; shared stat-card and table concerns were already closed in earlier fund-flow batches."
+    related_routes:
+      - /data/fund-flow
+  approval_status: approved

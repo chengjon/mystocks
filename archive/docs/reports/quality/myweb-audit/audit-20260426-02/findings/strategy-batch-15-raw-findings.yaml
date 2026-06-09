@@ -1,0 +1,39 @@
+- finding_id: strategy-backtest-data-state-004
+  batch_id: strategy-batch-15
+  page:
+    route: /strategy/backtest
+    page_key: strategy-backtest
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Strategy backtest rejected manual run action fabricated local freshness before any verified strategy context existed
+  trigger:
+    steps:
+      - "Open `/strategy/backtest` with a controlled first-load strategy-list failure so no verified strategy context exists."
+      - "After the route settles on the unresolved or failed-first-load shell, click `启动回测`."
+      - "Inspect the visible hero freshness surface `最后更新 / UPDATED`."
+  expected: "Rejected or no-op manual actions should keep hero freshness metadata pinned to the last verified snapshot or explicit placeholder truth such as `--` until a new verified snapshot actually exists."
+  actual: "Before repair, `runBacktest()` wrote `lastUpdated.value = new Date().toLocaleString()` in the `!strategyId` branch, so `/strategy/backtest` could present a local current-time freshness stamp even though no verified strategy context existed and no real backtest task had started."
+  evidence:
+    kind: live-observation
+    note: "Owner regression first reproduced the issue by clicking `启动回测` after a controlled strategy-list failure and observing `UPDATED` jump from `--` to a local current timestamp. After repair, the same route-level proof keeps `最后更新` at `--` while still surfacing the warning banner `未绑定有效策略ID，无法启动真实回测。`."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/backtest
+  status: open
+  dependency: null
+  dedupe_key: /strategy/backtest:data-state:rejectedActionFreshnessTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check that rejected manual run actions from unresolved context keep hero freshness on `--` and do not stamp the local current clock."

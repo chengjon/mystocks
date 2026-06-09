@@ -1,0 +1,38 @@
+- consolidated_issue_id: detail-graphics-issue-08
+  severity: High
+  title: Detail graphics route now keeps K-line and indicator snapshots aligned with the current symbol-plus-period selector context
+  pages:
+    - /detail/graphics/:symbol
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The canonical detail graphics route had one routed truth cluster: its primary K-line and indicator slices were not keyed to the current `symbol + period` selector context, so a new period could inherit the previous verified `1d` snapshot under the same routed page instance."
+  primary_owner: web/frontend/src/views/artdeco-pages/analysis-tabs/KLineAnalysis.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact: []
+  dedupe_keys:
+    - /detail/graphics/:symbol:data-state:selectorScopedPeriodSnapshotProvenance
+  verification_scope:
+    routes:
+      - /detail/graphics/:symbol
+    states:
+      - default
+      - same-symbol-period-switch-first-load-failure
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/market/marketKlineData.ts
+      - web/frontend/src/views/artdeco-pages/analysis-tabs/KLineAnalysis.vue
+      - web/frontend/src/views/artdeco-pages/analysis-tabs/__tests__/KLineAnalysis.spec.ts
+      - web/frontend/src/views/market/__node_tests__/marketKlineData.test.ts
+      - web/frontend/src/views/artdeco-pages/market-tabs/__node_tests__/marketKlineData.test.ts
+      - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+    notes:
+      - "the detail graphics route now keys verified K-line and indicator state to the current `symbol + period` selector context instead of symbol-only state"
+      - "the K-line request helper now accepts explicit selector periods instead of hard-coding `daily`"
+      - "a same-instance `1d -> 1w` switch now clears the old `1d` trend snapshot, request provenance, and indicator workspace when the new period fails before its first verified snapshot"
+      - "this batch reuses existing `myweb-audit v1.71` selector-scoped local-context guidance and does not introduce a new skill version"
+  verification_surface: code-review-plus-targeted-live-verification

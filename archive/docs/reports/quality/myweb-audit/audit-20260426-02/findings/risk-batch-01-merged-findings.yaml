@@ -1,0 +1,44 @@
+- consolidated_issue_id: risk-overview-issue-01
+  severity: Medium
+  title: Risk overview now derives alert-tab truth from live alert records and degrades uncovered KPI slices to explicit unverified states
+  pages:
+    - /risk/overview
+  source_roles:
+    - data-state-audit
+  why_consolidated: The embedded alert copy, fabricated KPI numbers, and hardcoded overview metrics were one hybrid live-surface truth defect centered on the canonical routed page.
+  primary_owner: web/frontend/src/views/risk/Overview.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact: []
+  dedupe_keys:
+    - /risk/overview:data-state:overview-hybrid-live-surface-truth
+  verification_scope:
+    routes:
+      - /risk/overview
+    states:
+      - default
+      - loading
+      - empty
+    breakpoints:
+      - 1920
+      - 1440
+      - 1280
+  repair_summary:
+    files:
+      - web/frontend/src/views/risk/Overview.vue
+      - web/frontend/src/views/risk/__tests__/Overview.spec.ts
+      - web/frontend/tests/unit/views/risk-wrapper-retention.spec.ts
+      - web/frontend/tests/e2e/risk-overview.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/SKILL.md
+      - .claude/skills/myweb-audit/references/audit-checklist.md
+      - .claude/agents/myweb-audit-data-state-audit.md
+      - .claude/skills/myweb-audit/references/CHANGELOG.md
+    notes:
+      - "the routed page now requests both `monitoringApi.getAlertRules()` and `monitoringApi.getAlerts({ page: 1, page_size: 50 })` on load"
+      - "the alert tab now renders live-derived alert rows and falls back to `暂无预警消息。` when no records exist"
+      - "the KPI strip and overview metric table now degrade to `未校验` and `待接入` instead of showing fabricated runtime numbers"
+      - "targeted routed-page, wrapper-retention, and E2E expectations now encode the hybrid live-surface truth rule"
+  verification_surface: code-review-plus-targeted-live-verification

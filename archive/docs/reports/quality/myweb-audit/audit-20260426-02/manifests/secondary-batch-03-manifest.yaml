@@ -1,0 +1,93 @@
+audit_run_id: audit-20260426-02
+batch_id: secondary-batch-03
+module: secondary-embedded-shells
+scope:
+  requested_by: user
+  pages:
+    - route: /secondary/artdeco-trading-center-active-wrappers
+      page_key: secondary-artdeco-trading-center-active-wrappers
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/artdeco-pages/ArtDecoTradingCenter.vue
+  compatibility_redirects: []
+batch_rationale: >-
+  Continue the secondary inventory phase by replacing the active
+  `ArtDecoTradingCenter.vue` monitor wrappers that still surfaced placeholder
+  migration shells, and delegate those panels to existing canonical
+  `/market/realtime` and `/risk/management` truth without introducing any new
+  shell snapshot or store.
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-only
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "the manifest route `/secondary/artdeco-trading-center-active-wrappers` is a synthetic secondary-inventory alias used for artifact indexing; the live parent shell remains `web/frontend/src/views/artdeco-pages/ArtDecoTradingCenter.vue` and is not a real router entry"
+    - "the repaired surfaces are the active `realtime-monitor` and `risk-monitor` wrapper panels imported by `ArtDecoTradingCenter.vue`"
+    - "all live truth must continue to come from existing canonical owners or degrade honestly"
+    - "the wrapper repair must not add a new store, snapshot cache, request provenance badge, or freshness strip"
+  fallback_log: []
+verification_plan:
+  verification_strategy: code-review-only
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states:
+    - default
+    - loading
+    - empty
+    - disabled
+  notes:
+    - "verify both active monitor wrappers no longer render local placeholder migration copy"
+    - "verify realtime and risk surfaces now reuse canonical owners directly"
+    - "verify canonical market/risk smoke regressions stay green after wrapper-only delegation"
+repair_approval:
+  status: approved
+  approved_findings:
+    - secondary-shell-issue-03
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - secondary-artdeco-trading-center-active-wrappers
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoRealtimeMonitor.vue
+    - web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskMonitor.vue
+    - web/frontend/src/views/artdeco-pages/market-data-tabs/__tests__/ArtDecoRealtimeMonitor.spec.ts
+    - web/frontend/src/views/artdeco-pages/risk-tabs/__tests__/ArtDecoRiskMonitor.spec.ts
+    - .claude/skills/myweb-audit/references/route-truth-operations.md
+    - .claude/skills/myweb-audit/references/route-truth-casebook.md
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/market/Realtime.vue
+      - web/frontend/src/views/risk/Center.vue
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vitest
+    typecheck: failed-existing-frontend-debt-only
+    pm2: pending
+    e2e: not-run-unrouted-owner
+    gitnexus_staged_detect: pending
+  staged_scope:
+    mode: not-run
+    files: []
+    verdict_origin: none
+    notes:
+      - "no isolated staged batch was prepared before verification started; staged verdict, if captured, may remain observation-only because the worktree is already mixed"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/artdeco-trading-center-monitor-wrapper-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/secondary-batch-03-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/secondary-batch-03-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/secondary-batch-03-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/secondary-batch-03-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: owner-regression
+  next_action: continue-secondary-inventory-triage
+  notes:
+    - "active import-chain promotion can override low heuristic score when a live parent shell still fronts placeholder migration copy over canonical truth"
+status: complete

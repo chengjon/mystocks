@@ -1,0 +1,95 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/recovery",
+  "total_endpoints": 8,
+  "endpoints": [
+    {
+      "path": "/recovery/tdengine/full",
+      "method": "POST",
+      "file": "backup_recovery.py",
+      "function": "restore_tdengine_full",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 403
+    },
+    {
+      "path": "/recovery/tdengine/pitr",
+      "method": "POST",
+      "file": "backup_recovery.py",
+      "function": "restore_tdengine_pitr",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 431
+    },
+    {
+      "path": "/recovery/postgresql/full",
+      "method": "POST",
+      "file": "backup_recovery.py",
+      "function": "restore_postgresql_full",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 460
+    },
+    {
+      "path": "/recovery/objectives",
+      "method": "GET",
+      "file": "backup_recovery.py",
+      "function": "get_recovery_objectives",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 488
+    },
+    {
+      "path": "/recovery/tdengine/full",
+      "method": "POST",
+      "file": "backup_recovery_secure.py",
+      "function": "restore_tdengine_full",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "tdengine",
+      "line_number": 455
+    },
+    {
+      "path": "/recovery/tdengine/pitr",
+      "method": "POST",
+      "file": "backup_recovery_secure.py",
+      "function": "restore_tdengine_pitr",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "tdengine",
+      "line_number": 534
+    },
+    {
+      "path": "/recovery/postgresql/full",
+      "method": "POST",
+      "file": "backup_recovery_secure.py",
+      "function": "restore_postgresql_full",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 619
+    },
+    {
+      "path": "/recovery/objectives",
+      "method": "GET",
+      "file": "backup_recovery_secure.py",
+      "function": "get_recovery_objectives",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 694
+    }
+  ]
+}

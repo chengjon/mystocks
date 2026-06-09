@@ -1,0 +1,24 @@
+- consolidated_issue_id: secondary-shell-issue-49
+  severity: Medium
+  affected_routes:
+    - /secondary/trade-management-orphan-components
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/trade-management/components/PortfolioOverview.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "Orphan trade-management child components may be degraded to honest static shells because the active trading orchestration shell now delegates to canonical `/trade/*` owners."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The repair is scoped to orphan secondary components and source regression; it does not create new trading APIs, stores, snapshots, or execution contracts."
+    related_routes:
+      - /secondary/trade-management-orphan-components
+  approval_status: approved

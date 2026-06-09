@@ -1,0 +1,26 @@
+- consolidated_issue_id: secondary-shell-issue-21
+  severity: Medium
+  affected_routes:
+    - /secondary/legacy-trading-orders-static-shell
+    - /secondary/legacy-trading-execution-static-shell
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/trading/Orders.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "Legacy nested trading orders and execution pages now degrade to honest static shells."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The repair stays scoped to the two nested legacy trading owners and their local regressions; no new store, snapshot cache, or shell-level truth surface was introduced."
+    related_routes:
+      - /secondary/legacy-trading-orders-static-shell
+      - /secondary/legacy-trading-execution-static-shell
+  approval_status: approved

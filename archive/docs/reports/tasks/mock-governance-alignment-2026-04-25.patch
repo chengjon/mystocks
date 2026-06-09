@@ -1,0 +1,1618 @@
+diff --git a/docs/guides/mock-data/MOCK_DATA_USAGE_RULES.md b/docs/guides/mock-data/MOCK_DATA_USAGE_RULES.md
+index aaba1e06d..ee3b9a51a 100644
+--- a/docs/guides/mock-data/MOCK_DATA_USAGE_RULES.md
++++ b/docs/guides/mock-data/MOCK_DATA_USAGE_RULES.md
+@@ -1,447 +1,156 @@
+-# Mock数据使用规则文档
++# Mock 数据使用规则
+ 
+ > **补充规范说明**:
+-> 本文件是项目补充标准、执行细则或专题规范，不是仓库共享规则的唯一事实来源。
+-> 仓库级共享规则总入口仍以 `architecture/STANDARDS.md` 为准；执行流程、命令与协作约束再参考根目录 `AGENTS.md`。本文件用于补充某一专题的执行细则、约束或参考模板。
+->
+-> 若本文件与 `architecture/STANDARDS.md`、根目录 `AGENTS.md` 或当前已批准执行口径不一致，应优先遵循 `architecture/STANDARDS.md`、根目录 `AGENTS.md` 与当前实现；若无冲突，则按本文件的专题范围执行。
+-
+-
+-## 概述
+-
+-本文档规定了 MyStocks 项目中 Mock 数据的使用规则，确保代码质量和数据管理的一致性。
++> 本文件是 Mock 数据专题的当前执行细则，不是仓库共享规则的唯一事实来源。
++> Mock 相关共享治理口径仍以 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md) 为准；页面级 API 行为与 `verified/pending` 规则以 [`openspec/specs/api-integration/spec.md`](/opt/claude/mystocks_spec/openspec/specs/api-integration/spec.md) 为准。
+ 
+-**核心原则**: 所有模拟数据必须通过 Mock 数据模块提供，**严禁在业务代码中直接硬编码数据**。
+-
+----
+-
+-## Mock数据架构
+-
+-### 三层数据源架构
+-
+-```
+-┌─────────────────────────────────────────────────────────────┐
+-│                    业务数据源 (Business)                      │
+-│                       business_mock.py                       │
+-├─────────────────────────────────────────────────────────────┤
+-│                                                              │
+-│  ┌──────────────────────┐    ┌──────────────────────┐       │
+-│  │  时序数据源            │    │  关系数据源           │       │
+-│  │  (TimeSeries)         │    │  (Relational)        │       │
+-│  │  timeseries_mock.py   │    │  relational_mock.py  │       │
+-│  └──────────────────────┘    └──────────────────────┘       │
+-│                                                              │
+-├─────────────────────────────────────────────────────────────┤
+-│                    数据源工厂 (Factory)                       │
+-│                        factory.py                            │
+-└─────────────────────────────────────────────────────────────┘
+-```
+-
+-### 数据源切换机制
+-
+-通过环境变量控制数据源类型：
+-
+-| 环境变量 | 可选值 | 说明 |
+-|---------|--------|------|
+-| `TIMESERIES_DATA_SOURCE` | mock / tdengine | 时序数据源 |
+-| `RELATIONAL_DATA_SOURCE` | mock / postgresql | 关系数据源 |
+-| `BUSINESS_DATA_SOURCE` | mock / composite | 业务数据源 |
+-| `USE_MOCK_DATA` | true / false | 全局Mock开关 |
++## 目的
+ 
+----
+-
+-## Mock数据文件清单
++本文件回答三个问题：
+ 
+-### 1. 核心数据源模块 (`src/data_sources/`)
+-
+-| 文件路径 | 用途 | 关键接口 |
+-|---------|------|---------|
+-| `factory.py` | 数据源工厂 | `get_timeseries_source()`, `get_relational_source()`, `get_business_source()` |
+-| `mock/timeseries_mock.py` | Mock时序数据 | `get_realtime_quotes()`, `get_kline_data()`, `get_fund_flow()` |
+-| `mock/relational_mock.py` | Mock关系数据 | `get_watchlist()`, `get_strategy_configs()`, `search_stocks()` |
+-| `mock/business_mock.py` | Mock业务数据 | `get_dashboard_summary()`, `execute_backtest()`, `calculate_risk_metrics()` |
++1. Mock 在本项目里什么时候允许使用
++2. Mock 在哪些场景下不能作为真实链路兜底
++3. 当前仓库中多层 Mock 资产应如何被理解和使用
+ 
+-### 2. 页面Mock模块 (`src/mock/`)
++## 当前主线规则
+ 
+-| 文件名 | 用途 | 主要函数 |
+-|--------|------|----------|
+-| `mock_Dashboard.py` | 仪表盘数据 | `get_market_hot()`, `get_plate_performance()`, `get_fund_flow()` |
+-| `mock_Market.py` | 市场行情 | `get_market_heatmap()`, `get_real_time_quotes()`, `get_etf_list()` |
+-| `mock_Stocks.py` | 股票详情 | `get_stock_list()`, `get_real_time_quote()`, `get_history_profit()` |
+-| `mock_TechnicalAnalysis.py` | 技术分析 | `get_stock_kline()`, `get_technical_indicators()`, `get_signal_analysis()` |
+-| `mock_Wencai.py` | 问财查询 | `get_wencai_queries()`, `get_query_results()` |
+-| `mock_StrategyManagement.py` | 策略管理 | `get_strategy_definitions()`, `run_strategy_single()`, `get_strategy_results()` |
+-| `mock_RealTimeMonitor.py` | 实时监控 | `get_realtime_alerts()`, `get_monitoring_summary()` |
+-| `mock_IndicatorLibrary.py` | 指标库 | `get_indicator_list()`, `get_indicator_detail()` |
++### 1. Mock 的定位
+ 
+-### 3. 后端统一Mock管理 (`web/backend/app/mock/`)
++- Mock 的首要用途是前后端解耦开发。
++- Mock 的常见用途是测试稳定性、固定数据验收、自动化隔离和开发态演示。
++- Mock 不是默认的线上成功路径，也不是 `verified` 页面真实接口失败后的静默替代品。
+ 
+-| 文件名 | 用途 | 主要函数 |
+-|--------|------|----------|
+-| `unified_mock_data.py` | 统一Mock管理 | `get_dashboard_data()`, `get_stocks_data()`, `get_technical_data()` |
++对应共享规则见：
+ 
+----
++- [`architecture/STANDARDS.md`](../../architecture/STANDARDS.md)
+ 
+-## 使用规则
++### 2. 页面级真相优先级
+ 
+-### 规则1: 禁止硬编码数据
++- `verified` 页面：
++  - 真实 API 是主数据源。
++  - 不得对同一路径静默回退到 mock。
++  - 必须显式暴露 `loading / error / empty / request id` 状态。
++- `pending` 页面：
++  - 路由可以保持可达。
++  - 允许保留壳层、加载态、错误态、空态。
++  - 不得臆造真实接口契约字段。
++  - 阻塞项必须记录到优化清单或任务报告。
+ 
+-**错误示例** ❌
+-```python
+-# 直接在代码中写入数据 - 严禁!
+-def get_stock_info():
+-    return {
+-        "symbol": "600000",
+-        "name": "浦发银行",
+-        "price": 12.50,
+-        "change": 0.15,
+-        "volume": 12345678
+-    }
+-```
++对应专题规格见：
+ 
+-**正确示例** ✅
+-```python
+-from src.data_sources.factory import get_timeseries_source
++- [`openspec/specs/api-integration/spec.md`](../../../openspec/specs/api-integration/spec.md)
+ 
+-def get_stock_info(symbol: str):
+-    source = get_timeseries_source(source_type="mock")
+-    return source.get_realtime_quotes([symbol])[0]
+-```
+-
+-### 规则2: 通过工厂函数获取数据源
+-
+-**错误示例** ❌
+-```python
+-# 直接实例化Mock类 - 不推荐
+-from src.data_sources.mock.timeseries_mock import MockTimeSeriesDataSource
+-source = MockTimeSeriesDataSource()
+-```
+-
+-**正确示例** ✅
+-```python
+-# 通过工厂函数获取 - 推荐
+-from src.data_sources.factory import get_timeseries_source
+-
+-source = get_timeseries_source(source_type="mock")
+-data = source.get_kline_data(
+-    symbol="600000",
+-    start_time=datetime(2025, 1, 1),
+-    end_time=datetime(2025, 10, 31),
+-    interval="1d"
+-)
+-```
+-
+-### 规则3: 使用统一的数据接口
+-
+-**时序数据获取**:
+-```python
+-from src.data_sources.factory import get_timeseries_source
++## 允许使用 Mock 的场景
+ 
+-source = get_timeseries_source(source_type="mock")
++### 开发解耦
+ 
+-# K线数据
+-kline_df = source.get_kline_data(symbol, start_time, end_time, interval)
+-
+-# 实时行情
+-quotes = source.get_realtime_quotes(symbols)
+-
+-# 资金流向
+-fund_flow = source.get_fund_flow(symbol, days)
+-
+-# 市场概览
+-overview = source.get_market_overview()
+-```
+-
+-**关系数据获取**:
+-```python
+-from src.data_sources.factory import get_relational_source
+-
+-source = get_relational_source(source_type="mock")
+-
+-# 自选股
+-watchlist = source.get_watchlist(user_id)
+-
+-# 股票搜索
+-results = source.search_stocks(keyword)
+-
+-# 行业列表
+-industries = source.get_industry_list()
+-```
+-
+-**业务数据获取**:
+-```python
+-from src.data_sources.factory import get_business_source
+-
+-source = get_business_source(source_type="mock")
+-
+-# 仪表盘数据
+-dashboard = source.get_dashboard_summary()
+-
+-# 回测执行
+-backtest_result = source.execute_backtest(strategy_config, start_date, end_date)
+-
+-# 风险指标
+-risk_metrics = source.calculate_risk_metrics(portfolio_id)
+-```
+-
+-### 规则4: 参数优化中的Mock数据使用
+-
+-在策略参数优化中，必须使用Mock数据源而非硬编码数据：
+-
+-**错误示例** ❌
+-```python
+-# 硬编码历史数据 - 严禁!
+-def run_backtest(params):
+-    historical_data = [
+-        {"date": "2025-01-01", "close": 10.5},
+-        {"date": "2025-01-02", "close": 10.8},
+-        # ... 直接写入数据
+-    ]
+-    return simulate(historical_data, params)
+-```
+-
+-**正确示例** ✅
+-```python
+-from src.data_sources.factory import get_timeseries_source
+-
+-def run_backtest(params):
+-    source = get_timeseries_source(source_type="mock")
+-    historical_data = source.get_kline_data(
+-        symbol="600000",
+-        start_time=datetime(2025, 1, 1),
+-        end_time=datetime(2025, 10, 31),
+-        interval="1d"
+-    )
+-    return simulate(historical_data, params)
+-```
+-
+-### 规则5: 支持随机种子保证可复现
+-
+-Mock数据支持随机种子，确保测试结果可复现：
+-
+-```python
+-from src.data_sources.factory import get_timeseries_source
+-
+-# 设置随机种子
+-source = get_timeseries_source(source_type="mock")
+-source.set_random_seed(42)
+-
+-# 现在生成的数据是可复现的
+-data1 = source.get_kline_data(symbol, start, end)
+-
+-# 重新设置相同种子，得到相同数据
+-source.set_random_seed(42)
+-data2 = source.get_kline_data(symbol, start, end)
+-# data1 == data2
+-```
+-
+-### 规则6: 保持数据结构一致性
+-
+-Mock数据结构应与真实API返回一致，便于无缝切换：
+-
+-```python
+-# Mock数据结构必须与真实API一致
+-def get_stock_quote(symbol: str) -> Dict:
+-    return {
+-        "symbol": symbol,           # 股票代码
+-        "name": "示例股票",          # 股票名称
+-        "price": 25.50,             # 当前价格
+-        "change": 0.35,             # 涨跌额
+-        "change_pct": 1.39,         # 涨跌幅%
+-        "volume": 12345678,         # 成交量
+-        "amount": 315678900,        # 成交额
+-        "high": 26.00,              # 最高价
+-        "low": 24.80,               # 最低价
+-        "open": 25.20,              # 开盘价
+-        "pre_close": 25.15,         # 昨收价
+-        "timestamp": datetime.now().isoformat()
+-    }
+-```
+-
+----
+-
+-## 添加新Mock数据的流程
+-
+-### 1. 确定数据类别
+-
+-| 数据类型 | 对应模块 | 说明 |
+-|---------|---------|------|
+-| 行情/K线 | `timeseries_mock.py` | 时序类数据 |
+-| 用户/配置 | `relational_mock.py` | 关系类数据 |
+-| 业务/分析 | `business_mock.py` | 复合业务数据 |
+-| 页面专用 | `src/mock/mock_*.py` | 页面级数据 |
+-
+-### 2. 实现数据生成函数
+-
+-```python
+-# 在对应的mock模块中添加
+-def get_new_feature_data(
+-    param1: str,
+-    param2: int = 10
+-) -> Dict[str, Any]:
+-    """
+-    获取新功能数据
+-
+-    Args:
+-        param1: 参数1说明
+-        param2: 参数2说明 (默认10)
+-
+-    Returns:
+-        包含新功能数据的字典
+-    """
+-    # 使用随机数生成器
+-    import random
+-    rng = random.Random(42)  # 可复现
+-
+-    return {
+-        "field1": rng.uniform(0, 100),
+-        "field2": rng.randint(1, 1000),
+-        "field3": [rng.random() for _ in range(param2)],
+-        "timestamp": datetime.now().isoformat()
+-    }
+-```
+-
+-### 3. 导出函数
+-
+-```python
+-# 在模块的 __all__ 中添加
+-__all__ = [
+-    'get_realtime_quotes',
+-    'get_kline_data',
+-    'get_new_feature_data',  # 新增
+-]
+-```
++- 后端接口尚未就绪，但前端需要先完成 UI/UX 视觉验收。
++- 新页面、新组件或新交互仍在壳层阶段，只需要表达布局、状态和体验。
+ 
+-### 4. 更新工厂函数（如需要）
++### 测试稳定性
+ 
+-如果是新的数据源类型，需要在 `factory.py` 中注册。
+-
+----
+-
+-## 导入规范
+-
+-### 推荐的导入方式
+-
+-```python
+-# 方式1: 通过工厂函数 (最推荐)
+-from src.data_sources.factory import get_timeseries_source
+-source = get_timeseries_source(source_type="mock")
+-
+-# 方式2: 从统一管理模块导入
+-from web.backend.app.mock.unified_mock_data import get_dashboard_data
+-data = get_dashboard_data()
+-
+-# 方式3: 从具体模块导入具体函数
+-from src.mock.mock_Dashboard import get_market_hot
+-data = get_market_hot()
+-```
+-
+-### 避免的导入方式
+-
+-```python
+-# 避免: 通配符导入
+-from src.mock.mock_Dashboard import *
+-
+-# 避免: 直接访问内部变量
+-from src.data_sources.mock import timeseries_mock
+-data = timeseries_mock._internal_data  # 禁止!
+-
+-# 避免: 硬编码实例化
+-source = MockTimeSeriesDataSource()  # 应使用工厂函数
+-```
+-
+----
+-
+-## 环境变量配置
+-
+-### 开发环境 (.env.development)
+-```bash
+-USE_MOCK_DATA=true
+-TIMESERIES_DATA_SOURCE=mock
+-RELATIONAL_DATA_SOURCE=mock
+-BUSINESS_DATA_SOURCE=mock
+-```
+-
+-### 生产环境 (.env.production)
+-```bash
+-USE_MOCK_DATA=false
+-TIMESERIES_DATA_SOURCE=tdengine
+-RELATIONAL_DATA_SOURCE=postgresql
+-BUSINESS_DATA_SOURCE=composite
+-```
+-
+----
+-
+-## 代码审查检查清单
+-
+-在代码审查时，请检查以下项目：
+-
+-- [ ] 没有硬编码的模拟数据
+-- [ ] 所有数据通过工厂函数或Mock模块的getter函数获取
+-- [ ] 导入路径正确
+-- [ ] 函数有类型注解和文档字符串
+-- [ ] 数据结构与预期API一致
+-- [ ] 新增的Mock函数已添加到对应模块
+-- [ ] 支持随机种子实现可复现性
+-- [ ] 没有使用通配符导入
++- Vitest / 组件测试 / 前端集成测试中，需要使用 `MSW` 或固定 mock payload 保证可复现。
++- 自动化场景需要避免实时数据、时间漂移、外部依赖波动。
++- Smoke 或 sandbox-safe 运行器中，显式启用 `VITE_USE_MOCK_DATA=true` 进行隔离验证。
+ 
+----
++### 非主链运行时降级
+ 
+-## 常见问题
++- 自动化浏览器验收或显式 mock 模式下，readiness 检查允许进入“mock 验收模式”，避免开发演示完全阻塞。
++- 这类 fallback 必须是显式模式或自动化专用，不得伪装成真实主链已通过。
+ 
+-### Q: 为什么不能直接在代码中写数据？
++## 禁止或默认不允许的场景
+ 
+-A: 直接硬编码数据会导致：
+-- 代码难以维护和修改
+-- 无法统一管理数据质量
+-- 切换真实数据源时需要大量修改
+-- 违反DRY原则（Don't Repeat Yourself）
+-- 难以保证数据的一致性和真实性
++### 禁止把 Mock 当成 `verified` 页面的静默兜底
+ 
+-### Q: Mock数据和真实数据结构不一致怎么办？
++- 已标记 `verified` 的页面，不得在同一路径上“真实接口失败后默默返回 mock 数据”。
++- 这类场景必须进入错误态、空态或明确的非阻塞 warning 态，而不是继续伪装成真实数据成功。
+ 
+-A: 应该以真实API的数据结构为准，修改Mock数据使其保持一致。如果真实API结构发生变化，需要同步更新Mock模块。
++### 禁止用 Mock 臆造契约
+ 
+-### Q: 如何生成符合市场规律的K线数据？
++- 不得为了让页面先跑起来而发明真实接口尚未承诺的字段。
++- 不得把 page-local 假字段包装成“真实接口兼容层”。
+ 
+-A: 参考 `timeseries_mock.py` 中的实现：
+-- 价格使用对数正态分布
+-- 涨跌幅限制在-10%到+10%
+-- 成交量在合理范围内波动
+-- 高开低收价格关系合理
++### 禁止在业务代码中无说明地内联硬编码数据
+ 
+-### Q: 参数优化时Mock数据不够用怎么办？
++- 业务代码中直接堆大型静态数组、随机散落的 fallback 对象、临时写死的行情/策略/持仓数据，默认视为不合规。
++- 如果确实需要 mock payload，必须：
++  - 放在集中 mock 模块或测试 fixture 中
++  - 明确说明用途是开发、测试或显式 fallback
++  - 与真实返回结构保持可比对关系
+ 
+-A: Mock数据源支持动态生成任意时间范围的数据：
+-```python
+-source = get_timeseries_source(source_type="mock")
+-# 可以请求任意时间范围
+-data = source.get_kline_data(
+-    symbol="600000",
+-    start_time=datetime(2020, 1, 1),
+-    end_time=datetime(2025, 12, 31),
+-    interval="1d"
+-)
+-```
++## 当前仓库中的 Mock 资产分层
+ 
+----
++当前仓库里与 Mock 相关的资产主要分为四类：
+ 
+-## 相关文件索引
++### 1. 后端 page-level / feature-level Mock
+ 
+-| 文件 | 说明 |
+-|------|------|
+-| `src/data_sources/factory.py` | 数据源工厂 (入口) |
+-| `src/data_sources/mock/` | Mock数据源实现目录 |
+-| `src/mock/` | 页面级Mock数据目录 |
+-| `web/backend/app/mock/` | 后端统一Mock管理 |
+-| `scripts/tests/test_mock_*.py` | Mock测试脚本 |
+-| `examples/mock_data_demo.py` | Mock使用演示 |
+-| `CLAUDE.md` | 项目开发规范 |
++- `src/mock/`
++- 作用：历史 page-level mock 数据、若干后端 fallback 或参考实现来源
+ 
+----
++### 2. 后端数据源级 Mock
+ 
+-## 版本历史
++- `src/data_sources/mock/`
++- 作用：数据源工厂模式下的 mock timeseries / relational / business provider
+ 
+-| 版本 | 日期 | 说明 |
+-|------|------|------|
+-| 1.0 | 2025-11-22 | 初始版本，建立Mock数据使用规范 |
++### 3. 后端统一 Mock 管理与 Mock 路由
++
++- `web/backend/app/mock/`
++- `web/backend/app/api/strategy_list_mock.py`
++- 作用：后端 mock manager、显式 mock API 路由和若干 fallback 接入点
++
++### 4. 前端测试与显式 Mock 客户端
++
++- `web/frontend/src/mock/`
++- `web/frontend/src/api/mockApiClient.ts`
++- 作用：前端测试数据、显式 `VITE_USE_MOCK_DATA` 模式、部分适配器/测试用例消费
++
++这些资产同时存在并不等于“所有页面都可以自由混用 mock/real”。真正的准入边界仍由 `verified/pending` 和当前主线验证状态决定。
++
++## 环境与开关
++
++当前仓库里最常见的 Mock 相关开关包括：
++
++- 后端：`USE_MOCK_DATA`
++- 前端：`VITE_USE_MOCK_DATA`
++
++补充说明：
++
++- 某些历史文档仍提到更早的 `VITE_APP_MODE` 口径；阅读时必须以当前代码和当前运行脚本为准。
++- 是否启用 mock，不应只看环境变量名，还要看页面是否已经处于 `verified` 主链、测试是否属于显式 mock 场景，以及调用链是否允许 fallback。
++
++## 实施建议
++
++### 新增页面或功能时
++
++- 先判断该页面当前是 `pending` 还是 `verified` 目标。
++- `pending` 阶段只做壳层和状态收口，不要发明真实字段。
++- 如果需要临时数据，放入集中 mock 模块，不要把数据散落在页面里。
++
++### 改造既有页面时
++
++- 先确认该页面是否已经被主线文档记为 `verified`。
++- 若已 `verified`，优先拆掉静默 mock fallback，保留错误态、空态和 request id。
++- 若仍需 mock 验收，必须让模式显式可见，而不是默认混在真实链路里。
++
++### 写测试时
++
++- 单元测试和集成测试优先使用 `MSW`、集中 fixture 或 mock helper。
++- E2E 若只跑 mock/sandbox-safe 子集，必须明确标注测试边界，不能表述成“真实联调已验证”。
++
++## 反模式
++
++以下模式应视为重点治理对象：
++
++- 页面内 `if request failed -> return mockRows`，且对用户无显式提示
++- `verified` 页面继续保留 `mixed` 假字段拼装
++- 业务主链直接从历史 page mock 文件导入数据作为默认成功数据
++- 文档把 mock 覆盖率、mock 文件数量、接口数量写成当前事实，但没有日期和复核来源
++
++## 相关文档
++
++- [`INDEX.md`](./INDEX.md)
++- [`MOCK_REAL_DATA_SWITCHING_GUIDE.md`](./MOCK_REAL_DATA_SWITCHING_GUIDE.md)
++- [`MOCK_GOVERNANCE_AUDIT_LEDGER.md`](./MOCK_GOVERNANCE_AUDIT_LEDGER.md)
++- [`web/frontend/ENVIRONMENT_SWITCHING_GUIDE.md`](../../../web/frontend/ENVIRONMENT_SWITCHING_GUIDE.md)
++- [`architecture/STANDARDS.md`](../../architecture/STANDARDS.md)
++- [`openspec/specs/api-integration/spec.md`](../../../openspec/specs/api-integration/spec.md)
+diff --git a/docs/guides/mock-data/MOCK_GOVERNANCE_AUDIT_LEDGER.md b/docs/guides/mock-data/MOCK_GOVERNANCE_AUDIT_LEDGER.md
+new file mode 100644
+index 000000000..5a91ffe14
+--- /dev/null
++++ b/docs/guides/mock-data/MOCK_GOVERNANCE_AUDIT_LEDGER.md
+@@ -0,0 +1,48 @@
++# MOCK 治理审计台账
++
++> **用途说明**:
++> 本文件用于记录当前主线下 MOCK 数据治理与页面状态对齐情况，服务于 `verified/pending` 审计与实现收口。
++> 仓库共享规则仍以 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md) 为准，页面级 API 行为仍以 [`openspec/specs/api-integration/spec.md`](/opt/claude/mystocks_spec/openspec/specs/api-integration/spec.md) 为准。
++
++## 当前审计结论
++
++- 当前前端 mock-routing 必须按三层理解：
++  - `client layer`: `web/frontend/src/api/apiClient.ts`
++  - `service layer`: `web/frontend/src/api/services/strategyService.ts`
++  - `adapter layer`: `web/frontend/src/api/adapters/*`
++- 允许保留的是 `client layer` 的显式 mock 模式。
++- 必须收掉的是：
++  - `service layer` 中以 `VITE_APP_MODE` 为依据的 dual-truth 切换
++  - `adapter layer` 中“请求失败后直接返回 mock payload”的 silent fallback
++- `useBackendReadiness.ts` 属于受控 fallback，不属于 silent fallback。
++
++## 页面与路由层对齐
++
++| 页面/能力 | 当前状态 | 主要消费者/入口 | Client Layer | Service Layer | Adapter Layer | 当前结论 | 退役/收口条件 |
++|----------|----------|----------------|-------------|---------------|---------------|----------|----------------|
++| `Strategy-Repo` / `Strategy-Parameters` | `verified` | `useStrategy.ts` → `ArtDecoStrategyManagement.vue` | `VITE_USE_MOCK_DATA` 显式可控 | 旧 `VITE_APP_MODE` 分支曾存在 | 详情读取曾有 silent fallback | 必须对齐 | 删除 `VITE_APP_MODE`，详情失败进入显式错误态 |
++| `Strategy-Backtest` | `verified` | `useStrategy.backtest.ts` / `backtestAnalysisViewModel.ts` | `VITE_USE_MOCK_DATA` 显式可控 | 旧 `VITE_APP_MODE` 分支曾存在 | 回测适配器本身已返回 `null`，非 silent success | 基本可控 | 保持显式失败分支，不再引入 mock 成功值 |
++| `Market-Technical` / `Data-FundFlow` 等市场页族 | `verified` | 市场适配器消费链 | `VITE_USE_MOCK_DATA` 显式可控 | 无独立 service dual-truth | `MarketAdapter` 曾在失败后返回 mock VM / 数组 | 必须对齐 | 失败只返回 empty-state 输入，不再返回 mock payload |
++| 应用启动 readiness | 显式 mock/自动化受控降级 | `App.vue` + `useBackendReadiness.ts` | 受 `VITE_USE_MOCK_DATA` 控制 | 无 | 无 silent mock payload | 合规保留 | 保持 banner / request id / mode 可见 |
++
++## 历史口径与文档漂移
++
++以下内容必须视为历史口径，不应继续作为当前运行时事实：
++
++- `VITE_APP_MODE` 是当前主切换开关
++- `/api/mock/strategy` 是策略主链默认入口
++- `verified` 页面请求失败后继续返回 mock 数据可视为成功
++
++已知重点漂移文档：
++
++- `web/frontend/ENVIRONMENT_SWITCHING_GUIDE.md`
++- 历史报告中把 `VITE_APP_MODE` 写成当前切换真相的实现报告
++
++## 本轮收口要求
++
++- `verified` 页面：
++  - 真实接口失败时进入显式 `error / empty / request id` 路径
++  - 不再在 adapter 内直接返回 mock payload
++- 显式 mock 模式：
++  - 仅通过 `VITE_USE_MOCK_DATA` 经共享 `apiClient` 生效
++  - 文档和测试都必须表述为“mock 验收”，不是“真实主链通过”
+diff --git a/openspec/changes/align-mock-data-governance-with-verified-pages/CLOSEOUT.md b/openspec/changes/align-mock-data-governance-with-verified-pages/CLOSEOUT.md
+new file mode 100644
+index 000000000..133e78d80
+--- /dev/null
++++ b/openspec/changes/align-mock-data-governance-with-verified-pages/CLOSEOUT.md
+@@ -0,0 +1,69 @@
++# Closeout Evidence
++
++Date: 2026-04-25
++
++## What Landed
++
++- Removed service-level `VITE_APP_MODE` branching from `web/frontend/src/api/services/strategyService.ts`
++- Kept `VITE_USE_MOCK_DATA` + shared `apiClient` as the active frontend mock-mode execution truth
++- Removed adapter-layer silent mock fallback from:
++  - `web/frontend/src/api/adapters/strategyAdapter.ts`
++  - `web/frontend/src/api/adapters/marketAdapter.ts`
++- Updated strategy detail consumer handling in `web/frontend/src/composables/useStrategy.ts`
++- Added explicit mock support for `/v1/strategy/*` routes in `web/frontend/src/api/mockApiClient.ts`
++- Updated environment/mock governance docs and added:
++  - `docs/guides/mock-data/MOCK_GOVERNANCE_AUDIT_LEDGER.md`
++
++## Verified Inventory / Layer Audit
++
++| Surface | Page status | Client layer | Service layer | Adapter layer | Result |
++|--------|-------------|--------------|---------------|---------------|--------|
++| Strategy list/detail paths via `useStrategy.ts` | verified | explicit `VITE_USE_MOCK_DATA` gate | `VITE_APP_MODE` branch removed | silent fallback removed | aligned |
++| Strategy backtest paths via `useStrategy.backtest.ts` / backtest VM | verified | explicit `VITE_USE_MOCK_DATA` gate | `VITE_APP_MODE` branch removed | backtest adapter already returned explicit `null` failure | aligned |
++| Market overview / fund flow / kline adapter paths | verified | explicit `VITE_USE_MOCK_DATA` gate | no dual-truth service branch in this batch | silent fallback removed | aligned |
++| App readiness | controlled fallback only | explicit `VITE_USE_MOCK_DATA` gate | n/a | n/a | confirmed compliant, no behavior change required |
++
++## Validation
++
++### OpenSpec
++
++```bash
++openspec validate align-mock-data-governance-with-verified-pages --strict
++```
++
++Result: passed
++
++### Frontend targeted tests
++
++```bash
++npm run test -- src/api/__tests__/strategy.test.ts src/api/adapters/marketAdapter.spec.ts src/api/services/__tests__/strategyService.msw.spec.ts src/composables/__tests__/useStrategy.spec.ts tests/unit/use-strategy.spec.ts tests/unit/config/console-log-cleanup-batch-21.spec.ts
++```
++
++Result:
++
++- Test files: 6 passed
++- Tests: 38 passed
++
++### Explicit mock strategy-route validation
++
++```bash
++npm run test -- tests/unit/mockApiClient-strategy-routes.spec.ts
++```
++
++Result:
++
++- Test files: 1 passed
++- Tests: 2 passed
++
++## Mock Acceptance vs Real Verification
++
++- `mock acceptance`:
++  - still supported through `VITE_USE_MOCK_DATA=true`
++  - now uses `/v1/strategy/*` through shared `apiClient` + `mockApiClient`
++- `real mainline verified`:
++  - no longer depends on service-level `VITE_APP_MODE`
++  - no longer silently substitutes adapter mock payloads on request failure
++
++## Remaining Follow-up
++
++- Historical reports outside the execution-facing docs still mention `VITE_APP_MODE` or old fallback models; those remain documentation cleanup work, not a blocker for current runtime alignment.
+diff --git a/openspec/changes/align-mock-data-governance-with-verified-pages/design.md b/openspec/changes/align-mock-data-governance-with-verified-pages/design.md
+new file mode 100644
+index 000000000..956bbee82
+--- /dev/null
++++ b/openspec/changes/align-mock-data-governance-with-verified-pages/design.md
+@@ -0,0 +1,70 @@
++## Context
++
++The repository already has a normative rule in `openspec/specs/api-integration/spec.md` that `verified` pages must not silently fall back to mock data. Updated documentation under `docs/guides/mock-data/` reinforces that rule and clarifies that mock data is for development decoupling, testing stability, and explicit mock acceptance, not for masking real-path failure.
++
++The implementation still contains three classes of drift:
++
++1. Frontend adapters that convert failed real responses into mock payloads.
++2. Frontend service/documentation paths that still treat `VITE_APP_MODE` as an active switching truth.
++3. Backend and historical docs that retain hybrid/fallback language without enough classification, increasing the risk that engineers misread approved explicit mock fallback as allowed verified-path behavior.
++
++More concretely, the current frontend stack has three independent mock-routing layers that need to be separated in governance:
++
++| Layer | Current file(s) | Mechanism | Current governance status |
++|------|------|------|------|
++| Client layer | `web/frontend/src/api/apiClient.ts` | Routes requests to `mockApiClient` when `VITE_USE_MOCK_DATA=true` | Compliant explicit mock-mode gate |
++| Service layer | `web/frontend/src/api/services/strategyService.ts` | Chooses `/mock/strategy` vs `/v1/strategy` using `VITE_APP_MODE` | Dual-truth drift that must be removed |
++| Adapter layer | `strategyAdapter.ts`, `marketAdapter.ts` | Returns mock payloads after failed real responses without explicit mode switch | Silent fallback violation that must be removed from verified mainline |
++
++## Goals / Non-Goals
++
++- Goals:
++  - Make verified-page runtime behavior match the current documented governance.
++  - Establish one active frontend mock switch truth: `VITE_USE_MOCK_DATA`.
++  - Preserve approved controlled fallback only where the user path is explicitly mock or automation-isolated.
++  - Create an implementation checklist that can be executed in phases without losing auditability.
++- Non-Goals:
++  - Remove every mock asset from the repository.
++  - Redesign all backend data-source fallback behavior in one batch.
++  - Reclassify every historical document in the repository immediately.
++
++## Decisions
++
++- Decision: Treat this as a cross-cutting governance alignment change under `api-integration`.
++  - Why: The core mismatch is not a new feature; it is a runtime contract mismatch between documented verified-page behavior and current frontend integration behavior.
++
++- Decision: Preserve explicit mock mode, but prohibit silent same-path mock substitution for verified pages.
++  - Why: The project still needs development decoupling and stable automation modes. The issue is hidden substitution, not all mock usage.
++
++- Decision: Use `apiClient` + `VITE_USE_MOCK_DATA` as the frontend switching truth.
++  - Why: The shared client already implements this switch, and leaving service-local `VITE_APP_MODE` branching creates dual truths.
++
++- Decision: Treat `useBackendReadiness.ts` as a compliance-confirmation surface, not a primary remediation surface.
++  - Why: Its fallback is already explicitly labeled by mode and user-visible state, unlike the silent adapter fallback pattern.
++
++- Decision: Keep a page-level audit ledger/checklist as part of rollout.
++  - Why: This prevents future drift where a page is documented as verified while its runtime still behaves like pending/mock-backed.
++
++## Risks / Trade-offs
++
++- Risk: Removing adapter-level mock fallback may surface more visible frontend error states immediately.
++  - Mitigation: Scope rollout to verified paths first and ensure views/stores already expose loading/error/empty states with request identifiers.
++
++- Risk: Some tests or workflows currently depend on implicit mock payloads.
++  - Mitigation: Reclassify those flows as explicit mock-mode tests or update them to assert visible failure states.
++
++- Risk: Backend hybrid/fallback concepts may still confuse future work.
++  - Mitigation: Document classification boundaries during rollout and defer larger backend fallback redesign to a follow-up change if needed.
++
++## Migration Plan
++
++1. Freeze the governance baseline: page status, current mock entrypoints, and current switching truth.
++2. Audit verified pages against the three-layer client/service/adapter model and record where silent fallback still exists.
++3. Remove silent mock fallback from verified-path frontend adapters.
++4. Collapse frontend switching onto `VITE_USE_MOCK_DATA` through shared client usage and retire `VITE_APP_MODE` service-level branching.
++5. Update docs and tests so explicit mock mode is described as explicit mock mode, not real verification.
++6. Record remaining non-mainline fallback patterns as approved exceptions or follow-up debt.
++
++## Open Questions
++
++- Whether any backend hybrid/fallback paths should be reclassified under a separate follow-up OpenSpec change instead of this batch.
+diff --git a/openspec/changes/align-mock-data-governance-with-verified-pages/proposal.md b/openspec/changes/align-mock-data-governance-with-verified-pages/proposal.md
+new file mode 100644
+index 000000000..00c6ba2af
+--- /dev/null
++++ b/openspec/changes/align-mock-data-governance-with-verified-pages/proposal.md
+@@ -0,0 +1,46 @@
++# Change: Align Mock Data Governance With Verified Pages
++
++## Why
++
++The repository's updated mock-data documentation now defines a stricter execution rule: mock data is allowed for explicit mock acceptance, development decoupling, and test isolation, but it must not remain a silent success-path fallback for `verified` pages. Current frontend adapters, environment-switching docs, and some service-layer switching logic still preserve the older "real fails -> use mock" behavior and an outdated `VITE_APP_MODE` switching model.
++
++Without a governed change, the project risks continuing to claim "real path verified" while runtime behavior still hides backend failures behind mock payloads.
++
++The runtime drift is not a single mechanism. It currently exists at three separate layers:
++
++- client layer: `apiClient.ts` explicitly routes through `mockApiClient` when `VITE_USE_MOCK_DATA=true`
++- service layer: `strategyService.ts` independently selects `/mock/strategy` vs `/v1/strategy` through `VITE_APP_MODE`
++- adapter layer: strategy and market adapters return mock payloads on failure without any explicit mode switch
++
++This proposal aligns those three layers so only the explicit client-layer switch remains as the current frontend execution truth for mock mode.
++
++## What Changes
++
++- Enforce that `verified` pages do not silently fall back to mock payloads on the same user path.
++- Remove service-level dual-truth switching in `strategyService.ts` so frontend mock routing is governed only by the shared client layer.
++- Align frontend mock switching on `VITE_USE_MOCK_DATA` as the active execution truth, while downgrading `VITE_APP_MODE` to historical/legacy status.
++- Retain controlled fallback only for explicit mock acceptance mode and approved automation/readiness isolation flows.
++- Update implementation and documentation to distinguish:
++  - client-layer explicit mock mode
++  - service-layer dual-truth drift
++  - adapter-layer silent fallback violation
++  - explicit mock mode
++  - real mainline verification
++  - historical fallback/hybrid behavior that must not remain in verified primary flows
++- Add a governance inventory/checklist so page-level mock usage can be audited against `verified/pending` status and mock-routing layer classification.
++
++## Impact
++
++- Affected specs:
++  - `api-integration`
++- Affected code:
++  - `web/frontend/src/api/adapters/strategyAdapter.ts`
++  - `web/frontend/src/api/adapters/marketAdapter.ts`
++  - `web/frontend/src/api/services/strategyService.ts`
++  - `web/frontend/src/api/apiClient.ts`
++  - `web/frontend/ENVIRONMENT_SWITCHING_GUIDE.md`
++  - `docs/guides/mock-data/*`
++- Affected test/documentation surfaces:
++  - strategy/market frontend adapter tests
++  - E2E or smoke documentation that still describes mock-path success as real verification
++  - verified-page audit output mapping each page to adapter/service/client mock-routing status
+diff --git a/openspec/changes/align-mock-data-governance-with-verified-pages/specs/api-integration/spec.md b/openspec/changes/align-mock-data-governance-with-verified-pages/specs/api-integration/spec.md
+new file mode 100644
+index 000000000..23c1d0912
+--- /dev/null
++++ b/openspec/changes/align-mock-data-governance-with-verified-pages/specs/api-integration/spec.md
+@@ -0,0 +1,33 @@
++## MODIFIED Requirements
++
++### Requirement: Page-Level API Truth Classification
++The system SHALL classify each active ArtDeco page's API dependency as `verified` or `pending` and apply page behavior accordingly.
++
++#### Scenario: Verified API page behavior
++- **WHEN** an ArtDeco page is marked `verified`
++- **THEN** it SHALL use the registered real API endpoint as its primary data source
++- **AND** it SHALL NOT silently fall back to mock data for the same user path
++- **AND** it SHALL surface loading, error, empty, and request identifier states
++- **AND** any explicit mock behavior for that page SHALL require an explicit mock-mode or approved automation-isolation path rather than implicit runtime substitution
++
++#### Scenario: Pending API page behavior
++- **WHEN** an ArtDeco page is marked `pending`
++- **THEN** the route SHALL remain reachable
++- **AND** the page SHALL render shell/loading/error/empty states without fabricating contract fields
++- **AND** the unresolved API blocker SHALL be recorded in the optimization list or task report
++
++## ADDED Requirements
++
++### Requirement: Frontend Mock Mode Execution Truth
++The frontend SHALL use `VITE_USE_MOCK_DATA` through the shared `apiClient` as the single active execution truth for explicit mock-mode switching and SHALL NOT use `VITE_APP_MODE` or any service-level mock/real endpoint switching in current verified-page runtime behavior.
++
++#### Scenario: Explicit mock mode is enabled
++- **WHEN** the frontend is started in explicit mock mode
++- **THEN** the shared frontend execution path SHALL use the approved mock-mode switch as the current truth
++- **AND** mock-backed behavior SHALL be described and tested as explicit mock acceptance rather than real-path verification
++
++#### Scenario: Legacy service-level switching exists in code or docs
++- **WHEN** `VITE_APP_MODE` or service-level endpoint branching remains in code or implementation-facing docs
++- **THEN** it SHALL be removed from active runtime behavior
++- **AND** any remaining documentation reference SHALL be marked as historical or legacy guidance
++- **AND** current implementation and execution-facing docs SHALL identify `VITE_USE_MOCK_DATA` through the shared `apiClient` as the active switching truth unambiguously
+diff --git a/openspec/changes/align-mock-data-governance-with-verified-pages/tasks.md b/openspec/changes/align-mock-data-governance-with-verified-pages/tasks.md
+new file mode 100644
+index 000000000..01b0c514d
+--- /dev/null
++++ b/openspec/changes/align-mock-data-governance-with-verified-pages/tasks.md
+@@ -0,0 +1,25 @@
++## 1. Governance Baseline
++
++- [x] 1.1 Confirm the active `verified/pending` page inventory that will be used as the execution truth for this batch, and produce a table mapping each `verified` page to its adapter/service/client mock-routing status and whether silent mock fallback exists.
++- [x] 1.2 Enumerate current frontend and backend mock/fallback entrypoints, and classify each by layer (`client layer`, `service layer`, `adapter layer`, `backend/runtime layer`) and disposition (`allowed for explicit mock mode`, `allowed for automation isolation`, `must be removed from verified mainline`).
++- [x] 1.3 Record any historical documents or reports that still present `VITE_APP_MODE`, hybrid fallback, or mock-path success as current truth.
++
++## 2. Frontend Mainline Alignment
++
++- [x] 2.1 Remove silent mock fallback from `verified`-path strategy adapters and make failure return explicit error/empty-state inputs instead of mock payloads; consuming views/stores remain responsible for rendering loading/error/empty/request-id states.
++- [x] 2.2 Remove silent mock fallback from `verified`-path market adapters and make failure return explicit error/empty-state inputs instead of mock payloads; consuming views/stores remain responsible for rendering loading/error/empty/request-id states.
++- [x] 2.3 Remove `VITE_APP_MODE`-driven endpoint branching from `strategyService.ts`, keep the real endpoint family as the service truth, and let mock/real routing be handled only by the shared `apiClient` gate controlled by `VITE_USE_MOCK_DATA`.
++- [x] 2.4 Confirm `useBackendReadiness.ts` remains compliant as a controlled explicit-mode / automation-isolation fallback path and does not require behavior changes for this change.
++
++## 3. Documentation And Testing Alignment
++
++- [x] 3.1 Update `web/frontend/ENVIRONMENT_SWITCHING_GUIDE.md` so `VITE_USE_MOCK_DATA` is documented as the active frontend switch and `VITE_APP_MODE` is explicitly marked historical.
++- [x] 3.2 Update mock-data governance docs to point to the final implementation truth and remove any remaining ambiguity around verified-page fallback rules.
++- [x] 3.3 Review adapter/unit/E2E tests that assume silent mock fallback and update them to reflect the new verified-path behavior and explicit mock-mode-only usage.
++- [x] 3.4 Create or update a lightweight audit ledger/checklist for page-level mock usage, including page status, real endpoint, mock source, client/service/adapter layer status, fallback status, and retirement condition.
++
++## 4. Validation
++
++- [x] 4.1 Validate the OpenSpec change with `openspec validate align-mock-data-governance-with-verified-pages --strict`.
++- [x] 4.2 Run targeted frontend tests or checks that cover strategy and market integration paths after the implementation batch lands.
++- [x] 4.3 Capture closeout evidence that distinguishes `mock acceptance`, `real mainline verified`, and any remaining approved pending blockers.
+diff --git a/web/frontend/ENVIRONMENT_SWITCHING_GUIDE.md b/web/frontend/ENVIRONMENT_SWITCHING_GUIDE.md
+index 7f4379e16..1b2e689e1 100644
+--- a/web/frontend/ENVIRONMENT_SWITCHING_GUIDE.md
++++ b/web/frontend/ENVIRONMENT_SWITCHING_GUIDE.md
+@@ -5,13 +5,16 @@
+ > 其中的步骤、示例、端口、目录和操作建议应先与 `architecture/STANDARDS.md`、当前代码实现及最新验证结果核对；若涉及仓库执行流程、命令或协作约束，再补充参考根目录 `AGENTS.md`。本文件不得单独视为仓库共享规则或当前状态的唯一事实来源。
+ 
+ 
+-## 📋 概述
++## 概述
+ 
+-项目支持两种运行模式：
+-- **Mock模式**: 使用Mock数据，无需后端数据库（开发/测试推荐）
+-- **Real模式**: 使用真实后端API，连接实际数据库（生产环境）
++当前前端只有一个生效中的 mock/real 切换真相源：
+ 
+-## 🔄 快速切换
++- `VITE_USE_MOCK_DATA=true`: 显式 mock 模式
++- `VITE_USE_MOCK_DATA=false`: 真实后端模式
++
++`VITE_APP_MODE` 仍可能出现在历史文档或旧报告中，但不应再作为当前运行时切换依据。
++
++## 快速切换
+ 
+ ### 方法1: 通过环境文件（推荐）
+ 
+@@ -27,40 +30,38 @@ cp .env.real .env
+ 
+ ### 方法2: 手动配置
+ 
+-编辑 `.env` 文件，设置 `VITE_APP_MODE`：
++编辑 `.env` 文件，设置 `VITE_USE_MOCK_DATA`：
+ 
+ ```bash
+ # Mock模式
+-VITE_APP_MODE=mock
++VITE_USE_MOCK_DATA=true
+ 
+ # Real模式
+-VITE_APP_MODE=real
++VITE_USE_MOCK_DATA=false
+ ```
+ 
+-## 🔍 验证当前模式
++## 验证当前模式
+ 
+ ### 查看浏览器控制台
+ 
+-前端启动时会输出当前使用的API端点：
++优先检查前端环境变量和实际请求路径：
+ 
+-```
+-[Strategy API] Using Mock endpoint: /api/mock/strategy
+-# 或
+-[Strategy API] Using Real endpoint: /api/v1/strategy
+-```
++- 显式 mock 模式：`VITE_USE_MOCK_DATA=true`
++- 真实联调模式：`VITE_USE_MOCK_DATA=false`
+ 
+ ### 检查网络请求
+ 
+-打开浏览器开发者工具 → Network标签：
+-- Mock模式: 请求 `/api/mock/strategy/strategies`
+-- Real模式: 请求 `/api/v1/strategy/strategies`
++打开浏览器开发者工具 → Network 标签：
++
++- 显式 mock 模式：前端经共享 `apiClient` 短路到 `mockApiClient`
++- 真实联调模式：请求真实 `/api/v1/...`、`/api/v2/...`、`/health/...` 等后端路径
+ 
+ ## ⚙️ 配置对比
+ 
+ | 配置项 | Mock模式 | Real模式 |
+ |--------|----------|----------|
+-| `VITE_APP_MODE` | `mock` | `real` |
+-| API端点 | `/api/mock/strategy` | `/api/v1/strategy` |
++| `VITE_USE_MOCK_DATA` | `true` | `false` |
++| 前端路由方式 | 共享 `apiClient` → `mockApiClient` | 共享 `apiClient` → 真实 `/api` |
+ | 数据来源 | Mock数据（内存） | PostgreSQL/TDengine |
+ | 后端依赖 | 无需后端 | 需要后端服务 |
+ 
+@@ -135,13 +136,13 @@ pm2 restart mystocks-backend
+ **原因**: 前端仍使用Mock配置，或后端USE_MOCK_DATA=true
+ 
+ **解决**:
+-1. 检查前端 `.env` 文件的 `VITE_APP_MODE`
++1. 检查前端 `.env` 文件的 `VITE_USE_MOCK_DATA`
+ 2. 检查后端 `.env` 文件的 `USE_MOCK_DATA`
+ 3. 重启前后端服务
+ 
+ ### 问题2: Real模式下API返回404
+ 
+-**原因**: 后端服务未启动或USE_MOCK_DATA=false导致API未注册
++**原因**: 后端服务未启动、真实接口不可达，或你把 mock 验收误当成真实联调
+ 
+ **解决**:
+ 1. 检查后端服务状态: `pm2 status`
+@@ -165,5 +166,13 @@ pm2 restart mystocks-backend
+ 
+ ---
+ 
+-**最后更新**: 2026-01-02
++## 历史口径说明
++
++以下说法视为历史口径，不再代表当前主线：
++
++- `VITE_APP_MODE=mock|real` 是前端唯一切换方式
++- `/api/mock/strategy` 是当前策略前端的主动主链入口
++- 真实接口失败后静默使用 mock 也可以视为成功
++
++**最后更新**: 2026-04-25
+ **维护者**: Main CLI (Claude Code)
+diff --git a/web/frontend/src/api/__tests__/strategy.test.ts b/web/frontend/src/api/__tests__/strategy.test.ts
+index daa0bd405..40484d320 100644
+--- a/web/frontend/src/api/__tests__/strategy.test.ts
++++ b/web/frontend/src/api/__tests__/strategy.test.ts
+@@ -43,7 +43,7 @@ describe('StrategyAdapter', () => {
+       expect(result[0].performance?.total_return).toBe(0.256);
+     });
+ 
+-    it('should fallback to mock data on API failure', () => {
++    it('should return an empty list on API failure', () => {
+       const apiResponse: UnifiedResponse<any> = {
+         success: false,
+         code: 500,
+@@ -56,10 +56,9 @@ describe('StrategyAdapter', () => {
+ 
+       const result = StrategyAdapter.adaptStrategyList(apiResponse);
+ 
+-      expect(result).toHaveLength(4);
+-      expect(result[0].id).toBe('1');
++      expect(result).toEqual([]);
+       expect(console.warn).toHaveBeenCalledWith(
+-        '[StrategyAdapter] API failed, using mock data:',
++        '[StrategyAdapter] API failed, returning empty strategy list:',
+         'Internal Server Error'
+       );
+     });
+@@ -77,7 +76,7 @@ describe('StrategyAdapter', () => {
+ 
+       const result = StrategyAdapter.adaptStrategyList(apiResponse);
+ 
+-      expect(result).toHaveLength(4); // Falls back to mock
++      expect(result).toEqual([]);
+     });
+   });
+ 
+@@ -101,7 +100,7 @@ describe('StrategyAdapter', () => {
+       expect(result.performance?.total_return).toBe(0.256);
+     });
+ 
+-    it('should fallback to mock on error', () => {
++    it('should return undefined on detail error', () => {
+       const apiResponse: UnifiedResponse<any> = {
+         success: false,
+         code: 404,
+@@ -114,9 +113,9 @@ describe('StrategyAdapter', () => {
+ 
+       const result = StrategyAdapter.adaptStrategyDetail(apiResponse);
+ 
+-      expect(result.id).toBe('1');
++      expect(result).toBeUndefined();
+       expect(console.warn).toHaveBeenCalledWith(
+-        '[StrategyAdapter] Strategy detail API failed, using mock:',
++        '[StrategyAdapter] Strategy detail API failed, returning empty detail:',
+         'Not Found'
+       );
+     });
+diff --git a/web/frontend/src/api/adapters/marketAdapter.spec.ts b/web/frontend/src/api/adapters/marketAdapter.spec.ts
+index 25bd07418..93c79b031 100644
+--- a/web/frontend/src/api/adapters/marketAdapter.spec.ts
++++ b/web/frontend/src/api/adapters/marketAdapter.spec.ts
+@@ -62,6 +62,20 @@ describe('MarketAdapter', () => {
+       expect(result.price_distribution).toBeDefined()
+       expect(result.price_distribution.total_stocks).toBe(0)
+     })
++
++    it('should return an empty market overview on API failure', () => {
++      const mockResponse = {
++        success: false,
++        message: 'service unavailable',
++        timestamp: '2026-04-25T00:00:00Z',
++        data: null
++      }
++
++      const result = MarketAdapter.adaptMarketOverview(mockResponse)
++
++      expect(result.price_distribution.total_stocks).toBe(0)
++      expect(result.timestamp).toBe('2026-04-25T00:00:00Z')
++    })
+   })
+ 
+   describe('adaptFundFlow', () => {
+@@ -126,6 +140,18 @@ describe('MarketAdapter', () => {
+ 
+       expect(result).toHaveLength(0)
+     })
++
++    it('should return empty items on API failure', () => {
++      const mockResponse = {
++        success: false,
++        message: 'service unavailable',
++        data: null
++      }
++
++      const result = MarketAdapter.adaptFundFlow(mockResponse)
++
++      expect(result).toEqual([])
++    })
+   })
+ 
+   describe('adaptKLineData', () => {
+@@ -200,6 +226,20 @@ describe('MarketAdapter', () => {
+       expect(result.values).toEqual([])
+       expect(result.volumes).toEqual([])
+     })
++
++    it('should return empty K-line data on API failure', () => {
++      const mockResponse = {
++        success: false,
++        message: 'service unavailable',
++        data: null
++      }
++
++      const result = MarketAdapter.adaptKLineData(mockResponse)
++
++      expect(result.categoryData).toEqual([])
++      expect(result.values).toEqual([])
++      expect(result.volumes).toEqual([])
++    })
+   })
+ })
+ 
+diff --git a/web/frontend/src/api/adapters/marketAdapter.ts b/web/frontend/src/api/adapters/marketAdapter.ts
+index 9a06ff0a4..6bd360061 100644
+--- a/web/frontend/src/api/adapters/marketAdapter.ts
++++ b/web/frontend/src/api/adapters/marketAdapter.ts
+@@ -2,7 +2,7 @@
+  * Market Data Adapter
+  *
+  * Handles data transformation between API responses and frontend models.
+- * Implements fallback to mock data on API failures.
++ * Returns explicit empty-state inputs instead of silent mock payloads on failures.
+  */
+ 
+ import type { UnifiedResponse } from '../types/common.ts';
+@@ -24,11 +24,6 @@ import type {
+   LongHuBangResponse,
+ } from '../types/common.ts';
+ 
+-// Import Mock data as fallback
+-// import mockMarketOverview from '@/mock/marketOverview.ts';  // Unused - using inline mock
+-import mockFundFlow from '@/mock/fundFlow.ts';
+-import mockKLineData from '@/mock/klineData.ts';
+-
+ interface AdaptedKLineData {
+   categoryData: string[];
+   values: {
+@@ -46,14 +41,14 @@ export class MarketAdapter {
+    * Adapt market overview from API response
+    *
+    * @param apiResponse - Raw API response
+-   * @returns Adapted MarketOverviewVM object (falls back to mock on error)
++   * @returns Adapted MarketOverviewVM object
+    */
+   static adaptMarketOverview(
+     apiResponse: UnifiedResponse<MarketOverviewResponse>
+   ): MarketOverviewVM {
+     if (!apiResponse.success || !apiResponse.data) {
+-      console.warn('[MarketAdapter] API failed, using mock data:', apiResponse.message);
+-      return this.getMockMarketOverview();
++      console.warn('[MarketAdapter] API failed, returning empty market overview:', apiResponse.message);
++      return this.createEmptyMarketOverview(apiResponse.timestamp);
+     }
+ 
+     try {
+@@ -76,7 +71,7 @@ export class MarketAdapter {
+       // Return a minimal valid MarketOverviewVM object
+       // Note: This is a simplified version - the full object would require all fields
+       return {
+-        ...this.getMockMarketOverview(), // Start with mock data to ensure all required fields
++        ...this.createEmptyMarketOverview(apiData.timestamp), // Start with empty state to ensure all required fields
+         price_distribution: {
+           up_stocks: rise,
+           down_stocks: fall,
+@@ -91,7 +86,7 @@ export class MarketAdapter {
+       } as MarketOverviewVM;
+     } catch (error) {
+       console.error('[MarketAdapter] Failed to adapt market overview:', error);
+-      return this.getMockMarketOverview();
++      return this.createEmptyMarketOverview(apiResponse.timestamp);
+     }
+   }
+ 
+@@ -99,14 +94,14 @@ export class MarketAdapter {
+    * Adapt fund flow data from API response
+    *
+    * @param apiResponse - Raw API response
+-   * @returns Array of adapted FundFlowChartPoint objects (falls back to mock on error)
++   * @returns Array of adapted FundFlowChartPoint objects
+    */
+   static adaptFundFlow(
+     apiResponse: UnifiedResponse<FundFlowAPIResponse>
+   ): FundFlowChartPoint[] {
+     if (!apiResponse.success || !apiResponse.data) {
+-      console.warn('[MarketAdapter] Fund flow API failed, using mock data:', apiResponse.message);
+-      return this.getMockFundFlow();
++      console.warn('[MarketAdapter] Fund flow API failed, returning empty fund flow:', apiResponse.message);
++      return [];
+     }
+ 
+     try {
+@@ -165,7 +160,7 @@ export class MarketAdapter {
+       }));
+     } catch (error) {
+       console.error('[MarketAdapter] Failed to adapt fund flow:', error);
+-      return this.getMockFundFlow();
++      return [];
+     }
+   }
+ 
+@@ -173,14 +168,14 @@ export class MarketAdapter {
+    * Adapt K-line data from API response
+    *
+    * @param apiResponse - Raw API response
+-   * @returns Adapted KLineChartData object (falls back to mock on error)
++   * @returns Adapted KLineChartData object
+    */
+   static adaptKLineData(
+     apiResponse: UnifiedResponse<KLineDataResponse>
+   ): AdaptedKLineData {
+     if (!apiResponse.success || !apiResponse.data) {
+-      console.warn('[MarketAdapter] K-line API failed, using mock data:', apiResponse.message);
+-      return this.getMockKLineData();
++      console.warn('[MarketAdapter] K-line API failed, returning empty K-line dataset:', apiResponse.message);
++      return this.createEmptyKLineData();
+     }
+ 
+     try {
+@@ -212,7 +207,7 @@ export class MarketAdapter {
+       };
+     } catch (error) {
+       console.error('[MarketAdapter] Failed to adapt K-line data:', error);
+-      return this.getMockKLineData();
++      return this.createEmptyKLineData();
+     }
+   }
+ 
+@@ -254,14 +249,11 @@ export class MarketAdapter {
+       }));
+   }
+ 
+-  // ==================== Mock Data Fallback Methods ====================
++  // ==================== Empty State Helpers ====================
++
++  private static createEmptyMarketOverview(timestamp?: string): MarketOverviewVM {
++    const resolvedTimestamp = timestamp || new Date().toISOString();
+ 
+-  /**
+-   * Get mock market overview data
+-   */
+-  private static getMockMarketOverview(): MarketOverviewVM {
+-    console.log('[MarketAdapter] 📦 Using Mock Market Overview data');
+-    // Basic fallback that matches VM structure
+     return {
+         market_status: 'sideways',
+         market_phase: 'accumulation',
+@@ -344,55 +336,18 @@ export class MarketAdapter {
+           retail: { inflow: 0, outflow: 0, net_flow: 0, net_flow_ratio: 0, large_order_ratio: 0, large_orders: { buy: 0, sell: 0, net: 0 }, big_orders: { buy: 0, sell: 0, net: 0 }, medium_orders: { buy: 0, sell: 0, net: 0 }, small_orders: { buy: 0, sell: 0, net: 0 } },
+           foreign: { inflow: 0, outflow: 0, net_flow: 0, net_flow_ratio: 0, large_order_ratio: 0, large_orders: { buy: 0, sell: 0, net: 0 }, big_orders: { buy: 0, sell: 0, net: 0 }, medium_orders: { buy: 0, sell: 0, net: 0 }, small_orders: { buy: 0, sell: 0, net: 0 } }
+         },
+-        timestamp: new Date().toISOString(),
+-        last_update: new Date().toISOString(),
++        timestamp: resolvedTimestamp,
++        last_update: resolvedTimestamp,
+         market_session: 'open' as const
+     };
+   }
+ 
+-  /**
+-   * Get mock fund flow data
+-   */
+-  private static getMockFundFlow(): FundFlowChartPoint[] {
+-    console.log('[MarketAdapter] 📦 Using Mock Fund Flow data');
+-
+-    // mockFundFlow is in UnifiedResponse format - extract the data part and wrap properly
+-    const mockResponse: UnifiedResponse<FundFlowAPIResponse> = {
+-      success: mockFundFlow.success,
+-      code: mockFundFlow.code,
+-      message: mockFundFlow.message,
+-      data: mockFundFlow.data,
+-      timestamp: mockFundFlow.timestamp,
+-      request_id: mockFundFlow.request_id,
+-      errors: mockFundFlow.errors,
+-    };
+-
+-    return this.adaptFundFlow(mockResponse);
+-  }
+-
+-  /**
+-   * Get mock K-line data
+-   */
+-  private static getMockKLineData(): AdaptedKLineData {
+-    console.log('[MarketAdapter] 📦 Using Mock K-Line data');
+-
+-    // Wrap mock data in KlineResponse structure
+-    const mockWrappedResponse: UnifiedResponse<KLineDataResponse> = {
+-      success: true,
+-      code: 200,
+-      message: 'Mock data',
+-      data: {
+-        symbol: '000001',
+-        period: '1d',
+-        data: mockKLineData,
+-        count: mockKLineData.length,
+-      },
+-      timestamp: new Date().toISOString(),
+-      request_id: 'mock',
+-      errors: null,
++  private static createEmptyKLineData(): AdaptedKLineData {
++    return {
++      categoryData: [],
++      values: [],
++      volumes: [],
+     };
+-
+-    return this.adaptKLineData(mockWrappedResponse);
+   }
+ 
+   // ==================== Validation Methods ====================
+diff --git a/web/frontend/src/api/adapters/strategyAdapter.ts b/web/frontend/src/api/adapters/strategyAdapter.ts
+index 226cbda71..fe1d80c68 100644
+--- a/web/frontend/src/api/adapters/strategyAdapter.ts
++++ b/web/frontend/src/api/adapters/strategyAdapter.ts
+@@ -2,7 +2,7 @@
+  * Strategy Adapter
+  *
+  * Handles data transformation between API responses and frontend models.
+- * Implements fallback to mock data on API failures.
++ * Surfaces explicit empty/error-state inputs instead of silent mock fallback.
+  */
+ 
+ import type { UnifiedResponse } from '../types/common.ts';
+@@ -14,21 +14,20 @@ import type {
+   StrategyListResponseVM as StrategyListResponse,
+ } from '../types/extensions/index.ts';
+ import type { BacktestRequest } from '../types/strategy.ts';
+-import { mockStrategyList, mockStrategyDetail } from '@/mock/strategyMock.ts';
+ 
+ export class StrategyAdapter {
+   /**
+    * Adapt strategy list from API response
+    *
+    * @param apiResponse - Raw API response
+-   * @returns Array of adapted Strategy objects (falls back to mock on error)
++   * @returns Array of adapted Strategy objects
+    */
+   static adaptStrategyList(
+     apiResponse: UnifiedResponse<StrategyListResponse>
+   ): Strategy[] {
+     if (!apiResponse.success || !apiResponse.data) {
+-      console.warn('[StrategyAdapter] API failed, using mock data:', apiResponse.message);
+-      return mockStrategyList.strategies as unknown as Strategy[];
++      console.warn('[StrategyAdapter] API failed, returning empty strategy list:', apiResponse.message);
++      return [];
+     }
+ 
+     try {
+@@ -38,7 +37,7 @@ export class StrategyAdapter {
+       return strategies.map((s: unknown) => this.adaptStrategy(s));
+     } catch (error) {
+       console.error('[StrategyAdapter] Failed to adapt strategy list:', error);
+-      return mockStrategyList.strategies as unknown as Strategy[];
++      return [];
+     }
+   }
+ 
+@@ -246,25 +245,24 @@ export class StrategyAdapter {
+   }
+ 
+   /**
+-   * Adapt strategy detail from API response
+-   * Falls back to mock detail on error
++   * Adapt strategy detail from API response.
+    *
+    * @param apiResponse - Raw API response
+-   * @returns Adapted Strategy object
++   * @returns Adapted Strategy object or undefined when unavailable
+    */
+   static adaptStrategyDetail(
+     apiResponse: UnifiedResponse<Strategy>
+-  ): Strategy {
++  ): Strategy | undefined {
+     if (!apiResponse.success || !apiResponse.data) {
+-      console.warn('[StrategyAdapter] Strategy detail API failed, using mock:', apiResponse.message);
+-      return mockStrategyDetail;
++      console.warn('[StrategyAdapter] Strategy detail API failed, returning empty detail:', apiResponse.message);
++      return undefined;
+     }
+ 
+     try {
+       return this.adaptStrategy(apiResponse.data);
+     } catch (error) {
+       console.error('[StrategyAdapter] Failed to adapt strategy detail:', error);
+-      return mockStrategyDetail;
++      return undefined;
+     }
+   }
+ 
+diff --git a/web/frontend/src/api/mockApiClient.ts b/web/frontend/src/api/mockApiClient.ts
+index 0ffc50df9..9da7afa8e 100644
+--- a/web/frontend/src/api/mockApiClient.ts
++++ b/web/frontend/src/api/mockApiClient.ts
+@@ -4,6 +4,7 @@ import type { UnifiedResponse } from './types/common.ts';
+ import mockDashboard from '../mock/mockDashboard.js';
+ import { loadMockKlineData } from './mockKlineData.ts';
+ import type { IntervalType } from '../types/kline.ts';
++import { mockBacktestResult, mockBacktestTask, mockStrategyDetail, mockStrategyList } from '@/mock/strategyMock.ts';
+ 
+ type RequestParams = Record<string, unknown>;
+ 
+@@ -282,6 +283,43 @@ export const mockApiClient = {
+       }));
+     }
+ 
++    // 15. Strategy management endpoints on the real endpoint family
++    if (matchesMockRoute(url, '/v1/strategy/strategies')) {
++      const status = typeof params.status === 'string' ? params.status : '';
++      const items = status
++        ? mockStrategyList.strategies.filter((item) => item.status === status)
++        : mockStrategyList.strategies;
++
++      return toMockResult<T>(createMockResponse({
++        items,
++        total: items.length,
++        page: Number(params.page || 1),
++        page_size: Number(params.page_size || items.length || 10),
++      }));
++    }
++
++    if (matchesMockRoute(url, '/v1/strategy/templates')) {
++      return toMockResult<T>(createMockResponse([]));
++    }
++
++    if (matchesMockRoute(url, '/v1/strategy/backtest/results')) {
++      return toMockResult<T>(createMockResponse([mockBacktestResult]));
++    }
++
++    if (matchesMockRoute(url, '/v1/strategy/backtest/results/')) {
++      return toMockResult<T>(createMockResponse(mockBacktestResult));
++    }
++
++    if (matchesMockRoute(url, '/v1/strategy/backtest/status/')) {
++      return toMockResult<T>(createMockResponse(mockBacktestTask));
++    }
++
++    if (matchesMockRoute(url, '/v1/strategy/strategies/')) {
++      const id = normalizeMockPath(url).split('/').pop() || mockStrategyDetail.id;
++      const strategy = mockStrategyList.strategies.find((item) => item.id === id) || mockStrategyDetail;
++      return toMockResult<T>(createMockResponse(strategy));
++    }
++
+     // Default fallback
+     console.warn(`[Mock API] No handler for GET ${url}, returning generic mock.`);
+       return { ...createMockResponse({}), data: { url, method: 'GET', ...params } } as T;
+@@ -290,12 +328,46 @@ export const mockApiClient = {
+   async post<T = UnifiedResponse<unknown>>(url: string, data?: unknown, config?: MockRequestConfig): Promise<T> {
+     await simulateNetworkDelay();
+     console.warn(`[Mock API] POST request to ${url} with data:`, data, 'and config:', config);
++
++    if (matchesMockRoute(url, '/v1/strategy/strategies')) {
++      return toMockResult<T>(createMockResponse({
++        ...mockStrategyDetail,
++        ...(typeof data === 'object' && data ? data : {}),
++      }));
++    }
++
++    if (
++      matchesMockRoute(url, '/v1/strategy/backtest/run')
++      || matchesMockRoute(url, '/v1/strategy/validate')
++      || matchesMockRoute(url, '/v1/strategy/import')
++      || matchesMockRoute(url, '/v1/strategy/clone/')
++      || matchesMockRoute(url, '/v1/strategy/') && (
++        normalizeMockPath(url).endsWith('/start')
++        || normalizeMockPath(url).endsWith('/stop')
++        || normalizeMockPath(url).endsWith('/pause')
++        || normalizeMockPath(url).endsWith('/resume')
++      )
++    ) {
++      const payload = matchesMockRoute(url, '/v1/strategy/backtest/run')
++        ? mockBacktestTask
++        : { ok: true };
++      return toMockResult<T>(createMockResponse(payload));
++    }
++
+     return { ...createMockResponse({}), data: { url, method: 'POST', requestData: data, ...getRequestParams(config) } } as T;
+   },
+ 
+   async put<T = UnifiedResponse<unknown>>(url: string, data?: unknown, config?: MockRequestConfig): Promise<T> {
+     await simulateNetworkDelay();
+     console.warn(`[Mock API] PUT request to ${url} with data:`, data, 'and config:', config);
++
++    if (matchesMockRoute(url, '/v1/strategy/strategies/')) {
++      return toMockResult<T>(createMockResponse({
++        ...mockStrategyDetail,
++        ...(typeof data === 'object' && data ? data : {}),
++      }));
++    }
++
+     return { ...createMockResponse({}), data: { url, method: 'PUT', requestData: data, ...getRequestParams(config) } } as T;
+   },
+ 
+@@ -308,6 +380,11 @@ export const mockApiClient = {
+   async delete<T = UnifiedResponse<unknown>>(url: string, config?: MockRequestConfig): Promise<T> {
+     await simulateNetworkDelay();
+     console.warn(`[Mock API] DELETE request to ${url} with config:`, config);
++
++    if (matchesMockRoute(url, '/v1/strategy/strategies/')) {
++      return toMockResult<T>(createMockResponse(null));
++    }
++
+     return { ...createMockResponse({}), data: { url, method: 'DELETE', ...getRequestParams(config) } } as T;
+   },
+ };
+diff --git a/web/frontend/src/api/services/strategyService.ts b/web/frontend/src/api/services/strategyService.ts
+index e79f91688..13ed96158 100644
+--- a/web/frontend/src/api/services/strategyService.ts
++++ b/web/frontend/src/api/services/strategyService.ts
+@@ -2,7 +2,7 @@
+  * Strategy API Service
+  *
+  * Service layer for strategy management with full UnifiedResponse support.
+- * All methods return complete UnifiedResponse objects for fallback handling.
++ * All methods return complete UnifiedResponse objects for explicit state handling.
+  */
+ 
+ import { apiGet, apiPost, apiPut, apiDelete } from '../apiClient.ts';
+@@ -24,25 +24,15 @@ function isRecord(value: unknown): value is Record<string, unknown> {
+ 
+ export class StrategyApiService {
+   /**
+-   * 根据 APP_MODE 环境变量决定使用哪个API端点
+-   * - mock: 使用 /mock/strategy (最终请求: /api/mock/strategy)
+-   * - real/production: 使用 /v1/strategy (最终请求: /api/v1/strategy)
++   * Use the real endpoint family as the service truth.
++   * Mock-vs-real routing is handled only by the shared apiClient via VITE_USE_MOCK_DATA.
+    */
+   private readonly baseUrl: string;
+   private readonly dataSource: StrategyApiDataSource;
+ 
+   constructor() {
+-    // 从环境变量读取模式，默认为real
+-    const appMode = import.meta.env.VITE_APP_MODE || 'real';
+-
+-    // 根据模式选择API端点
+-    if (appMode === 'mock') {
+-      this.baseUrl = '/mock/strategy';
+-      this.dataSource = 'mock';
+-    } else {
+-      this.baseUrl = '/v1/strategy';
+-      this.dataSource = 'real';
+-    }
++    this.baseUrl = '/v1/strategy';
++    this.dataSource = import.meta.env.VITE_USE_MOCK_DATA ? 'mock' : 'real';
+   }
+ 
+   getDataSource(): StrategyApiDataSource {
+diff --git a/web/frontend/src/composables/useStrategy.ts b/web/frontend/src/composables/useStrategy.ts
+index ccaa63e0d..8958a3cce 100644
+--- a/web/frontend/src/composables/useStrategy.ts
++++ b/web/frontend/src/composables/useStrategy.ts
+@@ -100,7 +100,18 @@ export function useStrategy(autoFetch = true) {
+ 
+     try {
+       const response = await strategyService.getStrategy(id);
+-      return StrategyAdapter.adaptStrategyDetail(response) as unknown as Strategy | undefined;
++
++      if (!response.success) {
++        error.value = response.message || '获取策略详情失败';
++        return undefined;
++      }
++
++      const strategy = StrategyAdapter.adaptStrategyDetail(response);
++      if (!strategy) {
++        error.value = '策略详情不可用';
++      }
++
++      return strategy as unknown as Strategy | undefined;
+     } catch (err) {
+       const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+       error.value = `获取策略详情失败: ${errorMsg}`;
+diff --git a/web/frontend/tests/unit/mockApiClient-strategy-routes.spec.ts b/web/frontend/tests/unit/mockApiClient-strategy-routes.spec.ts
+new file mode 100644
+index 000000000..3deb14ee8
+--- /dev/null
++++ b/web/frontend/tests/unit/mockApiClient-strategy-routes.spec.ts
+@@ -0,0 +1,22 @@
++import { describe, expect, it } from 'vitest'
++import { mockApiClient } from '@/api/mockApiClient'
++
++describe('mockApiClient strategy routes', () => {
++  it('serves strategy list from the real endpoint family in explicit mock mode', async () => {
++    const response = await mockApiClient.get('/v1/strategy/strategies', {
++      params: { status: 'active' }
++    })
++
++    expect(response.success).toBe(true)
++    expect(response.data.items.length).toBeGreaterThan(0)
++    expect(response.data.items.every((item: { status: string }) => item.status === 'active')).toBe(true)
++  })
++
++  it('serves strategy detail from the real endpoint family in explicit mock mode', async () => {
++    const response = await mockApiClient.get('/v1/strategy/strategies/1')
++
++    expect(response.success).toBe(true)
++    expect(response.data.id).toBe('1')
++    expect(response.data.name).toBeTruthy()
++  })
++})

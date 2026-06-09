@@ -1,0 +1,38 @@
+- consolidated_issue_id: strategy-parameters-issue-02
+  severity: High
+  title: Strategy parameters manual refresh now keeps verified parameter cards and request provenance out of latest transport failure truth
+  pages:
+    - /strategy/parameters
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The hero `REQ_ID / PROCESS`, visible parameter cards, and stale-state copy all leaked the same verified-snapshot provenance defect, so they represent one canonical route-truth issue on `/strategy/parameters`."
+  primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/StrategyParametersTab.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/parameters
+  dedupe_keys:
+    - /strategy/parameters:data-state:refreshSnapshotRequestProvenanceTruth
+  verification_scope:
+    routes:
+      - /strategy/parameters
+    states:
+      - error
+      - default
+      - empty
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/StrategyParametersTab.vue
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/StrategyParametersTab.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    notes:
+      - "the canonical strategy-parameters route now keeps page-local verified request metadata instead of binding hero `REQ_ID / PROCESS` directly to the latest `useArtDecoApi` transport attempt"
+      - "the repaired route now preserves the visible `Momentum Alpha` parameter card and shows stale-refresh messaging when a later manual refresh fails"
+      - "the strengthened regressions now guard both failed first-load provenance fallback and `success -> refresh fail` request-provenance retention in component tests and the Phase 3 routed matrix"
+      - "the natural PM2 route still loads with a real request id and honest live empty-state `0 / 0 / 0 / 101` after the page-local provenance repair lands"
+      - "this batch reuses existing `myweb-audit v1.43` rather than introducing a new skill version, because the defect directly matches the current verified-snapshot request-provenance rule"
+  verification_surface: code-review-plus-targeted-live-verification

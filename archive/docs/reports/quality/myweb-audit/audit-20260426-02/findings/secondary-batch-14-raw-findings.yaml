@@ -1,0 +1,38 @@
+- finding_id: secondary-shell-014
+  batch_id: secondary-batch-14
+  page:
+    route: /secondary/legacy-indicator-library-canonical-wrapper
+    page_key: secondary-legacy-indicator-library-canonical-wrapper
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/IndicatorLibrary.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy top-level indicator library page still exposed a forked pseudo-live indicator registry shell even though a semantically matching canonical data-indicator owner already exists
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/IndicatorLibrary.vue`"
+      - "Inspect the local total-indicator stats, filter shell, and indicator-library cards"
+      - "Confirm the page is not the current router-backed `/data/indicator` owner and does not delegate to `web/frontend/src/views/data/Advanced.vue`"
+  expected: "An unrouted legacy page that already has a semantically matching canonical data-indicator owner should collapse to a thin orchestration wrapper instead of preserving a forked pseudo-live indicator-library shell."
+  actual: "Before repair, `IndicatorLibrary.vue` rendered its own pseudo-live indicator registry, totals, filter controls, and detail cards instead of delegating to the canonical `/data/indicator` owner."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green regression confirmed the legacy top-level indicator-library page still rendered its own fake indicator workbench shell before the wrapper repair."
+  repair_target:
+    files:
+      - web/frontend/src/views/IndicatorLibrary.vue
+      - web/frontend/src/views/__tests__/IndicatorLibrary.spec.ts
+    primary_owner: web/frontend/src/views/IndicatorLibrary.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-indicator-library-canonical-wrapper
+  status: open
+  dependency: null
+  dedupe_key: /secondary/legacy-indicator-library-canonical-wrapper:route-truth:legacyIndicatorLibraryCanonicalWrapper
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner wrapper regression, canonical data-indicator regression, and secondary inventory tooling to confirm the legacy indicator library page now delegates entirely to the canonical `/data/indicator` owner."

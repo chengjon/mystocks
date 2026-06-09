@@ -1,0 +1,39 @@
+- finding_id: risk-management-data-state-014
+  batch_id: risk-batch-14
+  page:
+    route: /risk/management
+    page_key: risk-management
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/risk/Center.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Risk management footer claimed a fixed five-minute auto-refresh cadence without any owned scheduler
+  trigger:
+    steps:
+      - "Open `/risk/management`."
+      - "Inspect the visible footer copy after first paint or under a natural successful route load."
+      - "Check whether the route owns a scheduler, push subscription, or equivalent refresh mechanism for that cadence claim."
+  expected: "The canonical route should only claim a fixed refresh cadence when it actually owns a verified scheduler or push mechanism. Otherwise the footer must degrade to honest page-sync wording such as `按当前页同步结果更新`."
+  actual: "Before repair, `web/frontend/src/views/risk/Center.vue` hardcoded footer copy `风险数据每5分钟自动更新 · 最后一次更新：...` even though the route did not own a polling scheduler, push subscription, or equivalent cadence mechanism. The visible claim therefore overstated how the canonical page actually refreshes."
+  evidence:
+    kind: live-observation
+    note: "A new owner-level RED test, a Phase 4 routed assertion, static grep over the canonical route plus page-template path, and targeted system-Chrome verification all confirmed the same mismatch before repair. After repair, `/risk/management` now renders `风险数据按当前页同步结果更新 · 最后一次更新：...` and no longer claims `每5分钟自动更新`."
+  repair_target:
+    files:
+      - web/frontend/src/views/risk/Center.vue
+      - web/frontend/src/views/risk/__tests__/Center.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/risk/Center.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /risk/management
+  status: open
+  dependency: null
+  dedupe_key: /risk/management:data-state:refreshCadenceClaimWithoutOwnedScheduler
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/risk/management` after repair and confirm the footer no longer claims `每5分钟自动更新`, while natural PM2 success still advances `最后一次更新` through real page-sync completion."

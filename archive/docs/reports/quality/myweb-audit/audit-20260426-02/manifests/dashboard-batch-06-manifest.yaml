@@ -1,0 +1,91 @@
+audit_run_id: audit-20260426-02
+batch_id: dashboard-batch-06
+module: dashboard
+scope:
+  requested_by: user
+  pages:
+    - route: /dashboard
+      page_key: dashboard-home
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+  compatibility_redirects: []
+batch_rationale: "Close the canonical `/dashboard` capital-flow slice later-refresh truth gap so resolved `success:false` `big-deal` envelopes cannot be normalized into fake empty-success ranking payloads before route-local stale-slice retention runs, and codify that service-normalizer envelope rule as `myweb-audit v1.63`."
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/dashboard` remains `web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue`"
+    - "the visible capital-flow ranking and heatmap slice are still route-owned by `useArtDecoDashboard.ts`, but the later-failure defect can also originate one layer earlier inside `web/frontend/src/api/services/dashboardService.ts`"
+    - "a later `big-deal` refresh failure can affect both the fund-flow summary family and the capital-flow ranking family, so the repaired route may legitimately show aggregate `DATA: MIXED / SYNC: DEGRADED` and `资金流向数据暂不可用` while still retaining the last verified capital-flow ranking slice"
+    - "auth-seeded browser contexts plus browser-context interception with `serviceWorkers: block` are acceptable verification harnesses for controlled later `big-deal` refresh failure truth on `/dashboard`"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, error]
+  notes:
+    - "verify `/dashboard` first renders a verified capital-flow ranking slice with `贵州茅台 / 宁德时代` and a populated capital-flow heatmap"
+    - "verify a later `big-deal` refresh failure preserves that same ranking slice and surfaces explicit stale ranking copy instead of collapsing to empty-success truth"
+    - "verify the same controlled failure still allows the aggregate shell to degrade honestly when the shared fund-flow family also loses its refresh path"
+repair_approval:
+  status: approved
+  approved_findings:
+    - dashboard-home-issue-06
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - dashboard-home
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/api/services/dashboardService.ts
+    - web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+    - web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+    - web/frontend/src/api/services/__tests__/dashboardService.spec.ts
+    - web/frontend/tests/unit/components/ArtDecoDashboardLogic.spec.ts
+    - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+  shared_impact:
+    candidates:
+      - web/frontend/src/api/services/dashboardService.ts
+      - web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-dashboard-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-dashboard-capital-flow-slice-system-chrome-live-proof
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `dashboard-batch-06` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/dashboard-capital-flow-service-envelope-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-06-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-06-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/dashboard-batch-06-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/dashboard-batch-06-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: live-verification
+  next_action: finalize-dashboard-batch-06-closeout
+  notes:
+    - "the canonical dashboard route now keeps the last verified capital-flow ranking slice visible after a later `big-deal` refresh failure"
+    - "the same batch fixes the upstream service-normalizer path so resolved `success:false` envelopes cannot quietly arrive as fake empty-success ranking payloads"
+status: complete

@@ -1,0 +1,33 @@
+- consolidated_issue_id: secondary-shell-issue-29
+  severity: Medium
+  title: Legacy system database monitor page now degrades to an honest static shell
+  pages:
+    - /secondary/system-database-monitor-static-shell
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The hardcoded database-health counters, classification totals, routing-distribution counts, and migration-history summaries in `DatabaseMonitor.vue` were all faces of the same defect family: a legacy system dashboard preserved pseudo-live truth even though no verified canonical database-monitor owner existed."
+  primary_owner: web/frontend/src/views/system/DatabaseMonitor.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/system-database-monitor-static-shell
+  dedupe_keys:
+    - /secondary/system-database-monitor-static-shell:route-truth:systemDatabaseMonitorStaticShell
+  verification_scope:
+    routes:
+      - /secondary/system-database-monitor-static-shell
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/system/DatabaseMonitor.vue
+      - web/frontend/src/views/system/__tests__/DatabaseMonitor.spec.ts
+    notes:
+      - "the legacy database-monitor page now renders an honest static shell"
+      - "the repair removes local health counters, routing-distribution counts, and migration-history summaries instead of preserving pseudo-live system truth"
+      - "users are handed back to verified `/system/health`, `/system/resources`, and `/system/data` routes"
+  verification_surface: code-review-only

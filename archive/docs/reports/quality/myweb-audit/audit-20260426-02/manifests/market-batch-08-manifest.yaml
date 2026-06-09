@@ -1,0 +1,83 @@
+audit_run_id: audit-20260426-02
+batch_id: market-batch-08
+module: market
+scope:
+  requested_by: user
+  pages:
+    - route: /market/realtime
+      page_key: market-realtime
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/market/Realtime.vue
+  compatibility_redirects: []
+batch_rationale: Close the canonical `/market/realtime` quote request-provenance defect so first-load failures and stale-refresh failures cannot leak failed `TRACE_ID` values into visible hero metadata or falsely imply a verified quote snapshot exists before the route has actually completed one, while reusing existing `myweb-audit v1.41`, `v1.39`, and `v1.38` rules.
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/market/realtime` remains `web/frontend/src/views/market/Realtime.vue`"
+    - "the approved repair should stay page-local inside `Realtime.vue` and the Phase 1 routed regression matrix rather than altering shared ArtDeco defaults or the shared request wrapper"
+    - "before any verified quote snapshot exists, routed hero request metadata and top summary surfaces must degrade to explicit placeholders such as `TRACE_ID: N/A / SAMPLE: --` instead of leaking failed request ids or faux zero-count truth"
+    - "if a refresh fails after a successful sync, the route should continue to expose the request id that produced the currently visible verified quote snapshot rather than the failed retry request id"
+    - "the routed request-provenance and first-load placeholder truth rules already exist in `myweb-audit v1.41`, `v1.39`, and `v1.38`, so this batch should not create a new skill version"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [error, default, loading]
+  notes:
+    - "verify failed first-load `/market/realtime` now renders `TRACE_ID: N/A`, `SAMPLE: --`, stats `-- / -- / 核心蓝筹样本 / --`, and the no-verified-snapshot error copy"
+    - "verify the failed first-load route does not leak the failed request id anywhere in the visible route shell"
+    - "verify a success-then-fail refresh path keeps the last verified request id visible, preserves the previous quote rows, and still shows the stale-refresh error banner"
+repair_approval:
+  status: approved
+  approved_findings:
+    - market-realtime-issue-02
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - market-realtime
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/market/Realtime.vue
+    - web/frontend/src/views/market/__tests__/Realtime.spec.ts
+    - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-market-realtime-request-provenance-3-state
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `market-batch-08` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/market-realtime-request-provenance-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-08-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-08-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/market-batch-08-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/market-batch-08-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-market-batch-08-closeout
+  notes:
+    - "the canonical realtime route now renders failed first-load request metadata honestly as `TRACE_ID: N/A / SAMPLE: --` instead of leaking a failed quote request id into the visible route shell"
+    - "the same route now preserves the last verified request id when a refresh fails after a successful quote sync"
+status: complete

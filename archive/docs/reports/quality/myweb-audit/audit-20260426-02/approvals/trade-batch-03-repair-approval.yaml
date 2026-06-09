@@ -1,0 +1,23 @@
+- consolidated_issue_id: trade-history-issue-01
+  severity: High
+  affected_routes:
+    - /trade/history
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/trade/History.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: true
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: The canonical trade history route should preserve the last successful ledger and show a stale-refresh warning when a manual refresh fails.
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The routed defect is page-local to `/trade/history`, even though the batch also updates myweb-audit's verification method guidance."
+    related_routes: []
+  approval_status: approved

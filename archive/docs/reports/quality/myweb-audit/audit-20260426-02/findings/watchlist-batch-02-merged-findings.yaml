@@ -1,0 +1,44 @@
+- consolidated_issue_id: watchlist-signals-issue-02
+  severity: High
+  title: Watchlist signals route now uses route-local radar semantics and honest pending-integration copy instead of leaking strategy workbench wording
+  pages:
+    - /watchlist/signals
+  source_roles:
+    - data-state-audit
+  why_consolidated: The routed title, hero copy, focus label, and timeline description all leaked from the same shared `StrategySignalsTab.vue` owner and represented one donor-route semantic truth defect.
+  primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/signals
+  dedupe_keys:
+    - /watchlist/signals:route:StrategySignalsTab
+  verification_scope:
+    routes:
+      - /watchlist/signals
+      - /strategy/signals
+    states:
+      - default
+      - empty
+    breakpoints:
+      - 1920
+      - 1440
+      - 1280
+  repair_summary:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue
+      - web/frontend/src/views/watchlist/Signals.vue
+      - web/frontend/src/views/watchlist/__tests__/Signals.spec.ts
+      - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/SKILL.md
+      - .claude/skills/myweb-audit/references/audit-checklist.md
+      - .claude/agents/myweb-audit-data-state-audit.md
+      - .claude/skills/myweb-audit/references/CHANGELOG.md
+    notes:
+      - "the shared strategy signals surface now accepts a route-aware variant so watchlist and strategy routes can keep different page titles, hero labels, focus labels, and timeline descriptions without forking the component"
+      - "the watchlist wrapper now passes the `watchlist` variant and the shared surface degrades its subtitle and timeline description to explicit pending-integration wording because the current route still reuses the broader global trading-signals feed"
+      - "the strategy route keeps its original strategy-workbench semantics, and the strengthened watchlist regression plus Phase 2 matrix assertion now guard against donor-route copy leakage on the canonical watchlist route"
+      - "myweb-audit v1.27 now treats donor-route semantic leakage across shared routed surfaces as a first-class route-truth failure mode"
+  verification_surface: code-review-plus-targeted-live-verification

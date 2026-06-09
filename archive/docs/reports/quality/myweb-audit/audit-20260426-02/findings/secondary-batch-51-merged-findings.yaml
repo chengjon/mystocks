@@ -1,0 +1,33 @@
+- consolidated_issue_id: secondary-shell-issue-51
+  severity: Medium
+  title: Orphan stocks portfolio page now degrades to an honest static shell
+  pages:
+    - /secondary/stocks-portfolio-static-shell
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The file was an orphan stocks portfolio child page that preserved mock portfolio execution truth without active canonical ownership."
+  primary_owner: web/frontend/src/views/stocks/Portfolio.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/stocks-portfolio-static-shell
+  dedupe_keys:
+    - /secondary/stocks-portfolio-static-shell:route-truth:orphanPortfolioPage
+  verification_scope:
+    routes:
+      - /secondary/stocks-portfolio-static-shell
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/stocks/Portfolio.vue
+      - web/frontend/tests/unit/config/stocks-portfolio-static-shell.spec.ts
+    notes:
+      - "`Portfolio.vue` now renders `legacy-static-shell` with a canonical `/trade/portfolio` handoff link"
+      - "mock portfolio metrics, example positions, random refresh mutation, add-position messages, and performance-period state were removed"
+      - "secondary inventory refreshed to `H=0 / M=124 / L=105`"
+  verification_surface: code-review-only

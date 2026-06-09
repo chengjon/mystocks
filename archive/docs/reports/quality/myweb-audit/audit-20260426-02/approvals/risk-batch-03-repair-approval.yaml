@@ -1,0 +1,23 @@
+- consolidated_issue_id: risk-management-issue-02
+  severity: Medium
+  affected_routes:
+    - /risk/management
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/artdeco-pages/risk-tabs/riskManagementData.ts
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: true
+    generated_artifact: false
+  summary: The routed risk-management workbench should not present holdings-derived rows as true alerts, stop-loss states, or action recommendations unless the live routed source exposes real alert-policy inputs.
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: null
+    related_routes: []
+  approval_status: approved

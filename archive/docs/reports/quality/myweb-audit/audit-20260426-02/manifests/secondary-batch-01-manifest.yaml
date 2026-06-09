@@ -1,0 +1,91 @@
+audit_run_id: audit-20260426-02
+batch_id: secondary-batch-01
+module: secondary-embedded-shells
+scope:
+  requested_by: user
+  pages:
+    - route: /secondary/artdeco-trading-management
+      page_key: secondary-artdeco-trading-management
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/artdeco-pages/ArtDecoTradingManagement.vue
+  compatibility_redirects: []
+batch_rationale: >-
+  Start the secondary inventory phase with `ArtDecoTradingManagement.vue` by
+  removing shell-level fake live truth and delegating all supported tab runtime
+  data to existing canonical `/trade/*` pages, without introducing any new
+  shell snapshot or store.
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-only
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "the manifest route `/secondary/artdeco-trading-management` is a synthetic secondary-inventory alias used for artifact indexing; the repaired owner itself is `web/frontend/src/views/artdeco-pages/ArtDecoTradingManagement.vue` and is not a real router entry"
+    - "all live truth must come from existing canonical `/trade/*` owners or degrade to a static shell"
+    - "the shell must not add a new store, snapshot cache, request provenance badge, or freshness strip"
+  fallback_log: []
+verification_plan:
+  verification_strategy: code-review-only
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states:
+    - default
+    - loading
+    - empty
+    - error
+    - disabled
+  notes:
+    - "verify the shell no longer renders fake `REQ_ID`, `SYNC`, market status, P&L, or local summary strips"
+    - "verify overview/signals/positions/history reuse canonical `/trade/*` pages"
+    - "verify unsupported attribution degrades to a static shell instead of fake live data"
+repair_approval:
+  status: approved
+  approved_findings:
+    - secondary-shell-issue-01
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - secondary-artdeco-trading-management
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/artdeco-pages/ArtDecoTradingManagement.vue
+    - web/frontend/src/views/artdeco-pages/__tests__/ArtDecoTradingManagement.spec.ts
+    - web/frontend/src/views/trade/Portfolio.vue
+    - web/frontend/src/views/trade/__tests__/Portfolio.spec.ts
+    - .claude/skills/myweb-audit/references/route-truth-operations.md
+    - .claude/skills/myweb-audit/references/route-truth-casebook.md
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/trade/Portfolio.vue
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vitest
+    typecheck: failed-existing-frontend-debt-only
+    pm2: passed
+    e2e: not-run-unrouted-owner
+    gitnexus_staged_detect: not-run
+  staged_scope:
+    mode: not-run
+    files: []
+    verdict_origin: none
+    notes:
+      - "no isolated staged batch was prepared in this turn; worktree remains mixed"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/artdeco-trading-management-shell-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/secondary-batch-01-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/secondary-batch-01-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/secondary-batch-01-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/secondary-batch-01-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: owner-regression
+  next_action: continue-secondary-inventory-triage
+  notes:
+    - "secondary embedded shells without independent verified truth should be demoted to canonical orchestration instead of receiving new shell-level snapshots"
+status: complete

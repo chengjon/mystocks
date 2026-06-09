@@ -1,0 +1,39 @@
+- consolidated_issue_id: strategy-backtest-issue-05
+  severity: High
+  title: Strategy backtest KPI strip now preserves honest absolute-value semantics without shared delta chrome or pseudo precision
+  pages:
+    - /strategy/backtest
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The shared change-chrome leak and same-strip `0.00` pseudo precision came from the same routed KPI wrapper, so they are treated as one numeric-cluster truth defect on `/strategy/backtest`."
+  primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/components/BacktestKpiGrid.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/backtest
+  dedupe_keys:
+    - /strategy/backtest:data-state:kpiWrapperNumericTruth
+  verification_scope:
+    routes:
+      - /strategy/backtest
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/components/BacktestKpiGrid.vue
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/components/__tests__/BacktestKpiGrid.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/SKILL.md
+      - .claude/skills/myweb-audit/references/CHANGELOG.md
+      - .claude/skills/myweb-audit/references/audit-checklist.md
+      - .claude/agents/myweb-audit-data-state-audit.md
+    notes:
+      - "the page-local `BacktestKpiGrid` wrapper now forces `show-change=false` instead of inheriting shared delta chrome"
+      - "the same wrapper now normalizes finite numeric values to strings so count-only KPI cards no longer leak `0.00`-style pseudo precision"
+      - "owner and routed regressions now lock the same-strip numeric cluster so `.artdeco-stat-change`, `+0%`, and `0.00` stay absent from the canonical `/strategy/backtest` KPI strip"
+      - "this batch extends `myweb-audit` to `v1.58`, clarifying KPI-wrapper numeric-cluster truth for routed strips built on shared stat-card primitives"
+  verification_surface: code-review-plus-targeted-live-verification

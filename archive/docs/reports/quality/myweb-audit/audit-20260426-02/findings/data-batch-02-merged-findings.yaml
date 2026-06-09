@@ -1,0 +1,33 @@
+- consolidated_issue_id: data-indicator-issue-02
+  severity: Low
+  title: Indicator summary stats now describe visible routed inventory instead of an unsupported custom-indicator capability
+  pages:
+    - /data/indicator
+  source_roles:
+    - data-state-audit
+  why_consolidated: The misleading stat label and permanently-zero capability claim were one page-local truthfulness defect centered on the routed indicator summary strip.
+  primary_owner: web/frontend/src/views/data/Advanced.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact: []
+  dedupe_keys:
+    - /data/indicator:data-state:advancedIndicatorSummaryStats
+  verification_scope:
+    routes:
+      - /data/indicator
+    states:
+      - default
+    breakpoints:
+      - 1920
+      - 1440
+      - 1280
+  repair_summary:
+    files:
+      - web/frontend/src/views/data/Advanced.vue
+      - web/frontend/tests/unit/views/data-indicator-details.spec.ts
+    notes:
+      - "replaced the `自定义指标` stat with `当前分类指标` bound to `filteredIndicators.length`"
+      - "locked the routed summary strip with a unit regression that forbids the old unsupported capability claim"
+  verification_surface: code-review-only

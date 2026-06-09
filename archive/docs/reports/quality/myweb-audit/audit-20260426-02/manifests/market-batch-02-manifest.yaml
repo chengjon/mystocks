@@ -1,0 +1,82 @@
+audit_run_id: audit-20260426-02
+batch_id: market-batch-02
+module: market
+scope:
+  requested_by: user
+  pages:
+    - route: /market/lhb
+      page_key: market-lhb
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/market/LHB.vue
+  compatibility_redirects: []
+batch_rationale: Close the routed LHB numeric-truth cluster so the canonical leaderboard page no longer leaks shared exact-decimal formatting onto count-only KPI cards or ordinal rank cells, while reusing the existing `v1.32 + v1.36` skill rules without a new version bump.
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/market/lhb` remains `web/frontend/src/views/market/LHB.vue`"
+    - "the LHB route already uses page-local status and filter copy, so the approved repair should stay inside `LHB.vue` rather than altering shared ArtDeco stat-card or table defaults"
+    - "the numeric surfaces on `/market/lhb` are already covered by existing `v1.32` count-kpi delta truth and `v1.36` ordinal-precision truth; this batch does not require a new skill-version rule"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default]
+  notes:
+    - "verify the real PM2 `/market/lhb` route renders the top KPI strip as `44 / 今日 / 买入榜 / 74.41%` style values without `44.00` or any `.artdeco-stat-change` nodes"
+    - "verify the routed ranking table renders integer ranks such as `1` and `2` rather than `1.00` or `2.00`"
+repair_approval:
+  status: approved
+  approved_findings:
+    - market-lhb-issue-02
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - market-lhb
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/market/LHB.vue
+    - web/frontend/src/views/market/__tests__/LHB.spec.ts
+    - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/components/artdeco/base/ArtDecoStatCard.vue
+      - web/frontend/src/components/artdeco/trading/ArtDecoTable.vue
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-market-lhb-1-route
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `market-batch-02` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/market-lhb-numeric-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-02-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-02-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/market-batch-02-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/market-batch-02-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-market-batch-02-closeout
+  notes:
+    - "the canonical LHB route now renders count-only KPI and ordinal rank surfaces honestly on the live PM2 page"
+    - "this batch intentionally reuses the existing numeric-truth rules instead of introducing `v1.39`"
+status: complete

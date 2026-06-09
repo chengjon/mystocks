@@ -1,0 +1,87 @@
+audit_run_id: audit-20260426-02
+batch_id: dashboard-batch-07
+module: dashboard
+scope:
+  requested_by: user
+  pages:
+    - route: /dashboard
+      page_key: dashboard-home
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+  compatibility_redirects: []
+batch_rationale: "Close the canonical `/dashboard` trend-slice sync-state truth gap so unresolved or failed live kline snapshots no longer fall back to fake `待接入` copy or retention-only stale notes, and codify that chart-slice sync-state rule as `myweb-audit v1.64`."
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/dashboard` remains `web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue`"
+    - "the route-owned trend slice still depends on `marketService.getKline()` and is rendered by `marketTrendOption` inside the dashboard owner"
+    - "auth-seeded browser contexts plus browser-context interception with `serviceWorkers: block` are acceptable verification harnesses for controlled first-load pending and later refresh-failure truth on `/dashboard`"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, error]
+  notes:
+    - "verify unresolved first-load `/dashboard` renders `分时趋势同步中...` instead of `待接入真实行情时间序列接口`"
+    - "verify a later `success:false` kline refresh preserves the last verified trend chart and surfaces explicit unavailable-plus-stale copy"
+repair_approval:
+  status: approved
+  approved_findings:
+    - dashboard-home-issue-07
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - dashboard-home
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+    - web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+    - web/frontend/tests/unit/components/ArtDecoDashboardLogic.spec.ts
+    - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+      - web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-dashboard-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-dashboard-trend-slice-system-chrome-live-proof
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `dashboard-batch-07` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/dashboard-trend-slice-sync-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-07-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-07-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/dashboard-batch-07-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/dashboard-batch-07-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: live-verification
+  next_action: finalize-dashboard-batch-07-closeout
+  notes:
+    - "the canonical dashboard route now distinguishes unresolved first-load, unavailable first-load, and stale-refresh retention truth for the trend slice"
+    - "resolved `success:false` kline envelopes are now classified as failure truth before the route derives trend-state copy"
+status: complete

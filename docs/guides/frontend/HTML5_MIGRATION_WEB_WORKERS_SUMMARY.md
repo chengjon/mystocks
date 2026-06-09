@@ -6,6 +6,16 @@
 >
 > 文内统计值、完成状态、结论和处理结果如未重新复核，应视为历史快照，不得直接当作当前事实。
 
+> **Current Repo-Truth Disposition（2026-05-11）**:
+> 本文件保留 2025-12 阶段性 Web Workers 总结，不代表当前 HTML5 migration change 的已闭合事实。
+> 当前 `implement-html5-migration-experience-optimization` 的执行口径以 `openspec/changes/implement-html5-migration-experience-optimization/tasks.md`、`tasks-review.md`、实际代码和验证命令为准。
+>
+> 当前已确认边界：
+> - Web Workers 只能按 worker files / protocol source / manager façade 描述，不能承诺完整 orchestration、真实业务数据流或性能收益。
+> - `3.1.2` Worker + IndexedDB data flow、`3.2.4` Web Worker performance benchmark 仍未闭合。
+> - `web/frontend/src/utils/workersManager/workers-manager.ts` 仍是 placeholder / façade 口径；没有真实 `new Worker(...)` 生命周期编排证据时，不得把本文性能表述写作当前达成。
+> - 文内缓存命中率、零阻塞 UI、GPU 加速级别等表述如无当前复测证据，只能作为历史目标或阶段性总结阅读。
+
 
 ## 📋 项目概述
 

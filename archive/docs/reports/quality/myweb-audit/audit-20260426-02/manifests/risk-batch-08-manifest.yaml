@@ -1,0 +1,85 @@
+audit_run_id: audit-20260426-02
+batch_id: risk-batch-08
+module: risk
+scope:
+  requested_by: user
+  pages:
+    - route: /risk/stop-loss
+      page_key: risk-stop-loss
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/risk/StopLoss.vue
+  compatibility_redirects: []
+batch_rationale: Close the canonical `/risk/stop-loss` store-envelope and request-provenance truth defect so resolved `success:false` watchlist-stock failures cannot be swallowed by shared store transforms as empty monitoring success and failed request ids cannot replace the currently visible verified stop-loss snapshot, while promoting the new `myweb-audit v1.42` rule.
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/risk/stop-loss` remains `web/frontend/src/views/risk/StopLoss.vue`, while the ArtDeco risk-tab path stays a compatibility wrapper"
+    - "the watchlist and watchlist-stock transports can resolve failures as ordinary `success: false` payload envelopes, so the route owner must classify that failure truth before any shared store transform boundary can collapse it into empty monitoring success"
+    - "hero request provenance must reflect the currently visible verified stop-loss snapshot rather than the latest failed retry"
+    - "controlled browser-context fulfillment is required for the resolved-envelope and stale-refresh proofs even when the natural PM2 route is healthy, because those failure shapes are not reproducible on demand through the live backend"
+    - "the approved repair should stay page-local in `web/frontend/src/views/risk/StopLoss.vue` and the Phase 4 routed regression matrix rather than changing shared ArtDeco defaults or global Pinia-store behavior"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [error, default, loading]
+  notes:
+    - "verify resolved `success:false` first-load watchlist-stock failure now renders `REQ_ID: N/A`, `CRITICAL: --`, `TRIGGERED: --`, and top-strip `-- / -- / -- / --`"
+    - "verify the same first-load failure route does not leak the failed request id anywhere in the visible page shell and does not fall through to fake empty monitoring success"
+    - "verify a success-then-fail refresh path keeps the last verified request id visible, preserves previous stop-loss cards, and surfaces the stale-refresh warning copy"
+    - "verify the natural PM2 path still loads `/risk/stop-loss` and renders the honest current live state after the route-local raw-contract switch"
+repair_approval:
+  status: approved
+  approved_findings:
+    - risk-stop-loss-issue-08
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - risk-stop-loss
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/risk/StopLoss.vue
+    - web/frontend/src/views/risk/__tests__/StopLoss.spec.ts
+    - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    - web/frontend/tests/unit/views/risk-wrapper-retention.spec.ts
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-risk-stop-loss-envelope-and-request-provenance-3-state
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `risk-batch-08` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/risk-stop-loss-store-envelope-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-08-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-08-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-08-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/risk-batch-08-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-risk-batch-08-closeout
+  notes:
+    - "the canonical risk stop-loss route now preserves resolved failure-envelope truth before any shared watchlist-store transform boundary"
+    - "the same route now keeps hero request provenance aligned with the currently visible verified stop-loss cards during both first-load failure and stale-refresh failure paths"
+status: complete

@@ -1,0 +1,38 @@
+- finding_id: secondary-shell-030-system-performance-monitor
+  batch_id: secondary-batch-30
+  page:
+    route: /secondary/system-performance-monitor-static-shell
+    page_key: secondary-system-performance-monitor-static-shell
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/system/PerformanceMonitor.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy system performance monitor page still exposed pseudo Core Web Vitals, budget, and suggestion summaries without any verified canonical owner
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/system/PerformanceMonitor.vue`"
+      - "Inspect the local Core Web Vitals cards, trend chart placeholder, optimization suggestions, and performance-budget section"
+      - "Confirm there is no routed or otherwise active canonical performance-monitor owner that validates those shell-level metrics"
+  expected: "An unrouted legacy performance-monitor dashboard with no verified canonical owner should degrade to an honest static shell instead of preserving pseudo performance truth."
+  actual: "Before repair, `PerformanceMonitor.vue` still rendered hardcoded LCP/FID/CLS/FCP panels, performance-budget bars, trend placeholders, and optimization suggestion cards as if they were live verified system truth."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green regression confirmed the legacy performance-monitor page still rendered pseudo performance shell semantics before static-shell degradation."
+  repair_target:
+    files:
+      - web/frontend/src/views/system/PerformanceMonitor.vue
+      - web/frontend/src/views/system/__tests__/PerformanceMonitor.spec.ts
+    primary_owner: web/frontend/src/views/system/PerformanceMonitor.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/system-performance-monitor-static-shell
+  status: open
+  dependency: null
+  dedupe_key: /secondary/system-performance-monitor-static-shell:route-truth:systemPerformanceMonitorStaticShell
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner regression to confirm the pseudo Core Web Vitals, trend, budget, and suggestion surfaces are gone and replaced by a static shell."

@@ -1,0 +1,41 @@
+- finding_id: system-data-data-state-003
+  batch_id: system-batch-12
+  page:
+    route: /system/data
+    page_key: system-data
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/system/DataSource.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Routed system-data page presented unresolved first-load count cards as faux zero metrics before any verified config snapshot existed
+  trigger:
+    steps:
+      - "Open `/system/data`"
+      - "Keep the first `/api/v1/data-sources/config/` request unresolved before any verified config snapshot lands"
+      - "Inspect the visible stats strip and content meta while the route is still in the pending shell"
+  expected: "While the first config snapshot is still unresolved, source-dependent counts should stay degraded to `-- / --`, preserving only static write-capability truth and `REQ_ID: N/A`."
+  actual: "Before repair, `/system/data` rendered `0 / 0 / ON / N/A` and `VISIBLE: 0` even though the route had not yet verified any config payload. The shell therefore looked like a real empty inventory rather than an in-flight sync."
+  evidence:
+    kind: live-observation
+    note: "A new owner red test first reproduced `0 / 0 / ON / N/A`, then targeted Phase 4 Chromium proof confirmed the routed page now stays at `-- / -- / ON / N/A` until the delayed config request resolves."
+  repair_target:
+    files:
+      - web/frontend/src/views/system/DataSource.vue
+      - web/frontend/src/views/system/__tests__/DataSource.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/references/route-truth-casebook.md
+      - .claude/skills/myweb-audit/references/route-truth-coverage-matrix.md
+    primary_owner: web/frontend/src/views/system/DataSource.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /system/config
+  status: open
+  dependency: null
+  dedupe_key: /system/data:data-state:configPendingCountTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/system/data` after repair and confirm unresolved config counts stay at `-- / -- / ON / N/A` until the first verified config snapshot lands."

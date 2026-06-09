@@ -1,0 +1,81 @@
+audit_run_id: audit-20260426-02
+batch_id: data-batch-09
+module: data
+scope:
+  requested_by: user
+  pages:
+    - route: /data/concept
+      page_key: data-concept
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/data/Concepts.vue
+  compatibility_redirects: []
+batch_rationale: Close the canonical concept first-load placeholder-truth defect so the routed page no longer leaks zero-initialized tallies, fallback leader labels, or shared delta chrome before the first live concept payload resolves, reusing existing `myweb-audit v1.37 + v1.38`.
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/data/concept` remains `web/frontend/src/views/data/Concepts.vue`"
+    - "the live concept route still combines shared stat cards with adjacent hero/meta and content-meta surfaces, so the approved repair should stay page-local in `Concepts.vue` instead of changing shared ArtDeco defaults"
+    - "when the route is still unresolved on its first live load, tally and leader surfaces must degrade to placeholders rather than presenting `0`, `0.00`, `+0%`, or `N/A` as resolved route truth"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, loading]
+  notes:
+    - "verify the real PM2 `/data/concept` route no longer shows `SECTORS: 0`, `POSITIVE: 0`, `NEGATIVE: 0`, `龙头股 N/A`, or `0.00 / +0%` while the first live concept payload is still unresolved"
+    - "verify the same routed page still resolves to live concept data after the first payload completes"
+repair_approval:
+  status: approved
+  approved_findings:
+    - data-concept-issue-01
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - data-concept
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/data/Concepts.vue
+    - web/frontend/src/views/data/__tests__/Concepts.spec.ts
+    - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/components/artdeco/base/ArtDecoStatCard.vue
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-data-concept-live-placeholder-1-route
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `data-batch-09` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/data-concept-unresolved-first-load-placeholder-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-09-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-09-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-09-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/data-batch-09-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-data-batch-09-closeout
+  notes:
+    - "the canonical concept route now renders unresolved first-load tallies and leader surfaces as explicit placeholders rather than faux zero metrics or fallback labels"
+    - "no new `myweb-audit` version was required because the defect matched the existing `v1.37 + v1.38` rule set"
+status: complete

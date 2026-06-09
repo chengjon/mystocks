@@ -1,0 +1,41 @@
+- finding_id: strategy-parameters-data-state-002
+  batch_id: strategy-batch-10
+  page:
+    route: /strategy/parameters
+    page_key: strategy-parameters
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/artdeco-pages/strategy-tabs/StrategyParametersTab.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Strategy parameters route let later transport refresh metadata overwrite verified parameter snapshot provenance and cleared visible cards on manual refresh failure
+  trigger:
+    steps:
+      - "Open `/strategy/parameters?strategyId=101`"
+      - "Allow the first `/api/v1/strategy/strategies` payload to resolve successfully"
+      - "Click `刷新参数`"
+      - "Resolve the refresh request as a failure while the route is still showing the earlier verified parameter snapshot"
+      - "Inspect the hero `REQ_ID / PROCESS`, visible parameter cards, and stale-state copy"
+  expected: "After at least one verified parameter snapshot exists, a failed manual refresh should preserve the last verified parameter card plus the last verified `REQ_ID / PROCESS` provenance and show explicit stale-refresh messaging. Before any verified snapshot exists, a failed first load should degrade header provenance to `REQ_ID: N/A / PROCESS: N/A ms`."
+  actual: "Before repair, `/strategy/parameters` bound visible header provenance directly to the latest `useArtDecoApi` transport metadata. A failed first load could leak failed request provenance, and a later manual refresh failure could replace the visible `REQ_ID / PROCESS` truth and clear the currently visible parameter card instead of preserving the last verified snapshot."
+  evidence:
+    kind: live-observation
+    note: "System-`google-chrome` verification with browser-context interception reproduced both states. After repair the first-load failure path renders `REQ_ID: N/A / PROCESS: N/A ms` with `-- / -- / -- / 101`, and the `success -> refresh fail` path keeps `REQ_ID: req-live-strategy-parameters-success`, `PROCESS: 36.00 ms`, visible `Momentum Alpha` card content, and `当前仍显示上次成功同步的参数快照。`."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/StrategyParametersTab.vue
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/StrategyParametersTab.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/StrategyParametersTab.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/parameters
+  status: open
+  dependency: null
+  dedupe_key: /strategy/parameters:data-state:refreshSnapshotRequestProvenanceTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check that failed first loads no longer leak request provenance, and that a later failed manual refresh retains the last verified `REQ_ID / PROCESS` plus the visible parameter card."

@@ -1,0 +1,38 @@
+- finding_id: system-data-data-state-001
+  batch_id: system-batch-04
+  page:
+    route: /system/data
+    page_key: system-data
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/system/DataSource.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Routed system-data page collapsed live endpoint rows into repeated source placeholders when the payload omitted url fields
+  trigger:
+    steps:
+      - Open `/system/data`
+      - Let the routed page render a live `data.endpoints` payload that exposes `description`, `endpoint_name`, and `source_name` but omits `url`
+      - Inspect the visible data-source table on the primary live configuration surface
+  expected: "The page should preserve endpoint-level identity by rendering real endpoint descriptions and a stable endpoint identifier when the live contract omits friendly `name` or `url` fields."
+  actual: "Before repair, the routed page rendered repeated source-level rows such as `akshare` with `N/A` in the endpoint column, which hid the real endpoint-level identity present in the live contract."
+  evidence:
+    kind: live-observation
+    note: "Logged-in targeted verification and direct backend contract inspection confirmed that the page ignored live `description` and `endpoint_name` fields even though they were available in the real payload."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/system-tabs/dataManagementData.ts
+      - web/frontend/src/views/system/__tests__/DataSource.spec.ts
+      - web/frontend/src/views/artdeco-pages/system-tabs/__node_tests__/dataManagementData.test.ts
+    primary_owner: web/frontend/src/views/artdeco-pages/system-tabs/dataManagementData.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /system/data:data-state:dataManagementData-endpoint-normalization
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check the routed page so live config rows render endpoint descriptions and stable endpoint identifiers instead of repeated source placeholders.

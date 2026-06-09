@@ -1,0 +1,238 @@
+- finding_id: system-health-data-state-001
+  batch_id: system-batch-05
+  page:
+    route: /system/health
+    page_key: system-health
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/system/Health.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Routed system-health page treated successful plain `/api/health` payloads as unavailable runtime state
+  trigger:
+    steps:
+      - Open `/system/health`
+      - Allow the routed page to fetch the live `/api/health` probe
+      - Inspect the hero status and top KPI strip on the routed surface
+  expected: "A successful health probe should render live status and version truth even when the endpoint returns a plain object rather than a `UnifiedResponse` envelope."
+  actual: "Before repair, `/system/health` hit `200` on `/api/health` but still rendered `UNKNOWN / N/A / N/A / 3` because the page's wrapper path discarded plain probe payloads."
+  evidence:
+    kind: live-observation
+    note: "Targeted browser verification recorded successful `/api/health` responses while the routed page still showed unknown health state until a page-local contract adapter was added."
+  repair_target:
+    files:
+      - web/frontend/src/views/system/Health.vue
+      - web/frontend/src/views/system/healthProbeContract.ts
+      - web/frontend/src/views/system/__tests__/Health.spec.ts
+    primary_owner: web/frontend/src/views/system/healthProbeContract.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /system/api
+  status: open
+  dependency: null
+  dedupe_key: /system/health:data-state:health-probe-contract
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that the routed page renders `HEALTHY` and the live `version` field after normalizing plain probe payloads.
+
+- finding_id: system-health-data-state-002
+  batch_id: system-batch-05
+  page:
+    route: /system/health
+    page_key: system-health
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/system/Health.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Routed system-health KPI strip leaked fabricated delta chrome and pseudo precision for count-or-label cards
+  trigger:
+    steps:
+      - Open `/system/health`
+      - Inspect the top `.stats-strip` stat cards
+  expected: "Status, service, version, and middleware-count cards should render as plain labels or integers without `+0%`, flat dots, or `3.00`-style pseudo precision when no real comparison baseline exists."
+  actual: "Before repair, the shared stat-card default added four flat-change chips and decimalized the middleware count on the routed KPI strip."
+  evidence:
+    kind: code-path-review
+    note: "The canonical page passed raw numeric or label values to `ArtDecoStatCard` without overriding the component's default `showChange` and numeric formatting behavior."
+  repair_target:
+    files:
+      - web/frontend/src/views/system/Health.vue
+      - web/frontend/src/views/system/__tests__/Health.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/system/Health.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /system/api
+    - /system/data
+  status: open
+  dependency: null
+  dedupe_key: /system/health:data-state:stats-strip-count-kpi-truth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that the routed KPI strip has zero `.artdeco-stat-change` nodes and no fake precision strings.
+
+- finding_id: system-api-data-state-001
+  batch_id: system-batch-05
+  page:
+    route: /system/api
+    page_key: system-api
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/system/API.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Routed system-api page treated successful plain `/api/health` payloads as unavailable runtime state
+  trigger:
+    steps:
+      - Open `/system/api`
+      - Allow the routed page to fetch the live `/api/health` probe
+      - Inspect the hero status and top KPI strip on the routed surface
+  expected: "A successful health probe should render live status and version truth even when the endpoint returns a plain object rather than a `UnifiedResponse` envelope."
+  actual: "Before repair, `/system/api` hit `200` on `/api/health` but still rendered `UNKNOWN / N/A / N/A / 3` because the page's wrapper path discarded plain probe payloads."
+  evidence:
+    kind: live-observation
+    note: "Targeted browser verification recorded successful `/api/health` responses while the routed page still showed unknown health state until a page-local contract adapter was added."
+  repair_target:
+    files:
+      - web/frontend/src/views/system/API.vue
+      - web/frontend/src/views/system/healthProbeContract.ts
+      - web/frontend/src/views/system/__tests__/API.spec.ts
+    primary_owner: web/frontend/src/views/system/healthProbeContract.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /system/health
+  status: open
+  dependency: null
+  dedupe_key: /system/api:data-state:health-probe-contract
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that the routed page renders `HEALTHY` and the live `version` field after normalizing plain probe payloads.
+
+- finding_id: system-api-data-state-002
+  batch_id: system-batch-05
+  page:
+    route: /system/api
+    page_key: system-api
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/system/API.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Routed system-api KPI strip leaked fabricated delta chrome and pseudo precision for count-or-label cards
+  trigger:
+    steps:
+      - Open `/system/api`
+      - Inspect the top `.stats-strip` stat cards
+  expected: "Status, service, version, and middleware-count cards should render as plain labels or integers without `+0%`, flat dots, or `3.00`-style pseudo precision when no real comparison baseline exists."
+  actual: "Before repair, the shared stat-card default added four flat-change chips and decimalized the middleware count on the routed KPI strip."
+  evidence:
+    kind: code-path-review
+    note: "The canonical page passed raw numeric or label values to `ArtDecoStatCard` without overriding the component's default `showChange` and numeric formatting behavior."
+  repair_target:
+    files:
+      - web/frontend/src/views/system/API.vue
+      - web/frontend/src/views/system/__tests__/API.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/system/API.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /system/health
+    - /system/data
+  status: open
+  dependency: null
+  dedupe_key: /system/api:data-state:stats-strip-count-kpi-truth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that the routed KPI strip has zero `.artdeco-stat-change` nodes and no fake precision strings.
+
+- finding_id: system-data-data-state-001
+  batch_id: system-batch-05
+  page:
+    route: /system/data
+    page_key: system-data
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/system/DataSource.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Routed system-data KPI strip leaked fabricated delta chrome and pseudo precision for count-or-label cards
+  trigger:
+    steps:
+      - Open `/system/data`
+      - Inspect the top `.stats-strip` stat cards
+  expected: "Count and label cards should render as plain integers or labels without `+0%`, flat dots, or `2.00`-style pseudo precision when no real comparison baseline exists."
+  actual: "Before repair, the shared stat-card default added change chips and decimalized the routed count cards on the data-source surface."
+  evidence:
+    kind: live-observation
+    note: "Targeted browser verification and routed component review confirmed the top strip showed shared delta chrome despite only rendering plain counts and labels."
+  repair_target:
+    files:
+      - web/frontend/src/views/system/DataSource.vue
+      - web/frontend/src/views/system/__tests__/DataSource.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/system/DataSource.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /system/health
+    - /system/api
+  status: open
+  dependency: null
+  dedupe_key: /system/data:data-state:stats-strip-count-kpi-truth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that the routed KPI strip has zero `.artdeco-stat-change` nodes and no fake precision strings.
+
+- finding_id: system-config-data-state-001
+  batch_id: system-batch-05
+  page:
+    route: /system/config
+    page_key: system-config
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/system/Settings.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Routed system-config monitor fallback would collapse a successful plain health summary to unavailable
+  trigger:
+    steps:
+      - Open `/system/config`
+      - Let the detailed monitor path fail or return no usable rows
+      - Allow the routed fallback path to call `/api/health`
+  expected: "A successful plain health summary should downgrade the monitor tab to `SUMMARY` with `/api/health`-level truth instead of collapsing the routed surface to `UNAVAILABLE`."
+  actual: "Before repair, the fallback path passed a plain `/api/health` payload through a generic wrapper that treated it as missing `success/data`, so the page would skip the summary fallback and mark the monitor tab unavailable."
+  evidence:
+    kind: code-path-review
+    note: "A faithful `useArtDecoApi` test double reproduced the wrapper mismatch and proved the routed fallback path needed a page-family probe-envelope adapter."
+  repair_target:
+    files:
+      - web/frontend/src/views/system/Settings.vue
+      - web/frontend/src/views/system/healthProbeContract.ts
+      - web/frontend/src/views/system/__tests__/Settings.spec.ts
+    primary_owner: web/frontend/src/views/system/healthProbeContract.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /system/config:data-state:health-summary-fallback-contract
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: Re-check the summary fallback path with a faithful wrapper contract and confirm the monitor tab prefers `SUMMARY` over `UNAVAILABLE`.

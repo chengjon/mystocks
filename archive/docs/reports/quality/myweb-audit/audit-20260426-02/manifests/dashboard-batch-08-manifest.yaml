@@ -1,0 +1,90 @@
+audit_run_id: audit-20260426-02
+batch_id: dashboard-batch-08
+module: dashboard
+scope:
+  requested_by: user
+  pages:
+    - route: /dashboard
+      page_key: dashboard-home
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+  compatibility_redirects: []
+batch_rationale: "Close the canonical `/dashboard` auxiliary live-slice sync-state truth gap so technical-indicator and monitoring panels with real contracts no longer degrade to fake integration copy on first-load failure or later refresh failure, and codify that auxiliary-slice rule as `myweb-audit v1.65`."
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/dashboard` remains `web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue`"
+    - "the auxiliary live slices are route-owned by `web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts` and include technical indicators plus system monitoring"
+    - "auth-seeded browser contexts plus browser-context interception with `serviceWorkers: block` are acceptable verification harnesses for controlled first-load failure and later refresh-failure truth on `/dashboard` auxiliary slices"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, error]
+  notes:
+    - "verify indicators first-load failure renders explicit unavailable-plus-no-verified-snapshot copy instead of placeholder rows or `真实接口待接入...` wording"
+    - "verify monitoring first-load failure renders explicit unavailable-plus-no-verified-snapshot copy"
+    - "verify later auxiliary slice refresh failures retain the last verified indicators and monitoring rows while surfacing explicit stale or unavailable copy"
+repair_approval:
+  status: approved
+  approved_findings:
+    - dashboard-home-issue-08
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - dashboard-home
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/api/services/dashboardService.ts
+    - web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+    - web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+    - web/frontend/tests/unit/components/ArtDecoDashboardLogic.spec.ts
+    - web/frontend/src/api/services/__tests__/dashboardService.spec.ts
+    - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+      - web/frontend/src/api/services/dashboardService.ts
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-dashboard-vitest-and-service-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-dashboard-auxiliary-slice-live-proof
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `dashboard-batch-08` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/dashboard-auxiliary-slice-sync-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-08-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-08-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/dashboard-batch-08-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/dashboard-batch-08-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: live-verification
+  next_action: finalize-dashboard-batch-08-closeout
+  notes:
+    - "the canonical dashboard route now distinguishes first-load unavailable truth from later stale-refresh retention for its technical-indicator and monitoring auxiliary slices"
+    - "resolved `success:false` or `ok:false` auxiliary slice failures now reach the visible route instead of collapsing into placeholder rows or faux integration copy"
+status: complete

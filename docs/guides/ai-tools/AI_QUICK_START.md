@@ -137,6 +137,8 @@ MyStocks 是持续演进中的工程仓库，不是纯知识库。
 - 不要把历史报告当现行规范
 - 不要把单个页面或单个 API 文件当成完整功能边界
 - 不要在未确认功能域前就开始改代码
+- 不要为 `optimize-data-source-v2` 编造新的 repo-local 编码或补文档任务；该 change 的仓库内研发已闭环，后续只走外部验收、灰度、观测、ROI/SLA、会议与归档
+- 不要用 HTML5 / Web Workers / 菜单历史报告恢复移动端范围、6-domain 菜单口径、完整 Worker 编排或 PWA/offline/push/accessibility 已完成结论；当前事实以 active OpenSpec tasks、Desktop-only runtime guides 和代码验证为准
 
 ---
 

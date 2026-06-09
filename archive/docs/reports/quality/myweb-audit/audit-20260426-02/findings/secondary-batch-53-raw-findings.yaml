@@ -1,0 +1,38 @@
+- finding_id: secondary-shell-053-artdeco-technical-analysis
+  batch_id: secondary-batch-53
+  page:
+    route: /secondary/artdeco-technical-analysis-static-shell
+    page_key: secondary-artdeco-technical-analysis-static-shell
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/artdeco-pages/ArtDecoTechnicalAnalysis.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Orphan ArtDeco technical analysis page preserved mock execution truth
+  trigger:
+    steps:
+      - "Inspect `views/artdeco-pages/ArtDecoTechnicalAnalysis.vue`"
+      - "Confirm the file has no active route or importing owner"
+      - "Confirm it still exposes local GPU status, load badges, random trend data, delayed mock backtest stats, and synthetic equity data"
+  expected: "An orphan ArtDeco technical analysis page should degrade to an honest static shell and hand off users to canonical technical, indicator, and backtest owners."
+  actual: "Before repair, the page preserved local dashboardService calls mixed with random trend and equity data plus delayed mock backtest execution."
+  evidence:
+    kind: code-review-plus-owner-regression
+    note: "RED regression failed because `ArtDecoTechnicalAnalysis.vue` lacked `legacy-static-shell` and still exposed GPU badges plus random/mock execution code."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/ArtDecoTechnicalAnalysis.vue
+      - web/frontend/tests/unit/config/artdeco-technical-analysis-static-shell.spec.ts
+    primary_owner: web/frontend/src/views/artdeco-pages/ArtDecoTechnicalAnalysis.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/artdeco-technical-analysis-static-shell
+  status: open
+  dependency: null
+  dedupe_key: /secondary/artdeco-technical-analysis-static-shell:route-truth:orphanArtDecoTechnicalAnalysis
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run source regression to confirm the orphan ArtDeco technical page renders `legacy-static-shell` and no longer preserves random trend/equity or mock backtest execution truth."

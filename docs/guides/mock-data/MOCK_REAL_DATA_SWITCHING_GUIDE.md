@@ -1,477 +1,178 @@
 # Mock/Real 数据切换指南
 
 > **参考指南说明**:
-> 本文件是补充指南、命令参考、操作说明或使用手册，不是当前仓库共享规则、当前实现边界或当前主线流程的唯一事实来源。
-> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现及主线治理文档一并核对。
->
-> 文内步骤、示例、命令和说明应视为补充参考；若与当前代码、`architecture/STANDARDS.md` 或主线治理文档不一致，应以 `architecture/STANDARDS.md`、当前代码实现及主线治理文档为准。
+> 本文件是 Mock/Real 数据切换专题的当前主指南，不是仓库共享规则的唯一事实来源。
+> 若涉及审批门禁、共享工程规则或删除判定，请优先遵循 [`architecture/STANDARDS.md`](../../../architecture/STANDARDS.md)；若涉及页面级 API 行为边界，请回到 [`openspec/specs/api-integration/spec.md`](../../../openspec/specs/api-integration/spec.md)。
 
+## 先说结论
 
-## 📋 目录
+本项目当前的 Mock/Real 切换，不应理解为“任何页面都可以在 mock 和 real 间自由等价切换”。
 
-1. [架构概述](#架构概述)
-2. [切换机制](#切换机制)
-3. [数据源类型](#数据源类型)
-4. [使用方法](#使用方法)
-5. [实战示例](#实战示例)
-6. [核心特性](#核心特性)
-7. [常见问题](#常见问题)
-8. [相关文档](#相关文档)
+更准确的理解是：
 
----
+- Mock 用于开发解耦、测试稳定性和显式 mock 验收
+- Real 用于真实接口联调、页面主链验证和生产运行
+- 对已进入 `verified` 主线的页面，真实接口优先，失败时显式暴露状态，而不是静默切回 mock
 
-## 架构概述
+## 常见运行模式
 
-### 三层数据源设计
+### 1. 显式 Mock 验收模式
 
-```
-┌──────────────────────────────────────────────────────────┐
-│              业务层 (Business Layer)                      │
-│         复杂业务逻辑、策略回测、风险分析                    │
-├──────────────────────────────────────────────────────────┤
-│           数据源工厂 (DataSourceFactory)                   │
-│        环境变量驱动 → 动态路由 → 单例管理                   │
-├──────────────────┬───────────────────────────────────────┤
-│   Mock数据源      │            真实数据源                   │
-│  (开发/测试)      │          (生产环境)                     │
-│                  │                                       │
-│ • 时序Mock       │  • TDengine (高频时序)                 │
-│ • 关系Mock       │  • PostgreSQL (日线/参考/交易)           │
-│ • 业务Mock       │  • Composite (复合业务)                 │
-└──────────────────┴───────────────────────────────────────┘
-```
+适用场景：
 
-### 核心组件
+- 前端开发早期
+- UI/UX 视觉验收
+- sandbox-safe 或隔离式自动化验证
 
-| 组件 | 位置 | 作用 |
-|------|------|------|
-| **DataSourceFactory** | `src/data_sources/factory.py` | 数据源工厂，统一管理和路由 |
-| **Mock数据源** | `src/data_sources/mock/` | 开发测试用Mock数据 |
-| **真实数据源** | `src/data_sources/real/` | 生产环境真实数据 |
-| **接口定义** | `src/interfaces/` | 统一的数据源接口标准 |
+常见信号：
 
----
+- 前端显式启用 `VITE_USE_MOCK_DATA=true`
+- 后端按需启用 `USE_MOCK_DATA=true`
+- 请求链路可走 mock client、mock API 或 mock fallback
 
-## 切换机制
+### 2. Real 联调模式
 
-### 环境变量控制（核心开关）
+适用场景：
 
-通过 `.env` 文件控制数据源类型：
+- 页面真实接口消费验证
+- smoke / E2E 主链验证
+- 生产或准生产联调
+
+常见信号：
+
+- 前端 `VITE_USE_MOCK_DATA=false`
+- 后端 `USE_MOCK_DATA=false`
+- readiness 探针要求真实后端可达
+- 页面读链、写链和字段映射以真实接口为准
+
+### 3. 自动化 fallback 模式
+
+适用场景：
+
+- 自动化浏览器在后端暂不可达时仍需完成非阻塞验收
+
+说明：
+
+- 这类 fallback 是自动化或显式 mock 模式下的受控降级。
+- 它不等同于“真实链路已经验证成功”。
+
+## 当前主要开关
+
+### 后端
+
+后端通过 `USE_MOCK_DATA` 控制是否启用 mock API 注册或 mock 相关分支：
 
 ```bash
-# ============================================
-# 开发环境 - 全部使用Mock数据
-# ============================================
-TIMESERIES_DATA_SOURCE=mock      # 时序数据源
-RELATIONAL_DATA_SOURCE=mock      # 关系数据源
-BUSINESS_DATA_SOURCE=mock        # 业务数据源
-USE_MOCK_DATA=true               # 全局开关
-
-# ============================================
-# 生产环境 - 使用真实数据库
-# ============================================
-TIMESERIES_DATA_SOURCE=tdengine     # TDengine高频数据
-RELATIONAL_DATA_SOURCE=postgresql   # PostgreSQL通用数据
-BUSINESS_DATA_SOURCE=composite      # 复合业务数据源
+USE_MOCK_DATA=true
 USE_MOCK_DATA=false
 ```
 
-### 工厂模式自动路由
+当前代码入口可见于：
 
-```python
-# src/data_sources/factory.py
+- [`web/backend/app/core/config.py`](../../../web/backend/app/core/config.py)
 
-class DataSourceFactory:
-    """数据源工厂 - 单例模式，环境变量驱动"""
+### 前端
 
-    def get_timeseries_source(self, source_type=None):
-        """
-        智能获取数据源实例
-
-        逻辑流程:
-        1. source_type 为 None → 从环境变量读取
-        2. source_type 指定 → 使用指定类型
-        3. 单例缓存 → 避免重复创建
-        """
-        if source_type is None:
-            # 从环境变量读取配置
-            source_type = os.getenv("TIMESERIES_DATA_SOURCE", "mock")
-
-        # 获取对应的实现类
-        source_class = self._timeseries_registry[source_type]
-
-        # 创建或返回缓存实例
-        return source_class()
-```
-
----
-
-## 数据源类型
-
-### 三种数据源对比
-
-| 数据类型 | Mock实现 | 真实实现 | 用途 |
-|---------|---------|---------|------|
-| **时序数据** | `MockTimeSeriesDataSource` | `TDengineTimeSeriesDataSource` | K线、实时行情、资金流向 |
-| **关系数据** | `MockRelationalDataSource` | `PostgreSQLRelationalDataSource` | 自选股、搜索、配置 |
-| **业务数据** | `MockBusinessDataSource` | `CompositeBusinessDataSource` | 仪表盘、回测、风险指标 |
-
-### 支持的数据源类型
-
-```python
-# 时序数据源
-SUPPORTED_TIMESERIES_TYPES = ["mock", "tdengine", "api"]
-
-# 关系数据源
-SUPPORTED_RELATIONAL_TYPES = ["mock", "postgresql"]
-
-# 业务数据源
-SUPPORTED_BUSINESS_TYPES = ["mock", "composite"]
-```
-
----
-
-## 使用方法
-
-### 方式1：环境变量驱动（推荐生产环境）
+前端当前更直接的开关是 `VITE_USE_MOCK_DATA`：
 
 ```bash
-# 1. 设置环境变量
-export TIMESERIES_DATA_SOURCE=tdengine
-export RELATIONAL_DATA_SOURCE=postgresql
-
-# 2. 代码中无需修改，自动使用真实数据
-from src.data_sources.factory import get_timeseries_source
-
-source = get_timeseries_source()  # 自动从环境变量读取
-kline_data = source.get_kline_data("600000", start, end, "1d")
+VITE_USE_MOCK_DATA=true
+VITE_USE_MOCK_DATA=false
 ```
 
-### 方式2：显式指定（推荐测试环境）
+当前代码入口可见于：
 
-```python
-from src.data_sources.factory import get_timeseries_source
+- [`web/frontend/src/api/apiClient.ts`](../../../web/frontend/src/api/apiClient.ts)
+- [`web/frontend/src/composables/useBackendReadiness.ts`](../../../web/frontend/src/composables/useBackendReadiness.ts)
 
-# 强制使用Mock数据
-mock_source = get_timeseries_source(source_type="mock")
-data = mock_source.get_kline_data("600000", start, end, "1d")
+补充说明：
 
-# 强制使用真实数据
-real_source = get_timeseries_source(source_type="tdengine")
-data = real_source.get_kline_data("600000", start, end, "1d")
-```
+- 仓库中仍存在一些更早的 `VITE_APP_MODE` 文档口径。
+- 实际执行时，应优先相信当前代码和当前脚本，而不是更早的环境变量说明。
 
-### 方式3：运行时切换（灵活调试）
+## 前端切换要点
 
-```python
-from src.data_sources.factory import DataSourceFactory
+### API client
 
-factory = DataSourceFactory()
+- 当 `VITE_USE_MOCK_DATA=true` 时，前端 `apiClient` 会短路到 mock client。
+- 当 `VITE_USE_MOCK_DATA=false` 时，前端请求真实 `/api` 后端。
 
-# 开发阶段使用Mock
-mock_data = factory.get_timeseries_source("mock").get_realtime_quotes(["600000"])
+### readiness
 
-# 测试真实数据
-real_data = factory.get_timeseries_source("tdengine").get_realtime_quotes(["600000"])
+- 前端启动时会进行 `/health/ready` 探针检查。
+- 若显式处于 mock 模式，或处于自动化浏览器会话，探针失败时允许进入“mock 验收模式”。
+- 若不处于这些受控场景，探针失败应让页面进入阻塞错误态，而不是假装正常运行。
 
-# 清除缓存，重新实例化
-factory.clear_cache(category="timeseries")
-```
+## 推荐切换方式
 
----
+### 进行真实联调
 
-## 实战示例
+1. 设置前端 `VITE_USE_MOCK_DATA=false`
+2. 设置后端 `USE_MOCK_DATA=false`
+3. 启动或确认后端可用
+4. 校验 readiness、真实请求、字段映射和页面状态
+5. 对 `verified` 页面，确认不存在静默 mock fallback
 
-### 开发阶段（使用Mock）
+### 进行显式 Mock 验收
 
-**`.env.development` 配置**：
-```bash
-TIMESERIES_DATA_SOURCE=mock
-RELATIONAL_DATA_SOURCE=mock
-BUSINESS_DATA_SOURCE=mock
-```
+1. 设置前端 `VITE_USE_MOCK_DATA=true`
+2. 如需后端 mock 路由，设置 `USE_MOCK_DATA=true`
+3. 明确说明当前是 mock 验收，不把结果写成真实联调闭环
+4. 如果只是测试壳层和交互，不需要强行伪造真实契约字段
 
-**代码示例**：
-```python
-from src.data_sources.factory import get_timeseries_source
+## 如何判断当前是不是“真实通过”
 
-source = get_timeseries_source()  # 自动使用Mock
-quotes = source.get_realtime_quotes(["600000", "000001"])
-print(quotes)
-# 输出: [{'symbol': '600000', 'price': 25.50, 'change': 0.35, ...}]
-```
+只有满足以下条件，才应表述为真实主链已验证：
 
-### 生产环境（使用真实数据）
+- 前端未启用 `VITE_USE_MOCK_DATA`
+- 页面请求到真实 API
+- 页面消费的字段来自真实响应
+- 错误态、空态、request id 状态已正确接通
+- 没有对同一路径静默回退 mock
 
-**`.env.production` 配置**：
-```bash
-TIMESERIES_DATA_SOURCE=tdengine
-RELATIONAL_DATA_SOURCE=postgresql
-BUSINESS_DATA_SOURCE=composite
-```
+如果缺其中任何一项，默认都不应表述成“真实主链已通过”。
 
-**代码示例**（完全相同！）：
-```python
-from src.data_sources.factory import get_timeseries_source
+## 与页面 `verified/pending` 的关系
 
-source = get_timeseries_source()  # 自动使用TDengine
-quotes = source.get_realtime_quotes(["600000", "000001"])
-print(quotes)
-# 输出: [{'symbol': '600000', 'price': 12.48, 'change': -0.15, ...}] 真实数据
-```
+### `verified`
 
-### 混合使用（Mock + Real）
+- 主数据源必须是真实 API
+- 不得静默 mock fallback
+- 必须显式展现状态和 request id
 
-```python
-from src.data_sources.factory import get_timeseries_source, get_relational_source
+### `pending`
 
-# 时序数据使用真实数据库
-ts_source = get_timeseries_source(source_type="tdengine")
-real_kline = ts_source.get_kline_data("600000", start, end, "1d")
+- 路由可保持可达
+- 允许壳层、加载态、错误态、空态
+- 允许显式 mock 验收
+- 不得臆造真实契约字段
 
-# 关系数据使用Mock（测试中）
-rel_source = get_relational_source(source_type="mock")
-mock_watchlist = rel_source.get_watchlist(user_id=1)
-```
+## 文档阅读顺序
 
----
+建议按下面顺序阅读：
 
-## 核心特性
+1. [`MOCK_DATA_USAGE_RULES.md`](./MOCK_DATA_USAGE_RULES.md)
+2. [`web/frontend/ENVIRONMENT_SWITCHING_GUIDE.md`](../../../web/frontend/ENVIRONMENT_SWITCHING_GUIDE.md)
+3. [`INDEX.md`](./INDEX.md)
 
-### 1. 统一接口标准
+若需要了解历史方案、旧切换设计或更早的架构设想，再进入历史文档。
 
-所有Mock和真实数据源都实现相同的接口：
+## 历史口径提醒
 
-```python
-# src/interfaces/timeseries_data_source.py
+以下说法在仓库里仍可能作为历史痕迹存在，但阅读时必须降级理解：
 
-class ITimeSeriesDataSource(ABC):
-    @abstractmethod
-    def get_kline_data(symbol, start_time, end_time, interval):
-        """获取K线数据 - Mock和真实实现返回相同结构"""
-        pass
+- “三层数据源设计”是全部读者的第一入口
+- `VITE_APP_MODE` 是唯一前端切换方式
+- 页面可以在 mock 和 real 之间无成本等价切换
+- 真实接口失败后继续返回 mock 数据也可视为成功
 
-    @abstractmethod
-    def get_realtime_quotes(symbols):
-        """获取实时行情 - 数据结构完全一致"""
-        pass
-```
-
-### 2. 单例模式 + 缓存管理
-
-```python
-# 同一配置只创建一个实例
-source1 = get_timeseries_source()  # 创建实例
-source2 = get_timeseries_source()  # 返回缓存
-assert source1 is source2  # True
-
-# 配置变更时清除缓存
-factory = DataSourceFactory()
-factory.clear_cache(category="timeseries")
-```
-
-### 3. 类型安全 + 异常处理
-
-```python
-from src.data_sources.factory import UnsupportedDataSourceType
-
-try:
-    # 错误的数据源类型
-    source = get_timeseries_source(source_type="mongodb")
-except UnsupportedDataSourceType as e:
-    print(f"错误: {e.message}")
-    # 输出: Unsupported data source type: 'mongodb'.
-    #       Supported types: mock, tdengine, api
-```
-
-### 4. Mock数据的特殊特性
-
-#### 随机种子支持（可复现测试）
-
-```python
-source = get_timeseries_source(source_type="mock")
-source.set_random_seed(42)
-
-data1 = source.get_kline_data("600000", start, end, "1d")
-
-source.set_random_seed(42)
-data2 = source.get_kline_data("600000", start, end, "1d")
-
-# data1 == data2 ✅ 完全相同
-```
-
-#### 真实数据模拟
-
-```python
-# Mock数据符合市场规律
-# - 价格对数正态分布
-# - 涨跌幅限制 -10% ~ +10%
-# - 高开低收价格合理关系
-# - 成交量合理范围波动
-```
-
----
-
-## 常见问题
-
-### Q1: 如何确认当前使用的数据源类型？
-
-```python
-from src.data_sources.factory import DataSourceFactory
-
-factory = DataSourceFactory()
-
-# 查看当前环境变量配置
-config = factory.get_current_config()
-print(config)
-# 输出: {
-#   "timeseries": "mock",
-#   "relational": "postgresql",
-#   "business": "composite"
-# }
-
-# 查看所有已注册的数据源
-registered = factory.list_registered_sources()
-print(registered)
-# 输出: {
-#   "timeseries": ["mock", "tdengine", "api"],
-#   "relational": ["mock", "postgresql"],
-#   "business": ["mock", "composite"]
-# }
-```
-
-### Q2: Mock数据不够真实怎么办？
-
-A: Mock数据源基于faker库生成，支持参数化配置。如果需要更真实的测试数据，可以：
-
-1. **使用真实数据快照**：将生产数据导出为Mock数据
-2. **调整Mock生成参数**：修改 `src/data_sources/mock/` 中的生成逻辑
-3. **混合使用**：关键数据用真实数据，其他用Mock
-
-### Q3: 切换数据源需要重启服务吗？
-
-A: **不需要重启**。使用 `clear_cache()` 方法即可：
-
-```python
-from src.data_sources.factory import DataSourceFactory
-
-factory = DataSourceFactory()
-factory.clear_cache()  # 清除所有缓存
-
-# 下次获取数据源时，会读取新的环境变量配置
-source = get_timeseries_source()  # 使用新配置
-```
-
-### Q4: 如何调试数据源切换问题？
-
-```python
-import os
-import logging
-from src.data_sources.factory import get_timeseries_source
-
-# 启用调试日志
-logging.basicConfig(level=logging.DEBUG)
-
-# 检查环境变量
-print(f"TIMESERIES_DATA_SOURCE={os.getenv('TIMESERIES_DATA_SOURCE')}")
-
-# 获取数据源并测试
-source = get_timeseries_source()
-print(f"数据源类型: {type(source).__name__}")
-
-# 测试数据获取
-data = source.get_realtime_quotes(["600000"])
-print(f"数据: {data}")
-```
-
-### Q5: 能否同时使用多个数据源？
-
-A: **可以**。工厂模式支持同时创建多个数据源实例：
-
-```python
-from src.data_sources.factory import get_timeseries_source
-
-# Mock数据源用于测试
-mock_source = get_timeseries_source(source_type="mock")
-
-# TDengine数据源用于生产
-real_source = get_timeseries_source(source_type="tdengine")
-
-# 对比数据
-mock_data = mock_source.get_kline_data("600000", start, end, "1d")
-real_data = real_source.get_kline_data("600000", start, end, "1d")
-```
-
----
+这些说法不再代表当前主线执行口径。
 
 ## 相关文档
 
-### 核心文档
-- **[Mock数据使用规则](./MOCK_DATA_USAGE_RULES.md)** - Mock数据的详细使用规范
-- **[数据源接口定义](../../src/interfaces/README.md)** - 统一接口标准
-- **[快速开始指南](./QUICKSTART.md)** - 项目快速入门
-
-### 代码实现
-- **[工厂模式实现](../../src/data_sources/factory.py)** - DataSourceFactory源码
-- **[Mock数据源](../../src/data_sources/mock/)** - Mock数据源实现
-- **[真实数据源](../../src/data_sources/real/)** - 真实数据源实现
-
-### 配置文件
-- **[环境变量配置](../../.env.example)** - 环境变量模板
-- **[数据库配置](../../config/mystocks_table_config.yaml)** - 数据库表配置
-
----
-
-## 附录：完整数据源接口
-
-### ITimeSeriesDataSource 接口
-
-```python
-class ITimeSeriesDataSource(ABC):
-    # K线数据
-    def get_kline_data(symbol, start_time, end_time, interval)
-
-    # 实时行情
-    def get_realtime_quotes(symbols)
-
-    # 资金流向
-    def get_fund_flow(symbol, days)
-
-    # 市场概览
-    def get_market_overview()
-```
-
-### IRelationalDataSource 接口
-
-```python
-class IRelationalDataSource(ABC):
-    # 自选股
-    def get_watchlist(user_id)
-
-    # 股票搜索
-    def search_stocks(keyword)
-
-    # 行业列表
-    def get_industry_list()
-```
-
-### IBusinessDataSource 接口
-
-```python
-class IBusinessDataSource(ABC):
-    # 仪表盘数据
-    def get_dashboard_summary(user_id)
-
-    # 回测执行
-    def execute_backtest(strategy_config, start_date, end_date)
-
-    # 风险指标
-    def calculate_risk_metrics(portfolio_id)
-```
-
----
-
-**文档版本**: v1.0
-**创建日期**: 2026-01-01
-**维护者**: MyStocks Backend Team
-**相关文档**: [CLAUDE.md](../../CLAUDE.md)
+- [`MOCK_DATA_USAGE_RULES.md`](./MOCK_DATA_USAGE_RULES.md)
+- [`MOCK_REAL_DATA_INDEX.md`](./MOCK_REAL_DATA_INDEX.md)
+- [`INDEX.md`](./INDEX.md)
+- [`web/frontend/ENVIRONMENT_SWITCHING_GUIDE.md`](../../../web/frontend/ENVIRONMENT_SWITCHING_GUIDE.md)
+- [`architecture/STANDARDS.md`](../../architecture/STANDARDS.md)
+- [`openspec/specs/api-integration/spec.md`](../../../openspec/specs/api-integration/spec.md)

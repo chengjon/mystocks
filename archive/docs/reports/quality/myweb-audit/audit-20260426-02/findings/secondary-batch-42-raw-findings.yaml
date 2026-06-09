@@ -1,0 +1,40 @@
+- finding_id: secondary-shell-042-monitor
+  batch_id: secondary-batch-42
+  page:
+    route: /secondary/monitor-static-shell
+    page_key: secondary-monitor-static-shell
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/monitor.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy system monitor page still exposed local pseudo-live service checks without a verified canonical owner
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/monitor.vue`"
+      - "Inspect the page-local `usemonitor()` composable and `styles/monitor.scss` import"
+      - "Confirm the current router does not expose `monitor.vue` as an independent canonical route entry"
+  expected: "A legacy monitor page with no verified one-to-one canonical monitoring owner should degrade to an honest static shell and should not preserve local service checks, refresh controls, history rows, or hardcoded endpoint metadata."
+  actual: "Before repair, `monitor.vue` rendered refresh controls, auto-refresh state, service status cards, service details, monitor history rows, and hardcoded local database/API endpoint metadata through `usemonitor()`."
+  evidence:
+    kind: code-review-plus-owner-regression
+    note: "RED regression failed before repair because the page still entered the old runtime path instead of rendering `legacy-static-shell`; code review confirmed `usemonitor()` generated local pseudo-live status and history state."
+  repair_target:
+    files:
+      - web/frontend/src/views/monitor.vue
+      - web/frontend/src/views/composables/usemonitor.ts
+      - web/frontend/src/views/styles/monitor.scss
+      - web/frontend/src/views/__tests__/monitor.spec.ts
+    primary_owner: web/frontend/src/views/monitor.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/monitor-static-shell
+  status: open
+  dependency: null
+  dedupe_key: /secondary/monitor-static-shell:route-truth:legacyMonitorStaticShell
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner regression to confirm the page renders an honest static shell and no longer imports page-local pseudo-live monitor composable or style."

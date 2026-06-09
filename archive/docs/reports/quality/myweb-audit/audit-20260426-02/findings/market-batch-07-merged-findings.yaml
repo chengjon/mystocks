@@ -1,0 +1,39 @@
+- consolidated_issue_id: market-technical-issue-02
+  severity: High
+  title: Technical routed hero request metadata now tracks verified K-line provenance instead of failed retry ids
+  pages:
+    - /market/technical
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The first-load failure request-id leak and the stale-refresh request-id overwrite were two manifestations of the same routed request-provenance cluster: the canonical technical route treated `useArtDecoApi.lastRequestId` as if it always represented the currently visible K-line snapshot."
+  primary_owner: web/frontend/src/views/market/Technical.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /market/lhb
+    - /data/concept
+    - /stocks/screener
+  dedupe_keys:
+    - /market/technical:data-state:klineRequestProvenanceTruth
+  verification_scope:
+    routes:
+      - /market/technical
+    states:
+      - first-load-failure
+      - stale-refresh-failure
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/market/Technical.vue
+      - web/frontend/src/views/market/__tests__/Technical.spec.ts
+      - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+    notes:
+      - "the canonical technical route now derives `REQ` from page-local verified-snapshot truth, so first-load failure renders `REQ: N/A / POINTS: --` instead of leaking a failed request id as if a K-line snapshot had resolved"
+      - "the same route now retains the last verified request id during stale-refresh failure, so visible rows and hero metadata stay aligned when a failed retry occurs after a successful sync"
+      - "the strengthened routed regressions now cover first-load failure and refresh-after-success failure, closing the exact `lastRequestId` provenance regression on both component and Phase 1 routed surfaces"
+      - "this batch intentionally reuses existing `myweb-audit v1.41` route-truth and `v1.39` browser-context interception guidance instead of introducing a new skill version"
+  verification_surface: code-review-plus-targeted-live-verification

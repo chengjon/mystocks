@@ -1,15 +1,15 @@
 # ArtDeco Component Governance Record: ArtDecoPageTemplate
 
 > **说明**
-> 本文基于 [`ARTDECO_COMPONENT_GOVERNANCE_RECORD_TEMPLATE.md`](/opt/claude/mystocks_spec/docs/plans/ARTDECO_COMPONENT_GOVERNANCE_RECORD_TEMPLATE.md) 产出，是首批样板组件的第三份实战治理记录草案。
+> 本文基于 [`ARTDECO_COMPONENT_GOVERNANCE_RECORD_TEMPLATE.md`](ARTDECO_COMPONENT_GOVERNANCE_RECORD_TEMPLATE.md) 产出，是首批样板组件的第三份实战治理记录草案。
 
 ---
 
 ## 1. 组件基本信息
 
 - **组件名称**: `ArtDecoPageTemplate`
-- **组件路径**: [`web/frontend/src/views/artdeco-pages/_templates/ArtDecoPageTemplate.vue`](/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/_templates/ArtDecoPageTemplate.vue)
-- **关联逻辑**: [`web/frontend/src/views/artdeco-pages/_templates/composables/useArtDecoPageTemplate.ts`](/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/_templates/composables/useArtDecoPageTemplate.ts)
+- **组件路径**: [`web/frontend/src/views/artdeco-pages/_templates/ArtDecoPageTemplate.vue`](../../web/frontend/src/views/artdeco-pages/_templates/ArtDecoPageTemplate.vue)
+- **关联逻辑**: [`web/frontend/src/views/artdeco-pages/_templates/composables/useArtDecoPageTemplate.ts`](../../web/frontend/src/views/artdeco-pages/_templates/composables/useArtDecoPageTemplate.ts)
 - **所属层级**: `Core Skeleton`
 - **所属业务域**: `页面骨架 / 通用`
 - **当前状态**: `候选`
@@ -31,8 +31,8 @@
 
 抽样确认的直接使用点包括：
 
-- [`web/frontend/src/views/risk/Center.vue`](/opt/claude/mystocks_spec/web/frontend/src/views/risk/Center.vue)
-- [`web/frontend/src/views/artdeco-pages/_templates/ExampleRiskManagement.vue`](/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/_templates/ExampleRiskManagement.vue)
+- [`web/frontend/src/views/risk/Center.vue`](../../web/frontend/src/views/risk/Center.vue)
+- [`web/frontend/src/views/artdeco-pages/_templates/ExampleRiskManagement.vue`](../../web/frontend/src/views/artdeco-pages/_templates/ExampleRiskManagement.vue)
 
 它之所以应该优先治理，是因为它已经把以下平台职责打包在一起：
 

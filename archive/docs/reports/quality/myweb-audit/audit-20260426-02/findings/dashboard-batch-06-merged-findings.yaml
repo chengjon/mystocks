@@ -1,0 +1,43 @@
+- consolidated_issue_id: dashboard-home-issue-06
+  severity: High
+  title: Dashboard later capital-flow refresh now preserves the verified ranking slice because the service layer no longer swallows `success:false` as empty success
+  pages:
+    - /dashboard
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The disappearing capital-flow list, missing heatmap stale note, and service-level empty-success normalization all came from the same `getStockFlowRanking()` envelope-erasure path on the canonical dashboard route, so they form one service-to-route stale-slice truth issue."
+  primary_owner: web/frontend/src/api/services/dashboardService.ts
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /dashboard
+  dedupe_keys:
+    - /dashboard:data-state:capitalFlowServiceEnvelopeRefreshRetentionTruth
+  verification_scope:
+    routes:
+      - /dashboard
+    states:
+      - default
+      - partial-success
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/api/services/dashboardService.ts
+      - web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+      - web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+      - web/frontend/src/api/services/__tests__/dashboardService.spec.ts
+      - web/frontend/tests/unit/components/ArtDecoDashboardLogic.spec.ts
+      - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/SKILL.md
+      - .claude/skills/myweb-audit/references/CHANGELOG.md
+      - .claude/skills/myweb-audit/references/audit-checklist.md
+      - .claude/agents/myweb-audit-data-state-audit.md
+    notes:
+      - "the dashboard service now gates resolved `success:false` envelopes in `getStockFlowRanking()` before normalization, so a failed `big-deal` refresh no longer reaches the route as fake `data: []` success"
+      - "the dashboard composable now retains the last verified capital-flow ranking slice on same-tab later refresh failure and surfaces explicit stale-slice copy in both the ranking card and heatmap card"
+      - "owner, service, and routed regressions now lock the `success -> later big-deal refresh fail` path and prove `贵州茅台 / 宁德时代` remain visible with a stale ranking note"
+      - "this batch upgrades `myweb-audit` to `v1.63`, adding service-normalizer envelope-truth checks for routed stale-slice defects"
+  verification_surface: code-review-plus-targeted-live-verification

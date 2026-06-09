@@ -1,0 +1,24 @@
+- consolidated_issue_id: risk-management-issue-12
+  severity: High
+  affected_routes:
+    - /risk/management
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/risk/Center.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: The canonical risk management route now keeps footer freshness unresolved until the first verified positions snapshot arrives, instead of seeding `最后一次更新` from the local current clock.
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: The approved repair stayed page-local in `web/frontend/src/views/risk/Center.vue`; the legacy `ArtDecoRiskManagement.vue` wrapper only inherits the owner fix.
+    related_routes:
+      - /risk/management
+  approval_status: approved

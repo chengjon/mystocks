@@ -1,0 +1,39 @@
+- consolidated_issue_id: secondary-shell-issue-37
+  severity: Medium
+  title: Legacy market-domain pages now delegate to canonical data-domain owners
+  pages:
+    - /secondary/market-capital-flow-canonical-wrapper
+    - /secondary/market-concepts-canonical-wrapper
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The duplicate overview cards, refresh actions, hot rankings, and detail shells in `market/CapitalFlow.vue` and `market/Concepts.vue` were all faces of the same defect family: legacy market-domain pages preserved pseudo-live truth even though semantically matching canonical `/data/*` owners already existed."
+  primary_owner: web/frontend/src/views/market/CapitalFlow.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/market-capital-flow-canonical-wrapper
+    - /secondary/market-concepts-canonical-wrapper
+  dedupe_keys:
+    - /secondary/market-capital-flow-canonical-wrapper:route-truth:marketCapitalFlowCanonicalWrapper
+    - /secondary/market-concepts-canonical-wrapper:route-truth:marketConceptsCanonicalWrapper
+  verification_scope:
+    routes:
+      - /secondary/market-capital-flow-canonical-wrapper
+      - /secondary/market-concepts-canonical-wrapper
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/market/CapitalFlow.vue
+      - web/frontend/src/views/market/Concepts.vue
+      - web/frontend/src/views/market/__tests__/CapitalFlow.spec.ts
+      - web/frontend/src/views/market/__tests__/Concepts.spec.ts
+    notes:
+      - "the legacy market capital-flow page now renders a thin wrapper over the canonical `/data/fund-flow` owner"
+      - "the legacy market concepts page now renders a thin wrapper over the canonical `/data/concept` owner"
+      - "no new secondary snapshot, store, request provenance badge, selector shell, or wrapper-local ranking truth was introduced"
+  verification_surface: code-review-only

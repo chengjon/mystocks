@@ -1,0 +1,39 @@
+- finding_id: trade-terminal-data-state-002
+  batch_id: trade-batch-11
+  page:
+    route: /trade/terminal
+    page_key: trade-terminal
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/TradingDashboard.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Trade terminal risk slice refresh failure replaced the visible verified risk panel with fallback truth
+  trigger:
+    steps:
+      - "Open `/trade/terminal`"
+      - "Allow the first risk metrics slice to resolve successfully so the risk panel shows verified drawdown, PnL, positions, and last-updated values"
+      - "Trigger a later manual refresh"
+      - "Resolve `/api/trading/risk/metrics` as failed while other terminal slices still keep their verified shell"
+      - "Inspect the visible risk panel and stale-state messaging"
+  expected: "After at least one verified risk snapshot exists, a later risk-slice refresh failure should keep the last verified risk panel values visible and pair them with explicit stale or degraded-state messaging. Synthetic fallback values such as `0`, `待接入`, `未知`, or boot defaults are only acceptable before the first verified risk snapshot exists."
+  actual: "Before repair, `loadRiskData()` always replaced the visible risk slice with `FALLBACK_RISK_DATA` on any failure. A later risk refresh failure therefore cleared the verified drawdown, PnL, positions, and freshness values even though the page was already showing a valid earlier risk snapshot and only the newest risk request had failed."
+  evidence:
+    kind: live-observation
+    note: "System-`google-chrome` verification with browser-context interception reproduced a successful terminal risk snapshot followed by a failing risk refresh. After repair the route keeps `1.80%`, `¥3,450.50`, `2 个`, and `2026/5/4 17:30:00` on the visible risk panel while the runtime alert degrades to `部分数据降级：风险指标 / 当前降级模块：风险指标`."
+  repair_target:
+    files:
+      - web/frontend/src/views/composables/useTradingDashboard.ts
+    primary_owner: web/frontend/src/views/composables/useTradingDashboard.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /trade/terminal
+  status: open
+  dependency: null
+  dedupe_key: /trade/terminal:data-state:sliceRefreshFallbackRetentionTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/trade/terminal` after repair and confirm first-load fallback behavior remains intact while a later risk-slice refresh failure now preserves the last verified risk panel snapshot."

@@ -1,0 +1,33 @@
+- consolidated_issue_id: secondary-shell-issue-27
+  severity: Medium
+  title: Wencai legacy page now delegates directly to the live Wencai panel truth component
+  pages:
+    - /secondary/wencai-live-truth-wrapper
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The pseudo overview card, fake API status, statistics tabs, and wrapper-local summary fetch in `Wencai.vue` were all faces of the same defect family: a legacy wrapper duplicated shell-level truth even though the inner `WencaiPanel.vue` already owned the real Wencai query, results, export, and history contract."
+  primary_owner: web/frontend/src/views/Wencai.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/wencai-live-truth-wrapper
+  dedupe_keys:
+    - /secondary/wencai-live-truth-wrapper:route-truth:wencaiLiveTruthWrapper
+  verification_scope:
+    routes:
+      - /secondary/wencai-live-truth-wrapper
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/Wencai.vue
+      - web/frontend/src/views/__tests__/Wencai.spec.ts
+    notes:
+      - "the legacy Wencai page now renders a thin wrapper over `WencaiPanel.vue`"
+      - "the repair removes the wrapper-local pseudo overview, fake API status, statistics tabs, and summary fetch instead of preserving duplicated shell truth"
+      - "the live Wencai API/query/result/history contract remains owned by the preserved inner panel rather than by a new wrapper state layer"
+  verification_surface: code-review-only

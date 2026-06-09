@@ -1,7 +1,7 @@
 # ArtDeco Component Governance Record: ArtDecoRiskOverviewPanel
 
 > **说明**
-> 本文基于 [`ARTDECO_COMPONENT_GOVERNANCE_RECORD_TEMPLATE.md`](/opt/claude/mystocks_spec/docs/plans/ARTDECO_COMPONENT_GOVERNANCE_RECORD_TEMPLATE.md) 产出，是首批样板组件的第四份实战治理记录草案。
+> 本文基于 [`ARTDECO_COMPONENT_GOVERNANCE_RECORD_TEMPLATE.md`](ARTDECO_COMPONENT_GOVERNANCE_RECORD_TEMPLATE.md) 产出，是首批样板组件的第四份实战治理记录草案。
 > 它同时也是三层模型中的第一份 `Domain` 样板记录。
 
 ---
@@ -9,7 +9,7 @@
 ## 1. 组件基本信息
 
 - **组件名称**: `ArtDecoRiskOverviewPanel`
-- **组件路径**: [`web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskOverviewPanel.vue`](/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskOverviewPanel.vue)
+- **组件路径**: [`web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskOverviewPanel.vue`](../../web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskOverviewPanel.vue)
 - **所属层级**: `Domain`
 - **所属业务域**: `风险控制`
 - **当前状态**: `候选`
@@ -29,8 +29,8 @@
 
 `ArtDecoRiskOverviewPanel` 当前直接挂接在：
 
-- [`web/frontend/src/views/risk/Center.vue`](/opt/claude/mystocks_spec/web/frontend/src/views/risk/Center.vue)
-- [`web/frontend/src/views/artdeco-pages/_templates/ExampleRiskManagement.vue`](/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/_templates/ExampleRiskManagement.vue)
+- [`web/frontend/src/views/risk/Center.vue`](../../web/frontend/src/views/risk/Center.vue)
+- [`web/frontend/src/views/artdeco-pages/_templates/ExampleRiskManagement.vue`](../../web/frontend/src/views/artdeco-pages/_templates/ExampleRiskManagement.vue)
 
 它的价值不在“通用程度”，而在于它非常适合回答一个关键问题：
 

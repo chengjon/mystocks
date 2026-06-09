@@ -1,0 +1,39 @@
+- finding_id: strategy-repo-data-state-001
+  batch_id: strategy-batch-08
+  page:
+    route: /strategy/repo
+    page_key: strategy-repo
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/strategy/List.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Strategy repository route presented count-only summary cards and sibling count meta as faux delta metrics and reused zero or real-empty semantics before verified inventory existed
+  trigger:
+    steps:
+      - Open `/strategy/repo`
+      - Inspect the top summary cards and sibling `MATCHED / PAGE` meta after a verified strategy payload resolves
+      - Re-run the same route while the first `/api/v1/strategy/strategies` request is still unresolved before any verified repository inventory exists
+  expected: "Count-only repository summary cards should render plain strings without shared delta chrome or pseudo-decimal precision, and unresolved or failed first-load summary surfaces should degrade to placeholders such as `-- / -- / -- / 全部状态` plus `MATCHED: -- / PAGE: -- / --` until verified inventory evidence exists."
+  actual: "Before repair, the route delegated verified count-only tallies directly into shared stat-card defaults, and the same route reused zero-valued counts plus a false `REAL 数据为空，请先创建策略。` empty-state message while the first strategy payload was still unresolved."
+  evidence:
+    kind: code-review-plus-targeted-verification
+    note: "Code review of the pre-repair `ArtDecoStrategyManagement.vue` showed raw numeric counts, raw `MATCHED / PAGE` meta, and empty-state derivation from unresolved empty arrays, while targeted routed regression and browser-context verification confirmed the repaired states."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyManagement.vue
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoStrategyManagement.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyManagement.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/repo
+  status: open
+  dependency: null
+  dedupe_key: /strategy/repo:data-state:summaryCountAndFirstLoadTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that verified repository tally cards render as plain strings without `.artdeco-stat-change`, that unresolved or failed first-load summary surfaces degrade to placeholders, and that the page no longer claims the repository is really empty before any verified inventory exists.

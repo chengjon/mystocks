@@ -1,0 +1,41 @@
+- finding_id: system-config-data-state-003
+  batch_id: system-batch-11
+  page:
+    route: /system/config
+    page_key: system-config
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/system/Settings.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Routed system-config source tab presented unresolved first-load counts as faux zero metrics before any verified source-config snapshot existed
+  trigger:
+    steps:
+      - "Open `/system/config` with the default `数据源` tab active"
+      - "Keep the first `/api/v1/data-sources/config/` request unresolved while sibling general and monitor loaders complete"
+      - "Inspect the visible source-tab stats strip before any verified source-config snapshot lands"
+  expected: "While the active source-config slice is still unresolved, the route should keep source-dependent counts degraded to `-- / --` and preserve only static capability truth such as write support."
+  actual: "Before repair, the default `数据源` tab rendered `0 / 0 / ON / N/A` even though the page had not yet verified any source-config snapshot. The visible counts therefore looked like a real empty inventory instead of an unresolved first-load shell."
+  evidence:
+    kind: live-observation
+    note: "A new owner red test first reproduced `0 / 0 / ON / N/A`, then targeted Phase 4 Chromium proof confirmed the routed page now stays at `-- / -- / ON / N/A` until the delayed source-config request resolves."
+  repair_target:
+    files:
+      - web/frontend/src/views/system/Settings.vue
+      - web/frontend/src/views/system/__tests__/Settings.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/references/route-truth-casebook.md
+      - .claude/skills/myweb-audit/references/route-truth-coverage-matrix.md
+    primary_owner: web/frontend/src/views/system/Settings.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /system/data
+  status: open
+  dependency: null
+  dedupe_key: /system/config:data-state:sourcePendingCountTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/system/config` after repair and confirm unresolved source-tab stats stay at `-- / -- / ON / N/A` until the first verified source-config snapshot lands."

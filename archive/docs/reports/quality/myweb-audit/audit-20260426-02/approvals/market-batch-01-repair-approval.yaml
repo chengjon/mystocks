@@ -1,0 +1,77 @@
+- consolidated_issue_id: market-technical-issue-01
+  severity: Medium
+  affected_routes:
+    - /market/technical
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/market/Technical.vue
+  page_scope: shared-impact
+  frontend_fixable: true
+  repair_bucket: fix-with-shared-impact-review
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: true
+    generated_artifact: false
+  summary: The K-line workbench split chart and summary into two request paths, so the page now unifies them on the page-owned `/v1/market/kline` result.
+  dependency: null
+  shared_impact:
+    candidate: true
+    basis: embedded chart logic in `ProKLineChart.vue` and `useProKLineChart.ts`
+    related_routes:
+      - /market/technical
+  approval_status: approved
+
+- consolidated_issue_id: market-lhb-issue-01
+  severity: Medium
+  affected_routes:
+    - /market/lhb
+  source_roles:
+    - functional-audit
+  primary_repair_target: web/frontend/src/views/market/LHB.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: The LHB date selector now maps to trade-date-scoped `/v2/market/lhb` requests instead of slicing whatever happened to be loaded already.
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: null
+    related_routes: []
+  approval_status: approved
+
+- consolidated_issue_id: market-domain-issue-01
+  severity: Medium
+  affected_routes:
+    - /market/realtime
+    - /market/technical
+    - /market/lhb
+  source_roles:
+    - responsive-a11y-audit
+  primary_repair_target: web/frontend/src/views/market/Realtime.vue
+  page_scope: shared-impact
+  frontend_fixable: true
+  repair_bucket: fix-with-shared-impact-review
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: The routed market pages no longer carry unsupported `48rem` responsive branches under the current desktop-first policy.
+  dependency: null
+  shared_impact:
+    candidate: true
+    basis: same desktop-policy branch repeated across all three primary market pages
+    related_routes:
+      - /market/realtime
+      - /market/technical
+      - /market/lhb
+  approval_status: approved

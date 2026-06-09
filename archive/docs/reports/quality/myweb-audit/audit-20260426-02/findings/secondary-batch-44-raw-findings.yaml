@@ -1,0 +1,46 @@
+- finding_id: secondary-shell-044-stock-analysis-demo
+  batch_id: secondary-batch-44
+  page:
+    route: /secondary/stock-analysis-demo-static-shell
+    page_key: secondary-stock-analysis-demo-static-shell
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/StockAnalysisDemo.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy stock-analysis demo preserved selector tabs, TDX examples, realtime ticker, and integration-status truth without a verified owner
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/StockAnalysisDemo.vue`"
+      - "Inspect the imported `views/stock-analysis/*Tab.vue` children"
+      - "Confirm the current router does not expose `StockAnalysisDemo.vue` or its child tabs as independent canonical route entries"
+  expected: "A legacy stock-analysis demo with no verified one-to-one canonical owner should degrade to an honest static shell and should not preserve selector tabs, local TDX examples, RQAlpha metrics, realtime ticker rows, or integration-status claims."
+  actual: "Before repair, `StockAnalysisDemo.vue` orchestrated six selector tabs that displayed local TDX parsing examples, screening strategies, backtest metrics, realtime ticker cards, monitoring logs, and integration status."
+  evidence:
+    kind: code-review-plus-owner-regression
+    note: "RED regression failed before repair because the page did not render `legacy-static-shell` and still mounted the six stock-analysis tab children."
+  repair_target:
+    files:
+      - web/frontend/src/views/StockAnalysisDemo.vue
+      - web/frontend/src/views/stock-analysis/StockBacktestTab.vue
+      - web/frontend/src/views/stock-analysis/StockDataTab.vue
+      - web/frontend/src/views/stock-analysis/StockOverviewTab.vue
+      - web/frontend/src/views/stock-analysis/StockRealtimeTab.vue
+      - web/frontend/src/views/stock-analysis/StockStatusTab.vue
+      - web/frontend/src/views/stock-analysis/StockStrategyTab.vue
+      - web/frontend/src/views/styles/StockAnalysisDemo.scss
+      - web/frontend/src/views/__tests__/StockAnalysisDemo.spec.ts
+      - web/frontend/tests/unit/config/stock-analysis-style-normalization.spec.ts
+    primary_owner: web/frontend/src/views/StockAnalysisDemo.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/stock-analysis-demo-static-shell
+  status: open
+  dependency: null
+  dedupe_key: /secondary/stock-analysis-demo-static-shell:route-truth:legacyStockAnalysisDemoStaticShell
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run owner and config regressions to confirm the page renders an honest static shell and the retired tab files/style no longer exist."

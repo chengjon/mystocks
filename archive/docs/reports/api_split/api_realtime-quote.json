@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/realtime-quote",
+  "total_endpoints": 1,
+  "endpoints": [
+    {
+      "path": "/realtime-quote",
+      "method": "GET",
+      "file": "multi_source.py",
+      "function": "fetch_realtime_quote",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 121
+    }
+  ]
+}

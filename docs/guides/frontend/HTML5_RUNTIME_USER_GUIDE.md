@@ -26,7 +26,7 @@
 
 - 页面会加载 `manifest.json`
 - 浏览器会尝试注册 `sw.js`
-- 站点具备基础 icon / theme-color / mobile web app meta
+- 站点具备基础 icon / theme-color / web app compatibility meta
 
 这意味着在支持的桌面浏览器里，用户**有机会**看到“安装应用”或“添加到桌面”的体验。
 
@@ -35,7 +35,7 @@
 当前安装体验不是完整闭环，原因包括：
 
 - `vite-plugin-pwa` 仍未接入现行构建链
-- `manifest.json` 中的部分截图资源仍缺失
+- 当前 Desktop-only manifest 只保留核心 PWA icons；移动端 screenshots / splash screens 与 shortcut 图标设计不属于当前已闭合范围
 - 当前仓库并没有把“安装成功率”验收到完成状态
 
 因此用户应把当前体验理解为：
@@ -73,7 +73,7 @@
 当前离线能力仍不应被理解为“核心业务离线闭环已完成”，因为：
 
 - 多个 Playwright 用例当前显式禁用了 service worker
-- OpenSpec 中离线测试、跨浏览器验证、IndexedDB 迁移验证都还未闭合
+- OpenSpec 中 11 路由离线测试和跨浏览器 PWA 验证仍未闭合；IndexedDB 当前只按 Desktop Chromium version `1` schema bootstrap / close-reopen persistence 闭合，不代表跨浏览器或未来 schema upgrade 迁移已验收
 - 还没有“11 个路由离线可用”这类已验收结论
 
 用户应按如下预期使用：
@@ -91,14 +91,14 @@
 
 - 后端有用户级通知偏好契约：`/api/notification/preferences`
 - 前端 API 层已有对应读写方法
-- 但当前**活跃系统设置页面** [Settings.vue](/opt/claude/mystocks_spec/web/frontend/src/views/system/Settings.vue) 只说明这条契约存在，没有暴露完整通知偏好表单
+- 但当前**活跃系统设置页面** [Settings.vue](../../../web/frontend/src/views/system/Settings.vue) 只说明这条契约存在，没有暴露完整通知偏好表单
 
 ### 3.2 Important Limitation
 
 仓库里虽然保留了一个 ArtDeco 风格的通知设置组件：
 
-- [ArtDecoSettings.vue](/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/ArtDecoSettings.vue)
-- [NotificationSettings.vue](/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/settings/NotificationSettings.vue)
+- [ArtDecoSettings.vue](../../../web/frontend/src/views/artdeco-pages/ArtDecoSettings.vue)
+- [NotificationSettings.vue](../../../web/frontend/src/views/artdeco-pages/settings/NotificationSettings.vue)
 
 但它不是当前 router 的活跃设置入口。
 

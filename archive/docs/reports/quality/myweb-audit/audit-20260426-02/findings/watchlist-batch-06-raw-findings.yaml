@@ -1,0 +1,40 @@
+- finding_id: watchlist-manage-data-state-03
+  batch_id: watchlist-batch-06
+  page:
+    route: /watchlist/manage
+    page_key: watchlist-manage
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/watchlist/Manage.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Watchlist manage rebound stale stock rows to a newly selected watchlist when the later stock refresh failed
+  trigger:
+    steps:
+      - "Open `/watchlist/manage`."
+      - "Let the default `核心组合` watchlist and its stock rows verify successfully."
+      - "Select `成长跟踪` and let `/api/v1/monitoring/watchlists/:watchlistId/stocks` resolve `success: false` for that later selector-scoped refresh."
+      - "Inspect the active watchlist tab, the visible stock rows, and the route-level state panel."
+  expected: "If the route retains the previous verified stock rows after a later selector-scoped refresh fails, it must keep or explicitly revert the active selector chrome to the last verified watchlist snapshot and pair that retained table with explicit stale-refresh messaging."
+  actual: "Before repair, `handleSelectList()` promoted the requested watchlist id before the new stock slice verified, had no rollback path on later refresh failure, and left the previously verified `核心组合` rows visible under the newly active `成长跟踪` tab. The route therefore rebound stale rows to the wrong watchlist context and surfaced only a generic load-failure shell."
+  evidence:
+    kind: code-path-review
+    note: "A new component RED test reproduced the pre-repair path: clicking `成长跟踪` after a verified `核心组合` load kept `贵州茅台` visible while `.watchlist-tab.active` switched to `成长跟踪`, and the later failed refresh also raised an unhandled rejection because the selector path had no rollback or route-local stale state."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/stock-management-tabs/WatchlistManager.vue
+      - web/frontend/src/views/watchlist/__tests__/Manage.spec.ts
+      - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/artdeco-pages/stock-management-tabs/WatchlistManager.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /watchlist/manage
+  status: open
+  dependency: null
+  dedupe_key: /watchlist/manage:data-state:selectorScopedRowProvenanceTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check the canonical route after repair and confirm that a later watchlist-stock refresh failure keeps the active selector pinned to the last verified watchlist, preserves the correct rows, and renders explicit stale-refresh copy."

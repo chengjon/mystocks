@@ -1,0 +1,37 @@
+- consolidated_issue_id: strategy-parameters-issue-01
+  severity: High
+  title: Strategy parameters summary surfaces now render honest count-only cards and failed first-load placeholders instead of faux delta metrics or resolved zero tallies
+  pages:
+    - /strategy/parameters
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The top strategy summary strip leaked the same route-truth defect across adjacent states: verified count-only tallies, natural empty-state zeros, and failed first-load summary cards were all delegated into shared numeric presentation before the canonical page distinguished them."
+  primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/StrategyParametersTab.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/parameters
+  dedupe_keys:
+    - /strategy/parameters:data-state:summaryCountAndFirstLoadTruth
+  verification_scope:
+    routes:
+      - /strategy/parameters
+    states:
+      - default
+      - empty
+      - error
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/StrategyParametersTab.vue
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/StrategyParametersTab.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    notes:
+      - "the routed parameters tab now derives `showSummaryPlaceholders` from first-load and error-state evidence, so failed first loads degrade the count-only summary strip to `-- / -- / -- / 101` instead of inherited zero values"
+      - "the same route now passes plain string values and `show-change=false` to every top summary card, so verified count-only tallies and natural empty-state zeros no longer inherit shared `+0%` chrome or decimal pseudo precision"
+      - "the new routed component regression and strengthened phase3 matrix now protect both the verified-summary and failed-first-load parameter paths"
+      - "this batch reuses existing `myweb-audit v1.32 + v1.38` rules rather than introducing a new skill version, because the defect was a direct combination of count-kpi delta truth and unresolved first-load summary truth"
+  verification_surface: code-review-plus-targeted-live-verification

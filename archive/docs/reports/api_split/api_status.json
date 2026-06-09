@@ -1,0 +1,117 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/status",
+  "total_endpoints": 10,
+  "endpoints": [
+    {
+      "path": "/status",
+      "method": "GET",
+      "file": "metrics.py",
+      "function": "basic_status",
+      "return_model": "APIResponse",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 162
+    },
+    {
+      "path": "/status",
+      "method": "GET",
+      "file": "notification.py",
+      "function": "get_email_service_status",
+      "return_model": "Dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 303
+    },
+    {
+      "path": "/status/overview",
+      "method": "GET",
+      "file": "data_quality.py",
+      "function": "get_system_status_overview",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 297
+    },
+    {
+      "path": "/status",
+      "method": "GET",
+      "file": "gpu_monitoring.py",
+      "function": "get_gpu_status",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 70
+    },
+    {
+      "path": "/status",
+      "method": "GET",
+      "file": "sse_endpoints.py",
+      "function": "sse_status",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 259
+    },
+    {
+      "path": "/status",
+      "method": "GET",
+      "file": "cache.py",
+      "function": "get_cache_status",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 42
+    },
+    {
+      "path": "/status",
+      "method": "GET",
+      "file": "monitoring/routes.py",
+      "function": "get_status",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 16
+    },
+    {
+      "path": "/status",
+      "method": "GET",
+      "file": "technical/routes.py",
+      "function": "get_status",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 16
+    },
+    {
+      "path": "/status",
+      "method": "GET",
+      "file": "announcement/routes.py",
+      "function": "get_status",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 31
+    },
+    {
+      "path": "/status",
+      "method": "GET",
+      "file": "multi_source/routes.py",
+      "function": "get_status",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 16
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+audit_run_id: audit-20260426-02
+batch_id: data-batch-16
+module: data
+scope:
+  requested_by: user
+  pages:
+    - route: /data/indicator
+      page_key: data-indicator
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/data/Advanced.vue
+  compatibility_redirects: []
+batch_rationale: "Close the canonical `/data/indicator` refresh-timestamp provenance gap so failed manual refreshes cannot advance header `UPDATED` metadata while the page is still showing the previous verified analysis snapshot. This batch also codifies the new freshness rule as `myweb-audit v1.46`."
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/data/indicator` remains `web/frontend/src/views/data/Advanced.vue`"
+    - "the approved repair should stay page-local inside `useDataAnalysis` and `Advanced.vue` rather than widening into shared ArtDeco stat-card defaults, global request wrappers, or unrelated data-analysis family routes"
+    - "if a later manual refresh fails after success, header `UPDATED` must continue to identify the time of the currently visible verified analysis snapshot instead of the failed retry attempt or the local current clock"
+    - "the route should preserve the visible indicator workspace and show explicit stale-refresh copy rather than collapsing into full error state when the failed refresh occurs after a verified snapshot already exists"
+    - "this batch introduces `myweb-audit v1.46` refresh-timestamp provenance guidance for routed pages that expose hero freshness metadata"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [error, default]
+  notes:
+    - "verify a successful first sync followed by a failed manual refresh keeps the original `UPDATED` value visible on `/data/indicator`"
+    - "verify the same stale-refresh path keeps the indicator workspace mounted and shows `部分刷新失败 / 当前仍显示上次成功同步的数据分析快照。` instead of the full `数据分析数据加载失败` state"
+repair_approval:
+  status: approved
+  approved_findings:
+    - data-indicator-issue-03
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - data-indicator
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/composables/market/useDataAnalysis.ts
+    - web/frontend/src/views/data/Advanced.vue
+    - web/frontend/tests/unit/views/data-advanced-screening-truth.spec.ts
+    - web/frontend/src/views/data/__tests__/Advanced.spec.ts
+    - web/frontend/tests/unit/views/data-advanced-cutover.spec.ts
+    - web/frontend/tests/unit/views/data-indicator-details.spec.ts
+    - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-data-indicator-refresh-timestamp-provenance-and-phase2-list
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contains earlier staged audit artifacts and unrelated files, so any staged GitNexus output remains observation-only unless an isolated staged scope is prepared later"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` returned `risk_level: low`, `changed_files: 126`, `changed_count: 317`, and `affected_count: 0`, but the staged set remains mixed with earlier batches and unrelated files"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/data-indicator-refresh-timestamp-provenance-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-16-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/data-batch-16-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/data-batch-16-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/data-batch-16-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-data-batch-16-closeout
+  notes:
+    - "the canonical data-indicator route now keeps header `UPDATED` aligned to the currently visible verified analysis snapshot during stale-refresh failures"
+    - "this batch introduces `myweb-audit v1.46` so future routed pages audit hero freshness metadata separately from request-id or count-surface provenance"
+status: complete

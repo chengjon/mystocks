@@ -1,0 +1,23 @@
+- consolidated_issue_id: risk-stop-loss-issue-01
+  severity: Medium
+  affected_routes:
+    - /risk/stop-loss
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/artdeco-pages/risk-tabs/stopLossMonitorData.ts
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: true
+    generated_artifact: false
+  summary: The routed risk stop-loss workbench should not present quote-only watchlist rows as active threshold monitoring until the live routed source exposes real stop-loss inputs such as `stop_loss_price`.
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: null
+    related_routes: []
+  approval_status: approved

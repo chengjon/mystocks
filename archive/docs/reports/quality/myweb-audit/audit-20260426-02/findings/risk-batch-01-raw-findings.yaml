@@ -1,0 +1,38 @@
+- finding_id: risk-overview-data-state-001
+  batch_id: risk-batch-01
+  page:
+    route: /risk/overview
+    page_key: risk-overview
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/risk/Overview.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Routed risk-overview page mixed live rule data with embedded alert copy and fabricated KPI metrics on the same primary surface
+  trigger:
+    steps:
+      - Open `/risk/overview`
+      - Let the routed page load its real monitoring rule data
+      - Inspect the hero KPI strip, overview metric table, and `预警消息` tab on the same primary routed workbench surface
+  expected: "The page should either derive each visible slice from current live contract data or degrade uncovered slices to explicit empty, unverified, or pending-integration states."
+  actual: "Before repair, the page fetched real rule data but still showed embedded alert messages plus fabricated KPI and overview metric values such as `38.6%`, `1.08`, `16.2%`, `-8.9%`, and `2.6%` on the primary routed surface."
+  evidence:
+    kind: live-observation
+    note: "Live `/risk/overview` verification showed only `/api/v1/monitoring/alert-rules` traffic before repair while the route still rendered embedded alert copy and hardcoded overview metrics; comparator spot-checks on `/risk/alerts` and `/risk/news` already handled empty live data honestly."
+  repair_target:
+    files:
+      - web/frontend/src/views/risk/Overview.vue
+      - web/frontend/src/views/risk/__tests__/Overview.spec.ts
+      - web/frontend/tests/e2e/risk-overview.spec.ts
+    primary_owner: web/frontend/src/views/risk/Overview.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /risk/overview:data-state:overview-hybrid-live-surface-truth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check that the route requests both rule and alert endpoints and that uncovered KPI slices no longer display fabricated runtime values.

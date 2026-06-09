@@ -1,0 +1,51 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/groups",
+  "total_endpoints": 4,
+  "endpoints": [
+    {
+      "path": "/groups",
+      "method": "GET",
+      "file": "watchlist.py",
+      "function": "get_user_groups",
+      "return_model": "List[Dict]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 383
+    },
+    {
+      "path": "/groups",
+      "method": "POST",
+      "file": "watchlist.py",
+      "function": "create_group",
+      "return_model": "Dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 396
+    },
+    {
+      "path": "/groups/{group_id}",
+      "method": "PUT",
+      "file": "watchlist.py",
+      "function": "update_group",
+      "return_model": "Dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 422
+    },
+    {
+      "path": "/groups/{group_id}",
+      "method": "DELETE",
+      "file": "watchlist.py",
+      "function": "delete_group",
+      "return_model": "Dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 449
+    }
+  ]
+}

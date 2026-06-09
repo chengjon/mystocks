@@ -1,0 +1,55 @@
+- consolidated_issue_id: risk-overview-issue-02
+  severity: High
+  affected_routes:
+    - /risk/overview
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/risk/Overview.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: true
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: Count or label-only KPI cards on `/risk/overview` should not inherit shared stat-card delta chrome or exact-decimal precision when the routed payload only proves tallies and an unverified label.
+  dependency: null
+  shared_impact:
+    candidate: true
+    basis: The defect pattern came from shared stat-card defaults and was already observed on `/risk/alerts`, `/risk/news`, `/watchlist/manage`, and `/risk/stop-loss`, but the current batch intentionally repairs the route locally because `ArtDecoStatCard.vue` still has a HIGH upstream blast radius.
+    related_routes:
+      - /risk/stop-loss
+      - /risk/alerts
+      - /risk/news
+      - /watchlist/manage
+  approval_status: approved
+
+- consolidated_issue_id: risk-stop-loss-issue-02
+  severity: High
+  affected_routes:
+    - /risk/stop-loss
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/risk/StopLoss.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: true
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: The canonical `/risk/stop-loss` KPI strip should render honest count or label values instead of borrowing fabricated `+0%` chrome or decimal precision from shared stat-card defaults.
+  dependency: null
+  shared_impact:
+    candidate: true
+    basis: The same shared stat-card defaults affected `/risk/overview`, `/risk/alerts`, `/risk/news`, and `/watchlist/manage`, but the approved repair remains route-local because changing `ArtDecoStatCard.vue` directly would hit a HIGH shared blast radius.
+    related_routes:
+      - /risk/overview
+      - /risk/alerts
+      - /risk/news
+      - /watchlist/manage
+  approval_status: approved

@@ -1,0 +1,77 @@
+- finding_id: trade-signals-data-state-002
+  batch_id: trade-batch-05
+  page:
+    route: /trade/signals
+    page_key: trade-signals
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/trade/Signals.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Trade signals tally and pending-analysis cards inherited fabricated delta chrome and decimal precision from shared stat-card defaults
+  trigger:
+    steps:
+      - Open `/trade/signals`
+      - Inspect both the top KPI strip and the `信号总览与执行面板` stat-card grid
+      - Compare the visible card presentation with the actual routed surface, which exposes tallies, pending-analysis labels, and request latency but no comparison baseline
+  expected: "The routed cards should render honest tally or label values with no delta affordance because this surface does not expose verified movement semantics for those cards."
+  actual: "Before repair, the canonical route rendered flat-change chrome such as `● +0%` and exact-decimal values such as `3.00`, `1.00`, and `0.00` across both the top tally strip and the pending-analysis overview cards."
+  evidence:
+    kind: live-observation
+    note: The strengthened routed regression and targeted PM2 browser verification both reproduced shared stat-card change chrome and pseudo precision on `/trade/signals` before the page-local opt-out landed.
+  repair_target:
+    files:
+      - web/frontend/src/views/trade/Signals.vue
+    primary_owner: web/frontend/src/views/trade/Signals.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /trade/history
+    - /risk/overview
+  status: open
+  dependency: null
+  dedupe_key: /trade/signals:data-state:count-kpi-delta-truth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check both stat-card groups after repair and confirm the route still reaches the canonical trade-signals API while keeping pending-analysis copy honest.
+
+- finding_id: trade-history-data-state-002
+  batch_id: trade-batch-05
+  page:
+    route: /trade/history
+    page_key: trade-history
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/trade/History.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Trade history tally and cumulative-value cards inherited fabricated delta chrome and decimal precision from shared stat-card defaults
+  trigger:
+    steps:
+      - Open `/trade/history`
+      - Inspect the top KPI strip for `总笔数`, `已成交`, `待成交`, and `成交总额`
+      - Compare the visible card presentation with the actual routed surface, which exposes plain tallies plus a cumulative amount and no comparison baseline
+  expected: "The routed KPI strip should render honest tally or cumulative values only, with no flat-change chrome or pseudo precision when the page lacks comparison-baseline truth."
+  actual: "Before repair, the canonical route rendered exact-decimal tally values plus fabricated flat-change chrome such as `● +0%` on the same cards."
+  evidence:
+    kind: live-observation
+    note: The new routed regression reproduced four `.artdeco-stat-change` nodes on the trade-history KPI strip before repair, and targeted PM2 verification confirmed the natural route still showed the same shared-card chrome on honest empty-history data.
+  repair_target:
+    files:
+      - web/frontend/src/views/trade/History.vue
+    primary_owner: web/frontend/src/views/trade/History.vue
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /trade/signals
+    - /risk/stop-loss
+  status: open
+  dependency: null
+  dedupe_key: /trade/history:data-state:count-kpi-delta-truth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Re-check the routed KPI strip after repair and confirm the route still reaches `/api/v1/trade/trades` without rendering `+0%` or decimal-formatted tallies.

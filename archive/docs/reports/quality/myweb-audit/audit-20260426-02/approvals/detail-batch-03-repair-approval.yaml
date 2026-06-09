@@ -1,0 +1,24 @@
+- consolidated_issue_id: detail-news-issue-03
+  severity: High
+  affected_routes:
+    - /detail/news/:symbol
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/announcement/composables/useAnnouncementMonitor.ts
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: The canonical detail news route now clears sibling announcement stat cards back to `--` when the dedicated announcement stats slice refresh fails, instead of silently preserving stale counts as current truth.
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: The approved repair stayed inside a view-local single-consumer composable under `web/frontend/src/views/announcement/` plus its routed regressions and the myweb-audit skill package; no shared announcement transport or cross-route component changed in this batch.
+    related_routes:
+      - /detail/news/:symbol
+  approval_status: approved

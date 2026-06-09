@@ -1,0 +1,45 @@
+- finding_id: trade-reconciliation-data-state-001
+  batch_id: trade-batch-15
+  page:
+    route: /trade/reconciliation
+    page_key: trade-reconciliation
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/trade/Reconciliation.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Trade reconciliation leaked previous account statement and result rows while a newly selected account snapshot was still unresolved
+  trigger:
+    steps:
+      - "Open `/trade/reconciliation`"
+      - "Import a CSV so account `backtest:7` has verified statement rows and verified reconciliation result rows"
+      - "Switch the same page instance to account `backtest:8` while its first `/api/trade/reconciliation/statements` request is still unresolved"
+      - "Inspect the visible statement and result tables under the new account shell"
+  expected: "When the newly selected account has no verified snapshot yet, selector-owned statement rows and result rows should clear immediately so the page shows only the new account's pending shell."
+  actual: "Before repair, the hero switched to `ACCOUNT: backtest:8` but both the old `600519.SH` statement row and the old `601318.SH / 000001.SZ` reconciliation result rows remained visible until the new account request resolved."
+  evidence:
+    kind: live-observation
+    note: "A new owner red test first reproduced the same-instance account-switch leak, then a routed Phase 3 Chromium proof confirmed the new account shell now clears old rows while the unresolved selector stays pending."
+  repair_target:
+    files:
+      - web/frontend/src/api/trade.ts
+      - web/frontend/src/views/trade/composables/useTradeReconciliation.ts
+      - web/frontend/src/views/trade/__tests__/Reconciliation.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/references/route-truth-casebook.md
+      - .claude/skills/myweb-audit/references/route-truth-coverage-matrix.md
+    primary_owner: web/frontend/src/views/trade/composables/useTradeReconciliation.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /watchlist/manage
+    - /strategy/parameters
+    - /strategy/signals
+  status: open
+  dependency: null
+  dedupe_key: /trade/reconciliation:data-state:accountSelectorPendingRows
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check the same-instance `backtest:7 -> backtest:8` unresolved switch after repair and confirm the new account shell keeps no old statement or result rows."

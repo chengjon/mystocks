@@ -1,0 +1,39 @@
+- consolidated_issue_id: market-technical-issue-01
+  severity: Medium
+  title: Market technical routed first-load surfaces now render honest pending counters and placeholder copy instead of faux zero-point K-line truth
+  pages:
+    - /market/technical
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The unresolved first-load point counters and chart placeholder copy were two manifestations of the same routed first-snapshot truth cluster: the canonical technical page treated an unresolved K-line request as if a zero-point sample had already resolved."
+  primary_owner: web/frontend/src/views/market/Technical.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact: []
+  dedupe_keys:
+    - /market/technical:data-state:unresolvedFirstKlineSnapshotTruth
+  verification_scope:
+    routes:
+      - /market/technical
+    states:
+      - loading
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/market/Technical.vue
+      - web/frontend/src/views/market/__tests__/Technical.spec.ts
+      - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/SKILL.md
+      - .claude/agents/myweb-audit-data-state-audit.md
+      - .claude/skills/myweb-audit/references/audit-checklist.md
+      - .claude/skills/myweb-audit/references/CHANGELOG.md
+    notes:
+      - "the canonical technical route now gates unresolved first-load point counters behind `isAwaitingFirstSnapshot`, so hero and content meta render `POINTS: --` instead of `POINTS: 0` while the first K-line payload is still pending"
+      - "the chart placeholder now renders `Synchronizing K-Line Sample` during the unresolved first-load window and falls back to the generic empty copy only after the route has actually completed with no rows"
+      - "the new routed regression mounts the real stat-card path, and the strengthened Phase 1 matrix now exercises a hanging-K-line first-load state on `/market/technical`"
+      - "the skill, data-state agent, and checklist now record `v1.39`, requiring browser-context interception and optional service-worker blocking when `page.route()` is bypassed by worker-side request replays during live audits"
+  verification_surface: code-review-plus-targeted-live-verification

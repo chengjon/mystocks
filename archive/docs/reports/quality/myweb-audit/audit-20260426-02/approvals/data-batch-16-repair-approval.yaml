@@ -1,0 +1,24 @@
+- consolidated_issue_id: data-indicator-issue-03
+  severity: High
+  affected_routes:
+    - /data/indicator
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/composables/market/useDataAnalysis.ts
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: true
+    page_config: false
+    shared_composable: true
+    shared_component: false
+    generated_artifact: false
+  summary: The canonical data-indicator route now keeps failed manual refreshes from advancing visible UPDATED freshness metadata unless a new verified analysis snapshot actually exists on screen.
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The repaired freshness-provenance gap is contained in the route owner `Advanced.vue`, its page-local composable `useDataAnalysis`, and routed regressions; no shared stat-card, global request wrapper, or shared layout primitive changed in this batch."
+    related_routes:
+      - /data/indicator
+  approval_status: approved

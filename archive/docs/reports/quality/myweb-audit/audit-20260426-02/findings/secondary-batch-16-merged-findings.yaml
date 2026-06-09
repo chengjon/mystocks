@@ -1,0 +1,33 @@
+- consolidated_issue_id: secondary-shell-issue-16
+  severity: Medium
+  title: Legacy strategy list page now delegates to the canonical strategy-repo owner
+  pages:
+    - /secondary/legacy-strategy-list-canonical-wrapper
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The local strategy grid, refresh control, filter bar, and run-results surfaces were all facets of the same defect: `StrategyList.vue` preserved a forked pseudo-live strategy-definition shell even though the canonical strategy-repo owner already exists."
+  primary_owner: web/frontend/src/views/strategy/StrategyList.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-strategy-list-canonical-wrapper
+  dedupe_keys:
+    - /secondary/legacy-strategy-list-canonical-wrapper:route-truth:legacyStrategyListCanonicalWrapper
+  verification_scope:
+    routes:
+      - /secondary/legacy-strategy-list-canonical-wrapper
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/strategy/StrategyList.vue
+      - web/frontend/src/views/strategy/__tests__/StrategyList.spec.ts
+    notes:
+      - "the legacy strategy-list page now renders only the canonical strategy-repo owner instead of a forked pseudo-live strategy-definition shell"
+      - "the page no longer fabricates local refresh, filter, or run-results shell truth"
+      - "secondary inventory heuristics now drop `strategy/StrategyList.vue` out of the high-priority shortlist"
+  verification_surface: code-review-only

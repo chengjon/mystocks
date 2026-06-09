@@ -1,0 +1,33 @@
+- consolidated_issue_id: secondary-shell-issue-18
+  severity: Medium
+  title: Legacy nested technical-analysis page now degrades to an honest static shell
+  pages:
+    - /secondary/legacy-technical-module-static-shell
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The local search form, indicator overview cards, chart area, indicator table, and batch-calculation shell were all facets of the same defect: `web/frontend/src/views/technical/TechnicalAnalysis.vue` preserved a forked pseudo-live technical-analysis shell even though no active canonical owner existed for delegation."
+  primary_owner: web/frontend/src/views/technical/TechnicalAnalysis.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-technical-module-static-shell
+  dedupe_keys:
+    - /secondary/legacy-technical-module-static-shell:route-truth:legacyTechnicalModuleStaticShell
+  verification_scope:
+    routes:
+      - /secondary/legacy-technical-module-static-shell
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/technical/TechnicalAnalysis.vue
+      - web/frontend/src/views/technical/__tests__/TechnicalAnalysis.spec.ts
+    notes:
+      - "the nested legacy technical-analysis page now renders an honest static shell instead of a forked pseudo-live workbench"
+      - "the page no longer fabricates local indicator totals, signal summaries, chart chrome, or batch-calculation shell truth"
+      - "secondary inventory heuristics now drop `web/frontend/src/views/technical/TechnicalAnalysis.vue` out of the high-priority shortlist"
+  verification_surface: code-review-only

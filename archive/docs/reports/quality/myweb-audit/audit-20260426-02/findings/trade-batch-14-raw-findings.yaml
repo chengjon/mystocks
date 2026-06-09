@@ -1,0 +1,39 @@
+- finding_id: trade-terminal-data-state-005
+  batch_id: trade-batch-14
+  page:
+    route: /trade/terminal
+    page_key: trade-terminal
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/TradingDashboard.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Trade terminal later strategy refresh failure replaced the visible verified strategy rows with empty fallback truth
+  trigger:
+    steps:
+      - "Open `/trade/terminal`"
+      - "Wait until the route shows verified strategy-performance rows"
+      - "Trigger a later manual refresh"
+      - "Resolve `/api/trading/strategies/performance` as failed while the other terminal slices remain verified"
+      - "Inspect the visible `.strategy-performance` table and degraded-state messaging"
+  expected: "After at least one verified strategy-performance slice exists, a later strategy refresh failure should preserve the visible strategy rows while pairing the route with explicit degraded-state messaging. Empty fallback truth such as an empty table is only acceptable before the first verified strategy snapshot exists."
+  actual: "Before repair, `loadStrategyPerformance()` always replaced the visible strategy-performance slice with an empty array on any failure. A later strategy refresh failure therefore cleared the visible rows even though the failed refresh had not replaced the current verified strategy snapshot."
+  evidence:
+    kind: live-observation
+    note: "System-`google-chrome` verification with browser-context interception reproduced verified strategy rows followed by a failing later refresh. After repair the route keeps `Momentum Alpha` and `Mean Reversion` visible while the runtime alert degrades to `部分数据降级：策略绩效 / 当前降级模块：策略绩效`."
+  repair_target:
+    files:
+      - web/frontend/src/views/composables/useTradingDashboard.ts
+    primary_owner: web/frontend/src/views/composables/useTradingDashboard.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /trade/terminal
+  status: open
+  dependency: null
+  dedupe_key: /trade/terminal:data-state:strategyPerformanceRefreshFallbackRetentionTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/trade/terminal` after repair and confirm a later strategy refresh failure now preserves the last verified strategy rows while first-load strategy fallback truth remains intact."

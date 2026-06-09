@@ -1,0 +1,73 @@
+- consolidated_issue_id: trade-signals-issue-02
+  severity: High
+  title: Trade signals stat-card surfaces now render honest tally and pending-analysis values instead of fabricated delta chrome or decimal precision
+  pages:
+    - /trade/signals
+  source_roles:
+    - data-state-audit
+  why_consolidated: The routed top tally strip and the pending-analysis overview grid both leaked the same shared stat-card delta semantics and pseudo precision, so they represent one count-kpi truth issue on the canonical trade-signals route.
+  primary_owner: web/frontend/src/views/trade/Signals.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /trade/history
+    - /risk/overview
+  dedupe_keys:
+    - /trade/signals:data-state:count-kpi-delta-truth
+  verification_scope:
+    routes:
+      - /trade/signals
+    states:
+      - default
+      - empty
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/trade/Signals.vue
+      - web/frontend/src/views/trade/__tests__/Signals.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    notes:
+      - "the canonical trade-signals route now passes string tallies and explicitly disables `show-change` on both the top KPI strip and the pending-analysis overview cards"
+      - "the strengthened routed regression and Phase 3 matrix assertion now guard against `.artdeco-stat-change`, `+0%`, `3.00`, `1.00`, and `0.00` on `/trade/signals`"
+      - "the current repair reuses the existing `myweb-audit v1.32` count-kpi delta truth rule rather than adding a new skill-version branch"
+  verification_surface: code-review-plus-targeted-live-verification
+
+- consolidated_issue_id: trade-history-issue-02
+  severity: High
+  title: Trade history KPI strip now renders honest tally and cumulative values instead of fabricated delta chrome or decimal precision
+  pages:
+    - /trade/history
+  source_roles:
+    - data-state-audit
+  why_consolidated: The routed `总笔数`, `已成交`, `待成交`, and `成交总额` cards all inherited the same shared stat-card delta defaults, so they represent one count-kpi truth issue on the canonical trade-history route.
+  primary_owner: web/frontend/src/views/trade/History.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /trade/signals
+    - /risk/stop-loss
+  dedupe_keys:
+    - /trade/history:data-state:count-kpi-delta-truth
+  verification_scope:
+    routes:
+      - /trade/history
+    states:
+      - default
+      - empty
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/trade/History.vue
+      - web/frontend/src/views/trade/__tests__/History.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    notes:
+      - "the canonical trade-history route now passes string tallies and explicitly disables `show-change` on the top KPI strip, so honest empty-history and retained-ledger states no longer leak shared flat-change chrome"
+      - "the strengthened routed regression and Phase 3 matrix assertion now guard against `.artdeco-stat-change`, `+0%`, `2.00`, and `1.00` on `/trade/history`"
+      - "the earlier stale-refresh truth repair remains intact; this batch only closes the independent count-kpi presentation gap on the same canonical route"
+  verification_surface: code-review-plus-targeted-live-verification

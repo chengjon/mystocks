@@ -1,0 +1,19 @@
+{
+  "generated_at": "2026-05-18T11:09:14.509706",
+  "git_branch": "wip/root-dirty-20260403",
+  "git_head": "4327ddf22 fix(audit): trace include_router chains in route scanner, regenerate baseline",
+  "summary": {
+    "total_routes": 538,
+    "registered_routes": 522,
+    "orphan_routes": 16,
+    "unique_files": 94,
+    "local_decorator_duplicate_groups": 49,
+    "full_path_duplicate_groups": 0
+  },
+  "full_path_duplicates": [],
+  "local_decorator_duplicates_count": 49,
+  "orphan_files": [
+    "app/api/algorithms/_naive_bayes_router.py",
+    "app/api/algorithms/get_algorithms_module.py"
+  ]
+}

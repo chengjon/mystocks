@@ -1,0 +1,41 @@
+- consolidated_issue_id: system-api-issue-01
+  severity: High
+  title: System API now keeps first-load summary labels unresolved until the first verified system probe snapshot exists
+  pages:
+    - /system/api
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The route exposed one first-load route-truth cluster: summary labels and shell meta implied a real system probe snapshot before any verified payload existed."
+  primary_owner: web/frontend/src/views/system/API.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /system/health
+    - /system/config
+  dedupe_keys:
+    - /system/api:data-state:pendingSummaryLabelTruth
+  verification_scope:
+    routes:
+      - /system/api
+    states:
+      - first-load-pending
+      - verified-probe-success
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/system/API.vue
+      - web/frontend/src/views/system/__tests__/API.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/references/route-truth-families.md
+      - .claude/skills/myweb-audit/references/route-truth-casebook.md
+      - .claude/skills/myweb-audit/references/route-truth-coverage-matrix.md
+    notes:
+      - "system-api summary labels now stay at `-- / -- / --` until the first verified system probe snapshot exists"
+      - "content-shell meta and backend status card now reuse the same unresolved labels during the first pending system probe"
+      - "the route hero continues to keep unresolved provenance (`REQ_ID: N/A`) until a verified system probe snapshot lands"
+      - "owner and routed Phase 4 regressions now pin the delayed-first-load route shell for `/system/api`"
+      - "the stable `myweb-audit v2.0` numeric and provenance families are reused; only route references and artifacts were updated"
+  verification_surface: code-review-plus-targeted-live-verification

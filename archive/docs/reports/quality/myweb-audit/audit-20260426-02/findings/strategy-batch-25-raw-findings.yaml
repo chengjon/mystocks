@@ -1,0 +1,40 @@
+- finding_id: strategy-backtest-data-state-010
+  batch_id: strategy-batch-25
+  page:
+    route: /strategy/backtest
+    page_key: strategy-backtest
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Strategy backtest leaked the previous strategy task rows after the route query switched to a new strategy without its own verified task context
+  trigger:
+    steps:
+      - "Open `/strategy/backtest?strategyId=101` with a controlled successful strategies payload for strategy `101`."
+      - "Start a controlled completed backtest run so the task tab shows a verified `TASK bt-phase3-101 · 回测任务已完成` row."
+      - "Switch the same mounted route instance to `/strategy/backtest?strategyId=202` before strategy `202` has any verified task rows of its own."
+      - "Inspect the `回测任务` tab without remounting the routed owner."
+  expected: "Selector-owned task rows should belong only to the current `strategyId` query. If the new selector has no verified task context, the mounted `/strategy/backtest` route should keep `ID 202` in the context strip while the `回测任务` tab drops back to `0 rows` and no stale `TASK ... / 回测任务已完成` row remains visible."
+  actual: "Before repair, the same mounted `/strategy/backtest` instance kept showing the earlier strategy's verified task row after switching from `strategyId=101` to `strategyId=202`, so the new selector shell could still display the old `TASK bt-unit-004 · 回测任务已完成` row even though `202` had never verified its own task context."
+  evidence:
+    kind: live-observation
+    note: "Owner red-green regression reproduced the leak with `ID 202` plus the stale prior task row still visible in `.task-list`. After repair, targeted Playwright-library verification with system `google-chrome` confirmed the same mounted route first shows the verified `101` task row and then reopens `回测任务` under `ID 202` with `0` visible `.task-item` rows."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/backtest
+  status: open
+  dependency: null
+  dedupe_key: /strategy/backtest:data-state:selectorOwnedTaskRowsTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check that the same mounted `/strategy/backtest` instance first shows a verified `101` task row, then reaches `ID 202` with `0` visible `.task-item` rows after reopening the `回测任务` tab, and confirm the stale prior row no longer remains visible under the new selector shell."

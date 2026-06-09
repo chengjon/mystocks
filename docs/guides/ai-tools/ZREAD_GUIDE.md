@@ -122,12 +122,12 @@
 
 以当前仓库为例，可直接浏览：
 
-- [`current`](/opt/claude/mystocks_spec/.zread/wiki/current)
-- [`2026-04-19-215936`](/opt/claude/mystocks_spec/.zread/wiki/versions/2026-04-19-215936)
+- [`current`](../../../.zread/wiki/current)
+- [`2026-05-14-013747`](../../../.zread/wiki/versions/2026-05-14-013747)
 
 也就是说，AI 在回答“zread 文档在哪”这一类问题时，不应只停留在 `./.zread/wiki/` 层，而应进一步落到：
 
-`./.zread/wiki/versions/2026-04-19-215936/`
+`./.zread/wiki/versions/2026-05-14-013747/`
 
 然后在该目录下读取对应主题的 `.md` 页面。
 
@@ -191,6 +191,21 @@
 - `src/backtesting/`
 - `src/ml_strategy/`
 - 交易服务与风控模块
+
+### 日常开发与维护映射
+
+`.zread` 当前 wiki 是仓库地图，不是最终事实源。日常使用时，应先用它定位主题，再回到 canonical 文档和代码核对。
+
+| 日常场景 | 优先读取的 zread 页面 | 后续必须核对的真相源 |
+|----------|------------------------|----------------------|
+| 接手陌生任务 | `1 项目概览`、`4 功能树导航`、`5 工程红线与审批门禁` | [docs/FUNCTION_TREE.md](../../FUNCTION_TREE.md)、[architecture/STANDARDS.md](../../../architecture/STANDARDS.md) |
+| 判断是否需要 proposal | `5 工程红线与审批门禁`、`6 OpenSpec 变更管理` | [openspec/AGENTS.md](../../../openspec/AGENTS.md)、相关 `openspec/specs/` 与 `openspec/changes/` |
+| 后端 API 或类型契约变更 | `7 FastAPI 应用入口`、`15 前后端类型契约同步` | FastAPI 路由、Pydantic schema、导出的 OpenAPI、生成的 TypeScript 类型 |
+| 数据写入、数据源或存储路由变更 | `8 数据源适配器体系`、`9 统一数据管理器`、`16 TDengine/PostgreSQL`、`17 数据分类策略` | `src/adapters/`、`src/core/`、`src/data_access/`、相关测试 |
+| 前端页面、路由或设计系统变更 | `12 ArtDeco 设计系统`、`13 Vue 3 组件架构`、`14 前端路由与布局` | `web/frontend/src/router/index.ts`、对应 view/component、ArtDeco token 与前端结构指南 |
+| 提交前验证与运行维护 | `19 分层测试策略`、`21 CI/CD 质量门禁`、`23 PM2 进程管理与 E2E 冒烟测试` | 实际测试命令、PM2 状态、CI 工作流、运行时日志 |
+
+推荐在复杂任务的工作记录中保留一行 `zread pages consulted:`，只列真正读过的 1 到 3 个页面。不要把 zread 页面内容复制进 README、AGENTS 或规范文档。
 
 ---
 

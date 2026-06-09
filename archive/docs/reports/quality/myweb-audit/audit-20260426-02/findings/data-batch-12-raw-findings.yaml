@@ -1,0 +1,38 @@
+- finding_id: data-fund-flow-data-state-003
+  batch_id: data-batch-12
+  page:
+    route: /data/fund-flow
+    page_key: data-fund-flow
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/data/FundFlow.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Fund-flow route collapsed unresolved and failed first-load ranking meta into faux zero-row truth
+  trigger:
+    steps:
+      - "Open `/data/fund-flow`"
+      - "Observe the route while the first `/api/akshare/market/fund-flow/hsgt-summary` payload is still unresolved"
+      - "Repeat with the first summary and ranking requests both failing before any verified fund-flow snapshot exists"
+      - "Inspect the hero `WINDOW / RANKING / ROWS / REQ` metadata and the first-load route shell"
+  expected: "Before the route has any verified fund-flow snapshot, hero row counts and request metadata should degrade to explicit placeholders such as `ROWS: -- / REQ: N/A`. A first-load failure must not reuse the same zero-row semantics as a verified empty ranking surface."
+  actual: "Before repair, `/data/fund-flow` rendered `ROWS: 0` while the first summary payload was still unresolved and rendered `ROWS: 0` plus a failed request id on first-load failure, making the route look like it had already completed a verified empty ranking load."
+  evidence:
+    kind: live-observation
+    note: "System-`google-chrome` verification with authenticated browser-context interception and readiness stubs reproduced `ROWS: 0` on the hanging-first-load path and the same faux zero-row hero state on the first-load failure path before repair. After repair the same route renders `ROWS: -- / REQ: N/A` on both pending and unavailable states, while verified success still renders `ROWS: 2`."
+  repair_target:
+    files:
+      - web/frontend/src/views/data/FundFlow.vue
+    primary_owner: web/frontend/src/views/data/FundFlow.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /data/fund-flow
+  status: open
+  dependency: null
+  dedupe_key: /data/fund-flow:data-state:firstLoadRankingMetaTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/data/fund-flow` after repair and confirm pending, unavailable, and verified-success row-meta states now stay distinct on the routed page."

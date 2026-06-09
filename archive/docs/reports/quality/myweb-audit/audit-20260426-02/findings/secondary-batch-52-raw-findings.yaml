@@ -1,0 +1,39 @@
+- finding_id: secondary-shell-052-risk-orphan-pages
+  batch_id: secondary-batch-52
+  page:
+    route: /secondary/risk-orphan-static-shells
+    page_key: secondary-risk-orphan-static-shells
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/risk/Portfolio.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Orphan risk child pages preserved Phase roadmap placeholder truth
+  trigger:
+    steps:
+      - "Inspect `views/risk/{Portfolio,Positions}.vue`"
+      - "Confirm the files have no active route or importing owner"
+      - "Confirm they still expose `Coming Soon` / `Phase 7` placeholder semantics as standalone risk entries"
+  expected: "Unrouted orphan risk child pages should degrade to honest static shells and hand off users to canonical risk owners."
+  actual: "Before repair, the pages preserved standalone portfolio-risk and position-risk placeholder entries with Phase roadmap copy."
+  evidence:
+    kind: code-review-plus-owner-regression
+    note: "RED regression failed because `Portfolio.vue` lacked `legacy-static-shell` and still exposed `Portfolio Risk Analysis` and `Phase 7` copy."
+  repair_target:
+    files:
+      - web/frontend/src/views/risk/Portfolio.vue
+      - web/frontend/src/views/risk/Positions.vue
+      - web/frontend/tests/unit/config/risk-orphan-static-shells.spec.ts
+    primary_owner: web/frontend/src/views/risk/Portfolio.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/risk-orphan-static-shells
+  status: open
+  dependency: null
+  dedupe_key: /secondary/risk-orphan-static-shells:route-truth:orphanRiskPages
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run source regression to confirm the orphan risk pages render `legacy-static-shell` and no longer preserve Phase roadmap placeholder truth."

@@ -1,0 +1,84 @@
+audit_run_id: audit-20260426-02
+batch_id: dashboard-batch-09
+module: dashboard
+scope:
+  requested_by: user
+  pages:
+    - route: /dashboard
+      page_key: dashboard-home
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+  compatibility_redirects: []
+batch_rationale: "Close the canonical `/dashboard` capital-flow tab selector truth gap so same-instance flow-tab switches no longer leak the previous tab's verified ranking rows into a new tab before that tab has its own verified snapshot."
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/dashboard` remains `web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue`"
+    - "the capital-flow ranking slice remains route-owned by `web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts` and uses the local flow-tab selector `1day / 3day / 5day`"
+    - "the approved repair should stay page-local in the dashboard owner and route-owned composable instead of widening into shared dashboard-shell or shared chart-state redesign"
+    - "auth-seeded browser contexts plus browser-context interception with `serviceWorkers: block` are acceptable verification harnesses for the controlled `/dashboard` `1day -> 3day` same-instance tab-switch proof"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, error]
+  notes:
+    - "verify `/dashboard` first renders verified `1day` ranking rows such as `贵州茅台` and `宁德时代`"
+    - "verify the same mounted route then switches to active `3日` with no stale `1day` rows visible while the new `3day` request is still unresolved"
+repair_approval:
+  status: approved
+  approved_findings:
+    - dashboard-home-issue-09
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - dashboard-home
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+    - web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+    - web/frontend/tests/unit/components/ArtDecoDashboardLogic.spec.ts
+    - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+      - web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-dashboard-vitest
+    typecheck: failed-preexisting-useKLinePatternOverlays-errors-outside-batch
+    pm2: passed
+    e2e: passed-dashboard-capital-flow-tab-selector-system-chrome-live-proof
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `dashboard-batch-09` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/dashboard-capital-flow-tab-selector-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-09-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-09-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/dashboard-batch-09-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/dashboard-batch-09-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-dashboard-batch-09-closeout
+  notes:
+    - "the repaired dashboard route now keys capital-flow rows and slice-state copy to the active tab's own verified snapshot instead of one route-global ranking array"
+    - "future dashboard or workbench audits should treat local tabs the same way as query-scoped selectors whenever a mounted route can switch slices without remounting"
+status: complete

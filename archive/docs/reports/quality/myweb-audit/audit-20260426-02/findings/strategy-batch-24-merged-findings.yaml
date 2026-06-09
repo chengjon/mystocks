@@ -1,0 +1,37 @@
+- consolidated_issue_id: strategy-backtest-issue-09
+  severity: High
+  title: Strategy backtest now keys execution progress and logs to the current strategy query's verified task context
+  pages:
+    - /strategy/backtest
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The leaked execution progress, stale success log, and same-instance query-switch mismatch all came from one selector-owned execution-state defect on the canonical strategy-backtest owner route, so they are treated as one consolidated route-truth issue."
+  primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/backtest
+  dedupe_keys:
+    - /strategy/backtest:data-state:selectorOwnedExecutionStateTruth
+  verification_scope:
+    routes:
+      - /strategy/backtest
+    states:
+      - completed-run-with-verified-execution-state
+      - selector-switch-without-new-verified-task-context
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    notes:
+      - "the canonical strategy-backtest route now caches execution progress and run logs by `strategyId` instead of keeping one route-local execution state for every selector"
+      - "same-instance route switches now restore neutral baseline execution truth when the new selector has no verified task context of its own"
+      - "switching back to a selector with a cached verified execution snapshot can restore that selector-owned progress and logs from the page-local cache"
+      - "the strengthened regressions now lock the same-instance `strategyId=101 -> 202` execution-panel path in both owner tests and the routed Phase 3 matrix"
+      - "this batch introduces `myweb-audit v1.70`, because the defect extends selector-scoped snapshot truth into selector-owned execution-state surfaces such as progress panels and run logs"
+  verification_surface: code-review-plus-targeted-live-verification

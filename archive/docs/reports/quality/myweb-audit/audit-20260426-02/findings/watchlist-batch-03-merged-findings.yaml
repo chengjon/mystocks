@@ -1,0 +1,37 @@
+- consolidated_issue_id: watchlist-screener-issue-01
+  severity: High
+  title: Watchlist screener summary surfaces now render honest count-only strings and first-load placeholders instead of faux precise zero metrics
+  pages:
+    - /watchlist/screener
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The hero universe count and the four top summary cards leaked the same route-truth defect across adjacent surfaces: unresolved first-load, backend failure, and verified count-only tally states were all being delegated into shared numeric presentation without route-local differentiation."
+  primary_owner: web/frontend/src/views/stocks/Screener.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /watchlist/screener
+  dedupe_keys:
+    - /watchlist/screener:data-state:summaryCountAndFirstLoadTruth
+  verification_scope:
+    routes:
+      - /watchlist/screener
+    states:
+      - default
+      - loading
+      - error
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/stocks/Screener.vue
+      - web/frontend/src/views/watchlist/__tests__/Screener.spec.ts
+      - web/frontend/tests/e2e/phase2-mainline-matrix.spec.ts
+    notes:
+      - "the routed screener page now derives `showSummaryPlaceholders` from unresolved first-load or no-evidence error state, so hero `UNIVERSE` and all four top summary cards degrade to `--` until verified stock-universe evidence exists"
+      - "the same route now passes plain string values and `show-change=false` to the count-only summary cards, so verified counts no longer inherit shared decimal pseudo precision"
+      - "the new routed component regression and strengthened phase2 matrix now protect both the verified stock-universe path and the hanging first-load placeholder path"
+      - "this batch reuses existing `myweb-audit v1.32 + v1.37 + v1.38` rules rather than introducing a new skill version, because the defect was a direct combination of count-kpi delta truth, same-page numeric cluster review, and unresolved first-load numeric truth"
+  verification_surface: code-review-plus-targeted-live-verification

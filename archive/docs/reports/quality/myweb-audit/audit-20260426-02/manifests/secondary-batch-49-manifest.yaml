@@ -1,0 +1,88 @@
+audit_run_id: audit-20260426-02
+batch_id: secondary-batch-49
+module: secondary-legacy-surfaces
+scope:
+  requested_by: user
+  pages:
+    - route: /secondary/trade-management-orphan-components
+      page_key: secondary-trade-management-orphan-components
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/trade-management/components/PortfolioOverview.vue
+  compatibility_redirects: []
+batch_rationale: >-
+  Close orphan trade-management child components that still preserved
+  independent live trading and execution semantics after active orchestration
+  moved to canonical /trade/* owners.
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-only
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "the manifest route is a synthetic secondary-inventory alias used for artifact indexing"
+    - "the repair must not add new trading APIs, stores, snapshots, request provenance badges, selector shells, freshness strips, or execution truth"
+    - "canonical `/trade/*` owners remain the only live trading truth for these semantics"
+  fallback_log: []
+verification_plan:
+  verification_strategy: code-review-only
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states:
+    - default
+  notes:
+    - "verify orphan components render `legacy-static-shell`"
+    - "verify orphan components no longer import `tradeApi`, synthesize fallback rows, render fake charts, or submit orders"
+repair_approval:
+  status: approved
+  approved_findings:
+    - secondary-shell-issue-49
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - secondary-trade-management-orphan-components
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/trade-management/components/PortfolioOverview.vue
+    - web/frontend/src/views/trade-management/components/PositionsTab.vue
+    - web/frontend/src/views/trade-management/components/StatisticsTab.vue
+    - web/frontend/src/views/trade-management/components/TradeHistoryTab.vue
+    - web/frontend/src/views/trade-management/components/TradeDialog.vue
+    - web/frontend/tests/unit/config/trade-management-components-normalization.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/trade-management/components/PortfolioOverview.vue
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vitest-and-diff-check
+    typecheck: failed-existing-frontend-debt-only
+    pm2: passed
+    e2e: not-run-unrouted-owner
+    gitnexus_staged_detect: mixed-staged-observation-medium-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files:
+      - "GitNexus staged detect observed 248 staged files and 514 changed symbols across the dirty index"
+      - "GitNexus staged detect observed 3 affected processes, all outside the isolated trade-management orphan component scope"
+    verdict_origin: isolated-batch-only
+    notes:
+      - "the staged index already contained many unrelated files before this micro-batch, so `gitnexus_detect_changes({scope: staged})` must be recorded only as a mixed observation"
+      - "pre-edit file-level impact was LOW for PortfolioOverview.vue, PositionsTab.vue, StatisticsTab.vue, TradeHistoryTab.vue, and TradeDialog.vue"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/trade-management-orphan-components-static-shell-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/secondary-batch-49-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/secondary-batch-49-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/secondary-batch-49-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/secondary-batch-49-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: verification
+  next_action: continue-secondary-m-priority-triage
+  notes:
+    - "orphan trade-management child components should not preserve independent live trading or execution truth"
+status: complete

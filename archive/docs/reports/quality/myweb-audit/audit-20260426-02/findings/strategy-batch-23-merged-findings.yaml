@@ -1,0 +1,37 @@
+- consolidated_issue_id: strategy-backtest-issue-08
+  severity: High
+  title: Strategy backtest now keys synced report rows to the current strategy query's verified report context
+  pages:
+    - /strategy/backtest
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The leaked `报告中心` row, selector-switched context-strip mismatch, and same-instance route-switch truth all came from the same selector-scoped verified-report-row defect on the canonical strategy-backtest owner route, so they are treated as one consolidated route-truth issue."
+  primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/backtest
+  dedupe_keys:
+    - /strategy/backtest:data-state:selectorScopedReportRowsTruth
+  verification_scope:
+    routes:
+      - /strategy/backtest
+    states:
+      - completed-run-with-verified-report-row
+      - selector-switch-without-new-verified-report-context
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    notes:
+      - "the canonical strategy-backtest route now caches synced report rows by `strategyId` instead of keeping one route-local report-row array for every selector"
+      - "same-instance route switches now clear the old report row when the new selector has no verified report context of its own"
+      - "switching back to a selector with a cached verified report can restore that selector-owned row from the page-local cache"
+      - "the strengthened regressions now lock the same-instance `strategyId=101 -> 202` report-row path in both owner tests and the routed Phase 3 matrix"
+      - "this batch reuses existing `myweb-audit v1.68`, because the defect directly matches the current selector-scoped verified-snapshot rule already introduced for query-owned routed workbenches"
+  verification_surface: code-review-plus-targeted-live-verification

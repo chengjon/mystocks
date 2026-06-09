@@ -1,0 +1,76 @@
+- finding_id: secondary-shell-021-orders
+  batch_id: secondary-batch-21
+  page:
+    route: /secondary/legacy-trading-orders-static-shell
+    page_key: secondary-legacy-trading-orders-static-shell
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/trading/Orders.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy trading orders page still exposed a placeholder shell even though no semantically matching canonical owner exists
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/trading/Orders.vue`"
+      - "Inspect the local title, subtitle, and `Coming Soon` alert shell"
+      - "Confirm the current router graph has no semantically matching `/trade/orders` owner for direct delegation"
+  expected: "A nested legacy trading orders page with no semantically matching canonical owner should degrade to an honest static shell instead of preserving a placeholder surface."
+  actual: "Before repair, `trading/Orders.vue` still rendered its own `Order Management` placeholder and `Coming Soon` alert despite having no canonical route truth to delegate to."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green regression confirmed the legacy trading orders page still rendered its own placeholder shell before static-shell degradation."
+  repair_target:
+    files:
+      - web/frontend/src/views/trading/Orders.vue
+      - web/frontend/src/views/trading/__tests__/Orders.spec.ts
+    primary_owner: web/frontend/src/views/trading/Orders.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-trading-orders-static-shell
+  status: open
+  dependency: null
+  dedupe_key: /secondary/legacy-trading-orders-static-shell:route-truth:legacyTradingOrdersStaticShell
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner static-shell regression to confirm the placeholder shell is gone and the page no longer exposes local order-management semantics."
+- finding_id: secondary-shell-021-execution
+  batch_id: secondary-batch-21
+  page:
+    route: /secondary/legacy-trading-execution-static-shell
+    page_key: secondary-legacy-trading-execution-static-shell
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/trading/Execution.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy trading execution page still exposed a placeholder shell even though no semantically matching canonical owner exists
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/trading/Execution.vue`"
+      - "Inspect the local title, subtitle, and `Coming Soon` alert shell"
+      - "Confirm the current router graph has no semantically matching `/trade/execution` owner for direct delegation"
+  expected: "A nested legacy trading execution page with no semantically matching canonical owner should degrade to an honest static shell instead of preserving a placeholder surface."
+  actual: "Before repair, `trading/Execution.vue` still rendered its own `Trade Execution` placeholder and `Coming Soon` alert despite having no canonical route truth to delegate to."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green regression confirmed the legacy trading execution page still rendered its own placeholder shell before static-shell degradation."
+  repair_target:
+    files:
+      - web/frontend/src/views/trading/Execution.vue
+      - web/frontend/src/views/trading/__tests__/Execution.spec.ts
+    primary_owner: web/frontend/src/views/trading/Execution.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-trading-execution-static-shell
+  status: open
+  dependency: null
+  dedupe_key: /secondary/legacy-trading-execution-static-shell:route-truth:legacyTradingExecutionStaticShell
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner static-shell regression to confirm the placeholder shell is gone and the page no longer exposes local trade-execution semantics."

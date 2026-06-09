@@ -1,0 +1,38 @@
+- finding_id: detail-graphics-data-state-04
+  batch_id: detail-batch-04
+  page:
+    route: /detail/graphics/:symbol
+    page_key: stock-graphics
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/artdeco-pages/analysis-tabs/KLineAnalysis.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Detail graphics route collapsed indicators-slice failures into generic empty-state truth even when the K-line snapshot remained verified
+  trigger:
+    steps:
+      - "Open `/detail/graphics/600519` and let the K-line primary snapshot verify successfully."
+      - "Force `/api/v1/technical-indicators` to fail on the first load or on a later `开始分析` refresh while keeping the K-line request successful."
+      - "Inspect the runtime message and the `技术指标概览` card after the indicators-slice failure."
+  expected: "If the K-line primary snapshot remains verified while the indicators slice fails, the route should show explicit indicators-slice partial-failure copy instead of the generic empty message. If the indicators slice previously verified, the route should retain the last verified indicator values and explicitly state that they are stale."
+  actual: "Before repair, the detail graphics route used the generic `暂无技术指标结果。` empty-state copy whenever the indicators slice failed without a current result, even though the K-line trend snapshot stayed visible. A later indicators refresh failure after prior success also cleared the previously verified indicators instead of retaining them with stale-enrichment messaging."
+  evidence:
+    kind: live-observation
+    note: "Owner tests first reproduced both failure paths. Controlled Playwright-library verification with system `google-chrome` then confirmed the repaired route now keeps the K-line chart visible, shows explicit indicators-slice partial-failure copy on first-load failure, and retains the previously verified `RSI` indicator with stale-enrichment messaging after a later indicators refresh failure."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/analysis-tabs/KLineAnalysis.vue
+      - web/frontend/src/views/artdeco-pages/analysis-tabs/__tests__/KLineAnalysis.spec.ts
+      - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/artdeco-pages/analysis-tabs/KLineAnalysis.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /detail/graphics/:symbol:data-state:indicatorsSlicePartialFailureTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/detail/graphics/:symbol` after repair and confirm indicators-slice first-load failure shows explicit partial-failure copy while later refresh failure retains the last verified indicators with stale-enrichment messaging."

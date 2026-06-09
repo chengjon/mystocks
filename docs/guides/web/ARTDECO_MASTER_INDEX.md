@@ -55,10 +55,10 @@
 
 | 兼容路径 | 指向 |
 |----------|------|
-| [docs/guides/ARTDECO_MASTER_INDEX.md](/opt/claude/mystocks_spec/docs/guides/ARTDECO_MASTER_INDEX.md) | `docs/guides/web/ARTDECO_MASTER_INDEX.md` |
-| [docs/guides/ARTDECO_FINTECH_UNIFIED_SPEC.md](/opt/claude/mystocks_spec/docs/guides/ARTDECO_FINTECH_UNIFIED_SPEC.md) | `docs/guides/web/ARTDECO_FINTECH_UNIFIED_SPEC.md` |
-| [docs/guides/ARTDECO_COMPONENT_GUIDE.md](/opt/claude/mystocks_spec/docs/guides/ARTDECO_COMPONENT_GUIDE.md) | `docs/guides/web/ARTDECO_COMPONENT_GUIDE.md` |
-| [docs/api/ARTDECO_SYSTEM_ARCHITECTURE_SUMMARY.md](/opt/claude/mystocks_spec/docs/api/ARTDECO_SYSTEM_ARCHITECTURE_SUMMARY.md) | `docs/api/ArtDeco_System_Architecture_Summary.md` |
+| [docs/guides/ARTDECO_MASTER_INDEX.md](../ARTDECO_MASTER_INDEX.md) | `docs/guides/web/ARTDECO_MASTER_INDEX.md` |
+| [docs/guides/ARTDECO_FINTECH_UNIFIED_SPEC.md](../ARTDECO_FINTECH_UNIFIED_SPEC.md) | `docs/guides/web/ARTDECO_FINTECH_UNIFIED_SPEC.md` |
+| [docs/guides/ARTDECO_COMPONENT_GUIDE.md](../ARTDECO_COMPONENT_GUIDE.md) | `docs/guides/web/ARTDECO_COMPONENT_GUIDE.md` |
+| [docs/api/ARTDECO_SYSTEM_ARCHITECTURE_SUMMARY.md](../../api/ARTDECO_SYSTEM_ARCHITECTURE_SUMMARY.md) | `docs/api/ArtDeco_System_Architecture_Summary.md` |
 
 ## 2. 推荐阅读顺序
 

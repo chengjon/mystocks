@@ -1,0 +1,33 @@
+- consolidated_issue_id: secondary-shell-issue-14
+  severity: Medium
+  title: Legacy indicator library page now delegates to the canonical data-indicator owner
+  pages:
+    - /secondary/legacy-indicator-library-canonical-wrapper
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The local total-indicator stats, filter controls, and indicator cards were all facets of the same defect: `IndicatorLibrary.vue` preserved a forked pseudo-live indicator-library shell even though a semantically matching canonical data-indicator owner already exists."
+  primary_owner: web/frontend/src/views/IndicatorLibrary.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-indicator-library-canonical-wrapper
+  dedupe_keys:
+    - /secondary/legacy-indicator-library-canonical-wrapper:route-truth:legacyIndicatorLibraryCanonicalWrapper
+  verification_scope:
+    routes:
+      - /secondary/legacy-indicator-library-canonical-wrapper
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/IndicatorLibrary.vue
+      - web/frontend/src/views/__tests__/IndicatorLibrary.spec.ts
+    notes:
+      - "the legacy indicator library page now renders only the canonical `/data/indicator` owner instead of a forked pseudo-live indicator-library shell"
+      - "the page no longer fabricates local registry totals, filter chrome, or indicator-card truth"
+      - "secondary inventory heuristics now drop `IndicatorLibrary.vue` out of the high-priority shortlist"
+  verification_surface: code-review-only

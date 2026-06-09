@@ -42,7 +42,7 @@ MyStocks 是一个专业的企业级量化交易数据管理系统和 Web 管理
 ### 核心技术栈
 
 - **后端语言**: Python 3.12+
-- **Web 框架**: FastAPI + Vue 3 + Element Plus + Socket.IO
+- **Web 框架**: FastAPI + Vue 3 + Element Plus
 - **数据库**: TDengine 3.3.x + PostgreSQL 17.x (TimescaleDB扩展)
 - **数据源**: akshare (1.17.83), baostock, tushare, efinance, 通达信等
 - **GPU 加速**: RAPIDS (cuDF/cuML) - 支持 WSL2 环境
@@ -54,7 +54,9 @@ MyStocks 是一个专业的企业级量化交易数据管理系统和 Web 管理
 
 ### 项目特点
 
-- **🌐 现代化Web管理平台**: 基于 FastAPI + Vue 3 的全栈架构，支持实时通信
+- **🌐 现代化Web管理平台**: 基于 FastAPI + Vue 3 的全栈架构，当前 public canonical
+  realtime transport 为 FastAPI WebSocket route family；Socket.IO 相关能力仍属
+  compatibility-retained
 - **🤖 多智能体系统**: 集成多智能体系统，支持实时监控、技术分析、多数据源集成
 - **📊 双数据库存储策略**: TDengine(高频时序) + PostgreSQL(通用数据)
 - **🔧 智能数据调用**: 统一接口规范，自动路由策略
@@ -436,14 +438,17 @@ cd web/frontend && npm run dev
 
 **前端特性** (Vue 3 + Element Plus):
 - 响应式设计，适配桌面和移动端
-- 实时数据推送 (Socket.IO + SSE)
+- 实时数据推送（当前 public canonical transport 为 FastAPI WebSocket 路由；Socket.IO
+  能力仍属 compatibility-retained）
 - K线图表和技术指标可视化
 - 策略回测结果展示
 - 实时监控仪表板
 
-**后端特性** (FastAPI + Socket.IO):
+**后端特性** (FastAPI):
 - 50+ API端点，完整RESTful设计
-- Socket.IO实时通信
+- 当前 canonical runtime entrypoint 为 `web/backend/app/main.py`
+- 当前 canonical public realtime transport 为 FastAPI WebSocket 路由
+- Socket.IO 相关组件仍保留，但未作为已验证的 public runtime transport 挂载真相
 - CSRF安全保护
 - 连接池监控
 - 缓存管理API
@@ -457,7 +462,8 @@ cd web/frontend && npm run dev
 - **性能监控**: 慢查询检测、响应时间统计、连接池监控
 - **质量监控**: 数据完整性、准确性、新鲜度检查
 - **告警机制**: 7种告警类型 (价格突破、成交量激增等)
-- **实时推送**: Socket.IO实时告警通知
+- **实时推送**: 以 FastAPI WebSocket 路由为当前 canonical public push path，Socket.IO
+  仍为 compatibility-retained 能力
 - **多渠道支持**: 邮件、Webhook、日志记录
 
 ### 7. Claude Code Hooks 系统
@@ -1251,7 +1257,8 @@ health_status = response.json()
 - **Phase 6 技术债务修复**: 测试覆盖率从6%提升至72%，代码质量持续改善
 - **GPU回测引擎**: 15-20倍性能提升，支持大规模回测
 - **AI策略分析**: 集成AI增强策略，机器学习预测模型
-- **Web平台完善**: Socket.IO实时通信，CSRF安全保护
+- **Web平台完善**: FastAPI WebSocket 实时通信能力与 CSRF 安全保护；Socket.IO 相关能力保留
+  但当前不作为已验证的 public runtime canonical path
 - **监控系统增强**: 7种告警类型，实时性能监控
 
 ### v1.3.1 (2025-11-12)

@@ -1,0 +1,86 @@
+audit_run_id: audit-20260426-02
+batch_id: trade-batch-10
+module: trade
+scope:
+  requested_by: user
+  pages:
+    - route: /trade/positions
+      page_key: trade-positions
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/trade/Center.vue
+  compatibility_redirects: []
+batch_rationale: "Reuse the existing `v1.43` store-refresh snapshot-provenance rule on the canonical trade-positions route so a resolved `success: false` manual refresh can no longer clear verified holdings rows or replace visible `REQ_ID / TIME` provenance with the failed transport request."
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/trade/positions` remains `web/frontend/src/views/trade/Center.vue`, while the same owner is also reused by `/strategy/pos` through `ArtDecoTradingPositions.vue`"
+    - "the approved repair should stay page-local in `Center.vue` instead of widening into shared `useArtDecoApi` behavior"
+    - "the route is transport-backed through `useArtDecoApi`, so browser verification must include a controlled `success -> refresh fail` path instead of only first-load failure"
+    - "auth-seeded browser contexts plus browser-context interception with `serviceWorkers: block` are acceptable verification harnesses for controlled first-load failure and refresh-failure truth on this route family"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [loading, error, default]
+  notes:
+    - "verify `/trade/positions` still renders `REQ_ID: N/A / TIME: N/A / ROWS: --` plus top-strip `-- / -- / -- / --` when the first positions payload resolves as `success: false` before any verified snapshot exists"
+    - "verify the same route keeps the last verified `REQ_ID / TIME`, `ROWS`, and holdings rows when a later manual refresh resolves as `success: false`"
+    - "verify the natural PM2 `/trade/positions` route still renders an honest live shell with a real request id after the page-local verified-snapshot repair lands"
+    - "spot-check the shared `/strategy/pos` consumer to confirm the same owner change preserves route-family behavior"
+repair_approval:
+  status: approved
+  approved_findings:
+    - trade-positions-issue-02
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - trade-positions
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/trade/Center.vue
+    - web/frontend/src/views/trade/__tests__/Center.spec.ts
+    - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoTradingPositions.vue
+    confirmed:
+      - web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoTradingPositions.vue
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-trade-positions-refresh-provenance-verification
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `trade-batch-10` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/trade-positions-store-refresh-provenance-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-10-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-10-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-10-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/trade-batch-10-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-trade-batch-10-closeout
+  notes:
+    - "the repaired trade-positions route now distinguishes first-load unavailable truth from stale-refresh truth on the canonical transport-backed owner page"
+    - "this batch reuses existing `myweb-audit v1.43`, so future transport-backed positions-route audits must cover `success -> refresh fail` request-provenance retention rather than only first-load failure"
+status: complete

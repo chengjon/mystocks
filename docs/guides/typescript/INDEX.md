@@ -2,7 +2,7 @@
 
 > **导航说明**:
 > 本文件是 `docs/guides/typescript/` 的 transition index，不是当前仓库共享规则、当前实现边界或唯一 TypeScript 真相源。
-> 若涉及仓库级共享规则、审批门禁或治理口径，请优先阅读 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)；若涉及当前代码实现与前端质量治理，请结合根目录 `AGENTS.md`、相关代码与实际验证结果。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先阅读 [`architecture/STANDARDS.md`](../../../architecture/STANDARDS.md)；若涉及当前代码实现与前端质量治理，请结合根目录 `AGENTS.md`、相关代码与实际验证结果。
 
 ## Current Entry Order
 

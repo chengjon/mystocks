@@ -2,14 +2,14 @@
 
 > **导航说明**:
 > 本文件是 `docs/guides/documentation/` 的 transition index，不是仓库共享规则、当前 trunk map 或当前实现状态的唯一事实来源。
-> 若涉及文档系统 canonical trunk、治理口径或 reader routing，请优先阅读 [`docs/overview/documentation-system.md`](/opt/claude/mystocks_spec/docs/overview/documentation-system.md)；若涉及审批门禁与删除判定，再回到 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)。
+> 若涉及文档系统 canonical trunk、治理口径或 reader routing，请优先阅读 [`docs/overview/documentation-system.md`](../../overview/documentation-system.md)；若涉及审批门禁与删除判定，再回到 [`architecture/STANDARDS.md`](../../../architecture/STANDARDS.md)。
 
 ## Current Trunk First
 
 这一 family 不再单独承担 documentation governance trunk 的职责。当前阅读顺序是：
 
-1. [`docs/overview/documentation-system.md`](/opt/claude/mystocks_spec/docs/overview/documentation-system.md)
-2. [`CANONICAL_TRUNK_ADMISSION_GUIDE.md`](/opt/claude/mystocks_spec/docs/guides/documentation/CANONICAL_TRUNK_ADMISSION_GUIDE.md)
+1. [`docs/overview/documentation-system.md`](../../overview/documentation-system.md)
+2. [`CANONICAL_TRUNK_ADMISSION_GUIDE.md`](CANONICAL_TRUNK_ADMISSION_GUIDE.md)
 3. 再按需进入本 family 内的 supporting workflow / methodology guides
 
 ## Active Supporting Guides

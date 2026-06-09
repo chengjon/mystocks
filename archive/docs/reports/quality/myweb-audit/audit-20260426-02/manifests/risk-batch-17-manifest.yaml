@@ -1,0 +1,82 @@
+audit_run_id: audit-20260426-02
+batch_id: risk-batch-17
+module: risk
+scope:
+  requested_by: user
+  pages:
+    - route: /risk/alerts
+      page_key: risk-alerts
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/risk/Alerts.vue
+  compatibility_redirects: []
+batch_rationale: "Close the canonical `/risk/alerts` partial-slice truth gap so a first-load alert-records failure cannot hide a verified rules slice or collapse the route back to generic no-snapshot copy."
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/risk/alerts` remains `web/frontend/src/views/risk/Alerts.vue` and the route owns both the rules slice and the alert-records slice in one routed shell"
+    - "the defect is page-local partial-slice truth rather than shared mapper truth because the visible leak occurs when one sibling primary slice verifies and the other fails before the first full alerts snapshot exists"
+    - "controlled browser-context fulfillment is acceptable for the `rules success + alerts fail` proof because the natural PM2 route stays gated by the auth shell and does not expose that first-load mismatch on demand"
+    - "this repair intentionally stays route-local and does not widen into shared `useArtDecoApi` behavior because the bug is the page-owned verified-snapshot boundary inside the canonical route owner"
+  fallback_log:
+    - "the default local Playwright Chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome` with an authenticated browser context"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, error]
+  notes:
+    - "verify a controlled rules-success path first reaches one verified rules slice before the alerts failure is triggered"
+    - "verify the routed shell remains partial and unresolved while the rules table still exposes the verified rows"
+repair_approval:
+  status: approved
+  approved_findings:
+    - risk-alerts-issue-17
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - risk-alerts
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/risk/Alerts.vue
+    - web/frontend/src/views/risk/__tests__/Alerts.spec.ts
+    - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-targeted-vitest
+    typecheck: failed-pre-existing-frontend-debt
+    pm2: passed
+    e2e: passed-custom-system-chrome-alerts-partial-slice-proof
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `risk-batch-17` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+      - "latest staged observation returned `risk_level: low`, `changed_files: 126`, `changed_count: 317`, and `affected_count: 0`"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/risk-alerts-partial-slice-selector-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-17-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/risk-batch-17-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/risk-batch-17-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/risk-batch-17-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-risk-batch-17-closeout
+  notes:
+    - "the canonical risk alerts route now keys request provenance, summary counts, runtime copy, and empty-table states to per-slice verified truth instead of letting a route-global verified flag hide a verified rules slice"
+status: complete

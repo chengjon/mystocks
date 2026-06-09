@@ -1,0 +1,88 @@
+audit_run_id: audit-20260426-02
+batch_id: dashboard-batch-05
+module: dashboard
+scope:
+  requested_by: user
+  pages:
+    - route: /dashboard
+      page_key: dashboard-home
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+  compatibility_redirects: []
+batch_rationale: "Close the retained industry-slice aggregate-truth gap on `/dashboard` so later industry refresh failures keep the verified slice visible while degrading the aggregate shell, and fold that route-truth pattern back into myweb-audit as `v1.62`."
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/dashboard` remains `web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue`"
+    - "the approved repair should stay dashboard-family local inside `useArtDecoDashboard.ts` instead of widening into shared global dashboard helpers"
+    - "a later industry refresh failure after at least one verified industry snapshot should preserve `涨跌家数`, heat-map, and sector-radar surfaces while degrading aggregate `DATA / SYNC` and route-level alert truth"
+    - "auth-seeded browser contexts plus browser-context interception with `serviceWorkers: block` are acceptable verification harnesses for controlled retained-industry-slice truth on `/dashboard`"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, error]
+  notes:
+    - "verify `/dashboard` first renders a verified industry slice with `涨跌家数 2↑/0↓`"
+    - "verify a later industry refresh failure degrades aggregate route meta to `DATA: MIXED / SYNC: DEGRADED` and surfaces `行业热度数据暂不可用`"
+    - "verify the same later failure keeps the visible market-status card, heat-map, and sector-radar alive instead of collapsing to fallback notes"
+repair_approval:
+  status: approved
+  approved_findings:
+    - dashboard-home-issue-05
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - dashboard-home
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+    - web/frontend/tests/unit/components/ArtDecoDashboardLogic.spec.ts
+    - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-dashboard-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-dashboard-industry-slice-red-green-plus-controlled-system-chrome-live-proof
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `dashboard-batch-05` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` is treated as observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/dashboard-industry-slice-refresh-retention-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-05-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/dashboard-batch-05-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/dashboard-batch-05-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/dashboard-batch-05-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: closeout-finalized-and-validated
+  next_action: none-batch-complete
+  notes:
+    - "the dashboard industry slice now retains the last verified breadth, heat-map, and sector-radar surfaces on later refresh failure"
+    - "aggregate route meta and alerts must degrade together with the retained slice, per `v1.62`"
+status: complete

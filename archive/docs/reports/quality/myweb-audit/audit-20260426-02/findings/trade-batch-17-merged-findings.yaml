@@ -1,0 +1,44 @@
+- consolidated_issue_id: trade-reconciliation-issue-03
+  severity: High
+  title: Trade reconciliation now clears previous account request provenance and verified freshness while a newly selected account snapshot is unresolved
+  pages:
+    - /trade/reconciliation
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The route exposed a third selector-scoped truth cluster: verified request provenance and freshness stayed tied to the previous account after the visible account selector had already changed."
+  primary_owner: web/frontend/src/views/trade/composables/useTradeReconciliation.ts
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /strategy/signals
+    - /strategy/parameters
+    - /detail/news/:symbol
+  dedupe_keys:
+    - /trade/reconciliation:data-state:accountSelectorPendingProvenanceFreshness
+  verification_scope:
+    routes:
+      - /trade/reconciliation
+    states:
+      - verified-account-success
+      - verified-results-visible
+      - same-instance-account-switch-pending
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/api/tradeReconciliation.ts
+      - web/frontend/src/views/trade/composables/useTradeReconciliation.ts
+      - web/frontend/src/views/trade/Reconciliation.vue
+      - web/frontend/src/views/trade/__tests__/Reconciliation.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/references/route-truth-casebook.md
+      - .claude/skills/myweb-audit/references/route-truth-coverage-matrix.md
+    notes:
+      - "statement and result normalizers now preserve envelope request ids so the visible reconciliation snapshot can expose route-local provenance"
+      - "the reconciliation hero now renders selector-scoped `REQ_ID / UPDATED` derived from the currently visible verified account snapshot"
+      - "same-instance unresolved account switches now clear previous-account provenance and verified freshness until the new selector produces its own verified snapshot"
+      - "owner and routed Phase 3 regressions now lock the same-instance `backtest:7 -> backtest:8` unresolved-switch provenance and freshness path"
+      - "the stable `myweb-audit v2.0` request-provenance and freshness families are reused; only the casebook and coverage matrix were updated"
+  verification_surface: code-review-plus-targeted-live-verification

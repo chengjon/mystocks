@@ -1,0 +1,24 @@
+- consolidated_issue_id: data-indicator-issue-01
+  severity: High
+  affected_routes:
+    - /data/indicator
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/data/Advanced.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: The canonical data-indicator route now renders unverified summary surfaces honestly and verified tallies without inheriting shared faux zero metrics, delta chrome, or fake freshness metadata.
+  dependency: null
+  shared_impact:
+    candidate: true
+    basis: Shared `ArtDecoStatCard.vue` defaults amplified the tally leak, but the approved repair remains page-local in `Advanced.vue`.
+    related_routes:
+      - /data/indicator
+  approval_status: approved

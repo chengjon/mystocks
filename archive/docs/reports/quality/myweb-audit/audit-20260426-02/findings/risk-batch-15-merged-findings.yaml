@@ -1,0 +1,40 @@
+- consolidated_issue_id: risk-stop-loss-issue-15
+  severity: High
+  title: Risk stop-loss now keeps implicit primary-watchlist selector truth aligned with the currently derived verified snapshot
+  pages:
+    - /risk/stop-loss
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The canonical stop-loss route derived its active selector from the live primary watchlist and then treated the old verified stop-loss cards as if they were proof for the new derived selector after that selector's stock slice failed. This was one selector-owned routed truth defect on `/risk/stop-loss`."
+  primary_owner: web/frontend/src/views/risk/StopLoss.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /risk/stop-loss
+  dedupe_keys:
+    - /risk/stop-loss:data-state:implicitDerivedSelectorSnapshotTruth
+  verification_scope:
+    routes:
+      - /risk/stop-loss
+    states:
+      - default
+      - selector-switch-refresh-failure
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/risk/StopLoss.vue
+      - web/frontend/src/views/risk/__tests__/StopLoss.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/SKILL.md
+      - .claude/skills/myweb-audit/references/CHANGELOG.md
+      - .claude/skills/myweb-audit/references/audit-checklist.md
+      - .claude/agents/myweb-audit-data-state-audit.md
+    notes:
+      - "the canonical stop-loss owner now keys verified snapshot truth to the currently derived watchlist selector instead of a route-global verified flag"
+      - "after the primary watchlist switches to a new selector with no verified stock snapshot yet, hero `REQ_ID`, tally cards, and visible stop-loss cards now degrade to selector-local unavailable truth instead of reusing the previous selector's snapshot"
+      - "new routed regressions pin the same success-then-selector-failure path at both owner and Phase 4 matrix levels"
+      - "this batch promotes `myweb-audit` to `v1.69` with explicit implicit-selector discovery truth guidance"
+  verification_surface: code-review-plus-targeted-live-verification

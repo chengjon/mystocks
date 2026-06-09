@@ -1,0 +1,83 @@
+audit_run_id: audit-20260426-02
+batch_id: detail-batch-09
+module: detail
+scope:
+  requested_by: user
+  pages:
+    - route: /detail/news/:symbol
+      page_key: stock-news
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/announcement/AnnouncementMonitor.vue
+  compatibility_redirects: []
+batch_rationale: "Repair the canonical `/detail/news/:symbol` route so selector-specific auxiliary rules and triggered records cannot remain visible after the same page instance switches to a new detail symbol, reusing existing `myweb-audit v1.66` and `v1.60` guidance."
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "the canonical `/detail/news/:symbol` route remains owned by `web/frontend/src/views/announcement/AnnouncementMonitor.vue`"
+    - "detail-route auxiliary tables should never leave previous-symbol rows visible after the page shell switches to a new `routeSymbol`"
+    - "global announcement monitor rules with empty `stock_codes` remain valid across symbols and should survive selector filtering"
+    - "browser-context fulfillment with auth-seeded system `google-chrome` is an acceptable verification harness for controlled same-instance detail/news selector switches on this machine"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+    - "the natural PM2 detail/news route redirects to `/login`, so controlled live proof seeded an authenticated browser context before returning to the target detail route"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, error]
+  notes:
+    - "verify `/detail/news/600519` first shows the selector-specific auxiliary rows for the verified symbol"
+    - "verify a same-instance switch to `/detail/news/000001` removes old symbol-specific auxiliary rows while preserving global rules"
+    - "verify the new selector shell does not leak the previous symbol's triggered record rows"
+repair_approval:
+  status: approved
+  approved_findings:
+    - detail-news-issue-09
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - stock-news
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/announcement/AnnouncementMonitor.vue
+    - web/frontend/src/views/announcement/__tests__/AnnouncementMonitor.spec.ts
+    - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-targeted-vitest-and-git-diff-check
+    typecheck: failed-existing-unrelated-technical-debt
+    pm2: passed-pm2-online
+    e2e: passed-authenticated-system-chrome-detail-news-aux-selector-switch-proof
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contains earlier staged audit artifacts and unrelated files, so staged GitNexus output remains observation-only unless an isolated staged scope is prepared later"
+      - "the current staged observation reported `changed_files: 126`, `changed_count: 317`, and `risk_level: low`, which does not isolate `detail-batch-09`"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/detail-news-auxiliary-selector-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-09-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-09-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/detail-batch-09-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/detail-batch-09-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-detail-batch-09-closeout
+  notes:
+    - "the canonical detail news route now filters selector-specific auxiliary rows to the current detail symbol while preserving global rules"
+    - "future detail-route audits should reuse `v1.66` and `v1.60` whenever auxiliary rows can drift away from the current entity banner during same-instance route switches"
+status: complete

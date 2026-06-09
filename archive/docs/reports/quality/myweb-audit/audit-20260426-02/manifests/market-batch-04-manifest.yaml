@@ -1,0 +1,87 @@
+audit_run_id: audit-20260426-02
+batch_id: market-batch-04
+module: market
+scope:
+  requested_by: user
+  pages:
+    - route: /market/technical
+      page_key: market-technical
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/market/Technical.vue
+  compatibility_redirects: []
+batch_rationale: Close the canonical `/market/technical` unresolved-first-snapshot truth defect so point counters and chart placeholder copy do not present faux zero-state K-line semantics before the first successful payload resolves, and codify the newly observed worker-transport verification fallback as `myweb-audit v1.39`.
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/market/technical` remains `web/frontend/src/views/market/Technical.vue`"
+    - "the approved repair should stay page-local inside `Technical.vue` and the Phase 1 routed regression matrix rather than altering shared ArtDeco defaults"
+    - "when the route is still waiting on its first successful K-line payload, point counters and placeholder copy must degrade to explicit pending semantics instead of presenting `POINTS: 0` or generic empty-state copy as live truth"
+    - "the routed first-load product rule already exists in `myweb-audit v1.38`, but this batch also revealed a browser-verification gap where `page.route()` can be bypassed by a second request path, so `v1.39` must record the context-level interception fallback"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+    - "a first-pass `page.route()` reproduction was bypassed by a second request path; final delayed-state verification therefore used browser-context interception with `serviceWorkers: block`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [loading, default]
+  notes:
+    - "verify the delayed `/market/technical` route now renders top stat values `000001 / -- / -- / --`, `POINTS: --`, and `Synchronizing K-Line Sample` while the first `/api/v1/market/kline` payload remains unresolved"
+    - "verify the unresolved delayed route has no `.artdeco-stat-change` nodes and no `POINTS: 0` or `Waiting For K-Line Sample` copy"
+    - "verify the normal PM2 route still resolves to a live K-line snapshot after the page-local pending-state repair lands"
+repair_approval:
+  status: approved
+  approved_findings:
+    - market-technical-issue-01
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - market-technical
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/market/Technical.vue
+    - web/frontend/src/views/market/__tests__/Technical.spec.ts
+    - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+    - .claude/skills/myweb-audit/SKILL.md
+    - .claude/agents/myweb-audit-data-state-audit.md
+    - .claude/skills/myweb-audit/references/audit-checklist.md
+    - .claude/skills/myweb-audit/references/CHANGELOG.md
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-market-technical-delayed-and-default-2-state
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `market-batch-04` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/market-technical-unresolved-first-snapshot-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-04-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-04-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/market-batch-04-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/market-batch-04-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-market-batch-04-closeout
+  notes:
+    - "the canonical technical route now renders unresolved first-load point counters and chart placeholder copy honestly during the first delayed K-line window"
+    - "this batch introduced `myweb-audit v1.39` so worker-side request replays cannot silently bypass page-scoped browser interception during future live audits"
+status: complete

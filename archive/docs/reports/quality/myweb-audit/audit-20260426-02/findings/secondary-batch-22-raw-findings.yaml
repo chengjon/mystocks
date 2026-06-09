@@ -1,0 +1,38 @@
+- finding_id: secondary-shell-022-tdx-market
+  batch_id: secondary-batch-22
+  page:
+    route: /secondary/legacy-tdx-market-static-shell
+    page_key: secondary-legacy-tdx-market-static-shell
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/TdxMarket.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy TDX market page still exposed a pseudo-live workbench even though no verified canonical owner exists
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/TdxMarket.vue`"
+      - "Inspect the local quote, index-monitoring, K-line, and auto-refresh shell surfaces"
+      - "Confirm the only same-domain sibling, `web/frontend/src/views/market/Tdx.vue`, still depends on simulated transport and TODO APIs via `useTdx()`"
+  expected: "A legacy TDX market page with no verified canonical owner should degrade to an honest static shell instead of delegating to another unresolved pseudo-live sibling."
+  actual: "Before repair, `TdxMarket.vue` still rendered its own pseudo-live TDX quote, index, K-line, and refresh shell even though no verified canonical owner existed to back that truth."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green regression confirmed the top-level TDX market page still rendered pseudo-live TDX shell semantics before static-shell degradation."
+  repair_target:
+    files:
+      - web/frontend/src/views/TdxMarket.vue
+      - web/frontend/src/views/__tests__/TdxMarket.spec.ts
+    primary_owner: web/frontend/src/views/TdxMarket.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-tdx-market-static-shell
+  status: open
+  dependency: null
+  dedupe_key: /secondary/legacy-tdx-market-static-shell:route-truth:legacyTdxMarketStaticShell
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner static-shell regression to confirm the pseudo-live TDX shell is gone and the page no longer exposes local quote, index, or refresh semantics."

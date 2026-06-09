@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/tdx",
+  "total_endpoints": 2,
+  "endpoints": [
+    {
+      "path": "/tdx/data",
+      "method": "POST",
+      "file": "ml.py",
+      "function": "get_tdx_data",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 45
+    },
+    {
+      "path": "/tdx/stocks/{market}",
+      "method": "GET",
+      "file": "ml.py",
+      "function": "list_tdx_stocks",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 76
+    }
+  ]
+}

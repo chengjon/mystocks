@@ -1,0 +1,44 @@
+# Tech Debt Governance Execution Board (2026Q1)
+
+> **历史计划说明**:
+> 本文件是阶段性计划、路线图、提案、执行清单或整改建议，不是当前基线、当前实施状态或仓库共享规则的唯一事实来源。
+> 若涉及仓库级共享规则、审批门禁或治理口径，请优先遵循 `architecture/STANDARDS.md`；若涉及仓库执行流程、命令或协作约束，再结合根目录 `AGENTS.md`，并与当前代码实现及主线文档一并核对。
+>
+> 文内优先级、缺口清单、执行步骤、目标值、时间线和建议动作如未重新复核，应视为历史计划上下文，不得直接当作当前事实。
+
+
+## Usage
+- Cadence: weekly plan (Mon) and rollup (Fri)
+- Status: todo | doing | blocked | done
+- Priority: P0 (2 weeks) | P1 (30 days) | P2 (90 days)
+- Evidence: doc path, PR, CI, or dashboard link
+
+| ID | Task | Priority | Owner | DDL | Dependencies | Status | Acceptance Criteria | Evidence |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| T01 | Define Architecture Source of Truth | P0 | main | 2026-02-08 | - | done | SoT doc created and reviewed | `architecture/DOMAIN_BOUNDARIES.md` |
+| T02 | Seed Spec Conflict Matrix (Round 1) | P0 | main | 2026-02-22 | T01 | doing | SC-001..SC-010 tracked with owner/status | `technical_debt/governance/SPEC_CONFLICT_MATRIX.md` |
+| T03 | Establish Debt Register Cadence | P0 | main | 2026-02-23 | T01 | doing | TD-001..TD-015 have owner/DDL fields | `technical_debt/governance/DEBT_REGISTER.md` |
+| T04 | Consolidate Runtime Config Entry Points | P0 | main | 2026-02-08 | T01 | done | Single config entry point documented | `config/` consolidation, `main.py` refactor |
+| T05 | API Contract Baseline and Drift Checks | P1 | cli-2 | 2026-03-05 | T02 | todo | Contract checks added to CI | TBD |
+| T06 | Data Routing Rules + Regression Tests | P1 | main+cli-6 | 2026-03-08 | T01,T04 | todo | Routing rules documented + tests | TBD |
+| T07 | Minimum Observability SLO Baseline | P1 | main | 2026-03-10 | T04 | todo | 2 core SLOs defined and tracked | TBD |
+| T08 | Tooling Entry Point De-duplication | P1 | main | 2026-03-12 | T03 | todo | Unified tooling entry points | TBD |
+| T09 | Debt Gate (PR) Trial | P2 | main | 2026-04-01 | T05,T06,T07 | todo | PR gate enabled for debt checks | TBD |
+| T10 | Monthly Governance Report Automation | P2 | main | 2026-04-15 | T03,T09 | todo | Automated monthly report | TBD |
+
+## This Week (Suggested)
+1. T01 (SoT draft)
+2. T02 (Conflict matrix seed)
+3. T03 (Debt register seed)
+4. T04 (Config consolidation plan)
+
+<!-- AUTO_LAYER1_START -->
+## Auto Layer 1 (Now/Next/Blocked)
+- Last Sync: 2026-02-13 17:24:24
+- Session: `9fca15cb-6e30-4779-b570-5160d0fae795`
+- Completion Detected: `false`
+- Summary: (no assistant text)
+- Changed Files (0): (none)
+- Next: Review and update task ownership/DDL if needed
+- Blocked: (manual fill if any)
+<!-- AUTO_LAYER1_END -->

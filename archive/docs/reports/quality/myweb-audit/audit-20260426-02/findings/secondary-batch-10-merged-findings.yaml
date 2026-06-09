@@ -1,0 +1,33 @@
+- consolidated_issue_id: secondary-shell-issue-10
+  severity: Medium
+  title: Legacy strategy management page now delegates to the canonical strategy-repo owner
+  pages:
+    - /secondary/legacy-strategy-management-canonical-wrapper
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The local strategy workbench copy, create CTA, and empty-state messaging were all facets of the same defect: `StrategyManagement.vue` preserved a forked pseudo-live strategy workbench shell even though a semantically matching canonical strategy-repo owner already exists."
+  primary_owner: web/frontend/src/views/StrategyManagement.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-strategy-management-canonical-wrapper
+  dedupe_keys:
+    - /secondary/legacy-strategy-management-canonical-wrapper:route-truth:legacyStrategyManagementCanonicalWrapper
+  verification_scope:
+    routes:
+      - /secondary/legacy-strategy-management-canonical-wrapper
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/StrategyManagement.vue
+      - web/frontend/src/views/__tests__/StrategyManagement.spec.ts
+    notes:
+      - "the legacy strategy management page now renders only the canonical `/strategy/repo` owner instead of a forked pseudo-live workbench shell"
+      - "the page no longer fabricates local strategy-management truth or pseudo-live CTA/empty-state semantics"
+      - "secondary inventory heuristics now drop `StrategyManagement.vue` out of the high-priority shortlist"
+  verification_surface: code-review-only

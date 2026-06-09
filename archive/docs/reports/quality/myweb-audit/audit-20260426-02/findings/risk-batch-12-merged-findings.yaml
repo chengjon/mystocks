@@ -1,0 +1,37 @@
+- consolidated_issue_id: risk-management-issue-12
+  severity: High
+  title: Risk management now keeps footer freshness aligned with the first verified positions snapshot
+  pages:
+    - /risk/management
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The loading-shell leak and first-load failure leak were one routed truth cluster: `/risk/management` seeded footer freshness from the local current clock before any verified positions snapshot existed."
+  primary_owner: web/frontend/src/views/risk/Center.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /risk/management
+  dedupe_keys:
+    - /risk/management:data-state:initialFreshnessFooterTruth
+  verification_scope:
+    routes:
+      - /risk/management
+    states:
+      - loading
+      - first-load-failure
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/risk/Center.vue
+      - web/frontend/src/views/risk/__tests__/Center.spec.ts
+      - web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts
+    notes:
+      - "the canonical risk management owner now initializes `lastUpdateTime` as `--` and only advances it after `data-loaded` fires from a verified positions snapshot"
+      - "the new owner-level regression pins both the loading shell and first-load failure shell against local-current-time freshness leakage"
+      - "the Phase 4 routed matrix now guards the same footer truth on the canonical `/risk/management` route"
+      - "this batch reuses existing `myweb-audit v1.47` initial freshness placeholder truth guidance, so no new skill-version bump was required"
+  verification_surface: code-review-plus-targeted-live-verification

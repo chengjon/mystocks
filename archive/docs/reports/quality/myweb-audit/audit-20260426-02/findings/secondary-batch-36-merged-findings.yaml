@@ -1,0 +1,36 @@
+- consolidated_issue_id: secondary-shell-issue-36
+  severity: Medium
+  title: Legacy industry-concept analysis page now degrades to an honest static shell
+  pages:
+    - /secondary/industry-concept-analysis-static-shell
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The local tabs, selector filters, summary cards, charts, stock tables, and export action in `IndustryConceptAnalysis.vue` were all faces of the same defect family: a legacy industry-concept workbench preserved pseudo-live truth even though no semantically matching canonical owner existed."
+  primary_owner: web/frontend/src/views/IndustryConceptAnalysis.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/industry-concept-analysis-static-shell
+  dedupe_keys:
+    - /secondary/industry-concept-analysis-static-shell:route-truth:industryConceptAnalysisStaticShell
+  verification_scope:
+    routes:
+      - /secondary/industry-concept-analysis-static-shell
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/IndustryConceptAnalysis.vue
+      - web/frontend/src/views/__tests__/IndustryConceptAnalysis.spec.ts
+      - web/frontend/src/views/composables/useIndustryConceptAnalysis.ts
+      - web/frontend/src/views/styles/IndustryConceptAnalysis.scss
+    notes:
+      - "the legacy industry-concept analysis page now renders an honest static shell"
+      - "the repair removes local tabs, selector filters, summary cards, charts, stock tables, and export actions instead of preserving pseudo-live analysis truth"
+      - "the now-unused local page-only composable/style chain was retired with the owner"
+      - "users are handed back to verified `/data/industry`, `/data/concept`, and `/data/fund-flow` routes"
+  verification_surface: code-review-only

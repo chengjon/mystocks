@@ -1,0 +1,23 @@
+- consolidated_issue_id: risk-overview-issue-01
+  severity: Medium
+  affected_routes:
+    - /risk/overview
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/risk/Overview.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: The routed risk-overview page now uses live alert-record truth for the alert tab and degrades KPI and overview metric slices to explicit unverified states instead of mixing live rules with embedded placeholder copy.
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: null
+    related_routes: []
+  approval_status: approved

@@ -1,0 +1,85 @@
+audit_run_id: audit-20260426-02
+batch_id: trade-batch-08
+module: trade
+scope:
+  requested_by: user
+  pages:
+    - route: /trade/history
+      page_key: trade-history
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/trade/History.vue
+  compatibility_redirects: []
+batch_rationale: "Reuse the existing `v1.32 + v1.38 + v1.40` rules on the canonical trade-history route so hero meta, KPI strip, content-shell counts, and first-load empty copy stop presenting faux zero-row or faux empty-ledger truth before any verified history snapshot exists."
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/trade/history` remains `web/frontend/src/views/trade/History.vue`"
+    - "the approved repair should stay page-local in `History.vue` instead of widening into shared stat-card defaults or wrapper-specific logic"
+    - "the PM2 frontend currently auth-gates `/trade/history`, so targeted live verification may need an authenticated browser context before browser-context interception can isolate pending, first-load failure, and success states"
+    - "browser-context interception with `serviceWorkers: block` is an acceptable verification fallback for pending, first-load failure, and controlled success history states on this route"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [loading, error, default]
+  notes:
+    - "verify `/trade/history` no longer renders `ROWS: 0` or zero-valued KPI tallies while the first trade-ledger payload is unresolved"
+    - "verify the same route no longer treats a resolved `success: false` first-load failure as verified empty history truth"
+    - "verify the same route still renders verified ledger rows and request metadata once a successful trade-ledger snapshot resolves"
+repair_approval:
+  status: approved
+  approved_findings:
+    - trade-history-issue-03
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - trade-history
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/trade/History.vue
+    - web/frontend/src/views/trade/__tests__/History.spec.ts
+    - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoTradingHistory.vue
+    confirmed:
+      - web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoTradingHistory.vue
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-trade-history-pending-failure-success-verification
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `trade-batch-08` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/trade-history-first-load-provenance-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-08-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-08-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-08-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/trade-batch-08-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-trade-batch-08-closeout
+  notes:
+    - "the repaired trade-history route now distinguishes pending, unavailable, verified empty, stale-refresh, and verified-success ledger truth on the canonical owner page"
+    - "this batch reuses the existing first-load placeholder and provenance rules rather than introducing a new `myweb-audit` version branch"
+status: complete

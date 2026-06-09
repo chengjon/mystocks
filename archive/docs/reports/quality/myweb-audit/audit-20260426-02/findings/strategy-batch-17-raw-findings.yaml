@@ -1,0 +1,40 @@
+- finding_id: strategy-gpu-data-state-002
+  batch_id: strategy-batch-17
+  page:
+    route: /strategy/gpu
+    page_key: strategy-gpu
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/strategy/BacktestGPU.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Strategy GPU route presented performance-only or status-only partial refreshes as a full recent-sync runtime banner
+  trigger:
+    steps:
+      - "Open `/strategy/gpu` with a controlled successful `/api/gpu/performance` response but no valid `/api/gpu/status` snapshot, or the inverse status-only path."
+      - "Allow the route to complete its first visible refresh and inspect the top runtime banner."
+      - "Compare the banner wording with the actually verified primary slices on the page."
+  expected: "When only one primary slice verifies, the route-level runtime banner should explicitly degrade to partial-sync wording that identifies the missing or retained slice instead of presenting a generic full `最近同步` route sync."
+  actual: "Before repair, the route stamped `最近同步 <time>` as soon as either primary slice produced a partial success and set `lastUpdatedAt`, even when the other primary slice was still unresolved. Controlled live proof reproduced `banner: 最近同步 8:20:44 PM`, `statusTag: 待同步`, and `perf: 当前加速倍数64x...` on the same shell."
+  evidence:
+    kind: live-observation
+    note: "The new owner regression reproduced both performance-only and status-only partial first-load paths. After repair, targeted system-Chrome verification confirmed `banner: 部分同步 9:04:55 PM · GPU 状态待同步` on the performance-only path, while a full-success route still shows `最近同步 9:46:10 PM`."
+  repair_target:
+    files:
+      - web/frontend/src/views/strategy/composables/useBacktestGPU.ts
+      - web/frontend/src/views/strategy/BacktestGPU.vue
+      - web/frontend/src/views/strategy/composables/__tests__/useBacktestGPU.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/strategy/composables/useBacktestGPU.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /strategy/gpu
+  status: open
+  dependency: null
+  dedupe_key: /strategy/gpu:data-state:partialSyncBannerTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check that partial primary-slice refreshes on `/strategy/gpu` degrade the runtime banner to explicit `部分同步` wording and that full-success paths still keep `最近同步`."

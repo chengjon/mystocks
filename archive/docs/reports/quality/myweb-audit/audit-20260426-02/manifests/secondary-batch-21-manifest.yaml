@@ -1,0 +1,91 @@
+audit_run_id: audit-20260426-02
+batch_id: secondary-batch-21
+module: secondary-legacy-surfaces
+scope:
+  requested_by: user
+  pages:
+    - route: /secondary/legacy-trading-orders-static-shell
+      page_key: secondary-legacy-trading-orders-static-shell
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/trading/Orders.vue
+    - route: /secondary/legacy-trading-execution-static-shell
+      page_key: secondary-legacy-trading-execution-static-shell
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/trading/Execution.vue
+  compatibility_redirects: []
+batch_rationale: >-
+  Continue the secondary inventory phase by collapsing the nested legacy
+  `trading/Orders.vue` and `trading/Execution.vue` placeholder pages into
+  honest static shells because no semantically matching canonical trade
+  orders or trade execution owners exist for direct delegation.
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-only
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "the manifest routes are synthetic secondary-inventory aliases used for artifact indexing; `web/frontend/src/views/trading/Orders.vue` and `web/frontend/src/views/trading/Execution.vue` are not current router entries"
+    - "the current router graph does not expose semantically matching canonical `/trade/orders` or `/trade/execution` owners"
+    - "the repair must not add a new store, snapshot cache, request provenance badge, or shell-level freshness strip"
+  fallback_log: []
+verification_plan:
+  verification_strategy: code-review-only
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states:
+    - default
+  notes:
+    - "verify both legacy trading pages no longer render local `Coming Soon` placeholder shells"
+    - "verify the pages now degrade to honest static shells with no fabricated order-routing or execution truth"
+    - "verify secondary inventory tooling still passes after the precedent write-back"
+repair_approval:
+  status: approved
+  approved_findings:
+    - secondary-shell-issue-21
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - secondary-legacy-trading-orders-static-shell
+    - secondary-legacy-trading-execution-static-shell
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/trading/Orders.vue
+    - web/frontend/src/views/trading/Execution.vue
+    - web/frontend/src/views/trading/__tests__/Orders.spec.ts
+    - web/frontend/src/views/trading/__tests__/Execution.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/views/trading/Orders.vue
+      - web/frontend/src/views/trading/Execution.vue
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vitest
+    typecheck: failed-existing-frontend-debt-only
+    pm2: passed
+    e2e: not-run-unrouted-owner
+    gitnexus_staged_detect: mixed-observation-non-isolated
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "the staged index already contained many unrelated files before this micro-batch, so `gitnexus_detect_changes({scope: staged})` is recorded only as a mixed observation"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/trading-orders-execution-legacy-static-shell-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/secondary-batch-21-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/secondary-batch-21-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/secondary-batch-21-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/secondary-batch-21-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: verification
+  next_action: continue-secondary-inventory-triage
+  notes:
+    - "nested legacy placeholder pages without semantically matching canonical owners should degrade to honest static shells instead of being force-mapped onto nearby trade routes"
+status: complete

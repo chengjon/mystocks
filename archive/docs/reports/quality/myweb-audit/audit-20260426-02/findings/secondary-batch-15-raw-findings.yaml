@@ -1,0 +1,38 @@
+- finding_id: secondary-shell-015
+  batch_id: secondary-batch-15
+  page:
+    route: /secondary/legacy-trade-management-canonical-wrapper
+    page_key: secondary-legacy-trade-management-canonical-wrapper
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/TradeManagement.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Legacy top-level trade management page still exposed a forked pseudo-live trading workbench shell even though the active trading orchestration shell already exists
+  trigger:
+    steps:
+      - "Open `web/frontend/src/views/TradeManagement.vue`"
+      - "Inspect the local header, portfolio overview, positions, trade history, and statistics shell"
+      - "Confirm the page does not delegate to `web/frontend/src/views/artdeco-pages/ArtDecoTradingManagement.vue`"
+  expected: "An unrouted legacy page that is semantically covered by the active trading orchestration shell should collapse to a thin wrapper instead of preserving a forked pseudo-live trade-management workbench."
+  actual: "Before repair, `TradeManagement.vue` rendered its own pseudo-live trade-management shell with local positions, trade-history, and statistics surfaces instead of delegating to the active orchestration shell."
+  evidence:
+    kind: code-review
+    note: "Owner review plus red/green regression confirmed the legacy top-level trade-management page still rendered its own fake workbench shell before the wrapper repair."
+  repair_target:
+    files:
+      - web/frontend/src/views/TradeManagement.vue
+      - web/frontend/src/views/__tests__/TradeManagement.spec.ts
+    primary_owner: web/frontend/src/views/TradeManagement.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-trade-management-canonical-wrapper
+  status: open
+  dependency: null
+  dedupe_key: /secondary/legacy-trade-management-canonical-wrapper:route-truth:legacyTradeManagementCanonicalWrapper
+  verification_surface: code-review-only
+  verification:
+    required: true
+    complete: false
+    notes: "Re-run the owner wrapper regression, active orchestration-shell regression, and secondary inventory tooling to confirm the legacy trade-management page now delegates entirely to the active trading orchestration shell."

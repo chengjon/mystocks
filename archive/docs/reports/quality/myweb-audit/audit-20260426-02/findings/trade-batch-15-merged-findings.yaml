@@ -1,0 +1,43 @@
+- consolidated_issue_id: trade-reconciliation-issue-01
+  severity: High
+  title: Trade reconciliation now clears previous account rows while a newly selected account snapshot is unresolved
+  pages:
+    - /trade/reconciliation
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The route exposed one selector-scoped snapshot defect cluster: both statement rows and reconciliation result rows remained tied to the previous verified account after the visible account selector had already changed."
+  primary_owner: web/frontend/src/views/trade/composables/useTradeReconciliation.ts
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /watchlist/manage
+    - /strategy/parameters
+    - /strategy/signals
+  dedupe_keys:
+    - /trade/reconciliation:data-state:accountSelectorPendingRows
+  verification_scope:
+    routes:
+      - /trade/reconciliation
+    states:
+      - verified-account-success
+      - same-instance-account-switch-pending
+      - imported-results-visible
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/api/trade.ts
+      - web/frontend/src/views/trade/composables/useTradeReconciliation.ts
+      - web/frontend/src/views/trade/__tests__/Reconciliation.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/references/route-truth-casebook.md
+      - .claude/skills/myweb-audit/references/route-truth-coverage-matrix.md
+    notes:
+      - "account switches now clear selector-owned statement and reconciliation-result payloads before the new account snapshot resolves"
+      - "stale import-success banner copy is also cleared on account switch so the pending shell reflects the new selector rather than the previous import action"
+      - "the trade API service now imports reconciliation types explicitly so the route-adjacent type surface no longer adds new `Cannot find name` errors during `vue-tsc`"
+      - "owner and routed Phase 3 regressions now lock the same-instance `backtest:7 -> backtest:8` unresolved-switch path"
+      - "the stable `myweb-audit v2.0` selector-scoped family is reused; only the casebook and coverage matrix were updated"
+  verification_surface: code-review-plus-targeted-live-verification

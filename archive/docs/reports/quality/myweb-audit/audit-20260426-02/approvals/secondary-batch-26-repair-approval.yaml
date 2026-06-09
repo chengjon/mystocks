@@ -1,0 +1,24 @@
+- consolidated_issue_id: secondary-shell-issue-26
+  severity: Medium
+  affected_routes:
+    - /secondary/trading-decision-orders-static-shell
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/trading-decision/DecisionOrders.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "Trading decision orders panel now degrades to an honest static shell."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The repair stays scoped to the decision-orders owner and its local regression; no new store, snapshot cache, shell-level provenance badge, or freshness strip was introduced."
+    related_routes:
+      - /secondary/trading-decision-orders-static-shell
+  approval_status: approved

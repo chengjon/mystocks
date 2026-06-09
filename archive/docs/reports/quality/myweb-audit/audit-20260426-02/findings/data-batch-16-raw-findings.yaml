@@ -1,0 +1,40 @@
+- finding_id: data-indicator-data-state-003
+  batch_id: data-batch-16
+  page:
+    route: /data/indicator
+    page_key: data-indicator
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/data/Advanced.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Data indicator route advanced header UPDATED metadata on failed refresh even though the visible analysis snapshot never changed
+  trigger:
+    steps:
+      - "Open `/data/indicator`"
+      - "Allow the first indicator-registry and stock-universe requests to resolve successfully so the indicator workspace becomes visible"
+      - "Capture the header `UPDATED` value"
+      - "Trigger `刷新数据` and force the next `/api/v1/indicators/registry` request to fail while `/api/v1/data/stocks/basic` still resolves"
+      - "Inspect the header freshness metadata, warning state, and whether the visible indicator workspace remains mounted"
+  expected: "If the route keeps the previous verified indicator-analysis snapshot visible after refresh failure, header `UPDATED` should stay pinned to the last verified snapshot time and the page should show explicit stale-refresh copy instead of presenting a newer freshness timestamp."
+  actual: "Before repair, `useDataAnalysis.refreshData()` updated `lastUpdateTime` in `finally`, so a failed manual refresh advanced `UPDATED` to the local current time even though no new verified analysis snapshot existed and the page still represented the earlier indicator workspace."
+  evidence:
+    kind: live-observation
+    note: "The routed red test reproduced `UPDATED` advancing from `2026/5/3 09:00:00` to `2026/5/3 10:15:00` before repair. Controlled Playwright-library verification with system `google-chrome` then confirmed the repaired route keeps `UPDATED: 2026/5/3 23:21:57`, renders `部分刷新失败 / 当前仍显示上次成功同步的数据分析快照。`, keeps `移动平均线` visible, and does not fall into `数据分析数据加载失败`."
+  repair_target:
+    files:
+      - web/frontend/src/composables/market/useDataAnalysis.ts
+      - web/frontend/src/views/data/Advanced.vue
+    primary_owner: web/frontend/src/composables/market/useDataAnalysis.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /data/indicator
+  status: open
+  dependency: null
+  dedupe_key: /data/indicator:data-state:refreshTimestampProvenanceTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/data/indicator` after repair and confirm a failed manual refresh preserves the last verified `UPDATED` value while keeping the visible indicator workspace mounted."

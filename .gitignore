@@ -214,6 +214,14 @@ web/frontend/undefined:
 !.claude/build-checker-python.json
 !.claude/build-checker.json
 
+# --- Exception: .claude/skills/ (project-shared skills) ---
+!.claude/skills/
+!.claude/skills/*/
+!.claude/skills/*/**
+.claude/skills/**/logs/
+.claude/skills/**/*.log
+.claude/skills/**/.scan-cache.json
+
 # --- Exception: .planning/ (index files only) ---
 .planning/*
 !.planning/STATE.md
@@ -246,6 +254,7 @@ data/backups/*
 # ========================================
 .archive/
 archive/
+!archive/docs/
 
 # ========================================
 # OTHER BUILD/DEPENDENCY ARTIFACTS

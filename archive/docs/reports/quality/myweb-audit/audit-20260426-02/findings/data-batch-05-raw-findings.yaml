@@ -1,0 +1,39 @@
+- finding_id: data-industry-data-state-001
+  batch_id: data-batch-05
+  page:
+    route: /data/industry
+    page_key: data-industry
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/data/Industry.vue
+  source_role: data-state-audit
+  severity: Medium
+  issue_type: data-state
+  title: Routed industry page lost its refresh-truth contract by clearing or replacing last-known-good surfaces after a manual refresh failure
+  trigger:
+    steps:
+      - Open `/data/industry`
+      - Allow the initial industry request to succeed
+      - Click `刷新板块`
+      - Force the second industry request to fail
+  expected: "A failed manual refresh should keep the last successful board table and rotation snapshot visible and explicitly warn that the page is showing stale data."
+  actual: "Before repair, the page treated a refresh failure like a broader failure reset, so the stale-data contract for retained board and rotation content was missing."
+  evidence:
+    kind: live-observation
+    note: "Unit reproduction and targeted system-Chrome verification both confirmed that `/data/industry` needed a page-local stale-refresh warning path that coexists with the retained board and rotation surfaces."
+  repair_target:
+    files:
+      - web/frontend/src/views/data/Industry.vue
+      - web/frontend/tests/unit/views/data-industry-refresh-fallback.spec.ts
+      - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/data/Industry.vue
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact: []
+  status: open
+  dependency: null
+  dedupe_key: /data/industry:data-state:industryRefreshStaleWarning
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: Reproduce a success-then-refresh-fail industry path and confirm the warning panel appears while the old board and rotation content remain visible.

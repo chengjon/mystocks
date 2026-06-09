@@ -1,0 +1,82 @@
+audit_run_id: audit-20260426-02
+batch_id: detail-batch-07
+module: detail
+scope:
+  requested_by: user
+  pages:
+    - route: /detail/graphics/:symbol
+      page_key: stock-graphics
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/artdeco-pages/analysis-tabs/KLineAnalysis.vue
+  compatibility_redirects: []
+batch_rationale: "Repair the canonical `/detail/graphics/:symbol` route so a new detail symbol cannot inherit the previous verified K-line or indicator snapshot when selector-scoped first-load or enrichment failures occur, reusing existing `myweb-audit v1.66` selector-scoped provenance guidance."
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "the canonical `/detail/graphics/:symbol` route remains owned by `web/frontend/src/views/artdeco-pages/analysis-tabs/KLineAnalysis.vue`"
+    - "the detail route selector is route-scoped truth, so primary K-line and indicator slices must stay aligned with the current detail symbol rather than the previous verified snapshot"
+    - "the approved repair should stay page-local inside the routed detail graphics owner view and routed regressions instead of widening into shared technical-analysis transport or cross-route chart wrappers"
+    - "Playwright-library control of system `google-chrome` remains the acceptable natural route-switch verification harness on this machine even when the PM2 request path does not expose a browser-network interception surface for controlled failure fulfillment"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+    - "the PM2 `/detail/graphics` request path remained outside browser-network interception during live verification on this machine, so controlled failure proof stayed in owner regressions plus routed matrix assertions"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, error]
+  notes:
+    - "verify the first selector shows a verified K-line route snapshot"
+    - "verify a new failing selector clears the old primary K-line snapshot and request provenance"
+    - "verify a new enrichment failure keeps only the new symbol K-line snapshot and does not leak the previous symbol indicators"
+repair_approval:
+  status: approved
+  approved_findings:
+    - detail-graphics-issue-07
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - stock-graphics
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/artdeco-pages/analysis-tabs/KLineAnalysis.vue
+    - web/frontend/src/views/artdeco-pages/analysis-tabs/__tests__/KLineAnalysis.spec.ts
+    - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed-pm2-online
+    e2e: passed-natural-system-chrome-route-switch-proof-plus-routed-matrix-hardening
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contains earlier staged audit artifacts and unrelated files, so any staged GitNexus output remains observation-only unless an isolated staged scope is prepared later"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/detail-graphics-selector-snapshot-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-07-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/detail-batch-07-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/detail-batch-07-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/detail-batch-07-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-detail-batch-07-closeout
+  notes:
+    - "the canonical detail graphics route now keeps primary K-line and indicator slices selector-scoped so a new detail symbol cannot inherit the previous verified snapshot"
+    - "future selector-driven detail-route audits should reuse `v1.66` whenever the current route selector and the visible primary or enrichment slices can drift apart under first-load or refresh failure"
+status: complete

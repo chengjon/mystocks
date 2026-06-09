@@ -7,41 +7,41 @@
 ## Start Here
 
 - 部署与环境准备：
-  [`deployment/README.md`](/opt/claude/mystocks_spec/docs/operations/deployment/README.md),
-  [`deployment-guide.md`](/opt/claude/mystocks_spec/docs/operations/deployment-guide.md),
-  [`quick-start.md`](/opt/claude/mystocks_spec/docs/operations/quick-start.md)
+  [`deployment/README.md`](deployment/README.md),
+  [`deployment-guide.md`](deployment-guide.md),
+  [`quick-start.md`](quick-start.md)
 - 监控与可观测性：
-  [`monitoring/MONITORING_GUIDE.md`](/opt/claude/mystocks_spec/docs/operations/monitoring/MONITORING_GUIDE.md),
-  [`MYSTOCKS_MONITORING_SYSTEM_OVERVIEW.md`](/opt/claude/mystocks_spec/docs/operations/MYSTOCKS_MONITORING_SYSTEM_OVERVIEW.md)
+  [`monitoring/MONITORING_GUIDE.md`](monitoring/MONITORING_GUIDE.md),
+  [`MYSTOCKS_MONITORING_SYSTEM_OVERVIEW.md`](MYSTOCKS_MONITORING_SYSTEM_OVERVIEW.md)
 - 日常值班与故障排查：
-  [`OPS_MANUAL.md`](/opt/claude/mystocks_spec/docs/operations/OPS_MANUAL.md),
-  [`PRODUCTION_INFO.md`](/opt/claude/mystocks_spec/docs/operations/PRODUCTION_INFO.md),
-  [`TROUBLESHOOTING.md`](/opt/claude/mystocks_spec/docs/operations/TROUBLESHOOTING.md)
+  [`OPS_MANUAL.md`](OPS_MANUAL.md),
+  [`PRODUCTION_INFO.md`](PRODUCTION_INFO.md),
+  [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md)
 - 本地质量门禁与 CI/CD：
-  [`ci-cd/LOCAL_CI_INTEGRATION.md`](/opt/claude/mystocks_spec/docs/operations/ci-cd/LOCAL_CI_INTEGRATION.md),
-  [`ci-cd/QUALITY_GATE_MANAGEMENT.md`](/opt/claude/mystocks_spec/docs/operations/ci-cd/QUALITY_GATE_MANAGEMENT.md)
+  [`ci-cd/LOCAL_CI_INTEGRATION.md`](ci-cd/LOCAL_CI_INTEGRATION.md),
+  [`ci-cd/QUALITY_GATE_MANAGEMENT.md`](ci-cd/QUALITY_GATE_MANAGEMENT.md)
 
 ## Reader Routing
 
 - 若问题是仓库级运行门禁、审批门禁或环境一致性：
-  先看 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)
+  先看 [`architecture/STANDARDS.md`](../../architecture/STANDARDS.md)
 - 若问题是“服务现在是否健康”：
   先看 PM2、健康检查、日志与监控，而不是 README 中的历史目标表
 - 若问题是部署细节：
-  进入 [`deployment/`](/opt/claude/mystocks_spec/docs/operations/deployment/)
+  进入 [`deployment/`](deployment)
 - 若问题是监控细节：
-  进入 [`monitoring/`](/opt/claude/mystocks_spec/docs/operations/monitoring/)
+  进入 [`monitoring/`](monitoring)
 - 若问题是 CI/CD 或本地质量流程：
-  进入 [`ci-cd/`](/opt/claude/mystocks_spec/docs/operations/ci-cd/)
+  进入 [`ci-cd/`](ci-cd)
 
 ## Supporting Surfaces
 
-- [`INDEX.md`](/opt/claude/mystocks_spec/docs/operations/INDEX.md) 仅作为旧链接兼容索引保留
-- root-level runbooks 如 [`BACKUP_GUIDE.md`](/opt/claude/mystocks_spec/docs/operations/BACKUP_GUIDE.md)、
-  [`INFRASTRUCTURE_CHECKLIST.md`](/opt/claude/mystocks_spec/docs/operations/INFRASTRUCTURE_CHECKLIST.md)、
-  [`STOCKS_SPEC_COMMAND_GUIDE.md`](/opt/claude/mystocks_spec/docs/operations/STOCKS_SPEC_COMMAND_GUIDE.md)
+- [`INDEX.md`](INDEX.md) 仅作为旧链接兼容索引保留
+- root-level runbooks 如 [`BACKUP_GUIDE.md`](BACKUP_GUIDE.md)、
+  [`INFRASTRUCTURE_CHECKLIST.md`](INFRASTRUCTURE_CHECKLIST.md)、
+  [`STOCKS_SPEC_COMMAND_GUIDE.md`](STOCKS_SPEC_COMMAND_GUIDE.md)
   继续作为 supporting runbooks 保留
-- 历史分析类文档如 [`运维效果分析报告.md`](/opt/claude/mystocks_spec/docs/operations/运维效果分析报告.md) 只能作为 supporting/reporting material，不应被视为当前运行基线
+- 历史分析类文档如 [`运维效果分析报告.md`](运维效果分析报告.md) 只能作为 supporting/reporting material，不应被视为当前运行基线
 
 ## Governance Status
 

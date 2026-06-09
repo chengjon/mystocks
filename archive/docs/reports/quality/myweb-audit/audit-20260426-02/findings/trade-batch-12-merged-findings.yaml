@@ -1,0 +1,36 @@
+- consolidated_issue_id: trade-terminal-issue-03
+  severity: High
+  title: Trade terminal trading-status refresh now keeps the last verified session and KPI snapshot instead of falling back to offline truth
+  pages:
+    - /trade/terminal
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The visible session id, run state, total PnL, positions, win rate, and drawdown all leaked the same route-local trading-status refresh defect on `/trade/terminal`, so they represent one canonical terminal workbench truth issue."
+  primary_owner: web/frontend/src/views/composables/useTradingDashboard.ts
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /trade/terminal
+  dedupe_keys:
+    - /trade/terminal:data-state:tradingStatusRefreshFallbackRetentionTruth
+  verification_scope:
+    routes:
+      - /trade/terminal
+    states:
+      - default
+      - error
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/composables/useTradingDashboard.ts
+      - web/frontend/src/views/composables/__tests__/useTradingDashboard.spec.ts
+      - web/frontend/tests/e2e/trade-terminal.spec.ts
+    notes:
+      - "the terminal workbench now records a page-local verified trading-status boundary so later status refresh failures no longer overwrite the visible session and KPI surfaces with `FALLBACK_TRADING_DATA`"
+      - "the strengthened owner regression now covers `success -> status refresh fail` retention of session id, run state, total PnL, positions, win rate, and drawdown"
+      - "the strengthened routed trade-terminal E2E regression now guards the same status-slice stale-refresh path at the route surface"
+      - "this batch reuses existing `myweb-audit v1.55`, applying the new slice-refresh fallback-retention rule to the terminal route's primary status slice"
+  verification_surface: code-review-plus-targeted-live-verification

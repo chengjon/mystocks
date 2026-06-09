@@ -1,0 +1,95 @@
+audit_run_id: audit-20260426-02
+batch_id: trade-batch-06
+module: trade
+scope:
+  requested_by: user
+  pages:
+    - route: /trade/portfolio
+      page_key: trade-portfolio
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/trade/Portfolio.vue
+    - route: /risk/pnl
+      page_key: risk-pnl
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue
+  compatibility_redirects: []
+batch_rationale: Reuse the existing `v1.32 + v1.38 + v1.39` rules on the canonical trade-portfolio route so top summary cards, hero meta, and first-load empty panels stop presenting faux zero balances or false real-empty semantics before any verified portfolio snapshot exists, while the shared `/risk/pnl` wrapper stays aligned with the repaired owner route.
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/trade/portfolio` remains `web/frontend/src/views/trade/Portfolio.vue`"
+    - "`/risk/pnl` remains a thin routed wrapper over the same canonical portfolio page family via `PortfolioOverviewTab.vue`"
+    - "the natural PM2 environment may return a real empty portfolio snapshot, so unavailable and unresolved-first-load summary truth must be confirmed through browser-context interception rather than inferred from natural zero values alone"
+    - "the approved repair should stay page-local in `Portfolio.vue` instead of widening into shared `ArtDecoStatCard.vue` defaults"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+    - "targeted live verification blocked service workers and fulfilled or hung `/api/v1/trade/positions` directly so unavailable and unresolved-first-load portfolio states could be isolated from unrelated browser-runtime noise"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [default, empty, loading, error]
+  notes:
+    - "verify `/trade/portfolio` no longer renders faux zero balances or false real-empty copy while the first `/api/v1/trade/positions` payload is unresolved or failed"
+    - "verify the same route now degrades top summary cards, hero meta, hero totals, and dependent sections to `--` placeholders until a verified snapshot exists"
+    - "verify the natural PM2 empty-state path still renders honest zero-valued totals when the backend returns a real empty portfolio snapshot"
+    - "verify `/risk/pnl` still reuses the repaired owner route and preserves the same honest empty-state semantics"
+repair_approval:
+  status: approved
+  approved_findings:
+    - trade-portfolio-issue-02
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - trade-portfolio
+    - risk-pnl
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/trade/Portfolio.vue
+    - web/frontend/src/views/trade/__tests__/Portfolio.spec.ts
+    - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+  shared_impact:
+    candidates:
+      - web/frontend/src/components/artdeco/base/ArtDecoStatCard.vue
+      - web/frontend/src/views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue
+    confirmed:
+      - web/frontend/src/views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: passed
+    e2e: passed-custom-system-chrome-trade-portfolio-default-error-loading-and-wrapper-verification
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated frontend or backend files before `trade-batch-06` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` is treated as observation-only in this run because the staged set is not isolated to the current batch"
+      - "`gitnexus_detect_changes({ scope: \"staged\", repo: \"mystocks_spec\" })` remains a low-risk mixed observation and is not used as an isolated `trade-batch-06` verdict"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/trade-portfolio-first-load-summary-truth-audit.md
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/risk-pnl-first-load-summary-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-06-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/trade-batch-06-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/trade-batch-06-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/trade-batch-06-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-trade-batch-06-closeout
+  notes:
+    - "the current batch reuses the existing `v1.32 + v1.38 + v1.39` rule set rather than introducing a new failure-mode class"
+    - "`/trade/portfolio` and `/risk/pnl` now distinguish verified empty portfolio truth from unavailable or unresolved-first-load summary truth"
+status: complete

@@ -1,0 +1,82 @@
+audit_run_id: audit-20260426-02
+batch_id: market-batch-05
+module: market
+scope:
+  requested_by: user
+  pages:
+    - route: /market/lhb
+      page_key: market-lhb
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/market/LHB.vue
+  compatibility_redirects: []
+batch_rationale: Close the canonical `/market/lhb` unresolved-first-load count-truth defect so leaderboard row counters do not present `0` as live truth before the first successful board payload resolves, while reusing existing `myweb-audit v1.38` product truth and `v1.39` verification-method rules.
+audit_roles:
+  - route-inventory
+  - data-state-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: code-review-plus-targeted-live-verification
+  frontend_runtime_mode: reuse-existing
+  assumptions:
+    - "canonical route truth for `/market/lhb` remains `web/frontend/src/views/market/LHB.vue`"
+    - "the approved repair should stay page-local inside `LHB.vue` and the Phase 1 routed regression matrix rather than altering shared ArtDeco defaults"
+    - "when the route is still waiting on its first successful leaderboard payload, row-count surfaces must degrade to explicit pending semantics instead of presenting `ROWS: 0` or `榜单条目 0` as live truth"
+    - "the routed unresolved-first-load numeric truth rule already exists in `myweb-audit v1.38`, and the browser harness should reuse `v1.39` context-level interception for delayed-state verification"
+  fallback_log:
+    - "the default local Playwright chromium bundle is still unavailable on this machine, so targeted live verification used Playwright-library control of system `google-chrome`"
+verification_plan:
+  verification_strategy: code-review-plus-targeted-live-verification
+  browser_project: chromium
+  breakpoints: [1440]
+  required_states: [loading, default]
+  notes:
+    - "verify delayed `/market/lhb` now renders top stat values `-- / 今日 / 买入榜 / --` while the first `/api/v2/market/lhb` payload remains unresolved"
+    - "verify the unresolved delayed route now renders `ROWS: --`, no `.artdeco-stat-change`, and no empty-state banner"
+    - "verify the normal PM2 route still resolves to a live leaderboard after the page-local pending-state repair lands"
+repair_approval:
+  status: approved
+  approved_findings:
+    - market-lhb-issue-02
+  deferred_findings: []
+state_tracking:
+  completed_pages:
+    - market-lhb
+  pending_pages: []
+  fixed_files:
+    - web/frontend/src/views/market/LHB.vue
+    - web/frontend/src/views/market/__tests__/LHB.spec.ts
+    - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: passed-via-vue-tsc-and-targeted-vitest
+    typecheck: passed-180s-budget
+    pm2: pending-final-command
+    e2e: passed-custom-system-chrome-market-lhb-delayed-and-default-2-state
+    gitnexus_staged_detect: mixed-staged-observation-low-risk
+  staged_scope:
+    mode: mixed-staged-observation-only
+    files: []
+    verdict_origin: mixed-staged-observation
+    notes:
+      - "dirty worktree already contained earlier staged audit artifacts and unrelated files before `market-batch-05` closeout was prepared"
+      - "`gitnexus_detect_changes({ scope: \"staged\" })` remains observation-only in this run because the staged set is not isolated to the current batch"
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260426-02/
+  page_reports:
+    - docs/reports/quality/myweb-audit/audit-20260426-02/pages/market-lhb-unresolved-first-load-count-truth-audit.md
+  raw_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-05-raw-findings.yaml
+  merged_findings: docs/reports/quality/myweb-audit/audit-20260426-02/findings/market-batch-05-merged-findings.yaml
+  repair_approval_package: docs/reports/quality/myweb-audit/audit-20260426-02/approvals/market-batch-05-repair-approval.yaml
+  batch_report: docs/reports/quality/myweb-audit/audit-20260426-02/batches/market-batch-05-audit.md
+  closeout: docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md
+resume:
+  last_completed_step: targeted-live-verification
+  next_action: finalize-market-batch-05-closeout
+  notes:
+    - "the canonical LHB route now renders unresolved first-load row counters honestly as pending placeholders rather than faux zero leaderboard truth"
+    - "this batch reuses existing `v1.38` product-truth and `v1.39` browser-verification rules instead of introducing `v1.40`"
+status: complete

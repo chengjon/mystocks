@@ -1,0 +1,40 @@
+- finding_id: strategy-backtest-data-state-007
+  batch_id: strategy-batch-19
+  page:
+    route: /strategy/backtest
+    page_key: strategy-backtest
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue
+  source_role: data-state-audit
+  severity: High
+  issue_type: data-state
+  title: Strategy backtest leaked a previous strategy-local generated snapshot hint after the route query switched to a new strategy without its own verified local context
+  trigger:
+    steps:
+      - "Open `/strategy/backtest?strategyId=101` with a controlled successful strategy-list load and a local snapshot available for strategy `101`."
+      - "Click `生成上下文快照` and confirm the execution-action hint shows `最近快照：Momentum Alpha`."
+      - "Switch the same routed page instance to `/strategy/backtest?strategyId=202` before any verified local generated snapshot exists for strategy `202`."
+      - "Inspect the visible state banner, context strip, and execution-action hint."
+  expected: "Selector- or query-scoped local action feedback such as generated snapshot hints should either show the current strategy's verified local artifact or degrade to neutral selector-local baseline copy plus optional context-switched messaging."
+  actual: "Before repair, the route-local `lastGeneratedSnapshot` surface was reused across strategy-query switches, so `/strategy/backtest?strategyId=202` could still present `最近快照：Momentum Alpha` and related generated-snapshot copy even though strategy `202` had no verified local snapshot of its own."
+  evidence:
+    kind: live-observation
+    note: "The red-green owner regression first generated a local snapshot for strategy `101`, then switched the same mounted route instance to strategy `202` and reproduced the leaked `最近快照：Momentum Alpha` hint. After repair, targeted authenticated system-Chrome verification confirmed the route reaches `ID 202` with neutral baseline copy and no leaked `Momentum Alpha` hint."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+      - web/frontend/src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+    primary_owner: web/frontend/src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts
+  can_fix_frontend: true
+  shared_impact_candidate: true
+  cross_page_impact:
+    - /strategy/backtest
+  status: open
+  dependency: null
+  dedupe_key: /strategy/backtest:data-state:selectorLocalActionSnapshotTruth
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check that the same `/strategy/backtest` page instance clears the previous strategy-local generated snapshot hint after the route query switches to a different strategy without its own verified local snapshot."

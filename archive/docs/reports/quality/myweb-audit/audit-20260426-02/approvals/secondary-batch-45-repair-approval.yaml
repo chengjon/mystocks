@@ -1,0 +1,24 @@
+- consolidated_issue_id: secondary-shell-issue-45
+  severity: Medium
+  affected_routes:
+    - /secondary/legacy-strategy-workbench-static-shell
+  source_roles:
+    - data-state-audit
+  primary_repair_target: web/frontend/src/views/strategy/BatchScan.vue
+  page_scope: page-local
+  frontend_fixable: true
+  repair_bucket: fix-now
+  changes_truth_sources:
+    route_truth: false
+    page_config: false
+    shared_composable: false
+    shared_component: false
+    generated_artifact: false
+  summary: "Legacy strategy workbench pages may be degraded to honest static shells because they are unrouted and depend on retired execution/query API assumptions."
+  dependency: null
+  shared_impact:
+    candidate: false
+    basis: "The repair is scoped to four unrouted secondary pages and their page-local styles; it does not create new strategy stores, snapshots, route entries, or API contracts."
+    related_routes:
+      - /secondary/legacy-strategy-workbench-static-shell
+  approval_status: approved

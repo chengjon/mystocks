@@ -1,0 +1,38 @@
+- finding_id: dashboard-home-functional-003
+  batch_id: dashboard-batch-03
+  page:
+    route: /dashboard
+    page_key: dashboard-home
+    route_class: canonical-page
+    canonical_entry: web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue
+  source_role: functional-audit
+  severity: High
+  issue_type: data-state
+  title: Dashboard bootstrap summary reset detached the visible shared-header refresh action and left the route refresh button as a no-op
+  trigger:
+    steps:
+      - "Open `/dashboard`"
+      - "Wait until the shared header `刷新数据` button becomes visible after the first dashboard shell renders"
+      - "Trigger the shared header refresh action after at least one verified fund-flow slice exists"
+      - "Inspect whether `/api/akshare/market/fund-flow/hsgt-summary` issues a second request and whether route-level degraded messaging can appear"
+  expected: "Once `/dashboard` renders a visible manual refresh control, that control must remain bound to the page-owned refresh path even if bootstrap placeholder logic clears shared header text. Clicking the visible control after a verified snapshot exists should issue a new request cycle and allow later stale-refresh truth such as fund-flow degradation to surface."
+  actual: "Before repair, the dashboard bootstrap watch called `headerSummary.reset()`, and `reset()` cleared the shared `_refreshFn`. The visible shared-header refresh button still rendered, but `headerSummary.refresh()` became a no-op after first-load bootstrap, so no second `/api/akshare/market/fund-flow/hsgt-summary` request was issued."
+  evidence:
+    kind: mixed-evidence
+    note: "A new targeted dashboard logic regression reproduced the bootstrap-reset path and showed `headerSummary.refresh()` leaving `getFundFlow()` at one call instead of two. Controlled Playwright-library verification with system `google-chrome` then confirmed the repaired shared header button now drives a second fund-flow request and exposes the stale-refresh alert while preserving the verified fund-flow slice."
+  repair_target:
+    files:
+      - web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+    primary_owner: web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts
+  can_fix_frontend: true
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /dashboard
+  status: open
+  dependency: null
+  dedupe_key: /dashboard:functional:sharedHeaderRefreshResetClearsPageOwnedRefreshAction
+  verification_surface: live-audit
+  verification:
+    required: true
+    complete: false
+    notes: "Re-check `/dashboard` after repair and confirm the visible shared-header refresh control now triggers a second request cycle, allowing the route to surface later fund-flow degradation truth instead of remaining on a silent no-op."

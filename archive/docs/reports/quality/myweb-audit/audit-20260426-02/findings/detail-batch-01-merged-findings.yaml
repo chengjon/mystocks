@@ -1,0 +1,43 @@
+- consolidated_issue_id: detail-graphics-issue-01
+  severity: High
+  title: Detail graphics route now keeps hero request metadata aligned to the verified primary K-line snapshot
+  pages:
+    - /detail/graphics/:symbol
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The unresolved first-load faux point count, failed first-load request-id leak, and stale-refresh request-id overwrite were three expressions of the same detail-route provenance defect: the canonical graphics route treated the latest transport request as if it always represented the currently visible primary K-line snapshot."
+  primary_owner: web/frontend/src/views/artdeco-pages/analysis-tabs/KLineAnalysis.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /market/technical
+  dedupe_keys:
+    - /detail/graphics/:symbol:data-state:primarySnapshotProvenanceTruth
+  verification_scope:
+    routes:
+      - /detail/graphics/:symbol
+    states:
+      - unresolved-first-load
+      - first-load-failure
+      - stale-refresh-failure
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/artdeco-pages/analysis-tabs/KLineAnalysis.vue
+      - web/frontend/src/views/artdeco-pages/analysis-tabs/__tests__/KLineAnalysis.spec.ts
+      - web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/SKILL.md
+      - .claude/skills/myweb-audit/references/audit-checklist.md
+      - .claude/agents/myweb-audit-data-state-audit.md
+      - .claude/skills/myweb-audit/references/CHANGELOG.md
+    notes:
+      - "the canonical detail graphics route now derives hero `REQ_ID` from a page-local verified primary K-line snapshot instead of directly mirroring the latest `useArtDecoApi.lastRequestId` transport attempt"
+      - "before any verified primary K-line snapshot exists, the route now renders `POINTS: --` and suppresses `REQ_ID` rather than leaking unresolved or failed first-load provenance as `POINTS: 0` or failed request ids"
+      - "a later failed `开始分析` refresh now preserves the last verified request id and visible K-line sample while showing stale-refresh copy"
+      - "the routed component regression and Phase 1 matrix now pin unresolved first-load, first-load failure, and stale-refresh failure on the real canonical detail route"
+      - "this batch introduces `myweb-audit v1.45` detail-primary snapshot provenance guidance for canonical detail routes that mix a primary snapshot request with secondary enrichment requests"
+  verification_surface: code-review-plus-targeted-live-verification

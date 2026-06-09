@@ -1,0 +1,34 @@
+- consolidated_issue_id: secondary-shell-issue-07
+  severity: Medium
+  title: Legacy analysis workbench now degrades to an honest static shell when no semantically matching canonical owner exists
+  pages:
+    - /secondary/legacy-analysis-static-shell
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The analysis configuration panel, signal summary, recent signals, and export sections were all facets of the same defect: `Analysis.vue` presented pseudo-live analysis truth even though the legacy page had no semantically matching canonical owner or router-backed contract."
+  primary_owner: web/frontend/src/views/Analysis.vue
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /secondary/legacy-analysis-static-shell
+  dedupe_keys:
+    - /secondary/legacy-analysis-static-shell:data-state:legacyAnalysisStaticShellTruth
+  verification_scope:
+    routes:
+      - /secondary/legacy-analysis-static-shell
+    states:
+      - default
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/Analysis.vue
+      - web/frontend/src/views/__tests__/Analysis.spec.ts
+      - .claude/skills/myweb-audit/references/route-truth-casebook.md
+    notes:
+      - "the legacy analysis page now renders an honest static shell instead of a pseudo-live local analysis workbench"
+      - "the page no longer implies request provenance, freshness, signal counts, export actions, or verified analysis truth where no canonical owner exists"
+      - "the repair keeps the page available as a legacy reference point without fabricating analysis runtime semantics"
+  verification_surface: code-review-only

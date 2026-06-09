@@ -2,7 +2,7 @@
 
 > **使用说明**:
 > 本文件说明当前仓库里“可实际使用”的 contract impact analysis 工作流，不等于 OpenSpec 目标态里的完整 analyzer 平台。
-> 若涉及共享规则，请优先遵循 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)；若涉及契约事实，则以运行时 OpenAPI 与当前后端 contract 路由实现为准。
+> 若涉及共享规则，请优先遵循 [`architecture/STANDARDS.md`](../../../architecture/STANDARDS.md)；若涉及契约事实，则以运行时 OpenAPI 与当前后端 contract 路由实现为准。
 
 ## Scope Of This Guide
 
@@ -25,12 +25,12 @@
 ## Current Entry Points
 
 后端 contract routes：
-- [`routes.py`](/opt/claude/mystocks_spec/web/backend/app/api/contract/routes.py)
+- [`routes.py`](../../../web/backend/app/api/contract/routes.py)
 
 核心服务：
-- [`diff_engine.py`](/opt/claude/mystocks_spec/web/backend/app/api/contract/services/diff_engine.py)
-- [`validator.py`](/opt/claude/mystocks_spec/web/backend/app/api/contract/services/validator.py)
-- [`version_manager.py`](/opt/claude/mystocks_spec/web/backend/app/api/contract/services/version_manager.py)
+- [`diff_engine.py`](../../../web/backend/app/api/contract/services/diff_engine.py)
+- [`validator.py`](../../../web/backend/app/api/contract/services/validator.py)
+- [`version_manager.py`](../../../web/backend/app/api/contract/services/version_manager.py)
 
 ## Available Operations
 

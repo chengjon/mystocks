@@ -1,0 +1,42 @@
+- consolidated_issue_id: trade-reconciliation-issue-04
+  severity: High
+  title: Trade reconciliation now clears faux zero result metrics while a newly selected account snapshot is unresolved
+  pages:
+    - /trade/reconciliation
+  source_roles:
+    - data-state-audit
+  why_consolidated: "The route exposed another selector-scoped numeric-truth cluster: reconciliation result metrics stayed at faux zero values after the visible account selector had already switched to a new unresolved account."
+  primary_owner: web/frontend/src/views/trade/composables/useTradeReconciliation.ts
+  repair_bucket: fix-now
+  repair_decision: fixed
+  deferred_reason: null
+  shared_impact_candidate: false
+  cross_page_impact:
+    - /strategy/opt
+    - /strategy/backtest
+    - /trade/history
+  dedupe_keys:
+    - /trade/reconciliation:data-state:accountSelectorPendingResultMetrics
+  verification_scope:
+    routes:
+      - /trade/reconciliation
+    states:
+      - verified-account-success
+      - verified-results-visible
+      - same-instance-account-switch-pending
+    breakpoints:
+      - 1440
+  repair_summary:
+    files:
+      - web/frontend/src/views/trade/composables/useTradeReconciliation.ts
+      - web/frontend/src/views/trade/Reconciliation.vue
+      - web/frontend/src/views/trade/__tests__/Reconciliation.spec.ts
+      - web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts
+      - .claude/skills/myweb-audit/references/route-truth-casebook.md
+      - .claude/skills/myweb-audit/references/route-truth-coverage-matrix.md
+    notes:
+      - "reconciliation result metrics now degrade to `-- / -- / --` whenever the current visible account has no verified result snapshot"
+      - "same-instance unresolved account switches no longer collapse selector-owned result metrics into faux zero truth after rows and import metadata have already been cleared"
+      - "owner and routed Phase 3 regressions now lock the same-instance `backtest:7 -> backtest:8` unresolved-switch metric path"
+      - "the stable `myweb-audit v2.0` numeric-truth and selector-scoped families are reused; only the casebook and coverage matrix were updated"
+  verification_surface: code-review-plus-targeted-live-verification
