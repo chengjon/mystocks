@@ -10,8 +10,8 @@
 > 2026-04-19 盘点结果
 >
 > - `src/components/artdeco/` 下共 **73** 个 Vue 组件
-> - `views/artdeco-pages/` 下共 **89** 个 ArtDeco 相关 Vue 页面/块/模板
-> - 整个 ArtDeco 前端生态共盘点到 **162** 个 Vue 文件
+> - `views/artdeco-pages/` 下共 **90** 个 ArtDeco 相关 Vue 页面/块/模板
+> - 整个 ArtDeco 前端生态共盘点到 **163** 个 Vue 文件
 > - 另有 **1** 个共享运行时 composable：`src/composables/useHeaderSummary.ts`
 >
 > 口径说明
@@ -109,9 +109,9 @@ Domain reusable 主链共 **25** 个 Vue 组件，处理：
 
 ## 4. Page-Level Shared Fragments
 
-目录：`web/frontend/src/views/artdeco-pages/components/`（23）
+目录：`web/frontend/src/views/artdeco-pages/components/`（24）
 
-`AnalysisIndicators`、`AnalysisResults`、`AnalysisScreener`、`AnomalyAlerts`、`AnomalyPatterns`、`ArtDecoAttributionAnalysis`、`ArtDecoAttributionControls`、`ArtDecoPerformanceOverview`、`ArtDecoSignalHistory`、`ArtDecoSignalMonitoringMetrics`、`ArtDecoSignalMonitoringOverview`、`ArtDecoTradingHistoryControls`、`ArtDecoTradingSignalsControls`、`BuffettModel`、`DupontAnalysis`、`FinancialMetrics`、`LynchModel`、`MarketConcepts`、`MarketFundFlow`、`MarketPlaceholder`、`OneilModel`、`PanoramaCapitalFlow`、`PanoramaIndices`
+`AnalysisIndicators`、`AnalysisResults`、`AnalysisScreener`、`AnomalyAlerts`、`AnomalyPatterns`、`ArtDecoAttributionAnalysis`、`ArtDecoAttributionControls`、`ArtDecoPerformanceOverview`、`ArtDecoSignalHistory`、`ArtDecoSignalMonitoringMetrics`、`ArtDecoSignalMonitoringOverview`、`ArtDecoTradingHistoryControls`、`ArtDecoTradingSignalsControls`、`BuffettModel`、`DashboardMarketPanorama`、`DupontAnalysis`、`FinancialMetrics`、`LynchModel`、`MarketConcepts`、`MarketFundFlow`、`MarketPlaceholder`、`OneilModel`、`PanoramaCapitalFlow`、`PanoramaIndices`
 
 这组组件的职责不是“全站 UI 组件库”，而是 ArtDeco 页面系统内部的共享工作台片段。
 
@@ -198,6 +198,9 @@ Domain reusable 主链共 **25** 个 Vue 组件，处理：
 - `web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue`
 - `web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoTradingPositions.vue`
 - `web/frontend/src/views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue`
+- `web/frontend/src/views/artdeco-pages/analysis-tabs/KLineAnalysis.vue`
+
+其中 `KLineAnalysis.vue` 当前对应的是 `/detail/graphics/:symbol` 详情路由，而不是 `data` 域常规子路由。
 
 当某个 ArtDeco 文件被路由直接引用时，应以 router 为准逐项确认，而不是默认整个目录都是主业务入口。
 
@@ -207,15 +210,15 @@ Domain reusable 主链共 **25** 个 Vue 组件，处理：
 |------|------|------|
 | `src/components/artdeco/base+core+business+charts` | 48 | Base / UI 主链 |
 | `src/components/artdeco/trading+advanced+specialized` | 25 | Domain reusable 主链 |
-| `views/artdeco-pages/components` | 23 | 页面系统内部共享片段 |
+| `views/artdeco-pages/components` | 24 | 页面系统内部共享片段 |
 | `views/artdeco-pages/*-tabs` 等域块 | 54 | 域内工作台块与子组件 |
 | 顶层容器与模板 | 12 | 页面承载与模板壳层 |
-| `src/composables/useHeaderSummary.ts` | 1 | 共享运行时摘要状态桥接 |
-| **合计** | **162** | 当前 ArtDeco 生态 Vue 文件总数 |
+| **Vue 文件合计** | **163** | 当前 ArtDeco 生态 Vue 文件总数 |
+| `src/composables/useHeaderSummary.ts` | 1 | 额外共享运行时摘要状态桥接（非 Vue 文件） |
 
 > 说明：
 >
-> - 上表最后一行 `162` 仍只统计 Vue 文件。
+> - 上表最后一行 `163` 仍只统计 Vue 文件。
 > - `useHeaderSummary.ts` 是额外补充的运行时桥接资产，不改变 Vue 资产总数。
 
 ## 8. 维护规则
