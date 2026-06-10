@@ -5560,11 +5560,11 @@
     "node_type": "authorization",
     "owner_lane": "docs-governance",
     "parent": "b4-docs-reports-archive-retirement",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "docs/reports/worklogs/claude-auto/b4-011-m2a-HOLD-docs-reports-archive-drift-no-source-review-2026-06-10.md",
     "current_head": "3262930cd7c8d896eed7d314f1023bbc820bbde2",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "no-source-drift-review",
@@ -5613,11 +5613,11 @@
       "Do not touch the 11 untracked docs/reports entries",
       "Do not touch docs/guides, docs/superpowers, source, tests, scripts, web, OpenSpec, ST-HOLD, marketKlineData, or external dirty files"
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-10T02:57:26.266Z",
-    "updated_at": "2026-06-10T03:54:30.132Z",
+    "updated_at": "2026-06-10T04:00:34.771Z",
     "acceptance": {
       "commit_gate": [
         "staged scope must contain only the 8 active docs/reports deletions, their 8 matching archive/docs/reports overwrites, and governance/worklog files for this node",
@@ -5646,7 +5646,34 @@
         "note": "HOLD-A low-delta archive overwrites and active retirements are staged within the 16 exact authorized paths.",
         "current_head": "3262930cd7c8d896eed7d314f1023bbc820bbde2",
         "transitioned_at": "2026-06-10T03:54:30.132Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Implementation landed in commit ac3eea6df: 8 low-delta docs/reports active paths retired after matching archive overwrite.",
+        "current_head": "ac3eea6df38395973f1b44284c5c237d2893dc51",
+        "transitioned_at": "2026-06-10T04:00:01.793Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "B4.011-M2a-HOLD-A low-delta docs/reports drift retirement closed after commit ac3eea6df and post-commit index refresh.",
+        "current_head": "ac3eea6df38395973f1b44284c5c237d2893dc51",
+        "transitioned_at": "2026-06-10T04:00:34.770Z"
       }
-    ]
+    ],
+    "closeout": {
+      "summary": "Implemented by commit ac3eea6df; evidence report: docs/reports/worklogs/claude-auto/b4-011-m2a-HOLD-docs-reports-archive-drift-no-source-review-2026-06-10.md",
+      "compatibility": "Docs-only deletion-retirement: 8 active docs/reports paths retired; corresponding archive/docs/reports paths now preserve active HEAD content; no source, tests, runtime, web, docs/guides, docs/superpowers, OpenSpec, ST-HOLD, or marketKlineData touched.",
+      "gates": [
+        "staged exact scope 19/19; 8 archive staged blobs matched active HEAD before commit",
+        "git diff --cached --check passed before commit",
+        "GitNexus verify-staged and detect-changes risk low before commit",
+        "OPENDOG verification fresh with historical pipeline caution",
+        "post-commit GitNexus analyze --index-only updated index to ac3eea6df"
+      ],
+      "current_head": "ac3eea6df38395973f1b44284c5c237d2893dc51",
+      "prepared_at": "2026-06-10T04:00:20.418Z"
+    }
   }
 ]
