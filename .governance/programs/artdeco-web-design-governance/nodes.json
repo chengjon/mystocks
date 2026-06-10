@@ -5437,9 +5437,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "",
-    "status": "evidence-prepared",
+    "status": "authorization-prepared",
     "function_tree_ref": "B4.011-M2a",
-    "current_head": "6f77ad17da8854db4e268718f83cb2dc702cdf7d",
+    "current_head": "1723d5e3a851e73a0d5190592f219e51c8fa2272",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -5456,15 +5456,44 @@
         "note": "Refresh M2a docs/reports archive-retirement evidence after external commit 6f77ad17d; split remains 681 exact, 18 drift, 5 modified, 11 untracked.",
         "current_head": "6f77ad17da8854db4e268718f83cb2dc702cdf7d",
         "recorded_at": "2026-06-10T00:16:13.541Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "/tmp/b4-011-m2a-A/summary.json",
+        "note": "Current HEAD manifest refresh for B4.011-M2a-A exact docs/reports deletion-retirement candidates: 681 exact, 18 drift HOLD, 5 modified tracked, 11 untracked; implementation remains unauthorized until explicit deletion-retirement approval.",
+        "current_head": "1723d5e3a851e73a0d5190592f219e51c8fa2272",
+        "recorded_at": "2026-06-10T00:32:21.885Z"
       }
     ],
-    "allowed_paths": [],
+    "allowed_paths": [
+      "docs/reports/** deletion-retirement exact archive matches listed in /tmp/b4-011-m2a-A/active-deletions.txt",
+      "archive/docs/reports/** exact evidence paths listed in /tmp/b4-011-m2a-A/archive-paths.txt"
+    ],
     "forbidden_paths": [],
-    "non_goals": [],
+    "non_goals": [
+      "Do not touch the 18 docs/reports archive drift HOLD files",
+      "Do not touch the 5 modified tracked docs/reports files",
+      "Do not touch the 11 untracked docs/reports entries",
+      "Do not touch docs/guides, docs/superpowers, source, tests, scripts, web, openspec, ST-HOLD, marketKlineData, or external dirty files"
+    ],
     "next_gate": "prepare decision or authorization",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-10T00:07:39.025Z",
-    "updated_at": "2026-06-10T00:16:13.541Z"
+    "updated_at": "2026-06-10T00:32:21.885Z",
+    "acceptance": {
+      "commit_gate": [
+        "git diff --cached --name-status must show only the 681 active docs/reports deletions plus their 681 archive/docs/reports exact evidence paths and governance closeout files for this node",
+        "git diff --cached --check passes",
+        "node .gitnexus/run.cjs verify-staged -r mystocks --cwd /opt/claude/mystocks_spec --json passes with low risk",
+        "node .gitnexus/run.cjs detect-changes --scope staged -r mystocks --cwd /opt/claude/mystocks_spec passes",
+        "OPENDOG verification remains fresh or caveat is recorded"
+      ],
+      "closeout_gate": [
+        "Post-commit GitNexus analyze --index-only completes and status is up to date",
+        "Post-commit staged area is empty",
+        "B4.011-M2a-A worklog records exact counts, excluded HOLD/MOD/UNTRACKED buckets, and commit hash"
+      ]
+    }
   }
 ]
