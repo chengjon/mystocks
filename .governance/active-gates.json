@@ -1,5 +1,23 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-09T23:47:05.128Z",
-  "gates": []
+  "updated_at": "2026-06-10T00:07:58.004Z",
+  "gates": [
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-docs-reports-archive-retirement",
+      "title": "Docs reports archive retirement truth",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "",
+      "status": "evidence-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "prepare decision or authorization",
+      "function_tree_ref": "B4.011-M2a",
+      "freshness": "current-head",
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-10T00:07:58.001Z"
+    }
+  ]
 }
