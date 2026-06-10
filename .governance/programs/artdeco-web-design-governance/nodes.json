@@ -5553,5 +5553,63 @@
       "current_head": "e6a9e9ffa24124ec222333f7ad505abe41be49e3",
       "prepared_at": "2026-06-10T01:34:36.877Z"
     }
+  },
+  {
+    "id": "b4-docs-reports-hold-a-low-delta-retirement",
+    "title": "Docs reports low-delta archive drift retirement",
+    "node_type": "authorization",
+    "owner_lane": "docs-governance",
+    "parent": "b4-docs-reports-archive-retirement",
+    "status": "authorization-prepared",
+    "function_tree_ref": "docs/reports/worklogs/claude-auto/b4-011-m2a-HOLD-docs-reports-archive-drift-no-source-review-2026-06-10.md",
+    "current_head": "98537376d2f241aaa2611daa7b3ba082ee3ffdb7",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "no-source-drift-review",
+        "path": "docs/reports/worklogs/claude-auto/b4-011-m2a-HOLD-docs-reports-archive-drift-no-source-review-2026-06-10.md",
+        "note": "B4.011-M2a-HOLD review identified 8 low-delta docs/reports drift entries as candidates for archive overwrite plus active retirement; source/test/runtime edits remain unauthorized.",
+        "current_head": "98537376d2f241aaa2611daa7b3ba082ee3ffdb7",
+        "recorded_at": "2026-06-10T02:57:50.221Z"
+      }
+    ],
+    "allowed_paths": [
+      "docs/reports/cleanup/FILE_CLEANUP_TASK.md active deletion-retirement",
+      "docs/reports/cleanup/INDEX.md active deletion-retirement",
+      "docs/reports/cleanup/directory-organization/legacy/PROJECT_DIRECTORY_MANAGEMENT_PLAN.md active deletion-retirement",
+      "docs/reports/cleanup/index-artifacts/INDEX_root.md active deletion-retirement",
+      "docs/reports/documentation-governance/2026-04-08-decision-register.md active deletion-retirement",
+      "docs/reports/documentation-governance/2026-04-09-worklogs-source-investigation.md active deletion-retirement",
+      "docs/reports/plans/compatibility-inventory.md active deletion-retirement",
+      "docs/reports/reviews/PHASE1_GOVERNANCE_APPROVAL.md active deletion-retirement",
+      "matching archive/docs/reports/** paths for the 8 low-delta files only, overwritten with active HEAD content before retirement"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not touch the 10 medium/high-delta HOLD drift files",
+      "Do not touch the 5 modified tracked docs/reports files",
+      "Do not touch the 11 untracked docs/reports entries",
+      "Do not touch docs/guides, docs/superpowers, source, tests, scripts, web, OpenSpec, ST-HOLD, marketKlineData, or external dirty files"
+    ],
+    "next_gate": "review and approve implementation authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-10T02:57:26.266Z",
+    "updated_at": "2026-06-10T02:58:19.029Z",
+    "acceptance": {
+      "commit_gate": [
+        "staged scope must contain only the 8 active docs/reports deletions, their 8 matching archive/docs/reports overwrites, and governance/worklog files for this node",
+        "git diff --cached --check passes",
+        "archive blobs for the 8 paths match the active HEAD blobs before commit",
+        "GitNexus verify-staged and detect-changes pass with low risk",
+        "OPENDOG verification remains fresh or caveat is recorded"
+      ],
+      "closeout_gate": [
+        "GitNexus analyze --index-only completes post-commit and status is up to date",
+        "staged area is empty after commit",
+        "worklog records exact paths, excluded buckets, archive overwrite evidence, gates, and commit hash"
+      ]
+    }
   }
 ]

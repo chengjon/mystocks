@@ -1,5 +1,33 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-10T01:34:57.976Z",
-  "gates": []
+  "updated_at": "2026-06-10T02:58:19.032Z",
+  "gates": [
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-docs-reports-hold-a-low-delta-retirement",
+      "title": "Docs reports low-delta archive drift retirement",
+      "node_type": "authorization",
+      "owner_lane": "docs-governance",
+      "parent": "b4-docs-reports-archive-retirement",
+      "status": "authorization-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "review and approve implementation authorization",
+      "function_tree_ref": "docs/reports/worklogs/claude-auto/b4-011-m2a-HOLD-docs-reports-archive-drift-no-source-review-2026-06-10.md",
+      "freshness": "current-head",
+      "allowed_paths": [
+        "docs/reports/cleanup/FILE_CLEANUP_TASK.md active deletion-retirement",
+        "docs/reports/cleanup/INDEX.md active deletion-retirement",
+        "docs/reports/cleanup/directory-organization/legacy/PROJECT_DIRECTORY_MANAGEMENT_PLAN.md active deletion-retirement",
+        "docs/reports/cleanup/index-artifacts/INDEX_root.md active deletion-retirement",
+        "docs/reports/documentation-governance/2026-04-08-decision-register.md active deletion-retirement",
+        "docs/reports/documentation-governance/2026-04-09-worklogs-source-investigation.md active deletion-retirement",
+        "docs/reports/plans/compatibility-inventory.md active deletion-retirement",
+        "docs/reports/reviews/PHASE1_GOVERNANCE_APPROVAL.md active deletion-retirement",
+        "matching archive/docs/reports/** paths for the 8 low-delta files only, overwritten with active HEAD content before retirement"
+      ],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-10T02:58:19.029Z"
+    }
+  ]
 }

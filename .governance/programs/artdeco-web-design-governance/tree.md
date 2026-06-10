@@ -24,3 +24,11 @@
 
 Generated summary lives in `.governance/active-gates.md`.
 - [ ] route-header-shell-trade-portfolio: Migrate /trade/portfolio route header shell (planning, FT: docs/FUNCTION_TREE.md#domain-05-node-01)
+- [ ] b4-frontend-tooling-config-static-governance: Frontend tooling config static governance and local state (planning, FT: B4.010-M1)
+- [ ] b4-docs-archive-reorg-truth: Docs archive/reorg truth and dirty disposition (planning, FT: B4.011-M1)
+- [ ] b4-docs-guides-archive-exact-retirement: Docs guides archive exact retirement (planning, FT: B4.011-M2c-B)
+- [ ] b4-docs-guides-omc-workflow-hold: Docs guides OMC workflow hold disposition (planning, FT: B4.011-M2c-HOLD)
+- [ ] b4-docs-superpowers-archive-exact-retirement: Docs superpowers exact archive retirement (planning, FT: B4.011-M2b)
+- [ ] b4-docs-superpowers-trade-reconciliation-hold: Docs superpowers trade reconciliation drift hold (planning, FT: B4.011-M2b-HOLD)
+- [ ] b4-docs-reports-archive-retirement: Docs reports archive retirement truth (planning, FT: B4.011-M2a)
+- [ ] b4-docs-reports-hold-a-low-delta-retirement: Docs reports low-delta archive drift retirement (planning, FT: docs/reports/worklogs/claude-auto/b4-011-m2a-HOLD-docs-reports-archive-drift-no-source-review-2026-06-10.md)
