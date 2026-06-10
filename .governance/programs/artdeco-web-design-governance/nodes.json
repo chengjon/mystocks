@@ -5437,11 +5437,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "",
-    "status": "authorization-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "B4.011-M2a",
-    "current_head": "1723d5e3a851e73a0d5190592f219e51c8fa2272",
+    "current_head": "941ea87bcd70b88cc020f6c37d0c7155a0a8f519",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "no-source-archive-truth-audit",
@@ -5463,6 +5463,13 @@
         "note": "Current HEAD manifest refresh for B4.011-M2a-A exact docs/reports deletion-retirement candidates: 681 exact, 18 drift HOLD, 5 modified tracked, 11 untracked; implementation remains unauthorized until explicit deletion-retirement approval.",
         "current_head": "1723d5e3a851e73a0d5190592f219e51c8fa2272",
         "recorded_at": "2026-06-10T00:32:21.885Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "/tmp/b4-011-m2a-A/summary.json",
+        "note": "Post-authorization-draft HEAD refresh: B4.011-M2a-A candidate set remains stable after governance-only commit 941ea87bc; docs/reports status remains 699 deleted, 681 exact archive matches, 18 drift HOLD, 5 modified tracked, 11 untracked. Implementation remains limited to explicit deletion-retirement approval.",
+        "current_head": "941ea87bcd70b88cc020f6c37d0c7155a0a8f519",
+        "recorded_at": "2026-06-10T01:21:47.787Z"
       }
     ],
     "allowed_paths": [
@@ -5476,11 +5483,11 @@
       "Do not touch the 11 untracked docs/reports entries",
       "Do not touch docs/guides, docs/superpowers, source, tests, scripts, web, openspec, ST-HOLD, marketKlineData, or external dirty files"
     ],
-    "next_gate": "prepare decision or authorization",
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-10T00:07:39.025Z",
-    "updated_at": "2026-06-10T00:32:21.885Z",
+    "updated_at": "2026-06-10T01:26:24.425Z",
     "acceptance": {
       "commit_gate": [
         "git diff --cached --name-status must show only the 681 active docs/reports deletions plus their 681 archive/docs/reports exact evidence paths and governance closeout files for this node",
@@ -5494,6 +5501,22 @@
         "Post-commit staged area is empty",
         "B4.011-M2a-A worklog records exact counts, excluded HOLD/MOD/UNTRACKED buckets, and commit hash"
       ]
-    }
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "941ea87bcd70b88cc020f6c37d0c7155a0a8f519",
+        "transitioned_at": "2026-06-10T01:22:10.535Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "941ea87bcd70b88cc020f6c37d0c7155a0a8f519",
+        "transitioned_at": "2026-06-10T01:26:24.425Z"
+      }
+    ]
   }
 ]
