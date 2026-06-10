@@ -5439,7 +5439,7 @@
     "parent": "",
     "status": "evidence-prepared",
     "function_tree_ref": "B4.011-M2a",
-    "current_head": "ca89f8f28f16371ab38a99ca58e617000df20c16",
+    "current_head": "6f77ad17da8854db4e268718f83cb2dc702cdf7d",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -5449,6 +5449,13 @@
         "note": "M2a-pre current-head audit split docs/reports into 681 exact archive-retirement entries, 18 drift HOLD entries, 5 modified tracked files, and 11 untracked entries.",
         "current_head": "ca89f8f28f16371ab38a99ca58e617000df20c16",
         "recorded_at": "2026-06-10T00:07:58.001Z"
+      },
+      {
+        "kind": "current-head-evidence-refresh",
+        "path": "docs/reports/worklogs/claude-auto/b4-011-m2a-pre-refresh-docs-reports-current-head-evidence-2026-06-10.md",
+        "note": "Refresh M2a docs/reports archive-retirement evidence after external commit 6f77ad17d; split remains 681 exact, 18 drift, 5 modified, 11 untracked.",
+        "current_head": "6f77ad17da8854db4e268718f83cb2dc702cdf7d",
+        "recorded_at": "2026-06-10T00:16:13.541Z"
       }
     ],
     "allowed_paths": [],
@@ -5458,6 +5465,6 @@
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-10T00:07:39.025Z",
-    "updated_at": "2026-06-10T00:07:58.001Z"
+    "updated_at": "2026-06-10T00:16:13.541Z"
   }
 ]
