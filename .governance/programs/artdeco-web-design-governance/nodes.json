@@ -5562,7 +5562,7 @@
     "parent": "b4-docs-reports-archive-retirement",
     "status": "authorization-prepared",
     "function_tree_ref": "docs/reports/worklogs/claude-auto/b4-011-m2a-HOLD-docs-reports-archive-drift-no-source-review-2026-06-10.md",
-    "current_head": "98537376d2f241aaa2611daa7b3ba082ee3ffdb7",
+    "current_head": "8758ce845e0efb65881eff1390a8c8e130758fad",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -5572,6 +5572,13 @@
         "note": "B4.011-M2a-HOLD review identified 8 low-delta docs/reports drift entries as candidates for archive overwrite plus active retirement; source/test/runtime edits remain unauthorized.",
         "current_head": "98537376d2f241aaa2611daa7b3ba082ee3ffdb7",
         "recorded_at": "2026-06-10T02:57:50.221Z"
+      },
+      {
+        "kind": "current-head-authorization-refresh",
+        "path": "docs/reports/worklogs/claude-auto/b4-011-m2a-HOLD-docs-reports-archive-drift-no-source-review-2026-06-10.md",
+        "note": "Refresh HOLD-A authorization evidence after governance-only commit 8758ce845; candidate set remains 8 low-delta docs/reports drift entries, implementation remains unauthorized until explicit deletion-retirement approval.",
+        "current_head": "8758ce845e0efb65881eff1390a8c8e130758fad",
+        "recorded_at": "2026-06-10T03:27:23.902Z"
       }
     ],
     "allowed_paths": [
@@ -5592,11 +5599,11 @@
       "Do not touch the 11 untracked docs/reports entries",
       "Do not touch docs/guides, docs/superpowers, source, tests, scripts, web, OpenSpec, ST-HOLD, marketKlineData, or external dirty files"
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "prepare decision or authorization",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-10T02:57:26.266Z",
-    "updated_at": "2026-06-10T02:58:19.029Z",
+    "updated_at": "2026-06-10T03:27:23.902Z",
     "acceptance": {
       "commit_gate": [
         "staged scope must contain only the 8 active docs/reports deletions, their 8 matching archive/docs/reports overwrites, and governance/worklog files for this node",

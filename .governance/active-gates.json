@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-10T02:58:19.032Z",
+  "updated_at": "2026-06-10T03:27:23.905Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -12,7 +12,7 @@
       "status": "authorization-prepared",
       "source_edits_authorized": false,
       "current_blocker": "",
-      "next_allowed": "review and approve implementation authorization",
+      "next_allowed": "prepare decision or authorization",
       "function_tree_ref": "docs/reports/worklogs/claude-auto/b4-011-m2a-HOLD-docs-reports-archive-drift-no-source-review-2026-06-10.md",
       "freshness": "current-head",
       "allowed_paths": [
@@ -27,7 +27,7 @@
         "matching archive/docs/reports/** paths for the 8 low-delta files only, overwritten with active HEAD content before retirement"
       ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-10T02:58:19.029Z"
+      "updated_at": "2026-06-10T03:27:23.902Z"
     }
   ]
 }
