@@ -1,26 +1,5 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-10T01:26:24.427Z",
-  "gates": [
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-docs-reports-archive-retirement",
-      "title": "Docs reports archive retirement truth",
-      "node_type": "decision",
-      "owner_lane": "artdeco-web-design-governance",
-      "parent": "",
-      "status": "implementation-ready",
-      "source_edits_authorized": true,
-      "current_blocker": "",
-      "next_allowed": "land implementation with Git evidence",
-      "function_tree_ref": "B4.011-M2a",
-      "freshness": "current-head",
-      "allowed_paths": [
-        "docs/reports/** deletion-retirement exact archive matches listed in /tmp/b4-011-m2a-A/active-deletions.txt",
-        "archive/docs/reports/** exact evidence paths listed in /tmp/b4-011-m2a-A/archive-paths.txt"
-      ],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-10T01:26:24.425Z"
-    }
-  ]
+  "updated_at": "2026-06-10T01:34:57.976Z",
+  "gates": []
 }
