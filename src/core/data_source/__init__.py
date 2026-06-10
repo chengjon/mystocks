@@ -16,13 +16,55 @@ Data Source Manager子模块
 
 from __future__ import annotations
 
+import importlib
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from src.core.data_source.base import DataSourceManagerV2
     from src.core.data_source.cache import LRUCache
+    from src.core.data_source.client import (
+        CircuitOpenError,
+        DataQualityFailedError,
+        DataSourceClient,
+        DataSourceClientError,
+        DataSourceRequest,
+        DataSourceResult,
+        DataSourceTransport,
+        InvalidRequestError,
+        LocalDataSourceClient,
+        ProviderTimeoutError,
+        ProviderUnavailableError,
+        RateLimitedError,
+        RegistryNotFoundError,
+        RemoteDataSourceClient,
+        RouteDecision,
+        UrlLibJsonTransport,
+        create_data_source_client,
+    )
 
-__all__ = ["DataSourceManagerV2", "LRUCache"]
+__all__ = [
+    "DataSourceManagerV2",
+    "LRUCache",
+    "CircuitOpenError",
+    "DataQualityFailedError",
+    "DataSourceClient",
+    "DataSourceClientError",
+    "DataSourceRequest",
+    "DataSourceResult",
+    "DataSourceTransport",
+    "InvalidRequestError",
+    "LocalDataSourceClient",
+    "ProviderTimeoutError",
+    "ProviderUnavailableError",
+    "RateLimitedError",
+    "RegistryNotFoundError",
+    "RemoteDataSourceClient",
+    "RouteDecision",
+    "UrlLibJsonTransport",
+    "create_data_source_client",
+]
+
+_CLIENT_EXPORTS = set(__all__[2:])
 
 
 def __getattr__(name: str) -> Any:
@@ -35,5 +77,9 @@ def __getattr__(name: str) -> Any:
         from src.core.data_source.cache import LRUCache
 
         return LRUCache
+
+    if name in _CLIENT_EXPORTS:
+        client_module = importlib.import_module("src.core.data_source.client")
+        return getattr(client_module, name)
 
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
