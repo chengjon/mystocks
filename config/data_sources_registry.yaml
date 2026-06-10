@@ -1,4 +1,50 @@
 data_sources:
+  openstock_akshare_realtime_quotes:
+    call_method: remote_rest
+    classification_level: 1
+    data_category: REALTIME_QUOTES
+    data_classification: market_data
+    data_quality_score: 8.0
+    description: OpenStock远程运行时 AkShare A股实时行情/代码名称列表
+    endpoint_name: akshare.stock_zh_a_spot
+    parameters:
+      limit:
+        description: 返回记录数量上限
+        example: 50
+        required: false
+        type: integer
+      symbol:
+        description: 可选股票代码过滤
+        example: '000001'
+        required: false
+        type: string
+    priority: 1
+    quality_rules:
+      max_response_time: 15.0
+      min_record_count: 1
+      required_columns:
+      - symbol
+      - name
+    remote_runtime:
+      base_url_default: http://localhost:8031
+      base_url_env: OPENSTOCK_BASE_URL
+      fetch_path: /data/fetch
+      route_path: /routing/best
+      service: openstock
+      transport: rest
+    source_name: openstock
+    source_type: remote_runtime
+    status: active
+    table_name: realtime_quotes
+    tags:
+    - openstock
+    - akshare
+    - remote-runtime
+    - phase-3
+    target_db: postgresql
+    test_parameters:
+      limit: 1
+    update_frequency: realtime
   akshare_dragon_tiger_detail:
     call_method: function_call
     classification_level: 1
