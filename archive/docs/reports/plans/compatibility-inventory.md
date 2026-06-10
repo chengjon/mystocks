@@ -7,7 +7,7 @@
 > 文内结构分层、字段约定、模块职责、功能清单和实施建议应结合当前代码与主线文档复核；若冲突，应以 `architecture/STANDARDS.md`、当前代码实现及主线治理文档为准。
 
 
-> 范围：主工作树源码路径；排除 `.claude` 下 historical nested tooling / docs / dist / node_modules / logs / coverage 噪声目录。
+> 范围：主工作树源码路径；排除 `.claude/.omc/docs/reports/dist/node_modules/logs/coverage` 噪声目录。
 > 口径：Frontend 统计以 `files_with_matches` 的文件数计，不等同于行级 occurrences。
 
 ## 1) Frontend API 入口兼容层清单（`web/frontend/src`）

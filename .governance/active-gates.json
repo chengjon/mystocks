@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-10T03:27:23.905Z",
+  "updated_at": "2026-06-10T03:54:30.137Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -9,25 +9,32 @@
       "node_type": "authorization",
       "owner_lane": "docs-governance",
       "parent": "b4-docs-reports-archive-retirement",
-      "status": "authorization-prepared",
-      "source_edits_authorized": false,
+      "status": "implementation-ready",
+      "source_edits_authorized": true,
       "current_blocker": "",
-      "next_allowed": "prepare decision or authorization",
+      "next_allowed": "land implementation with Git evidence",
       "function_tree_ref": "docs/reports/worklogs/claude-auto/b4-011-m2a-HOLD-docs-reports-archive-drift-no-source-review-2026-06-10.md",
       "freshness": "current-head",
       "allowed_paths": [
-        "docs/reports/cleanup/FILE_CLEANUP_TASK.md active deletion-retirement",
-        "docs/reports/cleanup/INDEX.md active deletion-retirement",
-        "docs/reports/cleanup/directory-organization/legacy/PROJECT_DIRECTORY_MANAGEMENT_PLAN.md active deletion-retirement",
-        "docs/reports/cleanup/index-artifacts/INDEX_root.md active deletion-retirement",
-        "docs/reports/documentation-governance/2026-04-08-decision-register.md active deletion-retirement",
-        "docs/reports/documentation-governance/2026-04-09-worklogs-source-investigation.md active deletion-retirement",
-        "docs/reports/plans/compatibility-inventory.md active deletion-retirement",
-        "docs/reports/reviews/PHASE1_GOVERNANCE_APPROVAL.md active deletion-retirement",
-        "matching archive/docs/reports/** paths for the 8 low-delta files only, overwritten with active HEAD content before retirement"
+        "docs/reports/cleanup/FILE_CLEANUP_TASK.md",
+        "docs/reports/cleanup/INDEX.md",
+        "docs/reports/cleanup/directory-organization/legacy/PROJECT_DIRECTORY_MANAGEMENT_PLAN.md",
+        "docs/reports/cleanup/index-artifacts/INDEX_root.md",
+        "docs/reports/documentation-governance/2026-04-08-decision-register.md",
+        "docs/reports/documentation-governance/2026-04-09-worklogs-source-investigation.md",
+        "docs/reports/plans/compatibility-inventory.md",
+        "docs/reports/reviews/PHASE1_GOVERNANCE_APPROVAL.md",
+        "archive/docs/reports/cleanup/FILE_CLEANUP_TASK.md",
+        "archive/docs/reports/cleanup/INDEX.md",
+        "archive/docs/reports/cleanup/directory-organization/legacy/PROJECT_DIRECTORY_MANAGEMENT_PLAN.md",
+        "archive/docs/reports/cleanup/index-artifacts/INDEX_root.md",
+        "archive/docs/reports/documentation-governance/2026-04-08-decision-register.md",
+        "archive/docs/reports/documentation-governance/2026-04-09-worklogs-source-investigation.md",
+        "archive/docs/reports/plans/compatibility-inventory.md",
+        "archive/docs/reports/reviews/PHASE1_GOVERNANCE_APPROVAL.md"
       ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-10T03:27:23.902Z"
+      "updated_at": "2026-06-10T03:54:30.132Z"
     }
   ]
 }

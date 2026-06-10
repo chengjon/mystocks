@@ -641,8 +641,8 @@
 - [amp-help](guides/ai-tools/amp-help.md)
   - *Amp CLI help output*
 
-- Legacy multi-agent workflow guide (retired 2026-05-13)
-  - *Historical local workflow, model sync, and troubleshooting artifact; no longer a live guide entry*
+- [OMC_WORKFLOW_GUIDE](guides/ai-tools/OMC_WORKFLOW_GUIDE.md)
+  - *OMC 本地工作流、模型同步与常见故障排查*
 
 - [OMO_SETUP_GUIDE](guides/ai-tools/OMO_SETUP_GUIDE.md)
   - *OMO Setup Guide*

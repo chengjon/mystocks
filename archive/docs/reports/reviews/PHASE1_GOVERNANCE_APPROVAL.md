@@ -176,7 +176,7 @@ src/shared/
 
 ### Phase 6 – Code Review (1 day) ⏳ Pending
 - [ ] Front-end Lead posts "Ready for Review"
-- [ ] Run the code-review and security-review tooling available at that time
+- [ ] Run `oh-my-claudecode:code-reviewer` and `security-reviewer` agents
 - [ ] Address feedback; obtain final approval
 
 ### Phase 7 – Merge & Deploy (1 day) ⏳ Pending

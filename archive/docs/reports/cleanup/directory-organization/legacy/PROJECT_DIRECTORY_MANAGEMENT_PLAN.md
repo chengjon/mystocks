@@ -204,7 +204,7 @@
 │   ├── cache/                       # 缓存文件
 │   └── tmp/                         # 临时文件
 │
-└── 📂 retired-session-state/        # 🤖 retired state snapshot
+└── 📂 .omc/                         # 🤖 OMC状态
     ├── project-memory.json          # 项目记忆
     ├── sessions/                    # 会话状态
     └── state/                       # 系统状态

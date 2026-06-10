@@ -238,7 +238,7 @@ docs/worklogs 复发更可能来自仓库外的会话级历史状态 / 文件树
 - `/root/.config/opencode/*.json`
 - `/root/.claude/settings.json`
 - `/root/.claude/config.json`
-- retired historical config file under `/root/.claude/`
+- `/root/.claude/.omc-config.json`
 
 结论：
 
