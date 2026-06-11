@@ -17,13 +17,13 @@
 | 编号 | 子文档 | 主题 | 当前状态 |
 |------|--------|------|----------|
 | A | `docs/reports/quality/backend-logging-fix-2026-05-14.md` | 日志整改 | 已完成关键事实修正，`print()` 门禁复核为 0 |
-| B | `docs/reports/quality/backend-residual-files-inventory-2026-05-14.md` | 残留文件清册 | 已重扫当前工作树，剩余候选需双判定 |
-| C | `docs/reports/quality/api-flat-to-package-migration-2026-05-14.md` | API flat 到 package 迁移 | 已复核当前事实，只能作为 OpenSpec 输入 |
-| E | `docs/reports/quality/backend-singleton-to-di-2026-05-14.md` | Singleton 到 DI | 已补生命周期分类，只能作为 OpenSpec 输入 |
-| F | `docs/reports/quality/backend-core-split-plan-2026-05-14.md` | Core 拆分 | 已补 wrapper/OpenSpec 边界，只能作为 OpenSpec 输入 |
-| G | `docs/reports/quality/health-endpoint-consolidation-2026-05-14.md` | 健康端点收敛 | 已补 route table/OpenAPI/OpenSpec 边界，只能作为 OpenSpec 输入 |
-| H | `docs/reports/quality/backend-strategy-domain-governance-2026-05-14.md` | 策略域治理 | 已补当前注册/消费者/OpenSpec 边界，只能作为 OpenSpec 输入 |
-| I | `docs/reports/quality/backend-risk-domain-governance-2026-05-14.md` | 风控域治理 | 已补当前注册/消费者/OpenSpec 边界，只能作为 OpenSpec 输入 |
+| B | `docs/reports/quality/backend-residual-files-inventory-2026-05-14.md` | 残留文件清册 | 阻塞，需重扫当前工作树 |
+| C | `docs/reports/quality/api-flat-to-package-migration-2026-05-14.md` | API flat 到 package 迁移 | 需 OpenSpec 审批 |
+| E | `docs/reports/quality/backend-singleton-to-di-2026-05-14.md` | Singleton 到 DI | 需生命周期分类 |
+| F | `docs/reports/quality/backend-core-split-plan-2026-05-14.md` | Core 拆分 | 需修正兼容 wrapper 策略 |
+| G | `docs/reports/quality/health-endpoint-consolidation-2026-05-14.md` | 健康端点收敛 | 阻塞，需重测 route table |
+| H | `docs/reports/quality/backend-strategy-domain-governance-2026-05-14.md` | 策略域治理 | 需重测 router_registry 与测试引用 |
+| I | `docs/reports/quality/backend-risk-domain-governance-2026-05-14.md` | 风控域治理 | 需重测 router_registry 与测试引用 |
 
 复核报告: `docs/reports/quality/backend-audit-documents-review-2026-05-15.md`。
 
@@ -73,21 +73,21 @@ STANDARDS 要求：`所有 global 变量必须在模块顶层显式初始化为 
 - `app/services/` 下有 15+ 个 service 各自维护单例
 - 缺少统一的依赖注入或 service locator
 
-### 2.4 导入安全性 ⚠️ 废弃模块残留（已重扫）
+### 2.4 导入安全性 ⚠️ 废弃模块残留（部分已清理）
 
-> **2026-05-15 更新**: 子文档 B 已重扫当前工作树。当前未发现 `.bak`、`.backup`、`.old.py`、`.before_*` 类备份文件；剩余候选为 4 个 `_new.py` 过渡文件和 1 个 `monitoring_old/` 旧目录，均需双判定后再决定后续动作。
+> **2026-05-15 更新**: 已删除 9 个备份/残留文件（代码路径判定通过，无 import 引用）。详见子文档 B。
 
-**当前未发现**:
-- 当前未发现：`api/strategy_management.py.backup`、`api/risk_management.py.bak`、`api/data_source_config.py.backup`
-- 当前未发现：`api/mystocks_complete.py.bak`、`api/data_source_config.old.py`
-- 当前未发现：`services/data_adapter.py.backup.20260130`、`services/watchlist_service.py.bak2/.bak3/.before_schema_update`
+**已清理** (9 个):
+- `api/strategy_management.py.backup`、`api/risk_management.py.bak`、`api/data_source_config.py.backup`
+- `api/mystocks_complete.py.bak`、`api/data_source_config.old.py`
+- `services/data_adapter.py.backup.20260130`、`services/watchlist_service.py.bak2/.bak3/.before_schema_update`
 
 **仍需处理**:
 
 | 路径 | 类型 | 状态 |
 |---|---|---|
 | `api/monitoring_old/` | 旧模块目录 | 待 G 方案判定后处理 |
-| `api/auth_compat.py` | 兼容 shim | 功能性兼容面，不纳入残留删除候选 |
+| `api/auth_compat.py` | 兼容 shim | 有测试引用，需先更新测试 |
 | `services/risk_management_new.py` | 无退出条件的新版 | 需迁移计划 |
 | `services/data_adapter_new.py` | 无退出条件的新版 | 需迁移计划 |
 | `services/data_api_new.py` | 无退出条件的新版 | 需迁移计划 |
@@ -135,6 +135,10 @@ STANDARDS.md §三.2 要求：
 
 | 文件 | 类型 |
 |---|---|
+| `watchlist_service.py.bak2` | 备份文件 |
+| `watchlist_service.py.bak3` | 备份文件 |
+| `watchlist_service.py.before_schema_update` | 备份文件 |
+| `data_adapter.py.backup.20260130` | 带日期的备份 |
 | `risk_management_new.py` | 无退出条件的新版 |
 | `risk_management_2.py` | 无退出条件的2版 |
 | `data_adapter_new.py` | 标记为 `_new` 但无收口日期 |
@@ -156,7 +160,7 @@ STANDARDS.md §三.2 要求：
 
 ### 5.1 依赖注入缺失
 
-项目使用 FastAPI，也已有大量 `Depends()` 使用点，但 `global` singleton、getter、factory、lifespan 和 `app.state` 多种生命周期模型并存。治理重点不是把所有 `global` 单例机械改成 `Depends()`，而是先按生命周期分类：
+项目使用 FastAPI，但未充分利用其 `Depends()` 依赖注入机制。大量 `global` 单例本应通过 `Depends` 注入：
 
 ```python
 # 当前（反模式）
@@ -212,7 +216,7 @@ core/
 
 ### 5.5 API 健康端点碎片化
 
-> **事实校准**: 2026-05-17 基于代码扫描重验。详见子文档 G。
+> **事实校准**: 2026-05-15 基于代码扫描重验。详见子文档 G。
 
 **Canonical 健康端点**（已确认，3 组 5 个端点）：
 
@@ -224,7 +228,7 @@ core/
 | `GET /api/health/services` | `health.py` via router_registry | 服务依赖检查（PG/TD/Mongo/disk） |
 | `GET /api/health/detailed` | `health.py` via router_registry | 详细健康检查（需认证） |
 
-**碎片健康端点**（下表为历史样本；2026-05-17 装饰器级扫描发现 46 个 health-like route decorators，需先重导 route table / OpenAPI）：
+**碎片健康端点**（18 个，需收敛）：
 
 | # | 文件 | 路由器内路径 | 实际 URL（含 prefix） |
 |---|---|---|---|
@@ -276,7 +280,7 @@ core/
 | 项 | 行动 | 影响范围 |
 |---|---|---|
 | 保留 `print()` 门禁 | 当前 `web/backend/app` 扫描为 0 结果；后续新增后端 Python 文件仍需通过该门禁 | 日志红线 |
-| 补齐残留候选双判定 | 当前备份文件扫描为 0；对 4 个 `_new.py` 和 `monitoring_old/` 补代码路径判定与功能树判定 | 迁移收口 |
+| 复核备份/残留文件 | 重扫 `api/*.bak`, `api/*.backup`, `services/*.bak*`, `services/*.backup*`，补代码路径判定与功能树判定 | 迁移收口 |
 | 规划 Core 重复文件治理 | 确定 canonical 版本、兼容 wrapper 和退场条件，进入 OpenSpec 后再移动或删除 | 重复真相源 |
 | 规划 `schema/` + `schemas/` 合并 | 先确认 import 面和功能树状态，再决定是否迁移 `validation_models.py` | 重复真相源 |
 
@@ -293,9 +297,9 @@ core/
 
 | 项 | 行动 | 影响范围 |
 |---|---|---|
-| Singleton → DI 重构 | 先按生命周期分类，再用 FastAPI `Depends()`、factory、lifespan、`app.state` 或兼容 wrapper 分流处理 | 架构优化 |
-| Core 目录拆分 | 先补 canonical import、旧模块 wrapper、import smoke 和 OpenSpec 设计，再按风险拆分 `database/`、`cache/`、`security/`、`socketio/` 等 | 目录治理 |
-| 服务层整理 | 先补 consumer 矩阵、service parity、import smoke 和 OpenSpec 设计，再判定 `risk_management_new.py` / `risk_management_2.py` 是否退役 | 迁移收口 |
+| Singleton → DI 重构 | 用 FastAPI `Depends()` + `dependency_overrides` 替代 global 单例 | 架构优化 |
+| Core 目录拆分 | 按子域拆分 `database/`、`cache/`、`security/`、`socketio/` 等 | 目录治理 |
+| 服务层整理 | 合并 `risk_management_new.py` / `risk_management_2.py`，明确 canonical 服务 | 迁移收口 |
 | 统一错误响应路径 | 禁止端点直接 `raise HTTPException`，统一通过 `BusinessException` 体系 | 错误处理一致性 |
 
 ---

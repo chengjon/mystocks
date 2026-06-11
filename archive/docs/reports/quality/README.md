@@ -6,18 +6,6 @@
 >
 > 文内目录项、完成标记、数量统计和链接关系如未重新生成或复核，应视为历史导航快照，不得直接当作当前事实。
 
-## Current Quality Evidence Routing
-
-当前质量证据的 canonical 入口仍是对应 OpenSpec change、实际代码和验证结果；本目录只承载报告与索引。
-
-近期 HTML5 migration evidence 请从以下入口进入：
-
-- [html5-migration-evidence-index-2026-05-12.md](/opt/claude/mystocks_spec/docs/reports/quality/html5-migration-evidence-index-2026-05-12.md)
-- [html5-migration-change-wide-ledger-audit-2026-05-12.md](/opt/claude/mystocks_spec/docs/reports/quality/html5-migration-change-wide-ledger-audit-2026-05-12.md)
-- [implement-html5-migration-experience-optimization-handoff-2026-05-12.md](/opt/claude/mystocks_spec/docs/reports/tasks/implement-html5-migration-experience-optimization-handoff-2026-05-12.md)
-
-这些文件用于 reader-routing 和 historical evidence，不替代 `openspec/changes/implement-html5-migration-experience-optimization/tasks.md` 的任务状态。
-
 
 **目的**: 记录具有一定难度/或出现频度高的BUG，总结经验教训，为后续开发提供预防指引。
 

@@ -5804,11 +5804,11 @@
     "node_type": "decision",
     "owner_lane": "docs-governance",
     "parent": "b4-docs-reports-archive-retirement",
-    "status": "authorization-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "b4-docs-reports-archive-retirement",
-    "current_head": "0814211a332fefe5089f8e49a92317b466b4ca85",
+    "current_head": "e55e948b51e4163cbd469a724f431796afd63f65",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "baseline",
@@ -5816,6 +5816,13 @@
         "note": "No-source authorization preparation for HOLD-B Quality-Medium docs/reports archive drift; implementation remains unauthorized.",
         "current_head": "0814211a332fefe5089f8e49a92317b466b4ca85",
         "recorded_at": "2026-06-11T12:19:06.660Z"
+      },
+      {
+        "kind": "current-head-implementation-authorization",
+        "path": "user authorization: approval received for B4.011-M2a-HOLD-B-Quality-Medium deletion-retirement implementation",
+        "note": "Bind user implementation authorization to current HEAD before applying Quality-Medium archive overwrite and active path retirement.",
+        "current_head": "e55e948b51e4163cbd469a724f431796afd63f65",
+        "recorded_at": "2026-06-11T13:10:02.894Z"
       }
     ],
     "allowed_paths": [
@@ -5838,11 +5845,11 @@
       "Do not touch HOLD-B-Quality-High or HOLD-B-Generated-Pair files.",
       "Do not touch modified tracked docs/reports files, untracked docs/reports files, source, tests, runtime, route, UI, API, OpenSpec, ST-HOLD, marketKlineData, or external dirty files."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-11T12:19:06.598Z",
-    "updated_at": "2026-06-11T12:19:06.699Z",
+    "updated_at": "2026-06-11T13:10:03.069Z",
     "acceptance": {
       "commit_gate": [
         "Exact staging only for the two active paths, two matching archive paths, and required FUNCTION_TREE governance state files.",
@@ -5855,6 +5862,22 @@
         "Both target active paths are absent from HEAD and non-target docs/reports dirty state is unchanged.",
         "GitNexus analyze --index-only refreshes successfully."
       ]
-    }
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved B4.011-M2a-HOLD-B-Quality-Medium deletion-retirement implementation.",
+        "current_head": "e55e948b51e4163cbd469a724f431796afd63f65",
+        "transitioned_at": "2026-06-11T13:10:02.973Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Quality-Medium archive overwrite and active-path retirement prepared within approved scope.",
+        "current_head": "e55e948b51e4163cbd469a724f431796afd63f65",
+        "transitioned_at": "2026-06-11T13:10:03.068Z"
+      }
+    ]
   }
 ]
