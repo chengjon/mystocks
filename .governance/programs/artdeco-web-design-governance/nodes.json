@@ -5797,5 +5797,64 @@
       "current_head": "007fe58c05c08705704ffb814f067c0875d25b6f",
       "prepared_at": "2026-06-11T07:31:47.679Z"
     }
+  },
+  {
+    "id": "b4-docs-reports-hold-b-quality-medium-retirement",
+    "title": "Docs reports HOLD-B quality-medium retirement",
+    "node_type": "decision",
+    "owner_lane": "docs-governance",
+    "parent": "b4-docs-reports-archive-retirement",
+    "status": "authorization-prepared",
+    "function_tree_ref": "b4-docs-reports-archive-retirement",
+    "current_head": "0814211a332fefe5089f8e49a92317b466b4ca85",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-011-m2a-HOLD-B-quality-medium-authorization-prep-2026-06-11.md",
+        "note": "No-source authorization preparation for HOLD-B Quality-Medium docs/reports archive drift; implementation remains unauthorized.",
+        "current_head": "0814211a332fefe5089f8e49a92317b466b4ca85",
+        "recorded_at": "2026-06-11T12:19:06.660Z"
+      }
+    ],
+    "allowed_paths": [
+      "docs/reports/quality/README.md",
+      "docs/reports/quality/backend-audit-2026-05-14.md",
+      "archive/docs/reports/quality/README.md",
+      "archive/docs/reports/quality/backend-audit-2026-05-14.md"
+    ],
+    "forbidden_paths": [
+      "docs/reports/quality/backend-residual-files-inventory-2026-05-14.md",
+      "docs/reports/quality/health-endpoint-consolidation-2026-05-14.md",
+      "docs/reports/quality/generated/backend-fullpath-route-table.json",
+      "docs/reports/quality/generated/backend-fullpath-route-table.md",
+      "5 modified tracked docs/reports files",
+      "11 untracked docs/reports files",
+      "docs/guides/** docs/superpowers/** web/** src/** tests/** scripts/** OpenSpec ST-HOLD marketKlineData external dirty files"
+    ],
+    "non_goals": [
+      "Do not implement deletion-retirement until explicit B4.011-M2a-HOLD-B-Quality-Medium approval is granted.",
+      "Do not touch HOLD-B-Quality-High or HOLD-B-Generated-Pair files.",
+      "Do not touch modified tracked docs/reports files, untracked docs/reports files, source, tests, runtime, route, UI, API, OpenSpec, ST-HOLD, marketKlineData, or external dirty files."
+    ],
+    "next_gate": "review and approve implementation authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-11T12:19:06.598Z",
+    "updated_at": "2026-06-11T12:19:06.699Z",
+    "acceptance": {
+      "commit_gate": [
+        "Exact staging only for the two active paths, two matching archive paths, and required FUNCTION_TREE governance state files.",
+        "git diff --cached --check passes.",
+        "GitNexus verify-staged and detect_changes report low risk and no unexpected affected processes.",
+        "OPENDOG verification reports no cleanup blocker."
+      ],
+      "closeout_gate": [
+        "Both archive files preserve active HEAD content; EOF-only blank-line normalization is allowed only where required for git diff --cached --check.",
+        "Both target active paths are absent from HEAD and non-target docs/reports dirty state is unchanged.",
+        "GitNexus analyze --index-only refreshes successfully."
+      ]
+    }
   }
 ]

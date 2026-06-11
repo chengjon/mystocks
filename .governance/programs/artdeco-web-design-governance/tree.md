@@ -33,3 +33,4 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-docs-reports-archive-retirement: Docs reports archive retirement truth (planning, FT: B4.011-M2a)
 - [ ] b4-docs-reports-hold-a-low-delta-retirement: Docs reports low-delta archive drift retirement (planning, FT: docs/reports/worklogs/claude-auto/b4-011-m2a-HOLD-docs-reports-archive-drift-no-source-review-2026-06-10.md)
 - [ ] b4-docs-reports-hold-b-medium-high-drift-review: Docs reports medium/high archive drift decision review (planning, FT: b4-docs-reports-archive-retirement)
+- [ ] b4-docs-reports-hold-b-quality-medium-retirement: Docs reports HOLD-B quality-medium retirement (planning, FT: b4-docs-reports-archive-retirement)

@@ -1,0 +1,38 @@
+task:
+  id: "b4-docs-reports-hold-b-quality-medium-retirement"
+  title: "Docs reports HOLD-B quality-medium retirement"
+
+scope:
+  allowed_paths:
+    - "docs/reports/quality/README.md"
+    - "docs/reports/quality/backend-audit-2026-05-14.md"
+    - "archive/docs/reports/quality/README.md"
+    - "archive/docs/reports/quality/backend-audit-2026-05-14.md"
+  forbidden_paths:
+    - "docs/reports/quality/backend-residual-files-inventory-2026-05-14.md"
+    - "docs/reports/quality/health-endpoint-consolidation-2026-05-14.md"
+    - "docs/reports/quality/generated/backend-fullpath-route-table.json"
+    - "docs/reports/quality/generated/backend-fullpath-route-table.md"
+    - "5 modified tracked docs/reports files"
+    - "11 untracked docs/reports files"
+    - "docs/guides/** docs/superpowers/** web/** src/** tests/** scripts/** OpenSpec ST-HOLD marketKlineData external dirty files"
+
+non_goals:
+  - "Do not implement deletion-retirement until explicit B4.011-M2a-HOLD-B-Quality-Medium approval is granted."
+  - "Do not touch HOLD-B-Quality-High or HOLD-B-Generated-Pair files."
+  - "Do not touch modified tracked docs/reports files, untracked docs/reports files, source, tests, runtime, route, UI, API, OpenSpec, ST-HOLD, marketKlineData, or external dirty files."
+
+acceptance:
+  commit_gate:
+    - "Exact staging only for the two active paths, two matching archive paths, and required FUNCTION_TREE governance state files."
+    - "git diff --cached --check passes."
+    - "GitNexus verify-staged and detect_changes report low risk and no unexpected affected processes."
+    - "OPENDOG verification reports no cleanup blocker."
+  closeout_gate:
+    - "Both archive files preserve active HEAD content; EOF-only blank-line normalization is allowed only where required for git diff --cached --check."
+    - "Both target active paths are absent from HEAD and non-target docs/reports dirty state is unchanged."
+    - "GitNexus analyze --index-only refreshes successfully."
+
+evidence:
+  current_head: "0814211a332fefe5089f8e49a92317b466b4ca85"
+  notes: []
