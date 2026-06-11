@@ -5804,11 +5804,11 @@
     "node_type": "decision",
     "owner_lane": "docs-governance",
     "parent": "b4-docs-reports-archive-retirement",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "b4-docs-reports-archive-retirement",
     "current_head": "e55e948b51e4163cbd469a724f431796afd63f65",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "baseline",
@@ -5845,11 +5845,11 @@
       "Do not touch HOLD-B-Quality-High or HOLD-B-Generated-Pair files.",
       "Do not touch modified tracked docs/reports files, untracked docs/reports files, source, tests, runtime, route, UI, API, OpenSpec, ST-HOLD, marketKlineData, or external dirty files."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-11T12:19:06.598Z",
-    "updated_at": "2026-06-11T13:10:03.069Z",
+    "updated_at": "2026-06-11T14:05:42.582Z",
     "acceptance": {
       "commit_gate": [
         "Exact staging only for the two active paths, two matching archive paths, and required FUNCTION_TREE governance state files.",
@@ -5877,7 +5877,30 @@
         "note": "Quality-Medium archive overwrite and active-path retirement prepared within approved scope.",
         "current_head": "e55e948b51e4163cbd469a724f431796afd63f65",
         "transitioned_at": "2026-06-11T13:10:03.068Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "implementation commit 41331fa90 retired two quality medium active docs after archive overwrite",
+        "current_head": "41331fa90555437a245f394c0f56290722fca0dd",
+        "transitioned_at": "2026-06-11T14:04:30.135Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "B4.011-M2a-HOLD-B-Quality-Medium deletion-retirement closed after verified implementation commit 41331fa90",
+        "current_head": "41331fa90555437a245f394c0f56290722fca0dd",
+        "transitioned_at": "2026-06-11T14:05:42.582Z"
       }
-    ]
+    ],
+    "closeout": {
+      "summary": "implementation commit 41331fa90; archive overwrite verified; active paths retired; staged scope contained governance plus two active deletes plus two archive updates",
+      "compatibility": "documentation-only deletion-retirement; no source, test, runtime, route, OpenSpec, ST-HOLD, marketKlineData, docs/guides, or docs/superpowers changes",
+      "gates": [
+        "git diff --cached --check; GitNexus verify-staged low risk; GitNexus detect_changes staged low risk; OPENDOG verification available with no cleanup blockers; post-commit GitNexus analyze indexed 41331fa90"
+      ],
+      "current_head": "41331fa90555437a245f394c0f56290722fca0dd",
+      "prepared_at": "2026-06-11T14:05:04.377Z"
+    }
   }
 ]

@@ -1,36 +1,5 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-11T13:10:03.072Z",
-  "gates": [
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-docs-reports-hold-b-quality-medium-retirement",
-      "title": "Docs reports HOLD-B quality-medium retirement",
-      "node_type": "decision",
-      "owner_lane": "docs-governance",
-      "parent": "b4-docs-reports-archive-retirement",
-      "status": "implementation-ready",
-      "source_edits_authorized": true,
-      "current_blocker": "",
-      "next_allowed": "land implementation with Git evidence",
-      "function_tree_ref": "b4-docs-reports-archive-retirement",
-      "freshness": "current-head",
-      "allowed_paths": [
-        "docs/reports/quality/README.md",
-        "docs/reports/quality/backend-audit-2026-05-14.md",
-        "archive/docs/reports/quality/README.md",
-        "archive/docs/reports/quality/backend-audit-2026-05-14.md"
-      ],
-      "forbidden_paths": [
-        "docs/reports/quality/backend-residual-files-inventory-2026-05-14.md",
-        "docs/reports/quality/health-endpoint-consolidation-2026-05-14.md",
-        "docs/reports/quality/generated/backend-fullpath-route-table.json",
-        "docs/reports/quality/generated/backend-fullpath-route-table.md",
-        "5 modified tracked docs/reports files",
-        "11 untracked docs/reports files",
-        "docs/guides/** docs/superpowers/** web/** src/** tests/** scripts/** OpenSpec ST-HOLD marketKlineData external dirty files"
-      ],
-      "updated_at": "2026-06-11T13:10:03.069Z"
-    }
-  ]
+  "updated_at": "2026-06-11T14:05:42.585Z",
+  "gates": []
 }
