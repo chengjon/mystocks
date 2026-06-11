@@ -38,3 +38,4 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-docs-reports-hold-b-generated-pair-retirement: Docs reports generated evidence pair retirement (planning, FT: b4-docs-reports-drift-governance)
 - [ ] b4-docs-reports-residual-dirty-review: Docs reports residual dirty decision review (planning, FT: b4-docs-reports-drift-governance)
 - [ ] b4-docs-reports-residual-m5-preserve-review: Docs reports residual M5 tracked annotations (planning, FT: b4-docs-reports-drift-governance)
+- [ ] b4-docs-reports-residual-u11-untracked-review: Docs reports residual U11 untracked report classification (planning, FT: b4-docs-reports-drift-governance)
