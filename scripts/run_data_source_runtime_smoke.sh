@@ -3,6 +3,7 @@ set -euo pipefail
 
 OPENSTOCK_DIR="${OPENSTOCK_DIR:-/opt/claude/openstock}"
 export MPLCONFIGDIR="${MPLCONFIGDIR:-/tmp/matplotlib-openstock-smoke}"
+SKIP_REALTIME_PROVIDER_SMOKE="${OPENSTOCK_SKIP_REALTIME_PROVIDER_SMOKE:-${OPENSTOCK_SKIP_AKSHARE_REAL_SMOKE:-0}}"
 
 if [[ ! -d "${OPENSTOCK_DIR}" ]]; then
   echo "openstock directory not found: ${OPENSTOCK_DIR}" >&2
@@ -13,7 +14,7 @@ fi
   cd "${OPENSTOCK_DIR}"
   pytest tests/test_runtime_contract.py tests/test_akshare_runtime_pilot.py tests/test_market_stream_contract.py -q -p no:timing -p no:tdd-guard -p no:cacheprovider
 
-  if [[ "${OPENSTOCK_SKIP_AKSHARE_REAL_SMOKE:-0}" != "1" ]]; then
+  if [[ "${SKIP_REALTIME_PROVIDER_SMOKE}" != "1" ]]; then
     python - <<'PY'
 import contextlib
 import io
@@ -29,19 +30,23 @@ with contextlib.redirect_stdout(buffer), contextlib.redirect_stderr(buffer):
         json={
             "data_category": "REALTIME_QUOTES",
             "params": {"limit": 1},
-            "request_id": "smoke-akshare-real",
+            "request_id": "smoke-realtime-provider",
             "timeout_ms": 15000,
         },
     )
 
 response.raise_for_status()
 payload = response.json()
-assert payload["source"] == "akshare", payload
-assert payload["endpoint_name"] in {"akshare.stock_zh_a_spot", "akshare.stock_info_a_code_name"}, payload
+assert payload["source"] in {"eltdx", "akshare"}, payload
+assert payload["endpoint_name"] in {
+    "eltdx.tdx_7709",
+    "akshare.stock_zh_a_spot",
+    "akshare.stock_info_a_code_name",
+}, payload
 assert payload["data"], payload
 assert payload["data"][0].get("symbol"), payload["data"][0]
 print(
-    "openstock akshare real smoke passed:",
+    "openstock realtime provider smoke passed:",
     payload["endpoint_name"],
     payload["data"][0].get("symbol"),
     payload["data"][0].get("name"),
