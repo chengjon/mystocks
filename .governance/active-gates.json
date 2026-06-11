@@ -1,28 +1,5 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-11T16:05:38.852Z",
-  "gates": [
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-docs-reports-hold-b-generated-pair-retirement",
-      "title": "Docs reports generated evidence pair retirement",
-      "node_type": "decision",
-      "owner_lane": "artdeco-web-design-governance",
-      "parent": "",
-      "status": "implementation-ready",
-      "source_edits_authorized": true,
-      "current_blocker": "",
-      "next_allowed": "land implementation with Git evidence",
-      "function_tree_ref": "b4-docs-reports-drift-governance",
-      "freshness": "current-head",
-      "allowed_paths": [
-        "docs/reports/quality/generated/backend-fullpath-route-table.json",
-        "docs/reports/quality/generated/backend-fullpath-route-table.md",
-        "archive/docs/reports/quality/generated/backend-fullpath-route-table.json",
-        "archive/docs/reports/quality/generated/backend-fullpath-route-table.md"
-      ],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-11T16:05:38.842Z"
-    }
-  ]
+  "updated_at": "2026-06-11T16:16:59.431Z",
+  "gates": []
 }
