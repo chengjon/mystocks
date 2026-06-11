@@ -127,4 +127,5 @@
   - `openspec validate extract-data-source-runtime-service --strict`
   - Repo-truth（2026-06-10）：TDD 红灯为缺少 `src.core.data_source.closure_policy`；实现后 `pytest tests/integration/data_source/test_data_source_public_api_parity.py -q --no-cov -p no:cacheprovider` 通过 `3 passed`。
   - Repo-truth（2026-06-10）：data-source Phase 1-6 组合验证 `33 passed`；扩展后的 `bash scripts/run_data_source_runtime_smoke.sh` 通过 openstock `11 passed`、真实 AkShare smoke、MyStocks remote `5 passed`、AkShare pilot `3 passed`、market stream `5 passed`、MCP access modes `8 passed`、public parity `3 passed`；V2 前置回归矩阵保持 `42 passed`。
-- [ ] 6.6 Archive the change only after implementation tasks, parity evidence, runtime smoke, and rollback evidence are complete.
+- [x] 6.6 Archive the change only after implementation tasks, parity evidence, runtime smoke, and rollback evidence are complete.
+  - Repo-truth（2026-06-11）：`openspec archive extract-data-source-runtime-service --yes` 已将变更归档为 `openspec/changes/archive/2026-06-11-extract-data-source-runtime-service/`，并更新 `architecture-governance`、`containerized-runtime-deployment`、`data-source-runtime-service`、`data-sources` 与 `market-data` specs。

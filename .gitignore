@@ -211,6 +211,8 @@ data/backups/*
 # ========================================
 .archive/
 archive/
+!openspec/changes/archive/
+!openspec/changes/archive/**
 
 # ========================================
 # OTHER BUILD/DEPENDENCY ARTIFACTS
