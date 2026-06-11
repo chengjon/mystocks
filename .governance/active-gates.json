@@ -1,5 +1,23 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-10T04:00:34.773Z",
-  "gates": []
+  "updated_at": "2026-06-11T00:11:42.953Z",
+  "gates": [
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-docs-reports-hold-b-medium-high-drift-review",
+      "title": "Docs reports medium/high archive drift decision review",
+      "node_type": "decision",
+      "owner_lane": "docs-governance",
+      "parent": "b4-docs-reports-archive-retirement",
+      "status": "decision-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "prepare authorization",
+      "function_tree_ref": "b4-docs-reports-archive-retirement",
+      "freshness": "current-head",
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-11T00:11:42.951Z"
+    }
+  ]
 }

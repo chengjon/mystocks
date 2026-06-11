@@ -5675,5 +5675,43 @@
       "current_head": "ac3eea6df38395973f1b44284c5c237d2893dc51",
       "prepared_at": "2026-06-10T04:00:20.418Z"
     }
+  },
+  {
+    "id": "b4-docs-reports-hold-b-medium-high-drift-review",
+    "title": "Docs reports medium/high archive drift decision review",
+    "node_type": "decision",
+    "owner_lane": "docs-governance",
+    "parent": "b4-docs-reports-archive-retirement",
+    "status": "decision-prepared",
+    "function_tree_ref": "b4-docs-reports-archive-retirement",
+    "current_head": "fc8b563c44af967bbd203ef6014c6e02c9a96424",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-011-m2a-HOLD-B-docs-reports-archive-drift-no-source-review-2026-06-11.md",
+        "note": "No-source decision review for 10 remaining medium/high-delta docs/reports archive drift HOLD-B files; split recommendation prepared, deletion-retirement remains unauthorized.",
+        "current_head": "fc8b563c44af967bbd203ef6014c6e02c9a96424",
+        "recorded_at": "2026-06-11T00:11:42.904Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-11T00:11:42.838Z",
+    "updated_at": "2026-06-11T00:11:42.951Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "",
+        "current_head": "fc8b563c44af967bbd203ef6014c6e02c9a96424",
+        "transitioned_at": "2026-06-11T00:11:42.951Z"
+      }
+    ]
   }
 ]
