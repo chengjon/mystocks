@@ -1,28 +1,5 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-11T15:05:04.041Z",
-  "gates": [
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-docs-reports-hold-b-quality-high-retirement",
-      "title": "Docs reports high-drift quality retirement",
-      "node_type": "decision",
-      "owner_lane": "artdeco-web-design-governance",
-      "parent": "",
-      "status": "implementation-ready",
-      "source_edits_authorized": true,
-      "current_blocker": "",
-      "next_allowed": "land implementation with Git evidence",
-      "function_tree_ref": "b4-docs-reports-drift-governance",
-      "freshness": "current-head",
-      "allowed_paths": [
-        "docs/reports/quality/backend-residual-files-inventory-2026-05-14.md",
-        "docs/reports/quality/health-endpoint-consolidation-2026-05-14.md",
-        "archive/docs/reports/quality/backend-residual-files-inventory-2026-05-14.md",
-        "archive/docs/reports/quality/health-endpoint-consolidation-2026-05-14.md"
-      ],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-11T15:05:04.021Z"
-    }
-  ]
+  "updated_at": "2026-06-11T15:21:04.744Z",
+  "gates": []
 }

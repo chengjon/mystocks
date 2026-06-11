@@ -5909,11 +5909,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "b4-docs-reports-drift-governance",
     "current_head": "8ab2fbbdb1de611c092bede8a0a07c60275434ea",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "baseline",
@@ -5940,11 +5940,11 @@
     "non_goals": [
       "No implementation until explicit deletion-retirement approval; do not touch generated quality evidence pair, remaining modified/untracked docs reports, docs/guides, docs/superpowers, web, src, tests, scripts, OpenSpec, ST-HOLD, marketKlineData, or external dirty paths."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-11T14:43:30.420Z",
-    "updated_at": "2026-06-11T15:05:04.021Z",
+    "updated_at": "2026-06-11T15:21:04.737Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -5966,6 +5966,20 @@
         "note": "ready to overwrite archive docs with active HEAD blobs and retire active quality-high paths",
         "current_head": "8ab2fbbdb1de611c092bede8a0a07c60275434ea",
         "transitioned_at": "2026-06-11T15:05:04.021Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "implementation commit 45cfc2deb retired two high-drift quality active docs after archive overwrite",
+        "current_head": "45cfc2debea8a257711d5468fd45daf4d2add5a5",
+        "transitioned_at": "2026-06-11T15:20:02.565Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "B4.011-M2a-HOLD-B-Quality-High deletion-retirement closed after verified implementation commit 45cfc2deb",
+        "current_head": "45cfc2debea8a257711d5468fd45daf4d2add5a5",
+        "transitioned_at": "2026-06-11T15:21:04.737Z"
       }
     ],
     "acceptance": {
@@ -5975,6 +5989,15 @@
       "closeout_gate": [
         "Post-commit GitNexus analyze --index-only; active paths absent; archive paths present; active gates clear; remaining dirty distribution unchanged outside this scope."
       ]
+    },
+    "closeout": {
+      "summary": "implementation commit 45cfc2deb; archive overwrite verified; active high-drift quality report paths retired; remaining docs/reports dirty distribution M5 D2 ??11",
+      "compatibility": "documentation-only deletion-retirement; no source, test, runtime, route, OpenSpec, ST-HOLD, marketKlineData, docs/guides, docs/superpowers, generated pair, residual modified/untracked docs reports, or external dirty changes",
+      "gates": [
+        "git diff --cached --check; GitNexus verify-staged low risk; GitNexus detect_changes staged low risk and fresh; OPENDOG verification no cleanup blockers; post-commit GitNexus analyze indexed 45cfc2deb"
+      ],
+      "current_head": "45cfc2debea8a257711d5468fd45daf4d2add5a5",
+      "prepared_at": "2026-06-11T15:20:41.424Z"
     }
   }
 ]
