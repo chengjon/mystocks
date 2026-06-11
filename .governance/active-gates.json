@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-11T15:34:37.257Z",
+  "updated_at": "2026-06-11T16:05:38.852Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -9,10 +9,10 @@
       "node_type": "decision",
       "owner_lane": "artdeco-web-design-governance",
       "parent": "",
-      "status": "authorization-prepared",
-      "source_edits_authorized": false,
+      "status": "implementation-ready",
+      "source_edits_authorized": true,
       "current_blocker": "",
-      "next_allowed": "review and approve implementation authorization",
+      "next_allowed": "land implementation with Git evidence",
       "function_tree_ref": "b4-docs-reports-drift-governance",
       "freshness": "current-head",
       "allowed_paths": [
@@ -22,7 +22,7 @@
         "archive/docs/reports/quality/generated/backend-fullpath-route-table.md"
       ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-11T15:34:37.246Z"
+      "updated_at": "2026-06-11T16:05:38.842Z"
     }
   ]
 }

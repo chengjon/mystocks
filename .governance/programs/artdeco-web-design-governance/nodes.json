@@ -6006,11 +6006,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "",
-    "status": "authorization-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "b4-docs-reports-drift-governance",
-    "current_head": "7520326d9e6d2a1cdae9f50c56dd8e8c8a8efb2c",
+    "current_head": "445f29974bb7c7c63b3529f4fd8363a7c2e37a03",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "baseline",
@@ -6018,6 +6018,13 @@
         "note": "no-source generated evidence pair review; source_edits_authorized false",
         "current_head": "7520326d9e6d2a1cdae9f50c56dd8e8c8a8efb2c",
         "recorded_at": "2026-06-11T15:33:47.424Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "user authorization: approval received via '请继续' for B4.011-M2a-HOLD-B-Generated-Pair deletion-retirement implementation",
+        "note": "implementation authorization bound to current HEAD; scope remains generated JSON/MD pair active/archive paths only",
+        "current_head": "445f29974bb7c7c63b3529f4fd8363a7c2e37a03",
+        "recorded_at": "2026-06-11T16:05:01.404Z"
       }
     ],
     "allowed_paths": [
@@ -6030,11 +6037,11 @@
     "non_goals": [
       "No implementation until explicit deletion-retirement approval; do not regenerate the evidence pair, modify generator scripts, touch remaining M5 or untracked docs reports, docs/guides, docs/superpowers, web, src, tests, scripts, OpenSpec, ST-HOLD, marketKlineData, or external dirty paths."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-11T15:33:20.486Z",
-    "updated_at": "2026-06-11T15:34:37.246Z",
+    "updated_at": "2026-06-11T16:05:38.842Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -6042,6 +6049,20 @@
         "note": "generated-pair retirement decision package prepared; implementation remains unauthorized",
         "current_head": "7520326d9e6d2a1cdae9f50c56dd8e8c8a8efb2c",
         "transitioned_at": "2026-06-11T15:34:07.723Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "user approved generated-pair deletion-retirement implementation; no regeneration or script changes included",
+        "current_head": "445f29974bb7c7c63b3529f4fd8363a7c2e37a03",
+        "transitioned_at": "2026-06-11T16:05:25.648Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "ready to overwrite generated pair archive files from active HEAD blobs and retire active paths",
+        "current_head": "445f29974bb7c7c63b3529f4fd8363a7c2e37a03",
+        "transitioned_at": "2026-06-11T16:05:38.842Z"
       }
     ],
     "acceptance": {
