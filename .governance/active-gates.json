@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-11T16:40:48.786Z",
+  "updated_at": "2026-06-11T16:59:10.027Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -18,6 +18,23 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-11T16:40:48.777Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-docs-reports-residual-m5-preserve-review",
+      "title": "Docs reports residual M5 tracked annotations",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "",
+      "status": "decision-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "prepare authorization",
+      "function_tree_ref": "b4-docs-reports-drift-governance",
+      "freshness": "current-head",
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-11T16:59:10.021Z"
     }
   ]
 }

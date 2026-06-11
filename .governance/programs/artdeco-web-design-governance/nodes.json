@@ -6134,5 +6134,43 @@
         "transitioned_at": "2026-06-11T16:40:48.776Z"
       }
     ]
+  },
+  {
+    "id": "b4-docs-reports-residual-m5-preserve-review",
+    "title": "Docs reports residual M5 tracked annotations",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "",
+    "status": "decision-prepared",
+    "function_tree_ref": "b4-docs-reports-drift-governance",
+    "current_head": "0fbc6a592f7da912874cb86ba4150cfd44fe0dff",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-011-m2a-residual-m5-modified-tracked-review-2026-06-12.md",
+        "note": "no-source M5 tracked report review; preserve-active implementation recommended but not yet authorized",
+        "current_head": "0fbc6a592f7da912874cb86ba4150cfd44fe0dff",
+        "recorded_at": "2026-06-11T16:58:52.953Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-11T16:58:23.660Z",
+    "updated_at": "2026-06-11T16:59:10.021Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "M5 decision prepared: preserve five tracked report annotations in active paths, no archive or test edits",
+        "current_head": "0fbc6a592f7da912874cb86ba4150cfd44fe0dff",
+        "transitioned_at": "2026-06-11T16:59:10.021Z"
+      }
+    ]
   }
 ]
