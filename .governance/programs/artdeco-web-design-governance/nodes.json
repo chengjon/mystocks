@@ -5682,11 +5682,11 @@
     "node_type": "decision",
     "owner_lane": "docs-governance",
     "parent": "b4-docs-reports-archive-retirement",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "b4-docs-reports-archive-retirement",
     "current_head": "a5f15b69dba8895fa0b2744ac93c0794e55071f6",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "baseline",
@@ -5729,11 +5729,11 @@
       "Do not touch HOLD-B-Quality-Medium, HOLD-B-Quality-High, or HOLD-B-Generated-Pair files.",
       "Do not touch modified tracked docs/reports files, untracked docs/reports files, source, tests, runtime, route, UI, API, OpenSpec, ST-HOLD, marketKlineData, or external dirty files."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-11T00:11:42.838Z",
-    "updated_at": "2026-06-11T04:44:29.153Z",
+    "updated_at": "2026-06-11T07:32:50.360Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -5755,6 +5755,20 @@
         "note": "HOLD-B-Low archive overwrite and active-path retirement prepared within approved scope.",
         "current_head": "a5f15b69dba8895fa0b2744ac93c0794e55071f6",
         "transitioned_at": "2026-06-11T04:38:37.410Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Implementation landed in commit 007fe58c0: HOLD-B-Low archive overwrite and active path retirement.",
+        "current_head": "007fe58c05c08705704ffb814f067c0875d25b6f",
+        "transitioned_at": "2026-06-11T07:31:47.486Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "Close HOLD-B-Low after implementation commit 007fe58c0 and GitNexus index refresh.",
+        "current_head": "007fe58c05c08705704ffb814f067c0875d25b6f",
+        "transitioned_at": "2026-06-11T07:32:50.360Z"
       }
     ],
     "acceptance": {
@@ -5769,6 +5783,19 @@
         "The four active paths are absent from HEAD and non-target docs/reports dirty state is unchanged.",
         "GitNexus analyze --index-only refreshes successfully."
       ]
+    },
+    "closeout": {
+      "summary": "B4.011-M2a-HOLD-B-Low landed in 007fe58c0; 4 low-contained drift active docs/reports paths retired after archive overwrite.",
+      "compatibility": "No source/test/runtime/API/UI files changed; remaining HOLD-B medium/high/generated files untouched; docs/reports dirty count now D 6 / M 5 / ?? 11.",
+      "gates": [
+        "scope-check passed for 8 target files",
+        "git diff --cached --check passed before implementation commit",
+        "GitNexus verify-staged and detect_changes reported low risk",
+        "OPENDOG verification reported no cleanup blocker",
+        "GitNexus analyze --index-only completed full rebuild and indexed HEAD 007fe58c0"
+      ],
+      "current_head": "007fe58c05c08705704ffb814f067c0875d25b6f",
+      "prepared_at": "2026-06-11T07:31:47.679Z"
     }
   }
 ]
