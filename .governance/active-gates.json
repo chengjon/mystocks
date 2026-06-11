@@ -1,5 +1,23 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-11T16:16:59.431Z",
-  "gates": []
+  "updated_at": "2026-06-11T16:40:48.786Z",
+  "gates": [
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-docs-reports-residual-dirty-review",
+      "title": "Docs reports residual dirty decision review",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "",
+      "status": "decision-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "prepare authorization",
+      "function_tree_ref": "b4-docs-reports-drift-governance",
+      "freshness": "current-head",
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-11T16:40:48.777Z"
+    }
+  ]
 }

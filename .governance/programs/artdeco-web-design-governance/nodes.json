@@ -6096,5 +6096,43 @@
       "current_head": "85665927a7e80e7ecf3192eb355c42917ebeca67",
       "prepared_at": "2026-06-11T16:16:29.679Z"
     }
+  },
+  {
+    "id": "b4-docs-reports-residual-dirty-review",
+    "title": "Docs reports residual dirty decision review",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "",
+    "status": "decision-prepared",
+    "function_tree_ref": "b4-docs-reports-drift-governance",
+    "current_head": "da916c29ba23bb8df15bddde23847d2fc6439e48",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-011-m2a-residual-docs-reports-dirty-review-2026-06-12.md",
+        "note": "no-source residual docs reports dirty review; M5 and untracked 12 classified; source_edits_authorized false",
+        "current_head": "da916c29ba23bb8df15bddde23847d2fc6439e48",
+        "recorded_at": "2026-06-11T16:40:23.705Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-11T16:40:04.322Z",
+    "updated_at": "2026-06-11T16:40:48.777Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "residual dirty split prepared: M5 tracked active reports, 11 untracked MyStocks reports, 1 external OpenStock handoff",
+        "current_head": "da916c29ba23bb8df15bddde23847d2fc6439e48",
+        "transitioned_at": "2026-06-11T16:40:48.776Z"
+      }
+    ]
   }
 ]
