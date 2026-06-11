@@ -1,0 +1,25 @@
+task:
+  id: "b4-docs-reports-hold-b-quality-high-retirement"
+  title: "Docs reports high-drift quality retirement"
+
+scope:
+  allowed_paths:
+    - "docs/reports/quality/backend-residual-files-inventory-2026-05-14.md"
+    - "docs/reports/quality/health-endpoint-consolidation-2026-05-14.md"
+    - "archive/docs/reports/quality/backend-residual-files-inventory-2026-05-14.md"
+    - "archive/docs/reports/quality/health-endpoint-consolidation-2026-05-14.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No implementation until explicit deletion-retirement approval; do not touch generated quality evidence pair, remaining modified/untracked docs reports, docs/guides, docs/superpowers, web, src, tests, scripts, OpenSpec, ST-HOLD, marketKlineData, or external dirty paths."
+
+acceptance:
+  commit_gate:
+    - "Exact staging only; git diff --cached --check; GitNexus verify-staged; GitNexus detect_changes staged; OPENDOG verification with no cleanup blockers."
+  closeout_gate:
+    - "Post-commit GitNexus analyze --index-only; active paths absent; archive paths present; active gates clear; remaining dirty distribution unchanged outside this scope."
+
+evidence:
+  current_head: "7d2f64387f3a813529f4115b292fc7891b81a69b"
+  notes: []
