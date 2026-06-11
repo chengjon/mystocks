@@ -1,0 +1,25 @@
+task:
+  id: "b4-docs-reports-hold-b-generated-pair-retirement"
+  title: "Docs reports generated evidence pair retirement"
+
+scope:
+  allowed_paths:
+    - "docs/reports/quality/generated/backend-fullpath-route-table.json"
+    - "docs/reports/quality/generated/backend-fullpath-route-table.md"
+    - "archive/docs/reports/quality/generated/backend-fullpath-route-table.json"
+    - "archive/docs/reports/quality/generated/backend-fullpath-route-table.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No implementation until explicit deletion-retirement approval; do not regenerate the evidence pair, modify generator scripts, touch remaining M5 or untracked docs reports, docs/guides, docs/superpowers, web, src, tests, scripts, OpenSpec, ST-HOLD, marketKlineData, or external dirty paths."
+
+acceptance:
+  commit_gate:
+    - "Exact staging only; git diff --cached --check; GitNexus verify-staged; GitNexus detect_changes staged; OPENDOG verification with no cleanup blockers."
+  closeout_gate:
+    - "Post-commit GitNexus analyze --index-only; active paths absent; archive paths present; active gates clear; remaining dirty distribution unchanged outside this scope."
+
+evidence:
+  current_head: "7520326d9e6d2a1cdae9f50c56dd8e8c8a8efb2c"
+  notes: []
