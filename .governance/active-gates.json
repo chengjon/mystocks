@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-11T16:59:10.027Z",
+  "updated_at": "2026-06-11T17:30:54.085Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -26,15 +26,21 @@
       "node_type": "decision",
       "owner_lane": "artdeco-web-design-governance",
       "parent": "",
-      "status": "decision-prepared",
+      "status": "authorization-prepared",
       "source_edits_authorized": false,
       "current_blocker": "",
-      "next_allowed": "prepare authorization",
+      "next_allowed": "review and approve implementation authorization",
       "function_tree_ref": "b4-docs-reports-drift-governance",
       "freshness": "current-head",
-      "allowed_paths": [],
+      "allowed_paths": [
+        "docs/reports/BACKTEST_API_DOCUMENTATION.md",
+        "docs/reports/IMPLEMENT_WEB_FRONTEND_V2_NAVIGATION_STATUS_REPORT.md",
+        "docs/reports/PHASE2_MENU_REFACTORING_COMPLETION_REPORT.md",
+        "docs/reports/codebase-cleanup-2026-03-29.md",
+        "docs/reports/frontend-optimization-implementation-status-2026-01-27.md"
+      ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-11T16:59:10.021Z"
+      "updated_at": "2026-06-11T17:30:54.072Z"
     }
   ]
 }

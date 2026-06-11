@@ -6141,9 +6141,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "",
-    "status": "decision-prepared",
+    "status": "authorization-prepared",
     "function_tree_ref": "b4-docs-reports-drift-governance",
-    "current_head": "0fbc6a592f7da912874cb86ba4150cfd44fe0dff",
+    "current_head": "aabf10d412ece890b26fd0e771dae2cab2f81381",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -6153,16 +6153,39 @@
         "note": "no-source M5 tracked report review; preserve-active implementation recommended but not yet authorized",
         "current_head": "0fbc6a592f7da912874cb86ba4150cfd44fe0dff",
         "recorded_at": "2026-06-11T16:58:52.953Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-011-m2a-residual-m5-modified-tracked-review-2026-06-12.md",
+        "note": "M5 decision review landed at current HEAD; authorization draft may preserve five tracked active report annotations only",
+        "current_head": "8daf9e6b06971ec98be9cc009107177a0b242a0d",
+        "recorded_at": "2026-06-11T17:26:19.910Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-011-m2a-residual-m5-modified-tracked-review-2026-06-12.md",
+        "note": "M5 authorization draft refreshed after current HEAD advanced to include openstock boundary handoff closeout",
+        "current_head": "aabf10d412ece890b26fd0e771dae2cab2f81381",
+        "recorded_at": "2026-06-11T17:30:08.077Z"
       }
     ],
-    "allowed_paths": [],
+    "allowed_paths": [
+      "docs/reports/BACKTEST_API_DOCUMENTATION.md",
+      "docs/reports/IMPLEMENT_WEB_FRONTEND_V2_NAVIGATION_STATUS_REPORT.md",
+      "docs/reports/PHASE2_MENU_REFACTORING_COMPLETION_REPORT.md",
+      "docs/reports/codebase-cleanup-2026-03-29.md",
+      "docs/reports/frontend-optimization-implementation-status-2026-01-27.md"
+    ],
     "forbidden_paths": [],
-    "non_goals": [],
-    "next_gate": "prepare authorization",
+    "non_goals": [
+      "Do not archive, delete, move, or rewrite these active report files during M5 preservation.",
+      "Do not modify tests, source, web, scripts, OpenSpec, docs/guides, docs/superpowers, ST-HOLD, marketKlineData, untracked reports, or external dirty files."
+    ],
+    "next_gate": "review and approve implementation authorization",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-11T16:58:23.660Z",
-    "updated_at": "2026-06-11T16:59:10.021Z",
+    "updated_at": "2026-06-11T17:30:54.072Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -6171,6 +6194,15 @@
         "current_head": "0fbc6a592f7da912874cb86ba4150cfd44fe0dff",
         "transitioned_at": "2026-06-11T16:59:10.021Z"
       }
-    ]
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "Exact staging only: the five allowed tracked report files plus governance closeout files when separately closing the node; no broad git add.",
+        "Run git diff --cached --check, GitNexus verify-staged, GitNexus staged detect_changes, and OPENDOG verification before commit."
+      ],
+      "closeout_gate": [
+        "Confirm the five M5 tracked report annotations are preserved in active docs/reports paths, staged set is exact, GitNexus is refreshed after commit, and no residual U12 files are touched."
+      ]
+    }
   }
 ]

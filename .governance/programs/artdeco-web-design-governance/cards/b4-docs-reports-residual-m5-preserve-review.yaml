@@ -1,0 +1,28 @@
+task:
+  id: "b4-docs-reports-residual-m5-preserve-review"
+  title: "Docs reports residual M5 tracked annotations"
+
+scope:
+  allowed_paths:
+    - "docs/reports/BACKTEST_API_DOCUMENTATION.md"
+    - "docs/reports/IMPLEMENT_WEB_FRONTEND_V2_NAVIGATION_STATUS_REPORT.md"
+    - "docs/reports/PHASE2_MENU_REFACTORING_COMPLETION_REPORT.md"
+    - "docs/reports/codebase-cleanup-2026-03-29.md"
+    - "docs/reports/frontend-optimization-implementation-status-2026-01-27.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not archive, delete, move, or rewrite these active report files during M5 preservation."
+  - "Do not modify tests, source, web, scripts, OpenSpec, docs/guides, docs/superpowers, ST-HOLD, marketKlineData, untracked reports, or external dirty files."
+
+acceptance:
+  commit_gate:
+    - "Exact staging only: the five allowed tracked report files plus governance closeout files when separately closing the node; no broad git add."
+    - "Run git diff --cached --check, GitNexus verify-staged, GitNexus staged detect_changes, and OPENDOG verification before commit."
+  closeout_gate:
+    - "Confirm the five M5 tracked report annotations are preserved in active docs/reports paths, staged set is exact, GitNexus is refreshed after commit, and no residual U12 files are touched."
+
+evidence:
+  current_head: "aabf10d412ece890b26fd0e771dae2cab2f81381"
+  notes: []
