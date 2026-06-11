@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-11T18:09:44.731Z",
+  "updated_at": "2026-06-11T18:20:00.004Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -35,6 +35,28 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-11T18:09:44.723Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-docs-reports-residual-u11-a-paired-preserve",
+      "title": "Docs reports residual U11-A paired report preservation",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "",
+      "status": "authorization-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "review and approve implementation authorization",
+      "function_tree_ref": "b4-docs-reports-drift-governance",
+      "freshness": "current-head",
+      "allowed_paths": [
+        "docs/reports/ARTDECO_DOCS_CODE_ALIGNMENT_AUDIT_2026-05-28-review.md",
+        "docs/reports/ARTDECO_DOCS_CODE_ALIGNMENT_AUDIT_2026-05-28.md",
+        "docs/reports/workspace-cleanup-plan-2026-05-14-review.md",
+        "docs/reports/workspace-cleanup-plan-2026-05-14.md"
+      ],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-11T18:19:59.998Z"
     }
   ]
 }

@@ -6293,5 +6293,60 @@
         "transitioned_at": "2026-06-11T18:09:44.723Z"
       }
     ]
+  },
+  {
+    "id": "b4-docs-reports-residual-u11-a-paired-preserve",
+    "title": "Docs reports residual U11-A paired report preservation",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "",
+    "status": "authorization-prepared",
+    "function_tree_ref": "b4-docs-reports-drift-governance",
+    "current_head": "f48aeb6d4bcdfd2cb198930413b81c82724083b5",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-011-m2a-residual-u11-a-paired-preserve-review-2026-06-12.md",
+        "note": "no-source U11-A paired report preservation review prepared for four review/source report files",
+        "current_head": "f48aeb6d4bcdfd2cb198930413b81c82724083b5",
+        "recorded_at": "2026-06-11T18:19:18.476Z"
+      }
+    ],
+    "allowed_paths": [
+      "docs/reports/ARTDECO_DOCS_CODE_ALIGNMENT_AUDIT_2026-05-28-review.md",
+      "docs/reports/ARTDECO_DOCS_CODE_ALIGNMENT_AUDIT_2026-05-28.md",
+      "docs/reports/workspace-cleanup-plan-2026-05-14-review.md",
+      "docs/reports/workspace-cleanup-plan-2026-05-14.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not archive, delete, move, rewrite, or split the paired reports during U11-A preservation.",
+      "Do not touch U11-B, U11-C, tests, source, web, scripts, OpenSpec, docs/guides, docs/superpowers, ST-HOLD, marketKlineData, external dirty files, or historical untracked governance cards."
+    ],
+    "next_gate": "review and approve implementation authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-11T18:18:57.052Z",
+    "updated_at": "2026-06-11T18:19:59.998Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "U11-A decision prepared: preserve two report/review pairs together; do not split, archive, or delete without authorization",
+        "current_head": "f48aeb6d4bcdfd2cb198930413b81c82724083b5",
+        "transitioned_at": "2026-06-11T18:19:41.595Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "Exact staging only: the four allowed untracked report files for implementation, plus governance closeout files only when separately closing the node; no broad git add.",
+        "Run git diff --cached --check, GitNexus verify-staged, GitNexus staged detect_changes, and OPENDOG verification before implementation commit."
+      ],
+      "closeout_gate": [
+        "Confirm the four paired reports are tracked in active docs/reports paths, U11-B/U11-C remain untouched, staged set is exact, and GitNexus is refreshed after commit."
+      ]
+    }
   }
 ]

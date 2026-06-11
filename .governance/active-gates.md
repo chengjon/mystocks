@@ -4,5 +4,6 @@
 |---------|------|--------|-----------------|--------------|--------|
 | artdeco-web-design-governance | b4-docs-reports-residual-dirty-review | decision-prepared | - | prepare authorization | b4-docs-reports-drift-governance |
 | artdeco-web-design-governance | b4-docs-reports-residual-u11-untracked-review | decision-prepared | - | prepare authorization | b4-docs-reports-drift-governance |
+| artdeco-web-design-governance | b4-docs-reports-residual-u11-a-paired-preserve | authorization-prepared | - | review and approve implementation authorization | b4-docs-reports-drift-governance |
 
 _Generated from `.governance/active-gates.json`._
