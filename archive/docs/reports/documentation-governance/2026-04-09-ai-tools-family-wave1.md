@@ -24,7 +24,7 @@
   - `guides/ai-tools/CLAUDE.md`
   - `guides/ai-tools/GEMINI.md`
   - `guides/ai-tools/GRAPHITI_MCP_WORKFLOW.md`
-  - `retired historical workflow guide` (retired 2026-05-13)
+  - `guides/ai-tools/OMC_WORKFLOW_GUIDE.md`
   - `guides/ai-tools/OMO_SETUP_GUIDE.md`
   - `guides/ai-tools/OpenCode生产级配置与固化指南.md`
   - `Supporting Guides` -> `guides/ai-tools/INDEX.md`
@@ -56,6 +56,6 @@
 
 ## Expected Effect
 
-- 当时根导航优先暴露 AI quick start、agent 主入口与 historical workflow / OMO 主流程说明；其中 historical workflow guide 已于 2026-05-13 退役
+- 根导航优先暴露 AI quick start、agent 主入口与 OMC/OMO 主流程说明
 - 训练材料、专题修复与残留索引不再与高频入口平级暴露，但仍可通过 family index 进入
 - 后续若这些专题化材料的实际入链继续下降，可继续逐份评估 archive/delete

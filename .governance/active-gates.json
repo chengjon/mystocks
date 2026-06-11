@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-11T00:35:06.333Z",
+  "updated_at": "2026-06-11T04:38:37.414Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -9,21 +9,21 @@
       "node_type": "decision",
       "owner_lane": "docs-governance",
       "parent": "b4-docs-reports-archive-retirement",
-      "status": "authorization-prepared",
-      "source_edits_authorized": false,
+      "status": "implementation-ready",
+      "source_edits_authorized": true,
       "current_blocker": "",
-      "next_allowed": "review and approve implementation authorization",
+      "next_allowed": "land implementation with Git evidence",
       "function_tree_ref": "b4-docs-reports-archive-retirement",
       "freshness": "current-head",
       "allowed_paths": [
-        "docs/reports/documentation-governance/2026-04-09-ai-tools-family-wave1.md active deletion-retirement",
-        "docs/reports/misc/PROJECT_STRUCTURE.md active deletion-retirement",
-        "docs/reports/plans/code-simplification-notes.md active deletion-retirement",
-        "docs/reports/tasks/2026-03-27-local-dirty-worktree-batch-plan.md active deletion-retirement",
-        "archive/docs/reports/documentation-governance/2026-04-09-ai-tools-family-wave1.md archive overwrite from active HEAD",
-        "archive/docs/reports/misc/PROJECT_STRUCTURE.md archive overwrite from active HEAD",
-        "archive/docs/reports/plans/code-simplification-notes.md archive overwrite from active HEAD",
-        "archive/docs/reports/tasks/2026-03-27-local-dirty-worktree-batch-plan.md archive overwrite from active HEAD"
+        "docs/reports/documentation-governance/2026-04-09-ai-tools-family-wave1.md",
+        "docs/reports/misc/PROJECT_STRUCTURE.md",
+        "docs/reports/plans/code-simplification-notes.md",
+        "docs/reports/tasks/2026-03-27-local-dirty-worktree-batch-plan.md",
+        "archive/docs/reports/documentation-governance/2026-04-09-ai-tools-family-wave1.md",
+        "archive/docs/reports/misc/PROJECT_STRUCTURE.md",
+        "archive/docs/reports/plans/code-simplification-notes.md",
+        "archive/docs/reports/tasks/2026-03-27-local-dirty-worktree-batch-plan.md"
       ],
       "forbidden_paths": [
         "docs/reports/quality/README.md",
@@ -36,7 +36,21 @@
         "11 untracked docs/reports files",
         "docs/guides/** docs/superpowers/** web/** src/** tests/** scripts/** OpenSpec ST-HOLD marketKlineData external dirty files"
       ],
-      "updated_at": "2026-06-11T00:35:06.329Z"
+      "updated_at": "2026-06-11T04:44:29.153Z",
+      "acceptance": {
+        "commit_gate": [
+          "Exact staging only for the four active paths, four matching archive paths, and required FUNCTION_TREE governance state files.",
+          "git diff --cached --check passes.",
+          "GitNexus verify-staged and detect_changes report low risk and no unexpected affected processes.",
+          "OPENDOG verification reports no cleanup blocker."
+        ],
+        "closeout_gate": [
+          "Each archive file preserves active HEAD content; EOF-only blank-line normalization is allowed only where required for git diff --cached --check.",
+          "The four active paths are absent from HEAD and non-target docs/reports dirty state is unchanged.",
+          "GitNexus analyze --index-only refreshes successfully."
+        ]
+      },
+      "next_gate": "land implementation with Git evidence"
     }
   ]
 }

@@ -32,7 +32,7 @@
 
 - `web/frontend/src/views`：`69`
 - `web/frontend/src/components`：`45`
-- `retired session-state snapshots/...`：`3`
+- `.omc/state/sessions/...`：`3`
 - 其余为 `web/frontend` 顶层文档/脚本/报告、少量 `docs/scripts/reports/src`
 
 这说明当前工作区不是单一主题，而是至少混合了：
@@ -57,7 +57,7 @@
 
 以下内容必须单独处理：
 
-- `retired session-state snapshots/...`
+- `.omc/state/sessions/...`
 - 报告/总结类 Markdown
 - 测试 HTML、说明页、theme quick reference
 
@@ -93,7 +93,7 @@
 
 ### 范围
 
-- `retired session-state snapshots/5ae67728-2aaa-4150-a71f-2b770e97ae82/*`
+- `.omc/state/sessions/5ae67728-2aaa-4150-a71f-2b770e97ae82/*`
 
 ### 风险
 

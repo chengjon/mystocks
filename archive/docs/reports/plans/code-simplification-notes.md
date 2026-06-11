@@ -53,7 +53,7 @@
 - 本阶段仅规划，不做代码删除。
 - 执行阶段必须先做“引用扫描 + 迁移观测 + 回归验证”。
 
-## Phase A 基线快照（主工作树，排除 `.claude` 下 historical nested tooling / docs / dist / node_modules / logs / coverage）
+## Phase A 基线快照（主工作树，排除 .claude/.omc/docs/reports/dist/node_modules/logs/coverage）
 
 ### A. Frontend API 入口使用分布（`web/frontend/src`）
 > 口径：以下计数为 `files_with_matches` 的**文件数**（用于迁移优先级），不是精确行级 occurrence。

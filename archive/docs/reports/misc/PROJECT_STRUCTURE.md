@@ -500,7 +500,7 @@ node_modules/           - Node dependencies (151M)
 .mypy_cache/            - MyPy cache
 .pytest_cache/          - Pytest cache
 .ruff_cache/            - Ruff cache
-retired-session-state/  - Historical config snapshot (retired from current workflow)
+.omc/                   - OMC config
 .playwright-mcp/        - Playwright MCP
 __pycache__/            - Python cache
 ```

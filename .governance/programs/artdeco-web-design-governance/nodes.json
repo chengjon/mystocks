@@ -5682,11 +5682,11 @@
     "node_type": "decision",
     "owner_lane": "docs-governance",
     "parent": "b4-docs-reports-archive-retirement",
-    "status": "authorization-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "b4-docs-reports-archive-retirement",
-    "current_head": "fc8b563c44af967bbd203ef6014c6e02c9a96424",
+    "current_head": "a5f15b69dba8895fa0b2744ac93c0794e55071f6",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "baseline",
@@ -5694,17 +5694,24 @@
         "note": "No-source decision review for 10 remaining medium/high-delta docs/reports archive drift HOLD-B files; split recommendation prepared, deletion-retirement remains unauthorized.",
         "current_head": "fc8b563c44af967bbd203ef6014c6e02c9a96424",
         "recorded_at": "2026-06-11T00:11:42.904Z"
+      },
+      {
+        "kind": "current-head-implementation-authorization",
+        "path": "user authorization: formal approval received for B4.011-M2a-HOLD-B-Low deletion-retirement implementation",
+        "note": "Bind explicit user implementation authorization to current HEAD before applying HOLD-B-Low archive overwrite and active path retirement.",
+        "current_head": "a5f15b69dba8895fa0b2744ac93c0794e55071f6",
+        "recorded_at": "2026-06-11T04:34:34.697Z"
       }
     ],
     "allowed_paths": [
-      "docs/reports/documentation-governance/2026-04-09-ai-tools-family-wave1.md active deletion-retirement",
-      "docs/reports/misc/PROJECT_STRUCTURE.md active deletion-retirement",
-      "docs/reports/plans/code-simplification-notes.md active deletion-retirement",
-      "docs/reports/tasks/2026-03-27-local-dirty-worktree-batch-plan.md active deletion-retirement",
-      "archive/docs/reports/documentation-governance/2026-04-09-ai-tools-family-wave1.md archive overwrite from active HEAD",
-      "archive/docs/reports/misc/PROJECT_STRUCTURE.md archive overwrite from active HEAD",
-      "archive/docs/reports/plans/code-simplification-notes.md archive overwrite from active HEAD",
-      "archive/docs/reports/tasks/2026-03-27-local-dirty-worktree-batch-plan.md archive overwrite from active HEAD"
+      "docs/reports/documentation-governance/2026-04-09-ai-tools-family-wave1.md",
+      "docs/reports/misc/PROJECT_STRUCTURE.md",
+      "docs/reports/plans/code-simplification-notes.md",
+      "docs/reports/tasks/2026-03-27-local-dirty-worktree-batch-plan.md",
+      "archive/docs/reports/documentation-governance/2026-04-09-ai-tools-family-wave1.md",
+      "archive/docs/reports/misc/PROJECT_STRUCTURE.md",
+      "archive/docs/reports/plans/code-simplification-notes.md",
+      "archive/docs/reports/tasks/2026-03-27-local-dirty-worktree-batch-plan.md"
     ],
     "forbidden_paths": [
       "docs/reports/quality/README.md",
@@ -5722,11 +5729,11 @@
       "Do not touch HOLD-B-Quality-Medium, HOLD-B-Quality-High, or HOLD-B-Generated-Pair files.",
       "Do not touch modified tracked docs/reports files, untracked docs/reports files, source, tests, runtime, route, UI, API, OpenSpec, ST-HOLD, marketKlineData, or external dirty files."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-11T00:11:42.838Z",
-    "updated_at": "2026-06-11T00:35:06.329Z",
+    "updated_at": "2026-06-11T04:44:29.153Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -5734,19 +5741,33 @@
         "note": "",
         "current_head": "fc8b563c44af967bbd203ef6014c6e02c9a96424",
         "transitioned_at": "2026-06-11T00:11:42.951Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved B4.011-M2a-HOLD-B-Low deletion-retirement implementation.",
+        "current_head": "a5f15b69dba8895fa0b2744ac93c0794e55071f6",
+        "transitioned_at": "2026-06-11T04:34:34.783Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "HOLD-B-Low archive overwrite and active-path retirement prepared within approved scope.",
+        "current_head": "a5f15b69dba8895fa0b2744ac93c0794e55071f6",
+        "transitioned_at": "2026-06-11T04:38:37.410Z"
       }
     ],
     "acceptance": {
       "commit_gate": [
-        "Before implementation commit: exact staging only for the four active paths and four matching archive paths.",
-        "Before implementation commit: git diff --cached --check passes.",
-        "Before implementation commit: GitNexus verify-staged and detect_changes report low risk and no unexpected affected processes.",
-        "Before implementation commit: OPENDOG verification reports no cleanup blocker."
+        "Exact staging only for the four active paths, four matching archive paths, and required FUNCTION_TREE governance state files.",
+        "git diff --cached --check passes.",
+        "GitNexus verify-staged and detect_changes report low risk and no unexpected affected processes.",
+        "OPENDOG verification reports no cleanup blocker."
       ],
       "closeout_gate": [
-        "After implementation: each archive blob matches the pre-retirement active HEAD content.",
-        "After implementation: the four active paths are absent from HEAD and non-target docs/reports dirty state is unchanged.",
-        "After implementation: GitNexus analyze --index-only refreshes successfully."
+        "Each archive file preserves active HEAD content; EOF-only blank-line normalization is allowed only where required for git diff --cached --check.",
+        "The four active paths are absent from HEAD and non-target docs/reports dirty state is unchanged.",
+        "GitNexus analyze --index-only refreshes successfully."
       ]
     }
   }
