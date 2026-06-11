@@ -1,0 +1,134 @@
+version: "v0.2"
+
+task:
+  id: "pr-476"
+  title: "close openstock boundary handoff"
+  owner: "codex"
+  created_at: "2026-06-12"
+
+mainline:
+  id: "L1-openstock-runtime-boundary-handoff"
+  objective: "close the MyStocks-side OpenStock runtime boundary handoff after OpenStock-owned hardening completed separately"
+  milestone_id: "L2-data-source-runtime-extraction"
+  slice_id: "L3-openstock-boundary-handoff"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "extract-data-source-runtime-service"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "tests"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "This PR is a governance closure package for an approved cross-repository runtime boundary handoff; it records evidence and tightens smoke validation without introducing new product entrypoints, frontend routes, backend API handlers, or OpenStock-owned runtime behavior."
+
+scope:
+  allowed_paths:
+    - ".gitignore"
+    - "config/.env.data_sources.example"
+    - "docs/reports/worklogs/claude-auto/openstock-boundary-handoff-2026-06-11.md"
+    - "governance/mainline/task-cards/pr-476.yaml"
+    - "openspec/changes/archive/2026-06-11-extract-data-source-runtime-service/design.md"
+    - "openspec/changes/archive/2026-06-11-extract-data-source-runtime-service/proposal.md"
+    - "openspec/changes/archive/2026-06-11-extract-data-source-runtime-service/specs/architecture-governance/spec.md"
+    - "openspec/changes/archive/2026-06-11-extract-data-source-runtime-service/specs/containerized-runtime-deployment/spec.md"
+    - "openspec/changes/archive/2026-06-11-extract-data-source-runtime-service/specs/data-source-runtime-service/spec.md"
+    - "openspec/changes/archive/2026-06-11-extract-data-source-runtime-service/specs/data-sources/spec.md"
+    - "openspec/changes/archive/2026-06-11-extract-data-source-runtime-service/specs/market-data/spec.md"
+    - "openspec/changes/archive/2026-06-11-extract-data-source-runtime-service/tasks.md"
+    - "openspec/specs/architecture-governance/spec.md"
+    - "openspec/specs/data-source-runtime-service/spec.md"
+    - "openspec/specs/data-sources/spec.md"
+    - "openspec/specs/market-data/spec.md"
+    - "scripts/run_data_source_runtime_smoke.sh"
+    - "tests/integration/data_source/test_runtime_smoke_script.py"
+  forbidden_paths:
+    - "web/frontend/**"
+    - "web/backend/app/api/**"
+    - "web/backend/app/services/**"
+    - "docs/api/**"
+    - "src/adapters/**"
+    - "src/core/data_source/**"
+    - "src/data_access/**"
+    - "src/factories/**"
+    - "docker/**"
+    - "docker-compose*.yml"
+
+non_goals:
+  - "No OpenStock repository files are modified by this PR"
+  - "No runtime MCP, MCP-over-SSE, or SSE gateway is introduced"
+  - "No frontend route, page, store, or generated API contract changes"
+  - "No MyStocks backend API handler or service contract changes"
+  - "No provider migration, adapter retirement, or legacy data-source deletion"
+  - "No production deployment, PM2 state, auth, or container orchestration changes"
+
+acceptance:
+  checks:
+    - id: "boundary-pytest-matrix"
+      command: >-
+        pytest tests/integration/data_source/test_runtime_smoke_script.py
+        tests/integration/data_source/test_remote_data_source_client_contract.py
+        tests/integration/data_source/test_akshare_runtime_pilot.py
+        tests/integration/data_source/test_market_stream_contract.py
+        tests/integration/data_source/test_mcp_access_modes.py
+        tests/integration/data_source/test_data_source_public_api_parity.py
+        -q --no-cov -p no:cacheprovider --tb=short
+      required: true
+    - id: "runtime-smoke"
+      command: "bash scripts/run_data_source_runtime_smoke.sh"
+      required: true
+    - id: "runtime-smoke-syntax"
+      command: "bash -n scripts/run_data_source_runtime_smoke.sh"
+      required: true
+    - id: "openspec-strict"
+      command: "openspec validate --all --strict"
+      required: true
+    - id: "mainline-scope-gate"
+      command: >-
+        python governance/mainline/scripts/mainline_scope_gate.py
+        --task-card governance/mainline/task-cards/pr-476.yaml
+        --schema governance/mainline/schemas/ai-task-card.schema.json
+        --base-sha origin/wip/root-dirty-20260403
+        --head-sha HEAD
+        --report governance/mainline/reports/mainline-governance-report.json
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "The smoke script could be misread as still AkShare-only if reviewers miss the new provider-neutral environment variable"
+    - "The archived OpenSpec change could be confused with a new active extraction proposal rather than closure evidence"
+    - "The GitNexus index is stale relative to the current base branch, so graph impact analysis is advisory"
+  rollback_plan: "Revert PR #476; PR #475 remains merged and OpenStock-owned runtime hardening remains independently managed in the OpenStock repository."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "close the MyStocks-side OpenStock runtime boundary handoff after OpenStock-owned hardening completed"
+    modified_scope: "runtime smoke script, env example, OpenSpec archive/spec updates, handoff worklog, integration smoke-script tests, and this PR task card"
+    dependency_changes: "none in MyStocks; OpenStock validation is consumed through REST/WebSocket boundary smoke checks only"
+    legacy_logic_impact: "legacy MyStocks data-source adapters and existing frontend/API contracts remain unchanged"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert PR #476 if provider-neutral smoke validation, OpenSpec strict validation, or mainline scope governance regresses"
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-06-12T00:00:00+08:00"
+    approval_note: "Human maintainer instructed MyStocks to continue only project-side boundary handling after OpenStock-owned handoff completion was reported."
+    secondary_approved: false
