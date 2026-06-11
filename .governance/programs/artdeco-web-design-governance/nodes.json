@@ -5682,7 +5682,7 @@
     "node_type": "decision",
     "owner_lane": "docs-governance",
     "parent": "b4-docs-reports-archive-retirement",
-    "status": "decision-prepared",
+    "status": "authorization-prepared",
     "function_tree_ref": "b4-docs-reports-archive-retirement",
     "current_head": "fc8b563c44af967bbd203ef6014c6e02c9a96424",
     "freshness": "current-head",
@@ -5696,14 +5696,37 @@
         "recorded_at": "2026-06-11T00:11:42.904Z"
       }
     ],
-    "allowed_paths": [],
-    "forbidden_paths": [],
-    "non_goals": [],
-    "next_gate": "prepare authorization",
+    "allowed_paths": [
+      "docs/reports/documentation-governance/2026-04-09-ai-tools-family-wave1.md active deletion-retirement",
+      "docs/reports/misc/PROJECT_STRUCTURE.md active deletion-retirement",
+      "docs/reports/plans/code-simplification-notes.md active deletion-retirement",
+      "docs/reports/tasks/2026-03-27-local-dirty-worktree-batch-plan.md active deletion-retirement",
+      "archive/docs/reports/documentation-governance/2026-04-09-ai-tools-family-wave1.md archive overwrite from active HEAD",
+      "archive/docs/reports/misc/PROJECT_STRUCTURE.md archive overwrite from active HEAD",
+      "archive/docs/reports/plans/code-simplification-notes.md archive overwrite from active HEAD",
+      "archive/docs/reports/tasks/2026-03-27-local-dirty-worktree-batch-plan.md archive overwrite from active HEAD"
+    ],
+    "forbidden_paths": [
+      "docs/reports/quality/README.md",
+      "docs/reports/quality/backend-audit-2026-05-14.md",
+      "docs/reports/quality/backend-residual-files-inventory-2026-05-14.md",
+      "docs/reports/quality/health-endpoint-consolidation-2026-05-14.md",
+      "docs/reports/quality/generated/backend-fullpath-route-table.json",
+      "docs/reports/quality/generated/backend-fullpath-route-table.md",
+      "5 modified tracked docs/reports files",
+      "11 untracked docs/reports files",
+      "docs/guides/** docs/superpowers/** web/** src/** tests/** scripts/** OpenSpec ST-HOLD marketKlineData external dirty files"
+    ],
+    "non_goals": [
+      "Do not implement deletion-retirement until explicit B4.011-M2a-HOLD-B-Low approval is granted.",
+      "Do not touch HOLD-B-Quality-Medium, HOLD-B-Quality-High, or HOLD-B-Generated-Pair files.",
+      "Do not touch modified tracked docs/reports files, untracked docs/reports files, source, tests, runtime, route, UI, API, OpenSpec, ST-HOLD, marketKlineData, or external dirty files."
+    ],
+    "next_gate": "review and approve implementation authorization",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-11T00:11:42.838Z",
-    "updated_at": "2026-06-11T00:11:42.951Z",
+    "updated_at": "2026-06-11T00:35:06.329Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -5712,6 +5735,19 @@
         "current_head": "fc8b563c44af967bbd203ef6014c6e02c9a96424",
         "transitioned_at": "2026-06-11T00:11:42.951Z"
       }
-    ]
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "Before implementation commit: exact staging only for the four active paths and four matching archive paths.",
+        "Before implementation commit: git diff --cached --check passes.",
+        "Before implementation commit: GitNexus verify-staged and detect_changes report low risk and no unexpected affected processes.",
+        "Before implementation commit: OPENDOG verification reports no cleanup blocker."
+      ],
+      "closeout_gate": [
+        "After implementation: each archive blob matches the pre-retirement active HEAD content.",
+        "After implementation: the four active paths are absent from HEAD and non-target docs/reports dirty state is unchanged.",
+        "After implementation: GitNexus analyze --index-only refreshes successfully."
+      ]
+    }
   }
 ]

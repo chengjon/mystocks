@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-11T00:11:42.953Z",
+  "updated_at": "2026-06-11T00:35:06.333Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -9,15 +9,34 @@
       "node_type": "decision",
       "owner_lane": "docs-governance",
       "parent": "b4-docs-reports-archive-retirement",
-      "status": "decision-prepared",
+      "status": "authorization-prepared",
       "source_edits_authorized": false,
       "current_blocker": "",
-      "next_allowed": "prepare authorization",
+      "next_allowed": "review and approve implementation authorization",
       "function_tree_ref": "b4-docs-reports-archive-retirement",
       "freshness": "current-head",
-      "allowed_paths": [],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-11T00:11:42.951Z"
+      "allowed_paths": [
+        "docs/reports/documentation-governance/2026-04-09-ai-tools-family-wave1.md active deletion-retirement",
+        "docs/reports/misc/PROJECT_STRUCTURE.md active deletion-retirement",
+        "docs/reports/plans/code-simplification-notes.md active deletion-retirement",
+        "docs/reports/tasks/2026-03-27-local-dirty-worktree-batch-plan.md active deletion-retirement",
+        "archive/docs/reports/documentation-governance/2026-04-09-ai-tools-family-wave1.md archive overwrite from active HEAD",
+        "archive/docs/reports/misc/PROJECT_STRUCTURE.md archive overwrite from active HEAD",
+        "archive/docs/reports/plans/code-simplification-notes.md archive overwrite from active HEAD",
+        "archive/docs/reports/tasks/2026-03-27-local-dirty-worktree-batch-plan.md archive overwrite from active HEAD"
+      ],
+      "forbidden_paths": [
+        "docs/reports/quality/README.md",
+        "docs/reports/quality/backend-audit-2026-05-14.md",
+        "docs/reports/quality/backend-residual-files-inventory-2026-05-14.md",
+        "docs/reports/quality/health-endpoint-consolidation-2026-05-14.md",
+        "docs/reports/quality/generated/backend-fullpath-route-table.json",
+        "docs/reports/quality/generated/backend-fullpath-route-table.md",
+        "5 modified tracked docs/reports files",
+        "11 untracked docs/reports files",
+        "docs/guides/** docs/superpowers/** web/** src/** tests/** scripts/** OpenSpec ST-HOLD marketKlineData external dirty files"
+      ],
+      "updated_at": "2026-06-11T00:35:06.329Z"
     }
   ]
 }
