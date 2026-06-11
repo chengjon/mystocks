@@ -1,0 +1,152 @@
+version: "v0.2"
+
+task:
+  id: "pr-475"
+  title: "add openstock runtime migration boundary"
+  owner: "codex"
+  created_at: "2026-06-10"
+
+mainline:
+  id: "L1-openstock-runtime-migration-boundary"
+  objective: "land the MyStocks-side openstock REST/WebSocket runtime migration boundary without changing frontend routes or API contracts"
+  milestone_id: "L2-data-source-runtime-extraction"
+  slice_id: "L3-openstock-runtime-boundary"
+
+classification:
+  task_type: "feature"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "extract-data-source-runtime-service"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "domain-01"
+  node_id: "domain-01-node-03"
+  affected_entrypoints:
+    - "governance"
+    - "api"
+    - "core"
+    - "tests"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "domain-08"
+    - "domain-09"
+  exemption_reason: "The PR establishes a reviewed data-source runtime boundary under the existing multi-data-source integration node; config and core path coverage also touches system/data-management catalog domains, but frontend/API contracts and product entrypoints remain unchanged."
+
+scope:
+  allowed_paths:
+    - "config/data_sources_registry.yaml"
+    - "docs/reports/architecture/data-source-runtime-service-migration-feasibility-plan-2026-06-09.md"
+    - "docs/reports/architecture/data-source-runtime-service-migration-feasibility-plan-review-2026-06-09.md"
+    - "docs/reports/architecture/data-source-service-extraction-analysis-2026-06-09.md"
+    - "governance/mainline/task-cards/pr-475.yaml"
+    - "openspec/changes/extract-data-source-runtime-service/design.md"
+    - "openspec/changes/extract-data-source-runtime-service/proposal.md"
+    - "openspec/changes/extract-data-source-runtime-service/specs/architecture-governance/spec.md"
+    - "openspec/changes/extract-data-source-runtime-service/specs/containerized-runtime-deployment/spec.md"
+    - "openspec/changes/extract-data-source-runtime-service/specs/data-source-runtime-service/spec.md"
+    - "openspec/changes/extract-data-source-runtime-service/specs/data-sources/spec.md"
+    - "openspec/changes/extract-data-source-runtime-service/specs/market-data/spec.md"
+    - "openspec/changes/extract-data-source-runtime-service/tasks.md"
+    - "scripts/run_data_source_runtime_smoke.sh"
+    - "src/core/data_source/__init__.py"
+    - "src/core/data_source/client.py"
+    - "src/core/data_source/closure_policy.py"
+    - "src/core/data_source/market_stream_bridge.py"
+    - "src/core/data_source/mcp_diagnostics.py"
+    - "tests/integration/data_source/test_akshare_runtime_pilot.py"
+    - "tests/integration/data_source/test_data_source_public_api_parity.py"
+    - "tests/integration/data_source/test_market_stream_contract.py"
+    - "tests/integration/data_source/test_mcp_access_modes.py"
+    - "tests/integration/data_source/test_remote_data_source_client_contract.py"
+  forbidden_paths:
+    - "web/frontend/**"
+    - "web/backend/app/api/**"
+    - "web/backend/app/services/**"
+    - "docs/api/**"
+    - "src/adapters/**"
+    - "src/data_access/**"
+    - "src/factories/**"
+    - "docker/**"
+    - "docker-compose*.yml"
+
+non_goals:
+  - "No runtime MCP, MCP-over-SSE, or SSE gateway is introduced in this PR"
+  - "No frontend route, page, store, or generated API contract changes"
+  - "No provider batch migration beyond the AkShare REST/pull pilot contract coverage"
+  - "No retirement or deletion of legacy data-source paths"
+  - "No production deployment, auth, observability, or container orchestration hardening"
+  - "No PM2 commands or stateful runtime service changes"
+
+acceptance:
+  checks:
+    - id: "focused-data-source-regression"
+      command: >-
+        pytest tests/integration/data_source/test_remote_data_source_client_contract.py
+        tests/api/file_tests/test_data_source_config_api.py
+        tests/api/file_tests/test_data_source_registry_api.py
+        tests/integration/data_source/test_akshare_runtime_pilot.py
+        tests/integration/data_source/test_market_stream_contract.py
+        tests/integration/data_source/test_mcp_access_modes.py
+        tests/integration/data_source/test_data_source_public_api_parity.py
+        -q --no-cov -p no:cacheprovider
+      required: true
+    - id: "runtime-smoke-syntax"
+      command: "bash -n scripts/run_data_source_runtime_smoke.sh"
+      required: true
+    - id: "ruff-runtime-boundary"
+      command: >-
+        ruff check src/core/data_source/__init__.py src/core/data_source/client.py
+        src/core/data_source/market_stream_bridge.py src/core/data_source/mcp_diagnostics.py
+        src/core/data_source/closure_policy.py
+        tests/integration/data_source/test_remote_data_source_client_contract.py
+        tests/integration/data_source/test_akshare_runtime_pilot.py
+        tests/integration/data_source/test_market_stream_contract.py
+        tests/integration/data_source/test_mcp_access_modes.py
+        tests/integration/data_source/test_data_source_public_api_parity.py
+      required: true
+    - id: "openspec-strict"
+      command: "openspec validate extract-data-source-runtime-service --strict"
+      required: true
+    - id: "mainline-scope-gate"
+      command: >-
+        python governance/mainline/scripts/mainline_scope_gate.py
+        --task-card governance/mainline/task-cards/pr-475.yaml
+        --schema governance/mainline/schemas/ai-task-card.schema.json
+        --base-sha origin/wip/root-dirty-20260403
+        --head-sha HEAD
+        --report governance/mainline/reports/mainline-governance-report.json
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Reviewers may confuse diagnostics-only MCP access-mode coverage with an approved runtime MCP/SSE gateway"
+    - "The registry seed entry could be misread as transferring full runtime ownership before the approved openstock rollout phases"
+    - "The GitNexus index can be stale relative to this review commit, so graph impact must be treated as advisory"
+  rollback_plan: "Revert PR #475, including the openstock runtime boundary commit and this governance task card; openstock remains independently usable at its last pushed runtime/docs commits."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "add the MyStocks-side openstock REST/WebSocket runtime migration boundary"
+    modified_scope: "data-source client/bridge/diagnostics policy, registry seed, smoke script, OpenSpec deltas, architecture reports, integration tests, and this PR task card"
+    dependency_changes: "none in MyStocks; openstock runtime and documentation commits are delivered in the separate openstock repository"
+    legacy_logic_impact: "legacy data-source adapters and existing frontend/API contracts remain in place; registry entry is a remote pilot seed with fallback semantics"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert PR #475 if runtime boundary, OpenSpec validation, or mainline scope governance regresses"
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-06-10T09:22:28+08:00"
+    approval_note: "Human maintainer approved continuing the openstock runtime migration boundary after reviewing the feasibility plan, PR package, and no-runtime-MCP/SSE constraint."
+    secondary_approved: false
