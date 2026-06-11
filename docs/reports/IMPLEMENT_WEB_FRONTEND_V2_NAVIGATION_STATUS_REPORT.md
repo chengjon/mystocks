@@ -6,6 +6,15 @@
 >
 > 文内统计值、完成状态、结论、验证结果和修复结论如未重新复核，应视为历史快照，不得直接当作当前事实。
 
+> **Current Repo-Truth Disposition（2026-05-11）**:
+> 本报告保留 `implement-web-frontend-v2-navigation` 归档任务的历史检查结果，不代表当前前端菜单或路由真相源。
+> 当前菜单与路由事实应优先回到 `docs/guides/frontend-structure.md`、`web/frontend/src/layouts/MenuConfig.ts` 和 `web/frontend/src/router/index.ts`。
+>
+> 当前已确认边界：
+> - 当前 canonical 菜单结构为 Market / Data / Watchlist / Strategy / Trade / Risk / System 7 个业务域。
+> - 本文 “6 个 Layout 组件”“6 个功能域”“frontend-unified-optimization” 历史状态不得直接作为当前 active change 的待办或完成判定。
+> - 涉及 `implement-html5-migration-experience-optimization` 时，以该 OpenSpec change 的 `tasks.md`、`tasks-review.md` 与当前实测证据为准。
+
 
 **检查日期**: 2026-01-20
 **任务状态**: 📦 已归档 - 内容已整合到统一优化项目

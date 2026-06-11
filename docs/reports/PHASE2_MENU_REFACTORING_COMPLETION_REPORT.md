@@ -6,6 +6,15 @@
 >
 > 文内统计值、完成状态、结论、验证结果和修复结论如未重新复核，应视为历史快照，不得直接当作当前事实。
 
+> **Current Repo-Truth Disposition（2026-05-11）**:
+> 本报告保留 2026-01-10 菜单重构阶段性完成记录，不代表当前前端菜单真相源。
+> 当前菜单与路由事实应优先回到 `docs/guides/frontend-structure.md`、`web/frontend/src/layouts/MenuConfig.ts` 和 `web/frontend/src/router/index.ts`。
+>
+> 当前已确认边界：
+> - 当前 canonical 菜单结构为 Market / Data / Watchlist / Strategy / Trade / Risk / System 7 个业务域。
+> - 本文“6 个功能域”“29 个页面路由”“71 个单元测试”等历史完成表述不得直接作为当前完成判定。
+> - 涉及 `implement-html5-migration-experience-optimization` 时，以该 OpenSpec change 的 `tasks.md`、`tasks-review.md` 与当前实测证据为准。
+
 
 **项目**: MyStocks Web Frontend  
 **阶段**: Phase 2 - 菜单重构架构  

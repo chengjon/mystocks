@@ -119,7 +119,7 @@ safety check --json > config/safety_report.json
 | 项目 | 文件数 | 说明 |
 |------|--------|------|
 | `.map` source map 文件 | 241 | 已在 .gitignore，从 git 移除 |
-| `.omc/state/` 会话状态 | ~150 | OMC 运行时状态文件 |
+| retired session-state 目录 | ~150 | retired runtime state files |
 
 ## 8. .gitignore 变更
 
