@@ -5909,11 +5909,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "",
-    "status": "authorization-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "b4-docs-reports-drift-governance",
-    "current_head": "7d2f64387f3a813529f4115b292fc7891b81a69b",
+    "current_head": "8ab2fbbdb1de611c092bede8a0a07c60275434ea",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "baseline",
@@ -5921,6 +5921,13 @@
         "note": "no-source high-drift docs reports boundary review; source_edits_authorized false",
         "current_head": "7d2f64387f3a813529f4115b292fc7891b81a69b",
         "recorded_at": "2026-06-11T14:44:06.407Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "user authorization: approval received via '请继续' for B4.011-M2a-HOLD-B-Quality-High deletion-retirement implementation",
+        "note": "implementation authorization bound to HEAD 8ab2fbbdb; scope remains four quality-high paths only",
+        "current_head": "8ab2fbbdb1de611c092bede8a0a07c60275434ea",
+        "recorded_at": "2026-06-11T15:03:49.753Z"
       }
     ],
     "allowed_paths": [
@@ -5933,11 +5940,11 @@
     "non_goals": [
       "No implementation until explicit deletion-retirement approval; do not touch generated quality evidence pair, remaining modified/untracked docs reports, docs/guides, docs/superpowers, web, src, tests, scripts, OpenSpec, ST-HOLD, marketKlineData, or external dirty paths."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-11T14:43:30.420Z",
-    "updated_at": "2026-06-11T14:45:07.108Z",
+    "updated_at": "2026-06-11T15:05:04.021Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -5945,6 +5952,20 @@
         "note": "high-drift retirement decision package prepared; implementation remains unauthorized",
         "current_head": "7d2f64387f3a813529f4115b292fc7891b81a69b",
         "transitioned_at": "2026-06-11T14:44:25.601Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "user approved quality-high deletion-retirement implementation; no generated pair or residual dirty included",
+        "current_head": "8ab2fbbdb1de611c092bede8a0a07c60275434ea",
+        "transitioned_at": "2026-06-11T15:04:27.609Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "ready to overwrite archive docs with active HEAD blobs and retire active quality-high paths",
+        "current_head": "8ab2fbbdb1de611c092bede8a0a07c60275434ea",
+        "transitioned_at": "2026-06-11T15:05:04.021Z"
       }
     ],
     "acceptance": {

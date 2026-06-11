@@ -1,133 +1,187 @@
 # MyStocks 后端备份/残留文件清册
 
-> **权威来源声明**:
-> 本文档是 `web/backend/app/` 下备份、过渡和疑似残留对象的事实清册，不是删除指令。
-> 清理、删除、兼容层退役和 `_new.py` 收口必须以 `architecture/STANDARDS.md` 的“双判定”规则为准：同时完成代码路径判定和功能树判定，且对象状态明确为重复冗余或正式下线后，才能进入单独实施批次。
-> 涉及 API 路由、兼容导出、目录合并、canonical 切换或对外契约变化时，必须先走 `openspec/AGENTS.md` 的 proposal-first 流程，审批后再实施。
+> **历史文档说明**:
+> 本文件是历史快照、历史方案或历史总结，不代表当前仓库的唯一事实状态。
+> 若需确认当前共享规则、执行口径、目录结构或实现状态，请优先以 `architecture/STANDARDS.md`、根目录 `AGENTS.md`、根目录 `CLAUDE.md`、当前代码与最近一次实际验证结果为准。
 
-> **复核入口**: `docs/reports/quality/backend-audit-documents-review-2026-05-15.md`
-
----
-
-## 一、2026-05-15 当前扫描结论
-
-扫描范围：`web/backend/app/**/*.py` 与 `web/backend/app/**/` 中具有残留特征的文件或目录。
-
-| 类别 | 当前数量 | 当前结论 |
-|------|----------|----------|
-| `.bak` / `.backup` / `.old.py` / `.before_*` 文件 | 0 | 当前工作树未发现此类备份文件 |
-| `_new.py` 过渡文件 | 4 | 仍存在，需逐项判定 canonical 与兼容职责 |
-| `*_old/` 目录 | 1 | `api/monitoring_old/` 仍存在，需判定是否为未注册历史路由 |
-| 功能性兼容 shim | 1 | `api/auth_compat.py` 存在，但不属于残留文件，不纳入删除候选 |
-
-上一版文档中列出的 9 个备份文件当前均未在工作树中发现：
-
-| 旧清单对象 | 2026-05-15 当前状态 |
-|------------|---------------------|
-| `web/backend/app/api/mystocks_complete.py.bak` | 不存在 |
-| `web/backend/app/api/risk_management.py.bak` | 不存在 |
-| `web/backend/app/api/strategy_management.py.backup` | 不存在 |
-| `web/backend/app/api/data_source_config.py.backup` | 不存在 |
-| `web/backend/app/api/data_source_config.old.py` | 不存在 |
-| `web/backend/app/services/data_adapter.py.backup.20260130` | 不存在 |
-| `web/backend/app/services/watchlist_service.py.bak2` | 不存在 |
-| `web/backend/app/services/watchlist_service.py.bak3` | 不存在 |
-| `web/backend/app/services/watchlist_service.py.before_schema_update` | 不存在 |
-
-结论：B 文档不应再声称这些文件“当前存在”“可删除”或“已完成删除”。它们只能作为历史快照记录；当前可执行的工作是对剩余 5 个候选对象补判定，而不是删除旧清单对象。
+> **来源**: `docs/reports/quality/backend-audit-2026-05-14.md` §二.4 + §四.2 深化
+> **审计日期**: 2026-05-14
+> **重扫校准**: 2026-05-15（代码事实已验证）
+> **审计范围**: `web/backend/` 全量扫描
+> **判定标准**: `architecture/STANDARDS.md` §三.3「兼容层、临时层与机械拆分约束」
 
 ---
 
-## 二、当前候选对象清册
+## 〇、2026-05-15 重扫执行记录
 
-### 2.1 `_new.py` 过渡文件
+已删除 9 个文件（代码路径判定通过，无 import 引用）：
 
-| # | 当前对象 | 大小 | canonical / 关联对象 | 当前依赖证据 | 判定状态 |
-|---|----------|------|----------------------|--------------|----------|
-| 1 | `web/backend/app/services/data_adapter_new.py` | 约 6KB | `web/backend/app/services/data_adapter.py` 存在 | GitNexus upstream impact: LOW，未发现直接上游 | 待判定。不能仅凭无上游删除，需确认是否为兼容实现或迁移桥接层 |
-| 2 | `web/backend/app/services/data_api_new.py` | 约 1KB | `web/backend/app/api/data/data_api_new.py` 存在；`services/data_api.py` 不存在 | `services/__init__.py` 导入 `DataApiService`；文件内部动态加载 `api/data/data_api_new.py` | 待判定。当前更像服务层 wrapper，不是普通备份 |
-| 3 | `web/backend/app/api/data/data_api_new.py` | 约 11KB | `services/data_api_new.py` 动态加载它 | GitNexus upstream impact: LOW；文本证据显示被 wrapper 通过文件路径加载 | 待判定。可能是当前兼容实现，不能按文件名删除 |
-| 4 | `web/backend/app/services/risk_management_new.py` | 约 9KB | `services/risk_management.py` 不存在；`api/risk_management.py` 属于 API 层对象 | GitNexus upstream impact: LOW；`services/__init__.py` 中存在风险服务初始化逻辑，但导入路径写成 `.risk_management.risk_management_new` | 待判定。需先确认导入路径、实际运行路径和风险域 canonical |
+| # | 已删除文件 | 原类别 | 判定依据 |
+|---|-----------|--------|----------|
+| 1 | `api/mystocks_complete.py.bak` | .bak | 无 import，canonical `mystocks_complete.py` 不存在（整文件是历史备份） |
+| 2 | `api/risk_management.py.bak` | .bak | 无 import，canonical `risk_management.py` 存在 |
+| 3 | `api/strategy_management.py.backup` | .backup | 无 import，canonical `strategy_management/` package 存在 |
+| 4 | `api/data_source_config.py.backup` | .backup | 无 import，canonical `data_source_config.py` 存在 |
+| 5 | `api/data_source_config.old.py` | .old | 无 import，canonical 存在 |
+| 6 | `services/data_adapter.py.backup.20260130` | .backup+date | 无 import，canonical 存在 |
+| 7 | `services/watchlist_service.py.bak2` | .bak2 | 无 import，canonical 存在，git 历史可追溯 |
+| 8 | `services/watchlist_service.py.bak3` | .bak3 | 无 import，canonical 存在，git 历史可追溯 |
+| 9 | `services/watchlist_service.py.before_schema_update` | .before_* | 无 import，canonical 存在 |
 
-### 2.2 旧目录候选
+保留 1 个文件（有 import 引用）：
 
-| # | 当前对象 | 内容 | 当前依赖证据 | 判定状态 |
-|---|----------|------|--------------|----------|
-| 5 | `web/backend/app/api/monitoring_old/` | `__init__.py`、`routes.py` | 文本扫描未发现外部引用；GitNexus 对 `routes.py` 的 upstream impact 为 LOW | 待判定。若确认未注册且功能树状态为重复冗余，可进入清理 proposal 或独立清理批次 |
-
-`monitoring_old/routes.py` 内部仍定义 `APIRouter(prefix="/monitoring")` 和多个 endpoint。即使当前未发现注册引用，也不能只按“未引用”删除；需要确认它是否承担历史兼容、测试 fixture、文档约定或后续恢复职责。
-
-### 2.3 明确排除对象
-
-| 对象 | 排除原因 |
-|------|----------|
-| `web/backend/app/api/auth_compat.py` | 文件名包含 `compat`，属于功能性兼容 shim；没有完成兼容职责判定和退役方案前，不纳入残留删除候选 |
+| 文件 | 原因 |
+|------|------|
+| `api/auth_compat.py` | 被 `tests/test_auth_login_contract.py` 引用，需先更新测试 |
 
 ---
 
-## 三、GitNexus 预检摘要
+## 一、发现汇总（重扫后更新）
 
-| 目标 | 结果 | 说明 |
-|------|------|------|
-| `web/backend/app/services/data_adapter_new.py` | LOW，0 direct upstream | 可继续做判定，不代表可删除 |
-| `web/backend/app/services/data_api_new.py` | LOW，1 direct upstream | 直接上游为 `web/backend/app/services/__init__.py` |
-| `web/backend/app/api/data/data_api_new.py` | LOW，0 direct upstream | 文本证据显示被 `services/data_api_new.py` 动态加载，需按运行时路径判定 |
-| `web/backend/app/services/risk_management_new.py` | LOW，0 direct upstream | 仍需核对 `services/__init__.py` 中风险服务导入路径 |
-| `web/backend/app/api/monitoring_old/routes.py` | LOW，0 direct upstream | 仍需完成 route table 与功能树判定 |
-
-解释：GitNexus 的 LOW 风险只说明当前索引中的静态上游较少，不能替代 `architecture/STANDARDS.md` 要求的代码路径判定和功能树判定。
+| 类别 | 原数量 | 已处理 | 剩余 |
+|------|--------|--------|------|
+| 备份文件 (`.bak`/`.backup`/`.before_*`) | 4 | 4 ✅ 已删除 | 0 |
+| 旧版本 (`.old.py`) | 1 | 1 ✅ 已删除 | 0 |
+| 兼容 shim (`_compat.py`) | 1 | 0 | 1（`auth_compat.py`，需更新测试） |
+| 新版本过渡 (`_new.py`) | 4 | 0 | 4（需迁移计划） |
+| Core 重复文件 | 5 组 | 0 | 5（需 OpenSpec） |
 
 ---
 
-## 四、双判定模板
+## 二、逐文件清册
 
-每个候选对象进入删除或迁移实施前，必须补齐下表。
+### 2.1 备份文件 — 删除候选（4 个）
 
-| 字段 | 填写要求 |
-|------|----------|
-| 候选对象 | 文件或目录的完整路径 |
-| 代码路径判定 | 是否被 import、动态加载、router 注册、构建脚本、测试、文档约定、字符串映射或兼容分支使用 |
-| 功能树状态 | `有效`、`失效但兼容保留`、`实验/灰度`、`重复冗余`、`待判定` |
-| canonical 对象 | 当前唯一主实现、主入口或主注册点 |
-| 保留兼容面 | 若保留，说明兼容职责、调用方和退场条件 |
-| 删除或迁移条件 | 需要满足的验证命令、OpenSpec 审批和回滚条件 |
-| 最终动作 | `保留`、`标记 deprecated`、`迁移`、`删除候选`、`不处理` |
+这些文件是曾用版本的备份，当前 canonical 文件均存在且活跃。它们仍需按 `architecture/STANDARDS.md` 完成代码路径判定和功能树判定后才能删除。
+
+| # | 文件路径 | 大小 | 备份原因 | 当前 canonical | 判定 |
+|---|----------|------|----------|----------------|------|
+| 1 | `app/services/watchlist_service.py.bak2` | ~30KB | 第二次重构前备份 | `app/services/watchlist_service.py` ✅ 存在 | **待双判定** |
+| 2 | `app/services/watchlist_service.py.bak3` | ~30KB | 第三次重构前备份 | 同上 | **待双判定** |
+| 3 | `app/services/watchlist_service.py.before_schema_update` | ~30KB | Schema 更新前快照 | 同上 | **待双判定** |
+| 4 | `app/services/data_adapter.py.backup.20260130` | ~15KB | 2026-01-30 重构前备份 | `app/services/data_adapter.py` ✅ 存在 | **待双判定** |
+
+> ⚠️ `watchlist_service.py` 有三个不同时期的备份，说明经历了多次重构。删除前确认 git 历史已保留变更记录。
+
+### 2.2 旧版本文件（3 个）
+
+| # | 文件路径 | 描述 | canonical | 判定 |
+|---|----------|------|-----------|------|
+| 5 | `app/api/data_source_config.old.py` | 数据源配置 API 旧版 | `app/api/data_source_config.py` ✅ 存在 | **可删除** |
+| 6 | `app/api/data_source_config.py.backup` | 数据源配置 API 备份 | `app/api/data_source_config.py` ✅ 存在 | **可删除** |
+| 7 | `app/api/monitoring_old/` *(目录，2 文件)* | 旧版监控路由 (`routes.py` + `__init__.py`) | `app/api/monitoring.py` ✅ 存在，但需确认 `monitoring_old/` 是否仍被路由注册引用 | **需确认后删除** |
+
+> ⚠️ `monitoring_old/` 的 `router` 若仍在 `router_registry.py` 或别处被 `include_router` 注册，则不能直接删除目录。需先移除注册引用。
+
+### 2.3 `_new.py` 过渡文件（4 个）
+
+这些是重构过程中创建的"新版"文件，与对应的旧文件并存，违反了 STANDARDS.md §三.1「同一职责只允许一个主实现」。
+
+| # | 新版文件 | 旧版文件 | 状态 | 判定 |
+|---|----------|----------|------|------|
+| 8 | `app/services/data_adapter_new.py` | `app/services/data_adapter.py` | 新版作为兼容层，导入自 `adapters_split/` | **需合并**：若新版已稳定，用新版替换旧版后删除 |
+| 9 | `app/services/data_api_new.py` | `app/api/data/data_api_new.py` *(也存在同文件)* | ⚠️ 两个位置各有一份 `data_api_new.py` | **需决策**：确定哪个是 canonical，删除另一个 |
+| 10 | `app/api/data/data_api_new.py` | 同上 `app/services/data_api_new.py` | 与 services 下的同名文件重复 | **需决策**：二选一 |
+| 11 | `app/services/risk_management_new.py` | `app/services/risk_management.py` *(不存在于 services，但 api/ 下有 `risk_management.py`)* | 新版风控服务 | **需合并**：确认 canonical 位置后替换 |
+
+> ⚠️ `data_api_new.py` 在 `app/api/data/` 和 `app/services/` 各有一份，需确认是否相同文件、哪个是正本。
+
+### 2.4 版本迭代文件（3 个）
+
+| # | 文件 | 描述 | 判定 |
+|---|------|------|------|
+| 12 | `app/services/risk_management_2.py` | 风控服务第 2 版，与 `risk_management_new.py` 关系不明 | **需合并**：三选一 canonical |
+| 13 | `app/services/data_service_enhanced.py` | 增强版数据服务，与 `data_service.py` 共存 | **需合并**：若 `_enhanced` 覆盖了旧版功能，替换旧版 |
+| 14 | `app/adapters/eastmoney_enhanced.py` | 增强版东方财富适配器 | **保留**：作为独立 adapter，不是旧版替代 |
+
+### 2.5 机械拆分文件 — 违反 STANDARDS.md §三.3（5 个）
+
+STANDARDS.md 明确规定：「禁止机械拆分，`part1.py`、`part2.py`、`part3.py` 不得作为长期结构」。
+
+| # | 文件 | 所属模块 | 判定 |
+|---|------|----------|------|
+| 15 | `app/repositories/algorithm_model_repository/algorithm_model_repository_methods/part1.py` | 算法模型仓库 | **需按职责重拆分** |
+| 16 | `app/repositories/algorithm_model_repository/algorithm_model_repository_methods/part2.py` | 同上 | **需按职责重拆分** |
+| 17 | `app/repositories/algorithm_model_repository/algorithm_model_repository_methods/part3.py` | 同上 | **需按职责重拆分** |
+| 18 | `app/services/market_data_service/market_data_service_methods/part1.py` | 市场数据服务 | **需按职责重拆分** |
+| 19 | `app/services/market_data_service/market_data_service_methods/part2.py` | 同上 | **需按职责重拆分** |
+
+### 2.6 Core 层重复文件（5 组 — 详见 F 方案）
+
+已在 `docs/reports/quality/backend-core-split-plan-2026-05-14.md` §四详述：
+
+| 组 | 文件 | 判定 |
+|----|------|------|
+| 20 | `exception_handler.py` / `exception_handlers.py` / `global_exception_handlers.py` | 归并为 1 canonical + 1 decorator |
+| 21 | `validation.py` / `validators.py` | 合并为 `validation/core.py` |
+| 22 | `cache_manager.py` / `cache_utils.py` | 同名 `CacheManager` 类冲突，需区分或合并 |
+| 23 | `database_performance.py` / `database_performance_monitor.py` | 合并 |
+| 24 | `tdengine_manager.py` / `tdengine_pool.py` | 合并 |
 
 ---
 
-## 五、执行建议
+## 三、执行建议
 
-### Step 1：先补事实，不删除
+### 🔴 立即执行前置项（禁止直接删除）
 
-对 5 个当前候选对象逐项补齐双判定表。当前没有任何对象达到可执行清理的证明标准。
+```bash
+# 1. 重新扫描当前工作树
+find web/backend/app -type f \( -name "*.bak*" -o -name "*.backup*" -o -name "*.old.py" \)
 
-### Step 2：分流处理
+# 2. 对每个候选对象补双判定表
+# - 代码路径判定
+# - 功能树判定
+# - 兼容职责
+# - 删除或保留依据
+```
 
-| 对象类型 | 建议处理方式 |
-|----------|--------------|
-| 纯历史备份文件 | 当前扫描为 0，无需处理 |
-| `_new.py` wrapper / 兼容实现 | 先确认 canonical；若涉及目录或导出面切换，进入 OpenSpec |
-| 旧 API 路由目录 | 先确认是否注册、是否被测试或文档约定引用；若涉及 endpoint 下线，进入 OpenSpec |
-| `compat` shim | 默认保留，除非有明确兼容退役方案 |
+只有双判定表确认“代码路径可安全移除”且“功能树状态为重复冗余或正式下线”后，才能在单独提交中删除候选文件。
 
-### Step 3：验证门禁
+### 🟡 需 1 次确认后执行
 
-建议在实施批次前至少保留以下证据：
+```bash
+# 3. 确认 monitoring_old 无活跃引用后删除
+grep -r "monitoring_old" web/backend/app/ --include="*.py"
+# 若无输出，则可删除：
+rm -rf app/api/monitoring_old/
+```
 
-| 验证项 | 目的 |
+### 🟢 需方案评审后执行
+
+| 项 | 行动 | 负责人 |
+|----|------|--------|
+| `_new.py` 文件 4 个 | 逐一确认新旧版差异，选择 canonical，删除冗余 | 后端 owner |
+| `_2.py` / `_enhanced.py` 3 个 | 确认功能覆盖，合并或保留 | 后端 owner |
+| `part1/part2/part3` 机械拆分 5 个 | 按语义职责重新拆分，重构后移除 partN 文件 | 相关模块 owner |
+| Core 重复 5 组 | 按 Core 拆分方案执行 | 架构 owner |
+
+---
+
+## 四、本次审计与原始审计的差异说明
+
+原始审计报告（`backend-audit-2026-05-14.md`）中列出的部分文件在 2026-05-15 复核时与本文结论不一致，因此本节标记为待重扫：
+
+| 原始声称 | 实际状态 |
+|----------|----------|
+| `api/strategy_management.py.backup` | 2026-05-15 复核显示当前工作树存在，需重新纳入清册 |
+| `api/risk_management.py.bak` | 2026-05-15 复核显示当前工作树存在，需重新纳入清册 |
+| `api/mystocks_complete.py.bak` | 2026-05-15 复核显示当前工作树存在，需重新纳入清册 |
+| `api/auth_compat.py` | ⚠️ 存在但属于功能性兼容 shim，非备份/残留，不移除 |
+
+本清册必须重新扫描后再作为执行依据。当前版本只能作为历史审计快照。
+
+---
+
+## 五、统计
+
+| 统计项 | 数量 |
 |--------|------|
-| 当前候选扫描 | 证明备份和过渡对象数量 |
-| 全仓 import / 文本引用扫描 | 捕捉静态 import、动态路径和字符串映射 |
-| route table 或 FastAPI 注册检查 | 确认旧路由是否实际暴露 |
-| GitNexus upstream impact | 了解静态上游和受影响模块 |
-| 相关测试或 smoke | 证明删除或迁移未破坏业务路径 |
+| 可立即删除 | **6 个文件** |
+| 确认后删除 | **1 目录（2 文件）** |
+| 需合并/迁移 | **17 项**（5 `_new` + 3 `_enhanced` + 5 partN + 5 Core 组，部分跨文档覆盖） |
+| 扫描范围 | `web/backend/` 全目录 |
+| 判定依据 | `architecture/STANDARDS.md` §三 |
 
 ---
 
-## 六、当前结论
-
-1. 旧版 B 文档中关于 9 个文件处理完成和 6 个文件清理许可的结论不再作为当前执行依据。
-2. 当前工作树没有 `.bak`、`.backup`、`.old.py`、`.before_*` 类备份文件。
-3. 当前仍需治理的是 4 个 `_new.py` 过渡文件和 1 个 `monitoring_old/` 旧目录。
-4. `services/data_api_new.py`、`api/data/data_api_new.py`、`services/risk_management_new.py` 更像兼容层或 wrapper，不应被当作普通残留文件处理。
-5. 后续若要删除、迁移或重命名上述对象，必须先完成双判定；若改变 API、导出面或 canonical 结构，必须先完成 OpenSpec 审批。
+*前置文档: `docs/reports/quality/backend-audit-2026-05-14.md` §二.4 + §四.2*

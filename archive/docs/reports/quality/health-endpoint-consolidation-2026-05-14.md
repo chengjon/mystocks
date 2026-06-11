@@ -6,27 +6,13 @@
 
 > **来源**: `docs/reports/quality/backend-audit-2026-05-14.md` §五.5 深化
 > **审计日期**: 2026-05-14
-> **复核日期**: 2026-05-17
 > **红线基准**: `architecture/STANDARDS.md` §一.5「必须提供 `/health/ready` 探针」
-> **执行门禁**: 健康端点 canonical 变更、旧端点退役、OpenAPI 暴露面变化、监控/PM2/CI 探针切换均属于架构和运行面变更，实施前必须创建并通过 OpenSpec proposal/design/tasks 审批。
-
-2026-05-17 复核摘要：
-
-| 扫描项 | 当前数量 / 结论 |
-|--------|------------------|
-| `web/backend/app/**/*.py` 中 health-like route decorators | 46 |
-| 代码中 `/health/readiness` 文本命中 | 0 |
-| 代码中 `/health/services` 文本命中 | 1，位于 `api/health.py`，经 `router_registry.py` 的 `/api` prefix 暴露为 `/api/health/services` |
-| 已确认就绪探针 | `GET /health/ready` 与 `GET /api/health/ready` |
-| 已确认服务探针 | `GET /api/health/services` |
-
-结论：当前阻塞点不是 `/health/ready` 缺失，而是健康端点候选过多、注册 prefix 复杂、领域 smoke 端点和系统探针职责混在一起。删除或改路径前必须先重导 route table、OpenAPI diff、监控/前端/测试消费者清单。
 
 ---
 
 ## 一、当前健康端点碎片化清单
 
-### 1.1 Canonical 健康端点（已校准 2026-05-17）
+### 1.1 Canonical 健康端点（已校准 2026-05-15）
 
 > **事实来源**: `main.py` + `router_registry.py` + `health.py` 代码扫描
 
@@ -39,9 +25,9 @@
 | `GET /api/health/detailed` | `health.py` | `router_registry.py:97` prefix=`/api` | 详细健康检查（执行 shell 脚本，需认证） |
 | `GET /api/reports/health/{timestamp}` | `health.py` | `router_registry.py:97` prefix=`/api` | 读取历史健康报告 |
 
-### 1.2 分散在各模块的健康端点候选（历史样本，需重导 route table）
+### 1.2 分散在各模块的健康端点（已发现 21 个，含 5 canonical）
 
-下表是 2026-05-14 文档沉淀的历史样本。2026-05-17 装饰器级扫描发现 46 个 health-like route decorators，但其中哪些真实注册、哪些带 router prefix、哪些只是示例或内嵌 app，必须以当前 route table 和 OpenAPI diff 为准。
+除 `health.py` 外，共有 18 个碎片健康端点分布在以下模块：
 
 | # | 文件 | 端点 | 响应格式 |
 |---|------|------|----------|
@@ -64,9 +50,7 @@
 | 17 | `api/signal_monitoring/get_signal_statistics.py` | `/strategies/{id}/health/detailed` | 自定模型 |
 | 18 | `api/multi_source.py` | 额外 2 个 `/health` 端点 | 按 source_type
 
-### 1.3 历史健康端点一览（非当前执行清单）
-
-以下清单只能作为 route table 重导的输入，不得直接作为删除清单。
+### 1.3 当前全量健康端点一览（24 个：6 canonical + 18 碎片）
 
 ```
 GET /api/health/services           ← api/health.py via /api prefix
@@ -123,7 +107,7 @@ STANDARDS.md §一.5 要求：
 
 ---
 
-## 三、收敛方案口径
+## 三、收敛方案
 
 ### 3.1 目标状态
 
@@ -152,9 +136,9 @@ STANDARDS.md §一.5 要求：
 | 17 | signal_monitoring | 待判定 `/strategies/{id}/health/detailed` 是否仍有业务含义 |
 | 18 | multi_source | 待判定 `/refresh-health` 是否承担主动刷新职责 |
 
-### 3.3 增强 canonical 健康端点（OpenSpec 候选）
+### 3.3 增强 canonical 健康端点
 
-如需在 `health.py` 中新增各子模块状态子项，应作为 OpenSpec design 内容，通过读取 readiness 探针体系统一暴露：
+在 `health.py` 中新增各子模块的状态子项，通过读取 readiness 探针体系统一暴露：
 
 ```python
 # health.py 增强
@@ -180,44 +164,25 @@ async def system_services_health():
     }
 ```
 
-若某模块需要细粒度自检（如 wencai 的外部 API 连通性），可评估通过 `check_module_health()` 分发到各模块的内置 `health_check()` 方法。是否退役原独立端点必须先确认消费者和兼容期。
+若某模块需要细粒度自检（如 wencai 的外部 API 连通性），通过 `check_module_health()` 分发到各模块的内置 `health_check()` 方法，而非各自注册独立端点。
 
 ---
 
-## 四、提案前收敛路线（不直接实施）
+## 四、实施步骤
 
-### Step 1: 重导当前 route table
+### Step 1: 逐模块判定碎片端点（1 天）
 
-先从 FastAPI app 或 OpenAPI 生成当前真实路由表，区分：
+对 9 个模块逐一：
+1. 定位 `@router.get("/health")` 装饰器及函数体
+2. 补代码路径判定与功能树判定
+3. 运行该模块的测试确认引用情况
+4. 只有 OpenSpec 审批后才能删除或改路径
 
-| 类型 | 示例 |
-|------|------|
-| 平台 liveness/readiness | `/health`、`/health/ready`、`/api/health/ready` |
-| 系统服务探针 | `/api/health/services`、`/api/health/detailed` |
-| 领域 smoke 端点 | trade、technical、announcement、wencai、risk、strategy 等各域 `/health` |
-| 运维或指标端点 | metrics、Prometheus、SSE monitoring、adapter/database health |
-| 示例或内嵌 app | `models/base_example.py`、`app_factory.py` 等需确认是否生产暴露 |
+### Step 2: 删除 monitoring_old（已在 B 方案中覆盖）
 
-### Step 2: 建消费者矩阵
+### Step 3: 增强 canonical 健康端点（可选，1 天）
 
-对每个 health-like 端点补齐监控、PM2、CI、E2E、前端、外部调用和文档引用。没有消费者清单前，不得删除或改路径。
-
-### Step 3: OpenSpec 设计项
-
-健康端点收敛 proposal/design/tasks 至少说明：
-
-| 设计项 | 必填内容 |
-|--------|----------|
-| canonical endpoint | 平台级 readiness/liveness 和系统服务探针的最终路径 |
-| compatibility | 旧端点保留期、重定向或 wrapper 策略 |
-| OpenAPI diff | 新旧路径、响应模型和状态码变化 |
-| runtime smoke | PM2、`/api/health/services`、`/health/ready`、`/api/health/ready` |
-| consumer proof | 监控、前端、测试、CI、脚本调用清单 |
-| rollback | 任一探针失败时恢复旧端点或暂停退役的条件 |
-
-### Step 4: 审批后分批收敛
-
-审批通过后，优先处理无消费者且功能重复的端点；领域 smoke 端点保留、迁移或聚合都必须保留兼容期和验收记录。`monitoring_old/` 仍交由 B 文档的残留文件双判定处理。
+在 `health.py` 中增加子模块状态聚合，并按当前注册 prefix 暴露到 `/api/health/services`。
 
 ---
 
@@ -225,11 +190,9 @@ async def system_services_health():
 
 | 检查项 | 通过标准 |
 |--------|----------|
-| route table | 已导出当前真实 route table，health-like 端点有 canonical / smoke / metrics / 示例分类 |
-| OpenAPI diff | 删除、重命名、响应模型或状态码变化均有 diff 和兼容说明 |
+| 唯一健康入口 | `grep -r '"health"' web/backend/app/api/ --include="*.py"` 仅 `health.py` 包含 |
 | canonical 探针正常 | `curl http://localhost:8020/api/health/services` 返回 200 + healthy |
 | 就绪探针正常 | `curl http://localhost:8020/health/ready` 或 `curl http://localhost:8020/api/health/ready` 返回 ready |
-| 错误路径清零 | 当前代码不得新增 `/health/readiness`，文档如引用必须标记为历史误判 |
 | 旧端点处理 | 若决定退役，需 OpenAPI diff、监控调用清单和兼容期说明，不得只以 404 为验收 |
 | PM2 正常 | `pm2 status` 显示 online |
 
