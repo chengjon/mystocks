@@ -1,0 +1,100 @@
+version: "v0.2"
+task:
+  id: "g2-329"
+  title: "Reconcile service lifecycle DI branch anchor before next residual selection"
+  owner: "G/#79 service lifecycle DI + Route/OpenAPI governance"
+  created_at: "2026-06-03"
+
+mainline:
+  id: "L1-service-lifecycle-di-branch-anchor-reconciliation"
+  objective: "Anchor the baseline branch, calibrate watchlist drift, and fix candidate-pool statistics before the next global residual screen."
+  milestone_id: "g2"
+  slice_id: "g2-329"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: ""
+  approval_status: "not_required"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/service-lifecycle-di-branch-anchor-reconciliation-2026-06-03.json"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - "docs/reports/quality/backend-service-lifecycle-di-branch-anchor-reconciliation-2026-06-03.md"
+    - "governance/function-tree/catalog.yaml"
+    - "governance/mainline/task-cards/g2-329.yaml"
+  forbidden_paths:
+    - "src/**"
+    - "web/backend/app/**"
+    - "web/frontend/**"
+    - "tests/**"
+    - "scripts/**"
+    - "config/**"
+    - "openspec/changes/**"
+
+non_goals:
+  - "Do not implement service lifecycle DI source changes."
+  - "Do not modify OpenStock internals or provider/runtime implementation."
+  - "Do not treat the 2026-06-03 candidate-pool evidence as current screening truth for G2.330."
+  - "Do not edit API, frontend, tests, runtime state, scripts, configuration, or OpenSpec implementation changes."
+
+acceptance:
+  checks:
+    - id: "no-source-path-check"
+      command: "git diff --name-only HEAD~1..HEAD excludes src/**, web/backend/app/**, web/frontend/**, tests/**, scripts/**, config/**, and openspec/changes/**"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/g2-329.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha HEAD~1 --head-sha HEAD --report /tmp/g2-329-mainline-gate.json"
+      required: true
+    - id: "function-tree-catalog-literal-check"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py validates governance/function-tree/catalog.yaml without stale literal entrypoints"
+      required: true
+    - id: "gitnexus-staged-detect-changes"
+      command: "gitnexus_detect_changes(scope=staged)"
+      required: true
+    - id: "diff-check"
+      command: "git diff HEAD~1..HEAD --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Local HEAD, origin/wip/root-dirty-20260403, and the PR #474 anchor have diverged; historical G2.329 evidence must not be reused as current source authorization."
+    - "The function-tree catalog had stale literal entrypoints; this task only aligns governance metadata so the no-source gate can validate."
+    - "G2.330 may use this report only to avoid known false positives, then must rerun current normalized residual screening."
+  rollback_plan: "Revert this governance-only commit to restore the pre-G2.329 task card, branch-anchor evidence, report, and function-tree catalog metadata."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Anchor service lifecycle DI baseline evidence before selecting the next residual candidate."
+    modified_scope: "Governance evidence, steward branch register, quality report, function-tree catalog metadata, and G2.329 task card."
+    dependency_changes: "No dependency changes."
+    legacy_logic_impact: "No source, test, API, frontend, runtime, script, configuration, or OpenSpec implementation changes."
+    rollback_ready: "Revert this governance-only commit."
+    risk_and_rollback_point: "G2.330 must rerun current route-body DataSourceFactory screening before any source authorization."
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "No business entrypoint changed; function-tree catalog literal entries were synchronized as governance metadata to keep mainline scope validation runnable."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "G/#79 service lifecycle DI + Route/OpenAPI governance"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-06-03T22:23:56+08:00"
+    approval_note: "Human maintainer authorized G2.329 as planned_no_source pure governance with no source modifications."
+    secondary_approved: false
