@@ -62,7 +62,7 @@
             <div class="config-row" v-for="(item, idx) in configItems" :key="item.endpointName">
               <div class="col name">{{ item.name }}</div>
               <div class="col status">
-                <ArtDecoBadge :variant="item.enabled ? 'active' : 'neutral'" size="sm">
+                <ArtDecoBadge :variant="item.enabled ? 'success' : 'info'" size="sm">
                   {{ item.enabled ? '启用' : '禁用' }}
                 </ArtDecoBadge>
               </div>

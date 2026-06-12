@@ -33,7 +33,7 @@
       <div class="artde-card health-card">
         <div class="card-header">
           <span class="section-title">数据库健康状态</span>
-          <ArtDecoBadge :variant="healthData.summary?.healthy === 2 ? 'active' : 'loss'">
+          <ArtDecoBadge :variant="healthData.summary?.healthy === 2 ? 'success' : 'danger'">
             {{ healthData.summary?.healthy === 2 ? '全部正常' : '存在异常' }}
           </ArtDecoBadge>
         </div>
@@ -42,7 +42,7 @@
           <div class="database-status" v-if="healthData.tdengine">
             <div class="db-header">
               <h3 class="db-title">TDengine</h3>
-              <ArtDecoBadge :variant="healthData.tdengine?.status === 'healthy' ? 'active' : 'loss'" size="sm">
+              <ArtDecoBadge :variant="healthData.tdengine?.status === 'healthy' ? 'success' : 'danger'" size="sm">
                 {{ healthData.tdengine?.status === 'healthy' ? '正常' : '异常' }}
               </ArtDecoBadge>
             </div>
@@ -69,7 +69,7 @@
           <div class="database-status" v-if="healthData.postgresql">
             <div class="db-header">
               <h3 class="db-title">PostgreSQL</h3>
-              <ArtDecoBadge :variant="healthData.postgresql?.status === 'healthy' ? 'active' : 'loss'" size="sm">
+              <ArtDecoBadge :variant="healthData.postgresql?.status === 'healthy' ? 'success' : 'danger'" size="sm">
                 {{ healthData.postgresql?.status === 'healthy' ? '正常' : '异常' }}
               </ArtDecoBadge>
             </div>

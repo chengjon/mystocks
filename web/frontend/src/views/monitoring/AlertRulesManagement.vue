@@ -53,7 +53,7 @@
             </el-tag>
           </template>
           <template #cell-is_active="{ row }">
-            <ArtDecoBadge :variant="row.is_active ? 'active' : 'neutral'" size="sm">
+            <ArtDecoBadge :variant="row.is_active ? 'success' : 'info'" size="sm">
               {{ row.is_active ? '启用' : '停用' }}
             </ArtDecoBadge>
           </template>

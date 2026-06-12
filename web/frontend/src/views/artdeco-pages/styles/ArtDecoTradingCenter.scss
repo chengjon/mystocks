@@ -1,7 +1,11 @@
-    .artdeco-trading-center {
-        display: flex;
-        flex-direction: column;
-        height: 100vh;
+.artdeco-trading-center {
+    --artdeco-trading-function-panel-width: 20rem;
+    --artdeco-trading-function-panel-width-compact: 17.5rem;
+    --artdeco-trading-function-panel-height-mobile: 12.5rem;
+
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
         background: var(--artdeco-bg-primary);
         color: var(--artdeco-fg-primary);
     }
@@ -12,8 +16,8 @@
         overflow: hidden;
     }
 
-    .function-tree-panel {
-        width: 320px;
+.function-tree-panel {
+    width: var(--artdeco-trading-function-panel-width);
         border-right: 1px solid var(--artdeco-bg-tertiary);
         background: var(--artdeco-bg-secondary);
         overflow-y: auto;
@@ -44,31 +48,31 @@
 
         .last-update {
             color: var(--artdeco-fg-muted);
-            font-size: 12px;
+            font-size: var(--artdeco-text-xs);
         }
 
         .version-info {
             color: var(--artdeco-gold-primary);
             font-weight: 600;
-            font-size: 12px;
+            font-size: var(--artdeco-text-xs);
         }
     }
 
     // 响应式设计
-    @media (width <= 1024px) {
+    @media (width <= 64rem) {
         .function-tree-panel {
-            width: 280px;
+            width: var(--artdeco-trading-function-panel-width-compact);
         }
     }
 
-    @media (width <= 768px) {
+    @media (width <= 48rem) {
         .trading-center-content {
             flex-direction: column;
         }
 
         .function-tree-panel {
             width: 100%;
-            height: 200px;
+            height: var(--artdeco-trading-function-panel-height-mobile);
             border-right: none;
             border-bottom: 1px solid var(--artdeco-bg-tertiary);
         }
