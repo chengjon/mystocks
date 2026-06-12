@@ -41,6 +41,7 @@ function_tree:
 
 scope:
   allowed_paths:
+    - ".github/workflows/playwright.yml"
     - "governance/mainline/task-cards/pr-74.yaml"
     - "openspec/changes/align-business-route-status-and-tooltip-surfaces/design.md"
     - "openspec/changes/align-business-route-status-and-tooltip-surfaces/proposal.md"
@@ -62,7 +63,6 @@ scope:
     - "web/frontend/src/views/system/DatabaseMonitor.vue"
     - "web/frontend/src/views/system/styles/DatabaseMonitor.scss"
   forbidden_paths:
-    - ".github/workflows/**"
     - "src/**"
     - "web/backend/**"
     - "tests/**"
@@ -73,7 +73,7 @@ non_goals:
   - "No OpenStock runtime or repository changes"
   - "No backend API, OpenAPI, or generated contract changes"
   - "No route rewiring or menu structure changes outside the approved ArtDeco status and overlay scope"
-  - "No unrelated visual polish beyond resolving ArtDeco token, changed-file filtering, and type-ceiling CI failures"
+  - "No unrelated visual polish beyond resolving ArtDeco token, changed-file filtering, type-ceiling, and Playwright smoke workflow CI failures"
 
 acceptance:
   checks:
@@ -105,7 +105,7 @@ delivery:
   six_line_summary_required: true
   six_line_summary:
     change_purpose: "align business route status and overlay surfaces under the approved ArtDeco OpenSpec change and restore PR CI gates"
-    modified_scope: "approved OpenSpec files, touched frontend business route views/styles, the minimal ArtDeco token/type/changed-file CI fixes, and this PR-74 task card"
+    modified_scope: "approved OpenSpec files, touched frontend business route views/styles, the minimal ArtDeco token/type/changed-file/Playwright smoke CI fixes, and this PR-74 task card"
     dependency_changes: "none"
     legacy_logic_impact: "no backend, API contract, OpenStock, or route contract behavior changes"
     rollback_ready: "yes"
