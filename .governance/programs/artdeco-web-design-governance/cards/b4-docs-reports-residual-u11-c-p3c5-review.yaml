@@ -1,0 +1,31 @@
+task:
+  id: "b4-docs-reports-residual-u11-c-p3c5-review"
+  title: "Docs reports residual U11-C P3-C5 historical evidence review"
+
+scope:
+  allowed_paths:
+    - "docs/reports/P3-C5-HANDOFF.md"
+    - "docs/reports/P3-C5-exception-consolidation-progress.md"
+    - "archive/docs/reports/P3-C5-exception-consolidation-progress.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not modify report text except whitespace required by git diff --cached --check."
+  - "Do not touch source, tests, routes, API paths, runtime code, OpenSpec, ST-HOLD, marketKlineData, docs/guides, docs/superpowers, tracked P3-C5 completion report, or external dirty files."
+  - "Do not preserve both P3-C5 reports at active docs/reports paths."
+
+acceptance:
+  commit_gate:
+    - "Exact staging contains only the approved U11-C implementation paths, or only governance/evidence files for authorization prep."
+    - "git diff --cached --check passes."
+    - "GitNexus verify-staged and direct detect-changes pass with risk low or record a docs-only caveat."
+    - "OPENDOG verification reports blockers: []."
+  closeout_gate:
+    - "P3-C5-HANDOFF.md is tracked at active docs/reports path."
+    - "P3-C5 exception consolidation progress report is tracked under archive/docs/reports and no longer remains as an active untracked docs/reports file."
+    - "Final docs/reports residual state is reported."
+
+evidence:
+  current_head: "8908a33e22b025ff07f567e8a25e1604c01e4cce"
+  notes: []

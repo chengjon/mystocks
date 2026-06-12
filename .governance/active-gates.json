@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-12T04:16:35.819Z",
+  "updated_at": "2026-06-12T05:22:32.469Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -43,15 +43,19 @@
       "node_type": "decision",
       "owner_lane": "artdeco-web-design-governance",
       "parent": "",
-      "status": "decision-prepared",
+      "status": "authorization-prepared",
       "source_edits_authorized": false,
       "current_blocker": "",
-      "next_allowed": "prepare authorization",
+      "next_allowed": "review and approve implementation authorization",
       "function_tree_ref": "b4-docs-reports-drift-governance",
       "freshness": "current-head",
-      "allowed_paths": [],
+      "allowed_paths": [
+        "docs/reports/P3-C5-HANDOFF.md",
+        "docs/reports/P3-C5-exception-consolidation-progress.md",
+        "archive/docs/reports/P3-C5-exception-consolidation-progress.md"
+      ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-12T04:16:35.804Z"
+      "updated_at": "2026-06-12T05:22:32.440Z"
     }
   ]
 }

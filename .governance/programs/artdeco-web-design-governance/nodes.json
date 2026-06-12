@@ -6526,9 +6526,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "",
-    "status": "decision-prepared",
+    "status": "authorization-prepared",
     "function_tree_ref": "b4-docs-reports-drift-governance",
-    "current_head": "4bf8fccada09ea51f7e442a6a11f3c1fd063f170",
+    "current_head": "8908a33e22b025ff07f567e8a25e1604c01e4cce",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -6538,16 +6538,31 @@
         "note": "No-source U11-C review classified P3-C5 handoff as active preservation candidate and progress report as archive/retire candidate.",
         "current_head": "4bf8fccada09ea51f7e442a6a11f3c1fd063f170",
         "recorded_at": "2026-06-12T04:15:03.050Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-011-m2a-residual-u11-c-p3c5-historical-evidence-review-2026-06-12.md",
+        "note": "Fresh authorization baseline after U11-C review commit; implementation remains limited to handoff preserve plus progress report archive move.",
+        "current_head": "8908a33e22b025ff07f567e8a25e1604c01e4cce",
+        "recorded_at": "2026-06-12T05:22:02.115Z"
       }
     ],
-    "allowed_paths": [],
+    "allowed_paths": [
+      "docs/reports/P3-C5-HANDOFF.md",
+      "docs/reports/P3-C5-exception-consolidation-progress.md",
+      "archive/docs/reports/P3-C5-exception-consolidation-progress.md"
+    ],
     "forbidden_paths": [],
-    "non_goals": [],
-    "next_gate": "prepare authorization",
+    "non_goals": [
+      "Do not modify report text except whitespace required by git diff --cached --check.",
+      "Do not touch source, tests, routes, API paths, runtime code, OpenSpec, ST-HOLD, marketKlineData, docs/guides, docs/superpowers, tracked P3-C5 completion report, or external dirty files.",
+      "Do not preserve both P3-C5 reports at active docs/reports paths."
+    ],
+    "next_gate": "review and approve implementation authorization",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-12T04:14:27.634Z",
-    "updated_at": "2026-06-12T04:16:35.804Z",
+    "updated_at": "2026-06-12T05:22:32.440Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -6556,6 +6571,19 @@
         "current_head": "4bf8fccada09ea51f7e442a6a11f3c1fd063f170",
         "transitioned_at": "2026-06-12T04:16:35.803Z"
       }
-    ]
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "Exact staging contains only the approved U11-C implementation paths, or only governance/evidence files for authorization prep.",
+        "git diff --cached --check passes.",
+        "GitNexus verify-staged and direct detect-changes pass with risk low or record a docs-only caveat.",
+        "OPENDOG verification reports blockers: []."
+      ],
+      "closeout_gate": [
+        "P3-C5-HANDOFF.md is tracked at active docs/reports path.",
+        "P3-C5 exception consolidation progress report is tracked under archive/docs/reports and no longer remains as an active untracked docs/reports file.",
+        "Final docs/reports residual state is reported."
+      ]
+    }
   }
 ]
