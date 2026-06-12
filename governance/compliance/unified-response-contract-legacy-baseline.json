@@ -1,0 +1,20 @@
+{
+  "version": "v0.1",
+  "description": "Legacy backend API routes that predate the UnifiedResponse response_model guard. Entries are explicit debt records and must be removed by dedicated response-contract migration tasks, not by unrelated lifecycle cleanup.",
+  "entries": [
+    {
+      "path": "web/backend/app/api/technical_analysis.py",
+      "endpoints": [
+        "get_all_indicators",
+        "get_trend_indicators",
+        "get_momentum_indicators",
+        "get_volatility_indicators",
+        "get_volume_indicators",
+        "get_trading_signals",
+        "get_stock_history",
+        "get_batch_indicators"
+      ],
+      "reason": "G2.332 is a service lifecycle DI cleanup. These existing routes require a separate UnifiedResponse contract migration because changing response_model/return envelopes would alter the API contract."
+    }
+  ]
+}

@@ -5,9 +5,9 @@ Enhanced Technical Analysis
 
 import logging
 from datetime import date, datetime
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Path, Query
+from fastapi import APIRouter, Depends, Path, Query
 from pydantic import BaseModel, Field, ValidationError, field_validator
 
 from app.api._technical_patterns_router import router as technical_patterns_router
@@ -21,6 +21,11 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["technical-analysis"])
 router.include_router(technical_patterns_router)
+
+
+async def get_technical_analysis_data_source() -> Any:
+    data_source_factory = DataSourceFactory()
+    return await data_source_factory.get_data_source("technical_analysis")
 
 
 # ============================================================================
@@ -238,6 +243,8 @@ async def get_all_indicators(
     start_date: Optional[str] = Query(None, description="开始日期 YYYY-MM-DD"),
     end_date: Optional[str] = Query(None, description="结束日期 YYYY-MM-DD"),
     limit: Optional[int] = Query(None, description="数据点数量限制", ge=10, le=5000),
+    *,
+    technical_analysis_adapter: Any = Depends(get_technical_analysis_data_source),
 ):
     """
     获取股票的所有技术指标
@@ -292,11 +299,7 @@ async def get_all_indicators(
                 error_code="TECHNICAL_ANALYSIS_SERVICE_UNAVAILABLE",
             )
 
-        # 使用数据源工厂
-        data_source_factory = DataSourceFactory()
         try:
-            technical_analysis_adapter = await data_source_factory.get_data_source("technical_analysis")
-
             params = {
                 "symbol": validated_params.symbol,
                 "period": period,
@@ -341,6 +344,8 @@ async def get_trend_indicators(
     symbol: str = Path(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$"),
     period: str = Query("daily", description="数据周期", pattern=r"^(daily|weekly|monthly)$"),
     ma_periods: Optional[str] = Query(None, description="自定义MA周期，逗号分隔，如: 5,10,20"),
+    *,
+    technical_analysis_adapter: Any = Depends(get_technical_analysis_data_source),
 ):
     """
     获取趋势指标
@@ -371,10 +376,6 @@ async def get_trend_indicators(
             return create_error_response(
                 error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details
             )
-
-        # 使用数据源工厂
-        data_source_factory = DataSourceFactory()
-        technical_analysis_adapter = await data_source_factory.get_data_source("technical_analysis")
 
         params = {"symbol": validated_symbol.symbol, "period": period}
 
@@ -408,7 +409,12 @@ async def get_trend_indicators(
 
 
 @router.get("/{symbol}/momentum", response_model=Dict)
-async def get_momentum_indicators(symbol: str, period: str = Query("daily", description="数据周期")):
+async def get_momentum_indicators(
+    symbol: str,
+    period: str = Query("daily", description="数据周期"),
+    *,
+    technical_analysis_adapter: Any = Depends(get_technical_analysis_data_source),
+):
     """
     获取动量指标
 
@@ -434,10 +440,6 @@ async def get_momentum_indicators(symbol: str, period: str = Query("daily", desc
                 error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details
             )
 
-        # 使用数据源工厂
-        data_source_factory = DataSourceFactory()
-        technical_analysis_adapter = await data_source_factory.get_data_source("technical_analysis")
-
         params = {"symbol": validated_symbol.symbol, "period": period}
 
         result = await technical_analysis_adapter.get_data("momentum", params)
@@ -459,7 +461,12 @@ async def get_momentum_indicators(symbol: str, period: str = Query("daily", desc
 
 
 @router.get("/{symbol}/volatility", response_model=Dict)
-async def get_volatility_indicators(symbol: str, period: str = Query("daily", description="数据周期")):
+async def get_volatility_indicators(
+    symbol: str,
+    period: str = Query("daily", description="数据周期"),
+    *,
+    technical_analysis_adapter: Any = Depends(get_technical_analysis_data_source),
+):
     """
     获取波动性指标
 
@@ -484,10 +491,6 @@ async def get_volatility_indicators(symbol: str, period: str = Query("daily", de
                 error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details
             )
 
-        # 使用数据源工厂
-        data_source_factory = DataSourceFactory()
-        technical_analysis_adapter = await data_source_factory.get_data_source("technical_analysis")
-
         params = {"symbol": validated_symbol.symbol, "period": period}
 
         result = await technical_analysis_adapter.get_data("volatility", params)
@@ -509,7 +512,12 @@ async def get_volatility_indicators(symbol: str, period: str = Query("daily", de
 
 
 @router.get("/{symbol}/volume", response_model=Dict)
-async def get_volume_indicators(symbol: str, period: str = Query("daily", description="数据周期")):
+async def get_volume_indicators(
+    symbol: str,
+    period: str = Query("daily", description="数据周期"),
+    *,
+    technical_analysis_adapter: Any = Depends(get_technical_analysis_data_source),
+):
     """
     获取成交量指标
 
@@ -534,10 +542,6 @@ async def get_volume_indicators(symbol: str, period: str = Query("daily", descri
                 error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details
             )
 
-        # 使用数据源工厂
-        data_source_factory = DataSourceFactory()
-        technical_analysis_adapter = await data_source_factory.get_data_source("technical_analysis")
-
         params = {"symbol": validated_symbol.symbol, "period": period}
 
         result = await technical_analysis_adapter.get_data("volume", params)
@@ -559,7 +563,12 @@ async def get_volume_indicators(symbol: str, period: str = Query("daily", descri
 
 
 @router.get("/{symbol}/signals", response_model=Dict)
-async def get_trading_signals(symbol: str, period: str = Query("daily", description="数据周期")):
+async def get_trading_signals(
+    symbol: str,
+    period: str = Query("daily", description="数据周期"),
+    *,
+    technical_analysis_adapter: Any = Depends(get_technical_analysis_data_source),
+):
     """
     获取交易信号
 
@@ -585,10 +594,6 @@ async def get_trading_signals(symbol: str, period: str = Query("daily", descript
             return create_error_response(
                 error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details
             )
-
-        # 使用数据源工厂
-        data_source_factory = DataSourceFactory()
-        technical_analysis_adapter = await data_source_factory.get_data_source("technical_analysis")
 
         params = {"symbol": validated_symbol.symbol, "period": period}
 
@@ -619,6 +624,8 @@ async def get_stock_history(
     start_date: Optional[str] = Query(None, description="开始日期"),
     end_date: Optional[str] = Query(None, description="结束日期"),
     limit: int = Query(100, ge=10, le=1000, description="返回数据点数量"),
+    *,
+    technical_analysis_adapter: Any = Depends(get_technical_analysis_data_source),
 ):
     """
     获取股票历史行情数据
@@ -640,10 +647,6 @@ async def get_stock_history(
     - GET /api/technical/600519/history?start_date=2024-01-01
     """
     try:
-        # 使用数据源工厂
-        data_source_factory = DataSourceFactory()
-        technical_analysis_adapter = await data_source_factory.get_data_source("technical_analysis")
-
         params = {"symbol": symbol, "period": period, "start_date": start_date, "end_date": end_date, "limit": limit}
 
         result = await technical_analysis_adapter.get_data("history", params)
@@ -663,6 +666,8 @@ async def get_stock_history(
 async def get_batch_indicators(
     symbols: List[str] = Query(..., description="股票代码列表"),
     period: str = Query("daily", description="数据周期"),
+    *,
+    technical_analysis_adapter: Any = Depends(get_technical_analysis_data_source),
 ):
     """
     批量获取多只股票的技术指标
@@ -676,10 +681,6 @@ async def get_batch_indicators(
     try:
         if len(symbols) > 20:
             raise ValidationException(detail="Maximum 20 symbols allowed", field="symbols")
-
-        # 使用数据源工厂
-        data_source_factory = DataSourceFactory()
-        technical_analysis_adapter = await data_source_factory.get_data_source("technical_analysis")
 
         params = {"symbols": symbols, "period": period}
 

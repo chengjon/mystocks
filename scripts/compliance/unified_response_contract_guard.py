@@ -7,9 +7,9 @@ import re
 from pathlib import Path
 from typing import Any
 
-
 SCOPE_ROOT = "web/backend/app/api"
 RULE_ID = "unified-response-contract"
+DEFAULT_LEGACY_BASELINE = Path("governance/compliance/unified-response-contract-legacy-baseline.json")
 HTTP_ROUTE_DECORATORS = {"get", "post", "put", "delete", "patch", "options", "head", "api_route"}
 ALLOWED_RESPONSE_MODELS = ("UnifiedResponse", "UnifiedPaginatedResponse")
 RAW_RESPONSE_TYPES = (
@@ -113,7 +113,9 @@ def is_no_content_status(decorators: list[ast.Call]) -> bool:
     return False
 
 
-def raw_response_reason(function_node: ast.FunctionDef | ast.AsyncFunctionDef, decorators: list[ast.Call]) -> str | None:
+def raw_response_reason(
+    function_node: ast.FunctionDef | ast.AsyncFunctionDef, decorators: list[ast.Call]
+) -> str | None:
     if is_no_content_status(decorators):
         return "204 no-content endpoint"
 
@@ -151,7 +153,39 @@ def endpoint_route_label(decorators: list[ast.Call]) -> str:
     return ", ".join(routes)
 
 
-def evaluate_file(path_value: str, raw_path: str, project_root: Path) -> dict[str, Any]:
+def load_legacy_baseline(project_root: Path, baseline_path: str | None = None) -> dict[tuple[str, str], str]:
+    raw_path = Path(baseline_path) if baseline_path else DEFAULT_LEGACY_BASELINE
+    baseline_file = raw_path if raw_path.is_absolute() else project_root / raw_path
+    if not baseline_file.exists():
+        return {}
+
+    payload = json.loads(baseline_file.read_text(encoding="utf-8"))
+    entries = payload.get("entries", [])
+    baseline: dict[tuple[str, str], str] = {}
+    if not isinstance(entries, list):
+        return baseline
+
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
+        path_value = normalize_input_path(str(entry.get("path", "")))
+        endpoints = entry.get("endpoints", [])
+        reason = str(entry.get("reason", "Legacy UnifiedResponse contract baseline")).strip()
+        if not path_value or not isinstance(endpoints, list):
+            continue
+        for endpoint in endpoints:
+            endpoint_name = str(endpoint).strip()
+            if endpoint_name:
+                baseline[(path_value, endpoint_name)] = reason
+    return baseline
+
+
+def evaluate_file(
+    path_value: str,
+    raw_path: str,
+    project_root: Path,
+    legacy_baseline: dict[tuple[str, str], str] | None = None,
+) -> dict[str, Any]:
     file_path = project_root / normalize_input_path(raw_path)
     if not file_path.exists():
         return {
@@ -200,6 +234,7 @@ def evaluate_file(path_value: str, raw_path: str, project_root: Path) -> dict[st
         route_label = endpoint_route_label(decorators)
         exempt_reason = raw_response_reason(node, decorators)
         has_unified, response_model_expression = has_unified_response_model(decorators)
+        legacy_reason = (legacy_baseline or {}).get((path_value, node.name))
 
         if exempt_reason:
             results.append(
@@ -223,6 +258,19 @@ def evaluate_file(path_value: str, raw_path: str, project_root: Path) -> dict[st
                     "passed": True,
                     "mode": "unified-response-model",
                     "message": f"Declares response_model={response_model_expression}",
+                }
+            )
+            continue
+
+        if legacy_reason:
+            results.append(
+                {
+                    "path": path_value,
+                    "endpoint": node.name,
+                    "route": route_label,
+                    "passed": True,
+                    "mode": "legacy-baseline",
+                    "message": f"Legacy endpoint baseline: {legacy_reason}",
                 }
             )
             continue
@@ -259,7 +307,9 @@ def evaluate_file(path_value: str, raw_path: str, project_root: Path) -> dict[st
     return {
         "path": path_value,
         "passed": not errors,
-        "message": "All HTTP routes declare UnifiedResponse contract" if not errors else "Missing UnifiedResponse contract",
+        "message": (
+            "All HTTP routes declare UnifiedResponse contract" if not errors else "Missing UnifiedResponse contract"
+        ),
         "mode": "ok" if not errors else "has-violations",
         "errors": errors,
         "checked_routes": len(results),
@@ -267,10 +317,13 @@ def evaluate_file(path_value: str, raw_path: str, project_root: Path) -> dict[st
     }
 
 
-def build_report(project_root: Path, paths: list[str] | None = None) -> dict[str, Any]:
+def build_report(
+    project_root: Path, paths: list[str] | None = None, baseline_path: str | None = None
+) -> dict[str, Any]:
     normalized_inputs: list[str] = []
     results: list[dict[str, Any]] = []
     errors: list[dict[str, Any]] = []
+    legacy_baseline = load_legacy_baseline(project_root, baseline_path)
 
     for raw_path in paths or []:
         normalized = normalize_input_path(raw_path)
@@ -283,7 +336,7 @@ def build_report(project_root: Path, paths: list[str] | None = None) -> dict[str
 
     for file_path in candidate_files:
         relative_path = file_path.relative_to(project_root).as_posix()
-        file_result = evaluate_file(relative_path, relative_path, project_root)
+        file_result = evaluate_file(relative_path, relative_path, project_root, legacy_baseline)
         checked_routes += file_result["checked_routes"]
         results.extend(file_result["results"])
         errors.extend(file_result["errors"])
@@ -300,6 +353,7 @@ def build_report(project_root: Path, paths: list[str] | None = None) -> dict[str
             "errors": len(errors),
             "checked_files": len(candidate_files),
             "checked_routes": checked_routes,
+            "legacy_baseline_exemptions": sum(1 for item in results if item.get("mode") == "legacy-baseline"),
         },
     }
 
@@ -326,15 +380,18 @@ def print_report(report: dict[str, Any], output_format: str) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Validate UnifiedResponse response_model contract for changed backend API routes")
+    parser = argparse.ArgumentParser(
+        description="Validate UnifiedResponse response_model contract for changed backend API routes"
+    )
     parser.add_argument("filenames", nargs="*")
     parser.add_argument("--root-dir", default=".")
+    parser.add_argument("--baseline")
     parser.add_argument("--path", action="append")
     parser.add_argument("--format", choices=("text", "json"), default="text")
     args = parser.parse_args(argv)
 
     merged_paths = [*(args.path or []), *args.filenames]
-    report = build_report(Path(args.root_dir).resolve(), merged_paths)
+    report = build_report(Path(args.root_dir).resolve(), merged_paths, args.baseline)
     print_report(report, args.format)
     return 1 if report["summary"]["errors"] else 0
 
