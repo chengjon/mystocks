@@ -1,0 +1,100 @@
+version: "v0.2"
+task:
+  id: "g2-330"
+  title: "Screen service lifecycle DI global residual candidates"
+  owner: "G/#79 service lifecycle DI + Route/OpenAPI governance"
+  created_at: "2026-06-13"
+
+mainline:
+  id: "L1-service-lifecycle-di-global-residual-screening"
+  objective: "Regenerate the current route-body DataSourceFactory residual pool and record branch-split decisions before any source authorization."
+  milestone_id: "g2"
+  slice_id: "g2-330"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: ""
+  approval_status: "not_required"
+
+scope:
+  allowed_paths:
+    - "docs/reports/quality/backend-service-lifecycle-di-global-residual-screening-2026-06-13.md"
+    - "governance/mainline/task-cards/g2-330.yaml"
+  forbidden_paths:
+    - "src/**"
+    - "web/backend/app/**"
+    - "web/frontend/**"
+    - "tests/**"
+    - "scripts/**"
+    - "config/**"
+    - "openspec/changes/**"
+    - "openstock/**"
+    - "OpenStock/**"
+
+non_goals:
+  - "Do not implement service lifecycle DI source changes."
+  - "Do not modify MyStocks API route source, tests, frontend, runtime state, scripts, configuration, or OpenSpec implementation files."
+  - "Do not modify OpenStock internals, provider/runtime code, tests, configuration, packaging, or repository files."
+  - "Do not reuse the G2.329 historical seed as current mainline truth without the refreshed screening table."
+  - "Do not authorize deletion, retirement, compatibility-layer removal, or full-file removal."
+
+acceptance:
+  checks:
+    - id: "no-source-path-check"
+      command: "git diff --name-only HEAD~1..HEAD excludes src/**, web/backend/app/**, web/frontend/**, tests/**, scripts/**, config/**, openspec/changes/**, and OpenStock internals"
+      required: true
+    - id: "residual-screening-report"
+      command: "docs/reports/quality/backend-service-lifecycle-di-global-residual-screening-2026-06-13.md records origin/main, origin/wip/root-dirty-20260403, and PR #474 candidate pools separately"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/g2-330.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha HEAD~1 --head-sha HEAD --report /tmp/g2-330-mainline-gate.json"
+      required: true
+    - id: "gitnexus-staged-detect-changes"
+      command: "gitnexus_detect_changes(scope=staged)"
+      required: true
+    - id: "diff-check"
+      command: "git diff HEAD~1..HEAD --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "origin/main, origin/wip/root-dirty-20260403, and the PR #474 watchlist provider anchor diverge; implementation authorization must choose a base branch explicitly."
+    - "watchlist is a current origin/main residual but not a wip/PR #474 residual; treating those as one truth would reintroduce false authorization."
+    - "dashboard.py has a body-level get_data_source call without a DataSourceFactory constructor and must remain an observation item unless a later task broadens the rule."
+  rollback_plan: "Revert this governance-only commit to remove the G2.330 report and task card."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Record current service lifecycle DI residual evidence and branch-split decisions."
+    modified_scope: "Governance report and G2.330 task card only."
+    dependency_changes: "No dependency changes."
+    legacy_logic_impact: "No source, test, API, frontend, runtime, script, configuration, OpenSpec implementation, or OpenStock internal changes."
+    rollback_ready: "Revert this governance-only commit."
+    risk_and_rollback_point: "Any follow-up source work must use a separate source-authorized task card and pick the target base branch."
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "No business entrypoint changed; this is a no-source evidence and task-card package for mainline governance."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "G/#79 service lifecycle DI + Route/OpenAPI governance"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-06-13T01:26:03+08:00"
+    approval_note: "Human maintainer asked to continue MyStocks-side work after confirming OpenStock handoff completion; G2.330 is constrained to no-source governance screening."
+    secondary_approved: false
