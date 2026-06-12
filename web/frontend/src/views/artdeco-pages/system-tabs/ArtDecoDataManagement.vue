@@ -62,9 +62,9 @@
             <div class="config-row" v-for="(item, idx) in configItems" :key="item.endpointName">
               <div class="col name">{{ item.name }}</div>
               <div class="col status">
-                <span :class="['status-badge', item.enabled ? 'active' : 'inactive']">
+                <ArtDecoBadge :variant="item.enabled ? 'success' : 'info'" size="sm">
                   {{ item.enabled ? '启用' : '禁用' }}
-                </span>
+                </ArtDecoBadge>
               </div>
               <div class="col endpoint">{{ item.endpoint }}</div>
               <div class="col actions">
@@ -101,7 +101,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import { monitoringApi } from '@/api/index'
-import { ArtDecoButton, ArtDecoCard, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
+import { ArtDecoBadge, ArtDecoButton, ArtDecoCard, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
 import {
   extractDataSourceConfigItems,
   type NormalizedDataSourceConfigItem as DataSourceConfigItem,
@@ -294,23 +294,8 @@ onMounted(fetchConfig)
           }
 
           &.status {
-            .status-badge {
-              padding: var(--artdeco-spacing-1) var(--artdeco-spacing-2);
-              border-radius: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
-              font-size: var(--artdeco-text-xs);
-              font-weight: 600;
-              text-transform: uppercase;
-
-              &.active {
-                background: color-mix(in srgb, var(--artdeco-rise) 20%, transparent);
-                color: var(--artdeco-rise);
-              }
-
-              &.inactive {
-                background: color-mix(in srgb, var(--artdeco-down) 20%, transparent);
-                color: var(--artdeco-down);
-              }
-            }
+            display: flex;
+            align-items: center;
           }
 
           &.endpoint {

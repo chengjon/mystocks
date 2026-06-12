@@ -514,12 +514,13 @@
 .dialog-overlay {
   position: fixed;
   inset: 0;
-  z-index: 999;
+  z-index: var(--ad-overlay-z);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--artdeco-spacing-5);
-  background: color-mix(in srgb, var(--artdeco-bg-global) 80%, transparent);
+  background: var(--ad-overlay-bg);
+  backdrop-filter: blur(var(--ad-overlay-blur));
 }
 
 .dialog {

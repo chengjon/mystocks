@@ -205,26 +205,52 @@ function resolveGitChangedFiles({ cwd = process.cwd(), baseRef = "" } = {}) {
   }
 
   const repoRoot = rootResult.stdout.trim();
-  const diffArgs = ["diff", "--name-only"];
+  const hasGitRef = (ref) => {
+    const result = spawnSync("git", ["rev-parse", "--verify", "--quiet", ref], {
+      cwd: repoRoot,
+      encoding: "utf8",
+    });
+    return result.status === 0;
+  };
+
+  const diffRefs = [];
   if (baseRef) {
-    diffArgs.push(baseRef);
+    diffRefs.push({ ref: baseRef, required: true });
+  } else {
+    const envBaseRef = process.env.ARTDECO_BASE_REF || (
+      process.env.GITHUB_BASE_REF ? `origin/${process.env.GITHUB_BASE_REF}` : ""
+    );
+    const defaultBaseRef = envBaseRef || "origin/main";
+    if (hasGitRef(defaultBaseRef)) {
+      diffRefs.push({ ref: `${defaultBaseRef}...HEAD`, required: false });
+    }
+    diffRefs.push({ ref: "HEAD", required: false });
   }
-  diffArgs.push("--");
 
-  const diffResult = spawnSync("git", diffArgs, {
-    cwd: repoRoot,
-    encoding: "utf8",
-  });
+  const changedFiles = new Set();
+  for (const { ref, required } of diffRefs) {
+    const diffArgs = ["diff", "--name-only", ref, "--"];
+    const diffResult = spawnSync("git", diffArgs, {
+      cwd: repoRoot,
+      encoding: "utf8",
+    });
 
-  if (diffResult.status !== 0) {
-    throw new Error((diffResult.stderr || diffResult.stdout || "Failed to read git diff").trim());
+    if (diffResult.status !== 0) {
+      if (required) {
+        throw new Error((diffResult.stderr || diffResult.stdout || "Failed to read git diff").trim());
+      }
+      continue;
+    }
+
+    for (const filePath of diffResult.stdout.split("\n")) {
+      const trimmedPath = filePath.trim();
+      if (trimmedPath) {
+        changedFiles.add(path.resolve(repoRoot, trimmedPath));
+      }
+    }
   }
 
-  return diffResult.stdout
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((filePath) => path.resolve(repoRoot, filePath));
+  return [...changedFiles];
 }
 
 function analyzeFile(filePath, options) {

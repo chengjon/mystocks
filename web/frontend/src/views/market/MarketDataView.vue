@@ -21,7 +21,7 @@
         </div>
 
         <div class="header-info">
-          <span class="status-badge live">实时数据</span>
+          <ArtDecoBadge variant="active" size="sm">实时数据</ArtDecoBadge>
           <span class="time-display">{{ currentTime }}</span>
         </div>
       </div>
@@ -59,6 +59,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
+import { ArtDecoBadge } from '@/components/artdeco'
 
 import FundFlowPanel from '@/components/market/FundFlowPanel.vue'
 import ETFDataTable from '@/components/market/ETFDataTable.vue'
@@ -245,25 +246,6 @@ onBeforeUnmount(() => {
     display: flex;
     align-items: center;
     gap: var(--artdeco-spacing-4);
-  }
-
-  .status-badge {
-    padding:
-      calc(var(--artdeco-spacing-1) + var(--artdeco-spacing-px) * 2)
-      calc(var(--artdeco-spacing-3) + var(--artdeco-spacing-px) * 2);
-    background: color-mix(in srgb, var(--artdeco-down) 15%, transparent);
-    border: var(--artdeco-spacing-px) solid var(--artdeco-down);
-    color: var(--artdeco-down);
-    font-family: var(--artdeco-font-display);
-    font-size: var(--artdeco-text-compact-xs);
-    letter-spacing: var(--artdeco-spacing-px);
-    text-transform: uppercase;
-
-    &.live {
-      background: color-mix(in srgb, var(--artdeco-down) 15%, transparent);
-      border-color: var(--artdeco-down);
-      color: var(--artdeco-down);
-    }
   }
 
   .time-display {

@@ -335,12 +335,12 @@
 .stock-drawer-overlay {
   position: fixed;
   inset: 0 0 0 0;
-  background: color-mix(in srgb, var(--artdeco-bg-global) 80%, transparent);
+  background: var(--ad-overlay-bg);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
-  backdrop-filter: blur(var(--artdeco-spacing-1));
+  z-index: var(--ad-overlay-z);
+  backdrop-filter: blur(var(--ad-overlay-blur));
 }
 
 .stock-drawer {
@@ -444,12 +444,12 @@
 .modal-overlay {
   position: fixed;
   inset: 0 0 0 0;
-  background: color-mix(in srgb, var(--artdeco-bg-global) 80%, transparent);
+  background: var(--ad-overlay-bg);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
-  backdrop-filter: blur(var(--artdeco-spacing-1));
+  z-index: var(--ad-overlay-z);
+  backdrop-filter: blur(var(--ad-overlay-blur));
 }
 
 .modal {

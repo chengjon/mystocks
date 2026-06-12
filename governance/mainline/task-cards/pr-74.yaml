@@ -1,0 +1,124 @@
+version: "v0.2"
+
+task:
+  id: "pr-74"
+  title: "align business route status badges and overlay surfaces"
+  owner: "main"
+  created_at: "2026-06-12"
+
+mainline:
+  id: "L1-business-route-status-overlay-alignment"
+  objective: "align ArtDeco business route status badges and overlay surfaces while preserving existing frontend routes and API contracts"
+  milestone_id: "L2-frontend-artdeco-governance"
+  slice_id: "L3-business-route-status-overlay"
+
+classification:
+  task_type: "feature"
+  secondary_type: "fix"
+  secondary_change_budget_percent: 20
+  secondary_allowed_paths:
+    - "web/frontend/scripts/check-artdeco-tokens.js"
+    - "web/frontend/src/views/artdeco-pages/ArtDecoMarketData.vue"
+    - "web/frontend/src/views/artdeco-pages/styles/ArtDecoTradingCenter.scss"
+
+openspec:
+  change_id: "align-business-route-status-and-tooltip-surfaces"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "domain-01"
+  node_id: "domain-01-node-01"
+  affected_entrypoints:
+    - "frontend"
+    - "governance"
+  update_status: "required"
+  secondary_domains:
+    - "domain-03"
+    - "domain-06"
+    - "domain-08"
+    - "domain-09"
+  exemption_reason: "frontend-route-status-and-overlay-alignment-only-no-api-or-backend-contract-changes"
+
+scope:
+  allowed_paths:
+    - ".github/workflows/playwright.yml"
+    - "governance/mainline/task-cards/pr-74.yaml"
+    - "openspec/changes/align-business-route-status-and-tooltip-surfaces/design.md"
+    - "openspec/changes/align-business-route-status-and-tooltip-surfaces/proposal.md"
+    - "openspec/changes/align-business-route-status-and-tooltip-surfaces/specs/artdeco-design-governance/spec.md"
+    - "openspec/changes/align-business-route-status-and-tooltip-surfaces/tasks.md"
+    - "web/frontend/scripts/check-artdeco-tokens.js"
+    - "web/frontend/src/views/artdeco-pages/ArtDecoMarketData.vue"
+    - "web/frontend/src/views/artdeco-pages/styles/ArtDecoTradingCenter.scss"
+    - "web/frontend/src/views/artdeco-pages/system-tabs/ArtDecoDataManagement.vue"
+    - "web/frontend/src/views/market/MarketDataView.vue"
+    - "web/frontend/src/views/monitoring/AlertRulesManagement.vue"
+    - "web/frontend/src/views/monitoring/styles/AlertRulesManagement.scss"
+    - "web/frontend/src/views/monitoring/styles/WatchlistManagement.scss"
+    - "web/frontend/src/views/strategy/ResultsQuery.vue"
+    - "web/frontend/src/views/strategy/StrategyList.vue"
+    - "web/frontend/src/views/strategy/styles/ResultsQuery.scss"
+    - "web/frontend/src/views/strategy/styles/StatsAnalysis.scss"
+    - "web/frontend/src/views/strategy/styles/StrategyList.scss"
+    - "web/frontend/src/views/system/DatabaseMonitor.vue"
+    - "web/frontend/src/views/system/styles/DatabaseMonitor.scss"
+  forbidden_paths:
+    - "src/**"
+    - "web/backend/**"
+    - "tests/**"
+    - "scripts/**"
+    - "config/**"
+
+non_goals:
+  - "No OpenStock runtime or repository changes"
+  - "No backend API, OpenAPI, or generated contract changes"
+  - "No route rewiring or menu structure changes outside the approved ArtDeco status and overlay scope"
+  - "No unrelated visual polish beyond resolving ArtDeco token, changed-file filtering, type-ceiling, and Playwright smoke workflow CI failures"
+
+acceptance:
+  checks:
+    - id: "openspec-change-validation"
+      command: "openspec validate align-business-route-status-and-tooltip-surfaces --strict"
+      required: true
+    - id: "artdeco-changed-lint"
+      command: "cd web/frontend && npm run lint:artdeco:changed"
+      required: true
+    - id: "frontend-type-ceiling"
+      command: "cd web/frontend && TYPE_ERROR_CEILING=0 npm run test:type-ceiling"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-74.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr74-mainline-gate.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If the task card omits any PR diff path, Mainline Governance Gate will continue to block the PR"
+    - "If status badge variants drift from the shared ArtDecoBadge union, the frontend type ceiling will regress"
+    - "If changed-file filtering falls back to full ArtDeco directory scans on clean PR branches, historical token debt will keep blocking the PR"
+    - "If token replacements change layout semantics, business route surfaces may visually drift from the approved OpenSpec intent"
+  rollback_plan: "git revert <merge-commit-sha> if the ArtDeco status alignment or governance task card scope is found to be inaccurate after merge"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "align business route status and overlay surfaces under the approved ArtDeco OpenSpec change and restore PR CI gates"
+    modified_scope: "approved OpenSpec files, touched frontend business route views/styles, the minimal ArtDeco token/type/changed-file/Playwright smoke CI fixes, and this PR-74 task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "no backend, API contract, OpenStock, or route contract behavior changes"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the merge if the frontend status semantics or task-card allowed path scope is found to be inaccurate"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "user"
+    approved_at: "2026-06-12T00:00:00Z"
+    approval_note: "user approved continuing and merging this line; current changes are limited to PR CI stabilization and boundary-safe frontend governance"
+    secondary_approved: true
