@@ -1,5 +1,23 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-12T09:23:35.423Z",
-  "gates": []
+  "updated_at": "2026-06-12T10:28:32.226Z",
+  "gates": [
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-012-residual-dirty-domain-atlas",
+      "title": "Residual dirty domain atlas and batch queue",
+      "node_type": "decision",
+      "owner_lane": "docs-governance",
+      "parent": "",
+      "status": "decision-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "prepare authorization",
+      "function_tree_ref": "B4.012-M1",
+      "freshness": "current-head",
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-12T10:28:32.221Z"
+    }
+  ]
 }

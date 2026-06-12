@@ -6794,5 +6794,43 @@
       "current_head": "629a646474637c56d51c357784454b43c4bb91c7",
       "prepared_at": "2026-06-12T09:23:26.595Z"
     }
+  },
+  {
+    "id": "b4-012-residual-dirty-domain-atlas",
+    "title": "Residual dirty domain atlas and batch queue",
+    "node_type": "decision",
+    "owner_lane": "docs-governance",
+    "parent": "",
+    "status": "decision-prepared",
+    "function_tree_ref": "B4.012-M1",
+    "current_head": "022afee048dfb6dd0f8a73ba971fc33d8db7d771",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m1-residual-dirty-domain-atlas-no-source-audit-2026-06-12.md",
+        "note": "No-source residual dirty atlas after B4.011 closeout; classifies 735 dirty entries by domain and recommends next governance queue.",
+        "current_head": "022afee048dfb6dd0f8a73ba971fc33d8db7d771",
+        "recorded_at": "2026-06-12T10:28:09.205Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-12T10:27:30.498Z",
+    "updated_at": "2026-06-12T10:28:32.221Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "Atlas decision prepared: next safe batch is B4.012-M2a governance/task-card residual no-source audit; no source or deletion authorization granted.",
+        "current_head": "022afee048dfb6dd0f8a73ba971fc33d8db7d771",
+        "transitioned_at": "2026-06-12T10:28:32.221Z"
+      }
+    ]
   }
 ]
