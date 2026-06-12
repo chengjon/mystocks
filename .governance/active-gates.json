@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-12T13:56:26.504Z",
+  "updated_at": "2026-06-12T14:45:09.369Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -35,6 +35,38 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-12T10:38:49.253Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-012-governance-task-card-accepted-preservation",
+      "title": "Accepted governance task-card residual preservation authorization",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-012-governance-task-card-residual-audit",
+      "status": "authorization-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "review and approve implementation authorization",
+      "function_tree_ref": "b4-012-residual-dirty-domain-atlas",
+      "freshness": "current-head",
+      "allowed_paths": [
+        "governance/mainline/task-cards/g2-322.yaml",
+        "governance/mainline/task-cards/g2-323.yaml",
+        "governance/mainline/task-cards/g2-324.yaml",
+        "governance/mainline/task-cards/g2-325.yaml",
+        "governance/mainline/task-cards/g2-326.yaml",
+        "governance/mainline/task-cards/g2-328.yaml",
+        "governance/mainline/task-cards/g2-329.yaml",
+        "governance/mainline/task-cards/pr-474.yaml",
+        ".governance/active-gates.json",
+        ".governance/active-gates.md",
+        ".governance/programs/artdeco-web-design-governance/nodes.json",
+        ".governance/programs/artdeco-web-design-governance/tree.md",
+        ".governance/programs/artdeco-web-design-governance/cards/b4-012-governance-task-card-accepted-preservation.yaml",
+        "docs/reports/worklogs/claude-auto/b4-012-m2a-b-task-card-preservation-authorization-prep-2026-06-12.md"
+      ],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-12T14:45:09.358Z"
     }
   ]
 }

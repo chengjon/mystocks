@@ -1,0 +1,40 @@
+task:
+  id: "b4-012-governance-task-card-accepted-preservation"
+  title: "Accepted governance task-card residual preservation authorization"
+
+scope:
+  allowed_paths:
+    - "governance/mainline/task-cards/g2-322.yaml"
+    - "governance/mainline/task-cards/g2-323.yaml"
+    - "governance/mainline/task-cards/g2-324.yaml"
+    - "governance/mainline/task-cards/g2-325.yaml"
+    - "governance/mainline/task-cards/g2-326.yaml"
+    - "governance/mainline/task-cards/g2-328.yaml"
+    - "governance/mainline/task-cards/g2-329.yaml"
+    - "governance/mainline/task-cards/pr-474.yaml"
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/tree.md"
+    - ".governance/programs/artdeco-web-design-governance/cards/b4-012-governance-task-card-accepted-preservation.yaml"
+    - "docs/reports/worklogs/claude-auto/b4-012-m2a-b-task-card-preservation-authorization-prep-2026-06-12.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not stage, preserve, delete, or modify governance/mainline/task-cards/g2-327.yaml in this batch"
+  - "Do not touch source, tests, runtime, API routes, OpenSpec, ST-HOLD, marketKlineData, docs/guides, docs/superpowers, or external dirty files"
+  - "Do not perform broad dirty cleanup"
+
+acceptance:
+  commit_gate:
+    - "Exact staged allowlist contains only authorization-prep governance artifacts and worklog"
+    - "git diff --cached --check passes"
+    - "GitNexus verify-staged and staged detect-changes pass with low risk"
+    - "OPENDOG blockers remain empty"
+  closeout_gate:
+    - "Low-risk task-card implementation remains pending explicit authorization; g2-327 remains isolated"
+
+evidence:
+  current_head: "89a8856d25dda79011edee59f94ae7f4d2d201ac"
+  notes: []
