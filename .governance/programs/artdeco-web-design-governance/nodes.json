@@ -6406,11 +6406,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "",
-    "status": "approved-for-implementation",
+    "status": "closed",
     "function_tree_ref": "b4-docs-reports-drift-governance",
-    "current_head": "5ee9f148563101542745b131f6e675e5533f8e90",
+    "current_head": "dc93316065f91f1f0ec99f51c0f316c15a327d5f",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "baseline",
@@ -6425,6 +6425,20 @@
         "note": "Implementation approval requested by user after authorization-prepared commit; target reports still untracked and staged area empty.",
         "current_head": "5ee9f148563101542745b131f6e675e5533f8e90",
         "recorded_at": "2026-06-12T03:24:04.173Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-011-m2a-residual-u11-b-active-evidence-preserve-review-2026-06-12.md",
+        "note": "Fresh implementation baseline after approval commit; implementation remains limited to five U11-B report paths.",
+        "current_head": "f70f6ab9bf80ce8e5fdd07c7c9e695a38a62b379",
+        "recorded_at": "2026-06-12T03:33:11.387Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "dc9331606",
+        "note": "Implementation commit preserved five U11-B active evidence reports; no source/test/runtime files were changed.",
+        "current_head": "dc93316065f91f1f0ec99f51c0f316c15a327d5f",
+        "recorded_at": "2026-06-12T03:48:35.354Z"
       }
     ],
     "allowed_paths": [
@@ -6439,11 +6453,11 @@
       "Do not modify report contents, archive, move, delete, or retire U11-B files during authorization prep.",
       "Do not touch U11-C P3-C5 files, docs/guides, docs/superpowers, web, src, tests, scripts, OpenSpec, ST-HOLD, marketKlineData, or external dirty files."
     ],
-    "next_gate": "implement within allowed_paths",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-12T01:14:24.407Z",
-    "updated_at": "2026-06-12T03:24:26.691Z",
+    "updated_at": "2026-06-12T03:51:17.961Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -6458,6 +6472,27 @@
         "note": "",
         "current_head": "5ee9f148563101542745b131f6e675e5533f8e90",
         "transitioned_at": "2026-06-12T03:24:26.691Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "dc93316065f91f1f0ec99f51c0f316c15a327d5f",
+        "transitioned_at": "2026-06-12T03:49:12.735Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "dc93316065f91f1f0ec99f51c0f316c15a327d5f",
+        "transitioned_at": "2026-06-12T03:49:39.663Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "dc93316065f91f1f0ec99f51c0f316c15a327d5f",
+        "transitioned_at": "2026-06-12T03:51:17.960Z"
       }
     ],
     "acceptance": {
@@ -6471,6 +6506,18 @@
         "Five U11-B reports are tracked only after explicit implementation approval.",
         "Remaining U11 residual dirty state contains only U11-C files unless unrelated external work appears."
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-011-m2a-residual-u11-b-active-evidence-preserve-closeout-2026-06-12.md",
+      "compatibility": "Preserved active report paths; no source/test/runtime/API/route behavior changed.",
+      "gates": [
+        "Exact staged allowlist passed for five U11-B report files.",
+        "git diff --cached --check passed after EOF blank-line cleanup.",
+        "GitNexus verify-staged and direct detect-changes passed with risk low and 0 affected processes.",
+        "OPENDOG verification returned blockers: []."
+      ],
+      "current_head": "dc93316065f91f1f0ec99f51c0f316c15a327d5f",
+      "prepared_at": "2026-06-12T03:50:54.127Z"
     }
   }
 ]
