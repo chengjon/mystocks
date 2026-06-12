@@ -539,6 +539,8 @@ domains:
         coverage_paths:
           - "web/backend/app/api/system.py"
           - "config/**"
+          - "requirements.txt"
+          - "web/backend/requirements.txt"
           - "web/frontend/src/views/TaskManagement.vue"
         entrypoints:
           governance:
@@ -557,6 +559,8 @@ domains:
           operations:
             - "docs/operations/deployment/README.md"
             - "docker/README.md"
+            - "requirements.txt"
+            - "web/backend/requirements.txt"
       - id: "domain-08-node-03"
         label: "8.3 备份恢复"
         coverage_paths:

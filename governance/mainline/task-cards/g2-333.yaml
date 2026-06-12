@@ -1,0 +1,103 @@
+version: "v0.2"
+task:
+  id: "g2-333"
+  title: "Align CI-scanned dependency safety manifests"
+  owner: "G/#79 service lifecycle DI + Route/OpenAPI governance"
+  created_at: "2026-06-13"
+
+mainline:
+  id: "L1-ci-dependency-safety-manifest-alignment"
+  objective: "Align dependency manifests scanned by CI safety checks so backend API file tests and dependency safety gates can run on current secure lower bounds."
+  milestone_id: "g2"
+  slice_id: "g2-333"
+
+classification:
+  task_type: "fix"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: ""
+  approval_status: "not_required"
+
+scope:
+  allowed_paths:
+    - "config/requirements.txt"
+    - "docs/reports/quality/ci-dependency-safety-manifest-alignment-2026-06-13.md"
+    - "governance/function-tree/catalog.yaml"
+    - "governance/mainline/task-cards/g2-333.yaml"
+    - "requirements.txt"
+    - "web/backend/requirements.txt"
+  forbidden_paths:
+    - "src/**"
+    - "web/backend/app/**"
+    - "web/backend/tests/**"
+    - "web/frontend/**"
+    - "tests/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openstock/**"
+    - "OpenStock/**"
+
+non_goals:
+  - "Do not modify MyStocks API source, frontend source, tests, scripts, OpenSpec implementation files, or runtime behavior."
+  - "Do not modify OpenStock internals, provider/runtime code, tests, configuration, packaging, or repository files."
+  - "Do not broaden this task beyond the dependency manifests scanned by the CI Dependency Safety Check."
+  - "Do not resolve ignored unpinned dependency warnings in this task; only address vulnerabilities that CI reports as failing."
+
+acceptance:
+  checks:
+    - id: "ci-scanned-lower-bounds-present"
+      command: "python - <<'PY'\nfrom pathlib import Path\nexpected = {\n    'requirements.txt': ('APScheduler>=3.10.4', 'python-dotenv>=1.2.2', 'requests>=2.33.0', 'python-multipart>=0.0.27', 'pytest>=9.0.3'),\n    'config/requirements.txt': ('python-dotenv>=1.2.2', 'requests>=2.33.0', 'python-multipart>=0.0.27', 'pytest>=9.0.3'),\n    'web/backend/requirements.txt': ('python-dotenv==1.2.2', 'requests==2.33.0', 'python-multipart==0.0.27', 'pytest==9.0.3', 'pytest-asyncio==1.4.0'),\n}\nfor path, requirements in expected.items():\n    text = Path(path).read_text()\n    for requirement in requirements:\n        assert requirement in text, (path, requirement)\nPY"
+      required: true
+    - id: "dependency-safety-scan"
+      command: "safety check -r requirements.txt -r config/requirements.txt -r web/backend/requirements.txt"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/g2-333.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha HEAD~1 --head-sha HEAD --report /tmp/g2-333-mainline-gate.json"
+      required: true
+    - id: "gitnexus-detect-changes"
+      command: "gitnexus_detect_changes(scope=compare, base_ref=origin/main)"
+      required: true
+    - id: "diff-check"
+      command: "git diff HEAD~1..HEAD --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Raising pytest to 9.0.3 may expose plugin compatibility issues in CI; this is required by the active safety database and must be monitored in checks."
+    - "The update intentionally leaves ignored unpinned warning ranges untouched because they are not failing the current CI safety command."
+  rollback_plan: "Revert this commit to restore previous dependency specifiers if CI or runtime compatibility regresses."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Make CI-scanned dependency manifests pass the current Dependency Safety Check."
+    modified_scope: "Three dependency manifests, one function-tree catalog mapping, one governance report, and one task card."
+    dependency_changes: "Adds root APScheduler, raises safety-reported lower bounds for python-dotenv, requests, python-multipart, and pytest, and updates pytest-asyncio for pytest 9 compatibility."
+    legacy_logic_impact: "No source code, API contract, frontend, runtime, or OpenStock code is changed."
+    rollback_ready: "Revert this dependency-manifest commit."
+    risk_and_rollback_point: "Rollback restores previous dependency specifiers."
+
+function_tree:
+  domain_id: "domain-08"
+  node_id: "domain-08-node-02"
+  affected_entrypoints:
+    - "governance"
+    - "operations"
+  update_status: "required"
+  secondary_domains: []
+  exemption_reason: "This dependency safety fix updates only CI-scanned requirement manifests and function-tree governance metadata; no business entrypoint or source symbol changes."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "G/#79 service lifecycle DI + Route/OpenAPI governance"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-06-13T04:05:00+08:00"
+    approval_note: "Human maintainer asked to continue MyStocks-side work; this follow-up isolates CI dependency safety manifest alignment required before continuing G2.332."
+    secondary_approved: false
