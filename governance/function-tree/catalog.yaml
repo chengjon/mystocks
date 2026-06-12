@@ -696,6 +696,7 @@ domains:
       - id: "meta-governance-mainline"
         label: "Mainline Governance And Function-Tree Gate"
         coverage_paths:
+          - ".github/workflows/security-testing.yml"
           - "governance/mainline/**"
           - "governance/technical-debt/**"
           - "governance/function-tree/**"
@@ -703,6 +704,7 @@ domains:
           - "openspec/specs/**"
           - "openspec/AGENTS.md"
           - ".github/pull_request_template.md"
+          - "docs/reports/quality/security-testing-predeployment-checkout-fix-2026-06-13.md"
           - "docs/guides/governance/FEATURE_MANAGEMENT_WORKFLOW.md"
           - "docs/guides/ai-tools/AI_QUICK_START.md"
         entrypoints:
@@ -720,6 +722,7 @@ domains:
             - "tests/unit/governance/**"
             - "tests/fixtures/governance/**"
           operations:
+            - ".github/workflows/security-testing.yml"
             - "docs/guides/multi-cli-tasks/MONGO_MULTICLI_COORDINATION_GUIDE.md"
       - id: "meta-governance-frontend-type-generation"
         label: "Frontend Type Generation Determinism"
