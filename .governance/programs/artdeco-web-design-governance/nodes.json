@@ -6399,5 +6399,64 @@
       "current_head": "ec64963dc2ef4c3ed64cc5ecd8b1d23b32d3d7f5",
       "prepared_at": "2026-06-12T00:18:56.085Z"
     }
+  },
+  {
+    "id": "b4-docs-reports-residual-u11-b-active-evidence",
+    "title": "Docs reports residual U11-B active evidence preservation",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "",
+    "status": "authorization-prepared",
+    "function_tree_ref": "b4-docs-reports-drift-governance",
+    "current_head": "c74fcb7c193be3e64896eace2b361d30d1abb974",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-011-m2a-residual-u11-b-active-evidence-preserve-review-2026-06-12.md",
+        "note": "U11-B active evidence preservation scope reviewed; no source or report-body preservation implementation yet.",
+        "current_head": "c74fcb7c193be3e64896eace2b361d30d1abb974",
+        "recorded_at": "2026-06-12T01:14:42.776Z"
+      }
+    ],
+    "allowed_paths": [
+      "docs/reports/DASHBOARD_CRITIQUE_AUDIT.md",
+      "docs/reports/FRONTEND_DATA_SOURCE_DIAGNOSIS.md",
+      "docs/reports/GPU_DOCUMENTATION_INVENTORY.md",
+      "docs/reports/PRODUCT_DESIGN_AUDIT.md",
+      "docs/reports/architecture/data-source-service-extraction-analysis-review-2026-06-09.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not modify report contents, archive, move, delete, or retire U11-B files during authorization prep.",
+      "Do not touch U11-C P3-C5 files, docs/guides, docs/superpowers, web, src, tests, scripts, OpenSpec, ST-HOLD, marketKlineData, or external dirty files."
+    ],
+    "next_gate": "review and approve implementation authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-12T01:14:24.407Z",
+    "updated_at": "2026-06-12T01:15:45.169Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "",
+        "current_head": "c74fcb7c193be3e64896eace2b361d30d1abb974",
+        "transitioned_at": "2026-06-12T01:15:05.108Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "Exact staging contains only authorized U11-B report files for implementation, or only governance/evidence files for authorization prep.",
+        "git diff --cached --check passes.",
+        "GitNexus staged verification and staged detect-changes pass or record docs-only no-source scope.",
+        "OPENDOG verification reports no new blocker for the preservation batch."
+      ],
+      "closeout_gate": [
+        "Five U11-B reports are tracked only after explicit implementation approval.",
+        "Remaining U11 residual dirty state contains only U11-C files unless unrelated external work appears."
+      ]
+    }
   }
 ]

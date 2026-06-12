@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-12T00:20:00.078Z",
+  "updated_at": "2026-06-12T01:15:45.192Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -35,6 +35,29 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-11T18:09:44.723Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-docs-reports-residual-u11-b-active-evidence",
+      "title": "Docs reports residual U11-B active evidence preservation",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "",
+      "status": "authorization-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "review and approve implementation authorization",
+      "function_tree_ref": "b4-docs-reports-drift-governance",
+      "freshness": "current-head",
+      "allowed_paths": [
+        "docs/reports/DASHBOARD_CRITIQUE_AUDIT.md",
+        "docs/reports/FRONTEND_DATA_SOURCE_DIAGNOSIS.md",
+        "docs/reports/GPU_DOCUMENTATION_INVENTORY.md",
+        "docs/reports/PRODUCT_DESIGN_AUDIT.md",
+        "docs/reports/architecture/data-source-service-extraction-analysis-review-2026-06-09.md"
+      ],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-12T01:15:45.169Z"
     }
   ]
 }
