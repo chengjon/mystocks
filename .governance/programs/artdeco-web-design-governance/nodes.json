@@ -7384,5 +7384,43 @@
       "current_head": "9c34233b2d7f2a6bfbac62784c298e012b1c125d",
       "prepared_at": "2026-06-12T18:57:27.653Z"
     }
+  },
+  {
+    "id": "b4-012-scripts-residual-domain-audit",
+    "title": "Scripts residual dirty domain no-source audit",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-residual-dirty-domain-atlas",
+    "status": "decision-prepared",
+    "function_tree_ref": "B4.012-M2b",
+    "current_head": "abcb6bbb8548fbe9a2b99db510d05f855a82f974",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m2b-scripts-residual-domain-no-source-audit-2026-06-13.md",
+        "note": "No-source scripts residual family matrix and next-package decision audit.",
+        "current_head": "abcb6bbb8548fbe9a2b99db510d05f855a82f974",
+        "recorded_at": "2026-06-12T19:27:24.754Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-12T19:27:24.655Z",
+    "updated_at": "2026-06-12T19:27:24.863Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "",
+        "current_head": "abcb6bbb8548fbe9a2b99db510d05f855a82f974",
+        "transitioned_at": "2026-06-12T19:27:24.862Z"
+      }
+    ]
   }
 ]
