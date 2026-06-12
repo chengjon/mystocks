@@ -1,0 +1,34 @@
+task:
+  id: "b4-012-governance-g2-327-preservation-authorization"
+  title: "g2-327 source-review task-card preservation authorization"
+
+scope:
+  allowed_paths:
+    - "governance/mainline/task-cards/g2-327.yaml"
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/tree.md"
+    - ".governance/programs/artdeco-web-design-governance/cards/b4-012-governance-g2-327-preservation-authorization.yaml"
+    - "docs/reports/worklogs/claude-auto/b4-012-m2a-c1-g2-327-source-review-task-card-preservation-authorization-prep-2026-06-13.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not modify source, tests, API, routes, runtime, adapters, OpenSpec, ST-HOLD, marketKlineData, docs/guides, docs/superpowers, or external dirty files."
+  - "Do not perform technical_analysis source truth review in this package."
+  - "Do not delete, retire, rename, or normalize g2-327 task-card content."
+
+acceptance:
+  commit_gate:
+    - "Exact staged allowlist excludes all files except this node's governance artifacts and worklog; g2-327.yaml remains unstaged until explicit implementation authorization."
+    - "git diff --cached --check passes."
+    - "GitNexus verify-staged and staged detect-changes pass."
+    - "OPENDOG blocker count is zero."
+  closeout_gate:
+    - "Implementation authorization must be explicit before g2-327.yaml is preserved."
+    - "Post-commit GitNexus index refresh completes."
+
+evidence:
+  current_head: "f9d514245aabbb0be423ac3d8baace4a8b95e50b"
+  notes: []

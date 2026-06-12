@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-12T17:55:09.663Z",
+  "updated_at": "2026-06-12T18:42:03.939Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -52,6 +52,31 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-12T17:55:09.655Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-012-governance-g2-327-preservation-authorization",
+      "title": "g2-327 source-review task-card preservation authorization",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-012-governance-g2-327-source-review-disposition",
+      "status": "authorization-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "review and approve implementation authorization",
+      "function_tree_ref": "b4-012-governance-task-card-residual-audit",
+      "freshness": "current-head",
+      "allowed_paths": [
+        "governance/mainline/task-cards/g2-327.yaml",
+        ".governance/active-gates.json",
+        ".governance/active-gates.md",
+        ".governance/programs/artdeco-web-design-governance/nodes.json",
+        ".governance/programs/artdeco-web-design-governance/tree.md",
+        ".governance/programs/artdeco-web-design-governance/cards/b4-012-governance-g2-327-preservation-authorization.yaml",
+        "docs/reports/worklogs/claude-auto/b4-012-m2a-c1-g2-327-source-review-task-card-preservation-authorization-prep-2026-06-13.md"
+      ],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-12T18:42:03.922Z"
     }
   ]
 }

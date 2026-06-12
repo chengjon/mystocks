@@ -7132,5 +7132,67 @@
         "transitioned_at": "2026-06-12T17:55:09.655Z"
       }
     ]
+  },
+  {
+    "id": "b4-012-governance-g2-327-preservation-authorization",
+    "title": "g2-327 source-review task-card preservation authorization",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-governance-g2-327-source-review-disposition",
+    "status": "authorization-prepared",
+    "function_tree_ref": "b4-012-governance-task-card-residual-audit",
+    "current_head": "f9d514245aabbb0be423ac3d8baace4a8b95e50b",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m2a-c1-g2-327-source-review-task-card-preservation-authorization-prep-2026-06-13.md",
+        "note": "C1 authorization-prep worklog for isolated g2-327 preservation; task-card body remains untouched.",
+        "current_head": "f9d514245aabbb0be423ac3d8baace4a8b95e50b",
+        "recorded_at": "2026-06-12T18:42:03.638Z"
+      }
+    ],
+    "allowed_paths": [
+      "governance/mainline/task-cards/g2-327.yaml",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/tree.md",
+      ".governance/programs/artdeco-web-design-governance/cards/b4-012-governance-g2-327-preservation-authorization.yaml",
+      "docs/reports/worklogs/claude-auto/b4-012-m2a-c1-g2-327-source-review-task-card-preservation-authorization-prep-2026-06-13.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not modify source, tests, API, routes, runtime, adapters, OpenSpec, ST-HOLD, marketKlineData, docs/guides, docs/superpowers, or external dirty files.",
+      "Do not perform technical_analysis source truth review in this package.",
+      "Do not delete, retire, rename, or normalize g2-327 task-card content."
+    ],
+    "next_gate": "review and approve implementation authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-12T18:42:03.431Z",
+    "updated_at": "2026-06-12T18:42:03.922Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "",
+        "current_head": "f9d514245aabbb0be423ac3d8baace4a8b95e50b",
+        "transitioned_at": "2026-06-12T18:42:03.787Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "Exact staged allowlist excludes all files except this node's governance artifacts and worklog; g2-327.yaml remains unstaged until explicit implementation authorization.",
+        "git diff --cached --check passes.",
+        "GitNexus verify-staged and staged detect-changes pass.",
+        "OPENDOG blocker count is zero."
+      ],
+      "closeout_gate": [
+        "Implementation authorization must be explicit before g2-327.yaml is preserved.",
+        "Post-commit GitNexus index refresh completes."
+      ]
+    }
   }
 ]
