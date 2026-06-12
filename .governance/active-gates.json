@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-12T08:25:54.774Z",
+  "updated_at": "2026-06-12T09:18:26.513Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -9,10 +9,10 @@
       "node_type": "decision",
       "owner_lane": "docs-governance",
       "parent": "",
-      "status": "authorization-prepared",
+      "status": "implementation-landed",
       "source_edits_authorized": false,
       "current_blocker": "",
-      "next_allowed": "review and approve implementation authorization",
+      "next_allowed": "prepare closeout",
       "function_tree_ref": "B4.011-governance-card-residual",
       "freshness": "current-head",
       "allowed_paths": [
@@ -26,7 +26,7 @@
         "docs/reports/worklogs/claude-auto/b4-011-governance-card-residual-no-source-review-2026-06-12.md"
       ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-12T08:25:54.761Z"
+      "updated_at": "2026-06-12T09:18:26.508Z"
     }
   ]
 }

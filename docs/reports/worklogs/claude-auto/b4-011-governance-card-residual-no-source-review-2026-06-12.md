@@ -70,3 +70,26 @@ Required gates:
 ## Recommendation
 
 Prepare the authorization card now, then wait for explicit deletion-retirement approval before removing any of the three card files.
+
+## Implementation Record
+
+Deletion-retirement approval:
+
+- User approved implementation after the authorization-prepared package.
+
+Local recovery snapshot:
+
+- `/tmp/b4-011-governance-card-residual-backup-20260612/`
+
+Removed files:
+
+| File | Backup SHA-256 | Result |
+| --- | --- | --- |
+| `.governance/programs/artdeco-web-design-governance/cards/ai-batch-shape-readiness.yaml` | `c71b0fddb247fe2918b312a4a05d01861c32d6e23eb1d42adaf27d6ab1a418a1` | removed from worktree |
+| `.governance/programs/artdeco-web-design-governance/cards/b4-docs-reports-archive-retirement.yaml` | `d3ec12b945267b4fe134af8bd22362d5d6acf6de98806c1fc75b1272b9665859` | removed from worktree |
+| `.governance/programs/artdeco-web-design-governance/cards/b4-docs-reports-hold-a-low-delta-retirement.yaml` | `2d1d6108165ee3b5fe5dc5253a4acae2dfc2a9a683403928fdeb68aa88f2f86f` | removed from worktree |
+
+Implementation boundary:
+
+- No source, test, runtime, route, API, OpenSpec, ST-HOLD, `marketKlineData`, `docs/guides`, `docs/superpowers`, or report content changes were made.
+- The removal targets were untracked generated governance card artifacts, so the implementation commit records the governance state and this evidence note rather than tracked file deletions.
