@@ -1,0 +1,33 @@
+task:
+  id: "b4-012-governance-catalog-preservation"
+  title: "Governance catalog residual preservation authorization"
+
+scope:
+  allowed_paths:
+    - "governance/function-tree/catalog.yaml"
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/tree.md"
+    - ".governance/programs/artdeco-web-design-governance/cards/b4-012-governance-catalog-preservation.yaml"
+    - "docs/reports/worklogs/claude-auto/b4-012-m2a-a-catalog-preservation-authorization-prep-2026-06-12.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not stage or commit governance/function-tree/catalog.yaml until explicit implementation approval is granted"
+  - "Do not touch governance/mainline/task-cards residual files"
+  - "Do not touch source, tests, runtime, API routes, OpenSpec, ST-HOLD, marketKlineData, docs/guides, docs/superpowers, or external dirty files"
+
+acceptance:
+  commit_gate:
+    - "Exact staged allowlist contains only authorization-prep governance artifacts and worklog"
+    - "git diff --cached --check passes"
+    - "GitNexus verify-staged and staged detect_changes pass"
+    - "OPENDOG blockers remain empty"
+  closeout_gate:
+    - "Catalog implementation remains pending explicit authorization"
+
+evidence:
+  current_head: "537d0586fba3dd2a5787e6d893b57126185e760d"
+  notes: []

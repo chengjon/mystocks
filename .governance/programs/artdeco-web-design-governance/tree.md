@@ -45,3 +45,4 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-governance-card-residual-review: Governance card residual stale task-card review (planning, FT: B4.011-governance-card-residual)
 - [ ] b4-012-residual-dirty-domain-atlas: Residual dirty domain atlas and batch queue (planning, FT: B4.012-M1)
 - [ ] b4-012-governance-task-card-residual-audit: Governance task-card residual audit (planning, FT: B4.012-M2a)
+- [ ] b4-012-governance-catalog-preservation: Governance catalog residual preservation authorization (planning, FT: b4-012-residual-dirty-domain-atlas)
