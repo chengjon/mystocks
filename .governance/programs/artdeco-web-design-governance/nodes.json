@@ -6832,5 +6832,43 @@
         "transitioned_at": "2026-06-12T10:28:32.221Z"
       }
     ]
+  },
+  {
+    "id": "b4-012-governance-task-card-residual-audit",
+    "title": "Governance task-card residual audit",
+    "node_type": "decision",
+    "owner_lane": "docs-governance",
+    "parent": "b4-012-residual-dirty-domain-atlas",
+    "status": "decision-prepared",
+    "function_tree_ref": "B4.012-M2a",
+    "current_head": "fd44d61a28a616bc00daf182f37a08191d2caaa8",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m2a-governance-task-card-residual-no-source-audit-2026-06-12.md",
+        "note": "No-source audit of 10 governance residual entries: one catalog update and nine untracked mainline task cards.",
+        "current_head": "fd44d61a28a616bc00daf182f37a08191d2caaa8",
+        "recorded_at": "2026-06-12T10:38:32.555Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-12T10:38:15.211Z",
+    "updated_at": "2026-06-12T10:38:49.253Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "Decision prepared: split governance residuals into catalog preservation review and task-card preservation review; no implementation authorization granted.",
+        "current_head": "fd44d61a28a616bc00daf182f37a08191d2caaa8",
+        "transitioned_at": "2026-06-12T10:38:49.252Z"
+      }
+    ]
   }
 ]

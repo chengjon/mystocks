@@ -44,3 +44,4 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-docs-reports-residual-u11-c-p3c5-review: Docs reports residual U11-C P3-C5 historical evidence review (planning, FT: b4-docs-reports-drift-governance)
 - [ ] b4-governance-card-residual-review: Governance card residual stale task-card review (planning, FT: B4.011-governance-card-residual)
 - [ ] b4-012-residual-dirty-domain-atlas: Residual dirty domain atlas and batch queue (planning, FT: B4.012-M1)
+- [ ] b4-012-governance-task-card-residual-audit: Governance task-card residual audit (planning, FT: B4.012-M2a)
