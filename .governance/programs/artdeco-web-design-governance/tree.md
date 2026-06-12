@@ -42,3 +42,4 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-docs-reports-residual-u11-a-paired-preserve: Docs reports residual U11-A paired report preservation (planning, FT: b4-docs-reports-drift-governance)
 - [ ] b4-docs-reports-residual-u11-b-active-evidence: Docs reports residual U11-B active evidence preservation (planning, FT: b4-docs-reports-drift-governance)
 - [ ] b4-docs-reports-residual-u11-c-p3c5-review: Docs reports residual U11-C P3-C5 historical evidence review (planning, FT: b4-docs-reports-drift-governance)
+- [ ] b4-governance-card-residual-review: Governance card residual stale task-card review (planning, FT: B4.011-governance-card-residual)

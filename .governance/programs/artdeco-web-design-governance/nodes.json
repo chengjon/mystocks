@@ -6681,5 +6681,69 @@
       "current_head": "247f0fd841c0de660faf0f3648cfdb94fd6481d8",
       "prepared_at": "2026-06-12T06:05:20.994Z"
     }
+  },
+  {
+    "id": "b4-governance-card-residual-review",
+    "title": "Governance card residual stale task-card review",
+    "node_type": "decision",
+    "owner_lane": "docs-governance",
+    "parent": "",
+    "status": "authorization-prepared",
+    "function_tree_ref": "B4.011-governance-card-residual",
+    "current_head": "982061007f6059d2497c1b8536964707f5033a41",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-011-governance-card-residual-no-source-review-2026-06-12.md",
+        "note": "No-source review of three untracked stale governance task cards; all map to closed nodes and need explicit deletion-retirement authorization.",
+        "current_head": "982061007f6059d2497c1b8536964707f5033a41",
+        "recorded_at": "2026-06-12T08:24:46.873Z"
+      }
+    ],
+    "allowed_paths": [
+      ".governance/programs/artdeco-web-design-governance/cards/ai-batch-shape-readiness.yaml",
+      ".governance/programs/artdeco-web-design-governance/cards/b4-docs-reports-archive-retirement.yaml",
+      ".governance/programs/artdeco-web-design-governance/cards/b4-docs-reports-hold-a-low-delta-retirement.yaml",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/tree.md",
+      "docs/reports/worklogs/claude-auto/b4-011-governance-card-residual-no-source-review-2026-06-12.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not touch source, tests, routes, API paths, runtime code, OpenSpec, ST-HOLD, marketKlineData, docs/guides, docs/superpowers, docs/reports content beyond approved worklogs, or external dirty files.",
+      "Do not stage or modify any other governance card file.",
+      "Do not recreate stale authorization for closed nodes by committing the three residual card files as active artifacts."
+    ],
+    "next_gate": "review and approve implementation authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-12T08:24:35.736Z",
+    "updated_at": "2026-06-12T08:25:54.761Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "Decision prepared: three untracked task cards map to closed nodes and should be removed only under explicit deletion-retirement authorization.",
+        "current_head": "982061007f6059d2497c1b8536964707f5033a41",
+        "transitioned_at": "2026-06-12T08:24:59.750Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "Exact staged allowlist contains only approved governance state, this authorization card, and the no-source worklog during authorization prep; implementation requires explicit approval before deleting the three residual card files.",
+        "git diff --cached --check passes.",
+        "GitNexus verify-staged and staged detect-changes pass with low risk and zero affected processes.",
+        "OPENDOG verification returns blockers: []."
+      ],
+      "closeout_gate": [
+        "After approved implementation, the three stale untracked card files are absent from the worktree.",
+        "FUNCTION_TREE node records closeout evidence and source_edits_authorized is false.",
+        "GitNexus post-commit analyze --index-only completes."
+      ]
+    }
   }
 ]

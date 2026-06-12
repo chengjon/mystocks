@@ -1,0 +1,36 @@
+task:
+  id: "b4-governance-card-residual-review"
+  title: "Governance card residual stale task-card review"
+
+scope:
+  allowed_paths:
+    - ".governance/programs/artdeco-web-design-governance/cards/ai-batch-shape-readiness.yaml"
+    - ".governance/programs/artdeco-web-design-governance/cards/b4-docs-reports-archive-retirement.yaml"
+    - ".governance/programs/artdeco-web-design-governance/cards/b4-docs-reports-hold-a-low-delta-retirement.yaml"
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/tree.md"
+    - "docs/reports/worklogs/claude-auto/b4-011-governance-card-residual-no-source-review-2026-06-12.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not touch source, tests, routes, API paths, runtime code, OpenSpec, ST-HOLD, marketKlineData, docs/guides, docs/superpowers, docs/reports content beyond approved worklogs, or external dirty files."
+  - "Do not stage or modify any other governance card file."
+  - "Do not recreate stale authorization for closed nodes by committing the three residual card files as active artifacts."
+
+acceptance:
+  commit_gate:
+    - "Exact staged allowlist contains only approved governance state, this authorization card, and the no-source worklog during authorization prep; implementation requires explicit approval before deleting the three residual card files."
+    - "git diff --cached --check passes."
+    - "GitNexus verify-staged and staged detect-changes pass with low risk and zero affected processes."
+    - "OPENDOG verification returns blockers: []."
+  closeout_gate:
+    - "After approved implementation, the three stale untracked card files are absent from the worktree."
+    - "FUNCTION_TREE node records closeout evidence and source_edits_authorized is false."
+    - "GitNexus post-commit analyze --index-only completes."
+
+evidence:
+  current_head: "982061007f6059d2497c1b8536964707f5033a41"
+  notes: []
