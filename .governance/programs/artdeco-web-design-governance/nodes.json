@@ -6406,11 +6406,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "",
-    "status": "authorization-prepared",
+    "status": "approved-for-implementation",
     "function_tree_ref": "b4-docs-reports-drift-governance",
-    "current_head": "c74fcb7c193be3e64896eace2b361d30d1abb974",
+    "current_head": "5ee9f148563101542745b131f6e675e5533f8e90",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "baseline",
@@ -6418,6 +6418,13 @@
         "note": "U11-B active evidence preservation scope reviewed; no source or report-body preservation implementation yet.",
         "current_head": "c74fcb7c193be3e64896eace2b361d30d1abb974",
         "recorded_at": "2026-06-12T01:14:42.776Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-011-m2a-residual-u11-b-active-evidence-preserve-review-2026-06-12.md",
+        "note": "Implementation approval requested by user after authorization-prepared commit; target reports still untracked and staged area empty.",
+        "current_head": "5ee9f148563101542745b131f6e675e5533f8e90",
+        "recorded_at": "2026-06-12T03:24:04.173Z"
       }
     ],
     "allowed_paths": [
@@ -6432,11 +6439,11 @@
       "Do not modify report contents, archive, move, delete, or retire U11-B files during authorization prep.",
       "Do not touch U11-C P3-C5 files, docs/guides, docs/superpowers, web, src, tests, scripts, OpenSpec, ST-HOLD, marketKlineData, or external dirty files."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "implement within allowed_paths",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-12T01:14:24.407Z",
-    "updated_at": "2026-06-12T01:15:45.169Z",
+    "updated_at": "2026-06-12T03:24:26.691Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -6444,6 +6451,13 @@
         "note": "",
         "current_head": "c74fcb7c193be3e64896eace2b361d30d1abb974",
         "transitioned_at": "2026-06-12T01:15:05.108Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "5ee9f148563101542745b131f6e675e5533f8e90",
+        "transitioned_at": "2026-06-12T03:24:26.691Z"
       }
     ],
     "acceptance": {
