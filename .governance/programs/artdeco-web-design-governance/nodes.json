@@ -6877,11 +6877,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-governance-task-card-residual-audit",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "b4-012-residual-dirty-domain-atlas",
     "current_head": "c4966d6817e381ad79172f07a008066e6bb7f9bb",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "baseline",
@@ -6913,11 +6913,11 @@
       "Do not touch governance/mainline/task-cards residual files",
       "Do not touch source, tests, runtime, API routes, OpenSpec, ST-HOLD, marketKlineData, docs/guides, docs/superpowers, or external dirty files"
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-12T10:53:30.014Z",
-    "updated_at": "2026-06-12T13:51:36.525Z",
+    "updated_at": "2026-06-12T13:56:26.499Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -6939,6 +6939,20 @@
         "note": "",
         "current_head": "c4966d6817e381ad79172f07a008066e6bb7f9bb",
         "transitioned_at": "2026-06-12T13:51:36.524Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "37582ff6976c55e04c1e17ff0b5e7b3f14fde091",
+        "transitioned_at": "2026-06-12T13:56:26.338Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "37582ff6976c55e04c1e17ff0b5e7b3f14fde091",
+        "transitioned_at": "2026-06-12T13:56:26.498Z"
       }
     ],
     "acceptance": {
@@ -6951,6 +6965,18 @@
       "closeout_gate": [
         "Catalog implementation remains pending explicit authorization"
       ]
+    },
+    "closeout": {
+      "summary": "Landed governance/function-tree/catalog.yaml +20/-0 preservation in commit 37582ff69; no task-card residuals staged or modified",
+      "compatibility": "Metadata/catalog registration only; no source, test, runtime, API, route, OpenSpec, ST-HOLD, marketKlineData, docs/guides, or docs/superpowers behavior changed",
+      "gates": [
+        "Exact staged allowlist passed for implementation commit",
+        "git diff --cached --check passed",
+        "GitNexus verify-staged and detect-changes passed with risk low and affected processes 0",
+        "OPENDOG blockers remained empty"
+      ],
+      "current_head": "37582ff6976c55e04c1e17ff0b5e7b3f14fde091",
+      "prepared_at": "2026-06-12T13:56:26.421Z"
     }
   }
 ]
