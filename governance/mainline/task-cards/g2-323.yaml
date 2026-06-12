@@ -1,0 +1,113 @@
+version: "v0.2"
+
+task:
+  id: "g2-323"
+  node_slug: "g2-323-watchlist-datasourcefactory-provider-steward-surface-compaction"
+  title: "Freeze watchlist DataSourceFactory steward surfaces in compact form"
+  owner: "codex"
+  created_at: "2026-06-03"
+  status: "accepted_merged"
+
+mainline:
+  id: "L1-watchlist-datasourcefactory-provider-steward-surface-compaction"
+  objective: "compact the post-G2.322 steward current surfaces so active files retain only active gate, parent chain, and evidence refs"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "governance"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+  source_edit_authority: false
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.323 is a no-source steward surface compaction / baseline-freeze node and does not add, remove, or rename runtime entrypoints."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/generated/watchlist-datasourcefactory-provider-steward-surface-compaction-2026-06-03.json"
+    - "docs/reports/quality/backend-watchlist-datasourcefactory-provider-steward-surface-compaction-2026-06-03.md"
+    - "governance/mainline/task-cards/g2-323.yaml"
+  forbidden_paths:
+    - "web/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/**"
+    - "runtime state"
+    - "PM2 state"
+
+non_goals:
+  - "editing backend, frontend, or shared source code"
+  - "editing tests"
+  - "editing generated OpenAPI or docs/api artifacts"
+  - "changing route registration, route paths, request models, response models, or provider wiring"
+  - "editing config, scripts, OpenSpec, PM2, or runtime state"
+  - "processing unrelated SCSS dirty changes"
+  - "authorizing or merging any source implementation"
+
+acceptance:
+  checks:
+    - id: "parent-g2322-accepted"
+      command: "steward tree records G2.322 accepted_merged"
+      required: true
+    - id: "compact-current-surfaces"
+      command: "branch-register, current-next-gates, evidence-index, track, and steward-index retain compact active/current data only"
+      required: true
+    - id: "archive-pointer-preserved"
+      command: "long historical detail remains in archive, completed-ledger, reports, and generated evidence refs"
+      required: true
+    - id: "json-valid"
+      command: "node validates steward-index.json plus G2.323 generated evidence JSON"
+      required: true
+    - id: "no-source-staged"
+      command: "path-limited diff shows no web/, src/, tests/, docs/api/, config/, scripts/, or openspec/ changes introduced by G2.323"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "This is a governance surface compaction only; it does not verify runtime behavior."
+    - "Current local worktree is dirty; staging and review must remain path-limited to governance artifacts."
+    - "Unrelated out-of-scope governance and SCSS dirty artifacts may still exist in the worktree and are not accepted by this node."
+  rollback_plan: "Revert G2.323 governance artifacts and restore the previous steward current-surface references."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Close G2.323 no-source steward surface compaction / baseline freeze after G2.322 accepted_merged."
+    modified_scope: "steward tree, generated evidence, quality report, and G2.323 governance task card only."
+    dependency_changes: "No package dependency changes."
+    legacy_logic_impact: "No business source, tests, route contracts, frontend, config, scripts, OpenSpec, PM2, or runtime state changes."
+    rollback_ready: "Revert G2.323 governance artifacts and status updates."
+    risk_and_rollback_point: "No-source governance node; source nodes remain human-review gated and are not authorized here."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  next_gate: "G2.324 service lifecycle DI residual candidate selection / no-source decision"
+  stop_rule_owner: "governance"
+  stop_rule_sla_hours: 0
+  approval:
+    required: false
+    approval_note: "Pure governance no-source node may auto-advance under the current rule; source nodes still require human review."
+    secondary_approved: false

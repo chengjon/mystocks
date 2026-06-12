@@ -1,0 +1,123 @@
+version: "v0.2"
+
+task:
+  id: "g2-326"
+  node_slug: "g2-326-technical-analysis-datasourcefactory-provider-authorization-preflight"
+  title: "Authorize technical_analysis DataSourceFactory provider preflight"
+  owner: "codex"
+  created_at: "2026-06-03"
+  status: "accepted_merged"
+
+mainline:
+  id: "L1-technical-analysis-datasourcefactory-provider-authorization-preflight"
+  objective: "prepare a bounded future technical_analysis.py DataSourceFactory provider implementation lane without editing source"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "governance"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+  source_edit_authority: false
+  source_execution_started: false
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.326 is a no-source provider authorization preflight and does not add, remove, or rename runtime entrypoints."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/technical-analysis-datasourcefactory-provider-preflight-2026-06-03.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-technical-analysis-datasourcefactory-provider-preflight-2026-06-03.md"
+    - "governance/mainline/task-cards/g2-326.yaml"
+  future_source_scope:
+    allowed_paths:
+      - "web/backend/app/api/technical_analysis.py"
+      - "tests/api/file_tests/test_technical_analysis_api.py"
+    forbidden_paths:
+      - "web/backend/app/services/data_source_factory/**"
+      - "web/backend/app/api/watchlist.py"
+      - "web/backend/app/api/strategy_management/**"
+      - "web/backend/app/api/_technical_analysis_models.py"
+      - "web/backend/app/api/_technical_analysis_responses.py"
+      - "docs/api/**"
+      - "web/frontend/**"
+      - "src/**"
+      - "config/**"
+      - "scripts/**"
+      - "openspec/**"
+      - "runtime state"
+      - "PM2 state"
+
+non_goals:
+  - "editing technical_analysis.py or any backend source in this node"
+  - "editing tests in this node"
+  - "editing generated OpenAPI or docs/api artifacts"
+  - "changing route registration, route paths, request models, response models, or provider wiring in this node"
+  - "starting G2.327 source execution"
+
+acceptance:
+  checks:
+    - id: "parent-g2325-accepted"
+      command: "G2.325 records accepted_merged no-source ownership decision"
+      required: true
+    - id: "bounded-future-source-scope"
+      command: "future G2.327 scope is limited to technical_analysis.py plus focused technical analysis file tests"
+      required: true
+    - id: "source-not-started"
+      command: "G2.326 remains no-source and G2.327 source execution is not started"
+      required: true
+    - id: "human-review-gated"
+      command: "future source PR must stop for human review before merge"
+      required: true
+    - id: "json-yaml-valid"
+      command: "node validates steward-index.json, G2.326 generated evidence JSON, and G2.326 task card YAML"
+      required: true
+    - id: "no-source-staged"
+      command: "path-limited diff shows no web/, src/, tests/, docs/api/, config/, scripts/, or openspec/ changes introduced by G2.326"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "This is a no-source authorization preflight and does not verify runtime route/OpenAPI behavior."
+    - "The future source lane remains blocked until explicit source-lane execution approval."
+    - "Current local worktree is dirty; staging and review must remain path-limited to governance artifacts."
+  rollback_plan: "Revert G2.326 governance artifacts and restore G2.326 to planned_no_source in steward current surfaces."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Accept G2.326 no-source authorization preflight for a future technical_analysis.py provider implementation lane."
+    modified_scope: "steward tree, generated evidence, quality report, and G2.326 governance task card only."
+    dependency_changes: "No package dependency changes."
+    legacy_logic_impact: "No business source, tests, route contracts, frontend, config, scripts, OpenSpec, PM2, or runtime state changes."
+    rollback_ready: "Revert G2.326 governance artifacts and status updates."
+    risk_and_rollback_point: "No-source governance node; G2.327 source execution is not started and remains human-review gated."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  next_gate: "G2.327 technical_analysis DataSourceFactory provider implementation / source approval required"
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approval_note: "Pure governance no-source node may auto-advance under the current rule; source execution still requires explicit source-lane approval and human review before merge."
+    secondary_approved: false

@@ -1,0 +1,84 @@
+task:
+  id: "g2-329"
+  node_slug: "g2-329-service-lifecycle-di-branch-anchor-reconciliation-before-next-residual-selection"
+  title: "Reconcile service lifecycle DI branch anchor before next residual selection"
+  type: "no_source_branch_anchor_reconciliation"
+  status: "accepted_reviewed_no_source"
+  lane:
+    id: "L1-service-lifecycle-di-branch-anchor-reconciliation"
+    objective: "anchor the baseline branch, calibrate watchlist drift, and fix candidate-pool statistics before the next global residual screen"
+    owner: "G/#79 service lifecycle DI + Route/OpenAPI governance"
+  base:
+    branch: "wip/root-dirty-20260403"
+    current_workspace_head: "06b0fc09548774ba997784c878349c25087d7c88"
+    remote_anchor: "origin/wip/root-dirty-20260403 @ 2ebff6d7ded33403c691a60fc43f87dabf90a975"
+    accepted_pr_anchor: "PR #474 merge commit 2ebff6d7ded33403c691a60fc43f87dabf90a975"
+  authority:
+    source_edit_authority: false
+    source_execution_started: false
+    approval_status: "approved"
+    approval_note: "Human maintainer authorized G2.329 as planned_no_source, pure governance, with no source modifications."
+  scope:
+    allowed_paths:
+      - ".planning/codebase/generated/service-lifecycle-di-branch-anchor-reconciliation-2026-06-03.json"
+      - ".planning/codebase/steward-tree/branch-register.md"
+      - ".planning/codebase/steward-tree/current-next-gates.md"
+      - ".planning/codebase/steward-tree/completed-ledger.md"
+      - ".planning/codebase/steward-tree/evidence-index.md"
+      - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      - ".planning/codebase/steward-tree/steward-index.json"
+      - "docs/reports/quality/backend-service-lifecycle-di-branch-anchor-reconciliation-2026-06-03.md"
+      - "governance/mainline/task-cards/g2-329.yaml"
+    forbidden_paths:
+      - "web/**"
+      - "src/**"
+      - "tests/**"
+      - "docs/api/**"
+      - "web/frontend/**"
+      - "config/**"
+      - "scripts/**"
+      - "openspec/**"
+      - "PM2/runtime state"
+  reconciliation:
+    local_head: "06b0fc09548774ba997784c878349c25087d7c88"
+    remote_anchor: "2ebff6d7ded33403c691a60fc43f87dabf90a975"
+    pr474_anchor: "2ebff6d7ded33403c691a60fc43f87dabf90a975"
+    classification: "local-head-and-remote-anchor-diverged"
+    watchlist_current_inline_calls: "8/8"
+    watchlist_pr474_provider_calls: "1/1"
+    watchlist_pr474_dependency_bindings: 8
+    normalized_candidate_pool_count: 1
+    normalized_seed_candidate: "web/backend/app/api/strategy_management/_strategy_execution_router.py"
+  gates:
+    - id: "no-source"
+      command: "G2.329 modifies governance artifacts only"
+      result: "passed"
+    - id: "branch-anchor-check"
+      command: "git rev-parse and git merge-base read-only checks over HEAD, origin/wip/root-dirty-20260403, and PR #474"
+      result: "passed: local HEAD and remote/PR474 anchor have diverged"
+    - id: "watchlist-calibration"
+      command: "read-only watchlist count comparison over current worktree, current HEAD, and PR #474 anchor"
+      result: "passed: current 8/8 inline counts excluded by PR #474 provider anchor 1/1 + 8 dependency bindings"
+    - id: "candidate-pool-recalibration"
+      command: "read-only API route-body DataSourceFactory scan with watchlist anchor overlay and technical_analysis reviewed-worktree overlay"
+      result: "passed: normalized candidate pool count 1"
+  risks:
+    - "Local HEAD remains divergent from origin/wip/root-dirty-20260403 and PR #474."
+    - "Do not use current local watchlist.py counts as residual truth for this lane."
+    - "G2.330 may screen the normalized candidate pool, but source implementation remains separately gated."
+  rollback_plan: "Revert G2.329 governance artifacts and restore current steward surfaces to G2.329 planned_no_source if this reconciliation is rejected."
+  summary:
+    six_line_summary_required: true
+    six_line_summary:
+      change_purpose: "Anchor baseline branch and fix service lifecycle DI residual candidate-pool drift."
+      modified_scope: "governance evidence, steward tree indexes, quality report, and task card only."
+      dependency_changes: "No dependency changes."
+      legacy_logic_impact: "No business code changes; watchlist drift is recorded but not edited."
+      rollback_ready: "Revert G2.329 governance artifacts and status updates."
+      risk_and_rollback_point: "No-source reconciliation; next candidate screening must use normalized pool statistics."
+  governance:
+    phase: "phase_b_dual_hard_gate"
+    next_gate: "G2.330 service lifecycle DI global residual candidate screening"
+    next_gate_state: "planned_no_source"
+    next_gate_seed_candidate: "web/backend/app/api/strategy_management/_strategy_execution_router.py"
+    autopilot_continue_allowed: false

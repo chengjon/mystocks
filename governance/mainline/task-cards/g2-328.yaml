@@ -1,0 +1,85 @@
+task:
+  id: "g2-328"
+  node_slug: "g2-328-technical-analysis-datasourcefactory-provider-closeout-residual-refresh"
+  title: "Close technical_analysis DataSourceFactory provider lane and refresh residual calls"
+  type: "no_source_closeout_residual_refresh"
+  status: "accepted_reviewed_no_source"
+  lane:
+    id: "L1-technical-analysis-datasourcefactory-provider-closeout-residual-refresh"
+    objective: "close the locally reviewed G2.327 provider implementation lane and refresh technical_analysis residual calls without editing source"
+    owner: "G/#79 service lifecycle DI + Route/OpenAPI governance"
+  base:
+    branch: "wip/root-dirty-20260403"
+    current_workspace_head: "06b0fc09548774ba997784c878349c25087d7c88"
+    accepted_pr_anchor: "PR #474 merge commit 2ebff6d7ded33403c691a60fc43f87dabf90a975"
+    pr474_is_ancestor_of_current_head: false
+  authority:
+    source_edit_authority: false
+    source_execution_started: false
+    approval_status: "approved"
+    approval_note: "Human maintainer instructed: accept local G2.327 as reviewed-but-not-merged, create no PR, merge no code, and continue only with no-source governance."
+  scope:
+    allowed_paths:
+      - ".planning/codebase/generated/technical-analysis-datasourcefactory-provider-closeout-residual-refresh-2026-06-03.json"
+      - ".planning/codebase/generated/technical-analysis-datasourcefactory-provider-implementation-2026-06-03.json"
+      - ".planning/codebase/steward-tree/branch-register.md"
+      - ".planning/codebase/steward-tree/current-next-gates.md"
+      - ".planning/codebase/steward-tree/completed-ledger.md"
+      - ".planning/codebase/steward-tree/evidence-index.md"
+      - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      - ".planning/codebase/steward-tree/steward-index.json"
+      - "docs/reports/quality/backend-technical-analysis-datasourcefactory-provider-closeout-residual-refresh-2026-06-03.md"
+      - "docs/reports/quality/backend-technical-analysis-datasourcefactory-provider-implementation-2026-06-03.md"
+      - "governance/mainline/task-cards/g2-327.yaml"
+      - "governance/mainline/task-cards/g2-328.yaml"
+    forbidden_paths:
+      - "web/**"
+      - "src/**"
+      - "tests/**"
+      - "docs/api/**"
+      - "web/frontend/**"
+      - "config/**"
+      - "scripts/**"
+      - "openspec/**"
+      - "PM2/runtime state"
+  residual_refresh:
+    technical_analysis_provider_present: true
+    technical_analysis_provider_datasourcefactory_calls: 1
+    technical_analysis_provider_get_data_source_calls: 1
+    technical_analysis_dependency_bindings: 8
+    technical_analysis_handler_direct_datasourcefactory_calls: 0
+    technical_analysis_handler_direct_get_data_source_calls: 0
+    worktree_wide_candidate_selection: "deferred"
+    deferral_reason: "Current HEAD is not a descendant of PR #474; watchlist.py current counts contradict accepted PR #474 evidence."
+  gates:
+    - id: "no-source"
+      command: "G2.328 does not edit source, tests, API contracts, frontend, config, scripts, OpenSpec, PM2, or runtime state"
+      result: "passed"
+    - id: "parent-reviewed"
+      command: "Human maintainer accepted local G2.327 source implementation as reviewed-but-not-merged"
+      result: "passed"
+    - id: "technical-analysis-residual-refresh"
+      command: "read-only count over current technical_analysis.py provider and handler residuals"
+      result: "passed: handler direct residuals 0/0; provider backing 1/1"
+    - id: "branch-anchor-drift-recorded"
+      command: "git merge-base --is-ancestor PR474 HEAD and read-only watchlist counts"
+      result: "passed: PR #474 is not an ancestor of current HEAD; watchlist drift recorded but not acted on"
+  risks:
+    - "G2.327 remains reviewed-but-not-merged; do not claim PR merge."
+    - "Worktree-wide residual selection is deferred because current HEAD would rehydrate accepted watchlist work as a false candidate."
+    - "Local worktree remains dirty; this node is path-limited to governance artifacts."
+  rollback_plan: "Revert G2.328 governance artifacts and restore current steward surfaces to G2.327 reviewed-but-not-merged if the no-source closeout is rejected."
+  summary:
+    six_line_summary_required: true
+    six_line_summary:
+      change_purpose: "Close the locally reviewed technical_analysis DataSourceFactory provider lane without PR or merge."
+      modified_scope: "governance evidence, steward tree indexes, quality reports, and task cards only."
+      dependency_changes: "No dependency changes."
+      legacy_logic_impact: "No business code changes in G2.328; G2.327 source state remains reviewed-but-not-merged."
+      rollback_ready: "Revert G2.328 governance artifacts and status updates."
+      risk_and_rollback_point: "No-source closeout; next residual selection deferred until branch-anchor drift is reconciled."
+  governance:
+    phase: "phase_b_dual_hard_gate"
+    next_gate: "G2.329 service lifecycle DI branch-anchor reconciliation before next residual selection"
+    next_gate_state: "planned_no_source"
+    autopilot_continue_allowed: false

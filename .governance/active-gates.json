@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-12T14:45:09.369Z",
+  "updated_at": "2026-06-12T14:58:23.897Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -43,10 +43,10 @@
       "node_type": "decision",
       "owner_lane": "artdeco-web-design-governance",
       "parent": "b4-012-governance-task-card-residual-audit",
-      "status": "authorization-prepared",
-      "source_edits_authorized": false,
+      "status": "implementation-ready",
+      "source_edits_authorized": true,
       "current_blocker": "",
-      "next_allowed": "review and approve implementation authorization",
+      "next_allowed": "land implementation with Git evidence",
       "function_tree_ref": "b4-012-residual-dirty-domain-atlas",
       "freshness": "current-head",
       "allowed_paths": [
@@ -66,7 +66,7 @@
         "docs/reports/worklogs/claude-auto/b4-012-m2a-b-task-card-preservation-authorization-prep-2026-06-12.md"
       ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-12T14:45:09.358Z"
+      "updated_at": "2026-06-12T14:58:23.890Z"
     }
   ]
 }
