@@ -1,32 +1,5 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-12T09:18:26.513Z",
-  "gates": [
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-governance-card-residual-review",
-      "title": "Governance card residual stale task-card review",
-      "node_type": "decision",
-      "owner_lane": "docs-governance",
-      "parent": "",
-      "status": "implementation-landed",
-      "source_edits_authorized": false,
-      "current_blocker": "",
-      "next_allowed": "prepare closeout",
-      "function_tree_ref": "B4.011-governance-card-residual",
-      "freshness": "current-head",
-      "allowed_paths": [
-        ".governance/programs/artdeco-web-design-governance/cards/ai-batch-shape-readiness.yaml",
-        ".governance/programs/artdeco-web-design-governance/cards/b4-docs-reports-archive-retirement.yaml",
-        ".governance/programs/artdeco-web-design-governance/cards/b4-docs-reports-hold-a-low-delta-retirement.yaml",
-        ".governance/active-gates.json",
-        ".governance/active-gates.md",
-        ".governance/programs/artdeco-web-design-governance/nodes.json",
-        ".governance/programs/artdeco-web-design-governance/tree.md",
-        "docs/reports/worklogs/claude-auto/b4-011-governance-card-residual-no-source-review-2026-06-12.md"
-      ],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-12T09:18:26.508Z"
-    }
-  ]
+  "updated_at": "2026-06-12T09:23:35.423Z",
+  "gates": []
 }

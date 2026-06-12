@@ -93,3 +93,20 @@ Implementation boundary:
 
 - No source, test, runtime, route, API, OpenSpec, ST-HOLD, `marketKlineData`, `docs/guides`, `docs/superpowers`, or report content changes were made.
 - The removal targets were untracked generated governance card artifacts, so the implementation commit records the governance state and this evidence note rather than tracked file deletions.
+
+## Closeout Record
+
+Implementation commit:
+
+- `629a64647 B4.011: retire stale governance card residuals`
+
+Post-implementation verification:
+
+- The three stale untracked governance card files are absent from the worktree.
+- GitNexus `analyze --index-only` completed after the implementation commit.
+- Implementation staged scope contained only governance state and this authorized worklog update.
+- No source, test, runtime, route, API, OpenSpec, ST-HOLD, `marketKlineData`, `docs/guides`, or `docs/superpowers` paths were modified.
+
+Final disposition:
+
+- `b4-governance-card-residual-review` can close after recording this closeout evidence.
