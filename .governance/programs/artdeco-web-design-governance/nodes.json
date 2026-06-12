@@ -6839,11 +6839,11 @@
     "node_type": "decision",
     "owner_lane": "docs-governance",
     "parent": "b4-012-residual-dirty-domain-atlas",
-    "status": "decision-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "B4.012-M2a",
-    "current_head": "fd44d61a28a616bc00daf182f37a08191d2caaa8",
+    "current_head": "9c91fbe2131dead42c394e3e56f37c645880519b",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "baseline",
@@ -6851,16 +6851,33 @@
         "note": "No-source audit of 10 governance residual entries: one catalog update and nine untracked mainline task cards.",
         "current_head": "fd44d61a28a616bc00daf182f37a08191d2caaa8",
         "recorded_at": "2026-06-12T10:38:32.555Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m2a-governance-residual-closeout-no-source-review-2026-06-13.md",
+        "note": "Current HEAD no-source governance residual closeout review.",
+        "current_head": "9c91fbe2131dead42c394e3e56f37c645880519b",
+        "recorded_at": "2026-06-12T19:14:25.575Z"
       }
     ],
-    "allowed_paths": [],
+    "allowed_paths": [
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/cards/b4-012-governance-task-card-residual-audit.yaml",
+      "docs/reports/worklogs/claude-auto/b4-012-m2a-governance-residual-closeout-no-source-review-2026-06-13.md"
+    ],
     "forbidden_paths": [],
-    "non_goals": [],
-    "next_gate": "prepare authorization",
+    "non_goals": [
+      "Do not modify source, tests, API, routes, runtime, OpenSpec, ST-HOLD, marketKlineData, docs/guides, docs/superpowers, or external dirty files.",
+      "Do not perform technical_analysis source truth review or DataSourceFactory implementation review.",
+      "Do not clean up any non-governance residual dirty bucket from the B4.012 atlas."
+    ],
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-12T10:38:15.211Z",
-    "updated_at": "2026-06-12T10:38:49.253Z",
+    "updated_at": "2026-06-12T19:14:25.863Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -6868,8 +6885,34 @@
         "note": "Decision prepared: split governance residuals into catalog preservation review and task-card preservation review; no implementation authorization granted.",
         "current_head": "fd44d61a28a616bc00daf182f37a08191d2caaa8",
         "transitioned_at": "2026-06-12T10:38:49.252Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User requested continuation into M2a governance residual closeout; closeout scope is governance-only.",
+        "current_head": "9c91fbe2131dead42c394e3e56f37c645880519b",
+        "transitioned_at": "2026-06-12T19:14:25.775Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Closeout review and FUNCTION_TREE artifacts are ready to land.",
+        "current_head": "9c91fbe2131dead42c394e3e56f37c645880519b",
+        "transitioned_at": "2026-06-12T19:14:25.863Z"
       }
-    ]
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "Exact staged allowlist includes only this closeout worklog and required FUNCTION_TREE governance artifacts.",
+        "git diff --cached --check passes.",
+        "GitNexus verify-staged and staged detect-changes pass with low risk.",
+        "OPENDOG blocker count is zero."
+      ],
+      "closeout_gate": [
+        "governance/** and .governance/** have no residual unstaged or untracked changes after M2a closeout.",
+        "Post-commit GitNexus index refresh completes."
+      ]
+    }
   },
   {
     "id": "b4-012-governance-catalog-preservation",
@@ -7101,11 +7144,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-governance-task-card-residual-audit",
-    "status": "decision-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "b4-012-residual-dirty-domain-atlas",
-    "current_head": "82240fb67a6aa16c595cb399ab1119729e417d6f",
+    "current_head": "9c91fbe2131dead42c394e3e56f37c645880519b",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "baseline",
@@ -7113,16 +7156,33 @@
         "note": "No-source disposition audit for isolated g2-327 source-review task-card residual",
         "current_head": "82240fb67a6aa16c595cb399ab1119729e417d6f",
         "recorded_at": "2026-06-12T17:55:09.586Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m2a-governance-residual-closeout-no-source-review-2026-06-13.md",
+        "note": "Current HEAD no-source governance residual closeout review.",
+        "current_head": "9c91fbe2131dead42c394e3e56f37c645880519b",
+        "recorded_at": "2026-06-12T19:14:25.100Z"
       }
     ],
-    "allowed_paths": [],
+    "allowed_paths": [
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/cards/b4-012-governance-g2-327-source-review-disposition.yaml",
+      "docs/reports/worklogs/claude-auto/b4-012-m2a-governance-residual-closeout-no-source-review-2026-06-13.md"
+    ],
     "forbidden_paths": [],
-    "non_goals": [],
-    "next_gate": "prepare authorization",
+    "non_goals": [
+      "Do not modify source, tests, API, routes, runtime, OpenSpec, ST-HOLD, marketKlineData, docs/guides, docs/superpowers, or external dirty files.",
+      "Do not perform technical_analysis source truth review or DataSourceFactory implementation review.",
+      "Do not clean up any non-governance residual dirty bucket from the B4.012 atlas."
+    ],
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-12T17:55:09.491Z",
-    "updated_at": "2026-06-12T17:55:09.655Z",
+    "updated_at": "2026-06-12T19:14:25.479Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -7130,8 +7190,34 @@
         "note": "",
         "current_head": "82240fb67a6aa16c595cb399ab1119729e417d6f",
         "transitioned_at": "2026-06-12T17:55:09.655Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User requested continuation into M2a governance residual closeout; closeout scope is governance-only.",
+        "current_head": "9c91fbe2131dead42c394e3e56f37c645880519b",
+        "transitioned_at": "2026-06-12T19:14:25.373Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Closeout review and FUNCTION_TREE artifacts are ready to land.",
+        "current_head": "9c91fbe2131dead42c394e3e56f37c645880519b",
+        "transitioned_at": "2026-06-12T19:14:25.479Z"
       }
-    ]
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "Exact staged allowlist includes only this closeout worklog and required FUNCTION_TREE governance artifacts.",
+        "git diff --cached --check passes.",
+        "GitNexus verify-staged and staged detect-changes pass with low risk.",
+        "OPENDOG blocker count is zero."
+      ],
+      "closeout_gate": [
+        "governance/** and .governance/** have no residual unstaged or untracked changes after M2a closeout.",
+        "Post-commit GitNexus index refresh completes."
+      ]
+    }
   },
   {
     "id": "b4-012-governance-g2-327-preservation-authorization",

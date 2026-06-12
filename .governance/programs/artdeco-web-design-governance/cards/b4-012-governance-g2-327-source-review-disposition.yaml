@@ -1,0 +1,32 @@
+task:
+  id: "b4-012-governance-g2-327-source-review-disposition"
+  title: "g2-327 source-review task-card disposition audit"
+
+scope:
+  allowed_paths:
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/cards/b4-012-governance-g2-327-source-review-disposition.yaml"
+    - "docs/reports/worklogs/claude-auto/b4-012-m2a-governance-residual-closeout-no-source-review-2026-06-13.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not modify source, tests, API, routes, runtime, OpenSpec, ST-HOLD, marketKlineData, docs/guides, docs/superpowers, or external dirty files."
+  - "Do not perform technical_analysis source truth review or DataSourceFactory implementation review."
+  - "Do not clean up any non-governance residual dirty bucket from the B4.012 atlas."
+
+acceptance:
+  commit_gate:
+    - "Exact staged allowlist includes only this closeout worklog and required FUNCTION_TREE governance artifacts."
+    - "git diff --cached --check passes."
+    - "GitNexus verify-staged and staged detect-changes pass with low risk."
+    - "OPENDOG blocker count is zero."
+  closeout_gate:
+    - "governance/** and .governance/** have no residual unstaged or untracked changes after M2a closeout."
+    - "Post-commit GitNexus index refresh completes."
+
+evidence:
+  current_head: "9c91fbe2131dead42c394e3e56f37c645880519b"
+  notes: []
