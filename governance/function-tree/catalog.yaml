@@ -9,7 +9,6 @@ domains:
         label: "1.1 实时行情监控"
         coverage_paths:
           - "src/adapters/tdx/**"
-          - "web/backend/app/api/market.py"
           - "web/backend/app/api/market/**"
           - "web/frontend/src/api/mockApiClient.ts"
           - "web/frontend/src/composables/useWebSocketWithConfig.ts"
@@ -20,7 +19,6 @@ domains:
           governance:
             - "docs/FUNCTION_TREE.md"
           api:
-            - "web/backend/app/api/market.py"
             - "web/backend/app/api/market/**"
           frontend:
             - "web/frontend/src/api/mockApiClient.ts"
@@ -214,7 +212,7 @@ domains:
           governance:
             - "docs/FUNCTION_TREE.md"
           api:
-            - "web/backend/app/api/backtest_ws.py"
+            - "web/backend/app/api/v1/analysis/backtest.py"
           frontend:
             - "web/frontend/src/views/strategy/**"
           core:
@@ -256,13 +254,11 @@ domains:
         coverage_paths:
           - "src/governance/risk_management/**"
           - "web/backend/app/api/risk/**"
-          - "web/backend/app/api/risk_management.py"
         entrypoints:
           governance:
             - "docs/FUNCTION_TREE.md"
           api:
             - "web/backend/app/api/risk/**"
-            - "web/backend/app/api/risk_management.py"
           frontend:
             - "web/frontend/src/views/risk/**"
           core:
@@ -343,12 +339,10 @@ domains:
         coverage_paths:
           - "src/application/trading/**"
           - "src/trading/**"
-          - "web/backend/app/api/trading_monitor.py"
         entrypoints:
           governance:
             - "docs/FUNCTION_TREE.md"
           api:
-            - "web/backend/app/api/trading_monitor.py"
             - "web/backend/app/api/data/trading_api.py"
           frontend:
             - "web/frontend/src/views/trading/**"
@@ -399,7 +393,7 @@ domains:
             - "web/backend/app/api/signal_monitoring/**"
           frontend:
             - "web/frontend/src/views/monitoring/**"
-            - "web/frontend/src/views/monitor.vue"
+            - "web/frontend/src/views/system/PerformanceMonitor.vue"
             - "web/frontend/src/api/services/watchlistService.ts"
           core:
             - "src/monitoring/**"
@@ -566,13 +560,13 @@ domains:
       - id: "domain-08-node-03"
         label: "8.3 备份恢复"
         coverage_paths:
-          - "web/backend/app/api/backup_recovery.py"
+          - "web/backend/app/api/backup_recovery_secure.py"
           - "src/infrastructure/backup_recovery/**"
         entrypoints:
           governance:
             - "docs/FUNCTION_TREE.md"
           api:
-            - "web/backend/app/api/backup_recovery.py"
+            - "web/backend/app/api/backup_recovery_secure.py"
           frontend:
             - "web/frontend/src/views/system/**"
           core:
@@ -655,7 +649,6 @@ domains:
       - id: "domain-10-node-01"
         label: "10.1 公告管理"
         coverage_paths:
-          - "web/backend/app/api/announcement.py"
           - "web/backend/app/api/announcement/**"
           - "web/backend/app/services/announcement_service.py"
           - "web/backend/app/models/announcement.py"
@@ -663,7 +656,6 @@ domains:
           governance:
             - "docs/FUNCTION_TREE.md"
           api:
-            - "web/backend/app/api/announcement.py"
             - "web/backend/app/api/announcement/**"
           frontend:
             - "web/frontend/src/views/announcement/**"

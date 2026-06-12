@@ -1,0 +1,136 @@
+{
+  "schema_version": "2026-06-03.g2-no-source-branch-anchor-reconciliation.v1",
+  "generated_at": "2026-06-03T22:23:56+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "current_workspace_head": "06b0fc09548774ba997784c878349c25087d7c88",
+  "remote_anchor": {
+    "ref": "origin/wip/root-dirty-20260403",
+    "commit": "2ebff6d7ded33403c691a60fc43f87dabf90a975"
+  },
+  "accepted_pr_anchor": {
+    "pr": 474,
+    "state": "MERGED",
+    "merge_commit": "2ebff6d7ded33403c691a60fc43f87dabf90a975",
+    "title": "refactor(api): inject watchlist datasource provider"
+  },
+  "node": {
+    "id": "g2-329-service-lifecycle-di-branch-anchor-reconciliation-before-next-residual-selection",
+    "type": "no_source_branch_anchor_reconciliation",
+    "status": "accepted_reviewed_no_source",
+    "source_edit_authority": false,
+    "source_execution_started": false
+  },
+  "parent": {
+    "id": "g2-328-technical-analysis-datasourcefactory-provider-closeout-residual-refresh",
+    "status": "accepted_reviewed_no_source"
+  },
+  "allowed_scope": [
+    ".planning/codebase/generated/service-lifecycle-di-branch-anchor-reconciliation-2026-06-03.json",
+    ".planning/codebase/steward-tree/branch-register.md",
+    ".planning/codebase/steward-tree/current-next-gates.md",
+    ".planning/codebase/steward-tree/completed-ledger.md",
+    ".planning/codebase/steward-tree/evidence-index.md",
+    ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+    ".planning/codebase/steward-tree/steward-index.json",
+    "docs/reports/quality/backend-service-lifecycle-di-branch-anchor-reconciliation-2026-06-03.md",
+    "governance/mainline/task-cards/g2-329.yaml"
+  ],
+  "forbidden_scope": [
+    "web/**",
+    "src/**",
+    "tests/**",
+    "docs/api/**",
+    "web/frontend/**",
+    "config/**",
+    "scripts/**",
+    "openspec/**",
+    "PM2/runtime state"
+  ],
+  "branch_anchor_reconciliation": {
+    "commands": {
+      "git_rev_parse_head": "06b0fc09548774ba997784c878349c25087d7c88",
+      "git_rev_parse_origin_wip_root_dirty_20260403": "2ebff6d7ded33403c691a60fc43f87dabf90a975",
+      "git_merge_base_pr474_is_ancestor_of_head": 1,
+      "git_merge_base_head_is_ancestor_of_origin_wip": 1,
+      "git_merge_base_origin_wip_is_ancestor_of_head": 1
+    },
+    "classification": "local-head-and-remote-anchor-diverged",
+    "baseline_policy": "Use PR #474 / origin/wip/root-dirty-20260403 as the accepted watchlist provider anchor for service lifecycle residual statistics; do not use local HEAD watchlist counts as candidate truth."
+  },
+  "watchlist_calibration": {
+    "current_worktree": {
+      "datasourcefactory_calls": 8,
+      "get_data_source_calls": 8,
+      "depends_get_watchlist_data_source": 0
+    },
+    "current_head": {
+      "datasourcefactory_calls": 8,
+      "get_data_source_calls": 8,
+      "depends_get_watchlist_data_source": 0
+    },
+    "pr474_anchor": {
+      "datasourcefactory_calls": 1,
+      "get_data_source_calls": 1,
+      "depends_get_watchlist_data_source": 8
+    },
+    "reconciliation": "Watchlist 8/8 inline calls are branch-anchor drift in this local HEAD/worktree and must be excluded from the normalized residual candidate pool."
+  },
+  "candidate_pool_recalibration": {
+    "api_python_files_scanned": 218,
+    "raw_route_body_datasourcefactory_candidates": [
+      {
+        "file": "web/backend/app/api/watchlist.py",
+        "direct_handlers": 8,
+        "handlers": 15,
+        "datasourcefactory_calls": 8,
+        "get_data_source_calls": 8,
+        "classification": "excluded-by-pr474-anchor"
+      },
+      {
+        "file": "web/backend/app/api/strategy_management/_strategy_execution_router.py",
+        "direct_handlers": 3,
+        "handlers": 6,
+        "datasourcefactory_calls": 3,
+        "get_data_source_calls": 3,
+        "classification": "normalized-active-candidate"
+      }
+    ],
+    "normalized_route_body_datasourcefactory_candidates": [
+      {
+        "file": "web/backend/app/api/strategy_management/_strategy_execution_router.py",
+        "source": "worktree",
+        "direct_handlers": 3,
+        "handlers": 6,
+        "datasourcefactory_calls": 3,
+        "get_data_source_calls": 3
+      }
+    ],
+    "technical_analysis_adjustment": {
+      "source": "g2-327-reviewed-worktree",
+      "datasourcefactory_calls": 1,
+      "get_data_source_calls": 1,
+      "depends_get_technical_analysis_data_source": 8,
+      "handler_direct_datasourcefactory_calls": 0,
+      "handler_direct_get_data_source_calls": 0,
+      "classification": "closed-by-reviewed-local-g2-327"
+    }
+  },
+  "decision": {
+    "classification": "branch-anchor-reconciled-for-candidate-pool-statistics",
+    "g2_329_no_source_complete": true,
+    "next_gate": "g2-330-service-lifecycle-di-global-residual-candidate-screening",
+    "next_gate_state": "planned_no_source",
+    "next_gate_seed_candidate": "web/backend/app/api/strategy_management/_strategy_execution_router.py",
+    "next_gate_reason": "After excluding accepted watchlist drift and applying local reviewed technical_analysis closeout, the normalized route-body DataSourceFactory candidate pool has one remaining candidate."
+  },
+  "freshness": {
+    "checked_at": "2026-06-03T22:23:56+08:00",
+    "current_workspace_head": "06b0fc09548774ba997784c878349c25087d7c88",
+    "remote_anchor": "2ebff6d7ded33403c691a60fc43f87dabf90a975",
+    "stale_if_origin_wip_moves": true,
+    "stale_if_local_head_changes": true,
+    "stale_if_watchlist_worktree_changes": true,
+    "stale_if_candidate_pool_scan_changes": true
+  }
+}
