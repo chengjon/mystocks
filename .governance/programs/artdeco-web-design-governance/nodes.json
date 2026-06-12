@@ -6262,9 +6262,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "",
-    "status": "decision-prepared",
+    "status": "archived",
     "function_tree_ref": "b4-docs-reports-drift-governance",
-    "current_head": "924f2b8fb2f320740df9a982b95ed2288442e41e",
+    "current_head": "70ddfa2704a086e5d2c14cecaa170fc489732000",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -6274,16 +6274,23 @@
         "note": "no-source U11 untracked reports classified into paired governance evidence, active audit evidence, and historical P3-C5 evidence",
         "current_head": "924f2b8fb2f320740df9a982b95ed2288442e41e",
         "recorded_at": "2026-06-11T18:09:31.282Z"
+      },
+      {
+        "kind": "closeout",
+        "path": "docs/reports/worklogs/claude-auto/b4-011-m2a-residual-u11-untracked-review-closeout-2026-06-12.md",
+        "note": "U11-A, U11-B, and U11-C child packages resolved all 11 untracked reports; parent review is ready for archival.",
+        "current_head": "70ddfa2704a086e5d2c14cecaa170fc489732000",
+        "recorded_at": "2026-06-12T07:29:28.432Z"
       }
     ],
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-11T18:09:17.493Z",
-    "updated_at": "2026-06-11T18:09:44.723Z",
+    "updated_at": "2026-06-12T07:31:06.092Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -6291,6 +6298,13 @@
         "note": "U11 no-source decision package prepared; implementation authorization required before tracking, archiving, or deleting any U11 report",
         "current_head": "924f2b8fb2f320740df9a982b95ed2288442e41e",
         "transitioned_at": "2026-06-11T18:09:44.723Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "archived",
+        "note": "Superseded by closed U11-A/U11-B/U11-C child disposition packages; no direct implementation remains for parent review.",
+        "current_head": "70ddfa2704a086e5d2c14cecaa170fc489732000",
+        "transitioned_at": "2026-06-12T07:31:06.091Z"
       }
     ]
   },
