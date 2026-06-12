@@ -1,0 +1,110 @@
+task:
+  id: "g2-327"
+  node_slug: "g2-327-technical-analysis-datasourcefactory-provider-implementation"
+  title: "Implement technical_analysis DataSourceFactory provider"
+  type: "source_implementation"
+  status: "source_implementation_review_required"
+  lane:
+    id: "L1-technical-analysis-datasourcefactory-provider-implementation"
+    objective: "implement route-local provider injection for the technical_analysis.py DataSourceFactory seam"
+    owner: "G/#79 service lifecycle DI + Route/OpenAPI governance"
+  base:
+    branch: "wip/root-dirty-20260403"
+    current_workspace_head: "06b0fc09548774ba997784c878349c25087d7c88"
+    accepted_pr_anchor: "PR #474 merge commit 2ebff6d7ded33403c691a60fc43f87dabf90a975"
+  authority:
+    approval_required: true
+    approval_status: "approved"
+    approved_by: "human-maintainer"
+    approved_at: "2026-06-03T20:11:29+08:00"
+    approval_note: "User replied `同意，请继续`; source lane prepared by G2.326 entered."
+    source_edit_authority: true
+    source_execution_started: true
+    requires_human_review_before_merge: true
+  review:
+    status: "reviewed-but-not-merged"
+    accepted_by: "human-maintainer"
+    accepted_at: "2026-06-03T22:08:19+08:00"
+    review_note: "Human maintainer accepted the local G2.327 source implementation, explicitly requested no PR, no merge, and only no-source governance continuation."
+  scope:
+    allowed_paths:
+      - "web/backend/app/api/technical_analysis.py"
+      - "tests/api/file_tests/test_technical_analysis_api.py"
+      - ".planning/codebase/generated/technical-analysis-datasourcefactory-provider-implementation-2026-06-03.json"
+      - ".planning/codebase/steward-tree/branch-register.md"
+      - ".planning/codebase/steward-tree/current-next-gates.md"
+      - ".planning/codebase/steward-tree/completed-ledger.md"
+      - ".planning/codebase/steward-tree/evidence-index.md"
+      - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      - ".planning/codebase/steward-tree/steward-index.json"
+      - "docs/reports/quality/backend-technical-analysis-datasourcefactory-provider-implementation-2026-06-03.md"
+      - "governance/mainline/task-cards/g2-327.yaml"
+    forbidden_paths:
+      - "web/backend/app/services/data_source_factory/**"
+      - "web/backend/app/api/watchlist.py"
+      - "web/backend/app/api/strategy_management/**"
+      - "web/backend/app/api/_technical_analysis_models.py"
+      - "web/backend/app/api/_technical_analysis_responses.py"
+      - "docs/api/**"
+      - "web/frontend/**"
+      - "src/**"
+      - "config/**"
+      - "scripts/**"
+      - "openspec/**"
+      - "PM2/runtime state"
+  implementation:
+    provider: "get_technical_analysis_data_source"
+    dependency_binding: "Depends(get_technical_analysis_data_source)"
+    handlers_bound: 8
+    handler_direct_datasourcefactory_calls: 0
+    handler_direct_get_data_source_calls: 0
+    provider_datasourcefactory_calls: 1
+    provider_get_data_source_calls: 1
+    route_summary_unchanged: true
+  gates:
+    - id: "standards-read"
+      command: "architecture/STANDARDS.md read before source edit"
+      result: "passed"
+    - id: "gitnexus-index-refresh"
+      command: "npx gitnexus analyze"
+      result: "passed: repository indexed successfully in 519.9s"
+    - id: "gitnexus-impact"
+      command: "api_impact + file impact + eight handler upstream impacts"
+      result: "passed: LOW risk, zero affected processes for routes/handlers"
+    - id: "tdd-red"
+      command: "pytest tests/api/file_tests/test_technical_analysis_api.py::TestTechnicalAnalysisAPIFile::test_data_source_factory_is_route_local_provider -q"
+      result: "failed as expected: provider missing; narrow run also tripped repository coverage fail-under"
+    - id: "tdd-green"
+      command: "pytest tests/api/file_tests/test_technical_analysis_api.py::TestTechnicalAnalysisAPIFile::test_data_source_factory_is_route_local_provider -q --no-cov"
+      result: "passed: 1 passed"
+    - id: "focused-file-test"
+      command: "pytest tests/api/file_tests/test_technical_analysis_api.py -q --no-cov"
+      result: "passed: 19 passed"
+    - id: "py-compile"
+      command: "python -m py_compile web/backend/app/api/technical_analysis.py tests/api/file_tests/test_technical_analysis_api.py"
+      result: "passed"
+    - id: "ruff"
+      command: "ruff check web/backend/app/api/technical_analysis.py tests/api/file_tests/test_technical_analysis_api.py"
+      result: "passed: All checks passed!"
+    - id: "gitnexus-detect-changes"
+      command: "gitnexus.detect_changes(scope=all), then scope=staged with only two allowed files temporarily staged"
+      result: "not-passed: both attempts timed out after 120s; staged area restored empty"
+  risks:
+    - "Local worktree is very dirty; path scope must remain explicit during review."
+    - "GitNexus detect_changes timed out even for staged two-file scope; rely on pre-edit api_impact/impact evidence plus path-limited diff until detect_changes can complete."
+    - "The two allowed files had pre-existing local diff before this G2.327 edit; existing import cleanup was preserved."
+  rollback_plan: "Revert G2.327 source/test edits plus generated evidence/report/task-card/steward-surface updates; restore G2.327 to source_approval_required if source implementation is rejected."
+  summary:
+    six_line_summary_required: true
+    six_line_summary:
+      change_purpose: "Implement route-local provider injection for the technical_analysis DataSourceFactory seam."
+      modified_scope: "technical_analysis.py, focused technical analysis file test, governance evidence, steward tree indexes, report, and task card."
+      dependency_changes: "No package dependency changes."
+      legacy_logic_impact: "DataSourceFactory backing behavior retained; route paths and methods unchanged."
+      rollback_ready: "Revert G2.327 modified paths."
+      risk_and_rollback_point: "Source implementation ready for human review; do not mark accepted/merged before review and PR/merge."
+  governance:
+    phase: "phase_b_dual_hard_gate"
+    next_gate_if_accepted: "G2.328 technical_analysis DataSourceFactory provider closeout / residual refresh"
+    autopilot_continue_allowed: false
+    stop_reason: "Source node changed backend source/tests; it is reviewed-but-not-merged and must not be marked merged without PR/merge evidence."

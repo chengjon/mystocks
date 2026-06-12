@@ -7139,11 +7139,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-governance-g2-327-source-review-disposition",
-    "status": "authorization-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "b4-012-governance-task-card-residual-audit",
-    "current_head": "f9d514245aabbb0be423ac3d8baace4a8b95e50b",
+    "current_head": "66ca04acbcb3d311bd3a213d14bd65c6904c60a1",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "baseline",
@@ -7151,6 +7151,13 @@
         "note": "C1 authorization-prep worklog for isolated g2-327 preservation; task-card body remains untouched.",
         "current_head": "f9d514245aabbb0be423ac3d8baace4a8b95e50b",
         "recorded_at": "2026-06-12T18:42:03.638Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "User approved narrow C1 preservation implementation via latest request; preserve only governance/mainline/task-cards/g2-327.yaml and required FUNCTION_TREE artifacts.",
+        "note": "Current HEAD evidence before C1 implementation.",
+        "current_head": "66ca04acbcb3d311bd3a213d14bd65c6904c60a1",
+        "recorded_at": "2026-06-12T18:52:41.366Z"
       }
     ],
     "allowed_paths": [
@@ -7168,11 +7175,11 @@
       "Do not perform technical_analysis source truth review in this package.",
       "Do not delete, retire, rename, or normalize g2-327 task-card content."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-12T18:42:03.431Z",
-    "updated_at": "2026-06-12T18:42:03.922Z",
+    "updated_at": "2026-06-12T18:52:41.602Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -7180,6 +7187,20 @@
         "note": "",
         "current_head": "f9d514245aabbb0be423ac3d8baace4a8b95e50b",
         "transitioned_at": "2026-06-12T18:42:03.787Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "66ca04acbcb3d311bd3a213d14bd65c6904c60a1",
+        "transitioned_at": "2026-06-12T18:52:41.484Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "66ca04acbcb3d311bd3a213d14bd65c6904c60a1",
+        "transitioned_at": "2026-06-12T18:52:41.602Z"
       }
     ],
     "acceptance": {
