@@ -7139,11 +7139,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-governance-g2-327-source-review-disposition",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "b4-012-governance-task-card-residual-audit",
     "current_head": "66ca04acbcb3d311bd3a213d14bd65c6904c60a1",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "baseline",
@@ -7175,11 +7175,11 @@
       "Do not perform technical_analysis source truth review in this package.",
       "Do not delete, retire, rename, or normalize g2-327 task-card content."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-12T18:42:03.431Z",
-    "updated_at": "2026-06-12T18:52:41.602Z",
+    "updated_at": "2026-06-12T18:57:27.778Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -7201,6 +7201,20 @@
         "note": "",
         "current_head": "66ca04acbcb3d311bd3a213d14bd65c6904c60a1",
         "transitioned_at": "2026-06-12T18:52:41.602Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Preserved governance/mainline/task-cards/g2-327.yaml in commit 9c34233b2.",
+        "current_head": "9c34233b2d7f2a6bfbac62784c298e012b1c125d",
+        "transitioned_at": "2026-06-12T18:57:27.527Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "C1 preservation implementation and closeout complete.",
+        "current_head": "9c34233b2d7f2a6bfbac62784c298e012b1c125d",
+        "transitioned_at": "2026-06-12T18:57:27.778Z"
       }
     ],
     "acceptance": {
@@ -7214,6 +7228,19 @@
         "Implementation authorization must be explicit before g2-327.yaml is preserved.",
         "Post-commit GitNexus index refresh completes."
       ]
+    },
+    "closeout": {
+      "summary": "Preserved g2-327 source-review task-card as tracked governance evidence in commit 9c34233b2; no source, test, API, runtime, OpenSpec, ST-HOLD, marketKlineData, docs/guides, docs/superpowers, or external dirty files changed.",
+      "compatibility": "Governance evidence preservation only; no runtime or source compatibility surface changed.",
+      "gates": [
+        "Exact staged allowlist passed for implementation commit.",
+        "git diff --cached --check passed.",
+        "GitNexus verify-staged and staged detect-changes passed with risk low and 0 affected processes.",
+        "OPENDOG blocker count was zero.",
+        "Post-commit GitNexus index refresh completed after implementation commit."
+      ],
+      "current_head": "9c34233b2d7f2a6bfbac62784c298e012b1c125d",
+      "prepared_at": "2026-06-12T18:57:27.653Z"
     }
   }
 ]
