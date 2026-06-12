@@ -6103,9 +6103,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "",
-    "status": "decision-prepared",
+    "status": "archived",
     "function_tree_ref": "b4-docs-reports-drift-governance",
-    "current_head": "da916c29ba23bb8df15bddde23847d2fc6439e48",
+    "current_head": "5a2989259228664389cea200fd1ca845d80ea9cb",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -6115,16 +6115,23 @@
         "note": "no-source residual docs reports dirty review; M5 and untracked 12 classified; source_edits_authorized false",
         "current_head": "da916c29ba23bb8df15bddde23847d2fc6439e48",
         "recorded_at": "2026-06-11T16:40:23.705Z"
+      },
+      {
+        "kind": "closeout",
+        "path": "docs/reports/worklogs/claude-auto/b4-011-m2a-residual-docs-reports-dirty-review-closeout-2026-06-12.md",
+        "note": "Residual M5, U11, and OpenStock handoff tracks are resolved; parent review is ready for archival.",
+        "current_head": "5a2989259228664389cea200fd1ca845d80ea9cb",
+        "recorded_at": "2026-06-12T07:57:25.203Z"
       }
     ],
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-11T16:40:04.322Z",
-    "updated_at": "2026-06-11T16:40:48.777Z",
+    "updated_at": "2026-06-12T07:57:40.324Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -6132,6 +6139,13 @@
         "note": "residual dirty split prepared: M5 tracked active reports, 11 untracked MyStocks reports, 1 external OpenStock handoff",
         "current_head": "da916c29ba23bb8df15bddde23847d2fc6439e48",
         "transitioned_at": "2026-06-11T16:40:48.776Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "archived",
+        "note": "Superseded by closed Residual-M5 preservation, archived Residual-U11 review, and tracked OpenStock boundary handoff evidence; no direct implementation remains for parent review.",
+        "current_head": "5a2989259228664389cea200fd1ca845d80ea9cb",
+        "transitioned_at": "2026-06-12T07:57:40.324Z"
       }
     ]
   },
