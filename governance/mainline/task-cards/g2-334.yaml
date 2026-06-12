@@ -1,0 +1,101 @@
+version: "v0.2"
+task:
+  id: "g2-334"
+  title: "Restore pre-deployment security checkout"
+  owner: "G/#79 service lifecycle DI + Route/OpenAPI governance"
+  created_at: "2026-06-13"
+
+mainline:
+  id: "L1-security-testing-predeployment-checkout"
+  objective: "Make the Security Testing Pipeline pre-deployment verification job run against the checked-out repository before reading source security configuration files."
+  milestone_id: "g2"
+  slice_id: "g2-334"
+
+classification:
+  task_type: "fix"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: ""
+  approval_status: "not_required"
+
+scope:
+  allowed_paths:
+    - ".github/workflows/security-testing.yml"
+    - "docs/reports/quality/security-testing-predeployment-checkout-fix-2026-06-13.md"
+    - "governance/function-tree/catalog.yaml"
+    - "governance/mainline/task-cards/g2-334.yaml"
+  forbidden_paths:
+    - "src/**"
+    - "web/backend/app/**"
+    - "web/backend/tests/**"
+    - "web/frontend/**"
+    - "tests/**"
+    - "scripts/**"
+    - "config/**"
+    - "requirements.txt"
+    - "web/backend/requirements.txt"
+    - "openspec/changes/**"
+    - "openstock/**"
+    - "OpenStock/**"
+
+non_goals:
+  - "Do not modify MyStocks application source, tests, dependency manifests, OpenSpec implementation files, or runtime behavior."
+  - "Do not modify OpenStock internals, provider/runtime code, tests, configuration, packaging, or repository files."
+  - "Do not change security scan rules, severity thresholds, dependency versions, or deployment approval semantics."
+  - "Do not broaden G2.332 technical-analysis provider injection with this CI workflow fix."
+
+acceptance:
+  checks:
+    - id: "predeployment-job-checks-out-repository"
+      command: "python - <<'PY'\nfrom pathlib import Path\ntext = Path('.github/workflows/security-testing.yml').read_text()\njob = text.split('  pre-deployment-security:', 1)[1]\ncheckout = job.index('- name: Checkout code')\ndownload = job.index('- name: Download final security reports')\nverify = job.index('- name: Final security verification')\nassert checkout < download < verify\nassert 'uses: actions/checkout@v4' in job\nPY"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/g2-334.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha HEAD~1 --head-sha HEAD --report /tmp/g2-334-mainline-gate.json"
+      required: true
+    - id: "gitnexus-detect-changes"
+      command: "gitnexus_detect_changes(scope=compare, base_ref=origin/main)"
+      required: true
+    - id: "diff-check"
+      command: "git diff HEAD~1..HEAD --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "The pre-deployment security job now performs a normal repository checkout before downloading artifacts; this increases job setup time slightly but restores access to source files required by the existing verification script."
+    - "No security threshold or scan logic changes are included, so any later security finding should still fail the pipeline."
+  rollback_plan: "Revert this commit to restore the previous pre-deployment security job shape."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Restore the Security Testing Pipeline pre-deployment job's access to repository files."
+    modified_scope: "One GitHub Actions workflow, one function-tree catalog mapping, one governance report, and one task card."
+    dependency_changes: "None."
+    legacy_logic_impact: "No source code, API contract, frontend, runtime, or OpenStock code is changed."
+    rollback_ready: "Revert this workflow/governance commit."
+    risk_and_rollback_point: "Rollback removes the checkout step and restores the previous CI job behavior."
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "operations"
+  update_status: "required"
+  secondary_domains: []
+  exemption_reason: "This CI gate fix updates only GitHub Actions workflow wiring and governance metadata; no business entrypoint or source symbol changes."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "G/#79 service lifecycle DI + Route/OpenAPI governance"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-06-13T04:49:11+08:00"
+    approval_note: "Human maintainer asked to continue MyStocks-side work; this prerequisite fix isolates the CI checkout failure blocking G2.332."
+    secondary_approved: false
