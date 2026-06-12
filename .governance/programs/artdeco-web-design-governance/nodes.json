@@ -6877,11 +6877,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-governance-task-card-residual-audit",
-    "status": "authorization-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "b4-012-residual-dirty-domain-atlas",
-    "current_head": "537d0586fba3dd2a5787e6d893b57126185e760d",
+    "current_head": "c4966d6817e381ad79172f07a008066e6bb7f9bb",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "baseline",
@@ -6889,6 +6889,13 @@
         "note": "Prepared catalog preservation authorization boundary without staging catalog residual",
         "current_head": "537d0586fba3dd2a5787e6d893b57126185e760d",
         "recorded_at": "2026-06-12T10:53:30.112Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "user approval: 请继续 for B4.012-M2a-A catalog preservation implementation",
+        "note": "User approved catalog preservation implementation after authorization-prep commit",
+        "current_head": "c4966d6817e381ad79172f07a008066e6bb7f9bb",
+        "recorded_at": "2026-06-12T13:51:14.529Z"
       }
     ],
     "allowed_paths": [
@@ -6906,11 +6913,11 @@
       "Do not touch governance/mainline/task-cards residual files",
       "Do not touch source, tests, runtime, API routes, OpenSpec, ST-HOLD, marketKlineData, docs/guides, docs/superpowers, or external dirty files"
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-12T10:53:30.014Z",
-    "updated_at": "2026-06-12T10:53:30.257Z",
+    "updated_at": "2026-06-12T13:51:36.525Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -6918,6 +6925,20 @@
         "note": "",
         "current_head": "537d0586fba3dd2a5787e6d893b57126185e760d",
         "transitioned_at": "2026-06-12T10:53:30.198Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "c4966d6817e381ad79172f07a008066e6bb7f9bb",
+        "transitioned_at": "2026-06-12T13:51:14.584Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "c4966d6817e381ad79172f07a008066e6bb7f9bb",
+        "transitioned_at": "2026-06-12T13:51:36.524Z"
       }
     ],
     "acceptance": {
