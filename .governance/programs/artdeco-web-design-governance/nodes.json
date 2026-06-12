@@ -6300,9 +6300,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "",
-    "status": "authorization-prepared",
+    "status": "closed",
     "function_tree_ref": "b4-docs-reports-drift-governance",
-    "current_head": "f48aeb6d4bcdfd2cb198930413b81c82724083b5",
+    "current_head": "ec64963dc2ef4c3ed64cc5ecd8b1d23b32d3d7f5",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -6312,6 +6312,20 @@
         "note": "no-source U11-A paired report preservation review prepared for four review/source report files",
         "current_head": "f48aeb6d4bcdfd2cb198930413b81c82724083b5",
         "recorded_at": "2026-06-11T18:19:18.476Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-011-m2a-residual-u11-a-paired-preserve-review-2026-06-12.md",
+        "note": "U11-A paired report preservation approved by user continuation; evidence refreshed after authorization-prepared commit",
+        "current_head": "dc3d351b5ddaeeab8a9c91ff40df712bd73cc68a",
+        "recorded_at": "2026-06-12T00:10:26.209Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-011-m2a-residual-u11-a-paired-preserve-closeout-2026-06-12.md",
+        "note": "Closeout evidence refreshed after implementation commit ec64963dc",
+        "current_head": "ec64963dc2ef4c3ed64cc5ecd8b1d23b32d3d7f5",
+        "recorded_at": "2026-06-12T00:19:30.158Z"
       }
     ],
     "allowed_paths": [
@@ -6325,11 +6339,11 @@
       "Do not archive, delete, move, rewrite, or split the paired reports during U11-A preservation.",
       "Do not touch U11-B, U11-C, tests, source, web, scripts, OpenSpec, docs/guides, docs/superpowers, ST-HOLD, marketKlineData, external dirty files, or historical untracked governance cards."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-11T18:18:57.052Z",
-    "updated_at": "2026-06-11T18:19:59.998Z",
+    "updated_at": "2026-06-12T00:20:00.071Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -6337,6 +6351,34 @@
         "note": "U11-A decision prepared: preserve two report/review pairs together; do not split, archive, or delete without authorization",
         "current_head": "f48aeb6d4bcdfd2cb198930413b81c82724083b5",
         "transitioned_at": "2026-06-11T18:19:41.595Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User continuation accepted as approval for the prepared U11-A paired report preservation scope",
+        "current_head": "dc3d351b5ddaeeab8a9c91ff40df712bd73cc68a",
+        "transitioned_at": "2026-06-12T00:10:57.639Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Ready to add-track the four paired report files only",
+        "current_head": "dc3d351b5ddaeeab8a9c91ff40df712bd73cc68a",
+        "transitioned_at": "2026-06-12T00:11:18.437Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Implementation landed in commit ec64963dc tracking four paired reports in active docs/reports",
+        "current_head": "ec64963dc2ef4c3ed64cc5ecd8b1d23b32d3d7f5",
+        "transitioned_at": "2026-06-12T00:18:31.145Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "U11-A paired report preservation completed in ec64963dc and closeout evidence recorded",
+        "current_head": "ec64963dc2ef4c3ed64cc5ecd8b1d23b32d3d7f5",
+        "transitioned_at": "2026-06-12T00:20:00.070Z"
       }
     ],
     "acceptance": {
@@ -6347,6 +6389,15 @@
       "closeout_gate": [
         "Confirm the four paired reports are tracked in active docs/reports paths, U11-B/U11-C remain untouched, staged set is exact, and GitNexus is refreshed after commit."
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-011-m2a-residual-u11-a-paired-preserve-closeout-2026-06-12.md",
+      "compatibility": "Four paired reports tracked in active docs/reports paths; no archive/delete/move/body edits and no U11-B/U11-C changes.",
+      "gates": [
+        "Implementation commit gates passed: cached diff check, GitNexus verify-staged, GitNexus staged detect_changes, OPENDOG verification, and post-commit GitNexus analyze."
+      ],
+      "current_head": "ec64963dc2ef4c3ed64cc5ecd8b1d23b32d3d7f5",
+      "prepared_at": "2026-06-12T00:18:56.085Z"
     }
   }
 ]
