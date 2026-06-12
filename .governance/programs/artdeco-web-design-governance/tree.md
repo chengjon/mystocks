@@ -47,3 +47,4 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-012-governance-task-card-residual-audit: Governance task-card residual audit (planning, FT: B4.012-M2a)
 - [ ] b4-012-governance-catalog-preservation: Governance catalog residual preservation authorization (planning, FT: b4-012-residual-dirty-domain-atlas)
 - [ ] b4-012-governance-task-card-accepted-preservation: Accepted governance task-card residual preservation authorization (planning, FT: b4-012-residual-dirty-domain-atlas)
+- [ ] b4-012-governance-g2-327-source-review-disposition: g2-327 source-review task-card disposition audit (planning, FT: b4-012-residual-dirty-domain-atlas)

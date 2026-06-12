@@ -7094,5 +7094,43 @@
       "current_head": "c6ae452c0886ed8d55372edad3f56d5de5bc5915",
       "prepared_at": "2026-06-12T17:35:37.936Z"
     }
+  },
+  {
+    "id": "b4-012-governance-g2-327-source-review-disposition",
+    "title": "g2-327 source-review task-card disposition audit",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-governance-task-card-residual-audit",
+    "status": "decision-prepared",
+    "function_tree_ref": "b4-012-residual-dirty-domain-atlas",
+    "current_head": "82240fb67a6aa16c595cb399ab1119729e417d6f",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m2a-c-g2-327-source-review-task-card-disposition-no-source-audit-2026-06-13.md",
+        "note": "No-source disposition audit for isolated g2-327 source-review task-card residual",
+        "current_head": "82240fb67a6aa16c595cb399ab1119729e417d6f",
+        "recorded_at": "2026-06-12T17:55:09.586Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-12T17:55:09.491Z",
+    "updated_at": "2026-06-12T17:55:09.655Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "",
+        "current_head": "82240fb67a6aa16c595cb399ab1119729e417d6f",
+        "transitioned_at": "2026-06-12T17:55:09.655Z"
+      }
+    ]
   }
 ]

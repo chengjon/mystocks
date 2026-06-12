@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-12T17:35:38.021Z",
+  "updated_at": "2026-06-12T17:55:09.663Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -35,6 +35,23 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-12T10:38:49.253Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-012-governance-g2-327-source-review-disposition",
+      "title": "g2-327 source-review task-card disposition audit",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-012-governance-task-card-residual-audit",
+      "status": "decision-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "prepare authorization",
+      "function_tree_ref": "b4-012-residual-dirty-domain-atlas",
+      "freshness": "current-head",
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-12T17:55:09.655Z"
     }
   ]
 }
