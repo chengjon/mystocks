@@ -6839,11 +6839,11 @@
     "node_type": "decision",
     "owner_lane": "docs-governance",
     "parent": "b4-012-residual-dirty-domain-atlas",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "B4.012-M2a",
     "current_head": "9c91fbe2131dead42c394e3e56f37c645880519b",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "baseline",
@@ -6873,11 +6873,11 @@
       "Do not perform technical_analysis source truth review or DataSourceFactory implementation review.",
       "Do not clean up any non-governance residual dirty bucket from the B4.012 atlas."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-12T10:38:15.211Z",
-    "updated_at": "2026-06-12T19:14:25.863Z",
+    "updated_at": "2026-06-12T19:18:43.275Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -6899,6 +6899,20 @@
         "note": "Closeout review and FUNCTION_TREE artifacts are ready to land.",
         "current_head": "9c91fbe2131dead42c394e3e56f37c645880519b",
         "transitioned_at": "2026-06-12T19:14:25.863Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Governance residual closeout review landed in commit 221514bc8.",
+        "current_head": "221514bc8a123cb9aae4001c18dd3cd954ccf1e0",
+        "transitioned_at": "2026-06-12T19:18:42.961Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "B4.012-M2a governance task-card residual lane closed.",
+        "current_head": "221514bc8a123cb9aae4001c18dd3cd954ccf1e0",
+        "transitioned_at": "2026-06-12T19:18:43.275Z"
       }
     ],
     "acceptance": {
@@ -6912,6 +6926,20 @@
         "governance/** and .governance/** have no residual unstaged or untracked changes after M2a closeout.",
         "Post-commit GitNexus index refresh completes."
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m2a-governance-residual-closeout-no-source-review-2026-06-13.md",
+      "compatibility": "Governance evidence and FUNCTION_TREE closeout only; no source, test, API, runtime, OpenSpec, ST-HOLD, marketKlineData, docs/guides, docs/superpowers, or external dirty files changed.",
+      "gates": [
+        "Exact staged allowlist passed for closeout review commit.",
+        "git diff --cached --check passed.",
+        "GitNexus verify-staged and staged detect-changes passed with risk low and 0 affected processes.",
+        "OPENDOG blocker count was zero.",
+        "Post-commit GitNexus index refresh completed after closeout review commit.",
+        "governance/** and .governance/** residual status was clean before closeout."
+      ],
+      "current_head": "221514bc8a123cb9aae4001c18dd3cd954ccf1e0",
+      "prepared_at": "2026-06-12T19:18:43.091Z"
     }
   },
   {
@@ -7144,11 +7172,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-governance-task-card-residual-audit",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "b4-012-residual-dirty-domain-atlas",
     "current_head": "9c91fbe2131dead42c394e3e56f37c645880519b",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "baseline",
@@ -7178,11 +7206,11 @@
       "Do not perform technical_analysis source truth review or DataSourceFactory implementation review.",
       "Do not clean up any non-governance residual dirty bucket from the B4.012 atlas."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-12T17:55:09.491Z",
-    "updated_at": "2026-06-12T19:14:25.479Z",
+    "updated_at": "2026-06-12T19:18:42.818Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -7204,6 +7232,20 @@
         "note": "Closeout review and FUNCTION_TREE artifacts are ready to land.",
         "current_head": "9c91fbe2131dead42c394e3e56f37c645880519b",
         "transitioned_at": "2026-06-12T19:14:25.479Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Governance residual closeout review landed in commit 221514bc8.",
+        "current_head": "221514bc8a123cb9aae4001c18dd3cd954ccf1e0",
+        "transitioned_at": "2026-06-12T19:18:42.530Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "B4.012-M2a governance task-card residual lane closed.",
+        "current_head": "221514bc8a123cb9aae4001c18dd3cd954ccf1e0",
+        "transitioned_at": "2026-06-12T19:18:42.818Z"
       }
     ],
     "acceptance": {
@@ -7217,6 +7259,20 @@
         "governance/** and .governance/** have no residual unstaged or untracked changes after M2a closeout.",
         "Post-commit GitNexus index refresh completes."
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m2a-governance-residual-closeout-no-source-review-2026-06-13.md",
+      "compatibility": "Governance evidence and FUNCTION_TREE closeout only; no source, test, API, runtime, OpenSpec, ST-HOLD, marketKlineData, docs/guides, docs/superpowers, or external dirty files changed.",
+      "gates": [
+        "Exact staged allowlist passed for closeout review commit.",
+        "git diff --cached --check passed.",
+        "GitNexus verify-staged and staged detect-changes passed with risk low and 0 affected processes.",
+        "OPENDOG blocker count was zero.",
+        "Post-commit GitNexus index refresh completed after closeout review commit.",
+        "governance/** and .governance/** residual status was clean before closeout."
+      ],
+      "current_head": "221514bc8a123cb9aae4001c18dd3cd954ccf1e0",
+      "prepared_at": "2026-06-12T19:18:42.670Z"
     }
   },
   {

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-12T19:14:25.879Z",
+  "updated_at": "2026-06-12T19:18:43.310Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -18,52 +18,6 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-12T10:28:32.221Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-012-governance-g2-327-source-review-disposition",
-      "title": "g2-327 source-review task-card disposition audit",
-      "node_type": "decision",
-      "owner_lane": "artdeco-web-design-governance",
-      "parent": "b4-012-governance-task-card-residual-audit",
-      "status": "implementation-ready",
-      "source_edits_authorized": true,
-      "current_blocker": "",
-      "next_allowed": "land implementation with Git evidence",
-      "function_tree_ref": "b4-012-residual-dirty-domain-atlas",
-      "freshness": "current-head",
-      "allowed_paths": [
-        ".governance/active-gates.json",
-        ".governance/active-gates.md",
-        ".governance/programs/artdeco-web-design-governance/nodes.json",
-        ".governance/programs/artdeco-web-design-governance/cards/b4-012-governance-g2-327-source-review-disposition.yaml",
-        "docs/reports/worklogs/claude-auto/b4-012-m2a-governance-residual-closeout-no-source-review-2026-06-13.md"
-      ],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-12T19:14:25.479Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-012-governance-task-card-residual-audit",
-      "title": "Governance task-card residual audit",
-      "node_type": "decision",
-      "owner_lane": "docs-governance",
-      "parent": "b4-012-residual-dirty-domain-atlas",
-      "status": "implementation-ready",
-      "source_edits_authorized": true,
-      "current_blocker": "",
-      "next_allowed": "land implementation with Git evidence",
-      "function_tree_ref": "B4.012-M2a",
-      "freshness": "current-head",
-      "allowed_paths": [
-        ".governance/active-gates.json",
-        ".governance/active-gates.md",
-        ".governance/programs/artdeco-web-design-governance/nodes.json",
-        ".governance/programs/artdeco-web-design-governance/cards/b4-012-governance-task-card-residual-audit.yaml",
-        "docs/reports/worklogs/claude-auto/b4-012-m2a-governance-residual-closeout-no-source-review-2026-06-13.md"
-      ],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-12T19:14:25.863Z"
     }
   ]
 }
