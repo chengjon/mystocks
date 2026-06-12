@@ -6519,5 +6519,43 @@
       "current_head": "dc93316065f91f1f0ec99f51c0f316c15a327d5f",
       "prepared_at": "2026-06-12T03:50:54.127Z"
     }
+  },
+  {
+    "id": "b4-docs-reports-residual-u11-c-p3c5-review",
+    "title": "Docs reports residual U11-C P3-C5 historical evidence review",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "",
+    "status": "decision-prepared",
+    "function_tree_ref": "b4-docs-reports-drift-governance",
+    "current_head": "4bf8fccada09ea51f7e442a6a11f3c1fd063f170",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-011-m2a-residual-u11-c-p3c5-historical-evidence-review-2026-06-12.md",
+        "note": "No-source U11-C review classified P3-C5 handoff as active preservation candidate and progress report as archive/retire candidate.",
+        "current_head": "4bf8fccada09ea51f7e442a6a11f3c1fd063f170",
+        "recorded_at": "2026-06-12T04:15:03.050Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-12T04:14:27.634Z",
+    "updated_at": "2026-06-12T04:16:35.804Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "",
+        "current_head": "4bf8fccada09ea51f7e442a6a11f3c1fd063f170",
+        "transitioned_at": "2026-06-12T04:16:35.803Z"
+      }
+    ]
   }
 ]
