@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-12T05:26:38.382Z",
+  "updated_at": "2026-06-12T06:05:46.126Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -35,27 +35,6 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-11T18:09:44.723Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-docs-reports-residual-u11-c-p3c5-review",
-      "title": "Docs reports residual U11-C P3-C5 historical evidence review",
-      "node_type": "decision",
-      "owner_lane": "artdeco-web-design-governance",
-      "parent": "",
-      "status": "approved-for-implementation",
-      "source_edits_authorized": true,
-      "current_blocker": "",
-      "next_allowed": "implement within allowed_paths",
-      "function_tree_ref": "b4-docs-reports-drift-governance",
-      "freshness": "current-head",
-      "allowed_paths": [
-        "docs/reports/P3-C5-HANDOFF.md",
-        "docs/reports/P3-C5-exception-consolidation-progress.md",
-        "archive/docs/reports/P3-C5-exception-consolidation-progress.md"
-      ],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-12T05:26:38.366Z"
     }
   ]
 }

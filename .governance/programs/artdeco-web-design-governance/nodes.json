@@ -6526,11 +6526,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "",
-    "status": "approved-for-implementation",
+    "status": "closed",
     "function_tree_ref": "b4-docs-reports-drift-governance",
-    "current_head": "1a3ad1cc63ead753a46cdaee58d331df263e7866",
+    "current_head": "247f0fd841c0de660faf0f3648cfdb94fd6481d8",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "baseline",
@@ -6552,6 +6552,27 @@
         "note": "Fresh implementation baseline after authorization-prepared commit; next step is balanced historical preservation with handoff active and progress report archived.",
         "current_head": "1a3ad1cc63ead753a46cdaee58d331df263e7866",
         "recorded_at": "2026-06-12T05:26:03.272Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-011-m2a-residual-u11-c-p3c5-historical-evidence-review-2026-06-12.md",
+        "note": "Fresh implementation baseline after approval commit; staged implementation must only preserve P3-C5 handoff and archive progress report.",
+        "current_head": "3d3f3b86ee178da34f4770426e02f6fb422a2308",
+        "recorded_at": "2026-06-12T05:39:19.214Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-011-m2a-residual-u11-c-p3c5-historical-evidence-review-2026-06-12.md",
+        "note": "Fresh implementation baseline after approval commit; current HEAD aligned for the balanced preservation move.",
+        "current_head": "3d3f3b86ee178da34f4770426e02f6fb422a2308",
+        "recorded_at": "2026-06-12T05:42:13.748Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "247f0fd84",
+        "note": "Implementation commit preserved P3-C5 handoff at active docs/reports path and archived stale progress report.",
+        "current_head": "247f0fd841c0de660faf0f3648cfdb94fd6481d8",
+        "recorded_at": "2026-06-12T05:51:59.868Z"
       }
     ],
     "allowed_paths": [
@@ -6565,11 +6586,11 @@
       "Do not touch source, tests, routes, API paths, runtime code, OpenSpec, ST-HOLD, marketKlineData, docs/guides, docs/superpowers, tracked P3-C5 completion report, or external dirty files.",
       "Do not preserve both P3-C5 reports at active docs/reports paths."
     ],
-    "next_gate": "implement within allowed_paths",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-12T04:14:27.634Z",
-    "updated_at": "2026-06-12T05:26:38.366Z",
+    "updated_at": "2026-06-12T06:05:46.110Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -6584,6 +6605,27 @@
         "note": "",
         "current_head": "1a3ad1cc63ead753a46cdaee58d331df263e7866",
         "transitioned_at": "2026-06-12T05:26:38.366Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "247f0fd841c0de660faf0f3648cfdb94fd6481d8",
+        "transitioned_at": "2026-06-12T05:53:25.305Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "247f0fd841c0de660faf0f3648cfdb94fd6481d8",
+        "transitioned_at": "2026-06-12T05:54:48.826Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "247f0fd841c0de660faf0f3648cfdb94fd6481d8",
+        "transitioned_at": "2026-06-12T06:05:46.109Z"
       }
     ],
     "acceptance": {
@@ -6598,6 +6640,18 @@
         "P3-C5 exception consolidation progress report is tracked under archive/docs/reports and no longer remains as an active untracked docs/reports file.",
         "Final docs/reports residual state is reported."
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-011-m2a-residual-u11-c-p3c5-historical-evidence-closeout-2026-06-12.md",
+      "compatibility": "Preserved P3-C5 handoff at active report path and moved stale progress evidence to archive; no source/test/runtime/API/route behavior changed.",
+      "gates": [
+        "Exact staged allowlist passed for P3-C5 handoff and archived progress report.",
+        "git diff --cached --check passed.",
+        "GitNexus verify-staged and direct detect-changes passed with risk low and 0 affected processes.",
+        "OPENDOG verification returned blockers: []."
+      ],
+      "current_head": "247f0fd841c0de660faf0f3648cfdb94fd6481d8",
+      "prepared_at": "2026-06-12T06:05:20.994Z"
     }
   }
 ]
