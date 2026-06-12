@@ -14,11 +14,14 @@ jobs:
   test:
     timeout-minutes: 90
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.57.0-noble
     env:
       FRONTEND_PORT: '3020'
       FRONTEND_BACKUP_PORT: '3021'
       BACKEND_PORT: '8020'
       BACKEND_BACKUP_PORT: '8021'
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
     defaults:
       run:
         working-directory: web/frontend
@@ -29,18 +32,8 @@ jobs:
         node-version: lts/*
         cache: npm
         cache-dependency-path: web/frontend/package-lock.json
-    - name: Cache Playwright browsers
-      uses: actions/cache@v3
-      with:
-        path: ~/.cache/ms-playwright
-        key: playwright-${{ runner.os }}-${{ hashFiles('web/frontend/package-lock.json') }}
-        restore-keys: |
-          playwright-${{ runner.os }}-
-          visual-
     - name: Install dependencies
       run: npm ci
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps chromium
     - name: Run Playwright smoke tests
       run: npm run test:e2e:stable
     - uses: actions/upload-artifact@v4
