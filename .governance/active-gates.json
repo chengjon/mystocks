@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-13T01:56:04.857Z",
+  "updated_at": "2026-06-13T02:07:33.336Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -52,6 +52,31 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-13T01:56:04.848Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-012-scripts-myweb-audit-node-test-authorization",
+      "title": "myweb-audit node-test tooling preservation authorization",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-012-scripts-deleted-untracked-disposition-audit",
+      "status": "authorization-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "review and approve implementation authorization",
+      "function_tree_ref": "B4.012-M2b-B1",
+      "freshness": "current-head",
+      "allowed_paths": [
+        "scripts/dev/tools/__node_tests__/validateMywebAuditSkill.test.mjs",
+        ".governance/active-gates.json",
+        ".governance/active-gates.md",
+        ".governance/programs/artdeco-web-design-governance/nodes.json",
+        ".governance/programs/artdeco-web-design-governance/tree.md",
+        ".governance/programs/artdeco-web-design-governance/cards/b4-012-scripts-myweb-audit-node-test-authorization.yaml",
+        "docs/reports/worklogs/claude-auto/b4-012-m2b-b1-myweb-audit-node-test-tooling-preservation-authorization-prep-2026-06-13.md"
+      ],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-13T02:07:33.322Z"
     }
   ]
 }

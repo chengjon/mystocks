@@ -7586,5 +7586,63 @@
         "transitioned_at": "2026-06-13T01:56:04.848Z"
       }
     ]
+  },
+  {
+    "id": "b4-012-scripts-myweb-audit-node-test-authorization",
+    "title": "myweb-audit node-test tooling preservation authorization",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-scripts-deleted-untracked-disposition-audit",
+    "status": "authorization-prepared",
+    "function_tree_ref": "B4.012-M2b-B1",
+    "current_head": "07590ca686d6265a0c16d2fa5caf37828a5e2671",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m2b-b1-myweb-audit-node-test-tooling-preservation-authorization-prep-2026-06-13.md",
+        "note": "B4.012-M2b-B1 no-source authorization prep for myweb-audit Node test tooling",
+        "current_head": "07590ca686d6265a0c16d2fa5caf37828a5e2671",
+        "recorded_at": "2026-06-13T02:07:16.368Z"
+      }
+    ],
+    "allowed_paths": [
+      "scripts/dev/tools/__node_tests__/validateMywebAuditSkill.test.mjs",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/tree.md",
+      ".governance/programs/artdeco-web-design-governance/cards/b4-012-scripts-myweb-audit-node-test-authorization.yaml",
+      "docs/reports/worklogs/claude-auto/b4-012-m2b-b1-myweb-audit-node-test-tooling-preservation-authorization-prep-2026-06-13.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not stage or edit the candidate script during authorization prep.",
+      "Do not touch other scripts residuals, source, API, OpenSpec, ST-HOLD, marketKlineData, docs/guides, docs/superpowers, or external dirty files.",
+      "Do not delete or retire any file in this package."
+    ],
+    "next_gate": "review and approve implementation authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-13T02:06:59.127Z",
+    "updated_at": "2026-06-13T02:07:33.322Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "",
+        "current_head": "07590ca686d6265a0c16d2fa5caf37828a5e2671",
+        "transitioned_at": "2026-06-13T02:07:16.434Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "Exact staged allowlist; no scripts/** paths staged; git diff --cached --check; GitNexus staged verification; OPENDOG zero blockers."
+      ],
+      "closeout_gate": [
+        "Post-commit GitNexus index refresh; node remains authorization-prepared until explicit implementation approval."
+      ]
+    }
   }
 ]

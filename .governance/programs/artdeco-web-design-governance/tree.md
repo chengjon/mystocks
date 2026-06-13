@@ -52,3 +52,4 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-012-scripts-residual-domain-audit: Scripts residual dirty domain no-source audit (planning, FT: B4.012-M2b)
 - [ ] b4-012-scripts-governance-quality-authorization: Governance quality scripts authorization prep (planning, FT: B4.012-M2b-A)
 - [ ] b4-012-scripts-deleted-untracked-disposition-audit: Scripts deleted and untracked disposition audit (planning, FT: B4.012-M2b-B)
+- [ ] b4-012-scripts-myweb-audit-node-test-authorization: myweb-audit node-test tooling preservation authorization (planning, FT: B4.012-M2b-B1)
