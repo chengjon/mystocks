@@ -1,0 +1,31 @@
+task:
+  id: "b4-012-sync-opencode-model-catalog-contract-standardization-authorization"
+  title: "sync OpenCode model catalog contract standardization authorization"
+
+scope:
+  allowed_paths:
+    - "scripts/opencode/sync_opencode_model_catalog.py"
+    - "tests/unit/test_sync_opencode_model_catalog.py"
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/tree.md"
+    - ".governance/programs/artdeco-web-design-governance/cards/b4-012-sync-opencode-model-catalog-contract-standardization-authorization.yaml"
+    - "docs/reports/worklogs/claude-auto/b4-012-m2b-b2-c-b-a-sync-opencode-model-catalog-contract-standardization-authorization-prep-2026-06-14.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not modify scripts/opencode/sync_omc_model_catalog.py or tests/unit/test_sync_omc_model_catalog.py."
+  - "Do not modify opencode.json, .config/opencode/*, docs/guides, OpenSpec, frontend, API, ST-HOLD, marketKlineData, or unrelated dirty paths."
+  - "Do not introduce broad ASXS migration outside the minimal source/test contract needed for sync_opencode_model_catalog.py focused tests."
+
+acceptance:
+  commit_gate:
+    - "Exact staged allowlist only; python -m py_compile scripts/opencode/sync_opencode_model_catalog.py passes; focused pytest for tests/unit/test_sync_opencode_model_catalog.py passes; git diff --cached --check passes; GitNexus staged review reports low or no process impact."
+  closeout_gate:
+    - "Implementation closeout must document whether the accepted contract is opencode/glm/asxs or a narrower compatibility fix, and must keep OMC sibling files and local config untouched unless separately authorized."
+
+evidence:
+  current_head: "726be97e24ace7c6be8e8ce4642cf56bbbb3dc0d"
+  notes: []
