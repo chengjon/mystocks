@@ -1,0 +1,33 @@
+task:
+  id: "b4-012-active-decision-gate-reconciliation"
+  title: "B4.012 active decision gate reconciliation"
+
+scope:
+  allowed_paths:
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/tree.md"
+    - ".governance/programs/artdeco-web-design-governance/cards/b4-012-active-decision-gate-reconciliation.yaml"
+    - "docs/reports/worklogs/claude-auto/b4-012-m2b-gov-p1-active-parent-gate-metadata-closeout-2026-06-14.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not modify source, tests, runtime configs, OpenSpec, frontend, API, ST-HOLD, marketKlineData, or any external dirty paths."
+  - "Do not close broad atlas gates: b4-012-residual-dirty-domain-atlas, b4-012-scripts-residual-domain-audit, or b4-012-scripts-deleted-untracked-disposition-audit."
+  - "Do not stage scripts/runtime/record_graphiti_post_commit_closeout.py, scripts/runtime/trading_cash_reservations.py, or mystocks-spec-unfinished-task-inventory worklog."
+
+acceptance:
+  commit_gate:
+    - "Exact staged files must be limited to governance metadata and the GOV-P1 closeout worklog."
+    - "ft-governance validate must pass."
+    - "GitNexus verify-staged and detect-changes must report low or none risk and 0 affected processes."
+    - "OPENDOG verification must show no cleanup/refactor blockers."
+  closeout_gate:
+    - "Only completed parent gates identified in the reconciliation report may be closed or archived."
+    - "Broad B4.012 atlas and scripts residual gates remain active."
+
+evidence:
+  current_head: "c96aff53df1d798267322e67e92ef6e3e14208f7"
+  notes: []

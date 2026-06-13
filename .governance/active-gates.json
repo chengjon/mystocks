@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-13T19:30:05.053Z",
+  "updated_at": "2026-06-13T19:34:12.817Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -128,15 +128,22 @@
       "node_type": "decision",
       "owner_lane": "artdeco-web-design-governance",
       "parent": "b4-012-scripts-residual-domain-audit",
-      "status": "decision-prepared",
+      "status": "authorization-prepared",
       "source_edits_authorized": false,
       "current_blocker": "",
-      "next_allowed": "prepare authorization",
+      "next_allowed": "review and approve implementation authorization",
       "function_tree_ref": "B4.012-M2b-GOV-PARENT",
       "freshness": "current-head",
-      "allowed_paths": [],
+      "allowed_paths": [
+        ".governance/active-gates.json",
+        ".governance/active-gates.md",
+        ".governance/programs/artdeco-web-design-governance/nodes.json",
+        ".governance/programs/artdeco-web-design-governance/tree.md",
+        ".governance/programs/artdeco-web-design-governance/cards/b4-012-active-decision-gate-reconciliation.yaml",
+        "docs/reports/worklogs/claude-auto/b4-012-m2b-gov-p1-active-parent-gate-metadata-closeout-2026-06-14.md"
+      ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-13T19:30:05.044Z"
+      "updated_at": "2026-06-13T19:34:12.798Z"
     }
   ]
 }
