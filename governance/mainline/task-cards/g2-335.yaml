@@ -1,0 +1,105 @@
+version: "v0.2"
+task:
+  id: "g2-335"
+  title: "Refresh service lifecycle DI residual pool after technical_analysis merge"
+  owner: "G/#79 service lifecycle DI + Route/OpenAPI governance"
+  created_at: "2026-06-13"
+
+mainline:
+  id: "L1-service-lifecycle-di-post-technical-analysis-residual-refresh"
+  objective: "Regenerate the current route-body DataSourceFactory residual pool after PR #480 landed technical_analysis provider injection."
+  milestone_id: "g2"
+  slice_id: "g2-335"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: ""
+  approval_status: "not_required"
+
+scope:
+  allowed_paths:
+    - "docs/reports/quality/backend-service-lifecycle-di-post-technical-analysis-residual-refresh-2026-06-13.md"
+    - "governance/mainline/task-cards/g2-335.yaml"
+  forbidden_paths:
+    - "src/**"
+    - "web/backend/app/**"
+    - "web/frontend/**"
+    - "tests/**"
+    - "scripts/**"
+    - "config/**"
+    - "requirements.txt"
+    - "web/backend/requirements.txt"
+    - "openspec/changes/**"
+    - "openstock/**"
+    - "OpenStock/**"
+
+non_goals:
+  - "Do not implement service lifecycle DI source changes."
+  - "Do not modify MyStocks API route source, tests, frontend, runtime state, scripts, configuration, dependency manifests, or OpenSpec implementation files."
+  - "Do not modify OpenStock internals, provider/runtime code, tests, configuration, packaging, or repository files."
+  - "Do not select watchlist or strategy source implementation scope without a separate source-authorized task card."
+  - "Do not authorize deletion, retirement, compatibility-layer removal, or full-file removal."
+
+acceptance:
+  checks:
+    - id: "no-source-path-check"
+      command: "git diff --name-only HEAD~1..HEAD excludes src/**, web/backend/app/**, web/frontend/**, tests/**, scripts/**, config/**, requirements.txt, web/backend/requirements.txt, openspec/changes/**, and OpenStock internals"
+      required: true
+    - id: "residual-refresh-report"
+      command: "docs/reports/quality/backend-service-lifecycle-di-post-technical-analysis-residual-refresh-2026-06-13.md records current origin/main strict residual pool after PR #480"
+      required: true
+    - id: "residual-refresh-assertion"
+      command: "AST scan confirms strict route-body residual pool: web/backend/app/api/watchlist.py=8, web/backend/app/api/strategy.py=3, web/backend/app/api/technical_analysis.py=0"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/g2-335.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha HEAD~1 --head-sha HEAD --report /tmp/g2-335-mainline-gate.json"
+      required: true
+    - id: "gitnexus-staged-detect-changes"
+      command: "gitnexus_detect_changes(scope=staged)"
+      required: true
+    - id: "diff-check"
+      command: "git diff HEAD~1..HEAD --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Current main still shows watchlist residuals even though PR #474 accepted a watchlist provider anchor on the wip/root lane; follow-up source work must not conflate those branches."
+    - "Strategy route paths differ across main and wip/root branch families; follow-up authorization must name the target base branch explicitly."
+    - "Dashboard body-level get_data_source usage is an observation item only and must not be treated as a strict DataSourceFactory constructor residual."
+  rollback_plan: "Revert this governance-only commit to remove the G2.335 report and task card."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Record the current service lifecycle DI residual pool after technical_analysis provider injection landed on main."
+    modified_scope: "Governance report and G2.335 task card only."
+    dependency_changes: "No dependency changes."
+    legacy_logic_impact: "No source, test, API, frontend, runtime, script, configuration, OpenSpec implementation, or OpenStock internal changes."
+    rollback_ready: "Revert this governance-only commit."
+    risk_and_rollback_point: "Any follow-up source work must use a separate source-authorized task card and explicit base-branch decision."
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "No business entrypoint changed; this is a no-source evidence and task-card package for mainline governance."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "G/#79 service lifecycle DI + Route/OpenAPI governance"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-06-13T09:28:43+08:00"
+    approval_note: "Human maintainer agreed to continue with the next MyStocks-side task after PR #480 merged; G2.335 is constrained to no-source residual refresh."
+    secondary_approved: false
