@@ -1,0 +1,124 @@
+version: "v0.2"
+task:
+  id: "g2-337"
+  title: "Inject strategy data source provider"
+  owner: "G/#79 service lifecycle DI + Route/OpenAPI governance"
+  created_at: "2026-06-13"
+
+mainline:
+  id: "L1-service-lifecycle-di-strategy-provider"
+  objective: "Move strategy route-body DataSourceFactory construction into a FastAPI provider dependency without changing route behavior."
+  milestone_id: "g2"
+  slice_id: "g2-337"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: ""
+  approval_status: "not_required"
+
+scope:
+  allowed_paths:
+    - "docs/reports/quality/backend-service-lifecycle-di-strategy-provider-2026-06-13.md"
+    - "governance/compliance/unified-response-contract-legacy-baseline.json"
+    - "governance/function-tree/catalog.yaml"
+    - "governance/mainline/task-cards/g2-337.yaml"
+    - "web/backend/app/api/strategy.py"
+    - "web/backend/tests/test_strategy_provider_injection.py"
+  forbidden_paths:
+    - "src/**"
+    - "web/frontend/**"
+    - "config/**"
+    - "requirements.txt"
+    - "web/backend/requirements.txt"
+    - "openspec/changes/**"
+    - "openstock/**"
+    - "OpenStock/**"
+
+non_goals:
+  - "Do not change strategy route paths, response envelopes, parameter validation, exception mapping, or adapter get_data(...) request payloads."
+  - "Do not modify OpenStock internals, provider/runtime code, tests, configuration, packaging, or repository files."
+  - "Do not modify watchlist, technical_analysis, dashboard, frontend, unrelated scripts, configuration, OpenSpec implementation files, unrelated dependency manifests, or unrelated tests."
+  - "Do not migrate strategy response models to UnifiedResponse in this DI task; record existing response-contract debt in the explicit legacy baseline instead."
+  - "Do not delete or retire files, compatibility layers, route handlers, imports with side effects, or response-contract debt."
+
+acceptance:
+  checks:
+    - id: "tdd-red-provider-injection-test"
+      command: "pytest --no-cov web/backend/tests/test_strategy_provider_injection.py fails before implementation because strategy route bodies still construct DataSourceFactory"
+      required: true
+    - id: "focused-provider-injection-test"
+      command: "pytest --no-cov web/backend/tests/test_strategy_provider_injection.py"
+      required: true
+    - id: "strategy-api-file-tests"
+      command: "pytest --no-cov tests/api/file_tests/test_strategy_api.py"
+      required: true
+    - id: "strategy-unit-api-tests"
+      command: "pytest --no-cov tests/unit/api/test_strategy_api.py"
+      required: true
+    - id: "strategy-py-compile"
+      command: "python -m py_compile web/backend/app/api/strategy.py"
+      required: true
+    - id: "unified-response-guard-baseline-test"
+      command: "pytest --no-cov tests/unit/scripts/test_unified_response_contract_guard.py"
+      required: true
+    - id: "unified-response-guard-strategy"
+      command: "python scripts/compliance/unified_response_contract_guard.py --format json --root-dir $PWD --path web/backend/app/api/strategy.py"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/g2-337.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha HEAD~1 --head-sha HEAD --report /tmp/g2-337-mainline-gate.json"
+      required: true
+    - id: "gitnexus-api-impact"
+      command: "gitnexus_api_impact(file=web/backend/app/api/strategy.py) attempted before editing; current index maps strategy routes to removed strategy_management router and the implementation report records this limitation"
+      required: true
+    - id: "gitnexus-detect-changes"
+      command: "gitnexus_detect_changes(scope=compare, base_ref=origin/main)"
+      required: true
+    - id: "diff-check"
+      command: "git diff HEAD~1..HEAD --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "GitNexus API and symbol impact do not currently resolve current-main web/backend/app/api/strategy.py; this task must preserve the limitation evidence and rely on AST plus focused route tests."
+    - "The route-body cleanup touches three API handlers in one file; behavior must remain unchanged except dependency construction location."
+    - "Static provider-boundary tests prove the lifecycle boundary but do not replace focused strategy API file and unit tests."
+    - "The UnifiedResponse guard baseline is explicit debt registration only; it must not be used to add new legacy endpoints."
+  rollback_plan: "Revert this source-authorized commit to restore route-body DataSourceFactory construction and remove the focused provider-injection test, report, and task card."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Move strategy DataSourceFactory construction from route bodies into a provider dependency."
+    modified_scope: "One API route file, one focused backend provider-injection test file, one function-tree catalog mapping, one UnifiedResponse legacy baseline entry, one governance report, and one task card."
+    dependency_changes: "No dependency changes."
+    legacy_logic_impact: "Strategy route paths, response envelopes, validation, exception mapping, and adapter get_data(...) calls are preserved."
+    rollback_ready: "Revert this source-authorized commit."
+    risk_and_rollback_point: "Rollback restores previous inline DataSourceFactory lifecycle behavior and removes the explicit strategy response-contract debt baseline entry."
+
+function_tree:
+  domain_id: "domain-03"
+  node_id: "domain-03-node-01"
+  affected_entrypoints:
+    - "governance"
+    - "api"
+    - "tests"
+  update_status: "required"
+  secondary_domains: []
+  exemption_reason: "Existing strategy API routes are unchanged; the source-authorized change moves strategy adapter construction from route bodies to a route module provider dependency, adds focused regression tests, and refreshes the function-tree catalog mapping for the current-main strategy.py route file."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "G/#79 service lifecycle DI + Route/OpenAPI governance"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-06-13T10:24:57+08:00"
+    approval_note: "Human maintainer agreed to continue after G2.336; G2.337 is constrained to MyStocks strategy.py provider injection with OpenStock boundary-only handling."
+    secondary_approved: false

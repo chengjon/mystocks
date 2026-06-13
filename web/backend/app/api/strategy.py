@@ -6,9 +6,9 @@
 import logging
 import re
 from datetime import date, datetime
-from typing import List, Optional
+from typing import Any, List, Optional
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field, field_validator
 
 from app.core.responses import ErrorCodes, ResponseMessages, create_error_response, create_success_response
@@ -18,6 +18,11 @@ from app.services.strategy_service import get_strategy_service
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
+
+async def get_strategy_data_source() -> Any:
+    data_source_factory = DataSourceFactory()
+    return await data_source_factory.get_data_source("strategy")
 
 
 # ==================== 请求/响应模型 ====================
@@ -179,7 +184,10 @@ class MarketFilterParams(BaseModel):
 
 
 @router.get("/definitions", tags=["strategy"])
-async def get_strategy_definitions():
+async def get_strategy_definitions(
+    *,
+    strategy_adapter: Any = Depends(get_strategy_data_source),
+):
     """
     获取所有策略定义
 
@@ -187,10 +195,6 @@ async def get_strategy_definitions():
         所有可用策略的定义列表
     """
     try:
-        # 使用数据源工厂
-        data_source_factory = DataSourceFactory()
-        strategy_adapter = await data_source_factory.get_data_source("strategy")
-
         result = await strategy_adapter.get_data("definitions")
 
         if "error" in result:
@@ -221,6 +225,8 @@ async def run_strategy_single(
     symbol: str = Query(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$"),
     stock_name: Optional[str] = Query(None, description="股票名称", max_length=100),
     check_date: Optional[str] = Query(None, description="检查日期 YYYY-MM-DD", pattern=r"^\d{4}-\d{2}-\d{2}$"),
+    *,
+    strategy_adapter: Any = Depends(get_strategy_data_source),
 ):
     """
     对单只股票运行策略
@@ -235,10 +241,6 @@ async def run_strategy_single(
         策略执行结果
     """
     try:
-        # 使用数据源工厂
-        data_source_factory = DataSourceFactory()
-        strategy_adapter = await data_source_factory.get_data_source("strategy")
-
         params = {"strategy_code": strategy_code, "symbol": symbol, "stock_name": stock_name, "check_date": check_date}
 
         result = await strategy_adapter.get_data("run_single", params)
@@ -278,6 +280,8 @@ async def run_strategy_batch(
     market: Optional[str] = Query("A", description="市场类型 (A/SH/SZ/CYB/KCB)", pattern=r"^(A|SH|SZ|CYB|KCB)$"),
     limit: Optional[int] = Query(None, description="限制处理数量", ge=1, le=5000),
     check_date: Optional[str] = Query(None, description="检查日期 YYYY-MM-DD", pattern=r"^\d{4}-\d{2}-\d{2}$"),
+    *,
+    strategy_adapter: Any = Depends(get_strategy_data_source),
 ):
     """
     批量运行策略
@@ -293,10 +297,6 @@ async def run_strategy_batch(
         批量执行结果统计
     """
     try:
-        # 使用数据源工厂
-        data_source_factory = DataSourceFactory()
-        strategy_adapter = await data_source_factory.get_data_source("strategy")
-
         params = {
             "strategy_code": strategy_code,
             "symbols": symbols,
