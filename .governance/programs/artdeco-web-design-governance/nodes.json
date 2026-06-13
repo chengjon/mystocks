@@ -7593,11 +7593,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-scripts-deleted-untracked-disposition-audit",
-    "status": "authorization-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "B4.012-M2b-B1",
-    "current_head": "07590ca686d6265a0c16d2fa5caf37828a5e2671",
+    "current_head": "fcd87f0df278b7edff64ba559e54ade5b5f0c2d5",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "baseline",
@@ -7605,6 +7605,13 @@
         "note": "B4.012-M2b-B1 no-source authorization prep for myweb-audit Node test tooling",
         "current_head": "07590ca686d6265a0c16d2fa5caf37828a5e2671",
         "recorded_at": "2026-06-13T02:07:16.368Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "User continued after explicit single-path B4.012-M2b-B1 implementation scope; current HEAD refreshed before implementation.",
+        "note": "B4.012-M2b-B1 implementation approval accepted for scripts/dev/tools/__node_tests__/validateMywebAuditSkill.test.mjs only",
+        "current_head": "fcd87f0df278b7edff64ba559e54ade5b5f0c2d5",
+        "recorded_at": "2026-06-13T02:16:04.700Z"
       }
     ],
     "allowed_paths": [
@@ -7622,11 +7629,11 @@
       "Do not touch other scripts residuals, source, API, OpenSpec, ST-HOLD, marketKlineData, docs/guides, docs/superpowers, or external dirty files.",
       "Do not delete or retire any file in this package."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-13T02:06:59.127Z",
-    "updated_at": "2026-06-13T02:07:33.322Z",
+    "updated_at": "2026-06-13T02:16:50.846Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -7634,6 +7641,20 @@
         "note": "",
         "current_head": "07590ca686d6265a0c16d2fa5caf37828a5e2671",
         "transitioned_at": "2026-06-13T02:07:16.434Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "fcd87f0df278b7edff64ba559e54ade5b5f0c2d5",
+        "transitioned_at": "2026-06-13T02:16:04.762Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "fcd87f0df278b7edff64ba559e54ade5b5f0c2d5",
+        "transitioned_at": "2026-06-13T02:16:50.846Z"
       }
     ],
     "acceptance": {

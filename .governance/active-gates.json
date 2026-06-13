@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-13T02:07:33.336Z",
+  "updated_at": "2026-06-13T02:16:50.854Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -60,10 +60,10 @@
       "node_type": "decision",
       "owner_lane": "artdeco-web-design-governance",
       "parent": "b4-012-scripts-deleted-untracked-disposition-audit",
-      "status": "authorization-prepared",
-      "source_edits_authorized": false,
+      "status": "implementation-ready",
+      "source_edits_authorized": true,
       "current_blocker": "",
-      "next_allowed": "review and approve implementation authorization",
+      "next_allowed": "land implementation with Git evidence",
       "function_tree_ref": "B4.012-M2b-B1",
       "freshness": "current-head",
       "allowed_paths": [
@@ -76,7 +76,7 @@
         "docs/reports/worklogs/claude-auto/b4-012-m2b-b1-myweb-audit-node-test-tooling-preservation-authorization-prep-2026-06-13.md"
       ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-13T02:07:33.322Z"
+      "updated_at": "2026-06-13T02:16:50.846Z"
     }
   ]
 }
