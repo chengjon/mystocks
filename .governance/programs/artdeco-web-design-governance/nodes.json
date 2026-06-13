@@ -7729,5 +7729,63 @@
         "transitioned_at": "2026-06-13T02:49:08.357Z"
       }
     ]
+  },
+  {
+    "id": "b4-012-scripts-market-data-package-marker-authorization",
+    "title": "market_data package marker preservation authorization",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-scripts-market-data-opencode-disposition-audit",
+    "status": "authorization-prepared",
+    "function_tree_ref": "B4.012-M2b-B2-A",
+    "current_head": "c61b7c1276dc2899e9e944f88a1f04a3b0d91b8d",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m2b-b2-a-market-data-package-marker-preservation-authorization-prep-2026-06-13.md",
+        "note": "B4.012-M2b-B2-A no-source authorization prep for market_data package marker preservation",
+        "current_head": "c61b7c1276dc2899e9e944f88a1f04a3b0d91b8d",
+        "recorded_at": "2026-06-13T03:17:09.064Z"
+      }
+    ],
+    "allowed_paths": [
+      "scripts/market_data/__init__.py",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/tree.md",
+      ".governance/programs/artdeco-web-design-governance/cards/b4-012-scripts-market-data-package-marker-authorization.yaml",
+      "docs/reports/worklogs/claude-auto/b4-012-m2b-b2-a-market-data-package-marker-preservation-authorization-prep-2026-06-13.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not stage or edit scripts/market_data/__init__.py during authorization prep.",
+      "Do not touch scripts/opencode/sync_omc_model_catalog.py, runtime scripts, source, tests, API routes, OpenSpec, ST-HOLD, marketKlineData, docs/guides, docs/superpowers, or external dirty files.",
+      "Do not delete or retire any file in this package."
+    ],
+    "next_gate": "review and approve implementation authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-13T03:17:08.971Z",
+    "updated_at": "2026-06-13T03:17:23.731Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "",
+        "current_head": "c61b7c1276dc2899e9e944f88a1f04a3b0d91b8d",
+        "transitioned_at": "2026-06-13T03:17:09.120Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "Exact staged allowlist; no scripts/** paths staged; git diff --cached --check; GitNexus staged verification; OPENDOG zero blockers."
+      ],
+      "closeout_gate": [
+        "Post-commit GitNexus index refresh; node remains authorization-prepared until explicit implementation approval."
+      ]
+    }
   }
 ]

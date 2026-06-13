@@ -1,0 +1,30 @@
+task:
+  id: "b4-012-scripts-market-data-package-marker-authorization"
+  title: "market_data package marker preservation authorization"
+
+scope:
+  allowed_paths:
+    - "scripts/market_data/__init__.py"
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/tree.md"
+    - ".governance/programs/artdeco-web-design-governance/cards/b4-012-scripts-market-data-package-marker-authorization.yaml"
+    - "docs/reports/worklogs/claude-auto/b4-012-m2b-b2-a-market-data-package-marker-preservation-authorization-prep-2026-06-13.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not stage or edit scripts/market_data/__init__.py during authorization prep."
+  - "Do not touch scripts/opencode/sync_omc_model_catalog.py, runtime scripts, source, tests, API routes, OpenSpec, ST-HOLD, marketKlineData, docs/guides, docs/superpowers, or external dirty files."
+  - "Do not delete or retire any file in this package."
+
+acceptance:
+  commit_gate:
+    - "Exact staged allowlist; no scripts/** paths staged; git diff --cached --check; GitNexus staged verification; OPENDOG zero blockers."
+  closeout_gate:
+    - "Post-commit GitNexus index refresh; node remains authorization-prepared until explicit implementation approval."
+
+evidence:
+  current_head: "c61b7c1276dc2899e9e944f88a1f04a3b0d91b8d"
+  notes: []

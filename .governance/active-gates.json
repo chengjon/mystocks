@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-13T02:49:08.372Z",
+  "updated_at": "2026-06-13T03:17:23.751Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -69,6 +69,31 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-13T02:49:08.357Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-012-scripts-market-data-package-marker-authorization",
+      "title": "market_data package marker preservation authorization",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-012-scripts-market-data-opencode-disposition-audit",
+      "status": "authorization-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "review and approve implementation authorization",
+      "function_tree_ref": "B4.012-M2b-B2-A",
+      "freshness": "current-head",
+      "allowed_paths": [
+        "scripts/market_data/__init__.py",
+        ".governance/active-gates.json",
+        ".governance/active-gates.md",
+        ".governance/programs/artdeco-web-design-governance/nodes.json",
+        ".governance/programs/artdeco-web-design-governance/tree.md",
+        ".governance/programs/artdeco-web-design-governance/cards/b4-012-scripts-market-data-package-marker-authorization.yaml",
+        "docs/reports/worklogs/claude-auto/b4-012-m2b-b2-a-market-data-package-marker-preservation-authorization-prep-2026-06-13.md"
+      ],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-13T03:17:23.731Z"
     }
   ]
 }

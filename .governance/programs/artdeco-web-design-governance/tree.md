@@ -54,3 +54,4 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-012-scripts-deleted-untracked-disposition-audit: Scripts deleted and untracked disposition audit (planning, FT: B4.012-M2b-B)
 - [ ] b4-012-scripts-myweb-audit-node-test-authorization: myweb-audit node-test tooling preservation authorization (planning, FT: B4.012-M2b-B1)
 - [ ] b4-012-scripts-market-data-opencode-disposition-audit: market_data and opencode script disposition no-source review (planning, FT: B4.012-M2b-B2)
+- [ ] b4-012-scripts-market-data-package-marker-authorization: market_data package marker preservation authorization (planning, FT: B4.012-M2b-B2-A)
