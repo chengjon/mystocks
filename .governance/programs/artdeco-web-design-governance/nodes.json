@@ -7736,11 +7736,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-scripts-market-data-opencode-disposition-audit",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "B4.012-M2b-B2-A",
     "current_head": "ad008d5da235bf888faa0a1e05d0474e1afc6b5e",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "baseline",
@@ -7772,11 +7772,11 @@
       "Do not touch scripts/opencode/sync_omc_model_catalog.py, runtime scripts, source, tests, API routes, OpenSpec, ST-HOLD, marketKlineData, docs/guides, docs/superpowers, or external dirty files.",
       "Do not delete or retire any file in this package."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-13T03:17:08.971Z",
-    "updated_at": "2026-06-13T07:55:26.452Z",
+    "updated_at": "2026-06-13T08:56:04.099Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -7798,6 +7798,20 @@
         "note": "",
         "current_head": "ad008d5da235bf888faa0a1e05d0474e1afc6b5e",
         "transitioned_at": "2026-06-13T07:55:26.452Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Implemented by 6364267a9; market_data package marker preserved.",
+        "current_head": "6364267a9b59ffe8abb53825f4c9c63dc021407e",
+        "transitioned_at": "2026-06-13T08:56:03.988Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "B4.012-M2b-B2-A preservation and verification closed.",
+        "current_head": "6364267a9b59ffe8abb53825f4c9c63dc021407e",
+        "transitioned_at": "2026-06-13T08:56:04.099Z"
       }
     ],
     "acceptance": {
@@ -7807,6 +7821,18 @@
       "closeout_gate": [
         "Post-commit GitNexus index refresh; node remains authorization-prepared until explicit implementation approval."
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m2b-b2-a-market-data-package-marker-preservation-closeout-2026-06-13.md",
+      "compatibility": "Preserved scripts.market_data import compatibility; no runtime/API/routes/OpenSpec/ST-HOLD/marketKlineData/docs/guides/docs/superpowers changes.",
+      "gates": [
+        "python -m py_compile scripts/market_data/__init__.py passed",
+        "focused import check passed",
+        "GitNexus staged verification passed: risk low, affected processes 0",
+        "OPENDOG blocker_count 0"
+      ],
+      "current_head": "6364267a9b59ffe8abb53825f4c9c63dc021407e",
+      "prepared_at": "2026-06-13T08:56:04.045Z"
     }
   }
 ]
