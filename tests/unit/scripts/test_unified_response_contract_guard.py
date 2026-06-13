@@ -5,7 +5,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 SCRIPT_PATH = PROJECT_ROOT / "scripts" / "compliance" / "unified_response_contract_guard.py"
 
@@ -130,6 +129,55 @@ async def get_quotes():
     payload = json.loads(completed.stdout)
     assert payload["summary"]["errors"] == 1
     assert "QuoteResponse" in payload["errors"][0]["message"]
+
+
+def test_legacy_baseline_exempts_listed_endpoint(tmp_path: Path) -> None:
+    project_root = tmp_path / "repo"
+    target = project_root / "web" / "backend" / "app" / "api" / "legacy_quotes.py"
+    baseline = project_root / "governance" / "compliance" / "unified-response-contract-legacy-baseline.json"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    baseline.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(
+        """
+from __future__ import annotations
+
+from fastapi import APIRouter
+from pydantic import BaseModel
+
+router = APIRouter()
+
+class QuoteResponse(BaseModel):
+    symbol: str
+
+@router.get("/quotes", response_model=QuoteResponse)
+async def get_quotes():
+    return {"symbol": "000001"}
+""".strip(),
+        encoding="utf-8",
+    )
+    baseline.write_text(
+        json.dumps(
+            {
+                "version": "v0.1",
+                "entries": [
+                    {
+                        "path": "web/backend/app/api/legacy_quotes.py",
+                        "endpoints": ["get_quotes"],
+                        "reason": "Legacy endpoint kept until a dedicated response-contract migration.",
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    completed = run_guard(project_root, "--path", "web/backend/app/api/legacy_quotes.py")
+
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    payload = json.loads(completed.stdout)
+    assert payload["summary"]["errors"] == 0
+    assert payload["results"][0]["mode"] == "legacy-baseline"
+    assert "Legacy endpoint" in payload["results"][0]["message"]
 
 
 def test_passes_for_raw_streaming_endpoint(tmp_path: Path) -> None:

@@ -115,12 +115,14 @@ domains:
         coverage_paths:
           - "src/indicators/**"
           - "web/backend/app/api/indicators.py"
+          - "web/backend/app/api/technical_analysis.py"
           - "web/backend/app/api/technical/**"
         entrypoints:
           governance:
             - "docs/FUNCTION_TREE.md"
           api:
             - "web/backend/app/api/indicators.py"
+            - "web/backend/app/api/technical_analysis.py"
             - "web/backend/app/api/technical/**"
           frontend:
             - "web/frontend/src/views/technical/**"
@@ -698,8 +700,10 @@ domains:
         coverage_paths:
           - ".github/workflows/security-testing.yml"
           - "governance/mainline/**"
+          - "governance/compliance/**"
           - "governance/technical-debt/**"
           - "governance/function-tree/**"
+          - "scripts/compliance/**"
           - "openspec/changes/**"
           - "openspec/specs/**"
           - "openspec/AGENTS.md"
@@ -710,6 +714,7 @@ domains:
         entrypoints:
           governance:
             - "governance/mainline/**"
+            - "governance/compliance/**"
             - "governance/technical-debt/**"
             - "governance/function-tree/**"
             - "openspec/changes/**"
@@ -720,9 +725,11 @@ domains:
             - "docs/guides/ai-tools/AI_QUICK_START.md"
           tests:
             - "tests/unit/governance/**"
+            - "tests/unit/scripts/test_unified_response_contract_guard.py"
             - "tests/fixtures/governance/**"
           operations:
             - ".github/workflows/security-testing.yml"
+            - "scripts/compliance/**"
             - "docs/guides/multi-cli-tasks/MONGO_MULTICLI_COORDINATION_GUIDE.md"
       - id: "meta-governance-frontend-type-generation"
         label: "Frontend Type Generation Determinism"

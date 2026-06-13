@@ -1,0 +1,119 @@
+version: "v0.2"
+task:
+  id: "g2-332"
+  title: "Inject technical_analysis data source provider"
+  owner: "G/#79 service lifecycle DI + Route/OpenAPI governance"
+  created_at: "2026-06-13"
+
+mainline:
+  id: "L1-service-lifecycle-di-technical-analysis-provider"
+  objective: "Move technical_analysis route-body DataSourceFactory construction into a FastAPI provider dependency without changing route behavior."
+  milestone_id: "g2"
+  slice_id: "g2-332"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: ""
+  approval_status: "not_required"
+
+scope:
+  allowed_paths:
+    - "docs/reports/quality/backend-service-lifecycle-di-technical-analysis-provider-2026-06-13.md"
+    - "governance/compliance/unified-response-contract-legacy-baseline.json"
+    - "governance/function-tree/catalog.yaml"
+    - "governance/mainline/task-cards/g2-332.yaml"
+    - "scripts/compliance/unified_response_contract_guard.py"
+    - "tests/unit/scripts/test_unified_response_contract_guard.py"
+    - "web/backend/app/api/technical_analysis.py"
+    - "web/backend/tests/test_technical_analysis_provider_injection.py"
+  forbidden_paths:
+    - "src/**"
+    - "web/frontend/**"
+    - "config/**"
+    - "openspec/changes/**"
+    - "openstock/**"
+    - "OpenStock/**"
+
+non_goals:
+  - "Do not change technical_analysis route paths, response models, parameter validation, circuit-breaker behavior, exception mapping, or adapter get_data(...) request payloads."
+  - "Do not modify OpenStock internals, provider/runtime code, tests, configuration, packaging, or repository files."
+  - "Do not modify watchlist, strategy, dashboard, frontend, unrelated scripts, configuration, OpenSpec implementation files, unrelated dependency manifests, or unrelated tests."
+  - "Do not migrate technical_analysis response models to UnifiedResponse in this DI task; record existing response-contract debt in an explicit guard baseline instead."
+  - "Do not delete or retire files, compatibility layers, or route handlers."
+
+acceptance:
+  checks:
+    - id: "tdd-red-provider-injection-test"
+      command: "pytest --no-cov web/backend/tests/test_technical_analysis_provider_injection.py fails before implementation because route bodies still construct DataSourceFactory"
+      required: true
+    - id: "focused-provider-injection-test"
+      command: "pytest --no-cov web/backend/tests/test_technical_analysis_provider_injection.py"
+      required: true
+    - id: "technical-analysis-api-file-tests"
+      command: "pytest --no-cov tests/api/file_tests/test_technical_analysis_api.py"
+      required: true
+    - id: "unified-response-guard-baseline-test"
+      command: "pytest --no-cov tests/unit/scripts/test_unified_response_contract_guard.py"
+      required: true
+    - id: "unified-response-guard-technical-analysis"
+      command: "python scripts/compliance/unified_response_contract_guard.py --format json --root-dir $PWD --path web/backend/app/api/technical_analysis.py"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/g2-332.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha HEAD~1 --head-sha HEAD --report /tmp/g2-332-mainline-gate.json"
+      required: true
+    - id: "gitnexus-api-impact"
+      command: "gitnexus_api_impact(file=web/backend/app/api/technical_analysis.py)"
+      required: true
+    - id: "gitnexus-detect-changes"
+      command: "gitnexus_detect_changes(scope=compare, base_ref=origin/main)"
+      required: true
+    - id: "diff-check"
+      command: "git diff HEAD~1..HEAD --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "The route-body cleanup touches 8 API handlers in one file; behavior must remain unchanged except dependency construction location."
+    - "Static tests prove the provider boundary but do not replace focused API file tests."
+    - "The UnifiedResponse guard baseline is explicit debt registration only; it must not be used to add new legacy endpoints."
+    - "GitNexus impact/API-impact reported LOW risk before editing, but must be rerun after implementation."
+  rollback_plan: "Revert this commit to restore route-body DataSourceFactory construction and remove the focused provider-injection test and governance artifacts."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Move technical_analysis DataSourceFactory construction from route bodies into a provider dependency."
+    modified_scope: "One API route file, one focused backend test file, one CI guard baseline sidecar, one function-tree catalog mapping, one governance report, and one task card."
+    dependency_changes: "No dependency changes."
+    legacy_logic_impact: "Route paths, response models, validation, circuit-breaker behavior, exception mapping, and adapter get_data(...) calls are preserved."
+    rollback_ready: "Revert this source-authorized commit."
+    risk_and_rollback_point: "Rollback restores previous inline DataSourceFactory lifecycle behavior."
+
+function_tree:
+  domain_id: "domain-02"
+  node_id: "domain-02-node-01"
+  affected_entrypoints:
+    - "governance"
+    - "api"
+    - "tests"
+    - "operations"
+  update_status: "required"
+  secondary_domains: []
+  exemption_reason: "Existing API routes are unchanged; the source-authorized change moves technical_analysis adapter construction from route bodies to the route module provider dependency, adds regression tests, refreshes function-tree catalog mapping, and records existing UnifiedResponse contract debt in an explicit CI guard baseline."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "G/#79 service lifecycle DI + Route/OpenAPI governance"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-06-13T02:57:36+08:00"
+    approval_note: "Human maintainer asked to continue MyStocks-side work; G2.331 selected technical_analysis.py as the next source-authorized DI candidate while keeping OpenStock boundary-only."
+    secondary_approved: false
