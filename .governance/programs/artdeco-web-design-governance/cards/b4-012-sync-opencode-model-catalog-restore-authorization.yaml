@@ -1,0 +1,30 @@
+task:
+  id: "b4-012-sync-opencode-model-catalog-restore-authorization"
+  title: "sync OpenCode model catalog restore authorization"
+
+scope:
+  allowed_paths:
+    - "scripts/opencode/sync_opencode_model_catalog.py"
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/tree.md"
+    - ".governance/programs/artdeco-web-design-governance/cards/b4-012-sync-opencode-model-catalog-restore-authorization.yaml"
+    - "docs/reports/worklogs/claude-auto/b4-012-m2b-b2-c-a-sync-opencode-model-catalog-restore-authorization-prep-2026-06-14.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not restore, edit, stage, delete, or retire scripts/opencode/sync_opencode_model_catalog.py during authorization prep."
+  - "Do not modify scripts/opencode/sync_omc_model_catalog.py, tests/unit/test_sync_opencode_model_catalog.py, tests/unit/test_sync_omc_model_catalog.py, docs/guides, OpenSpec, frontend, API, ST-HOLD, marketKlineData, or unrelated dirty paths."
+  - "Do not implement or validate the ASXS provider migration in this restore-only package."
+
+acceptance:
+  commit_gate:
+    - "Exact staged allowlist only; no target script staged during authorization prep; path-limited git diff --check passes; GitNexus staged review runs and reports low or no process impact."
+  closeout_gate:
+    - "Later restore implementation must restore scripts/opencode/sync_opencode_model_catalog.py byte-equivalent to HEAD and run env PYTHONDONTWRITEBYTECODE=1 python -m pytest tests/unit/test_sync_opencode_model_catalog.py -q --no-cov -p no:cacheprovider before closeout."
+
+evidence:
+  current_head: "95d990a6d20b336c90fd2dca512d9bb5af20091f"
+  notes: []

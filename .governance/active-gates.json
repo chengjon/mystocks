@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-13T14:02:26.436Z",
+  "updated_at": "2026-06-13T17:35:24.162Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -86,6 +86,48 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-13T09:53:38.005Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-012-scripts-sync-opencode-model-catalog-disposition-audit",
+      "title": "sync OpenCode model catalog dirty diff disposition no-source review",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-012-scripts-market-data-opencode-disposition-audit",
+      "status": "decision-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "prepare authorization",
+      "function_tree_ref": "B4.012-M2b-B2-C",
+      "freshness": "current-head",
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-13T17:34:22.388Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-012-sync-opencode-model-catalog-restore-authorization",
+      "title": "sync OpenCode model catalog restore authorization",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-012-scripts-sync-opencode-model-catalog-disposition-audit",
+      "status": "authorization-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "review and approve implementation authorization",
+      "function_tree_ref": "B4.012-M2b-B2-C-A",
+      "freshness": "current-head",
+      "allowed_paths": [
+        "scripts/opencode/sync_opencode_model_catalog.py",
+        ".governance/active-gates.json",
+        ".governance/active-gates.md",
+        ".governance/programs/artdeco-web-design-governance/nodes.json",
+        ".governance/programs/artdeco-web-design-governance/tree.md",
+        ".governance/programs/artdeco-web-design-governance/cards/b4-012-sync-opencode-model-catalog-restore-authorization.yaml",
+        "docs/reports/worklogs/claude-auto/b4-012-m2b-b2-c-a-sync-opencode-model-catalog-restore-authorization-prep-2026-06-14.md"
+      ],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-13T17:35:24.152Z"
     }
   ]
 }

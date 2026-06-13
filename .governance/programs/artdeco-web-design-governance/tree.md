@@ -58,3 +58,5 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-012-scripts-opencode-omc-sync-disposition-audit: opencode OMC sync tool restore-vs-retirement no-source decision (planning, FT: B4.012-M2b-B2-B)
 - [ ] b4-012-scripts-opencode-omc-sync-restore-authorization: opencode OMC sync tool restore authorization (planning, FT: B4.012-M2b-B2-B-A)
 - [ ] b4-012-sync-omc-test-restore-authorization: sync OMC model catalog test restore authorization (planning, FT: B4.012-M2b-B2-B-B)
+- [ ] b4-012-scripts-sync-opencode-model-catalog-disposition-audit: sync OpenCode model catalog dirty diff disposition no-source review (planning, FT: B4.012-M2b-B2-C)
+- [ ] b4-012-sync-opencode-model-catalog-restore-authorization: sync OpenCode model catalog restore authorization (planning, FT: B4.012-M2b-B2-C-A)
