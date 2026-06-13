@@ -7872,5 +7872,63 @@
         "transitioned_at": "2026-06-13T09:53:38.005Z"
       }
     ]
+  },
+  {
+    "id": "b4-012-scripts-opencode-omc-sync-restore-authorization",
+    "title": "opencode OMC sync tool restore authorization",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-scripts-opencode-omc-sync-disposition-audit",
+    "status": "authorization-prepared",
+    "function_tree_ref": "B4.012-M2b-B2-B-A",
+    "current_head": "6b49ddf2ce405146f38c7ed96bd5494a6a560670",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m2b-b2-b-a-opencode-omc-sync-tool-restore-authorization-prep-2026-06-13.md",
+        "note": "B4.012-M2b-B2-B-A restore-only authorization prep for deleted opencode OMC sync tool",
+        "current_head": "6b49ddf2ce405146f38c7ed96bd5494a6a560670",
+        "recorded_at": "2026-06-13T10:10:38.673Z"
+      }
+    ],
+    "allowed_paths": [
+      "scripts/opencode/sync_omc_model_catalog.py",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/tree.md",
+      ".governance/programs/artdeco-web-design-governance/cards/b4-012-scripts-opencode-omc-sync-restore-authorization.yaml",
+      "docs/reports/worklogs/claude-auto/b4-012-m2b-b2-b-a-opencode-omc-sync-tool-restore-authorization-prep-2026-06-13.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not restore, edit, stage, delete, or retire scripts/opencode/sync_omc_model_catalog.py during authorization prep.",
+      "Do not modify scripts/opencode/sync_opencode_model_catalog.py, docs/guides/ai-tools/OMC_WORKFLOW_GUIDE.md, market-data scripts, runtime scripts, source, tests, API routes, OpenSpec, ST-HOLD, marketKlineData, docs/guides, docs/superpowers, or unrelated dirty paths.",
+      "Do not treat authorization prep as approval to implement restore."
+    ],
+    "next_gate": "review and approve implementation authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-13T10:07:21.080Z",
+    "updated_at": "2026-06-13T10:11:35.686Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "Restore authorization decision prepared from B4.012-M2b-B2-B no-source disposition; no source edits authorized.",
+        "current_head": "6b49ddf2ce405146f38c7ed96bd5494a6a560670",
+        "transitioned_at": "2026-06-13T10:11:04.705Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "Exact staged allowlist; no target script staged during authorization prep; git diff --cached --check; Function Tree validate; GitNexus staged review before commit."
+      ],
+      "closeout_gate": [
+        "Node remains authorization-prepared until explicit implementation approval; later restore implementation must pass python -m py_compile scripts/opencode/sync_omc_model_catalog.py and focused reference/import evidence before closeout."
+      ]
+    }
   }
 ]

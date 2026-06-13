@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-13T09:53:38.011Z",
+  "updated_at": "2026-06-13T10:11:35.693Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -86,6 +86,31 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-13T09:53:38.005Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-012-scripts-opencode-omc-sync-restore-authorization",
+      "title": "opencode OMC sync tool restore authorization",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-012-scripts-opencode-omc-sync-disposition-audit",
+      "status": "authorization-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "review and approve implementation authorization",
+      "function_tree_ref": "B4.012-M2b-B2-B-A",
+      "freshness": "current-head",
+      "allowed_paths": [
+        "scripts/opencode/sync_omc_model_catalog.py",
+        ".governance/active-gates.json",
+        ".governance/active-gates.md",
+        ".governance/programs/artdeco-web-design-governance/nodes.json",
+        ".governance/programs/artdeco-web-design-governance/tree.md",
+        ".governance/programs/artdeco-web-design-governance/cards/b4-012-scripts-opencode-omc-sync-restore-authorization.yaml",
+        "docs/reports/worklogs/claude-auto/b4-012-m2b-b2-b-a-opencode-omc-sync-tool-restore-authorization-prep-2026-06-13.md"
+      ],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-13T10:11:35.686Z"
     }
   ]
 }
