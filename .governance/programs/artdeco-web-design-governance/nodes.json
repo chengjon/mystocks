@@ -7736,11 +7736,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-scripts-market-data-opencode-disposition-audit",
-    "status": "authorization-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "B4.012-M2b-B2-A",
-    "current_head": "c61b7c1276dc2899e9e944f88a1f04a3b0d91b8d",
+    "current_head": "ad008d5da235bf888faa0a1e05d0474e1afc6b5e",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "baseline",
@@ -7748,6 +7748,13 @@
         "note": "B4.012-M2b-B2-A no-source authorization prep for market_data package marker preservation",
         "current_head": "c61b7c1276dc2899e9e944f88a1f04a3b0d91b8d",
         "recorded_at": "2026-06-13T03:17:09.064Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "User explicitly approved B4.012-M2b-B2-A implementation after authorization prep; current HEAD refreshed before implementation.",
+        "note": "B4.012-M2b-B2-A implementation approval accepted for scripts/market_data/__init__.py only",
+        "current_head": "ad008d5da235bf888faa0a1e05d0474e1afc6b5e",
+        "recorded_at": "2026-06-13T05:36:09.044Z"
       }
     ],
     "allowed_paths": [
@@ -7765,11 +7772,11 @@
       "Do not touch scripts/opencode/sync_omc_model_catalog.py, runtime scripts, source, tests, API routes, OpenSpec, ST-HOLD, marketKlineData, docs/guides, docs/superpowers, or external dirty files.",
       "Do not delete or retire any file in this package."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-13T03:17:08.971Z",
-    "updated_at": "2026-06-13T03:17:23.731Z",
+    "updated_at": "2026-06-13T07:55:26.452Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -7777,6 +7784,20 @@
         "note": "",
         "current_head": "c61b7c1276dc2899e9e944f88a1f04a3b0d91b8d",
         "transitioned_at": "2026-06-13T03:17:09.120Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "ad008d5da235bf888faa0a1e05d0474e1afc6b5e",
+        "transitioned_at": "2026-06-13T05:36:09.129Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "ad008d5da235bf888faa0a1e05d0474e1afc6b5e",
+        "transitioned_at": "2026-06-13T07:55:26.452Z"
       }
     ],
     "acceptance": {
