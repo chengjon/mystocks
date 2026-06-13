@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-13T08:56:04.105Z",
+  "updated_at": "2026-06-13T09:53:38.011Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -69,6 +69,23 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-13T02:49:08.357Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-012-scripts-opencode-omc-sync-disposition-audit",
+      "title": "opencode OMC sync tool restore-vs-retirement no-source decision",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-012-scripts-market-data-opencode-disposition-audit",
+      "status": "decision-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "prepare authorization",
+      "function_tree_ref": "B4.012-M2b-B2-B",
+      "freshness": "current-head",
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-13T09:53:38.005Z"
     }
   ]
 }

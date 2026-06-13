@@ -7834,5 +7834,43 @@
       "current_head": "6364267a9b59ffe8abb53825f4c9c63dc021407e",
       "prepared_at": "2026-06-13T08:56:04.045Z"
     }
+  },
+  {
+    "id": "b4-012-scripts-opencode-omc-sync-disposition-audit",
+    "title": "opencode OMC sync tool restore-vs-retirement no-source decision",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-scripts-market-data-opencode-disposition-audit",
+    "status": "decision-prepared",
+    "function_tree_ref": "B4.012-M2b-B2-B",
+    "current_head": "c8c4048b4548555e1c00526b19302092e8c202d4",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m2b-b2-b-opencode-omc-sync-tool-disposition-no-source-decision-2026-06-13.md",
+        "note": "B4.012-M2b-B2-B no-source decision for opencode OMC sync tracked deletion",
+        "current_head": "c8c4048b4548555e1c00526b19302092e8c202d4",
+        "recorded_at": "2026-06-13T09:53:37.963Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-13T09:53:37.910Z",
+    "updated_at": "2026-06-13T09:53:38.005Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "",
+        "current_head": "c8c4048b4548555e1c00526b19302092e8c202d4",
+        "transitioned_at": "2026-06-13T09:53:38.005Z"
+      }
+    ]
   }
 ]
