@@ -7548,5 +7548,43 @@
       "current_head": "61bf0ce33a62e15b05860aec91aadff199e24398",
       "prepared_at": "2026-06-13T01:32:13.129Z"
     }
+  },
+  {
+    "id": "b4-012-scripts-deleted-untracked-disposition-audit",
+    "title": "Scripts deleted and untracked disposition audit",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-scripts-residual-domain-audit",
+    "status": "decision-prepared",
+    "function_tree_ref": "B4.012-M2b-B",
+    "current_head": "fbd575025f1aeaf35c741f41d6de30e200d10319",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m2b-b-scripts-deleted-untracked-disposition-no-source-review-2026-06-13.md",
+        "note": "No-source disposition matrix for remaining deleted/untracked scripts.",
+        "current_head": "fbd575025f1aeaf35c741f41d6de30e200d10319",
+        "recorded_at": "2026-06-13T01:56:04.785Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-13T01:56:04.712Z",
+    "updated_at": "2026-06-13T01:56:04.848Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "",
+        "current_head": "fbd575025f1aeaf35c741f41d6de30e200d10319",
+        "transitioned_at": "2026-06-13T01:56:04.848Z"
+      }
+    ]
   }
 ]

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-13T01:32:13.210Z",
+  "updated_at": "2026-06-13T01:56:04.857Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -35,6 +35,23 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-12T19:27:24.863Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-012-scripts-deleted-untracked-disposition-audit",
+      "title": "Scripts deleted and untracked disposition audit",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-012-scripts-residual-domain-audit",
+      "status": "decision-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "prepare authorization",
+      "function_tree_ref": "B4.012-M2b-B",
+      "freshness": "current-head",
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-13T01:56:04.848Z"
     }
   ]
 }
