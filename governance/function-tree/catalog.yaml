@@ -184,6 +184,7 @@ domains:
         coverage_paths:
           - "src/application/strategy/**"
           - "src/strategies/**"
+          - "web/backend/app/api/strategy.py"
           - "web/backend/app/api/strategy_management/**"
           - "web/backend/app/api/strategy_mgmt.py"
           - "web/frontend/src/views/strategy/**"
@@ -191,6 +192,7 @@ domains:
           governance:
             - "docs/FUNCTION_TREE.md"
           api:
+            - "web/backend/app/api/strategy.py"
             - "web/backend/app/api/strategy_management/**"
             - "web/backend/app/api/strategy_mgmt.py"
           frontend:
@@ -200,6 +202,9 @@ domains:
             - "src/application/strategy/**"
             - "src/strategies/**"
           tests:
+            - "tests/api/file_tests/test_strategy_api.py"
+            - "tests/unit/api/test_strategy_api.py"
+            - "web/backend/tests/test_strategy_provider_injection.py"
             - "tests/api/strategy.spec.ts"
             - "tests/e2e/strategy-management.spec.ts"
             - "web/frontend/tests/e2e/strategy-backtest.spec.ts"

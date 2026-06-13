@@ -15,6 +15,18 @@
         "get_batch_indicators"
       ],
       "reason": "G2.332 is a service lifecycle DI cleanup. These existing routes require a separate UnifiedResponse contract migration because changing response_model/return envelopes would alter the API contract."
+    },
+    {
+      "path": "web/backend/app/api/strategy.py",
+      "endpoints": [
+        "get_strategy_definitions",
+        "run_strategy_single",
+        "run_strategy_batch",
+        "query_strategy_results",
+        "get_matched_stocks",
+        "get_strategy_summary"
+      ],
+      "reason": "G2.337 is a service lifecycle DI cleanup. These existing routes require a separate UnifiedResponse contract migration because changing response_model/return envelopes would alter the API contract."
     }
   ]
 }
