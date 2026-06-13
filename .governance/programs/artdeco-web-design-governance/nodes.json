@@ -7879,9 +7879,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-scripts-opencode-omc-sync-disposition-audit",
-    "status": "authorization-prepared",
+    "status": "closed",
     "function_tree_ref": "B4.012-M2b-B2-B-A",
-    "current_head": "6b49ddf2ce405146f38c7ed96bd5494a6a560670",
+    "current_head": "c0be497efb100f1994923b1e632f76d213d02fbd",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -7891,6 +7891,13 @@
         "note": "B4.012-M2b-B2-B-A restore-only authorization prep for deleted opencode OMC sync tool",
         "current_head": "6b49ddf2ce405146f38c7ed96bd5494a6a560670",
         "recorded_at": "2026-06-13T10:10:38.673Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m2b-b2-b-a-opencode-omc-sync-tool-restore-authorization-prep-2026-06-13.md",
+        "note": "Fresh authorization evidence bound to current HEAD after user approval on 2026-06-13; scope remains limited to scripts/opencode/sync_omc_model_catalog.py and generated governance/report files.",
+        "current_head": "c0be497efb100f1994923b1e632f76d213d02fbd",
+        "recorded_at": "2026-06-13T11:15:45.191Z"
       }
     ],
     "allowed_paths": [
@@ -7908,11 +7915,11 @@
       "Do not modify scripts/opencode/sync_opencode_model_catalog.py, docs/guides/ai-tools/OMC_WORKFLOW_GUIDE.md, market-data scripts, runtime scripts, source, tests, API routes, OpenSpec, ST-HOLD, marketKlineData, docs/guides, docs/superpowers, or unrelated dirty paths.",
       "Do not treat authorization prep as approval to implement restore."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-13T10:07:21.080Z",
-    "updated_at": "2026-06-13T10:11:35.686Z",
+    "updated_at": "2026-06-13T12:08:13.919Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -7920,6 +7927,34 @@
         "note": "Restore authorization decision prepared from B4.012-M2b-B2-B no-source disposition; no source edits authorized.",
         "current_head": "6b49ddf2ce405146f38c7ed96bd5494a6a560670",
         "transitioned_at": "2026-06-13T10:11:04.705Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "c0be497efb100f1994923b1e632f76d213d02fbd",
+        "transitioned_at": "2026-06-13T11:21:35.031Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Scope check passed for the approved OMC restore package; target script restored byte-equivalent to HEAD and focused validation passed.",
+        "current_head": "c0be497efb100f1994923b1e632f76d213d02fbd",
+        "transitioned_at": "2026-06-13T11:56:42.739Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Restored scripts/opencode/sync_omc_model_catalog.py from HEAD; no source diff remains for the target path; paired test remains outside scope.",
+        "current_head": "c0be497efb100f1994923b1e632f76d213d02fbd",
+        "transitioned_at": "2026-06-13T11:59:09.456Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "Close OMC sync restore package after verified restore and closeout evidence.",
+        "current_head": "c0be497efb100f1994923b1e632f76d213d02fbd",
+        "transitioned_at": "2026-06-13T12:08:13.919Z"
       }
     ],
     "acceptance": {
@@ -7929,6 +7964,15 @@
       "closeout_gate": [
         "Node remains authorization-prepared until explicit implementation approval; later restore implementation must pass python -m py_compile scripts/opencode/sync_omc_model_catalog.py and focused reference/import evidence before closeout."
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m2b-b2-b-a-opencode-omc-sync-tool-restore-authorization-prep-2026-06-13.md",
+      "compatibility": "Restored scripts/opencode/sync_omc_model_catalog.py byte-equivalent to HEAD, preserving the documented OMC_WORKFLOW_GUIDE CLI entrypoint. No sibling script, docs guide, tests, config, API, frontend, OpenSpec, or OpenStock paths were modified.",
+      "gates": [
+        "Path-limited scope-check passed for 7 authorized paths; git diff --quiet passed for restored script; py_compile, --help, and import smoke passed; GitNexus impact returned not_found/risk UNKNOWN with manual reference fallback recorded; full ft validate remains blocked by pre-existing closed-node allowed-path debt."
+      ],
+      "current_head": "c0be497efb100f1994923b1e632f76d213d02fbd",
+      "prepared_at": "2026-06-13T12:00:11.241Z"
     }
   }
 ]

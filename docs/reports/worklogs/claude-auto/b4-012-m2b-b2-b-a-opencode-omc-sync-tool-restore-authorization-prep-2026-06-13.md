@@ -47,10 +47,47 @@ This package therefore authorizes only the future restoration path, not deletion
 - Function Tree validation passes.
 - GitNexus staged-change review is run before commit.
 
+## Validation Notes
+
+Authorization-prep local checks:
+
+- New node: `b4-012-scripts-opencode-omc-sync-restore-authorization`
+- Initial new node status: `authorization-prepared`
+- Initial new node `source_edits_authorized`: `false`
+- New card generated: `.governance/programs/artdeco-web-design-governance/cards/b4-012-scripts-opencode-omc-sync-restore-authorization.yaml`
+- Path-limited `git diff --check` for this package: passed
+- Scope check for the six governance/report files in this package: no active source-edit authorization, inspected only governance/report files
+
+Implementation approval and restore checks:
+
+- User approval: user replied `同意，请继续` on 2026-06-13 after the restore-authorization boundary was prepared.
+- Fresh evidence was appended because the prior node evidence was bound to an older `HEAD`.
+- Node transition: `authorization-prepared -> approved-for-implementation`.
+- Restore action: `git restore --source=HEAD -- scripts/opencode/sync_omc_model_catalog.py`.
+- Restored target state: `git diff --quiet -- scripts/opencode/sync_omc_model_catalog.py` passed, so the restored script is byte-equivalent to `HEAD` and has no remaining source diff.
+- Target validation: `python -m py_compile scripts/opencode/sync_omc_model_catalog.py` passed.
+- CLI smoke: `python scripts/opencode/sync_omc_model_catalog.py --help` passed and printed the expected argument parser help without writing configuration.
+- Import smoke: `importlib.util.spec_from_file_location(...)` loaded the script and confirmed 11 expected functions are present.
+- Reference evidence: `docs/guides/ai-tools/OMC_WORKFLOW_GUIDE.md` still directly references `python3 /opt/claude/mystocks_spec/scripts/opencode/sync_omc_model_catalog.py` and the `--write-user-config` form.
+- GitNexus evidence: `query` found related OMC/OpenCode artifacts, but `impact` for `scripts/opencode/sync_omc_model_catalog.py` returned `not_found` / `risk=UNKNOWN`; manual reference/import evidence was used as the fallback.
+- Function Tree scoped gate: `ft-governance scope-check --files ...` passed for the 7 authorized paths in this package.
+- Scope caveat: paired tracked test `tests/unit/test_sync_omc_model_catalog.py` remains deleted in the worktree and is outside this node's allowed paths; it was not restored or edited in this package.
+- Global `ft-governance scope-check` is not usable as a package pass/fail signal in the current root worktree because hundreds of unrelated pre-existing dirty paths are outside this node's allowed paths.
+- Function Tree final node status after restore: `closed`; `source_edits_authorized=false`; closeout summary, compatibility note, and gates are recorded on the node.
+- Repository-wide `git diff --check` remains blocked by unrelated pre-existing whitespace in `TASK-REPORT.md:524` and `scripts/dev/mock_market/_generate_realistic_stock_price.py:394`; path-limited `git diff --check` for this package passed.
+
+Known repository-wide validation blocker:
+
+- `ft-governance validate` currently fails on pre-existing closed frontend governance nodes that retain historical source `allowed_paths`, beginning with `b4-frontend-shared-ui-component-truth`.
+- This blocker predates the OMC authorization-prep node and is not remediated in this package.
+- Because of that blocker, this authorization-prep package should not be committed as "full Function Tree validate passed" until either the validator invariant is reconciled with historical closed nodes or a separate governance-repair package resolves the closed-node allowed-path state.
+- The OMC restore node was closed by the Function Tree closeout workflow after its local gates passed. Full validation still cannot be reported as passed because the repository-wide validator currently stops at the pre-existing historical closed-node allowed-path blocker.
+
 ## Closeout Gate
 
-- Node remains `authorization-prepared` until explicit implementation approval.
-- A later restore implementation must prove the restored script is byte-equivalent or intentionally updated from `HEAD`, must pass `python -m py_compile scripts/opencode/sync_omc_model_catalog.py`, and must include focused reference/import evidence before closeout.
+- Implementation approval has been recorded and the restore implementation has completed within the narrow allowed path.
+- Closeout may proceed only if the final scoped diff contains the governance state/report updates and no unexpected source/test/config/OpenSpec edits.
+- Full Function Tree validation remains blocked by the pre-existing closed-node allowed-path debt described above; do not report full validation as passed for this package.
 
 ## Boundary Confirmation
 
