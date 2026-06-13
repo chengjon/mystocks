@@ -1,0 +1,49 @@
+task:
+  id: "b4-012-scripts-governance-quality-authorization"
+  title: "Governance quality scripts authorization prep"
+
+scope:
+  allowed_paths:
+    - "scripts/dev/quality_gate/build_runtime_quality_summary.py"
+    - "scripts/dev/quality_gate/collect_runtime_observability_baseline.py"
+    - "scripts/dev/quality_gate/collect_tech_debt_baseline.py"
+    - "scripts/dev/quality_gate/summarize_metrics_snapshot.py"
+    - "scripts/dev/quality_gate/tech_debt_governance_gate.py"
+    - "scripts/dev/quality_gate/validate_runtime_observability_drift.py"
+    - "scripts/dev/quality_gate/collect_api_performance_baseline.py"
+    - "scripts/dev/quality_gate/collect_frontend_runtime_gate.py"
+    - "scripts/dev/quality_gate/validate_api_performance_drift.py"
+    - "scripts/dev/quality_gate/validate_backend_runtime_dependencies.py"
+    - "scripts/dev/quality_gate/validate_container_deployment_contract.py"
+    - "scripts/dev/quality_gate/validate_deployment_env_contract.py"
+    - "scripts/dev/tools/generate-myweb-audit-secondary-inventory.mjs"
+    - "scripts/dev/tools/validate-myweb-audit-artifacts.mjs"
+    - "scripts/dev/tools/validate-myweb-audit-skill.mjs"
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/tree.md"
+    - ".governance/programs/artdeco-web-design-governance/cards/b4-012-scripts-governance-quality-authorization.yaml"
+    - "docs/reports/worklogs/claude-auto/b4-012-m2b-a-governance-quality-scripts-authorization-prep-2026-06-13.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not touch scripts outside the 15-path governance quality candidate list."
+  - "Do not touch source, tests, runtime behavior, API, routes, OpenSpec, ST-HOLD, marketKlineData, docs/guides, docs/superpowers, or external dirty files."
+  - "Do not delete, retire, restore, rename, format, or execute scripts in this authorization-prep package."
+  - "Do not batch this with the deleted sync_omc_model_catalog.py path or other scripts families."
+
+acceptance:
+  commit_gate:
+    - "Exact staged allowlist excludes all scripts; this package stages only FUNCTION_TREE artifacts and the authorization-prep worklog."
+    - "git diff --cached --check passes."
+    - "GitNexus verify-staged and staged detect-changes pass with low risk."
+    - "OPENDOG blocker count is zero."
+  closeout_gate:
+    - "Future implementation requires explicit script-source authorization before any candidate script path is staged."
+    - "Post-commit GitNexus index refresh completes."
+
+evidence:
+  current_head: "8af24adeb8a4b16ce5d1f160fa6e1bcd33eec9c9"
+  notes: []

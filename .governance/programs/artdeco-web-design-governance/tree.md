@@ -50,3 +50,4 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-012-governance-g2-327-source-review-disposition: g2-327 source-review task-card disposition audit (planning, FT: b4-012-residual-dirty-domain-atlas)
 - [ ] b4-012-governance-g2-327-preservation-authorization: g2-327 source-review task-card preservation authorization (planning, FT: b4-012-governance-task-card-residual-audit)
 - [ ] b4-012-scripts-residual-domain-audit: Scripts residual dirty domain no-source audit (planning, FT: B4.012-M2b)
+- [ ] b4-012-scripts-governance-quality-authorization: Governance quality scripts authorization prep (planning, FT: B4.012-M2b-A)
