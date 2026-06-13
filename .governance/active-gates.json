@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-13T19:13:45.737Z",
+  "updated_at": "2026-06-13T19:30:05.053Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -120,6 +120,23 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-13T18:52:31.558Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-012-active-decision-gate-reconciliation",
+      "title": "B4.012 active decision gate reconciliation",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-012-scripts-residual-domain-audit",
+      "status": "decision-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "prepare authorization",
+      "function_tree_ref": "B4.012-M2b-GOV-PARENT",
+      "freshness": "current-head",
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-13T19:30:05.044Z"
     }
   ]
 }

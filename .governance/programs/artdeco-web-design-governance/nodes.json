@@ -8462,5 +8462,43 @@
       "current_head": "2fa2a782a77d0d27e37f85f5f26478cceda0a94b",
       "prepared_at": "2026-06-13T19:12:18.439Z"
     }
+  },
+  {
+    "id": "b4-012-active-decision-gate-reconciliation",
+    "title": "B4.012 active decision gate reconciliation",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-scripts-residual-domain-audit",
+    "status": "decision-prepared",
+    "function_tree_ref": "B4.012-M2b-GOV-PARENT",
+    "current_head": "c96aff53df1d798267322e67e92ef6e3e14208f7",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m2b-gov-parent-active-decision-gate-reconciliation-no-source-2026-06-14.md",
+        "note": "No-source reconciliation of active B4.012 parent decision gates after OpenCode model catalog implementation closeout.",
+        "current_head": "c96aff53df1d798267322e67e92ef6e3e14208f7",
+        "recorded_at": "2026-06-13T19:30:04.994Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-13T19:30:04.926Z",
+    "updated_at": "2026-06-13T19:30:05.044Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "Decision prepared: next safe step is a governance-only parent gate metadata cleanup authorization, not source changes.",
+        "current_head": "c96aff53df1d798267322e67e92ef6e3e14208f7",
+        "transitioned_at": "2026-06-13T19:30:05.044Z"
+      }
+    ]
   }
 ]
