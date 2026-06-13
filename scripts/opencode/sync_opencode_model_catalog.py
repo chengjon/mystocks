@@ -112,6 +112,8 @@ OMO_PLUGIN_LIST = [
 
 OMO_XHIGH_MODEL = "gmn/gpt-5.4"
 OMO_XHIGH_VARIANT = "xhigh"
+DEFAULT_ENABLED_PROVIDERS = ["opencode", "gmn", "glm"]
+DEFAULT_SERVER_PORT = 11000
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -266,9 +268,19 @@ def build_provider_configs(catalog: dict[str, Any]) -> dict[str, Any]:
 
 
 def apply_common(config: dict[str, Any], catalog: dict[str, Any], plugin_list: list[str] | None = None) -> None:
-    config["enabled_providers"] = catalog["enabled_providers"]
+    config["enabled_providers"] = catalog.get("enabled_providers", DEFAULT_ENABLED_PROVIDERS)
     config["model"] = MODEL_MAIN_FILE_REF
     config["small_model"] = MODEL_SMALL_FILE_REF
+
+    server = config.get("server")
+    if not isinstance(server, dict):
+        server = {}
+        config["server"] = server
+
+    port = server.get("port")
+    if isinstance(port, bool) or not isinstance(port, int):
+        server["port"] = DEFAULT_SERVER_PORT
+
     config["provider"] = build_provider_configs(catalog)
     if plugin_list is not None:
         config["plugin"] = plugin_list

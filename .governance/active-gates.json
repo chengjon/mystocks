@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-13T18:53:23.520Z",
+  "updated_at": "2026-06-13T19:13:45.737Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -106,33 +106,6 @@
     },
     {
       "program": "artdeco-web-design-governance",
-      "id": "b4-012-sync-opencode-model-catalog-restore-authorization",
-      "title": "sync OpenCode model catalog restore authorization",
-      "node_type": "decision",
-      "owner_lane": "artdeco-web-design-governance",
-      "parent": "b4-012-scripts-sync-opencode-model-catalog-disposition-audit",
-      "status": "blocked",
-      "source_edits_authorized": false,
-      "current_blocker": "Focused pytest still fails after restoring scripts/opencode/sync_opencode_model_catalog.py byte-equivalent to HEAD; current HEAD script/test contract drift requires separate source/test authorization for sync_opencode_model_catalog.py and tests/unit/test_sync_opencode_model_catalog.py.",
-      "blocker_reason": "Focused pytest still fails after restoring scripts/opencode/sync_opencode_model_catalog.py byte-equivalent to HEAD; current HEAD script/test contract drift requires separate source/test authorization for sync_opencode_model_catalog.py and tests/unit/test_sync_opencode_model_catalog.py.",
-      "next_allowed": "unblock to implementation-ready",
-      "unblock_target_state": "implementation-ready",
-      "function_tree_ref": "B4.012-M2b-B2-C-A",
-      "freshness": "current-head",
-      "allowed_paths": [
-        "scripts/opencode/sync_opencode_model_catalog.py",
-        ".governance/active-gates.json",
-        ".governance/active-gates.md",
-        ".governance/programs/artdeco-web-design-governance/nodes.json",
-        ".governance/programs/artdeco-web-design-governance/tree.md",
-        ".governance/programs/artdeco-web-design-governance/cards/b4-012-sync-opencode-model-catalog-restore-authorization.yaml",
-        "docs/reports/worklogs/claude-auto/b4-012-m2b-b2-c-a-sync-opencode-model-catalog-restore-authorization-prep-2026-06-14.md"
-      ],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-13T18:21:17.541Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
       "id": "b4-012-sync-opencode-model-catalog-contract-drift-audit",
       "title": "sync OpenCode model catalog contract drift no-source audit",
       "node_type": "decision",
@@ -147,32 +120,6 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-13T18:52:31.558Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-012-sync-opencode-model-catalog-contract-standardization-authorization",
-      "title": "sync OpenCode model catalog contract standardization authorization",
-      "node_type": "decision",
-      "owner_lane": "artdeco-web-design-governance",
-      "parent": "b4-012-sync-opencode-model-catalog-contract-drift-audit",
-      "status": "authorization-prepared",
-      "source_edits_authorized": false,
-      "current_blocker": "",
-      "next_allowed": "review and approve implementation authorization",
-      "function_tree_ref": "B4.012-M2b-B2-C-B-A",
-      "freshness": "current-head",
-      "allowed_paths": [
-        "scripts/opencode/sync_opencode_model_catalog.py",
-        "tests/unit/test_sync_opencode_model_catalog.py",
-        ".governance/active-gates.json",
-        ".governance/active-gates.md",
-        ".governance/programs/artdeco-web-design-governance/nodes.json",
-        ".governance/programs/artdeco-web-design-governance/tree.md",
-        ".governance/programs/artdeco-web-design-governance/cards/b4-012-sync-opencode-model-catalog-contract-standardization-authorization.yaml",
-        "docs/reports/worklogs/claude-auto/b4-012-m2b-b2-c-b-a-sync-opencode-model-catalog-contract-standardization-authorization-prep-2026-06-14.md"
-      ],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-13T18:53:23.511Z"
     }
   ]
 }

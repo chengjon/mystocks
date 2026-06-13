@@ -8114,7 +8114,7 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-scripts-sync-opencode-model-catalog-disposition-audit",
-    "status": "blocked",
+    "status": "closed",
     "function_tree_ref": "B4.012-M2b-B2-C-A",
     "current_head": "d8deab309265a3b6a7289a41b16add3ec1f005ab",
     "freshness": "current-head",
@@ -8150,11 +8150,11 @@
       "Do not modify scripts/opencode/sync_omc_model_catalog.py, tests/unit/test_sync_opencode_model_catalog.py, tests/unit/test_sync_omc_model_catalog.py, docs/guides, OpenSpec, frontend, API, ST-HOLD, marketKlineData, or unrelated dirty paths.",
       "Do not implement or validate the ASXS provider migration in this restore-only package."
     ],
-    "next_gate": "unblock to implementation-ready",
-    "blocker_reason": "Focused pytest still fails after restoring scripts/opencode/sync_opencode_model_catalog.py byte-equivalent to HEAD; current HEAD script/test contract drift requires separate source/test authorization for sync_opencode_model_catalog.py and tests/unit/test_sync_opencode_model_catalog.py.",
-    "unblock_target_state": "implementation-ready",
+    "next_gate": "none",
+    "blocker_reason": null,
+    "unblock_target_state": null,
     "created_at": "2026-06-13T17:34:43.387Z",
-    "updated_at": "2026-06-13T18:21:17.541Z",
+    "updated_at": "2026-06-13T19:13:45.731Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -8183,6 +8183,27 @@
         "note": "Blocked restore closeout on focused test failure; do not modify paired test or contract behavior in this restore-only package.",
         "current_head": "d8deab309265a3b6a7289a41b16add3ec1f005ab",
         "transitioned_at": "2026-06-13T18:21:17.541Z"
+      },
+      {
+        "from": "blocked",
+        "to": "implementation-ready",
+        "note": "Blocker cleared by C-B-A contract standardization; focused pytest now passes.",
+        "current_head": "2fa2a782a77d0d27e37f85f5f26478cceda0a94b",
+        "transitioned_at": "2026-06-13T19:13:45.569Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Restore and contract verification are bound to current source delta.",
+        "current_head": "2fa2a782a77d0d27e37f85f5f26478cceda0a94b",
+        "transitioned_at": "2026-06-13T19:13:45.621Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "Restore node closed after blocker resolution.",
+        "current_head": "2fa2a782a77d0d27e37f85f5f26478cceda0a94b",
+        "transitioned_at": "2026-06-13T19:13:45.730Z"
       }
     ],
     "acceptance": {
@@ -8192,6 +8213,17 @@
       "closeout_gate": [
         "Later restore implementation must restore scripts/opencode/sync_opencode_model_catalog.py byte-equivalent to HEAD and run env PYTHONDONTWRITEBYTECODE=1 python -m pytest tests/unit/test_sync_opencode_model_catalog.py -q --no-cov -p no:cacheprovider before closeout."
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m2b-b2-c-a-sync-opencode-model-catalog-restore-closeout-2026-06-14.md",
+      "compatibility": "Restored OpenCode catalog sync tool remains available; minimal catalog compatibility verified.",
+      "gates": [
+        "py_compile scripts/opencode/sync_opencode_model_catalog.py passed",
+        "focused pytest tests/unit/test_sync_opencode_model_catalog.py: 4 passed",
+        "C-B-A contract standardization closed"
+      ],
+      "current_head": "2fa2a782a77d0d27e37f85f5f26478cceda0a94b",
+      "prepared_at": "2026-06-13T19:13:45.674Z"
     }
   },
   {
@@ -8332,9 +8364,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-sync-opencode-model-catalog-contract-drift-audit",
-    "status": "authorization-prepared",
+    "status": "closed",
     "function_tree_ref": "B4.012-M2b-B2-C-B-A",
-    "current_head": "726be97e24ace7c6be8e8ce4642cf56bbbb3dc0d",
+    "current_head": "6ee5a860145ca911dc3e1b737e1f8359eebe9927",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -8344,6 +8376,13 @@
         "note": "Authorization evidence for source/test contract standardization: tracked source/test fail 4/4 after restore; runtime config indicates opencode/glm/asxs provider contract.",
         "current_head": "726be97e24ace7c6be8e8ce4642cf56bbbb3dc0d",
         "recorded_at": "2026-06-13T18:52:56.138Z"
+      },
+      {
+        "kind": "validation",
+        "path": "current HEAD 6ee5a860145ca911dc3e1b737e1f8359eebe9927",
+        "note": "Refresh authorization evidence after Function Tree metadata repair commit before implementation approval.",
+        "current_head": "6ee5a860145ca911dc3e1b737e1f8359eebe9927",
+        "recorded_at": "2026-06-13T19:00:49.899Z"
       }
     ],
     "allowed_paths": [
@@ -8362,11 +8401,11 @@
       "Do not modify opencode.json, .config/opencode/*, docs/guides, OpenSpec, frontend, API, ST-HOLD, marketKlineData, or unrelated dirty paths.",
       "Do not introduce broad ASXS migration outside the minimal source/test contract needed for sync_opencode_model_catalog.py focused tests."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-13T18:52:41.927Z",
-    "updated_at": "2026-06-13T18:53:23.511Z",
+    "updated_at": "2026-06-13T19:12:18.489Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -8374,6 +8413,34 @@
         "note": "Source/test authorization decision prepared from C-B no-source audit; no edits authorized yet.",
         "current_head": "726be97e24ace7c6be8e8ce4642cf56bbbb3dc0d",
         "transitioned_at": "2026-06-13T18:53:07.683Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approval received; proceed with path-limited source/test contract standardization.",
+        "current_head": "6ee5a860145ca911dc3e1b737e1f8359eebe9927",
+        "transitioned_at": "2026-06-13T19:00:59.595Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Implementation package is bound to current HEAD and limited to sync_opencode_model_catalog script/test contract drift.",
+        "current_head": "6ee5a860145ca911dc3e1b737e1f8359eebe9927",
+        "transitioned_at": "2026-06-13T19:01:08.808Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Source implementation prepared: sync_opencode_model_catalog.py restores enabled_providers and server.port compatibility contract.",
+        "current_head": "2fa2a782a77d0d27e37f85f5f26478cceda0a94b",
+        "transitioned_at": "2026-06-13T19:12:18.386Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "C-B-A implementation closed after focused contract verification.",
+        "current_head": "2fa2a782a77d0d27e37f85f5f26478cceda0a94b",
+        "transitioned_at": "2026-06-13T19:12:18.489Z"
       }
     ],
     "acceptance": {
@@ -8383,6 +8450,17 @@
       "closeout_gate": [
         "Implementation closeout must document whether the accepted contract is opencode/glm/asxs or a narrower compatibility fix, and must keep OMC sibling files and local config untouched unless separately authorized."
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m2b-b2-c-b-a-sync-opencode-model-catalog-contract-standardization-closeout-2026-06-14.md",
+      "compatibility": "Runtime behavior preserved for complete catalogs; minimal legacy catalogs regain enabled_providers and server.port defaults.",
+      "gates": [
+        "py_compile scripts/opencode/sync_opencode_model_catalog.py passed",
+        "focused pytest tests/unit/test_sync_opencode_model_catalog.py: 4 passed",
+        "GitNexus impact LOW for build_provider_configs and apply_common"
+      ],
+      "current_head": "2fa2a782a77d0d27e37f85f5f26478cceda0a94b",
+      "prepared_at": "2026-06-13T19:12:18.439Z"
     }
   }
 ]
