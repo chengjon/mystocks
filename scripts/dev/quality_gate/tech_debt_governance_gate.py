@@ -35,11 +35,18 @@ TTL_PATTERNS = [
 ]
 
 DEBT_MARKER_PATTERN = re.compile(
-    r"(@ts-ignore|@ts-expect-error|@ts-nocheck|\sas any\b|#\s*type:\s*ignore|@pytest\.mark\.skip|@pytest\.mark\.xfail|pytest\.skip\(|pytest\.xfail\(|TODO|FIXME|HACK)",
+    r"(@ts-ignore|@ts-expect-error|@ts-nocheck|\sas any\b|#\s*type:\s*ignore|@pytest\.mark\.skip|@pytest\.mark\.xfail|pytest\.skip\(|pytest\.xfail\(|\bTODO\b|\bFIXME\b|\bHACK\b)",
     re.IGNORECASE,
 )
 
 REQUIRED_MARKER_FIELDS = ("owner", "issue", "ttl")
+
+GENERATED_TTL_EXCLUDE_PATHS = {
+    (PROJECT_ROOT / "web" / "frontend" / "src" / "components.d.ts").resolve(),
+    (PROJECT_ROOT / "web" / "frontend" / "src" / "auto-imports.d.ts").resolve(),
+    (PROJECT_ROOT / "web" / "frontend" / "components.d.ts").resolve(),
+    (PROJECT_ROOT / "web" / "frontend" / "auto-imports.d.ts").resolve(),
+}
 
 
 @dataclass(frozen=True)
@@ -280,7 +287,7 @@ def git_changed_files(base_sha: str | None) -> set[Path]:
 
 def iter_target_files(base_sha: str | None) -> Iterable[Path]:
     if base_sha:
-        return sorted(git_changed_files(base_sha))
+        return sorted(path for path in git_changed_files(base_sha) if path.resolve() not in GENERATED_TTL_EXCLUDE_PATHS)
 
     all_files: list[Path] = []
     for root in (
@@ -291,7 +298,7 @@ def iter_target_files(base_sha: str | None) -> Iterable[Path]:
     ):
         if root.exists():
             all_files.extend(p for p in root.rglob("*") if p.is_file() and p.suffix.lower() in TARGET_EXTENSIONS)
-    return sorted(all_files)
+    return sorted(path for path in all_files if path.resolve() not in GENERATED_TTL_EXCLUDE_PATHS)
 
 
 def extract_marker_violations(base_sha: str | None, as_of: date) -> list[MarkerViolation]:
@@ -611,13 +618,18 @@ def render_weekly_report(
         runtime_baseline = runtime_metrics.get("baseline", {})
         runtime_current = runtime_metrics.get("current") or {}
         runtime_drift = runtime_metrics.get("drift") or {}
+        api_baseline = runtime_baseline.get("api_performance") or {}
+        api_current = runtime_current.get("api_performance") or {}
         lines.extend(
             [
                 "## 4. Runtime Observability KPI",
                 f"- PM2 runtime overall gate status: measured=`{runtime_current.get('overall_gate_status', 'N/A')}` baseline=`{runtime_baseline.get('overall_gate_status', 'N/A')}` target=`PASS`",
-                f"- Anonymous API overall P95 (ms): measured=`{(runtime_current.get('api_performance') or {}).get('overall_p95_ms', 'N/A')}` baseline=`{(runtime_baseline.get('api_performance') or {}).get('overall_p95_ms', 'N/A')}` target=`<= 300`",
+                f"- Anonymous API overall P95 (ms): measured=`{api_current.get('overall_p95_ms', 'N/A')}` baseline=`{api_baseline.get('overall_p95_ms', 'N/A')}` target=`<= 300`",
                 f"- API performance drift gate: measured=`{'PASS' if (runtime_current.get('api_performance_drift') or {}).get('pass') else 'FAIL' if (runtime_current.get('api_performance_drift') is not None) else 'N/A'}` baseline=`PASS` target=`PASS`",
                 f"- API performance drift violations: measured=`{len((runtime_current.get('api_performance_drift') or {}).get('violations', [])) if runtime_current.get('api_performance_drift') is not None else 'N/A'}` baseline=`0` target=`0`",
+                f"- Technical analysis history requests delta: measured=`{api_current.get('technical_analysis_history_requests_total_delta', 'N/A')}` baseline=`{api_baseline.get('technical_analysis_history_requests_total_delta', 'N/A')}` target=`>= baseline`",
+                f"- Technical analysis fallback total delta: measured=`{api_current.get('technical_analysis_history_fallback_total_delta', 'N/A')}` baseline=`{api_baseline.get('technical_analysis_history_fallback_total_delta', 'N/A')}` target=`<= baseline`",
+                f"- Technical analysis fallback ratio delta: measured=`{api_current.get('technical_analysis_history_fallback_ratio_delta', 'N/A')}` baseline=`{api_baseline.get('technical_analysis_history_fallback_ratio_delta', 'N/A')}` target=`<= baseline + 1.0`",
                 f"- Monitoring auth alert-rules P95 (ms): measured=`{(runtime_current.get('monitoring_auth_performance') or {}).get('alert_rules_p95_ms', 'N/A')}` baseline=`{(runtime_baseline.get('monitoring_auth_performance') or {}).get('alert_rules_p95_ms', 'N/A')}` target=`<= 300`",
                 f"- Docker runtime smoke status: measured=`{runtime_metrics.get('docker_smoke_current', 'N/A')}` baseline=`{runtime_metrics.get('docker_smoke_baseline', 'N/A')}` target=`PASS/PASS/PASS`",
                 f"- Docker metrics http_requests_total delta: measured=`{(runtime_current.get('docker_runtime') or {}).get('http_requests_total_delta', 'N/A')}` baseline=`{(runtime_baseline.get('docker_runtime') or {}).get('http_requests_total_delta', 'N/A')}` target=`>= 0`",

@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 import argparse
+import ast
 import json
 import re
 import subprocess
@@ -122,7 +123,9 @@ def collect_suppressions() -> dict:
     frontend_files = list(iter_files(FRONTEND_SRC, (".ts", ".tsx", ".vue", ".d.ts")))
     generated_candidates = {
         FRONTEND_SRC / "auto-imports.d.ts",
+        FRONTEND_SRC / "components.d.ts",
         PROJECT_ROOT / "web" / "frontend" / "auto-imports.d.ts",
+        PROJECT_ROOT / "web" / "frontend" / "components.d.ts",
     }
 
     generated_files = [p for p in generated_candidates if p.exists()]
@@ -170,10 +173,30 @@ def collect_test_placeholder_asserts() -> dict:
     for test_dir in TEST_DIRS:
         test_files.extend(iter_files(test_dir, (".py",)))
 
-    result = count_pattern_in_files(test_files, ASSERT_TRUE_PATTERN)
+    count = 0
+    files = 0
+
+    for path in test_files:
+        try:
+            text = path.read_text(encoding="utf-8", errors="ignore")
+            tree = ast.parse(text, filename=str(path))
+        except (OSError, SyntaxError):
+            continue
+
+        file_count = 0
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Assert):
+                continue
+            if isinstance(node.test, ast.Constant) and node.test.value is True:
+                file_count += 1
+
+        if file_count:
+            files += 1
+            count += file_count
+
     return {
-        "test_placeholder_assert_count": result.count,
-        "test_placeholder_assert_files": result.files,
+        "test_placeholder_assert_count": count,
+        "test_placeholder_assert_files": files,
     }
 
 

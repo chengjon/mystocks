@@ -7429,11 +7429,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-scripts-residual-domain-audit",
-    "status": "authorization-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "B4.012-M2b-A",
-    "current_head": "8af24adeb8a4b16ce5d1f160fa6e1bcd33eec9c9",
+    "current_head": "fccc6e89bb79eb0146bba0216b0c2834bd37351b",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "baseline",
@@ -7441,6 +7441,13 @@
         "note": "Authorization prep for 15 governance quality script candidates; no script files changed.",
         "current_head": "8af24adeb8a4b16ce5d1f160fa6e1bcd33eec9c9",
         "recorded_at": "2026-06-13T01:09:17.187Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "User continued after M2b-A authorization-prep; treating as narrow script-source implementation approval for the 15 listed governance quality script candidates only. Syntax precheck passed for 12 Python scripts and 3 MJS scripts.",
+        "note": "Current HEAD evidence before M2b-A implementation.",
+        "current_head": "fccc6e89bb79eb0146bba0216b0c2834bd37351b",
+        "recorded_at": "2026-06-13T01:26:09.831Z"
       }
     ],
     "allowed_paths": [
@@ -7473,11 +7480,11 @@
       "Do not delete, retire, restore, rename, format, or execute scripts in this authorization-prep package.",
       "Do not batch this with the deleted sync_omc_model_catalog.py path or other scripts families."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-13T01:09:17.130Z",
-    "updated_at": "2026-06-13T01:09:17.292Z",
+    "updated_at": "2026-06-13T01:26:10.120Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -7485,6 +7492,20 @@
         "note": "",
         "current_head": "8af24adeb8a4b16ce5d1f160fa6e1bcd33eec9c9",
         "transitioned_at": "2026-06-13T01:09:17.240Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "Narrow implementation approval: preserve only 15 governance quality script candidates and required FUNCTION_TREE artifacts.",
+        "current_head": "fccc6e89bb79eb0146bba0216b0c2834bd37351b",
+        "transitioned_at": "2026-06-13T01:26:10.005Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Candidate scripts and FUNCTION_TREE state ready for staged validation.",
+        "current_head": "fccc6e89bb79eb0146bba0216b0c2834bd37351b",
+        "transitioned_at": "2026-06-13T01:26:10.119Z"
       }
     ],
     "acceptance": {

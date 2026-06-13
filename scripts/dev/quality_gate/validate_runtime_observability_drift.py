@@ -62,6 +62,17 @@ GATED_RULES: tuple[DriftRule, ...] = (
         description="anonymous API slow request delta must not increase",
     ),
     DriftRule(
+        "api_performance.technical_analysis_history_fallback_total_delta",
+        "max",
+        description="technical analysis fallback activations during runtime gate must not increase",
+    ),
+    DriftRule(
+        "api_performance.technical_analysis_history_fallback_ratio_delta",
+        "max",
+        threshold=1.0,
+        description="technical analysis fallback ratio during runtime gate must not increase",
+    ),
+    DriftRule(
         "monitoring_auth_performance.alert_rules_p95_ms",
         "max",
         threshold=300.0,

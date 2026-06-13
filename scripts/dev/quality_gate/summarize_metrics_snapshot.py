@@ -147,6 +147,23 @@ def build_snapshot(
     cache_misses = sum_metric("mystocks_cache_misses_total")
     cache_total = cache_hits + cache_misses
     cache_hit_ratio = round(cache_hits / cache_total, 4) if cache_total else None
+    technical_analysis_history_requests_total = sum_metric("technical_analysis_history_requests_total")
+    technical_analysis_history_requests_total_delta = diff_sum_metric("technical_analysis_history_requests_total")
+    technical_analysis_history_fallback_total = sum_metric("technical_analysis_history_fallback_total")
+    technical_analysis_history_fallback_total_delta = diff_sum_metric("technical_analysis_history_fallback_total")
+    technical_analysis_history_fallback_ratio = (
+        round(technical_analysis_history_fallback_total / technical_analysis_history_requests_total, 4)
+        if technical_analysis_history_requests_total
+        else None
+    )
+    technical_analysis_history_fallback_ratio_delta = (
+        round(
+            technical_analysis_history_fallback_total_delta / technical_analysis_history_requests_total_delta,
+            4,
+        )
+        if technical_analysis_history_requests_total_delta
+        else None
+    )
 
     return {
         "metrics_health": health_payload,
@@ -162,6 +179,12 @@ def build_snapshot(
             "cache_hits_total": cache_hits,
             "cache_misses_total": cache_misses,
             "cache_hit_ratio": cache_hit_ratio,
+            "technical_analysis_history_requests_total": technical_analysis_history_requests_total,
+            "technical_analysis_history_requests_total_delta": technical_analysis_history_requests_total_delta,
+            "technical_analysis_history_fallback_total": technical_analysis_history_fallback_total,
+            "technical_analysis_history_fallback_total_delta": technical_analysis_history_fallback_total_delta,
+            "technical_analysis_history_fallback_ratio": technical_analysis_history_fallback_ratio,
+            "technical_analysis_history_fallback_ratio_delta": technical_analysis_history_fallback_ratio_delta,
             "api_health_status": api_health,
             "db_connections_active": db_connections,
             "slow_request_endpoints": slow_request_endpoints,

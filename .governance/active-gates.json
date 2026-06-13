@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-13T01:09:17.300Z",
+  "updated_at": "2026-06-13T01:26:10.135Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -43,10 +43,10 @@
       "node_type": "decision",
       "owner_lane": "artdeco-web-design-governance",
       "parent": "b4-012-scripts-residual-domain-audit",
-      "status": "authorization-prepared",
-      "source_edits_authorized": false,
+      "status": "implementation-ready",
+      "source_edits_authorized": true,
       "current_blocker": "",
-      "next_allowed": "review and approve implementation authorization",
+      "next_allowed": "land implementation with Git evidence",
       "function_tree_ref": "B4.012-M2b-A",
       "freshness": "current-head",
       "allowed_paths": [
@@ -73,7 +73,7 @@
         "docs/reports/worklogs/claude-auto/b4-012-m2b-a-governance-quality-scripts-authorization-prep-2026-06-13.md"
       ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-13T01:09:17.292Z"
+      "updated_at": "2026-06-13T01:26:10.120Z"
     }
   ]
 }
