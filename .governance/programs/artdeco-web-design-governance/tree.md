@@ -57,3 +57,4 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-012-scripts-market-data-package-marker-authorization: market_data package marker preservation authorization (planning, FT: B4.012-M2b-B2-A)
 - [ ] b4-012-scripts-opencode-omc-sync-disposition-audit: opencode OMC sync tool restore-vs-retirement no-source decision (planning, FT: B4.012-M2b-B2-B)
 - [ ] b4-012-scripts-opencode-omc-sync-restore-authorization: opencode OMC sync tool restore authorization (planning, FT: B4.012-M2b-B2-B-A)
+- [ ] b4-012-sync-omc-test-restore-authorization: sync OMC model catalog test restore authorization (planning, FT: B4.012-M2b-B2-B-B)

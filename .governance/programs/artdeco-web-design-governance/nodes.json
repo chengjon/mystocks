@@ -7974,5 +7974,100 @@
       "current_head": "c0be497efb100f1994923b1e632f76d213d02fbd",
       "prepared_at": "2026-06-13T12:00:11.241Z"
     }
+  },
+  {
+    "id": "b4-012-sync-omc-test-restore-authorization",
+    "title": "sync OMC model catalog test restore authorization",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-scripts-opencode-omc-sync-disposition-audit",
+    "status": "closed",
+    "function_tree_ref": "B4.012-M2b-B2-B-B",
+    "current_head": "577ee839d56e7fcf4d8dcac8c16b8e041a32b996",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m2b-b2-b-b-sync-omc-test-restore-authorization-prep-2026-06-13.md",
+        "note": "No-source evidence for restoring deleted paired test after sync_omc_model_catalog.py was restored; temp pytest of HEAD blob passed; GitNexus impact not_found/risk UNKNOWN recorded.",
+        "current_head": "577ee839d56e7fcf4d8dcac8c16b8e041a32b996",
+        "recorded_at": "2026-06-13T12:57:46.928Z"
+      }
+    ],
+    "allowed_paths": [
+      "tests/unit/test_sync_omc_model_catalog.py",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/tree.md",
+      ".governance/programs/artdeco-web-design-governance/cards/b4-012-sync-omc-test-restore-authorization.yaml",
+      "docs/reports/worklogs/claude-auto/b4-012-m2b-b2-b-b-sync-omc-test-restore-authorization-prep-2026-06-13.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not restore, edit, stage, delete, or retire tests/unit/test_sync_omc_model_catalog.py during authorization prep.",
+      "Do not modify scripts/opencode/sync_omc_model_catalog.py, tests/unit/test_sync_opencode_model_catalog.py, docs/guides/ai-tools/OMC_WORKFLOW_GUIDE.md, source, API, frontend, OpenSpec, or unrelated dirty paths.",
+      "Do not treat authorization prep as approval to implement restore."
+    ],
+    "next_gate": "none",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-13T12:57:03.614Z",
+    "updated_at": "2026-06-13T14:02:26.429Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "Restore-vs-retirement decision prepared for deleted paired test; no test edits authorized.",
+        "current_head": "577ee839d56e7fcf4d8dcac8c16b8e041a32b996",
+        "transitioned_at": "2026-06-13T12:58:43.886Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved implementation on 2026-06-13; evidence is bound to current HEAD 577ee839d5 and scope is limited to tests/unit/test_sync_omc_model_catalog.py plus governance/report files.",
+        "current_head": "577ee839d56e7fcf4d8dcac8c16b8e041a32b996",
+        "transitioned_at": "2026-06-13T13:32:10.360Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Scope check passed for approved sync OMC test restore; target test restored byte-equivalent to HEAD and focused pytest passed.",
+        "current_head": "577ee839d56e7fcf4d8dcac8c16b8e041a32b996",
+        "transitioned_at": "2026-06-13T13:46:57.074Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Restored tests/unit/test_sync_omc_model_catalog.py from HEAD; no test diff remains for the target path; focused pytest passed.",
+        "current_head": "577ee839d56e7fcf4d8dcac8c16b8e041a32b996",
+        "transitioned_at": "2026-06-13T13:48:35.882Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "Close sync OMC paired test restore after focused pytest and scoped governance evidence.",
+        "current_head": "577ee839d56e7fcf4d8dcac8c16b8e041a32b996",
+        "transitioned_at": "2026-06-13T14:02:26.429Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "Exact staged allowlist only; no target test staged during authorization prep; path-limited git diff --check passes; scoped Function Tree scope-check passes; GitNexus UNKNOWN/manual fallback evidence recorded."
+      ],
+      "closeout_gate": [
+        "Later restore implementation must restore tests/unit/test_sync_omc_model_catalog.py byte-equivalent or intentionally updated from HEAD and pass python -m pytest tests/unit/test_sync_omc_model_catalog.py -q --no-cov before closeout."
+      ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m2b-b2-b-b-sync-omc-test-restore-authorization-prep-2026-06-13.md",
+      "compatibility": "Restored tests/unit/test_sync_omc_model_catalog.py byte-equivalent to HEAD, preserving the paired contract coverage for scripts/opencode/sync_omc_model_catalog.py. No sibling script, OMC guide, source, unrelated test, OpenSpec, frontend, ST-HOLD, marketKlineData, or external dirty paths were modified.",
+      "gates": [
+        "Restored target test clean against HEAD; python -m pytest tests/unit/test_sync_omc_model_catalog.py -q --no-cov passed with 1 passed; GitNexus impact not_found/risk UNKNOWN recorded with manual fallback; scoped scope-check and path-limited diff checks passed."
+      ],
+      "current_head": "577ee839d56e7fcf4d8dcac8c16b8e041a32b996",
+      "prepared_at": "2026-06-13T13:58:42.449Z"
+    }
   }
 ]

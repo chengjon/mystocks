@@ -1,0 +1,30 @@
+task:
+  id: "b4-012-sync-omc-test-restore-authorization"
+  title: "sync OMC model catalog test restore authorization"
+
+scope:
+  allowed_paths:
+    - "tests/unit/test_sync_omc_model_catalog.py"
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/tree.md"
+    - ".governance/programs/artdeco-web-design-governance/cards/b4-012-sync-omc-test-restore-authorization.yaml"
+    - "docs/reports/worklogs/claude-auto/b4-012-m2b-b2-b-b-sync-omc-test-restore-authorization-prep-2026-06-13.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not restore, edit, stage, delete, or retire tests/unit/test_sync_omc_model_catalog.py during authorization prep."
+  - "Do not modify scripts/opencode/sync_omc_model_catalog.py, tests/unit/test_sync_opencode_model_catalog.py, docs/guides/ai-tools/OMC_WORKFLOW_GUIDE.md, source, API, frontend, OpenSpec, or unrelated dirty paths."
+  - "Do not treat authorization prep as approval to implement restore."
+
+acceptance:
+  commit_gate:
+    - "Exact staged allowlist only; no target test staged during authorization prep; path-limited git diff --check passes; scoped Function Tree scope-check passes; GitNexus UNKNOWN/manual fallback evidence recorded."
+  closeout_gate:
+    - "Later restore implementation must restore tests/unit/test_sync_omc_model_catalog.py byte-equivalent or intentionally updated from HEAD and pass python -m pytest tests/unit/test_sync_omc_model_catalog.py -q --no-cov before closeout."
+
+evidence:
+  current_head: "577ee839d56e7fcf4d8dcac8c16b8e041a32b996"
+  notes: []
