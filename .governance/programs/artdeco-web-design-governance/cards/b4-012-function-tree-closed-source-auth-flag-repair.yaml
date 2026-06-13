@@ -1,0 +1,29 @@
+task:
+  id: "b4-012-function-tree-closed-source-auth-flag-repair"
+  title: "Function Tree closed source authorization flag repair"
+
+scope:
+  allowed_paths:
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/tree.md"
+    - ".governance/programs/artdeco-web-design-governance/cards/b4-012-function-tree-closed-source-auth-flag-repair.yaml"
+    - "docs/reports/worklogs/claude-auto/b4-012-function-tree-closed-source-auth-flag-repair-2026-06-14.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not modify source code, tests, frontend, backend, OpenSpec, or OpenStock."
+  - "Do not clear historical allowed_paths, closeout evidence, or transition history."
+  - "Do not repair unrelated dirty worktree files or Function Tree helper implementation."
+
+acceptance:
+  commit_gate:
+    - "Exact staged allowlist only; path-limited git diff --check passes; scoped Function Tree scope-check passes; ft-governance validate passes or any remaining blocker is documented; GitNexus staged detect is run."
+  closeout_gate:
+    - "Only semantic nodes.json repair is b4-frontend-shared-ui-component-truth source_edits_authorized true -> false; active gates no longer include the repair node after closeout; no source/test/OpenSpec/OpenStock paths modified."
+
+evidence:
+  current_head: "726be97e24ace7c6be8e8ce4642cf56bbbb3dc0d"
+  notes: []

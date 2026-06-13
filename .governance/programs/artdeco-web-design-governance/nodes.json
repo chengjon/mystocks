@@ -4497,7 +4497,7 @@
     "function_tree_ref": "B4.008-M1",
     "current_head": "43eb2c2f64da93f2133d1852fccf8041be2b649f",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "baseline",
@@ -8191,6 +8191,197 @@
       ],
       "closeout_gate": [
         "Later restore implementation must restore scripts/opencode/sync_opencode_model_catalog.py byte-equivalent to HEAD and run env PYTHONDONTWRITEBYTECODE=1 python -m pytest tests/unit/test_sync_opencode_model_catalog.py -q --no-cov -p no:cacheprovider before closeout."
+      ]
+    }
+  },
+  {
+    "id": "b4-012-function-tree-closed-source-auth-flag-repair",
+    "title": "Function Tree closed source authorization flag repair",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-residual-dirty-domain-atlas",
+    "status": "closed",
+    "function_tree_ref": "B4.012-FT-VALIDATE",
+    "current_head": "726be97e24ace7c6be8e8ce4642cf56bbbb3dc0d",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-function-tree-closed-source-auth-flag-repair-2026-06-14.md",
+        "note": "No-source evidence for repairing one stale source_edits_authorized flag on closed node b4-frontend-shared-ui-component-truth; no source/test edits authorized.",
+        "current_head": "726be97e24ace7c6be8e8ce4642cf56bbbb3dc0d",
+        "recorded_at": "2026-06-13T18:47:33.712Z"
+      }
+    ],
+    "allowed_paths": [
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/tree.md",
+      ".governance/programs/artdeco-web-design-governance/cards/b4-012-function-tree-closed-source-auth-flag-repair.yaml",
+      "docs/reports/worklogs/claude-auto/b4-012-function-tree-closed-source-auth-flag-repair-2026-06-14.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not modify source code, tests, frontend, backend, OpenSpec, or OpenStock.",
+      "Do not clear historical allowed_paths, closeout evidence, or transition history.",
+      "Do not repair unrelated dirty worktree files or Function Tree helper implementation."
+    ],
+    "next_gate": "none",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-13T18:47:22.475Z",
+    "updated_at": "2026-06-13T18:52:13.874Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "Decision prepared to repair only the stale source_edits_authorized flag on closed node b4-frontend-shared-ui-component-truth; preserve allowed_paths and closeout evidence.",
+        "current_head": "726be97e24ace7c6be8e8ce4642cf56bbbb3dc0d",
+        "transitioned_at": "2026-06-13T18:47:43.660Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved continuing on 2026-06-14; scope limited to governance metadata repair of closed node b4-frontend-shared-ui-component-truth source_edits_authorized flag plus generated governance/report files.",
+        "current_head": "726be97e24ace7c6be8e8ce4642cf56bbbb3dc0d",
+        "transitioned_at": "2026-06-13T18:48:13.678Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Scoped governance metadata repair applied: closed node b4-frontend-shared-ui-component-truth source_edits_authorized false and blocked active gate mirror fields added; validate passed before closeout.",
+        "current_head": "726be97e24ace7c6be8e8ce4642cf56bbbb3dc0d",
+        "transitioned_at": "2026-06-13T18:50:47.298Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Function Tree validation metadata repair landed; ft-governance validate passed after scoped repair.",
+        "current_head": "726be97e24ace7c6be8e8ce4642cf56bbbb3dc0d",
+        "transitioned_at": "2026-06-13T18:51:06.443Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "Close Function Tree validation metadata repair after validate passed and closeout evidence recorded.",
+        "current_head": "726be97e24ace7c6be8e8ce4642cf56bbbb3dc0d",
+        "transitioned_at": "2026-06-13T18:52:13.874Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "Exact staged allowlist only; path-limited git diff --check passes; scoped Function Tree scope-check passes; ft-governance validate passes or any remaining blocker is documented; GitNexus staged detect is run."
+      ],
+      "closeout_gate": [
+        "Only semantic nodes.json repair is b4-frontend-shared-ui-component-truth source_edits_authorized true -> false; active gates no longer include the repair node after closeout; no source/test/OpenSpec/OpenStock paths modified."
+      ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-function-tree-closed-source-auth-flag-repair-2026-06-14.md",
+      "compatibility": "Governance metadata only: closed node b4-frontend-shared-ui-component-truth now has source_edits_authorized=false; blocked active gate b4-012-sync-opencode-model-catalog-restore-authorization carries blocker_reason and unblock_target_state mirror fields. Historical allowed_paths, closeout evidence, transition history, source, tests, OpenSpec, and OpenStock were not modified.",
+      "gates": [
+        "ft-governance validate passed; scoped scope-check passed for authorized governance/report files; path-limited git diff --check passed before closeout."
+      ],
+      "current_head": "726be97e24ace7c6be8e8ce4642cf56bbbb3dc0d",
+      "prepared_at": "2026-06-13T18:51:29.522Z"
+    }
+  },
+  {
+    "id": "b4-012-sync-opencode-model-catalog-contract-drift-audit",
+    "title": "sync OpenCode model catalog contract drift no-source audit",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-sync-opencode-model-catalog-restore-authorization",
+    "status": "decision-prepared",
+    "function_tree_ref": "B4.012-M2b-B2-C-B",
+    "current_head": "726be97e24ace7c6be8e8ce4642cf56bbbb3dc0d",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m2b-b2-c-b-sync-opencode-model-catalog-contract-drift-no-source-2026-06-14.md",
+        "note": "No-source root-cause audit for sync_opencode_model_catalog.py contract drift: HEAD source/test are clean but focused test fails 4/4; runtime config is opencode/glm/asxs while tracked tests are gmn/glm.",
+        "current_head": "726be97e24ace7c6be8e8ce4642cf56bbbb3dc0d",
+        "recorded_at": "2026-06-13T18:52:21.634Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-13T18:51:28.622Z",
+    "updated_at": "2026-06-13T18:52:31.558Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "Decision prepared: source/test contract standardization is required; do not hide fix in restore-only package.",
+        "current_head": "726be97e24ace7c6be8e8ce4642cf56bbbb3dc0d",
+        "transitioned_at": "2026-06-13T18:52:31.558Z"
+      }
+    ]
+  },
+  {
+    "id": "b4-012-sync-opencode-model-catalog-contract-standardization-authorization",
+    "title": "sync OpenCode model catalog contract standardization authorization",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-sync-opencode-model-catalog-contract-drift-audit",
+    "status": "authorization-prepared",
+    "function_tree_ref": "B4.012-M2b-B2-C-B-A",
+    "current_head": "726be97e24ace7c6be8e8ce4642cf56bbbb3dc0d",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m2b-b2-c-b-sync-opencode-model-catalog-contract-drift-no-source-2026-06-14.md",
+        "note": "Authorization evidence for source/test contract standardization: tracked source/test fail 4/4 after restore; runtime config indicates opencode/glm/asxs provider contract.",
+        "current_head": "726be97e24ace7c6be8e8ce4642cf56bbbb3dc0d",
+        "recorded_at": "2026-06-13T18:52:56.138Z"
+      }
+    ],
+    "allowed_paths": [
+      "scripts/opencode/sync_opencode_model_catalog.py",
+      "tests/unit/test_sync_opencode_model_catalog.py",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/tree.md",
+      ".governance/programs/artdeco-web-design-governance/cards/b4-012-sync-opencode-model-catalog-contract-standardization-authorization.yaml",
+      "docs/reports/worklogs/claude-auto/b4-012-m2b-b2-c-b-a-sync-opencode-model-catalog-contract-standardization-authorization-prep-2026-06-14.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not modify scripts/opencode/sync_omc_model_catalog.py or tests/unit/test_sync_omc_model_catalog.py.",
+      "Do not modify opencode.json, .config/opencode/*, docs/guides, OpenSpec, frontend, API, ST-HOLD, marketKlineData, or unrelated dirty paths.",
+      "Do not introduce broad ASXS migration outside the minimal source/test contract needed for sync_opencode_model_catalog.py focused tests."
+    ],
+    "next_gate": "review and approve implementation authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-13T18:52:41.927Z",
+    "updated_at": "2026-06-13T18:53:23.511Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "Source/test authorization decision prepared from C-B no-source audit; no edits authorized yet.",
+        "current_head": "726be97e24ace7c6be8e8ce4642cf56bbbb3dc0d",
+        "transitioned_at": "2026-06-13T18:53:07.683Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "Exact staged allowlist only; python -m py_compile scripts/opencode/sync_opencode_model_catalog.py passes; focused pytest for tests/unit/test_sync_opencode_model_catalog.py passes; git diff --cached --check passes; GitNexus staged review reports low or no process impact."
+      ],
+      "closeout_gate": [
+        "Implementation closeout must document whether the accepted contract is opencode/glm/asxs or a narrower compatibility fix, and must keep OMC sibling files and local config untouched unless separately authorized."
       ]
     }
   }
