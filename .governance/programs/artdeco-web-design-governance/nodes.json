@@ -7429,11 +7429,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-scripts-residual-domain-audit",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "B4.012-M2b-A",
     "current_head": "fccc6e89bb79eb0146bba0216b0c2834bd37351b",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "baseline",
@@ -7480,11 +7480,11 @@
       "Do not delete, retire, restore, rename, format, or execute scripts in this authorization-prep package.",
       "Do not batch this with the deleted sync_omc_model_catalog.py path or other scripts families."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-13T01:09:17.130Z",
-    "updated_at": "2026-06-13T01:26:10.120Z",
+    "updated_at": "2026-06-13T01:32:13.203Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -7506,6 +7506,20 @@
         "note": "Candidate scripts and FUNCTION_TREE state ready for staged validation.",
         "current_head": "fccc6e89bb79eb0146bba0216b0c2834bd37351b",
         "transitioned_at": "2026-06-13T01:26:10.119Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Preserved 15 governance quality script candidates in commit 61bf0ce33.",
+        "current_head": "61bf0ce33a62e15b05860aec91aadff199e24398",
+        "transitioned_at": "2026-06-13T01:32:13.057Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "B4.012-M2b-A governance quality scripts implementation closed.",
+        "current_head": "61bf0ce33a62e15b05860aec91aadff199e24398",
+        "transitioned_at": "2026-06-13T01:32:13.203Z"
       }
     ],
     "acceptance": {
@@ -7519,6 +7533,20 @@
         "Future implementation requires explicit script-source authorization before any candidate script path is staged.",
         "Post-commit GitNexus index refresh completes."
       ]
+    },
+    "closeout": {
+      "summary": "Preserved 15 governance quality script candidates in commit 61bf0ce33: 6 modified tracked quality_gate scripts and 9 previously untracked quality_gate/myweb-audit helper scripts. No other scripts, source, tests, runtime, API, OpenSpec, ST-HOLD, marketKlineData, docs/guides, docs/superpowers, or external dirty files changed.",
+      "compatibility": "Governance/tooling scripts only; no application runtime or API compatibility surface changed.",
+      "gates": [
+        "Exact staged allowlist passed with 18 files: 15 candidate scripts plus 3 FUNCTION_TREE state files.",
+        "git diff --cached --check passed.",
+        "Syntax checks passed for 12 Python scripts via python -m py_compile and 3 MJS scripts via node --check.",
+        "GitNexus verify-staged and staged detect-changes passed with risk low and 0 affected processes.",
+        "OPENDOG blocker count was zero.",
+        "Post-commit GitNexus index refresh completed after implementation commit."
+      ],
+      "current_head": "61bf0ce33a62e15b05860aec91aadff199e24398",
+      "prepared_at": "2026-06-13T01:32:13.129Z"
     }
   }
 ]
