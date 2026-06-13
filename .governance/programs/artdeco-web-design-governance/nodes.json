@@ -7691,5 +7691,43 @@
       "current_head": "beb9a728fdc148908738e8fb8f5dffae01ff9490",
       "prepared_at": "2026-06-13T02:22:05.263Z"
     }
+  },
+  {
+    "id": "b4-012-scripts-market-data-opencode-disposition-audit",
+    "title": "market_data and opencode script disposition no-source review",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-scripts-deleted-untracked-disposition-audit",
+    "status": "decision-prepared",
+    "function_tree_ref": "B4.012-M2b-B2",
+    "current_head": "5570d587319f2d3cd4d4871e4b730cfb19f81707",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m2b-b2-market-data-opencode-script-disposition-no-source-review-2026-06-13.md",
+        "note": "B4.012-M2b-B2 no-source review for market_data package marker and opencode OMC sync tracked deletion",
+        "current_head": "5570d587319f2d3cd4d4871e4b730cfb19f81707",
+        "recorded_at": "2026-06-13T02:49:08.274Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-13T02:49:08.171Z",
+    "updated_at": "2026-06-13T02:49:08.357Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "",
+        "current_head": "5570d587319f2d3cd4d4871e4b730cfb19f81707",
+        "transitioned_at": "2026-06-13T02:49:08.357Z"
+      }
+    ]
   }
 ]
