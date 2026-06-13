@@ -71,6 +71,43 @@ env PYTHONDONTWRITEBYTECODE=1 python -m pytest tests/unit/test_sync_opencode_mod
 - Record GitNexus `verify-staged` and `detect-changes --scope staged`
 - Stage only the target script plus this package's governance/report files
 
+## Implementation Attempt
+
+User continued on 2026-06-14 after the restore-only authorization prep. Fresh evidence was bound to current `HEAD` and the Function Tree node reached `approved-for-implementation`.
+
+Implementation action:
+
+- `git restore --source=HEAD -- scripts/opencode/sync_opencode_model_catalog.py`
+
+Post-restore state:
+
+- `scripts/opencode/sync_opencode_model_catalog.py` exists, is tracked, is clean, and is byte-equivalent to `HEAD`
+- SHA-256 after restore: `5610f80f1dc897ed7cc16bff91ddf87b07a7b19eb6ededacf5f25dc68b69f6c6`
+- `scripts/opencode/sync_omc_model_catalog.py` remained clean
+- `tests/unit/test_sync_opencode_model_catalog.py` remained clean
+- `tests/unit/test_sync_omc_model_catalog.py` remained clean
+
+Focused gate run:
+
+```bash
+env PYTHONDONTWRITEBYTECODE=1 python -m pytest tests/unit/test_sync_opencode_model_catalog.py -q --no-cov -p no:cacheprovider
+```
+
+Result:
+
+- `4 failed in 0.42s`
+- `apply_common` still raises `KeyError: 'enabled_providers'` against the existing minimal catalog fixture
+- `test_main_updates_model_files_from_catalog` still raises `KeyError: 'server'`
+
+Interpretation:
+
+The ASXS/GMN dirty diff has been cleared, but the restored `HEAD` script and current paired test contract still drift from each other. This is outside the restore-only authorization. The package cannot be closed as passing without a separate source/test contract-drift authorization.
+
+Blocked next step:
+
+- Prepare a separate `B4.012-M2b-B2-C-B` contract-drift no-source decision or source/test authorization for the `sync_opencode_model_catalog.py` and `tests/unit/test_sync_opencode_model_catalog.py` contract.
+- Do not hide that contract fix inside this restore-only package.
+
 ## Boundary Confirmation
 
 This package prepares authorization only. It does not authorize source edits until the user explicitly approves implementation and the node reaches `approved-for-implementation`.

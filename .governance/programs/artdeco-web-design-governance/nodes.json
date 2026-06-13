@@ -8114,9 +8114,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-scripts-sync-opencode-model-catalog-disposition-audit",
-    "status": "authorization-prepared",
+    "status": "blocked",
     "function_tree_ref": "B4.012-M2b-B2-C-A",
-    "current_head": "95d990a6d20b336c90fd2dca512d9bb5af20091f",
+    "current_head": "d8deab309265a3b6a7289a41b16add3ec1f005ab",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -8126,6 +8126,13 @@
         "note": "Restore authorization evidence from B4.012-M2b-B2-C no-source decision; current dirty script fails paired test 4/4 and restore-to-HEAD is the recommended short package.",
         "current_head": "95d990a6d20b336c90fd2dca512d9bb5af20091f",
         "recorded_at": "2026-06-13T17:34:55.498Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m2b-b2-c-a-sync-opencode-model-catalog-restore-authorization-prep-2026-06-14.md",
+        "note": "Fresh implementation evidence bound to current HEAD after user continued on 2026-06-14; restore scope remains limited to scripts/opencode/sync_opencode_model_catalog.py and generated governance/report files.",
+        "current_head": "d8deab309265a3b6a7289a41b16add3ec1f005ab",
+        "recorded_at": "2026-06-13T18:16:50.696Z"
       }
     ],
     "allowed_paths": [
@@ -8143,11 +8150,11 @@
       "Do not modify scripts/opencode/sync_omc_model_catalog.py, tests/unit/test_sync_opencode_model_catalog.py, tests/unit/test_sync_omc_model_catalog.py, docs/guides, OpenSpec, frontend, API, ST-HOLD, marketKlineData, or unrelated dirty paths.",
       "Do not implement or validate the ASXS provider migration in this restore-only package."
     ],
-    "next_gate": "review and approve implementation authorization",
-    "blocker_reason": null,
-    "unblock_target_state": null,
+    "next_gate": "unblock to implementation-ready",
+    "blocker_reason": "Focused pytest still fails after restoring scripts/opencode/sync_opencode_model_catalog.py byte-equivalent to HEAD; current HEAD script/test contract drift requires separate source/test authorization for sync_opencode_model_catalog.py and tests/unit/test_sync_opencode_model_catalog.py.",
+    "unblock_target_state": "implementation-ready",
     "created_at": "2026-06-13T17:34:43.387Z",
-    "updated_at": "2026-06-13T17:35:24.152Z",
+    "updated_at": "2026-06-13T18:21:17.541Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -8155,6 +8162,27 @@
         "note": "Restore-only authorization decision prepared from no-source disposition; no source edits authorized yet.",
         "current_head": "95d990a6d20b336c90fd2dca512d9bb5af20091f",
         "transitioned_at": "2026-06-13T17:35:05.395Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User continued on 2026-06-14 after restore-only authorization prep; source edits limited to scripts/opencode/sync_opencode_model_catalog.py plus governance/report files.",
+        "current_head": "d8deab309265a3b6a7289a41b16add3ec1f005ab",
+        "transitioned_at": "2026-06-13T18:17:00.484Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Restored scripts/opencode/sync_opencode_model_catalog.py byte-equivalent to HEAD; focused pytest failed due existing script/test contract drift.",
+        "current_head": "d8deab309265a3b6a7289a41b16add3ec1f005ab",
+        "transitioned_at": "2026-06-13T18:21:05.138Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "blocked",
+        "note": "Blocked restore closeout on focused test failure; do not modify paired test or contract behavior in this restore-only package.",
+        "current_head": "d8deab309265a3b6a7289a41b16add3ec1f005ab",
+        "transitioned_at": "2026-06-13T18:21:17.541Z"
       }
     ],
     "acceptance": {

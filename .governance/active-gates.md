@@ -8,6 +8,6 @@
 | artdeco-web-design-governance | b4-012-scripts-market-data-opencode-disposition-audit | decision-prepared | - | prepare authorization | B4.012-M2b-B2 |
 | artdeco-web-design-governance | b4-012-scripts-opencode-omc-sync-disposition-audit | decision-prepared | - | prepare authorization | B4.012-M2b-B2-B |
 | artdeco-web-design-governance | b4-012-scripts-sync-opencode-model-catalog-disposition-audit | decision-prepared | - | prepare authorization | B4.012-M2b-B2-C |
-| artdeco-web-design-governance | b4-012-sync-opencode-model-catalog-restore-authorization | authorization-prepared | - | review and approve implementation authorization | B4.012-M2b-B2-C-A |
+| artdeco-web-design-governance | b4-012-sync-opencode-model-catalog-restore-authorization | blocked | Focused pytest still fails after restoring scripts/opencode/sync_opencode_model_catalog.py byte-equivalent to HEAD; current HEAD script/test contract drift requires separate source/test authorization for sync_opencode_model_catalog.py and tests/unit/test_sync_opencode_model_catalog.py. | unblock to implementation-ready | B4.012-M2b-B2-C-A |
 
 _Generated from `.governance/active-gates.json`._
