@@ -14,13 +14,69 @@ Priority: P2 (Utility)
 Coverage: 70% functional + smoke testing
 """
 
+import ast
+from pathlib import Path
+
 import pytest
 
-from tests.api.file_tests.conftest import api_test_fixtures
+TECHNICAL_ANALYSIS_API_PATH = (
+    Path(__file__).resolve().parents[3] / "web" / "backend" / "app" / "api" / "technical_analysis.py"
+)
+
+TECHNICAL_ANALYSIS_HANDLER_NAMES = [
+    "get_all_indicators",
+    "get_trend_indicators",
+    "get_momentum_indicators",
+    "get_volatility_indicators",
+    "get_volume_indicators",
+    "get_trading_signals",
+    "get_stock_history",
+    "get_batch_indicators",
+]
+
+
+def _default_by_argument(function_node):
+    defaults = function_node.args.defaults
+    if not defaults:
+        return {}
+    args_with_defaults = function_node.args.args[-len(defaults) :]
+    return {argument.arg: default for argument, default in zip(args_with_defaults, defaults)}
 
 
 class TestTechnicalAnalysisAPIFile:
     """Test suite for technical_analysis.py API file"""
+
+    @pytest.mark.file_test
+    def test_data_source_factory_is_route_local_provider(self):
+        """Route handlers receive the technical-analysis adapter through FastAPI dependency injection."""
+        tree = ast.parse(TECHNICAL_ANALYSIS_API_PATH.read_text(encoding="utf-8"))
+        async_functions = {node.name: node for node in tree.body if isinstance(node, ast.AsyncFunctionDef)}
+
+        assert "get_technical_analysis_data_source" in async_functions
+
+        for handler_name in TECHNICAL_ANALYSIS_HANDLER_NAMES:
+            handler = async_functions[handler_name]
+            defaults = _default_by_argument(handler)
+
+            adapter_default = defaults.get("technical_analysis_adapter")
+            assert adapter_default is not None, f"{handler_name} must accept injected technical_analysis_adapter"
+            assert isinstance(adapter_default, ast.Call)
+            assert isinstance(adapter_default.func, ast.Name)
+            assert adapter_default.func.id == "Depends"
+            assert len(adapter_default.args) == 1
+            assert isinstance(adapter_default.args[0], ast.Name)
+            assert adapter_default.args[0].id == "get_technical_analysis_data_source"
+
+            inline_factory_calls = [
+                node.lineno
+                for node in ast.walk(handler)
+                if isinstance(node, ast.Call)
+                and isinstance(node.func, ast.Name)
+                and node.func.id == "DataSourceFactory"
+            ]
+            assert inline_factory_calls == [], (
+                f"{handler_name} must not construct DataSourceFactory inline at lines {inline_factory_calls}"
+            )
 
     @pytest.mark.file_test
     def test_symbol_indicators_endpoint(self, api_test_fixtures):

@@ -15,7 +15,6 @@ import asyncio
 
 import pytest
 
-from tests.api.file_tests.conftest import api_test_fixtures, assert_file_test_result, mock_responses
 
 
 class TestTradeRoutesAPIFile:
@@ -165,8 +164,10 @@ class TestTradeContractValidation:
         strategy_list = mock_responses["strategy_list"]
 
         assert "/api/trade/orders/create" in trading_paths
-        assert "success" in strategy_list and isinstance(strategy_list["success"], bool)
-        assert "data" in strategy_list and "strategies" in strategy_list["data"]
+        assert "success" in strategy_list
+        assert isinstance(strategy_list["success"], bool)
+        assert "data" in strategy_list
+        assert "strategies" in strategy_list["data"]
 
     @pytest.mark.contract_test
     def test_endpoint_coverage(self, contract_specs):
