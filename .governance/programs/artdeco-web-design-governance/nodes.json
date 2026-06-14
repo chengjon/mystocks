@@ -9707,11 +9707,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-b-api-backend-contract-tests-split",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "B4.012-M3a-B4",
     "current_head": "6294e25eb412123dcc8c1a2d7e31babe65785625",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "baseline",
@@ -9739,11 +9739,11 @@
       "Do not stage or accept untracked contract/deployment tests.",
       "Do not include tests/api/**, tests/backend/**, E2E/frontend tests, security/performance families, or M3a-A/M3a-B1/M3a-B2/M3a-B3 families."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-14T07:24:11.410Z",
-    "updated_at": "2026-06-14T18:56:50.221Z",
+    "updated_at": "2026-06-14T19:02:10.026Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -9765,6 +9765,20 @@
         "note": "",
         "current_head": "6294e25eb412123dcc8c1a2d7e31babe65785625",
         "transitioned_at": "2026-06-14T18:56:50.221Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "8f9476fcdccc097574793297daf9cdccf9b72b48",
+        "transitioned_at": "2026-06-14T19:01:24.412Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "8f9476fcdccc097574793297daf9cdccf9b72b48",
+        "transitioned_at": "2026-06-14T19:02:10.026Z"
       }
     ],
     "acceptance": {
@@ -9777,6 +9791,19 @@
       "closeout_gate": [
         "Closeout reports accepted/deferred tracked contract test paths and confirms untracked contract/deployment candidates remain routed to provenance review."
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m3a-b4-tracked-contract-engine-tests-closeout-2026-06-14.md",
+      "compatibility": "Tracked contract engine tests preserved runtime/source/OpenSpec boundaries; no production source behavior changed.",
+      "gates": [
+        "py_compile passed",
+        "ruff passed",
+        "focused pytest passed: 8 passed, 95 warnings",
+        "GitNexus verify-staged passed: risk low, affected processes 0",
+        "OPENDOG verification available with no blockers"
+      ],
+      "current_head": "8f9476fcdccc097574793297daf9cdccf9b72b48",
+      "prepared_at": "2026-06-14T19:02:09.971Z"
     }
   },
   {
