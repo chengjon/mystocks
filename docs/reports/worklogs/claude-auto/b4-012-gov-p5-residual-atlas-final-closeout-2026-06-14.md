@@ -1,4 +1,4 @@
-# B4.012-GOV-P5 residual dirty atlas final closeout
+# B4.012-GOV-P5 residual dirty atlas M1 closeout
 
 Date: 2026-06-14
 Mode: governance metadata only
@@ -26,9 +26,11 @@ No source, test, runtime config, OpenSpec, frontend, API, ST-HOLD, marketKlineDa
 
 ## Active Gate Result
 
-After this closeout, `ft-governance gate --verbose` reports no active gates for the Function Tree program.
+After this closeout, the original M1 atlas subtree has no active descendants. The remaining dirty worktree is carried by the successor M3 rebaseline gate:
 
-This does not claim the repository-wide dirty worktree is clean. It only closes the B4.012 governance queue represented by this Function Tree subtree.
+- `b4-012-m3-residual-dirty-atlas-rebaseline`
+
+This does not claim the repository-wide dirty worktree is clean. It only closes the original B4.012-M1/M2 governance queue represented by this Function Tree subtree.
 
 ## External Dirty Files Preserved
 
@@ -50,4 +52,4 @@ This package intentionally did not stage or modify:
 
 ## Disposition
 
-`B4.012-GOV-P5` closes the residual dirty atlas queue. No B4.012 Function Tree active gate remains after this package.
+`B4.012-GOV-P5` closes the original residual dirty atlas queue. Remaining dirty-work governance continues under `B4.012-M3` via `b4-012-m3-residual-dirty-atlas-rebaseline`.

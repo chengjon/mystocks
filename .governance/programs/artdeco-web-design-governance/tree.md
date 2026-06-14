@@ -68,3 +68,4 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-012-deleted-untracked-parent-gate-closeout: B4.012 deleted/untracked scripts parent gate closeout (planning, FT: B4.012-M2b-GOV-P3)
 - [ ] b4-012-scripts-residual-parent-gate-closeout: B4.012 scripts residual parent gate closeout (planning, FT: B4.012-M2b-GOV-P4)
 - [ ] b4-012-residual-atlas-final-closeout: B4.012 residual dirty atlas final closeout (planning, FT: B4.012-GOV-P5)
+- [ ] b4-012-m3-residual-dirty-atlas-rebaseline: B4.012 M3 residual dirty atlas rebaseline (planning, FT: B4.012-M3)

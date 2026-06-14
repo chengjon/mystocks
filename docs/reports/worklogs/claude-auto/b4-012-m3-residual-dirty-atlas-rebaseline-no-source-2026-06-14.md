@@ -4,7 +4,7 @@ Date: 2026-06-14
 Mode: no-source audit, no source/test/runtime/OpenSpec cleanup authorization
 Branch: `wip/root-dirty-20260403`
 Baseline HEAD: `c71b12597 B4.012-M2b-GOV-P4: close scripts residual parent gate`
-Active gate: `b4-012-residual-dirty-domain-atlas`
+Active gate: `b4-012-m3-residual-dirty-atlas-rebaseline`
 
 ## Scope
 
@@ -15,7 +15,7 @@ Allowed in this package:
 - read-only Git/FUNCTION_TREE/GitNexus/OPENDOG checks
 - status aggregation and risk grouping
 - this worklog under `docs/reports/worklogs/claude-auto/`
-- FUNCTION_TREE evidence refresh for the existing atlas node
+- FUNCTION_TREE evidence for a new M3 residual atlas rebaseline node
 
 Forbidden in this package:
 
@@ -66,7 +66,11 @@ This does not mean every dirty `scripts/**` file has been accepted or cleaned. I
 
 ## Closure Decision
 
-The top-level `b4-012-residual-dirty-domain-atlas` must remain active.
+The original M1 `b4-012-residual-dirty-domain-atlas` must not be treated as final repository cleanup.
+
+It is safe to retire the original M1 atlas queue only if this M3 rebaseline remains active as the successor queue:
+
+- `b4-012-m3-residual-dirty-atlas-rebaseline`
 
 Reason:
 
@@ -75,7 +79,7 @@ Reason:
 - OpenSpec, backend, frontend, tests, and source domains have separate policy and runtime risk
 - the original atlas was a queue controller, not a single implementation package
 
-No top-level closeout is prepared in this package.
+No source cleanup, deletion-retirement, or domain implementation closeout is prepared in this package.
 
 ## Recommended Next Domain Queue
 

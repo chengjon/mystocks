@@ -9037,5 +9037,43 @@
       "current_head": "c71b12597af3aec0189c7bd1da9c6fbca3323ca9",
       "prepared_at": "2026-06-14T04:09:18.161Z"
     }
+  },
+  {
+    "id": "b4-012-m3-residual-dirty-atlas-rebaseline",
+    "title": "B4.012 M3 residual dirty atlas rebaseline",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "",
+    "status": "decision-prepared",
+    "function_tree_ref": "B4.012-M3",
+    "current_head": "d69ed57970a787fe2e39003ba97d95f3e44bd7b1",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3-residual-dirty-atlas-rebaseline-no-source-2026-06-14.md",
+        "note": "No-source M3 rebaseline after B4.012-M2b closeout; remaining dirty worktree requires new domain queue.",
+        "current_head": "d69ed57970a787fe2e39003ba97d95f3e44bd7b1",
+        "recorded_at": "2026-06-14T04:12:35.489Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-14T04:12:20.696Z",
+    "updated_at": "2026-06-14T04:12:48.236Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "M3 rebaseline decision prepared: next safe queue is tests residual domain no-source audit; no source/deletion authorization granted.",
+        "current_head": "d69ed57970a787fe2e39003ba97d95f3e44bd7b1",
+        "transitioned_at": "2026-06-14T04:12:48.236Z"
+      }
+    ]
   }
 ]

@@ -1,5 +1,23 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-14T04:09:30.214Z",
-  "gates": []
+  "updated_at": "2026-06-14T04:12:48.243Z",
+  "gates": [
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-012-m3-residual-dirty-atlas-rebaseline",
+      "title": "B4.012 M3 residual dirty atlas rebaseline",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "",
+      "status": "decision-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "prepare authorization",
+      "function_tree_ref": "B4.012-M3",
+      "freshness": "current-head",
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-14T04:12:48.236Z"
+    }
+  ]
 }
