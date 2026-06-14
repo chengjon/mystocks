@@ -8,14 +8,10 @@ Tests all 37 endpoints in akshare_market.py as a cohesive unit to ensure:
 - Performance requirements for market data APIs
 - Error handling for market data requests
 """
-import asyncio
-from datetime import datetime, timedelta
-from typing import Any, Dict, List
+from typing import Any, List
 
-import httpx
 import pytest
 
-from tests.conftest import auth_headers, client, test_user
 
 
 class TestAkShareMarketAPIFile:
@@ -158,7 +154,7 @@ class TestAkShareMarketAPIFile:
 
             if response.status_code == 200:
                 data = response.json()
-                assert "success" in data, f"Business data response missing success field"
+                assert "success" in data, "Business data response missing success field"
     @pytest.mark.asyncio
     async def test_akshare_market_file_technical_indicators(self, client, auth_headers):
         """Test technical indicators endpoint functionality"""
@@ -211,7 +207,7 @@ class TestAkShareMarketAPIFile:
 
             if response.status_code == 200:
                 data = response.json()
-                assert "success" in data, f"Concept board response missing success field"
+                assert "success" in data, "Concept board response missing success field"
     @pytest.mark.asyncio
     async def test_akshare_market_file_board_industry_integration(self, client, auth_headers):
         """Test industry board data integration"""
@@ -229,7 +225,7 @@ class TestAkShareMarketAPIFile:
 
             if response.status_code == 200:
                 data = response.json()
-                assert "success" in data, f"Industry board response missing success field"
+                assert "success" in data, "Industry board response missing success field"
     @pytest.mark.asyncio
     async def test_akshare_market_file_sector_data_integration(self, client, auth_headers):
         """Test sector data integration"""
@@ -245,7 +241,7 @@ class TestAkShareMarketAPIFile:
 
             if response.status_code == 200:
                 data = response.json()
-                assert "success" in data, f"Sector data response missing success field"
+                assert "success" in data, "Sector data response missing success field"
     @pytest.mark.asyncio
     async def test_akshare_market_file_error_handling(self, client, auth_headers):
         """Test error handling across akshare market endpoints"""
@@ -281,6 +277,8 @@ class TestAkShareMarketAPIFile:
             response = client.get(endpoint, headers=auth_headers)
             end_time = time.time()
             response_time = end_time - start_time
+
+            assert response.status_code in [200, 400, 401, 403, 404, 422, 500]
 
             # Log performance for monitoring
             print(f"AkShare endpoint {endpoint}: {response_time:.3f}s")

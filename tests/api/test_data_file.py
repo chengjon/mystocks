@@ -9,14 +9,10 @@ Tests all 29 endpoints in data.py as a cohesive unit to ensure:
 - Error handling works correctly
 """
 
-import asyncio
-from datetime import datetime, timedelta
-from typing import Any, Dict, List
+from typing import Any, List
 
-import httpx
 import pytest
 
-from tests.conftest import auth_headers, client, test_user
 
 
 class TestDataAPIFile:
@@ -119,6 +115,7 @@ class TestDataAPIFile:
 
         if overview_response.status_code == 200:
             overview_data = overview_response.json()
+            assert isinstance(overview_data, dict)
 
             # Test price distribution endpoint
             price_dist_response = client.get("/api/data/markets/price-distribution", headers=auth_headers)
@@ -207,6 +204,8 @@ class TestDataAPIFile:
             response = client.get(endpoint, headers=auth_headers)
             end_time = time.time()
             response_time = end_time - start_time
+
+            assert response.status_code in [200, 400, 401, 403, 404, 422, 500]
 
             # Log performance for monitoring
             print(f"Endpoint {endpoint}: {response_time:.3f}s")

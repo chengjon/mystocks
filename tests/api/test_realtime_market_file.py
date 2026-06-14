@@ -16,7 +16,7 @@ Coverage: 75% functional + smoke testing
 
 import pytest
 
-from tests.api.file_tests.conftest import api_test_fixtures
+pytest_plugins = ("tests.api.file_tests.conftest",)
 
 
 class TestRealtimeMarketAPIFile:
