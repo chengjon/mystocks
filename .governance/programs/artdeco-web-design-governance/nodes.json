@@ -9598,11 +9598,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-b-api-backend-contract-tests-split",
-    "status": "authorization-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "B4.012-M3a-B3",
-    "current_head": "906d98553a8879e4f45802518310a77206e501d1",
+    "current_head": "d9487a0032a1218043861073d7d0229f22217524",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "baseline",
@@ -9610,6 +9610,13 @@
         "note": "M3a-B3 no-source authorization prep for 4 tracked modified backend regression/risk tests; source/test edits remain unauthorized.",
         "current_head": "906d98553a8879e4f45802518310a77206e501d1",
         "recorded_at": "2026-06-14T07:20:25.158Z"
+      },
+      {
+        "kind": "authorization",
+        "path": "user authorization: B4.012-M3a-B3 backend regression contract implementation, allowed_paths only, tests-only edits, no source/runtime/OpenSpec/external dirty paths",
+        "note": "User formally authorized B4.012-M3a-B3 implementation at current HEAD; scope remains limited to Function Tree allowed_paths.",
+        "current_head": "d9487a0032a1218043861073d7d0229f22217524",
+        "recorded_at": "2026-06-14T16:47:38.556Z"
       }
     ],
     "allowed_paths": [
@@ -9625,11 +9632,11 @@
       "Do not stage or accept untracked tests.",
       "Do not include tests/api/**, contract-engine tests, E2E/frontend tests, security/performance families, or M3a-A/M3a-B1/M3a-B2 families."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-14T07:20:25.112Z",
-    "updated_at": "2026-06-14T07:20:42.685Z",
+    "updated_at": "2026-06-14T16:47:38.674Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -9637,6 +9644,20 @@
         "note": "M3a-B3 backend regression authorization boundary prepared from no-source split; no test/source authorization yet.",
         "current_head": "906d98553a8879e4f45802518310a77206e501d1",
         "transitioned_at": "2026-06-14T07:20:25.197Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "B4.012-M3a-B3 source/test edit authorization approved by user; only allowed_paths may be modified.",
+        "current_head": "d9487a0032a1218043861073d7d0229f22217524",
+        "transitioned_at": "2026-06-14T16:47:38.619Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Implementation may begin after current-head authorization evidence refresh.",
+        "current_head": "d9487a0032a1218043861073d7d0229f22217524",
+        "transitioned_at": "2026-06-14T16:47:38.674Z"
       }
     ],
     "acceptance": {

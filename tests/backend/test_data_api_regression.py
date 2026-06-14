@@ -33,8 +33,8 @@ def test_get_stocks_basic(mock_factory):
         "data": [{"symbol": "000001", "name": "Ping An"}],
         "total": 1
     }
-    
-    response = client.get("/api/v1/data/stocks/basic")
+
+    response = client.get("/stocks/basic")
     assert response.status_code == 200
     assert response.json()["success"] is True
     assert len(response.json()["data"]) == 1
@@ -44,8 +44,8 @@ def test_get_market_overview(mock_factory):
         "status": "success",
         "data": {"index": "sh000001"}
     }
-    
-    response = client.get("/api/v1/data/markets/overview")
+
+    response = client.get("/markets/overview")
     assert response.status_code == 200
     assert response.json()["success"] is True
 
@@ -54,7 +54,7 @@ def test_get_kline(mock_factory):
         "status": "success",
         "data": [{"date": "2025-01-01", "close": 10.0}]
     }
-    
-    response = client.get("/api/v1/data/stocks/daily?symbol=000001")
+
+    response = client.get("/stocks/daily?symbol=000001")
     assert response.status_code == 200
     assert response.json()["success"] is True

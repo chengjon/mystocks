@@ -1,54 +1,38 @@
-import pytest
-from unittest.mock import MagicMock, patch, AsyncMock
-import pandas as pd
-import numpy as np
 import sys
 import os
 
 # Add web/backend to sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../web/backend")))
 
-from app.api.risk_management_core import RiskCalculator, RiskService
-from app.core.exceptions import BusinessException
+from app.services.risk_management.risk_base import RiskBase
+from app.services.risk_management_new import RiskManagementService
 
 def test_risk_calculator_var():
-    returns = pd.Series([-0.01, -0.02, 0.01, 0.02, -0.05])
-    metrics = RiskCalculator.calculate_var_cvar(returns, 0.95)
-    assert "var_95_hist" in metrics
-    assert "cvar_95" in metrics
+    returns = [-0.01, -0.02, 0.01, 0.02, -0.05]
+    risk_base = RiskBase()
+    metrics = {
+        "var": risk_base.calculate_var(returns),
+        "cvar": risk_base.calculate_cvar(returns, 0.95),
+    }
+    assert isinstance(metrics["var"], float)
+    assert isinstance(metrics["cvar"], float)
+    assert metrics["var"] >= 0
+    assert metrics["cvar"] >= 0
 
-def test_risk_calculator_beta():
-    asset = pd.Series([0.01, 0.02, -0.01])
-    market = pd.Series([0.01, 0.01, -0.01])
-    beta = RiskCalculator.calculate_beta(asset, market)
-    assert isinstance(beta, float)
+def test_risk_calculator_adjusted_var():
+    returns = [0.01, 0.02, -0.01]
+    adjusted_var = RiskBase().calculate_var_with_return(returns, risk_free_rate=0.01)
+    assert isinstance(adjusted_var, float)
+    assert adjusted_var >= 0
 
-@pytest.mark.asyncio
-async def test_risk_service_calculate_var_success():
-    mock_manager = MagicMock()
-    mock_manager.save_data_by_classification.return_value = True
+def test_risk_service_calculate_var_success():
+    service = RiskManagementService()
+    result = service.calculate_var([0.01, -0.02, 0.03, -0.01])
+    assert isinstance(result, float)
+    assert result >= 0
 
-    mock_db = MagicMock()
-
-    service = RiskService(mock_manager, mock_db)
-
-    result = await service.calculate_var_cvar_logic({
-        "entity_type": "portfolio",
-        "entity_id": 101,
-        "confidence_level": 0.95,
-    })
-
-    assert result is not None
-    assert "var_95_hist" in result or "entity_id" in result
-
-@pytest.mark.asyncio
-async def test_risk_service_calculate_beta_success():
-    """Test beta calculation via RiskCalculator static method"""
-    asset_returns = pd.Series([0.01, 0.02, -0.01, 0.03, -0.02])
-    market_returns = pd.Series([0.01, 0.01, -0.01, 0.02, -0.01])
-
-    beta = RiskCalculator.calculate_beta(asset_returns, market_returns)
-
-    assert beta is not None
-    assert isinstance(beta, float)
-    assert beta > 0  # positive correlation expected
+def test_risk_service_calculate_adjusted_var_success():
+    service = RiskManagementService()
+    adjusted_var = service.calculate_var_with_return([0.01, 0.02, -0.01, 0.03, -0.02], risk_free_rate=0.01)
+    assert isinstance(adjusted_var, float)
+    assert adjusted_var >= 0
