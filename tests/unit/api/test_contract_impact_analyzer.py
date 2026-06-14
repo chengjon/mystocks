@@ -106,3 +106,87 @@ def test_contract_impact_analyzer_reports_schema_property_removal() -> None:
     assert analysis.migration_effort.estimated_hours_min == 3
     assert analysis.migration_effort.estimated_hours_max == 8
     assert analysis.migration_effort.drivers == ["Removed schema QuoteResponse.price"]
+
+
+def test_contract_impact_analyzer_classifies_added_endpoint_as_non_breaking() -> None:
+    from_spec = {
+        "openapi": "3.1.0",
+        "paths": {},
+        "components": {"schemas": {}},
+    }
+    to_spec = {
+        "openapi": "3.1.0",
+        "paths": {
+            "/api/v1/strategy/signals": {
+                "post": {
+                    "operationId": "createStrategySignal",
+                    "tags": ["strategy"],
+                    "responses": {"200": {"description": "ok"}},
+                }
+            }
+        },
+        "components": {"schemas": {}},
+    }
+
+    analysis = ContractImpactAnalyzer().analyze_specs(from_spec, to_spec, "1.0.0", "1.1.0")
+
+    assert analysis.risk_level == "medium"
+    assert analysis.summary.total_impacts == 1
+    assert analysis.summary.breaking_impacts == 0
+    assert analysis.summary.non_breaking_impacts == 1
+    assert analysis.affected_endpoints == ["/api/v1/strategy/signals"]
+    assert analysis.affected_clients == ["strategy"]
+    assert analysis.impacts[0].change_type == "added"
+    assert analysis.impacts[0].is_breaking is False
+    assert analysis.migration_effort.level == "low"
+    assert analysis.migration_effort.score == 1
+    assert analysis.migration_effort.drivers == ["Added endpoint POST /api/v1/strategy/signals"]
+
+
+def test_contract_impact_analyzer_reports_required_property_added_as_breaking() -> None:
+    from_spec = {
+        "openapi": "3.1.0",
+        "paths": {},
+        "components": {
+            "schemas": {
+                "TrainRequest": {
+                    "type": "object",
+                    "required": ["symbol"],
+                    "properties": {
+                        "symbol": {"type": "string"},
+                        "horizon": {"type": "integer"},
+                    },
+                }
+            }
+        },
+    }
+    to_spec = {
+        "openapi": "3.1.0",
+        "paths": {},
+        "components": {
+            "schemas": {
+                "TrainRequest": {
+                    "type": "object",
+                    "required": ["symbol", "horizon"],
+                    "properties": {
+                        "symbol": {"type": "string"},
+                        "horizon": {"type": "integer"},
+                    },
+                }
+            }
+        },
+    }
+
+    analysis = ContractImpactAnalyzer().analyze_specs(from_spec, to_spec, "1.0.0", "1.1.0")
+
+    assert analysis.risk_level == "high"
+    assert analysis.summary.breaking_impacts == 1
+    assert analysis.affected_schemas == ["TrainRequest"]
+    assert analysis.impacts[0].category == "schema"
+    assert analysis.impacts[0].name == "TrainRequest.horizon"
+    assert analysis.impacts[0].change_type == "required_added"
+    assert analysis.impacts[0].severity == "high"
+    assert analysis.impacts[0].is_breaking is True
+    assert analysis.migration_effort.level == "medium"
+    assert analysis.migration_effort.score == 4
+    assert analysis.migration_effort.drivers == ["Required_added schema TrainRequest.horizon"]

@@ -9707,11 +9707,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-b-api-backend-contract-tests-split",
-    "status": "authorization-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "B4.012-M3a-B4",
-    "current_head": "ba44326e9a01242b29c2ecb9307432e9b6450b76",
+    "current_head": "6294e25eb412123dcc8c1a2d7e31babe65785625",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "baseline",
@@ -9719,6 +9719,13 @@
         "note": "M3a-B4 no-source authorization prep for 2 tracked contract-engine/impact unit tests; source/test edits remain unauthorized.",
         "current_head": "ba44326e9a01242b29c2ecb9307432e9b6450b76",
         "recorded_at": "2026-06-14T07:24:11.457Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "B4 boundary recheck at HEAD 6294e25eb: allowed tests dirty, external run_file_tests.py isolated, no staged changes.",
+        "note": "Current-head no-source boundary recheck before approved implementation.",
+        "current_head": "6294e25eb412123dcc8c1a2d7e31babe65785625",
+        "recorded_at": "2026-06-14T18:54:03.938Z"
       }
     ],
     "allowed_paths": [
@@ -9732,11 +9739,11 @@
       "Do not stage or accept untracked contract/deployment tests.",
       "Do not include tests/api/**, tests/backend/**, E2E/frontend tests, security/performance families, or M3a-A/M3a-B1/M3a-B2/M3a-B3 families."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-14T07:24:11.410Z",
-    "updated_at": "2026-06-14T07:24:35.781Z",
+    "updated_at": "2026-06-14T18:56:50.221Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -9744,6 +9751,20 @@
         "note": "M3a-B4 tracked contract test authorization boundary prepared from no-source split; no test/source authorization yet.",
         "current_head": "ba44326e9a01242b29c2ecb9307432e9b6450b76",
         "transitioned_at": "2026-06-14T07:24:11.498Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "6294e25eb412123dcc8c1a2d7e31babe65785625",
+        "transitioned_at": "2026-06-14T18:54:03.999Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "6294e25eb412123dcc8c1a2d7e31babe65785625",
+        "transitioned_at": "2026-06-14T18:56:50.221Z"
       }
     ],
     "acceptance": {
