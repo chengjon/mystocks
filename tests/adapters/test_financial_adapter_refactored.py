@@ -19,7 +19,7 @@ class TestPriceDataMethods:
 
     def test_get_stock_daily_valid_params(self):
         """测试：获取股票日线数据 - 有效参数"""
-        # TODO: 这个测试在重构前应该失败，因为没有拆分的模块
+        # TODO owner=data-adapters issue=techdebt-expired-markers ttl=2026-06-30: 这个测试在重构前应该失败，因为没有拆分的模块
         # RED阶段：编写失败的测试
         from src.adapters.price_data_adapter import PriceDataAdapter
 
@@ -68,7 +68,7 @@ class TestVolumeDataMethods:
 
     def test_calculate_volume_ma(self):
         """测试：计算成交量移动平均"""
-        # TODO: 重构前应该失败
+        # TODO owner=data-adapters issue=techdebt-expired-markers ttl=2026-06-30: 重构前应该失败
         from src.adapters.volume_data_processor import VolumeDataProcessor
 
         processor = VolumeDataProcessor()
@@ -129,7 +129,7 @@ class TestDataValidationMethods:
 
     def test_validate_stock_symbol(self):
         """测试：股票代码校验"""
-        # TODO: 重构前应该失败
+        # TODO owner=data-adapters issue=techdebt-expired-markers ttl=2026-06-30: 重构前应该失败
         from src.adapters.data_validator import DataValidator
 
         validator = DataValidator()
@@ -195,7 +195,7 @@ class TestPerformanceBenchmarks:
 
     def test_get_stock_daily_performance(self):
         """测试：股票日线数据获取性能基准"""
-        # TODO: 重构前应该失败
+        # TODO owner=data-adapters issue=techdebt-expired-markers ttl=2026-06-30: 重构前应该失败
         import time
 
         from src.adapters.price_data_adapter import PriceDataAdapter

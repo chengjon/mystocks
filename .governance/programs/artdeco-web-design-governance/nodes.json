@@ -9964,11 +9964,11 @@
     "node_type": "implementation",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-c-adapter-data-source-tests-split",
-    "status": "authorization-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "b4-012-m3a-c-adapter-data-source-tests-split",
-    "current_head": "e4877ce7c1de727823973274e8a1f3026b0c7019",
+    "current_head": "2dfe563e7b4fc6ec9c7ecf9ca1e0f189b4d229ed",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "baseline",
@@ -9976,6 +9976,13 @@
         "note": "M3a-C1 fast adapter tests current-head no-source boundary and authorization prep.",
         "current_head": "e4877ce7c1de727823973274e8a1f3026b0c7019",
         "recorded_at": "2026-06-14T19:22:36.433Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "User approved C1-fast implementation at HEAD 2dfe563e7; allowed paths remain the three adapter tests plus closeout worklog.",
+        "note": "Current-head implementation approval evidence.",
+        "current_head": "2dfe563e7b4fc6ec9c7ecf9ca1e0f189b4d229ed",
+        "recorded_at": "2026-06-14T19:31:36.823Z"
       }
     ],
     "allowed_paths": [
@@ -9990,11 +9997,11 @@
       "Do not include Akshare split assertion migration or slow/network adapter tests in this batch.",
       "Do not delete, move, or rename tests."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-14T19:21:52.690Z",
-    "updated_at": "2026-06-14T19:22:50.319Z",
+    "updated_at": "2026-06-14T19:32:36.685Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -10002,6 +10009,20 @@
         "note": "",
         "current_head": "e4877ce7c1de727823973274e8a1f3026b0c7019",
         "transitioned_at": "2026-06-14T19:22:36.508Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "2dfe563e7b4fc6ec9c7ecf9ca1e0f189b4d229ed",
+        "transitioned_at": "2026-06-14T19:31:36.885Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "2dfe563e7b4fc6ec9c7ecf9ca1e0f189b4d229ed",
+        "transitioned_at": "2026-06-14T19:32:36.684Z"
       }
     ],
     "acceptance": {

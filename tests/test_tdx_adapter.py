@@ -235,7 +235,7 @@ class TestTDXAdapterIntegration:
             if result and isinstance(result, dict):
                 assert "code" in result or "price" in result
         except Exception as e:
-            pytest.skip(f"TDX connection failed: {str(e)}")
+            pytest.skip(f"TDX connection failed: {str(e)} owner=data-adapters issue=techdebt-expired-markers ttl=2026-06-30")
 
     @pytest.mark.integration
     @pytest.mark.slow
@@ -248,4 +248,4 @@ class TestTDXAdapterIntegration:
             if result is not None:
                 assert isinstance(result, pd.DataFrame)
         except Exception as e:
-            pytest.skip(f"TDX K-line data failed: {str(e)}")
+            pytest.skip(f"TDX K-line data failed: {str(e)} owner=data-adapters issue=techdebt-expired-markers ttl=2026-06-30")

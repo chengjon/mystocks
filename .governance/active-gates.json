@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-14T19:22:50.328Z",
+  "updated_at": "2026-06-14T19:32:36.691Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -128,10 +128,10 @@
       "node_type": "implementation",
       "owner_lane": "artdeco-web-design-governance",
       "parent": "b4-012-m3a-c-adapter-data-source-tests-split",
-      "status": "authorization-prepared",
-      "source_edits_authorized": false,
+      "status": "implementation-ready",
+      "source_edits_authorized": true,
       "current_blocker": "",
-      "next_allowed": "review and approve implementation authorization",
+      "next_allowed": "land implementation with Git evidence",
       "function_tree_ref": "b4-012-m3a-c-adapter-data-source-tests-split",
       "freshness": "current-head",
       "allowed_paths": [
@@ -141,7 +141,7 @@
         "docs/reports/worklogs/claude-auto/b4-012-m3a-c1-fast-adapter-tests-closeout-2026-06-15.md"
       ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-14T19:22:50.319Z"
+      "updated_at": "2026-06-14T19:32:36.685Z"
     }
   ]
 }

@@ -20,7 +20,7 @@ class TestTdxConnectionManager:
 
     def test_init_connection_manager(self):
         """测试：初始化TDX连接管理器"""
-        # TODO: 这个测试在重构前应该失败，因为没有拆分的模块
+        # TODO owner=data-adapters issue=techdebt-expired-markers ttl=2026-06-30: 这个测试在重构前应该失败，因为没有拆分的模块
         from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
@@ -113,7 +113,7 @@ class TestTdxDataParser:
 
     def test_validate_kline_data(self):
         """测试：验证K线数据"""
-        # TODO: 重构前应该失败
+        # TODO owner=data-adapters issue=techdebt-expired-markers ttl=2026-06-30: 重构前应该失败
         from src.adapters.tdx_data_parser import TdxDataParser
 
         parser = TdxDataParser()
@@ -250,7 +250,7 @@ class TestTdxKlineDataFetcher:
 
     def test_get_stock_daily(self):
         """测试：获取股票日线数据"""
-        # TODO: 重构前应该失败
+        # TODO owner=data-adapters issue=techdebt-expired-markers ttl=2026-06-30: 重构前应该失败
         from src.adapters.tdx_kline_fetcher import TdxKlineDataFetcher
 
         fetcher = TdxKlineDataFetcher()
@@ -329,7 +329,7 @@ class TestTdxRealtimeManager:
 
     def test_get_real_time_data(self):
         """测试：获取实时数据"""
-        # TODO: 重构前应该失败
+        # TODO owner=data-adapters issue=techdebt-expired-markers ttl=2026-06-30: 重构前应该失败
         from src.adapters.tdx_realtime_manager import TdxRealtimeManager
 
         manager = TdxRealtimeManager()
@@ -410,7 +410,7 @@ class TestTdxBasicDataManager:
 
     def test_get_stock_basic(self):
         """测试：获取股票基础信息"""
-        # TODO: 重构前应该失败
+        # TODO owner=data-adapters issue=techdebt-expired-markers ttl=2026-06-30: 重构前应该失败
         from src.adapters.tdx_basic_data_manager import TdxBasicDataManager
 
         manager = TdxBasicDataManager()
