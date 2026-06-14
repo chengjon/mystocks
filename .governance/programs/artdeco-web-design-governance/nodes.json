@@ -9598,11 +9598,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-b-api-backend-contract-tests-split",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "B4.012-M3a-B3",
     "current_head": "d9487a0032a1218043861073d7d0229f22217524",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "baseline",
@@ -9632,11 +9632,11 @@
       "Do not stage or accept untracked tests.",
       "Do not include tests/api/**, contract-engine tests, E2E/frontend tests, security/performance families, or M3a-A/M3a-B1/M3a-B2 families."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-14T07:20:25.112Z",
-    "updated_at": "2026-06-14T16:47:38.674Z",
+    "updated_at": "2026-06-14T17:07:09.984Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -9658,6 +9658,20 @@
         "note": "Implementation may begin after current-head authorization evidence refresh.",
         "current_head": "d9487a0032a1218043861073d7d0229f22217524",
         "transitioned_at": "2026-06-14T16:47:38.674Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Implementation landed in commit 73dc60d83 B4.012-M3a-B3: standardize backend regression contracts.",
+        "current_head": "73dc60d833fcbbb649eccc747bfb044ca0fdc375",
+        "transitioned_at": "2026-06-14T17:06:09.826Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "B4.012-M3a-B3 closeout complete; implementation commit 73dc60d83 and closeout worklog recorded.",
+        "current_head": "73dc60d833fcbbb649eccc747bfb044ca0fdc375",
+        "transitioned_at": "2026-06-14T17:07:09.984Z"
       }
     ],
     "acceptance": {
@@ -9670,6 +9684,21 @@
       "closeout_gate": [
         "Closeout reports accepted/deferred backend regression paths and confirms excluded families remain open."
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m3a-b3-backend-regression-contract-closeout-2026-06-14.md",
+      "compatibility": "Backend regression contracts remain tests-only; source/runtime/OpenSpec, tests/api/**, and external dirty files untouched.",
+      "gates": [
+        "GitNexus representative impact risk LOW with 0 affected processes",
+        "python -m py_compile focused B3 files passed",
+        "python -m ruff check focused B3 files passed",
+        "python -m pytest --no-cov focused B3 files passed: 21 passed, 1 warning",
+        "default coverage pytest test bodies passed: 21 passed, 1 warning; coverage fail-under is subset-inapplicable",
+        "GitNexus staged detect affected processes 0",
+        "OPENDOG cleanup/refactor blockers 0"
+      ],
+      "current_head": "73dc60d833fcbbb649eccc747bfb044ca0fdc375",
+      "prepared_at": "2026-06-14T17:07:09.913Z"
     }
   },
   {

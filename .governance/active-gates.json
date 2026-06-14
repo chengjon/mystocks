@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-14T16:47:38.680Z",
+  "updated_at": "2026-06-14T17:07:09.990Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -141,29 +141,6 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-14T07:40:55.516Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-012-m3a-b3-backend-regression-contract-authorization",
-      "title": "B4.012 M3a-B3 backend regression contract authorization",
-      "node_type": "decision",
-      "owner_lane": "artdeco-web-design-governance",
-      "parent": "b4-012-m3a-b-api-backend-contract-tests-split",
-      "status": "implementation-ready",
-      "source_edits_authorized": true,
-      "current_blocker": "",
-      "next_allowed": "land implementation with Git evidence",
-      "function_tree_ref": "B4.012-M3a-B3",
-      "freshness": "current-head",
-      "allowed_paths": [
-        "tests/backend/test_data_adapter_regression.py",
-        "tests/backend/test_data_api_regression.py",
-        "tests/backend/test_risk_management_core.py",
-        "tests/backend/test_risk_management_regression.py",
-        "docs/reports/worklogs/claude-auto/b4-012-m3a-b3-backend-regression-contract-closeout-2026-06-14.md"
-      ],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-14T16:47:38.674Z"
     }
   ]
 }
