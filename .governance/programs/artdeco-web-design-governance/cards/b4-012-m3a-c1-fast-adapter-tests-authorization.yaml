@@ -1,0 +1,28 @@
+task:
+  id: "b4-012-m3a-c1-fast-adapter-tests-authorization"
+  title: "B4.012 M3a-C1 fast adapter compatibility tests authorization"
+
+scope:
+  allowed_paths:
+    - "tests/adapters/test_financial_adapter_refactored.py"
+    - "tests/adapters/test_tdx_adapter_refactored.py"
+    - "tests/test_tdx_adapter.py"
+    - "docs/reports/worklogs/claude-auto/b4-012-m3a-c1-fast-adapter-tests-closeout-2026-06-15.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not touch src, web, scripts/runtime, openspec, ST-HOLD, marketKlineData, or external dirty files."
+  - "Do not include Akshare split assertion migration or slow/network adapter tests in this batch."
+  - "Do not delete, move, or rename tests."
+
+acceptance:
+  commit_gate:
+    - "py_compile, ruff, focused pytest for the three allowed test files pass."
+    - "Function Tree scope-check, git diff --cached --check, GitNexus verify-staged/detect-changes, and OPENDOG verification pass."
+  closeout_gate:
+    - "Closeout worklog records verification, boundaries, and next C-family batch recommendation."
+
+evidence:
+  current_head: "e4877ce7c1de727823973274e8a1f3026b0c7019"
+  notes: []

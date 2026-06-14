@@ -9957,5 +9957,61 @@
         "transitioned_at": "2026-06-14T07:40:55.516Z"
       }
     ]
+  },
+  {
+    "id": "b4-012-m3a-c1-fast-adapter-tests-authorization",
+    "title": "B4.012 M3a-C1 fast adapter compatibility tests authorization",
+    "node_type": "implementation",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-m3a-c-adapter-data-source-tests-split",
+    "status": "authorization-prepared",
+    "function_tree_ref": "b4-012-m3a-c-adapter-data-source-tests-split",
+    "current_head": "e4877ce7c1de727823973274e8a1f3026b0c7019",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-c1-fast-adapter-tests-authorization-prep-2026-06-15.md",
+        "note": "M3a-C1 fast adapter tests current-head no-source boundary and authorization prep.",
+        "current_head": "e4877ce7c1de727823973274e8a1f3026b0c7019",
+        "recorded_at": "2026-06-14T19:22:36.433Z"
+      }
+    ],
+    "allowed_paths": [
+      "tests/adapters/test_financial_adapter_refactored.py",
+      "tests/adapters/test_tdx_adapter_refactored.py",
+      "tests/test_tdx_adapter.py",
+      "docs/reports/worklogs/claude-auto/b4-012-m3a-c1-fast-adapter-tests-closeout-2026-06-15.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not touch src, web, scripts/runtime, openspec, ST-HOLD, marketKlineData, or external dirty files.",
+      "Do not include Akshare split assertion migration or slow/network adapter tests in this batch.",
+      "Do not delete, move, or rename tests."
+    ],
+    "next_gate": "review and approve implementation authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-14T19:21:52.690Z",
+    "updated_at": "2026-06-14T19:22:50.319Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "",
+        "current_head": "e4877ce7c1de727823973274e8a1f3026b0c7019",
+        "transitioned_at": "2026-06-14T19:22:36.508Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "py_compile, ruff, focused pytest for the three allowed test files pass.",
+        "Function Tree scope-check, git diff --cached --check, GitNexus verify-staged/detect-changes, and OPENDOG verification pass."
+      ],
+      "closeout_gate": [
+        "Closeout worklog records verification, boundaries, and next C-family batch recommendation."
+      ]
+    }
   }
 ]

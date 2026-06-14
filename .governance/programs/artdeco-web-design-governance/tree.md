@@ -81,3 +81,4 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-012-m3a-d-e2e-frontend-tests-split: B4.012 M3a-D E2E and frontend tests no-source split (planning, FT: B4.012-M3a-D)
 - [ ] b4-012-m3a-e-performance-runtime-security-tests-split: B4.012 M3a-E performance runtime security tests no-source split (planning, FT: B4.012-M3a-E)
 - [ ] b4-012-m3a-u-untracked-tests-provenance-review: B4.012 M3a-U untracked tests provenance review (planning, FT: B4.012-M3a-U)
+- [ ] b4-012-m3a-c1-fast-adapter-tests-authorization: B4.012 M3a-C1 fast adapter compatibility tests authorization (planning, FT: b4-012-m3a-c-adapter-data-source-tests-split)
