@@ -1,0 +1,29 @@
+task:
+  id: "b4-012-m3a-b4-tracked-contract-engine-tests-authorization"
+  title: "B4.012 M3a-B4 tracked contract engine tests authorization"
+
+scope:
+  allowed_paths:
+    - "tests/unit/api/test_contract_impact_analyzer.py"
+    - "tests/unit/contract/test_contract_engine_runtime_source.py"
+    - "docs/reports/worklogs/claude-auto/b4-012-m3a-b4-tracked-contract-engine-tests-closeout-2026-06-14.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not edit source, runtime, OpenSpec, generated contracts, backend/API implementation, frontend, ST-HOLD, marketKlineData, config, OpenStock, or external dirty files."
+  - "Do not stage or accept untracked contract/deployment tests."
+  - "Do not include tests/api/**, tests/backend/**, E2E/frontend tests, security/performance families, or M3a-A/M3a-B1/M3a-B2/M3a-B3 families."
+
+acceptance:
+  commit_gate:
+    - "Exact staged allowlist contains only approved M3a-B4 paths."
+    - "Contract engine/runtime-source boundary review is recorded before accepting dirty deltas."
+    - "Focused contract unit verification is recorded."
+    - "GitNexus staged verification and OPENDOG blocker check pass."
+  closeout_gate:
+    - "Closeout reports accepted/deferred tracked contract test paths and confirms untracked contract/deployment candidates remain routed to provenance review."
+
+evidence:
+  current_head: "ba44326e9a01242b29c2ecb9307432e9b6450b76"
+  notes: []

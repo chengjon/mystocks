@@ -9501,5 +9501,62 @@
         "Closeout reports accepted/deferred backend regression paths and confirms excluded families remain open."
       ]
     }
+  },
+  {
+    "id": "b4-012-m3a-b4-tracked-contract-engine-tests-authorization",
+    "title": "B4.012 M3a-B4 tracked contract engine tests authorization",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-m3a-b-api-backend-contract-tests-split",
+    "status": "authorization-prepared",
+    "function_tree_ref": "B4.012-M3a-B4",
+    "current_head": "ba44326e9a01242b29c2ecb9307432e9b6450b76",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-b4-tracked-contract-engine-tests-authorization-prep-2026-06-14.md",
+        "note": "M3a-B4 no-source authorization prep for 2 tracked contract-engine/impact unit tests; source/test edits remain unauthorized.",
+        "current_head": "ba44326e9a01242b29c2ecb9307432e9b6450b76",
+        "recorded_at": "2026-06-14T07:24:11.457Z"
+      }
+    ],
+    "allowed_paths": [
+      "tests/unit/api/test_contract_impact_analyzer.py",
+      "tests/unit/contract/test_contract_engine_runtime_source.py",
+      "docs/reports/worklogs/claude-auto/b4-012-m3a-b4-tracked-contract-engine-tests-closeout-2026-06-14.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not edit source, runtime, OpenSpec, generated contracts, backend/API implementation, frontend, ST-HOLD, marketKlineData, config, OpenStock, or external dirty files.",
+      "Do not stage or accept untracked contract/deployment tests.",
+      "Do not include tests/api/**, tests/backend/**, E2E/frontend tests, security/performance families, or M3a-A/M3a-B1/M3a-B2/M3a-B3 families."
+    ],
+    "next_gate": "review and approve implementation authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-14T07:24:11.410Z",
+    "updated_at": "2026-06-14T07:24:35.781Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "M3a-B4 tracked contract test authorization boundary prepared from no-source split; no test/source authorization yet.",
+        "current_head": "ba44326e9a01242b29c2ecb9307432e9b6450b76",
+        "transitioned_at": "2026-06-14T07:24:11.498Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "Exact staged allowlist contains only approved M3a-B4 paths.",
+        "Contract engine/runtime-source boundary review is recorded before accepting dirty deltas.",
+        "Focused contract unit verification is recorded.",
+        "GitNexus staged verification and OPENDOG blocker check pass."
+      ],
+      "closeout_gate": [
+        "Closeout reports accepted/deferred tracked contract test paths and confirms untracked contract/deployment candidates remain routed to provenance review."
+      ]
+    }
   }
 ]

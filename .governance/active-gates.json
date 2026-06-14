@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-14T07:20:42.690Z",
+  "updated_at": "2026-06-14T07:24:35.787Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -199,6 +199,27 @@
       ],
       "forbidden_paths": [],
       "updated_at": "2026-06-14T07:20:42.685Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-012-m3a-b4-tracked-contract-engine-tests-authorization",
+      "title": "B4.012 M3a-B4 tracked contract engine tests authorization",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-012-m3a-b-api-backend-contract-tests-split",
+      "status": "authorization-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "review and approve implementation authorization",
+      "function_tree_ref": "B4.012-M3a-B4",
+      "freshness": "current-head",
+      "allowed_paths": [
+        "tests/unit/api/test_contract_impact_analyzer.py",
+        "tests/unit/contract/test_contract_engine_runtime_source.py",
+        "docs/reports/worklogs/claude-auto/b4-012-m3a-b4-tracked-contract-engine-tests-closeout-2026-06-14.md"
+      ],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-14T07:24:35.781Z"
     }
   ]
 }
