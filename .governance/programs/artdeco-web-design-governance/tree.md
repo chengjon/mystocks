@@ -73,3 +73,4 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-012-tests-residual-domain-audit: B4.012-M3a tests residual domain no-source audit (planning, FT: B4.012-M3a)
 - [ ] b4-012-m3a-a-tests-infra-helper-boundary-authorization: B4.012 M3a-A tests infrastructure helper boundary authorization (planning, FT: B4.012-M3a-A)
 - [ ] b4-012-m3a-b-api-backend-contract-tests-split: B4.012 M3a-B API backend contract tests no-source split (planning, FT: B4.012-M3a-B)
+- [ ] b4-012-m3a-b1-api-file-tests-authorization: B4.012 M3a-B1 API file tests authorization (planning, FT: B4.012-M3a-B1)

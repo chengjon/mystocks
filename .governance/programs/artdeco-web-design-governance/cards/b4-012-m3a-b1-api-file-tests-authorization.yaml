@@ -1,0 +1,53 @@
+task:
+  id: "b4-012-m3a-b1-api-file-tests-authorization"
+  title: "B4.012 M3a-B1 API file tests authorization"
+
+scope:
+  allowed_paths:
+    - "tests/api/file_tests/test_akshare_market_api.py"
+    - "tests/api/file_tests/test_backup_recovery_api.py"
+    - "tests/api/file_tests/test_backup_recovery_secure_api.py"
+    - "tests/api/file_tests/test_data_lineage_api.py"
+    - "tests/api/file_tests/test_data_quality_api.py"
+    - "tests/api/file_tests/test_governance_dashboard_api.py"
+    - "tests/api/file_tests/test_indicators_api.py"
+    - "tests/api/file_tests/test_market_v2_api.py"
+    - "tests/api/file_tests/test_metrics_api.py"
+    - "tests/api/file_tests/test_monitoring_analysis_api.py"
+    - "tests/api/file_tests/test_notification_api.py"
+    - "tests/api/file_tests/test_prometheus_exporter_api.py"
+    - "tests/api/file_tests/test_realtime_market_api.py"
+    - "tests/api/file_tests/test_realtime_mtm_adapter_api.py"
+    - "tests/api/file_tests/test_realtime_mtm_init_api.py"
+    - "tests/api/file_tests/test_signal_monitoring_api.py"
+    - "tests/api/file_tests/test_sse_endpoints_api.py"
+    - "tests/api/file_tests/test_stock_search_api.py"
+    - "tests/api/file_tests/test_strategy_api.py"
+    - "tests/api/file_tests/test_strategy_list_mock_api.py"
+    - "tests/api/file_tests/test_strategy_mgmt_api.py"
+    - "tests/api/file_tests/test_system_api.py"
+    - "tests/api/file_tests/test_tasks_api.py"
+    - "tests/api/file_tests/test_technical_analysis_api.py"
+    - "tests/api/file_tests/test_trade_routes_api.py"
+    - "tests/api/file_tests/test_watchlist_api.py"
+    - "tests/api/file_tests/test_websocket_api.py"
+    - "docs/reports/worklogs/claude-auto/b4-012-m3a-b1-api-file-tests-closeout-2026-06-14.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not edit source, backend, frontend, API runtime, OpenSpec, ST-HOLD, marketKlineData, config, or external dirty files."
+  - "Do not stage or accept untracked tests."
+  - "Do not include tests/api/file_tests/run_file_tests.py, API root file tests, backend regression tests, contract-engine tests, E2E/frontend tests, security/performance tests, or M3a-A helpers."
+
+acceptance:
+  commit_gate:
+    - "Exact staged allowlist contains only approved M3a-B1 paths."
+    - "Focused API file-test verification is recorded."
+    - "GitNexus staged verification and OPENDOG blocker check pass."
+  closeout_gate:
+    - "Closeout reports accepted/deferred API file-test paths and confirms excluded families remain open."
+
+evidence:
+  current_head: "ef59e4b7b4822d3bdd471e65732d49bd2d64b505"
+  notes: []
