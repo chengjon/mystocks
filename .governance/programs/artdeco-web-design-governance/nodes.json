@@ -9470,11 +9470,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-b-api-backend-contract-tests-split",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "B4.012-M3a-B2",
     "current_head": "80151e731eece3c87dc6816f8f327b9e38ffdf6a",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "baseline",
@@ -9523,11 +9523,11 @@
       "Do not stage or accept untracked tests.",
       "Do not include tests/api/file_tests/**, tests/api/file_tests/run_file_tests.py, backend regression tests, contract-engine tests, E2E/frontend tests, security/performance tests, or M3a-A/M3a-B1 families."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-14T07:16:02.351Z",
-    "updated_at": "2026-06-14T11:31:27.525Z",
+    "updated_at": "2026-06-14T11:47:16.077Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -9549,6 +9549,20 @@
         "note": "Implementation may begin after current-head authorization evidence refresh.",
         "current_head": "80151e731eece3c87dc6816f8f327b9e38ffdf6a",
         "transitioned_at": "2026-06-14T11:31:27.525Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Implementation landed in commit 167708ed6 B4.012-M3a-B2: standardize API root file tests.",
+        "current_head": "167708ed68b732855992b78d4cbfff43e34e2fa6",
+        "transitioned_at": "2026-06-14T11:46:40.533Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "B4.012-M3a-B2 closeout complete; implementation commit 167708ed6 and closeout worklog recorded.",
+        "current_head": "167708ed68b732855992b78d4cbfff43e34e2fa6",
+        "transitioned_at": "2026-06-14T11:47:16.076Z"
       }
     ],
     "acceptance": {
@@ -9561,6 +9575,21 @@
       "closeout_gate": [
         "Closeout reports accepted/deferred API root file-test paths and confirms excluded families remain open."
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m3a-b2-api-root-file-tests-closeout-2026-06-14.md",
+      "compatibility": "API root file_tests remain tests-only; source/runtime/OpenSpec, tests/api/file_tests/**, and external dirty files untouched.",
+      "gates": [
+        "GitNexus representative impact risk LOW with 0 affected processes",
+        "python -m py_compile focused B2 files passed",
+        "python -m ruff check focused B2 files passed",
+        "python -m pytest --no-cov focused B2 files passed: 382 passed, 35 skipped",
+        "default coverage pytest test bodies passed: 382 passed, 35 skipped; coverage fail-under is subset-inapplicable",
+        "GitNexus staged detect risk low with 0 affected processes",
+        "OPENDOG cleanup/refactor blockers 0"
+      ],
+      "current_head": "167708ed68b732855992b78d4cbfff43e34e2fa6",
+      "prepared_at": "2026-06-14T11:47:16.025Z"
     }
   },
   {

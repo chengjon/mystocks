@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-14T11:31:27.532Z",
+  "updated_at": "2026-06-14T11:47:16.083Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -164,48 +164,6 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-14T07:40:55.516Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-012-m3a-b2-api-root-file-tests-authorization",
-      "title": "B4.012 M3a-B2 API root file tests authorization",
-      "node_type": "decision",
-      "owner_lane": "artdeco-web-design-governance",
-      "parent": "b4-012-m3a-b-api-backend-contract-tests-split",
-      "status": "implementation-ready",
-      "source_edits_authorized": true,
-      "current_blocker": "",
-      "next_allowed": "land implementation with Git evidence",
-      "function_tree_ref": "B4.012-M3a-B2",
-      "freshness": "current-head",
-      "allowed_paths": [
-        "tests/api/test_akshare_market_file.py",
-        "tests/api/test_backup_recovery_file.py",
-        "tests/api/test_cache_file.py",
-        "tests/api/test_data_file.py",
-        "tests/api/test_data_quality_file.py",
-        "tests/api/test_gpu_monitoring_file.py",
-        "tests/api/test_health_file.py",
-        "tests/api/test_indicator_registry_file.py",
-        "tests/api/test_market_v2_file.py",
-        "tests/api/test_metrics_file.py",
-        "tests/api/test_ml_file.py",
-        "tests/api/test_monitoring_file.py",
-        "tests/api/test_multi_source_file.py",
-        "tests/api/test_notification_file.py",
-        "tests/api/test_prometheus_exporter_file.py",
-        "tests/api/test_realtime_market_file.py",
-        "tests/api/test_signal_monitoring_file.py",
-        "tests/api/test_sse_endpoints_file.py",
-        "tests/api/test_stock_search_file.py",
-        "tests/api/test_system_file.py",
-        "tests/api/test_tasks_file.py",
-        "tests/api/test_watchlist_file.py",
-        "tests/api/test_websocket_file.py",
-        "docs/reports/worklogs/claude-auto/b4-012-m3a-b2-api-root-file-tests-closeout-2026-06-14.md"
-      ],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-14T11:31:27.525Z"
     }
   ]
 }
