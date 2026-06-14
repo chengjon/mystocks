@@ -9364,5 +9364,83 @@
         "Closeout reports accepted/deferred API file-test paths and confirms excluded families remain open."
       ]
     }
+  },
+  {
+    "id": "b4-012-m3a-b2-api-root-file-tests-authorization",
+    "title": "B4.012 M3a-B2 API root file tests authorization",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-m3a-b-api-backend-contract-tests-split",
+    "status": "authorization-prepared",
+    "function_tree_ref": "B4.012-M3a-B2",
+    "current_head": "454a2a9cb88756bc2b2e04c2de00bbb087613189",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-b2-api-root-file-tests-authorization-prep-2026-06-14.md",
+        "note": "M3a-B2 no-source authorization prep for 23 tracked modified API root file tests under tests/api/test_*_file.py; source/test edits remain unauthorized.",
+        "current_head": "454a2a9cb88756bc2b2e04c2de00bbb087613189",
+        "recorded_at": "2026-06-14T07:16:02.395Z"
+      }
+    ],
+    "allowed_paths": [
+      "tests/api/test_akshare_market_file.py",
+      "tests/api/test_backup_recovery_file.py",
+      "tests/api/test_cache_file.py",
+      "tests/api/test_data_file.py",
+      "tests/api/test_data_quality_file.py",
+      "tests/api/test_gpu_monitoring_file.py",
+      "tests/api/test_health_file.py",
+      "tests/api/test_indicator_registry_file.py",
+      "tests/api/test_market_v2_file.py",
+      "tests/api/test_metrics_file.py",
+      "tests/api/test_ml_file.py",
+      "tests/api/test_monitoring_file.py",
+      "tests/api/test_multi_source_file.py",
+      "tests/api/test_notification_file.py",
+      "tests/api/test_prometheus_exporter_file.py",
+      "tests/api/test_realtime_market_file.py",
+      "tests/api/test_signal_monitoring_file.py",
+      "tests/api/test_sse_endpoints_file.py",
+      "tests/api/test_stock_search_file.py",
+      "tests/api/test_system_file.py",
+      "tests/api/test_tasks_file.py",
+      "tests/api/test_watchlist_file.py",
+      "tests/api/test_websocket_file.py",
+      "docs/reports/worklogs/claude-auto/b4-012-m3a-b2-api-root-file-tests-closeout-2026-06-14.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not edit source, backend, frontend, API runtime, OpenSpec, ST-HOLD, marketKlineData, config, OpenStock, or external dirty files.",
+      "Do not stage or accept untracked tests.",
+      "Do not include tests/api/file_tests/**, tests/api/file_tests/run_file_tests.py, backend regression tests, contract-engine tests, E2E/frontend tests, security/performance tests, or M3a-A/M3a-B1 families."
+    ],
+    "next_gate": "review and approve implementation authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-14T07:16:02.351Z",
+    "updated_at": "2026-06-14T07:16:54.357Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "M3a-B2 authorization boundary prepared from no-source split; no test/source authorization yet.",
+        "current_head": "454a2a9cb88756bc2b2e04c2de00bbb087613189",
+        "transitioned_at": "2026-06-14T07:16:54.323Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "Exact staged allowlist contains only approved M3a-B2 paths.",
+        "Route registry and response-contract review is recorded before accepting dirty deltas.",
+        "Focused API root file-test verification is recorded.",
+        "GitNexus staged verification and OPENDOG blocker check pass."
+      ],
+      "closeout_gate": [
+        "Closeout reports accepted/deferred API root file-test paths and confirms excluded families remain open."
+      ]
+    }
   }
 ]
