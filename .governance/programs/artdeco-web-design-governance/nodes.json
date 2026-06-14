@@ -9172,11 +9172,11 @@
     "node_type": "authorization",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-tests-residual-domain-audit",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "B4.012-M3a-A",
     "current_head": "f05e40618b8d2ebdc0a6906318480361ff65bd93",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "baseline",
@@ -9226,11 +9226,11 @@
       "No untracked test path preservation, deletion, ignore, or staging decision.",
       "No API/backend, adapter/data-source, E2E/frontend, performance/runtime/security, OpenSpec, OpenStock, or external dirty path changes."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-14T05:42:03.753Z",
-    "updated_at": "2026-06-14T10:24:40.538Z",
+    "updated_at": "2026-06-14T10:28:40.073Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -9252,6 +9252,20 @@
         "note": "Tests infra/helper standardization prepared within allowed_paths; focused structure, lint, import, CLI, and TS checks recorded.",
         "current_head": "f05e40618b8d2ebdc0a6906318480361ff65bd93",
         "transitioned_at": "2026-06-14T10:24:40.538Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Implementation committed in 487585874 B4.012-M3a-A: standardize tests infra helpers.",
+        "current_head": "487585874859ab4edec979b3f8f41c9a42b87bab",
+        "transitioned_at": "2026-06-14T10:28:39.844Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "M3a-A test infra/helper boundary implementation closed; remaining M3a families stay open.",
+        "current_head": "487585874859ab4edec979b3f8f41c9a42b87bab",
+        "transitioned_at": "2026-06-14T10:28:40.073Z"
       }
     ],
     "acceptance": {
@@ -9265,6 +9279,21 @@
         "Report accepted/deferred candidate paths and focused verification evidence.",
         "Confirm no untracked tests or out-of-scope domains were touched."
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m3a-a-tests-infra-helper-boundary-authorization-prep-2026-06-14.md",
+      "compatibility": "Shared test runner/helper compatibility preserved; pytest relative-import collection error in CI helper fixed with fallback import.",
+      "gates": [
+        "ft-governance scope-check exact staged files passed",
+        "python -m ruff check focused allowed Python paths passed",
+        "python -m py_compile focused allowed Python paths passed",
+        "TypeScript helper check passed",
+        "module import smoke and run_pipeline --help passed",
+        "GitNexus staged detect risk low with 0 affected processes",
+        "OPENDOG cleanup/refactor blockers 0"
+      ],
+      "current_head": "487585874859ab4edec979b3f8f41c9a42b87bab",
+      "prepared_at": "2026-06-14T10:28:39.893Z"
     }
   },
   {
