@@ -1209,7 +1209,7 @@
       "No file deletion, archive movement, or baseline update",
       "No OpenSpec change files in this docs-only node"
     ],
-    "next_gate": "prepare decision or authorization",
+    "next_gate": "prepare authorization",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-05-31T17:34:31.462Z",
@@ -4194,7 +4194,7 @@
       "Do not change Vue/TypeScript runtime logic, layout registration, archive semantics, template structure, component props, emits, slots, or public component API.",
       "Do not extract shared components, redesign visuals, change ArtDeco token values, reactivate archive layouts, or touch unrelated dirty files such as tree.md, .planning, active views, BacktestGPU, Screener, Signals, or existing user-modified pages."
     ],
-    "next_gate": "prepare decision or authorization",
+    "next_gate": "prepare authorization",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-03T14:40:05.715Z",
@@ -9084,7 +9084,7 @@
     "parent": "b4-012-m3-residual-dirty-atlas-rebaseline",
     "status": "decision-prepared",
     "function_tree_ref": "B4.012-M3a",
-    "current_head": "77807e11d126e5e5a33ff2d7c5f982274cd82831",
+    "current_head": "6ab7c8acd7f0964096135708b61dccd068af05f7",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -9094,6 +9094,13 @@
         "note": "Canonical M3a tests residual domain audit evidence; supersedes misnamed b4-012-tests-residual-domain-audit gate.",
         "current_head": "77807e11d126e5e5a33ff2d7c5f982274cd82831",
         "recorded_at": "2026-06-14T05:29:44.768Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-tests-residual-domain-no-source-audit-2026-06-14.md",
+        "note": "B4.012-M3a no-source tests residual domain audit; canonical parent-linked node supersedes orphan duplicate.",
+        "current_head": "6ab7c8acd7f0964096135708b61dccd068af05f7",
+        "recorded_at": "2026-06-14T05:33:46.939Z"
       }
     ],
     "allowed_paths": [],
@@ -9103,7 +9110,7 @@
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-14T05:21:56.026Z",
-    "updated_at": "2026-06-14T05:29:44.837Z",
+    "updated_at": "2026-06-14T05:33:46.939Z",
     "transitions": [
       {
         "from": "evidence-prepared",

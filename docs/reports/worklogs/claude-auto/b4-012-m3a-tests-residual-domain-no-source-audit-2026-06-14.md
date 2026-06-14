@@ -2,8 +2,9 @@
 
 Date: 2026-06-14
 Mode: no-source audit, no test/source/runtime cleanup authorization
-Node: `b4-012-tests-residual-domain-audit`
+Node: `b4-012-m3a-tests-residual-domain-audit`
 Parent gate: `b4-012-m3-residual-dirty-atlas-rebaseline`
+Legacy duplicate node: `b4-012-tests-residual-domain-audit` (superseded by the parent-linked node above)
 Baseline HEAD: `acf58d95a B4.012-M3: keep residual atlas rebaseline active`
 
 ## Scope
@@ -165,3 +166,9 @@ This audit prepares the decision matrix only:
 `source_edits_authorized: false`
 
 This no-source audit does not authorize any test implementation package.
+
+Governance metadata correction on 2026-06-14:
+
+- canonical node is `b4-012-m3a-tests-residual-domain-audit`, parented by `b4-012-m3-residual-dirty-atlas-rebaseline`
+- legacy duplicate node `b4-012-tests-residual-domain-audit` is a superseded orphan and should not drive follow-up packages
+- correction remains no-source: no `tests/**`, source, runtime, OpenSpec, deletion, restore, or staging authorization is granted
