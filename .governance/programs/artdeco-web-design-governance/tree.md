@@ -75,3 +75,4 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-012-m3a-b-api-backend-contract-tests-split: B4.012 M3a-B API backend contract tests no-source split (planning, FT: B4.012-M3a-B)
 - [ ] b4-012-m3a-b1-api-file-tests-authorization: B4.012 M3a-B1 API file tests authorization (planning, FT: B4.012-M3a-B1)
 - [ ] b4-012-m3a-b2-api-root-file-tests-authorization: B4.012 M3a-B2 API root file tests authorization (planning, FT: B4.012-M3a-B2)
+- [ ] b4-012-m3a-b3-backend-regression-contract-authorization: B4.012 M3a-B3 backend regression contract authorization (planning, FT: B4.012-M3a-B3)

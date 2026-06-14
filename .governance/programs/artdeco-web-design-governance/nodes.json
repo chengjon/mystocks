@@ -9442,5 +9442,64 @@
         "Closeout reports accepted/deferred API root file-test paths and confirms excluded families remain open."
       ]
     }
+  },
+  {
+    "id": "b4-012-m3a-b3-backend-regression-contract-authorization",
+    "title": "B4.012 M3a-B3 backend regression contract authorization",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-m3a-b-api-backend-contract-tests-split",
+    "status": "authorization-prepared",
+    "function_tree_ref": "B4.012-M3a-B3",
+    "current_head": "906d98553a8879e4f45802518310a77206e501d1",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-b3-backend-regression-contract-authorization-prep-2026-06-14.md",
+        "note": "M3a-B3 no-source authorization prep for 4 tracked modified backend regression/risk tests; source/test edits remain unauthorized.",
+        "current_head": "906d98553a8879e4f45802518310a77206e501d1",
+        "recorded_at": "2026-06-14T07:20:25.158Z"
+      }
+    ],
+    "allowed_paths": [
+      "tests/backend/test_data_adapter_regression.py",
+      "tests/backend/test_data_api_regression.py",
+      "tests/backend/test_risk_management_core.py",
+      "tests/backend/test_risk_management_regression.py",
+      "docs/reports/worklogs/claude-auto/b4-012-m3a-b3-backend-regression-contract-closeout-2026-06-14.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not edit source, backend runtime, frontend, API runtime, OpenSpec, ST-HOLD, marketKlineData, config, OpenStock, or external dirty files.",
+      "Do not stage or accept untracked tests.",
+      "Do not include tests/api/**, contract-engine tests, E2E/frontend tests, security/performance families, or M3a-A/M3a-B1/M3a-B2 families."
+    ],
+    "next_gate": "review and approve implementation authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-14T07:20:25.112Z",
+    "updated_at": "2026-06-14T07:20:42.685Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "M3a-B3 backend regression authorization boundary prepared from no-source split; no test/source authorization yet.",
+        "current_head": "906d98553a8879e4f45802518310a77206e501d1",
+        "transitioned_at": "2026-06-14T07:20:25.197Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "Exact staged allowlist contains only approved M3a-B3 paths.",
+        "Backend service/API boundary review is recorded before accepting dirty deltas.",
+        "Focused backend regression/risk verification is recorded.",
+        "GitNexus staged verification and OPENDOG blocker check pass."
+      ],
+      "closeout_gate": [
+        "Closeout reports accepted/deferred backend regression paths and confirms excluded families remain open."
+      ]
+    }
   }
 ]
