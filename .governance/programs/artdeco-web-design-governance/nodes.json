@@ -9596,5 +9596,43 @@
         "transitioned_at": "2026-06-14T07:29:56.668Z"
       }
     ]
+  },
+  {
+    "id": "b4-012-m3a-d-e2e-frontend-tests-split",
+    "title": "B4.012 M3a-D E2E and frontend tests no-source split",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-m3a-tests-residual-domain-audit",
+    "status": "decision-prepared",
+    "function_tree_ref": "B4.012-M3a-D",
+    "current_head": "cf1431f1fa93879b50be8ff0983bd5f0ff0dc2a1",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-d-e2e-frontend-tests-no-source-split-2026-06-14.md",
+        "note": "M3a-D no-source split: 8 tracked E2E/frontend/UI candidates, API/backend/runtime/untracked overlaps routed to existing packages.",
+        "current_head": "cf1431f1fa93879b50be8ff0983bd5f0ff0dc2a1",
+        "recorded_at": "2026-06-14T07:33:55.862Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-14T07:33:55.819Z",
+    "updated_at": "2026-06-14T07:33:55.901Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "M3a-D split report ready; no source/test authorization.",
+        "current_head": "cf1431f1fa93879b50be8ff0983bd5f0ff0dc2a1",
+        "transitioned_at": "2026-06-14T07:33:55.901Z"
+      }
+    ]
   }
 ]

@@ -78,3 +78,4 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-012-m3a-b3-backend-regression-contract-authorization: B4.012 M3a-B3 backend regression contract authorization (planning, FT: B4.012-M3a-B3)
 - [ ] b4-012-m3a-b4-tracked-contract-engine-tests-authorization: B4.012 M3a-B4 tracked contract engine tests authorization (planning, FT: B4.012-M3a-B4)
 - [ ] b4-012-m3a-c-adapter-data-source-tests-split: B4.012 M3a-C adapter and data-source tests no-source split (planning, FT: B4.012-M3a-C)
+- [ ] b4-012-m3a-d-e2e-frontend-tests-split: B4.012 M3a-D E2E and frontend tests no-source split (planning, FT: B4.012-M3a-D)

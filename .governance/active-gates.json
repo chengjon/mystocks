@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-14T07:29:56.673Z",
+  "updated_at": "2026-06-14T07:33:55.905Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -237,6 +237,23 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-14T07:29:56.668Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-012-m3a-d-e2e-frontend-tests-split",
+      "title": "B4.012 M3a-D E2E and frontend tests no-source split",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-012-m3a-tests-residual-domain-audit",
+      "status": "decision-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "prepare authorization",
+      "function_tree_ref": "B4.012-M3a-D",
+      "freshness": "current-head",
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-14T07:33:55.901Z"
     }
   ]
 }

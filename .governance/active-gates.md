@@ -11,5 +11,6 @@
 | artdeco-web-design-governance | b4-012-m3a-b3-backend-regression-contract-authorization | authorization-prepared | - | review and approve implementation authorization | B4.012-M3a-B3 |
 | artdeco-web-design-governance | b4-012-m3a-b4-tracked-contract-engine-tests-authorization | authorization-prepared | - | review and approve implementation authorization | B4.012-M3a-B4 |
 | artdeco-web-design-governance | b4-012-m3a-c-adapter-data-source-tests-split | decision-prepared | - | prepare authorization | B4.012-M3a-C |
+| artdeco-web-design-governance | b4-012-m3a-d-e2e-frontend-tests-split | decision-prepared | - | prepare authorization | B4.012-M3a-D |
 
 _Generated from `.governance/active-gates.json`._
