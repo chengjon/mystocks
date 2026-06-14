@@ -9165,5 +9165,85 @@
         "transitioned_at": "2026-06-14T05:29:44.891Z"
       }
     ]
+  },
+  {
+    "id": "b4-012-m3a-a-tests-infra-helper-boundary-authorization",
+    "title": "B4.012 M3a-A tests infrastructure helper boundary authorization",
+    "node_type": "authorization",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-m3a-tests-residual-domain-audit",
+    "status": "authorization-prepared",
+    "function_tree_ref": "B4.012-M3a-A",
+    "current_head": "fc57d98345a14bbddf5c375d5e1b045498e37715",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-a-tests-infra-helper-boundary-authorization-prep-2026-06-14.md",
+        "note": "M3a-A no-source boundary review for 12 tracked tests infrastructure/helper files; no test edits authorized.",
+        "current_head": "fc57d98345a14bbddf5c375d5e1b045498e37715",
+        "recorded_at": "2026-06-14T05:46:35.517Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-a-tests-infra-helper-boundary-authorization-prep-2026-06-14.md",
+        "note": "B4.012-M3a-A tests infrastructure/helper boundary authorization prep; 12 tracked candidate paths, untracked tests excluded.",
+        "current_head": "fc57d98345a14bbddf5c375d5e1b045498e37715",
+        "recorded_at": "2026-06-14T05:47:49.002Z"
+      }
+    ],
+    "allowed_paths": [
+      "tests/base.py",
+      "tests/base_enhanced.py",
+      "tests/ci/run_pipeline.py",
+      "tests/ci/test_continuous_integration.py",
+      "tests/conftest.py",
+      "tests/file_level/conftest.py",
+      "tests/file_level/fixtures.py",
+      "tests/file_level/test_runner.py",
+      "tests/helpers/assertions.ts",
+      "tests/helpers/sse-tester/part-1.ts",
+      "tests/pipeline/test_data_pipeline.py",
+      "tests/test_runner.py",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/tree.md",
+      ".governance/programs/artdeco-web-design-governance/cards/b4-012-m3a-a-tests-infra-helper-boundary-authorization.yaml",
+      "docs/reports/worklogs/claude-auto/b4-012-m3a-a-tests-infra-helper-boundary-authorization-prep-2026-06-14.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No tests/source/runtime edits in this authorization-prep commit.",
+      "No untracked test path preservation, deletion, ignore, or staging decision.",
+      "No API/backend, adapter/data-source, E2E/frontend, performance/runtime/security, OpenSpec, OpenStock, or external dirty path changes."
+    ],
+    "next_gate": "review and approve implementation authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-14T05:42:03.753Z",
+    "updated_at": "2026-06-14T05:47:49.119Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "",
+        "current_head": "fc57d98345a14bbddf5c375d5e1b045498e37715",
+        "transitioned_at": "2026-06-14T05:46:35.576Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "Exact staged allowlist only; no git add -A.",
+        "git diff --cached --check.",
+        "GitNexus staged detect_changes low or explicitly understood.",
+        "Function Tree validate passes."
+      ],
+      "closeout_gate": [
+        "Report accepted/deferred candidate paths and focused verification evidence.",
+        "Confirm no untracked tests or out-of-scope domains were touched."
+      ]
+    }
   }
 ]

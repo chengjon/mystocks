@@ -71,3 +71,4 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-012-m3-residual-dirty-atlas-rebaseline: B4.012 M3 residual dirty atlas rebaseline (planning, FT: B4.012-M3)
 - [ ] b4-012-m3a-tests-residual-domain-audit: B4.012 M3a tests residual domain no-source audit (planning, FT: B4.012-M3a)
 - [ ] b4-012-tests-residual-domain-audit: B4.012-M3a tests residual domain no-source audit (planning, FT: B4.012-M3a)
+- [ ] b4-012-m3a-a-tests-infra-helper-boundary-authorization: B4.012 M3a-A tests infrastructure helper boundary authorization (planning, FT: B4.012-M3a-A)
