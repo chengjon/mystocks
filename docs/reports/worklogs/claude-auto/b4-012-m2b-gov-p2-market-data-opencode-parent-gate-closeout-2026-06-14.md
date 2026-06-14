@@ -46,7 +46,7 @@ This package intentionally did not stage or modify:
 - `ft-governance validate` passes.
 - `ft-governance scope-check` passes for the GOV-P2 changed files.
 - `git diff --cached --check` passes.
-- GitNexus staged detect reports no affected symbols or processes for this governance-only change.
+- GitNexus post-commit compare was not used as acceptance evidence because the repository's broad pre-existing dirty worktree inflated the comparison to unrelated files; commit scope is instead verified with `git show --name-status HEAD`, which contains only the GOV-P2 governance/report files.
 - OPENDOG verification reports no cleanup or refactor blockers; its caution level is due to historical pipeline command masking, not a blocker for this metadata-only package.
 
 ## Disposition
