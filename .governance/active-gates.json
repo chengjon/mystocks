@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-14T04:12:48.243Z",
+  "updated_at": "2026-06-14T05:23:39.869Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -18,6 +18,40 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-14T04:12:48.236Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-012-m3a-tests-residual-domain-audit",
+      "title": "B4.012 M3a tests residual domain no-source audit",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-012-m3-residual-dirty-atlas-rebaseline",
+      "status": "planning",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "collect baseline evidence",
+      "function_tree_ref": "B4.012-M3a",
+      "freshness": "current-head",
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-14T05:21:56.026Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-012-tests-residual-domain-audit",
+      "title": "B4.012-M3a tests residual domain no-source audit",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "",
+      "status": "decision-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "prepare authorization",
+      "function_tree_ref": "B4.012-M3a",
+      "freshness": "current-head",
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-14T05:23:39.864Z"
     }
   ]
 }
