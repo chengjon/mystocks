@@ -7698,7 +7698,7 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-scripts-deleted-untracked-disposition-audit",
-    "status": "decision-prepared",
+    "status": "archived",
     "function_tree_ref": "B4.012-M2b-B2",
     "current_head": "5570d587319f2d3cd4d4871e4b730cfb19f81707",
     "freshness": "current-head",
@@ -7715,11 +7715,11 @@
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-13T02:49:08.171Z",
-    "updated_at": "2026-06-13T02:49:08.357Z",
+    "updated_at": "2026-06-14T03:15:00.896Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -7727,6 +7727,13 @@
         "note": "",
         "current_head": "5570d587319f2d3cd4d4871e4b730cfb19f81707",
         "transitioned_at": "2026-06-13T02:49:08.357Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "archived",
+        "note": "GOV-P2 metadata closeout: market_data marker child is closed and both OpenCode sibling parent gates are archived; retire this completed parent disposition gate from active queue.",
+        "current_head": "9e14c973383229ea1c9d629b7061fb5f549d27d8",
+        "transitioned_at": "2026-06-14T03:15:00.896Z"
       }
     ]
   },
@@ -8588,6 +8595,109 @@
       ],
       "current_head": "373439415b3622871d0ab7a6375e9b01c9af15bc",
       "prepared_at": "2026-06-14T03:08:47.437Z"
+    }
+  },
+  {
+    "id": "b4-012-market-data-opencode-parent-gate-closeout",
+    "title": "B4.012 market-data/opencode parent gate closeout",
+    "node_type": "authorization",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-scripts-residual-domain-audit",
+    "status": "closed",
+    "function_tree_ref": "B4.012-M2b-GOV-P2",
+    "current_head": "9e14c973383229ea1c9d629b7061fb5f549d27d8",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m2b-gov-parent-active-decision-gate-reconciliation-no-source-2026-06-14.md",
+        "note": "GOV-P1 identified market-data/opencode parent gate as next cleanup candidate after OpenCode sibling parents close.",
+        "current_head": "9e14c973383229ea1c9d629b7061fb5f549d27d8",
+        "recorded_at": "2026-06-14T03:13:58.601Z"
+      },
+      {
+        "kind": "validation",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m2b-gov-p1-active-parent-gate-metadata-closeout-2026-06-14.md",
+        "note": "GOV-P1 archived OMC and sync OpenCode sibling parent gates, satisfying the prerequisite for B2 parent cleanup review.",
+        "current_head": "9e14c973383229ea1c9d629b7061fb5f549d27d8",
+        "recorded_at": "2026-06-14T03:14:07.737Z"
+      }
+    ],
+    "allowed_paths": [
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/tree.md",
+      ".governance/programs/artdeco-web-design-governance/cards/b4-012-market-data-opencode-parent-gate-closeout.yaml",
+      "docs/reports/worklogs/claude-auto/b4-012-m2b-gov-p2-market-data-opencode-parent-gate-closeout-2026-06-14.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not modify source, tests, runtime configs, OpenSpec, frontend, API, ST-HOLD, marketKlineData, OpenStock, or unrelated dirty files.",
+      "Do not close broad B4.012 residual atlas, scripts residual audit, or deleted/untracked scripts audit in this package."
+    ],
+    "next_gate": "none",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-14T03:13:27.841Z",
+    "updated_at": "2026-06-14T03:16:00.661Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "Decision prepared: archive only the completed B4.012-M2b-B2 parent gate; keep broad residual gates active.",
+        "current_head": "9e14c973383229ea1c9d629b7061fb5f549d27d8",
+        "transitioned_at": "2026-06-14T03:14:15.664Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved continuing; proceed with metadata-only B4.012-M2b-B2 parent gate closeout.",
+        "current_head": "9e14c973383229ea1c9d629b7061fb5f549d27d8",
+        "transitioned_at": "2026-06-14T03:14:41.556Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Implementation is limited to archiving the completed market-data/opencode parent gate and writing closeout evidence.",
+        "current_head": "9e14c973383229ea1c9d629b7061fb5f549d27d8",
+        "transitioned_at": "2026-06-14T03:14:49.601Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "GOV-P2 metadata archival applied to completed market-data/opencode parent gate.",
+        "current_head": "9e14c973383229ea1c9d629b7061fb5f549d27d8",
+        "transitioned_at": "2026-06-14T03:15:39.072Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "GOV-P2 metadata closeout completed.",
+        "current_head": "9e14c973383229ea1c9d629b7061fb5f549d27d8",
+        "transitioned_at": "2026-06-14T03:16:00.660Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "Staged files are limited to allowed governance metadata and the GOV-P2 closeout report.",
+        "ft-governance validate and scope-check pass."
+      ],
+      "closeout_gate": [
+        "Active gates no longer include b4-012-scripts-market-data-opencode-disposition-audit.",
+        "Remaining broad B4.012 residual gates stay active."
+      ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m2b-gov-p2-market-data-opencode-parent-gate-closeout-2026-06-14.md",
+      "compatibility": "Runtime behavior unchanged; only completed B4.012-M2b-B2 parent gate metadata was archived.",
+      "gates": [
+        "ft-governance validate passed",
+        "metadata-only scope check passed for authorized files"
+      ],
+      "current_head": "9e14c973383229ea1c9d629b7061fb5f549d27d8",
+      "prepared_at": "2026-06-14T03:15:50.601Z"
     }
   }
 ]

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-14T03:08:47.514Z",
+  "updated_at": "2026-06-14T03:16:00.668Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -52,23 +52,6 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-13T01:56:04.848Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-012-scripts-market-data-opencode-disposition-audit",
-      "title": "market_data and opencode script disposition no-source review",
-      "node_type": "decision",
-      "owner_lane": "artdeco-web-design-governance",
-      "parent": "b4-012-scripts-deleted-untracked-disposition-audit",
-      "status": "decision-prepared",
-      "source_edits_authorized": false,
-      "current_blocker": "",
-      "next_allowed": "prepare authorization",
-      "function_tree_ref": "B4.012-M2b-B2",
-      "freshness": "current-head",
-      "allowed_paths": [],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-13T02:49:08.357Z"
     }
   ]
 }
