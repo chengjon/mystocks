@@ -65,3 +65,4 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-012-sync-opencode-model-catalog-contract-standardization-authorization: sync OpenCode model catalog contract standardization authorization (planning, FT: B4.012-M2b-B2-C-B-A)
 - [ ] b4-012-active-decision-gate-reconciliation: B4.012 active decision gate reconciliation (planning, FT: B4.012-M2b-GOV-PARENT)
 - [ ] b4-012-market-data-opencode-parent-gate-closeout: B4.012 market-data/opencode parent gate closeout (planning, FT: B4.012-M2b-GOV-P2)
+- [ ] b4-012-deleted-untracked-parent-gate-closeout: B4.012 deleted/untracked scripts parent gate closeout (planning, FT: B4.012-M2b-GOV-P3)

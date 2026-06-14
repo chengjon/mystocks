@@ -1,0 +1,30 @@
+task:
+  id: "b4-012-deleted-untracked-parent-gate-closeout"
+  title: "B4.012 deleted/untracked scripts parent gate closeout"
+
+scope:
+  allowed_paths:
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/tree.md"
+    - ".governance/programs/artdeco-web-design-governance/cards/b4-012-deleted-untracked-parent-gate-closeout.yaml"
+    - "docs/reports/worklogs/claude-auto/b4-012-m2b-gov-p3-deleted-untracked-parent-gate-closeout-2026-06-14.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not modify source, tests, runtime configs, OpenSpec, frontend, API, ST-HOLD, marketKlineData, OpenStock, or unrelated dirty files."
+  - "Do not close scripts residual audit or top-level residual atlas in this package."
+
+acceptance:
+  commit_gate:
+    - "Staged files are limited to allowed governance metadata and the GOV-P3 closeout report."
+    - "ft-governance validate and scope-check pass."
+  closeout_gate:
+    - "Active gates no longer include b4-012-scripts-deleted-untracked-disposition-audit."
+    - "Broad scripts residual and atlas gates remain active for separate reconciliation."
+
+evidence:
+  current_head: "c8aacbac69d1d5eb71154e1d955b9f86d4836036"
+  notes: []

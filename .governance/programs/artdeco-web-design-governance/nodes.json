@@ -7555,7 +7555,7 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-scripts-residual-domain-audit",
-    "status": "decision-prepared",
+    "status": "archived",
     "function_tree_ref": "B4.012-M2b-B",
     "current_head": "fbd575025f1aeaf35c741f41d6de30e200d10319",
     "freshness": "current-head",
@@ -7572,11 +7572,11 @@
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-13T01:56:04.712Z",
-    "updated_at": "2026-06-13T01:56:04.848Z",
+    "updated_at": "2026-06-14T03:27:19.090Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -7584,6 +7584,13 @@
         "note": "",
         "current_head": "fbd575025f1aeaf35c741f41d6de30e200d10319",
         "transitioned_at": "2026-06-13T01:56:04.848Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "archived",
+        "note": "GOV-P3 metadata closeout: all deleted/untracked scripts child packages are closed or archived; retire this completed parent disposition gate from active queue.",
+        "current_head": "c8aacbac69d1d5eb71154e1d955b9f86d4836036",
+        "transitioned_at": "2026-06-14T03:27:19.090Z"
       }
     ]
   },
@@ -8698,6 +8705,109 @@
       ],
       "current_head": "9e14c973383229ea1c9d629b7061fb5f549d27d8",
       "prepared_at": "2026-06-14T03:15:50.601Z"
+    }
+  },
+  {
+    "id": "b4-012-deleted-untracked-parent-gate-closeout",
+    "title": "B4.012 deleted/untracked scripts parent gate closeout",
+    "node_type": "authorization",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-scripts-residual-domain-audit",
+    "status": "closed",
+    "function_tree_ref": "B4.012-M2b-GOV-P3",
+    "current_head": "c8aacbac69d1d5eb71154e1d955b9f86d4836036",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m2b-b-scripts-deleted-untracked-disposition-no-source-review-2026-06-13.md",
+        "note": "Deleted/untracked scripts no-source review has now had its child implementation/disposition packages closed or archived.",
+        "current_head": "c8aacbac69d1d5eb71154e1d955b9f86d4836036",
+        "recorded_at": "2026-06-14T03:25:13.220Z"
+      },
+      {
+        "kind": "validation",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m2b-gov-p2-market-data-opencode-parent-gate-closeout-2026-06-14.md",
+        "note": "GOV-P2 archived the last active market-data/opencode child parent gate, leaving the deleted/untracked parent with no active descendants.",
+        "current_head": "c8aacbac69d1d5eb71154e1d955b9f86d4836036",
+        "recorded_at": "2026-06-14T03:25:59.904Z"
+      }
+    ],
+    "allowed_paths": [
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/tree.md",
+      ".governance/programs/artdeco-web-design-governance/cards/b4-012-deleted-untracked-parent-gate-closeout.yaml",
+      "docs/reports/worklogs/claude-auto/b4-012-m2b-gov-p3-deleted-untracked-parent-gate-closeout-2026-06-14.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not modify source, tests, runtime configs, OpenSpec, frontend, API, ST-HOLD, marketKlineData, OpenStock, or unrelated dirty files.",
+      "Do not close scripts residual audit or top-level residual atlas in this package."
+    ],
+    "next_gate": "none",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-14T03:24:03.466Z",
+    "updated_at": "2026-06-14T03:35:17.526Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "Decision prepared: archive only the completed deleted/untracked scripts parent gate; keep broader scripts residual and atlas gates active.",
+        "current_head": "c8aacbac69d1d5eb71154e1d955b9f86d4836036",
+        "transitioned_at": "2026-06-14T03:26:14.355Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved continuing; proceed with metadata-only deleted/untracked parent gate closeout.",
+        "current_head": "c8aacbac69d1d5eb71154e1d955b9f86d4836036",
+        "transitioned_at": "2026-06-14T03:26:51.458Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Implementation is limited to archiving the completed deleted/untracked scripts parent gate and writing closeout evidence.",
+        "current_head": "c8aacbac69d1d5eb71154e1d955b9f86d4836036",
+        "transitioned_at": "2026-06-14T03:27:02.116Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "GOV-P3 metadata archival applied to completed deleted/untracked scripts parent gate.",
+        "current_head": "c8aacbac69d1d5eb71154e1d955b9f86d4836036",
+        "transitioned_at": "2026-06-14T03:33:10.368Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "GOV-P3 metadata closeout completed.",
+        "current_head": "c8aacbac69d1d5eb71154e1d955b9f86d4836036",
+        "transitioned_at": "2026-06-14T03:35:17.526Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "Staged files are limited to allowed governance metadata and the GOV-P3 closeout report.",
+        "ft-governance validate and scope-check pass."
+      ],
+      "closeout_gate": [
+        "Active gates no longer include b4-012-scripts-deleted-untracked-disposition-audit.",
+        "Broad scripts residual and atlas gates remain active for separate reconciliation."
+      ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m2b-gov-p3-deleted-untracked-parent-gate-closeout-2026-06-14.md",
+      "compatibility": "Runtime behavior unchanged; only completed B4.012-M2b-B deleted/untracked scripts parent gate metadata was archived.",
+      "gates": [
+        "ft-governance validate passed",
+        "metadata-only scope check passed for authorized files"
+      ],
+      "current_head": "c8aacbac69d1d5eb71154e1d955b9f86d4836036",
+      "prepared_at": "2026-06-14T03:34:26.281Z"
     }
   }
 ]
