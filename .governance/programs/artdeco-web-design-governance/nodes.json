@@ -9634,5 +9634,43 @@
         "transitioned_at": "2026-06-14T07:33:55.901Z"
       }
     ]
+  },
+  {
+    "id": "b4-012-m3a-e-performance-runtime-security-tests-split",
+    "title": "B4.012 M3a-E performance runtime security tests no-source split",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-m3a-tests-residual-domain-audit",
+    "status": "decision-prepared",
+    "function_tree_ref": "B4.012-M3a-E",
+    "current_head": "6cd2d7eadfb5905810aca81a76b1a914a4acbfe3",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-e-performance-runtime-security-tests-no-source-split-2026-06-14.md",
+        "note": "M3a-E no-source split: tracked performance/runtime, security/compliance, and governance-script candidates separated from untracked provenance-only tests.",
+        "current_head": "6cd2d7eadfb5905810aca81a76b1a914a4acbfe3",
+        "recorded_at": "2026-06-14T07:37:33.451Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-14T07:37:33.388Z",
+    "updated_at": "2026-06-14T07:37:33.491Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "M3a-E split report ready; no source/test authorization.",
+        "current_head": "6cd2d7eadfb5905810aca81a76b1a914a4acbfe3",
+        "transitioned_at": "2026-06-14T07:37:33.490Z"
+      }
+    ]
   }
 ]
