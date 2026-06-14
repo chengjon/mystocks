@@ -7841,7 +7841,7 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-scripts-market-data-opencode-disposition-audit",
-    "status": "decision-prepared",
+    "status": "archived",
     "function_tree_ref": "B4.012-M2b-B2-B",
     "current_head": "c8c4048b4548555e1c00526b19302092e8c202d4",
     "freshness": "current-head",
@@ -7858,11 +7858,11 @@
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-13T09:53:37.910Z",
-    "updated_at": "2026-06-13T09:53:38.005Z",
+    "updated_at": "2026-06-14T03:08:06.818Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -7870,6 +7870,13 @@
         "note": "",
         "current_head": "c8c4048b4548555e1c00526b19302092e8c202d4",
         "transitioned_at": "2026-06-13T09:53:38.005Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "archived",
+        "note": "GOV-P1 metadata closeout: OMC sync restore and paired test restore child nodes are closed; this parent disposition gate is retired from active queue.",
+        "current_head": "373439415b3622871d0ab7a6375e9b01c9af15bc",
+        "transitioned_at": "2026-06-14T03:08:06.817Z"
       }
     ]
   },
@@ -8076,7 +8083,7 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-scripts-market-data-opencode-disposition-audit",
-    "status": "decision-prepared",
+    "status": "archived",
     "function_tree_ref": "B4.012-M2b-B2-C",
     "current_head": "95d990a6d20b336c90fd2dca512d9bb5af20091f",
     "freshness": "current-head",
@@ -8093,11 +8100,11 @@
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-13T17:33:00.106Z",
-    "updated_at": "2026-06-13T17:34:22.388Z",
+    "updated_at": "2026-06-14T03:08:06.759Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -8105,6 +8112,13 @@
         "note": "Decision prepared: do not accept dirty ASXS/provider diff as-is; prepare restore-to-HEAD authorization or split ASXS migration into source/test package.",
         "current_head": "95d990a6d20b336c90fd2dca512d9bb5af20091f",
         "transitioned_at": "2026-06-13T17:34:22.388Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "archived",
+        "note": "GOV-P1 metadata closeout: restore and contract standardization child nodes are closed; this parent disposition gate is retired from active queue.",
+        "current_head": "373439415b3622871d0ab7a6375e9b01c9af15bc",
+        "transitioned_at": "2026-06-14T03:08:06.758Z"
       }
     ]
   },
@@ -8326,7 +8340,7 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-sync-opencode-model-catalog-restore-authorization",
-    "status": "decision-prepared",
+    "status": "archived",
     "function_tree_ref": "B4.012-M2b-B2-C-B",
     "current_head": "726be97e24ace7c6be8e8ce4642cf56bbbb3dc0d",
     "freshness": "current-head",
@@ -8343,11 +8357,11 @@
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-13T18:51:28.622Z",
-    "updated_at": "2026-06-13T18:52:31.558Z",
+    "updated_at": "2026-06-14T03:08:06.695Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -8355,6 +8369,13 @@
         "note": "Decision prepared: source/test contract standardization is required; do not hide fix in restore-only package.",
         "current_head": "726be97e24ace7c6be8e8ce4642cf56bbbb3dc0d",
         "transitioned_at": "2026-06-13T18:52:31.558Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "archived",
+        "note": "GOV-P1 metadata closeout: child C-B-A contract standardization authorization is closed; this parent decision gate is no longer active work.",
+        "current_head": "373439415b3622871d0ab7a6375e9b01c9af15bc",
+        "transitioned_at": "2026-06-14T03:08:06.695Z"
       }
     ]
   },
@@ -8469,9 +8490,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-scripts-residual-domain-audit",
-    "status": "authorization-prepared",
+    "status": "closed",
     "function_tree_ref": "B4.012-M2b-GOV-PARENT",
-    "current_head": "c96aff53df1d798267322e67e92ef6e3e14208f7",
+    "current_head": "373439415b3622871d0ab7a6375e9b01c9af15bc",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -8481,6 +8502,13 @@
         "note": "No-source reconciliation of active B4.012 parent decision gates after OpenCode model catalog implementation closeout.",
         "current_head": "c96aff53df1d798267322e67e92ef6e3e14208f7",
         "recorded_at": "2026-06-13T19:30:04.994Z"
+      },
+      {
+        "kind": "validation",
+        "path": "current HEAD 373439415 for GOV-P1 metadata closeout implementation approval",
+        "note": "Refresh evidence after GOV-P1 authorization-prep commit before metadata-only implementation approval.",
+        "current_head": "373439415b3622871d0ab7a6375e9b01c9af15bc",
+        "recorded_at": "2026-06-14T03:07:50.451Z"
       }
     ],
     "allowed_paths": [
@@ -8497,11 +8525,11 @@
       "Do not close broad atlas gates: b4-012-residual-dirty-domain-atlas, b4-012-scripts-residual-domain-audit, or b4-012-scripts-deleted-untracked-disposition-audit.",
       "Do not stage scripts/runtime/record_graphiti_post_commit_closeout.py, scripts/runtime/trading_cash_reservations.py, or mystocks-spec-unfinished-task-inventory worklog."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-13T19:30:04.926Z",
-    "updated_at": "2026-06-13T19:34:12.798Z",
+    "updated_at": "2026-06-14T03:08:47.494Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -8509,6 +8537,34 @@
         "note": "Decision prepared: next safe step is a governance-only parent gate metadata cleanup authorization, not source changes.",
         "current_head": "c96aff53df1d798267322e67e92ef6e3e14208f7",
         "transitioned_at": "2026-06-13T19:30:05.044Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User continued after GOV-P1 authorization prep; proceed with metadata-only parent gate closeout.",
+        "current_head": "373439415b3622871d0ab7a6375e9b01c9af15bc",
+        "transitioned_at": "2026-06-14T03:07:50.515Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Metadata-only implementation is limited to parent gate archival and GOV-P1 closeout report.",
+        "current_head": "373439415b3622871d0ab7a6375e9b01c9af15bc",
+        "transitioned_at": "2026-06-14T03:07:50.579Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "GOV-P1 metadata archival applied to completed parent gates.",
+        "current_head": "373439415b3622871d0ab7a6375e9b01c9af15bc",
+        "transitioned_at": "2026-06-14T03:08:47.380Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "GOV-P1 metadata closeout completed.",
+        "current_head": "373439415b3622871d0ab7a6375e9b01c9af15bc",
+        "transitioned_at": "2026-06-14T03:08:47.494Z"
       }
     ],
     "acceptance": {
@@ -8522,6 +8578,16 @@
         "Only completed parent gates identified in the reconciliation report may be closed or archived.",
         "Broad B4.012 atlas and scripts residual gates remain active."
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m2b-gov-p1-active-parent-gate-metadata-closeout-2026-06-14.md",
+      "compatibility": "Runtime behavior unchanged; broad B4.012 atlas and scripts residual gates remain active.",
+      "gates": [
+        "ft-governance validate passed before closeout",
+        "metadata-only scope check passed for authorized files"
+      ],
+      "current_head": "373439415b3622871d0ab7a6375e9b01c9af15bc",
+      "prepared_at": "2026-06-14T03:08:47.437Z"
     }
   }
 ]
