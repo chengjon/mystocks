@@ -7391,7 +7391,7 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-residual-dirty-domain-atlas",
-    "status": "decision-prepared",
+    "status": "archived",
     "function_tree_ref": "B4.012-M2b",
     "current_head": "abcb6bbb8548fbe9a2b99db510d05f855a82f974",
     "freshness": "current-head",
@@ -7408,11 +7408,11 @@
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-12T19:27:24.655Z",
-    "updated_at": "2026-06-12T19:27:24.863Z",
+    "updated_at": "2026-06-14T03:49:02.524Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -7420,6 +7420,13 @@
         "note": "",
         "current_head": "abcb6bbb8548fbe9a2b99db510d05f855a82f974",
         "transitioned_at": "2026-06-12T19:27:24.862Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "archived",
+        "note": "GOV-P4 metadata closeout: scripts residual child packages are all closed or archived; retire this completed parent gate from active queue.",
+        "current_head": "b95b6af7d59736770d14d4b03f7263eecaf5d115",
+        "transitioned_at": "2026-06-14T03:49:02.524Z"
       }
     ]
   },
@@ -8808,6 +8815,109 @@
       ],
       "current_head": "c8aacbac69d1d5eb71154e1d955b9f86d4836036",
       "prepared_at": "2026-06-14T03:34:26.281Z"
+    }
+  },
+  {
+    "id": "b4-012-scripts-residual-parent-gate-closeout",
+    "title": "B4.012 scripts residual parent gate closeout",
+    "node_type": "authorization",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-residual-dirty-domain-atlas",
+    "status": "closed",
+    "function_tree_ref": "B4.012-M2b-GOV-P4",
+    "current_head": "b95b6af7d59736770d14d4b03f7263eecaf5d115",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m2b-scripts-residual-domain-no-source-audit-2026-06-13.md",
+        "note": "Scripts residual no-source audit baseline; all child packages are now closed or archived.",
+        "current_head": "b95b6af7d59736770d14d4b03f7263eecaf5d115",
+        "recorded_at": "2026-06-14T03:43:18.368Z"
+      },
+      {
+        "kind": "validation",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m2b-gov-p3-deleted-untracked-parent-gate-closeout-2026-06-14.md",
+        "note": "GOV-P3 archived the last active deleted/untracked scripts parent gate, leaving scripts residual with no active descendants.",
+        "current_head": "b95b6af7d59736770d14d4b03f7263eecaf5d115",
+        "recorded_at": "2026-06-14T03:43:38.080Z"
+      }
+    ],
+    "allowed_paths": [
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/tree.md",
+      ".governance/programs/artdeco-web-design-governance/cards/b4-012-scripts-residual-parent-gate-closeout.yaml",
+      "docs/reports/worklogs/claude-auto/b4-012-m2b-gov-p4-scripts-residual-parent-gate-closeout-2026-06-14.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not modify source, tests, runtime configs, OpenSpec, frontend, API, ST-HOLD, marketKlineData, OpenStock, or unrelated dirty files.",
+      "Do not close top-level residual dirty domain atlas in this package."
+    ],
+    "next_gate": "none",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-14T03:42:51.328Z",
+    "updated_at": "2026-06-14T03:56:06.357Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "Decision prepared: archive completed scripts residual parent gate; keep top-level atlas active for final reconciliation.",
+        "current_head": "b95b6af7d59736770d14d4b03f7263eecaf5d115",
+        "transitioned_at": "2026-06-14T03:46:43.361Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved continuing; proceed with metadata-only scripts residual parent gate closeout.",
+        "current_head": "b95b6af7d59736770d14d4b03f7263eecaf5d115",
+        "transitioned_at": "2026-06-14T03:48:17.883Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Implementation is limited to archiving completed scripts residual parent gate and writing closeout evidence.",
+        "current_head": "b95b6af7d59736770d14d4b03f7263eecaf5d115",
+        "transitioned_at": "2026-06-14T03:48:33.013Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "GOV-P4 metadata archival applied to completed scripts residual parent gate.",
+        "current_head": "b95b6af7d59736770d14d4b03f7263eecaf5d115",
+        "transitioned_at": "2026-06-14T03:54:42.911Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "GOV-P4 metadata closeout completed.",
+        "current_head": "b95b6af7d59736770d14d4b03f7263eecaf5d115",
+        "transitioned_at": "2026-06-14T03:56:06.357Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "Staged files are limited to allowed governance metadata and the GOV-P4 closeout report.",
+        "ft-governance validate and scope-check pass."
+      ],
+      "closeout_gate": [
+        "Active gates no longer include b4-012-scripts-residual-domain-audit.",
+        "Top-level residual dirty domain atlas remains active for final reconciliation."
+      ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m2b-gov-p4-scripts-residual-parent-gate-closeout-2026-06-14.md",
+      "compatibility": "Runtime behavior unchanged; only completed B4.012-M2b scripts residual parent gate metadata was archived.",
+      "gates": [
+        "ft-governance validate passed",
+        "metadata-only scope check passed for authorized files"
+      ],
+      "current_head": "b95b6af7d59736770d14d4b03f7263eecaf5d115",
+      "prepared_at": "2026-06-14T03:55:25.758Z"
     }
   }
 ]

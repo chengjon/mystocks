@@ -1,0 +1,30 @@
+task:
+  id: "b4-012-scripts-residual-parent-gate-closeout"
+  title: "B4.012 scripts residual parent gate closeout"
+
+scope:
+  allowed_paths:
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/tree.md"
+    - ".governance/programs/artdeco-web-design-governance/cards/b4-012-scripts-residual-parent-gate-closeout.yaml"
+    - "docs/reports/worklogs/claude-auto/b4-012-m2b-gov-p4-scripts-residual-parent-gate-closeout-2026-06-14.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not modify source, tests, runtime configs, OpenSpec, frontend, API, ST-HOLD, marketKlineData, OpenStock, or unrelated dirty files."
+  - "Do not close top-level residual dirty domain atlas in this package."
+
+acceptance:
+  commit_gate:
+    - "Staged files are limited to allowed governance metadata and the GOV-P4 closeout report."
+    - "ft-governance validate and scope-check pass."
+  closeout_gate:
+    - "Active gates no longer include b4-012-scripts-residual-domain-audit."
+    - "Top-level residual dirty domain atlas remains active for final reconciliation."
+
+evidence:
+  current_head: "b95b6af7d59736770d14d4b03f7263eecaf5d115"
+  notes: []
