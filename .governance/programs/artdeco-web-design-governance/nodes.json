@@ -9082,20 +9082,37 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3-residual-dirty-atlas-rebaseline",
-    "status": "planning",
+    "status": "decision-prepared",
     "function_tree_ref": "B4.012-M3a",
-    "current_head": "acf58d95a1aad4f06f78503732aa2de43577c64a",
+    "current_head": "77807e11d126e5e5a33ff2d7c5f982274cd82831",
     "freshness": "current-head",
     "source_edits_authorized": false,
-    "evidence": [],
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-tests-residual-domain-no-source-audit-2026-06-14.md",
+        "note": "Canonical M3a tests residual domain audit evidence; supersedes misnamed b4-012-tests-residual-domain-audit gate.",
+        "current_head": "77807e11d126e5e5a33ff2d7c5f982274cd82831",
+        "recorded_at": "2026-06-14T05:29:44.768Z"
+      }
+    ],
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "collect baseline evidence",
+    "next_gate": "prepare authorization",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-14T05:21:56.026Z",
-    "updated_at": "2026-06-14T05:21:56.026Z"
+    "updated_at": "2026-06-14T05:29:44.837Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "",
+        "current_head": "77807e11d126e5e5a33ff2d7c5f982274cd82831",
+        "transitioned_at": "2026-06-14T05:29:44.836Z"
+      }
+    ]
   },
   {
     "id": "b4-012-tests-residual-domain-audit",
@@ -9103,7 +9120,7 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "",
-    "status": "decision-prepared",
+    "status": "archived",
     "function_tree_ref": "B4.012-M3a",
     "current_head": "acf58d95a1aad4f06f78503732aa2de43577c64a",
     "freshness": "current-head",
@@ -9120,11 +9137,11 @@
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-14T05:22:25.920Z",
-    "updated_at": "2026-06-14T05:23:39.864Z",
+    "updated_at": "2026-06-14T05:29:44.891Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -9132,6 +9149,13 @@
         "note": "",
         "current_head": "acf58d95a1aad4f06f78503732aa2de43577c64a",
         "transitioned_at": "2026-06-14T05:23:39.864Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "archived",
+        "note": "",
+        "current_head": "77807e11d126e5e5a33ff2d7c5f982274cd82831",
+        "transitioned_at": "2026-06-14T05:29:44.891Z"
       }
     ]
   }
