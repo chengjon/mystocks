@@ -9172,11 +9172,11 @@
     "node_type": "authorization",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-tests-residual-domain-audit",
-    "status": "authorization-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "B4.012-M3a-A",
-    "current_head": "fc57d98345a14bbddf5c375d5e1b045498e37715",
+    "current_head": "f05e40618b8d2ebdc0a6906318480361ff65bd93",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "baseline",
@@ -9191,6 +9191,13 @@
         "note": "B4.012-M3a-A tests infrastructure/helper boundary authorization prep; 12 tracked candidate paths, untracked tests excluded.",
         "current_head": "fc57d98345a14bbddf5c375d5e1b045498e37715",
         "recorded_at": "2026-06-14T05:47:49.002Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-a-tests-infra-helper-boundary-authorization-prep-2026-06-14.md",
+        "note": "User granted B4.012-M3a-A source/test implementation authorization at current HEAD; scope remains limited to existing allowed_paths and excludes source/runtime/OpenSpec/external dirty files.",
+        "current_head": "f05e40618b8d2ebdc0a6906318480361ff65bd93",
+        "recorded_at": "2026-06-14T10:15:30.412Z"
       }
     ],
     "allowed_paths": [
@@ -9219,11 +9226,11 @@
       "No untracked test path preservation, deletion, ignore, or staging decision.",
       "No API/backend, adapter/data-source, E2E/frontend, performance/runtime/security, OpenSpec, OpenStock, or external dirty path changes."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-14T05:42:03.753Z",
-    "updated_at": "2026-06-14T05:47:49.119Z",
+    "updated_at": "2026-06-14T10:24:40.538Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -9231,6 +9238,20 @@
         "note": "",
         "current_head": "fc57d98345a14bbddf5c375d5e1b045498e37715",
         "transitioned_at": "2026-06-14T05:46:35.576Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "Formal user approval received for tests infra/helper boundary implementation; only existing allowed_paths may be edited or staged.",
+        "current_head": "f05e40618b8d2ebdc0a6906318480361ff65bd93",
+        "transitioned_at": "2026-06-14T10:15:30.482Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Tests infra/helper standardization prepared within allowed_paths; focused structure, lint, import, CLI, and TS checks recorded.",
+        "current_head": "f05e40618b8d2ebdc0a6906318480361ff65bd93",
+        "transitioned_at": "2026-06-14T10:24:40.538Z"
       }
     ],
     "acceptance": {

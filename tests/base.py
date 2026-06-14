@@ -3,13 +3,10 @@ E2E测试基础框架
 提供所有测试的基类和通用功能
 """
 
-import asyncio
 import json
-import os
 from datetime import datetime
-from pathlib import Path
 
-from playwright.async_api import Browser, Page, async_playwright
+from playwright.async_api import async_playwright
 
 
 class BaseTest:
@@ -324,7 +321,7 @@ class BaseTest:
         print("\n" + "=" * 60)
         print(f"✅ {self.page_name} 页面测试完成")
         print("=" * 60)
-        print(f"📊 测试结果:")
+        print("📊 测试结果:")
         print(f"   - 总检查项: {report['summary']['total_checks']}")
         print(f"   - 通过: {report['summary']['passed_checks']}")
         print(f"   - 失败: {report['summary']['failed_checks']}")

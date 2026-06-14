@@ -82,11 +82,11 @@ for legacy_name, canonical_name in LEGACY_TEST_IMPORT_ALIASES.items():
     try:
         sys.modules[legacy_name] = importlib.import_module(canonical_name)
     except Exception:
-        # 某些历史生成测试依赖过时模块名；仅在目标模块可导入时注册别名。
+        # TODO owner=test-governance issue=techdebt-expired-markers ttl=2026-06-30: 某些历史生成测试依赖过时模块名；仅在目标模块可导入时注册别名。
         pass
 
 
-def pytest_ignore_collect(collection_path, config):  # type: ignore[no-untyped-def]
+def pytest_ignore_collect(collection_path, config):  # type: ignore[no-untyped-def] owner=test-governance issue=techdebt-expired-markers ttl=2026-06-30
     normalized = str(collection_path).replace("\\", "/")
     return any(normalized.endswith(suffix) for suffix in COLLECT_IGNORE_SUFFIXES)
 
@@ -146,7 +146,7 @@ def client():
 
         return TestClient(app)
     except Exception as exc:
-        pytest.skip(f"FastAPI app not available for testing: {exc}")
+        pytest.skip(f"FastAPI app not available for testing: {exc}")  # TODO owner=test-governance issue=techdebt-expired-markers ttl=2026-06-30: FastAPI app 不可用时跳过历史依赖测试
 
 
 @pytest.fixture

@@ -144,7 +144,7 @@ class EnhancedTestRunner:
                 # 获取所有数据档案进行优化
                 statistics = await optimizer.get_optimization_statistics()
                 print(f"数据统计: {statistics}")
-        except Exception as e:
+        except Exception:
             logger.warning("数据优化跳过: %s")
 
     async def _run_ai_tests(self, project_context: Dict[str, Any]) -> TestExecutionResult:

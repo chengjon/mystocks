@@ -12,9 +12,6 @@ Author: MyStocks Testing Team
 Date: 2026-01-10
 """
 
-import json
-from datetime import datetime, timedelta
-from typing import Any, Dict, List
 
 import pytest
 from fastapi.testclient import TestClient
@@ -265,7 +262,7 @@ class TestMarketAPIFileLevel:
                     error_data = response.json()
                     # Should have error information
                     assert "detail" in error_data or "error" in error_data or "message" in error_data
-                except:
+                except Exception:
                     # If not JSON, that's also acceptable for errors
                     pass
 
@@ -282,7 +279,7 @@ class TestMarketAPIFileLevel:
 
         for endpoint in endpoints_to_test:
             start_time = time.time()
-            response = self.client.get(endpoint)
+            _response = self.client.get(endpoint)
             end_time = time.time()
 
             response_time = end_time - start_time
@@ -316,7 +313,7 @@ class TestMarketAPIFileLevel:
         ), f"Too few market endpoints documented: {documented_endpoints}"  # At least 5 core endpoints
 
     @pytest.mark.parametrize(
-        "endpoint_suffix,expected_min_status",
+        ("endpoint_suffix", "expected_min_status"),
         [
             ("status", 200),
             ("quotes", 200),

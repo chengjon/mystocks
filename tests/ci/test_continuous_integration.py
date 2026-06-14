@@ -24,7 +24,10 @@ from pydantic import BaseModel, Field
 
 import docker
 
-from ._continuous_integration_tail import ContinuousIntegrationManagerTailMixin, demo_ci_system as _demo_ci_system
+try:
+    from ._continuous_integration_tail import ContinuousIntegrationManagerTailMixin, demo_ci_system as _demo_ci_system
+except ImportError:
+    from _continuous_integration_tail import ContinuousIntegrationManagerTailMixin, demo_ci_system as _demo_ci_system
 
 # 设置日志
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -171,7 +174,7 @@ class ContinuousIntegrationManager(ContinuousIntegrationManagerTailMixin):
         # 初始化Docker客户端
         try:
             self.docker_client = docker.from_env()
-        except Exception as e:
+        except Exception:
             logger.warning("Docker初始化失败: %(e)s")
 
         # 初始化HTTP会话
@@ -227,7 +230,7 @@ class ContinuousIntegrationManager(ContinuousIntegrationManagerTailMixin):
             logger.warning("配置文件 {self.config_file} 不存在，使用默认配置")
             self.config = self._create_default_config()
             return self.config
-        except Exception as e:
+        except Exception:
             logger.error("加载配置失败: %(e)s")
             raise
 
@@ -304,7 +307,7 @@ class ContinuousIntegrationManager(ContinuousIntegrationManagerTailMixin):
         steps = []
 
         # 执行无依赖的步骤
-        independent_steps = [step for step in config.steps if not step.dependencies]
+        _independent_steps = [step for step in config.steps if not step.dependencies]
 
         # 执行依赖的步骤
         while config.steps:
@@ -571,7 +574,7 @@ class ContinuousIntegrationManager(ContinuousIntegrationManagerTailMixin):
             result = await self._run_command("python -m safety check")
             checks["dependency_check"] = result.get("success", False)
 
-        except Exception as e:
+        except Exception:
             logger.error("代码质量检查失败: %(e)s")
 
         return checks

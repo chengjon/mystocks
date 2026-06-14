@@ -127,8 +127,8 @@ export class SSETester {
 
                 es.onopen = () => {
                   clearTimeout(timer);
-                  (window as any).__sseEventSource = es;
-                  (window as any).__sseConnected = true;
+                  (window as any).__sseEventSource = es; // TODO owner=frontend-platform issue=techdebt-expired-markers ttl=2026-06-30: replace any with typed SSE test window state
+                  (window as any).__sseConnected = true; // TODO owner=frontend-platform issue=techdebt-expired-markers ttl=2026-06-30: replace any with typed SSE test window state
                   pageResolve();
                 };
 
@@ -177,7 +177,7 @@ export class SSETester {
 
       try {
         const newEvents = await this.page.evaluate(() => {
-          const es = (window as any).__sseEventSource;
+          const es = (window as any).__sseEventSource; // TODO owner=frontend-platform issue=techdebt-expired-markers ttl=2026-06-30: replace any with typed SSE test window state
           if (!es) return [];
 
           // Create event listeners for all event types
@@ -226,11 +226,11 @@ export class SSETester {
 
     try {
       await this.page.evaluate(() => {
-        const es = (window as any).__sseEventSource;
+        const es = (window as any).__sseEventSource; // TODO owner=frontend-platform issue=techdebt-expired-markers ttl=2026-06-30: replace any with typed SSE test window state
         if (es) {
           es.close();
-          (window as any).__sseEventSource = null;
-          (window as any).__sseConnected = false;
+          (window as any).__sseEventSource = null; // TODO owner=frontend-platform issue=techdebt-expired-markers ttl=2026-06-30: replace any with typed SSE test window state
+          (window as any).__sseConnected = false; // TODO owner=frontend-platform issue=techdebt-expired-markers ttl=2026-06-30: replace any with typed SSE test window state
         }
       });
     } catch (error) {
@@ -485,4 +485,3 @@ export class SSETester {
     return this.isConnected;
   }
 }
-

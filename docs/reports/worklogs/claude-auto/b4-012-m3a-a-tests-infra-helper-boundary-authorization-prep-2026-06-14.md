@@ -115,3 +115,47 @@ Prepare M3a-A as a small, high-review test-support authorization package.
 Function Tree authorization-prepared status remains `source_edits_authorized: false`.
 
 Do not proceed to source/test edits until explicit human approval is granted for this exact candidate scope.
+
+## Implementation Evidence - 2026-06-14
+
+User granted formal implementation authorization for `B4.012-M3a-A tests infra/helper boundary implementation` at HEAD `f05e40618`.
+
+Implementation stayed inside the existing allowed path boundary:
+
+- `tests/base.py`
+- `tests/base_enhanced.py`
+- `tests/ci/run_pipeline.py`
+- `tests/ci/test_continuous_integration.py`
+- `tests/conftest.py`
+- `tests/file_level/conftest.py`
+- `tests/file_level/fixtures.py`
+- `tests/file_level/test_runner.py`
+- `tests/helpers/assertions.ts`
+- `tests/helpers/sse-tester/part-1.ts`
+- `tests/pipeline/test_data_pipeline.py`
+- `tests/test_runner.py`
+
+Accepted and standardized the existing test helper deltas:
+
+- cleaned unused imports and unused exception variables
+- converted bare `except` handlers in focused helper code to `except Exception`
+- added governance metadata to existing TODO / skip / `any` compatibility markers
+- normalized harmless formatting and f-string lint issues
+- added a direct-import fallback for `tests/ci/test_continuous_integration.py` so pytest collection and top-level runner imports work when `tests/ci` is not a package
+- corrected focused ruff findings in the same allowed files
+
+No source, runtime, OpenSpec, frontend implementation, ST-HOLD, marketKlineData, untracked tests, or external dirty files were modified or staged.
+
+Verification performed:
+
+- `ft-governance scope-check --files <12 test/helper paths>`: passed, 12 changed files within active authorization
+- `python -m ruff check <10 Python allowed paths>`: passed
+- `python -m py_compile <10 Python allowed paths>`: passed
+- `npx tsc --noEmit --skipLibCheck --target ES2020 --module commonjs --moduleResolution node --types node --esModuleInterop tests/helpers/assertions.ts tests/helpers/sse-tester/part-1.ts`: passed
+- Python module import smoke for 9 helper/runner modules: passed
+- `python tests/ci/run_pipeline.py --help`: passed
+
+Focused pytest note:
+
+- `python -m pytest tests/ci/test_continuous_integration.py tests/file_level/test_runner.py tests/pipeline/test_data_pipeline.py tests/test_runner.py -q --no-cov -p no:cacheprovider` no longer raises the original `tests/ci/test_continuous_integration.py` relative import collection error after the fallback fix.
+- The focused pytest command still exits with pytest code 5 because these files are helper/runner/template modules and collect 0 pytest items under the current repository pytest config. This is recorded as a collection-shape limitation, not as a passing unit-test suite.

@@ -20,7 +20,7 @@ import json
 import os
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, AsyncGenerator, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 from unittest.mock import AsyncMock, MagicMock
 
 import httpx
@@ -31,7 +31,6 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
 # Import project modules
-from src.core import DataClassification
 from src.data_access import PostgreSQLDataAccess, TDengineDataAccess
 
 
@@ -192,7 +191,7 @@ async def test_db_engine(test_config):
     # Use PostgreSQL for test data
     database_url = test_config.get("database.test_database_url")
     if not database_url:
-        pytest.skip("Test database URL not configured")
+        pytest.skip("Test database URL not configured owner=test-governance issue=techdebt-expired-markers ttl=2026-06-30")
 
     # Create async engine
     engine = create_async_engine(database_url, echo=False, future=True)
@@ -258,7 +257,6 @@ async def api_client(test_config):
 @pytest.fixture
 def sync_api_client(test_config):
     """Synchronous API client for testing"""
-    from fastapi.testclient import TestClient
 
     # Import the FastAPI app
     try:
@@ -267,7 +265,7 @@ def sync_api_client(test_config):
         client = TestClient(app)
         yield client
     except ImportError:
-        pytest.skip("FastAPI app not available for testing")
+        pytest.skip("FastAPI app not available for testing owner=test-governance issue=techdebt-expired-markers ttl=2026-06-30")
 
 
 @pytest.fixture
@@ -469,8 +467,6 @@ class ParallelTestRunner:
         Returns:
             List of test results
         """
-        import asyncio
-        from concurrent.futures import ThreadPoolExecutor
 
         async def run_single_test(test_func):
             """Run a single test function"""

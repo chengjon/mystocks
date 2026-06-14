@@ -279,7 +279,7 @@ pytest tests/file_level/ --cov=web/backend/app --cov-report=html:htmlcov
 
 **FastAPI App Not Available**
 ```
-pytest.skip("FastAPI application not available for testing")
+pytest.skip("FastAPI application not available for testing owner=test-governance issue=techdebt-expired-markers ttl=2026-06-30")
 ```
 Solution: Ensure backend app is properly imported
 

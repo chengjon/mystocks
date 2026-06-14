@@ -333,7 +333,7 @@ export async function assertToastMessage(
 export async function assertNoConsoleErrors(page: Page): Promise<void> {
   const messages = await page.evaluate(() => {
     // This needs to be captured during test execution
-    return (window as any).__consoleErrors || [];
+    return (window as any).__consoleErrors || []; // TODO owner=frontend-platform issue=techdebt-expired-markers ttl=2026-06-30: replace any with typed console error buffer
   });
 
   expect(messages).toHaveLength(0);

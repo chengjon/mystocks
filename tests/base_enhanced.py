@@ -2,11 +2,10 @@
 增强版E2E测试框架 - 修复数据加载和选择器问题
 """
 
-import asyncio
 import json
 from datetime import datetime
 
-from playwright.async_api import Page, async_playwright
+from playwright.async_api import async_playwright
 
 
 class EnhancedBaseTest:
@@ -95,7 +94,7 @@ class EnhancedBaseTest:
                     await self.page.wait_for_selector(sel, timeout=timeout)
                     await self.add_check(f"智能等待({sel})", True, f"元素在{timeout}ms内出现")
                     return True
-                except:
+                except Exception:
                     continue
 
             await self.add_warning("智能等待", f"所有选择器都失败: {selector}")
@@ -131,7 +130,7 @@ class EnhancedBaseTest:
                 await self.add_check("数据加载检测", True, f"检测到: {indicator}")
                 print(f"   ✅ 数据已加载（检测到: {indicator}）")
                 return True
-            except:
+            except Exception:
                 continue
 
         # 策略2: 等待API请求完成
@@ -160,7 +159,7 @@ class EnhancedBaseTest:
                 lambda response: "/api/" in response.url and response.status == 200, timeout=timeout
             )
             return True
-        except:
+        except Exception:
             return False
 
     async def check_element_visible(self, selector: str, name: str = None):
@@ -183,7 +182,7 @@ class EnhancedBaseTest:
                         elem_name = name or sel
                         await self.add_check(f"元素可见({elem_name})", is_visible, sel)
                         return is_visible
-                except:
+                except Exception:
                     continue
 
             await self.add_warning("元素检查", f"所有选择器都未找到: {selector}")
@@ -213,7 +212,7 @@ class EnhancedBaseTest:
                         elem_name = name or sel
                         await self.add_check(f"元素数量({elem_name})", True, f"找到 {count} 个")
                         return True
-                except:
+                except Exception:
                     continue
 
             await self.add_warning("元素数量检查", f"未找到足够的元素: {selector}")
@@ -319,7 +318,7 @@ class EnhancedBaseTest:
         print("\n" + "=" * 60)
         print(f"✅ {self.page_name} 页面测试完成（修复版）")
         print("=" * 60)
-        print(f"📊 测试结果:")
+        print("📊 测试结果:")
         print(f"   - 总检查项: {report['summary']['total_checks']}")
         print(f"   - 通过: {report['summary']['passed_checks']}")
         print(f"   - 失败: {report['summary']['failed_checks']}")
