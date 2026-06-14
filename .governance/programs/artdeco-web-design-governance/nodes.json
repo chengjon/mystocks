@@ -9672,5 +9672,43 @@
         "transitioned_at": "2026-06-14T07:37:33.490Z"
       }
     ]
+  },
+  {
+    "id": "b4-012-m3a-u-untracked-tests-provenance-review",
+    "title": "B4.012 M3a-U untracked tests provenance review",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-m3a-tests-residual-domain-audit",
+    "status": "decision-prepared",
+    "function_tree_ref": "B4.012-M3a-U",
+    "current_head": "85da979c16f4b8809a6d0b61c7c0eee0465d5ade",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-u-untracked-tests-provenance-review-2026-06-14.md",
+        "note": "M3a-U no-source provenance review: 13 untracked tests status rows expanded to 29 files; no untracked staging or deletion authorized.",
+        "current_head": "85da979c16f4b8809a6d0b61c7c0eee0465d5ade",
+        "recorded_at": "2026-06-14T07:40:55.475Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-14T07:40:55.430Z",
+    "updated_at": "2026-06-14T07:40:55.516Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "M3a-U provenance review ready; no preserve/delete/ignore authorization.",
+        "current_head": "85da979c16f4b8809a6d0b61c7c0eee0465d5ade",
+        "transitioned_at": "2026-06-14T07:40:55.516Z"
+      }
+    ]
   }
 ]
