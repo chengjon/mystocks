@@ -6801,9 +6801,9 @@
     "node_type": "decision",
     "owner_lane": "docs-governance",
     "parent": "",
-    "status": "decision-prepared",
+    "status": "archived",
     "function_tree_ref": "B4.012-M1",
-    "current_head": "022afee048dfb6dd0f8a73ba971fc33d8db7d771",
+    "current_head": "c71b12597af3aec0189c7bd1da9c6fbca3323ca9",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -6813,16 +6813,23 @@
         "note": "No-source residual dirty atlas after B4.011 closeout; classifies 735 dirty entries by domain and recommends next governance queue.",
         "current_head": "022afee048dfb6dd0f8a73ba971fc33d8db7d771",
         "recorded_at": "2026-06-12T10:28:09.205Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3-residual-dirty-atlas-rebaseline-no-source-2026-06-14.md",
+        "note": "B4.012-M3 rebaseline confirms scripts governance subline is closed but top-level residual dirty atlas must remain active for tests/backend/OpenSpec/frontend/source domains.",
+        "current_head": "c71b12597af3aec0189c7bd1da9c6fbca3323ca9",
+        "recorded_at": "2026-06-14T04:07:17.629Z"
       }
     ],
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-12T10:27:30.498Z",
-    "updated_at": "2026-06-12T10:28:32.221Z",
+    "updated_at": "2026-06-14T04:08:01.120Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -6830,6 +6837,13 @@
         "note": "Atlas decision prepared: next safe batch is B4.012-M2a governance/task-card residual no-source audit; no source or deletion authorization granted.",
         "current_head": "022afee048dfb6dd0f8a73ba971fc33d8db7d771",
         "transitioned_at": "2026-06-12T10:28:32.221Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "archived",
+        "note": "GOV-P5 final closeout: all residual dirty atlas child packages are closed or archived; retire the completed top-level atlas from active queue.",
+        "current_head": "c71b12597af3aec0189c7bd1da9c6fbca3323ca9",
+        "transitioned_at": "2026-06-14T04:08:01.119Z"
       }
     ]
   },
@@ -8918,6 +8932,110 @@
       ],
       "current_head": "b95b6af7d59736770d14d4b03f7263eecaf5d115",
       "prepared_at": "2026-06-14T03:55:25.758Z"
+    }
+  },
+  {
+    "id": "b4-012-residual-atlas-final-closeout",
+    "title": "B4.012 residual dirty atlas final closeout",
+    "node_type": "authorization",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "",
+    "status": "closed",
+    "function_tree_ref": "B4.012-GOV-P5",
+    "current_head": "c71b12597af3aec0189c7bd1da9c6fbca3323ca9",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m1-residual-dirty-domain-atlas-no-source-audit-2026-06-12.md",
+        "note": "Top-level residual dirty domain atlas baseline; all child packages have now closed or archived.",
+        "current_head": "c71b12597af3aec0189c7bd1da9c6fbca3323ca9",
+        "recorded_at": "2026-06-14T04:06:48.296Z"
+      },
+      {
+        "kind": "validation",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m2b-gov-p4-scripts-residual-parent-gate-closeout-2026-06-14.md",
+        "note": "GOV-P4 archived the last active scripts residual child, leaving the top-level atlas with no active descendants.",
+        "current_head": "c71b12597af3aec0189c7bd1da9c6fbca3323ca9",
+        "recorded_at": "2026-06-14T04:07:02.528Z"
+      }
+    ],
+    "allowed_paths": [
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/tree.md",
+      ".governance/programs/artdeco-web-design-governance/cards/b4-012-residual-atlas-final-closeout.yaml",
+      "docs/reports/worklogs/claude-auto/b4-012-gov-p5-residual-atlas-final-closeout-2026-06-14.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not modify source, tests, runtime configs, OpenSpec, frontend, API, ST-HOLD, marketKlineData, OpenStock, or unrelated dirty files.",
+      "Do not decide or clean any remaining repository dirty state outside the already closed B4.012 governance queue."
+    ],
+    "next_gate": "none",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-14T04:06:35.768Z",
+    "updated_at": "2026-06-14T04:09:30.203Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "Decision prepared: final-closeout top-level residual atlas after all descendants resolved.",
+        "current_head": "c71b12597af3aec0189c7bd1da9c6fbca3323ca9",
+        "transitioned_at": "2026-06-14T04:07:12.463Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved continuing; proceed with metadata-only final residual atlas closeout.",
+        "current_head": "c71b12597af3aec0189c7bd1da9c6fbca3323ca9",
+        "transitioned_at": "2026-06-14T04:07:42.710Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Implementation is limited to archiving the completed residual dirty domain atlas and writing final closeout evidence.",
+        "current_head": "c71b12597af3aec0189c7bd1da9c6fbca3323ca9",
+        "transitioned_at": "2026-06-14T04:07:51.318Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "GOV-P5 metadata archival applied to completed residual dirty atlas.",
+        "current_head": "c71b12597af3aec0189c7bd1da9c6fbca3323ca9",
+        "transitioned_at": "2026-06-14T04:09:04.742Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "GOV-P5 final atlas closeout completed.",
+        "current_head": "c71b12597af3aec0189c7bd1da9c6fbca3323ca9",
+        "transitioned_at": "2026-06-14T04:09:30.202Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "Staged files are limited to allowed governance metadata and the GOV-P5 closeout report.",
+        "ft-governance validate and scope-check pass."
+      ],
+      "closeout_gate": [
+        "Function Tree active gates are empty after atlas final closeout.",
+        "No source-edit authorization remains active."
+      ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-gov-p5-residual-atlas-final-closeout-2026-06-14.md",
+      "compatibility": "Runtime behavior unchanged; only completed B4.012 residual dirty atlas governance metadata was archived.",
+      "gates": [
+        "ft-governance validate passed",
+        "metadata-only scope check passed for authorized files",
+        "active gates empty after final closeout"
+      ],
+      "current_head": "c71b12597af3aec0189c7bd1da9c6fbca3323ca9",
+      "prepared_at": "2026-06-14T04:09:18.161Z"
     }
   }
 ]

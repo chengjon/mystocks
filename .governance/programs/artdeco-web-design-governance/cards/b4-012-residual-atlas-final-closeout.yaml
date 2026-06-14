@@ -1,0 +1,30 @@
+task:
+  id: "b4-012-residual-atlas-final-closeout"
+  title: "B4.012 residual dirty atlas final closeout"
+
+scope:
+  allowed_paths:
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/tree.md"
+    - ".governance/programs/artdeco-web-design-governance/cards/b4-012-residual-atlas-final-closeout.yaml"
+    - "docs/reports/worklogs/claude-auto/b4-012-gov-p5-residual-atlas-final-closeout-2026-06-14.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not modify source, tests, runtime configs, OpenSpec, frontend, API, ST-HOLD, marketKlineData, OpenStock, or unrelated dirty files."
+  - "Do not decide or clean any remaining repository dirty state outside the already closed B4.012 governance queue."
+
+acceptance:
+  commit_gate:
+    - "Staged files are limited to allowed governance metadata and the GOV-P5 closeout report."
+    - "ft-governance validate and scope-check pass."
+  closeout_gate:
+    - "Function Tree active gates are empty after atlas final closeout."
+    - "No source-edit authorization remains active."
+
+evidence:
+  current_head: "c71b12597af3aec0189c7bd1da9c6fbca3323ca9"
+  notes: []
