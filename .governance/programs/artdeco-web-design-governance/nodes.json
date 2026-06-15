@@ -10504,9 +10504,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-c-adapter-data-source-tests-split",
-    "status": "authorization-prepared",
+    "status": "closed",
     "function_tree_ref": "B4.012-M3a-C",
-    "current_head": "e48a90a2d6e4577f8d92cadd3e55a0b0dbb899df",
+    "current_head": "9810d9e398c2d3594456d8a5538b22f83fee84b2",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -10523,6 +10523,13 @@
         "note": "C6 no-source review committed at e48a90a2d; refresh evidence for authorization prep",
         "current_head": "e48a90a2d6e4577f8d92cadd3e55a0b0dbb899df",
         "recorded_at": "2026-06-15T09:51:14.146Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-c6-datasource-manager-tests-no-source-review-2026-06-15.md",
+        "note": "C6 implementation authorization granted by user; refresh evidence at authorization-prep commit before implementation",
+        "current_head": "9810d9e398c2d3594456d8a5538b22f83fee84b2",
+        "recorded_at": "2026-06-15T10:17:11.176Z"
       }
     ],
     "allowed_paths": [
@@ -10537,11 +10544,11 @@
       "Do not touch tests/data_sources/test_query_builder.py or tests/unit/data_source/test_data_source_client_contract.py",
       "Do not touch source/runtime/OpenSpec/API/frontend/generated/tooling/ST-HOLD/marketKlineData or external dirty files"
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T09:33:56.437Z",
-    "updated_at": "2026-06-15T09:51:59.247Z",
+    "updated_at": "2026-06-15T10:33:56.146Z",
     "acceptance": {
       "commit_gate": [
         "python -m py_compile the 3 C6 test files",
@@ -10553,6 +10560,45 @@
       "closeout_gate": [
         "C6 closeout worklog records current contracts, gates, residual warnings, and exact commit"
       ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User authorized C6 DataSourceManager tests implementation for allowed paths only",
+        "current_head": "9810d9e398c2d3594456d8a5538b22f83fee84b2",
+        "transitioned_at": "2026-06-15T10:17:11.231Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "C6 DataSourceManager test standardization committed at 92f515b1d",
+        "current_head": "92f515b1d71e6015db767cb462cf0b8a1d810868",
+        "transitioned_at": "2026-06-15T10:33:55.993Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Implementation landed in commit 92f515b1d",
+        "current_head": "92f515b1d71e6015db767cb462cf0b8a1d810868",
+        "transitioned_at": "2026-06-15T10:33:56.044Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "C6 closeout complete after implementation commit 92f515b1d",
+        "current_head": "92f515b1d71e6015db767cb462cf0b8a1d810868",
+        "transitioned_at": "2026-06-15T10:33:56.146Z"
+      }
+    ],
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m3a-c6-datasource-manager-tests-closeout-2026-06-15.md",
+      "compatibility": "Runtime DataSourceManager behavior unchanged; tests now use IDataSource-compatible doubles and current registry contract.",
+      "gates": [
+        "py_compile passed; ruff passed; focused pytest 50 passed; GitNexus staged low risk; OPENDOG lint/test verification passed"
+      ],
+      "current_head": "92f515b1d71e6015db767cb462cf0b8a1d810868",
+      "prepared_at": "2026-06-15T10:33:56.096Z"
     }
   }
 ]
