@@ -10173,11 +10173,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-c-adapter-data-source-tests-split",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "b4-012-m3a-c-adapter-data-source-tests-split",
     "current_head": "1216caccf04e0d87dcd9565d62bfaabd03df4acd",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "baseline",
@@ -10205,11 +10205,11 @@
       "Do not modify tests/unit/connection_pool/test_connection_pool_core.py; its E712 issue is separate existing hygiene.",
       "Do not modify source/runtime/OpenSpec/API/frontend/ST-HOLD/marketKlineData or external dirty files outside allowed paths."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T02:23:38.999Z",
-    "updated_at": "2026-06-15T02:37:28.132Z",
+    "updated_at": "2026-06-15T02:43:08.274Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -10231,6 +10231,20 @@
         "note": "",
         "current_head": "1216caccf04e0d87dcd9565d62bfaabd03df4acd",
         "transitioned_at": "2026-06-15T02:37:28.132Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "66a3f44736621cac50d092b2e9a6929196b69aaa",
+        "transitioned_at": "2026-06-15T02:42:12.540Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "66a3f44736621cac50d092b2e9a6929196b69aaa",
+        "transitioned_at": "2026-06-15T02:43:08.274Z"
       }
     ],
     "acceptance": {
@@ -10243,6 +10257,20 @@
       "closeout_gate": [
         "Closeout worklog records source contract repair, test results, GitNexus risk, OPENDOG status, and exact staged file list."
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m3a-c3-query-builder-contract-closeout-2026-06-15.md",
+      "compatibility": "QueryBuilder SELECT condition connector contract repaired locally; production caller modules unchanged; external dirty files isolated.",
+      "gates": [
+        "py_compile passed for query_builder source and focused test",
+        "ruff passed for query_builder source and focused test",
+        "focused pytest passed: tests/data_sources/test_query_builder.py 25 passed",
+        "related smoke passed: test_query_builder_functionality.py 2 passed; connection_pool_core.py 5 passed",
+        "GitNexus verify-staged/detect-changes risk low; affected processes 0",
+        "OPENDOG fresh lint/test verification recorded with no failing runs or cleanup blockers"
+      ],
+      "current_head": "66a3f44736621cac50d092b2e9a6929196b69aaa",
+      "prepared_at": "2026-06-15T02:43:08.211Z"
     }
   }
 ]

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-15T02:37:28.143Z",
+  "updated_at": "2026-06-15T02:43:08.287Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -120,27 +120,6 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-14T07:40:55.516Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-012-m3a-c3-query-builder-contract-authorization",
-      "title": "B4.012 M3a-C3 query builder SQL contract authorization",
-      "node_type": "decision",
-      "owner_lane": "artdeco-web-design-governance",
-      "parent": "b4-012-m3a-c-adapter-data-source-tests-split",
-      "status": "implementation-ready",
-      "source_edits_authorized": true,
-      "current_blocker": "",
-      "next_allowed": "land implementation with Git evidence",
-      "function_tree_ref": "b4-012-m3a-c-adapter-data-source-tests-split",
-      "freshness": "current-head",
-      "allowed_paths": [
-        "src/data_sources/real/query_builder.py",
-        "tests/data_sources/test_query_builder.py",
-        "docs/reports/worklogs/claude-auto/b4-012-m3a-c3-query-builder-contract-closeout-2026-06-15.md"
-      ],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-15T02:37:28.132Z"
     }
   ]
 }
