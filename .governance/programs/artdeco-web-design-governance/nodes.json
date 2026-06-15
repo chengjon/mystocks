@@ -10286,11 +10286,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-c-adapter-data-source-tests-split",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "B4.012-M3a-C",
     "current_head": "4ed2a7588444ead2daeddc99f8eaa7d0a25c4583",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "baseline",
@@ -10322,11 +10322,11 @@
       "No src/runtime/OpenSpec/API/frontend edits.",
       "No C5/C6, generated/tooling, untracked provenance, ST-HOLD, marketKlineData, or external dirty edits."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T03:49:58.190Z",
-    "updated_at": "2026-06-15T05:02:24.774Z",
+    "updated_at": "2026-06-15T05:07:19.990Z",
     "acceptance": {
       "commit_gate": [
         "py_compile, ruff, focused pytest for the seven C4 files.",
@@ -10350,7 +10350,34 @@
         "note": "",
         "current_head": "4ed2a7588444ead2daeddc99f8eaa7d0a25c4583",
         "transitioned_at": "2026-06-15T05:02:24.774Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "7efcc8cf1c3002e718de7a5f6291f0389d0d2cd5",
+        "transitioned_at": "2026-06-15T05:06:28.197Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "7efcc8cf1c3002e718de7a5f6291f0389d0d2cd5",
+        "transitioned_at": "2026-06-15T05:07:19.990Z"
       }
-    ]
+    ],
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m3a-c4-akshare-adapter-tests-closeout-2026-06-15.md",
+      "compatibility": "Test-only C4 standardization; no source/runtime/API/OpenSpec/front-end behavior changed.",
+      "gates": [
+        "ruff passed for 7 C4 files",
+        "py_compile passed for 7 C4 files",
+        "pytest C4 aggregate passed: 120 passed, 4 skipped, 7 xfailed",
+        "GitNexus staged verify/detect low risk, 0 affected processes",
+        "OPENDOG fresh, no blockers"
+      ],
+      "current_head": "7efcc8cf1c3002e718de7a5f6291f0389d0d2cd5",
+      "prepared_at": "2026-06-15T05:07:19.931Z"
+    }
   }
 ]
