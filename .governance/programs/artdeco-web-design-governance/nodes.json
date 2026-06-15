@@ -10386,9 +10386,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "",
-    "status": "authorization-prepared",
+    "status": "closed",
     "function_tree_ref": "B4.012-M3a-C",
-    "current_head": "ecd9947c8897c2db730e81808774a20513883b9a",
+    "current_head": "e231f0a45c1260047ec82e9fa6e50077a92183b0",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -10398,6 +10398,20 @@
         "note": "C5 no-source boundary audit and baseline verification captured",
         "current_head": "ecd9947c8897c2db730e81808774a20513883b9a",
         "recorded_at": "2026-06-15T05:31:53.023Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-c5-other-adapter-compatibility-tests-authorization-prep-2026-06-15.md",
+        "note": "User approved C5 implementation; refresh evidence at authorization-prep commit HEAD",
+        "current_head": "efca5f6cb3a627c55f08d818e65a19b9ba06fff2",
+        "recorded_at": "2026-06-15T06:21:56.851Z"
+      },
+      {
+        "kind": "runtime",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-c5-other-adapter-compatibility-tests-closeout-2026-06-15.md",
+        "note": "C5 implementation landed at e231f0a45; focused py_compile, ruff, pytest, GitNexus, and OPENDOG gates passed",
+        "current_head": "e231f0a45c1260047ec82e9fa6e50077a92183b0",
+        "recorded_at": "2026-06-15T07:19:10.008Z"
       }
     ],
     "allowed_paths": [
@@ -10416,11 +10430,11 @@
       "Do not touch C6 DataSourceManager files, tests/data_sources/test_query_builder.py, generated/tooling tests, or untracked provenance directories.",
       "Do not change adapter runtime behavior; test-only contract alignment and style cleanup only."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T05:31:52.955Z",
-    "updated_at": "2026-06-15T05:32:13.301Z",
+    "updated_at": "2026-06-15T08:40:33.416Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -10428,6 +10442,34 @@
         "note": "",
         "current_head": "ecd9947c8897c2db730e81808774a20513883b9a",
         "transitioned_at": "2026-06-15T05:31:53.117Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "efca5f6cb3a627c55f08d818e65a19b9ba06fff2",
+        "transitioned_at": "2026-06-15T06:21:56.914Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "e231f0a45c1260047ec82e9fa6e50077a92183b0",
+        "transitioned_at": "2026-06-15T07:19:20.038Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "e231f0a45c1260047ec82e9fa6e50077a92183b0",
+        "transitioned_at": "2026-06-15T08:39:58.165Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "e231f0a45c1260047ec82e9fa6e50077a92183b0",
+        "transitioned_at": "2026-06-15T08:40:33.416Z"
       }
     ],
     "acceptance": {
@@ -10441,6 +10483,19 @@
       "closeout_gate": [
         "C5 closeout worklog records landed changes, preserved compatibility surface, and all gate evidence"
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m3a-c5-other-adapter-compatibility-tests-closeout-2026-06-15.md",
+      "compatibility": "C5 adapter compatibility tests now match current baostock/byapi/customer/financial/tdx/tushare contracts without source/runtime edits",
+      "gates": [
+        "py_compile passed for 7 C5 test files",
+        "ruff passed for 7 C5 test files",
+        "focused pytest passed: 115 passed, 2 known baostock destructor warnings",
+        "GitNexus staged checks low risk, 0 affected processes",
+        "OPENDOG lint/test verification passed"
+      ],
+      "current_head": "e231f0a45c1260047ec82e9fa6e50077a92183b0",
+      "prepared_at": "2026-06-15T08:40:15.151Z"
     }
   }
 ]
