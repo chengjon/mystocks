@@ -10061,5 +10061,62 @@
       "current_head": "ed6cd0dade6df2fedbb994c1aa8d1813561e4f1b",
       "prepared_at": "2026-06-14T19:35:57.522Z"
     }
+  },
+  {
+    "id": "b4-012-m3a-c2-datasource-registry-tests-authorization",
+    "title": "B4.012 M3a-C2 datasource registry tests authorization",
+    "node_type": "implementation",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-m3a-c-adapter-data-source-tests-split",
+    "status": "authorization-prepared",
+    "function_tree_ref": "b4-012-m3a-c-adapter-data-source-tests-split",
+    "current_head": "540bb5e7ceaca0758b5ec5d76552e13eb40bd412",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-c2-datasource-registry-tests-authorization-prep-2026-06-15.md",
+        "note": "M3a-C2 datasource registry tests no-source boundary and authorization prep.",
+        "current_head": "540bb5e7ceaca0758b5ec5d76552e13eb40bd412",
+        "recorded_at": "2026-06-15T00:24:19.282Z"
+      }
+    ],
+    "allowed_paths": [
+      "tests/unit/core/test_datasource_registry_redis_runtime.py",
+      "tests/unit/test_data_source_metrics_integration.py",
+      "tests/unit/test_datasource/test_health.py",
+      "tests/unit/test_datasource/test_registry.py",
+      "docs/reports/worklogs/claude-auto/b4-012-m3a-c2-datasource-registry-tests-closeout-2026-06-15.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not modify tests/data_sources/test_query_builder.py in this batch.",
+      "Do not touch src, web, scripts/runtime, openspec, ST-HOLD, marketKlineData, or external dirty files.",
+      "Do not delete, move, or rename tests."
+    ],
+    "next_gate": "review and approve implementation authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-15T00:22:45.786Z",
+    "updated_at": "2026-06-15T00:24:19.382Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "",
+        "current_head": "540bb5e7ceaca0758b5ec5d76552e13eb40bd412",
+        "transitioned_at": "2026-06-15T00:24:19.334Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "py_compile, ruff, and focused pytest pass for the four allowed test files.",
+        "Function Tree scope-check, git diff --cached --check, GitNexus verify-staged/detect-changes, and OPENDOG verification pass."
+      ],
+      "closeout_gate": [
+        "Closeout worklog records verification, query-builder deferral, and remaining C-family recommendation."
+      ]
+    }
   }
 ]

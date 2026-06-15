@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-14T19:35:57.579Z",
+  "updated_at": "2026-06-15T00:24:19.389Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -120,6 +120,29 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-14T07:40:55.516Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-012-m3a-c2-datasource-registry-tests-authorization",
+      "title": "B4.012 M3a-C2 datasource registry tests authorization",
+      "node_type": "implementation",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-012-m3a-c-adapter-data-source-tests-split",
+      "status": "authorization-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "review and approve implementation authorization",
+      "function_tree_ref": "b4-012-m3a-c-adapter-data-source-tests-split",
+      "freshness": "current-head",
+      "allowed_paths": [
+        "tests/unit/core/test_datasource_registry_redis_runtime.py",
+        "tests/unit/test_data_source_metrics_integration.py",
+        "tests/unit/test_datasource/test_health.py",
+        "tests/unit/test_datasource/test_registry.py",
+        "docs/reports/worklogs/claude-auto/b4-012-m3a-c2-datasource-registry-tests-closeout-2026-06-15.md"
+      ],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-15T00:24:19.382Z"
     }
   ]
 }
