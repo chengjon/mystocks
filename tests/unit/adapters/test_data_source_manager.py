@@ -11,7 +11,6 @@ import os
 import sys
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
-from unittest.mock import patch
 
 import pandas as pd
 import pytest
@@ -19,10 +18,12 @@ import pytest
 # 添加src路径到导入路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))
 
+from src.interfaces.data_source import IDataSource
+
 
 # 导入接口定义
-# 由于接口兼容性问题，我们将使用独立的Mock类
-class MockTdxDataSource:
+# 使用真实 IDataSource 子类，避免绕过 DataSourceManager 的注册契约。
+class MockTdxDataSource(IDataSource):
     """模拟TDX数据源"""
 
     def __init__(self, should_fail: bool = False):
@@ -121,8 +122,12 @@ class MockTdxDataSource:
             }
         ]
 
+    def connect(self) -> bool:
+        """模拟连接"""
+        return not self.should_fail
 
-class MockAkshareDataSource:
+
+class MockAkshareDataSource(IDataSource):
     """模拟Akshare数据源"""
 
     def __init__(self, should_fail: bool = False):
@@ -221,6 +226,10 @@ class MockAkshareDataSource:
             }
         ]
 
+    def connect(self) -> bool:
+        """模拟连接"""
+        return not self.should_fail
+
 
 class TestDataSourceManager:
     """数据源管理器测试"""
@@ -254,12 +263,8 @@ class TestDataSourceManager:
         manager = DataSourceManager()
         tdx_source = MockTdxDataSource()
 
-        # 使用monkeypatch绕过接口检查
-        with patch("adapters.data_source_manager.IDataSource") as mock_interface:
-            mock_interface.__instancecheck__ = lambda cls, instance: True
-
-            # 注册数据源
-            manager.register_source("tdx", tdx_source)
+        # 注册数据源
+        manager.register_source("tdx", tdx_source)
 
         # 验证注册结果
         assert len(manager._sources) == 1
@@ -280,7 +285,7 @@ class TestDataSourceManager:
         try:
             manager.register_source("invalid", "not a data source")
             # 如果没有抛出异常，说明接口检查被跳过了
-            pytest.skip("IDataSource接口检查可能被跳过")
+            pytest.skip("IDataSource接口检查可能被跳过 owner=test-governance issue=techdebt-expired-markers ttl=2026-06-30")
         except TypeError:
             # 这是期望的行为
             pass

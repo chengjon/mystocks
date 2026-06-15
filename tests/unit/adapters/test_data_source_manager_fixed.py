@@ -12,7 +12,6 @@ import os
 import sys
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
-from unittest.mock import patch
 
 import pandas as pd
 import pytest
@@ -20,9 +19,11 @@ import pytest
 # 添加src路径到导入路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))
 
+from src.interfaces.data_source import IDataSource
 
-class SimpleMockDataSource:
-    """简化的模拟数据源，避免接口检查问题"""
+
+class SimpleMockDataSource(IDataSource):
+    """简化的模拟数据源，满足 DataSourceManager 的注册契约"""
 
     def __init__(self, name: str, should_fail: bool = False):
         self.name = name
@@ -128,14 +129,6 @@ class SimpleMockDataSource:
         return not self.should_fail
 
 
-@pytest.fixture
-def mock_interface_check():
-    """Fixture来绕过IDataSource接口检查"""
-    with patch("builtins.isinstance") as mock_isinstance:
-        mock_isinstance.return_value = True
-        yield
-
-
 class TestDataSourceManagerFixed:
     """数据源管理器测试 - 修复版本"""
 
@@ -160,7 +153,7 @@ class TestDataSourceManagerFixed:
         # 验证日志器
         assert hasattr(manager, "logger")
 
-    def test_register_source_success(self, mock_interface_check):
+    def test_register_source_success(self):
         """测试数据源注册成功"""
         from src.adapters.data_source_manager import DataSourceManager
 
@@ -189,12 +182,12 @@ class TestDataSourceManagerFixed:
         try:
             manager.register_source("invalid", "not a data source")
             # 如果没有抛出异常，说明接口检查被跳过了
-            pytest.skip("IDataSource接口检查可能被跳过")
+            pytest.skip("IDataSource接口检查可能被跳过 owner=test-governance issue=techdebt-expired-markers ttl=2026-06-30")
         except TypeError:
             # 这是期望的行为
             pass
 
-    def test_get_source_exists(self, mock_interface_check):
+    def test_get_source_exists(self):
         """测试获取存在的数据源"""
         from src.adapters.data_source_manager import DataSourceManager
 
@@ -220,7 +213,7 @@ class TestDataSourceManagerFixed:
 
         assert result is None
 
-    def test_list_sources(self, mock_interface_check):
+    def test_list_sources(self):
         """测试列出所有数据源"""
         from src.adapters.data_source_manager import DataSourceManager
 
@@ -241,7 +234,7 @@ class TestDataSourceManagerFixed:
         # 验证返回的是列表类型
         assert isinstance(sources, list)
 
-    def test_get_real_time_data_with_specified_source(self, mock_interface_check):
+    def test_get_real_time_data_with_specified_source(self):
         """测试使用指定数据源获取实时行情"""
         from src.adapters.data_source_manager import DataSourceManager
 
@@ -271,7 +264,7 @@ class TestDataSourceManagerFixed:
         assert isinstance(result, str)
         assert "不存在" in result
 
-    def test_get_real_time_data_auto_priority_success(self, mock_interface_check):
+    def test_get_real_time_data_auto_priority_success(self):
         """测试按优先级自动选择数据源获取实时行情成功"""
         from src.adapters.data_source_manager import DataSourceManager
 
@@ -294,7 +287,7 @@ class TestDataSourceManagerFixed:
         assert tdx_source.call_count == 1
         assert akshare_source.call_count == 0
 
-    def test_get_stock_daily_with_specified_source(self, mock_interface_check):
+    def test_get_stock_daily_with_specified_source(self):
         """测试使用指定数据源获取日线数据"""
         from src.adapters.data_source_manager import DataSourceManager
 
@@ -312,7 +305,7 @@ class TestDataSourceManagerFixed:
         assert "date" in result.columns
         assert tdx_source.call_count == 1
 
-    def test_data_source_manager_simple_workflow(self, mock_interface_check):
+    def test_data_source_manager_simple_workflow(self):
         """测试数据源管理器简单工作流程"""
         from src.adapters.data_source_manager import DataSourceManager
 
