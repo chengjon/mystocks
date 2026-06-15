@@ -144,10 +144,11 @@ async def test_manual_datasource_test_route_records_canonical_metrics(monkeypatc
         authorization="Bearer local-test",
     )
 
-    assert response["success"] is True
-    assert response["row_count"] >= 1
-    assert response["error"] is None
-    assert response["quality_checks"]["has_data"] is True
+    response_data = response.data
+    assert response_data.success is True
+    assert response_data.row_count >= 1
+    assert response_data.error is None
+    assert response_data.quality_checks["has_data"] is True
     assert (
         metrics.api_calls_total.labels(
             endpoint="demo.daily_kline",
@@ -156,7 +157,9 @@ async def test_manual_datasource_test_route_records_canonical_metrics(monkeypatc
         )._value.get()
         == 1
     )
-    assert 'datasource_api_cost_estimated{endpoint="demo.daily_kline"} 0.0' in metrics.generate_metrics().decode("utf-8")
+    assert 'datasource_api_cost_estimated{endpoint="demo.daily_kline"} 0.0' in metrics.generate_metrics().decode(
+        "utf-8"
+    )
 
 
 def test_call_endpoint_cache_miss_then_hit_records_canonical_cache_metrics(monkeypatch):

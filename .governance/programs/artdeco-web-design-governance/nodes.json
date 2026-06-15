@@ -10068,11 +10068,11 @@
     "node_type": "implementation",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-c-adapter-data-source-tests-split",
-    "status": "authorization-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "b4-012-m3a-c-adapter-data-source-tests-split",
-    "current_head": "540bb5e7ceaca0758b5ec5d76552e13eb40bd412",
+    "current_head": "a574dd8f57928636ed1195ff44a36f5ce1656c75",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "baseline",
@@ -10080,6 +10080,13 @@
         "note": "M3a-C2 datasource registry tests no-source boundary and authorization prep.",
         "current_head": "540bb5e7ceaca0758b5ec5d76552e13eb40bd412",
         "recorded_at": "2026-06-15T00:24:19.282Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "User approved B4.012-M3a-C2 implementation at HEAD a574dd8f5; allowed paths remain four datasource/registry tests plus closeout worklog; tests/data_sources/test_query_builder.py and external dirty files excluded.",
+        "note": "C2 implementation source authorization received; scope remains test-only and query_builder excluded.",
+        "current_head": "a574dd8f57928636ed1195ff44a36f5ce1656c75",
+        "recorded_at": "2026-06-15T01:29:45.112Z"
       }
     ],
     "allowed_paths": [
@@ -10095,11 +10102,11 @@
       "Do not touch src, web, scripts/runtime, openspec, ST-HOLD, marketKlineData, or external dirty files.",
       "Do not delete, move, or rename tests."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T00:22:45.786Z",
-    "updated_at": "2026-06-15T00:24:19.382Z",
+    "updated_at": "2026-06-15T01:31:07.989Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -10107,6 +10114,20 @@
         "note": "",
         "current_head": "540bb5e7ceaca0758b5ec5d76552e13eb40bd412",
         "transitioned_at": "2026-06-15T00:24:19.334Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "a574dd8f57928636ed1195ff44a36f5ce1656c75",
+        "transitioned_at": "2026-06-15T01:29:45.175Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "a574dd8f57928636ed1195ff44a36f5ce1656c75",
+        "transitioned_at": "2026-06-15T01:31:07.989Z"
       }
     ],
     "acceptance": {

@@ -3,7 +3,7 @@ from __future__ import annotations
 import importlib.util
 import sys
 from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 
 REGISTRY_PATH = Path('/opt/claude/mystocks_spec/src/core/datasource/registry.py')
@@ -12,8 +12,9 @@ REGISTRY_PATH = Path('/opt/claude/mystocks_spec/src/core/datasource/registry.py'
 def _load_registry_module(module_name: str = 'test_src_core_datasource_registry_module'):
     sys.modules.pop(module_name, None)
     spec = importlib.util.spec_from_file_location(module_name, REGISTRY_PATH)
+    assert spec is not None
     module = importlib.util.module_from_spec(spec)
-    assert spec is not None and spec.loader is not None
+    assert spec.loader is not None
     sys.modules[module_name] = module
     spec.loader.exec_module(module)
     return module
