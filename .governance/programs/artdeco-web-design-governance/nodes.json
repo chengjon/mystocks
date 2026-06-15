@@ -10497,5 +10497,34 @@
       "current_head": "e231f0a45c1260047ec82e9fa6e50077a92183b0",
       "prepared_at": "2026-06-15T08:40:15.151Z"
     }
+  },
+  {
+    "id": "b4-012-m3a-c6-datasource-manager-tests-authorization",
+    "title": "B4.012-M3a-C6 DataSourceManager tests",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-m3a-c-adapter-data-source-tests-split",
+    "status": "evidence-prepared",
+    "function_tree_ref": "B4.012-M3a-C",
+    "current_head": "d66849abb76b42310fa119a7e54636e353f4cacf",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-c6-datasource-manager-tests-no-source-review-2026-06-15.md",
+        "note": "No-source review completed; 3 tracked C6 files identified, current runtime contract and failure classes recorded",
+        "current_head": "d66849abb76b42310fa119a7e54636e353f4cacf",
+        "recorded_at": "2026-06-15T09:34:13.570Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare decision or authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-15T09:33:56.437Z",
+    "updated_at": "2026-06-15T09:34:13.570Z"
   }
 ]
