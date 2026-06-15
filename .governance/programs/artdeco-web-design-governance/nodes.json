@@ -10379,5 +10379,68 @@
       "current_head": "7efcc8cf1c3002e718de7a5f6291f0389d0d2cd5",
       "prepared_at": "2026-06-15T05:07:19.931Z"
     }
+  },
+  {
+    "id": "b4-012-m3a-c5-other-adapter-compatibility-tests-authorization",
+    "title": "B4.012-M3a-C5 other adapter compatibility tests",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "",
+    "status": "authorization-prepared",
+    "function_tree_ref": "B4.012-M3a-C",
+    "current_head": "ecd9947c8897c2db730e81808774a20513883b9a",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-c5-other-adapter-compatibility-tests-authorization-prep-2026-06-15.md",
+        "note": "C5 no-source boundary audit and baseline verification captured",
+        "current_head": "ecd9947c8897c2db730e81808774a20513883b9a",
+        "recorded_at": "2026-06-15T05:31:53.023Z"
+      }
+    ],
+    "allowed_paths": [
+      "tests/unit/adapters/test_baostock_adapter_real.py",
+      "tests/unit/adapters/test_byapi_adapter_basic.py",
+      "tests/unit/adapters/test_customer_adapter_basic.py",
+      "tests/unit/adapters/test_financial_adapter_real.py",
+      "tests/unit/adapters/test_financial_adapter_simple.py",
+      "tests/unit/adapters/test_tdx_connection_manager.py",
+      "tests/unit/adapters/test_tushare_adapter_basic.py",
+      "docs/reports/worklogs/claude-auto/b4-012-m3a-c5-other-adapter-compatibility-tests-closeout-2026-06-15.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not modify source/runtime/OpenSpec/API/frontend files.",
+      "Do not touch C6 DataSourceManager files, tests/data_sources/test_query_builder.py, generated/tooling tests, or untracked provenance directories.",
+      "Do not change adapter runtime behavior; test-only contract alignment and style cleanup only."
+    ],
+    "next_gate": "review and approve implementation authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-15T05:31:52.955Z",
+    "updated_at": "2026-06-15T05:32:13.301Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "",
+        "current_head": "ecd9947c8897c2db730e81808774a20513883b9a",
+        "transitioned_at": "2026-06-15T05:31:53.117Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "python -m py_compile on 7 C5 files passes",
+        "python -m ruff check on 7 C5 files passes",
+        "Focused pytest for 7 C5 files passes or only explicitly documented skips/xfails remain",
+        "GitNexus verify-staged and detect-changes report low risk",
+        "OPENDOG verification is fresh with no blockers"
+      ],
+      "closeout_gate": [
+        "C5 closeout worklog records landed changes, preserved compatibility surface, and all gate evidence"
+      ]
+    }
   }
 ]
