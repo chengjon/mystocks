@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-15T09:34:13.580Z",
+  "updated_at": "2026-06-15T09:51:59.257Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -128,15 +128,20 @@
       "node_type": "decision",
       "owner_lane": "artdeco-web-design-governance",
       "parent": "b4-012-m3a-c-adapter-data-source-tests-split",
-      "status": "evidence-prepared",
+      "status": "authorization-prepared",
       "source_edits_authorized": false,
       "current_blocker": "",
-      "next_allowed": "prepare decision or authorization",
+      "next_allowed": "review and approve implementation authorization",
       "function_tree_ref": "B4.012-M3a-C",
       "freshness": "current-head",
-      "allowed_paths": [],
+      "allowed_paths": [
+        "tests/unit/adapters/test_data_source_manager.py",
+        "tests/unit/adapters/test_data_source_manager_basic.py",
+        "tests/unit/adapters/test_data_source_manager_fixed.py",
+        "docs/reports/worklogs/claude-auto/b4-012-m3a-c6-datasource-manager-tests-closeout-2026-06-15.md"
+      ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-15T09:34:13.570Z"
+      "updated_at": "2026-06-15T09:51:59.247Z"
     }
   ]
 }

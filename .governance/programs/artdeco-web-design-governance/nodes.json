@@ -10504,9 +10504,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-c-adapter-data-source-tests-split",
-    "status": "evidence-prepared",
+    "status": "authorization-prepared",
     "function_tree_ref": "B4.012-M3a-C",
-    "current_head": "d66849abb76b42310fa119a7e54636e353f4cacf",
+    "current_head": "e48a90a2d6e4577f8d92cadd3e55a0b0dbb899df",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -10516,15 +10516,43 @@
         "note": "No-source review completed; 3 tracked C6 files identified, current runtime contract and failure classes recorded",
         "current_head": "d66849abb76b42310fa119a7e54636e353f4cacf",
         "recorded_at": "2026-06-15T09:34:13.570Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-c6-datasource-manager-tests-no-source-review-2026-06-15.md",
+        "note": "C6 no-source review committed at e48a90a2d; refresh evidence for authorization prep",
+        "current_head": "e48a90a2d6e4577f8d92cadd3e55a0b0dbb899df",
+        "recorded_at": "2026-06-15T09:51:14.146Z"
       }
     ],
-    "allowed_paths": [],
+    "allowed_paths": [
+      "tests/unit/adapters/test_data_source_manager.py",
+      "tests/unit/adapters/test_data_source_manager_basic.py",
+      "tests/unit/adapters/test_data_source_manager_fixed.py",
+      "docs/reports/worklogs/claude-auto/b4-012-m3a-c6-datasource-manager-tests-closeout-2026-06-15.md"
+    ],
     "forbidden_paths": [],
-    "non_goals": [],
-    "next_gate": "prepare decision or authorization",
+    "non_goals": [
+      "No source/runtime edits, including src/adapters/data_source_manager.py",
+      "Do not touch tests/data_sources/test_query_builder.py or tests/unit/data_source/test_data_source_client_contract.py",
+      "Do not touch source/runtime/OpenSpec/API/frontend/generated/tooling/ST-HOLD/marketKlineData or external dirty files"
+    ],
+    "next_gate": "review and approve implementation authorization",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T09:33:56.437Z",
-    "updated_at": "2026-06-15T09:34:13.570Z"
+    "updated_at": "2026-06-15T09:51:59.247Z",
+    "acceptance": {
+      "commit_gate": [
+        "python -m py_compile the 3 C6 test files",
+        "python -m ruff check the 3 C6 test files",
+        "focused pytest for the 3 C6 test files passes or records any environment-only timeout with evidence",
+        "GitNexus verify-staged and detect-changes remain low risk",
+        "OPENDOG lint/test verification recorded"
+      ],
+      "closeout_gate": [
+        "C6 closeout worklog records current contracts, gates, residual warnings, and exact commit"
+      ]
+    }
   }
 ]

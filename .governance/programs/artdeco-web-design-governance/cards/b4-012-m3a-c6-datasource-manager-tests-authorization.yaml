@@ -1,0 +1,31 @@
+task:
+  id: "b4-012-m3a-c6-datasource-manager-tests-authorization"
+  title: "B4.012-M3a-C6 DataSourceManager tests"
+
+scope:
+  allowed_paths:
+    - "tests/unit/adapters/test_data_source_manager.py"
+    - "tests/unit/adapters/test_data_source_manager_basic.py"
+    - "tests/unit/adapters/test_data_source_manager_fixed.py"
+    - "docs/reports/worklogs/claude-auto/b4-012-m3a-c6-datasource-manager-tests-closeout-2026-06-15.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No source/runtime edits, including src/adapters/data_source_manager.py"
+  - "Do not touch tests/data_sources/test_query_builder.py or tests/unit/data_source/test_data_source_client_contract.py"
+  - "Do not touch source/runtime/OpenSpec/API/frontend/generated/tooling/ST-HOLD/marketKlineData or external dirty files"
+
+acceptance:
+  commit_gate:
+    - "python -m py_compile the 3 C6 test files"
+    - "python -m ruff check the 3 C6 test files"
+    - "focused pytest for the 3 C6 test files passes or records any environment-only timeout with evidence"
+    - "GitNexus verify-staged and detect-changes remain low risk"
+    - "OPENDOG lint/test verification recorded"
+  closeout_gate:
+    - "C6 closeout worklog records current contracts, gates, residual warnings, and exact commit"
+
+evidence:
+  current_head: "e48a90a2d6e4577f8d92cadd3e55a0b0dbb899df"
+  notes: []
