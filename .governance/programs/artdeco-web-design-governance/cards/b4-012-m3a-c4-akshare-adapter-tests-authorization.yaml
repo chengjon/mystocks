@@ -1,0 +1,31 @@
+task:
+  id: "b4-012-m3a-c4-akshare-adapter-tests-authorization"
+  title: "B4.012 M3a-C4 Akshare adapter tests authorization"
+
+scope:
+  allowed_paths:
+    - "tests/adapters/test_akshare_adapter/helpers.py"
+    - "tests/adapters/test_akshare_adapter/test_akshare_market_data_adapter_methods/part1.py"
+    - "tests/adapters/test_akshare_adapter/test_akshare_market_data_adapter_methods/part2.py"
+    - "tests/adapters/test_akshare_adapter/test_akshare_market_data_adapter_methods/part3.py"
+    - "tests/test_akshare_adapter.py"
+    - "tests/unit/adapters/test_akshare_adapter.py"
+    - "tests/unit/adapters/test_akshare_adapter_real.py"
+    - "docs/reports/worklogs/claude-auto/b4-012-m3a-c4-akshare-adapter-tests-closeout-2026-06-15.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No src/runtime/OpenSpec/API/frontend edits."
+  - "No C5/C6, generated/tooling, untracked provenance, ST-HOLD, marketKlineData, or external dirty edits."
+
+acceptance:
+  commit_gate:
+    - "py_compile, ruff, focused pytest for the seven C4 files."
+    - "GitNexus verify-staged and detect-changes, OPENDOG verification, exact staging only."
+  closeout_gate:
+    - "Closeout worklog records C4 files, preserved behavior, test evidence, GitNexus/OPENDOG evidence, and remaining C family next gate."
+
+evidence:
+  current_head: "50b6d1df4d73dde911e2b50dc8a71c3575923a2f"
+  notes: []

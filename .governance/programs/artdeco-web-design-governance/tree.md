@@ -84,3 +84,4 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-012-m3a-c1-fast-adapter-tests-authorization: B4.012 M3a-C1 fast adapter compatibility tests authorization (planning, FT: b4-012-m3a-c-adapter-data-source-tests-split)
 - [ ] b4-012-m3a-c2-datasource-registry-tests-authorization: B4.012 M3a-C2 datasource registry tests authorization (planning, FT: b4-012-m3a-c-adapter-data-source-tests-split)
 - [ ] b4-012-m3a-c3-query-builder-contract-authorization: B4.012 M3a-C3 query builder SQL contract authorization (planning, FT: b4-012-m3a-c-adapter-data-source-tests-split)
+- [ ] b4-012-m3a-c4-akshare-adapter-tests-authorization: B4.012 M3a-C4 Akshare adapter tests authorization (planning, FT: B4.012-M3a-C)

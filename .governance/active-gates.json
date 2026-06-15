@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-15T03:07:48.174Z",
+  "updated_at": "2026-06-15T03:50:16.545Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -120,6 +120,32 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-15T03:07:48.166Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-012-m3a-c4-akshare-adapter-tests-authorization",
+      "title": "B4.012 M3a-C4 Akshare adapter tests authorization",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-012-m3a-c-adapter-data-source-tests-split",
+      "status": "authorization-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "review and approve implementation authorization",
+      "function_tree_ref": "B4.012-M3a-C",
+      "freshness": "current-head",
+      "allowed_paths": [
+        "tests/adapters/test_akshare_adapter/helpers.py",
+        "tests/adapters/test_akshare_adapter/test_akshare_market_data_adapter_methods/part1.py",
+        "tests/adapters/test_akshare_adapter/test_akshare_market_data_adapter_methods/part2.py",
+        "tests/adapters/test_akshare_adapter/test_akshare_market_data_adapter_methods/part3.py",
+        "tests/test_akshare_adapter.py",
+        "tests/unit/adapters/test_akshare_adapter.py",
+        "tests/unit/adapters/test_akshare_adapter_real.py",
+        "docs/reports/worklogs/claude-auto/b4-012-m3a-c4-akshare-adapter-tests-closeout-2026-06-15.md"
+      ],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-15T03:50:16.537Z"
     }
   ]
 }
