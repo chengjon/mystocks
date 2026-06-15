@@ -10600,5 +10600,58 @@
       "current_head": "92f515b1d71e6015db767cb462cf0b8a1d810868",
       "prepared_at": "2026-06-15T10:33:56.096Z"
     }
+  },
+  {
+    "id": "b4-012-m3a-d1-e2e-browser-smoke-authorization",
+    "title": "B4.012-M3a-D1 E2E browser smoke tests authorization",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-m3a-d-e2e-frontend-tests-split",
+    "status": "authorization-prepared",
+    "function_tree_ref": "b4-012-m3a-d-e2e-frontend-tests-split",
+    "current_head": "8e4d7facfb1082ceb05476c2fece7708022bba0f",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-d-e2e-frontend-tests-no-source-split-2026-06-14.md",
+        "note": "D1 no-source boundary inherited from M3a-D split; six tracked E2E/browser smoke files identified",
+        "current_head": "8e4d7facfb1082ceb05476c2fece7708022bba0f",
+        "recorded_at": "2026-06-15T11:36:03.977Z"
+      }
+    ],
+    "allowed_paths": [
+      "tests/e2e/specs/auth-optimized.spec.ts",
+      "tests/e2e/specs/dashboard.spec.ts",
+      "tests/e2e/test_fund_flow.py",
+      "tests/e2e/test_login.py",
+      "tests/e2e/test_risk.py",
+      "tests/e2e/test_web_e2e.py",
+      "docs/reports/worklogs/claude-auto/b4-012-m3a-d1-e2e-browser-smoke-closeout-2026-06-15.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No frontend/source/runtime/API/backend/OpenSpec edits.",
+      "Do not touch tests/dashboard, tests/prototype, tests/performance, untracked contract E2E, generated/tooling, ST-HOLD, marketKlineData, or external dirty files.",
+      "Do not change Playwright runtime behavior beyond metadata/style cleanup without explicit implementation authorization."
+    ],
+    "next_gate": "review and approve implementation authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-15T11:36:03.916Z",
+    "updated_at": "2026-06-15T11:36:04.024Z",
+    "acceptance": {
+      "commit_gate": [
+        "py_compile for Python E2E files and TypeScript syntax-focused check for Playwright specs",
+        "focused pytest or documented environment skip for Python E2E files",
+        "Playwright/E2E gate command selected by implementation scope or explicitly documented as environment-blocked",
+        "GitNexus verify-staged and detect-changes remain low risk",
+        "OPENDOG lint/test verification recorded"
+      ],
+      "closeout_gate": [
+        "D1 closeout worklog records exact files, gates, residual environment warnings, and implementation commit"
+      ]
+    }
   }
 ]
