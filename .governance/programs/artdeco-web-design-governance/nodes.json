@@ -9814,7 +9814,7 @@
     "parent": "b4-012-m3a-tests-residual-domain-audit",
     "status": "decision-prepared",
     "function_tree_ref": "B4.012-M3a-C",
-    "current_head": "a3b062523ed66987a19ad31c9d3c3507f50b7974",
+    "current_head": "29b080886b105485c24d10306a155424c0bade83",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -9824,16 +9824,23 @@
         "note": "M3a-C no-source split: 25 tracked adapter/data-source test candidates, API/backend overlaps routed to M3a-B, untracked data_source routed to M3a-U.",
         "current_head": "a3b062523ed66987a19ad31c9d3c3507f50b7974",
         "recorded_at": "2026-06-14T07:29:56.627Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-c-family-residual-rebaseline-2026-06-15.md",
+        "note": "C family residual no-source rebaseline after C1/C2/C3 closeout; 17 modified tracked candidates remain across C4/C5/C6 families.",
+        "current_head": "29b080886b105485c24d10306a155424c0bade83",
+        "recorded_at": "2026-06-15T03:07:48.166Z"
       }
     ],
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
+    "next_gate": "prepare decision or authorization",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-14T07:29:56.581Z",
-    "updated_at": "2026-06-14T07:29:56.668Z",
+    "updated_at": "2026-06-15T03:07:48.166Z",
     "transitions": [
       {
         "from": "evidence-prepared",
