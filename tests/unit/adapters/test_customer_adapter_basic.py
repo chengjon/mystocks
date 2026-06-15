@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))
 try:
     from src.adapters.customer_adapter import CustomerDataSource
 except ImportError as e:
-    pytest.skip(f"无法导入CustomerDataSource: {e}", allow_module_level=True)
+    pytest.skip(f"无法导入CustomerDataSource: {e} owner=test-governance issue=techdebt-expired-markers ttl=2026-06-30", allow_module_level=True)
 
 
 class TestCustomerDataSourceBasic:
@@ -28,7 +28,7 @@ class TestCustomerDataSourceBasic:
 
         # 验证基本属性
         assert hasattr(adapter, "use_column_mapping")
-        assert adapter.use_column_mapping == True
+        assert adapter.use_column_mapping is True
 
     def test_initialization_with_mapping(self):
         """测试带列映射的初始化"""
@@ -36,7 +36,7 @@ class TestCustomerDataSourceBasic:
 
         # 验证配置设置
         assert hasattr(adapter, "use_column_mapping")
-        assert adapter.use_column_mapping == False
+        assert adapter.use_column_mapping is False
 
     def test_standardize_dataframe_method(self):
         """测试DataFrame标准化方法"""
@@ -79,11 +79,11 @@ class TestCustomerDataSourceBasic:
         """测试列映射配置"""
         # 测试启用列映射
         adapter1 = CustomerDataSource(use_column_mapping=True)
-        assert adapter1.use_column_mapping == True
+        assert adapter1.use_column_mapping is True
 
         # 测试禁用列映射
         adapter2 = CustomerDataSource(use_column_mapping=False)
-        assert adapter2.use_column_mapping == False
+        assert adapter2.use_column_mapping is False
 
     def test_dataframe_standardization_logic(self):
         """测试DataFrame标准化逻辑"""
@@ -152,7 +152,7 @@ class TestCustomerDataSourceBasic:
             assert adapter is not None
             assert isinstance(adapter, CustomerDataSource)
         except ImportError:
-            pytest.skip("CustomerDataSource不可用")
+            pytest.skip("CustomerDataSource不可用 owner=data-adapters issue=techdebt-expired-markers ttl=2026-06-30")
 
     def test_attribute_initialization(self):
         """测试属性初始化"""

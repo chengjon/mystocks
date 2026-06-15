@@ -56,7 +56,7 @@ class TestTushareDataSourceBasic:
             assert TushareDataSource is not None
             # 由于需要token，不创建实例
         except ImportError:
-            pytest.skip("TushareDataSource不可用")
+            pytest.skip("TushareDataSource不可用 owner=data-adapters issue=techdebt-expired-markers ttl=2026-06-30")
 
     def test_has_core_methods(self):
         """测试核心方法存在"""
@@ -100,15 +100,15 @@ class TestTushareDataSourceBasic:
         assert "tushare" in init_source
         assert "TUSHARE_TOKEN" in init_source
 
-    @patch("src.adapters.tushare_adapter.os.getenv", return_value="test_token")
-    def test_initialization_uses_pro_api_token_without_set_token_side_effect(self, _mock_getenv):
+    def test_initialization_uses_pro_api_token_without_set_token_side_effect(self):
         """测试初始化直接把 token 传给 pro_api，不依赖 set_token 落盘"""
         fake_tushare = MagicMock()
         fake_tushare.set_token.side_effect = AssertionError("set_token should not be used")
         fake_tushare.pro_api.return_value = object()
 
-        with patch.dict("sys.modules", {"tushare": fake_tushare}):
-            ds = TushareDataSource()
+        with patch("src.adapters.tushare_adapter.os.getenv", return_value="test_token"):
+            with patch.dict("sys.modules", {"tushare": fake_tushare}):
+                ds = TushareDataSource()
 
         fake_tushare.pro_api.assert_called_once_with("test_token")
         fake_tushare.set_token.assert_not_called()

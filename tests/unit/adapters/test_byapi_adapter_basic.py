@@ -178,7 +178,7 @@ class TestByapiAdapterBasic:
             assert error is not None
             assert isinstance(error, DataSourceError)
         except ImportError:
-            pytest.skip("ByapiAdapter不可用")
+            pytest.skip("ByapiAdapter不可用 owner=data-adapters issue=techdebt-expired-markers ttl=2026-06-30")
 
     def test_method_signature_presence(self):
         """测试方法签名存在性"""
@@ -238,8 +238,6 @@ class TestByapiAdapterBasic:
 
     def test_error_handling_preparation(self):
         """测试错误处理准备"""
-        adapter = ByapiAdapter()
-
         # 验证异常类可用
         assert DataSourceError is not None
 

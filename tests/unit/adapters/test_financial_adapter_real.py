@@ -5,7 +5,7 @@ Financial适配器真实测试
 
 import os
 import sys
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import pandas as pd
 import pytest
@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))
 try:
     from src.adapters.financial_adapter import FinancialDataSource
 except ImportError as e:
-    pytest.skip(f"无法导入FinancialDataSource: {e}", allow_module_level=True)
+    pytest.skip(f"无法导入FinancialDataSource: {e} owner=test-governance issue=techdebt-expired-markers ttl=2026-06-30", allow_module_level=True)
 
 
 class TestFinancialDataSourceReal:
@@ -74,10 +74,10 @@ class TestFinancialDataSourceReal:
         cached_data = adapter._get_from_cache(cache_key)
         assert cached_data == test_data
 
-    @patch("src.adapters.financial_adapter.efinance")
-    def test_get_stock_daily_method(self, mock_efinance):
+    def test_get_stock_daily_method(self):
         """测试获取股票日线数据方法"""
         # 设置模拟数据
+        mock_efinance = Mock()
         mock_df = pd.DataFrame(
             {
                 "日期": ["2024-01-01", "2024-01-02"],
@@ -90,7 +90,8 @@ class TestFinancialDataSourceReal:
         )
         mock_efinance.stock.get_quote_history.return_value = mock_df
 
-        adapter = FinancialDataSource()
+        with patch.dict("sys.modules", {"efinance": mock_efinance}):
+            adapter = FinancialDataSource()
 
         # 调用方法
         result = adapter.get_stock_daily("000001", start_date="20240101", end_date="20240102")
@@ -98,14 +99,15 @@ class TestFinancialDataSourceReal:
         # 验证结果
         assert isinstance(result, pd.DataFrame)
 
-    @patch("src.adapters.financial_adapter.efinance")
-    def test_get_index_daily_method(self, mock_efinance):
+    def test_get_index_daily_method(self):
         """测试获取指数日线数据方法"""
         # 设置模拟数据
+        mock_efinance = Mock()
         mock_df = pd.DataFrame({"日期": ["2024-01-01", "2024-01-02"], "收盘": [3000.0, 3020.0]})
         mock_efinance.stock.get_quote_history.return_value = mock_df
 
-        adapter = FinancialDataSource()
+        with patch.dict("sys.modules", {"efinance": mock_efinance}):
+            adapter = FinancialDataSource()
 
         # 调用方法
         result = adapter.get_index_daily("000001", start_date="20240101", end_date="20240102")
@@ -113,14 +115,15 @@ class TestFinancialDataSourceReal:
         # 验证结果
         assert isinstance(result, pd.DataFrame)
 
-    @patch("src.adapters.financial_adapter.efinance")
-    def test_get_stock_basic_method(self, mock_efinance):
+    def test_get_stock_basic_method(self):
         """测试获取股票基本信息方法"""
         # 设置模拟数据
+        mock_efinance = Mock()
         mock_df = pd.DataFrame({"股票代码": ["000001"], "股票名称": ["平安银行"]})
         mock_efinance.stock.get_base_info.return_value = mock_df
 
-        adapter = FinancialDataSource()
+        with patch.dict("sys.modules", {"efinance": mock_efinance}):
+            adapter = FinancialDataSource()
 
         # 调用方法
         result = adapter.get_stock_basic("000001")
@@ -136,10 +139,6 @@ class TestFinancialDataSourceReal:
         flags = [
             "efinance_available",
             "easyquotation_available",
-            "akshare_available",
-            "tushare_available",
-            "byapi_available",
-            "sina_crawler_available",
         ]
 
         for flag in flags:
@@ -162,7 +161,8 @@ class TestFinancialDataSourceReal:
 
         # 验证数据已保存
         assert cache_key in adapter.data_cache
-        assert adapter.data_cache[cache_key] == test_data
+        assert adapter.data_cache[cache_key]["data"] == test_data
+        assert "timestamp" in adapter.data_cache[cache_key]
 
     def test_import_compatibility(self):
         """测试导入兼容性"""
@@ -173,7 +173,7 @@ class TestFinancialDataSourceReal:
             adapter = FinancialDataSource()
             assert adapter is not None
         except ImportError:
-            pytest.skip("FinancialDataSource不可用")
+            pytest.skip("FinancialDataSource不可用 owner=data-adapters issue=techdebt-expired-markers ttl=2026-06-30")
 
     def test_class_docstring(self):
         """测试类文档"""
@@ -181,11 +181,12 @@ class TestFinancialDataSourceReal:
         assert adapter.__class__.__doc__ is not None
         assert len(adapter.__class__.__doc__) > 0
 
-    def test_init_data_sources_method_exists(self):
-        """测试初始化数据源方法存在"""
+    def test_legacy_data_methods_exist(self):
+        """测试 legacy 数据方法存在"""
         adapter = FinancialDataSource()
-        assert hasattr(adapter, "_init_data_sources")
-        assert callable(getattr(adapter, "_init_data_sources"))
+        for method_name in ["get_stock_daily", "get_index_daily", "get_stock_basic", "get_financial_data"]:
+            assert hasattr(adapter, method_name)
+            assert callable(getattr(adapter, method_name))
 
 
 if __name__ == "__main__":

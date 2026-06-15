@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))
 try:
     from src.adapters.financial_adapter import FinancialDataSource
 except ImportError as e:
-    pytest.skip(f"无法导入FinancialDataSource: {e}", allow_module_level=True)
+    pytest.skip(f"无法导入FinancialDataSource: {e} owner=test-governance issue=techdebt-expired-markers ttl=2026-06-30", allow_module_level=True)
 
 
 class TestFinancialDataSourceSimple:
@@ -29,24 +29,24 @@ class TestFinancialDataSourceSimple:
         with patch("src.adapters.financial_adapter.FinancialDataSource") as mock_class:
             # 创建一个模拟实例
             mock_instance = Mock()
-            mock_instance.available = True
-            mock_instance.api_key = "test_key"
+            mock_instance.efinance_available = True
+            mock_instance.easyquotation_available = True
             mock_class.return_value = mock_instance
             yield mock_class, mock_instance
 
     def test_class_initialization(self):
         """测试类的基本初始化"""
-        # 使用patch避免真实API调用
-        with patch("src.adapters.financial_adapter.FinancialDataSource"):
-            adapter = FinancialDataSource(api_key="test_key")
-            assert hasattr(adapter, "api_key")
-            assert adapter.api_key == "test_key"
+        adapter = FinancialDataSource()
+        assert hasattr(adapter, "efinance_available")
+        assert hasattr(adapter, "easyquotation_available")
+        assert hasattr(adapter, "data_cache")
 
     def test_initialization_with_no_api_key(self):
         """测试无API key的初始化"""
-        with patch("src.adapters.financial_adapter.FinancialDataSource"):
-            adapter = FinancialDataSource()
-            assert hasattr(adapter, "api_key")
+        adapter = FinancialDataSource()
+        assert not hasattr(adapter, "api_key")
+        assert hasattr(adapter, "ef")
+        assert hasattr(adapter, "eq")
 
     def test_adapter_has_required_methods(self):
         """测试适配器具有必需的方法"""
@@ -59,10 +59,14 @@ class TestFinancialDataSourceSimple:
 
             # 验证方法存在
             required_methods = [
-                "get_income_statement",
-                "get_balance_sheet",
-                "get_cash_flow",
-                "get_financial_indicators",
+                "get_stock_daily",
+                "get_index_daily",
+                "get_stock_basic",
+                "get_index_components",
+                "get_real_time_data",
+                "get_market_calendar",
+                "get_financial_data",
+                "get_news_data",
             ]
             for method in required_methods:
                 assert hasattr(adapter, method)
@@ -71,55 +75,56 @@ class TestFinancialDataSourceSimple:
         """测试收入报表方法存在"""
         with patch("src.adapters.financial_adapter.FinancialDataSource") as mock_class:
             mock_instance = Mock()
-            mock_instance.available = True
+            mock_instance.efinance_available = True
             mock_class.return_value = mock_instance
 
             adapter = FinancialDataSource()
-            assert hasattr(adapter, "get_income_statement")
-            assert callable(getattr(adapter, "get_income_statement"))
+            assert hasattr(adapter, "get_stock_daily")
+            assert callable(getattr(adapter, "get_stock_daily"))
 
     def test_get_balance_sheet_method_exists(self):
         """测试资产负债表方法存在"""
         with patch("src.adapters.financial_adapter.FinancialDataSource") as mock_class:
             mock_instance = Mock()
-            mock_instance.available = True
+            mock_instance.efinance_available = True
             mock_class.return_value = mock_instance
 
             adapter = FinancialDataSource()
-            assert hasattr(adapter, "get_balance_sheet")
-            assert callable(getattr(adapter, "get_balance_sheet"))
+            assert hasattr(adapter, "get_index_daily")
+            assert callable(getattr(adapter, "get_index_daily"))
 
     def test_get_cash_flow_method_exists(self):
         """测试现金流量表方法存在"""
         with patch("src.adapters.financial_adapter.FinancialDataSource") as mock_class:
             mock_instance = Mock()
-            mock_instance.available = True
+            mock_instance.efinance_available = True
             mock_class.return_value = mock_instance
 
             adapter = FinancialDataSource()
-            assert hasattr(adapter, "get_cash_flow")
-            assert callable(getattr(adapter, "get_cash_flow"))
+            assert hasattr(adapter, "get_stock_basic")
+            assert callable(getattr(adapter, "get_stock_basic"))
 
     def test_get_financial_indicators_method_exists(self):
         """测试财务指标方法存在"""
         with patch("src.adapters.financial_adapter.FinancialDataSource") as mock_class:
             mock_instance = Mock()
-            mock_instance.available = True
+            mock_instance.efinance_available = True
             mock_class.return_value = mock_instance
 
             adapter = FinancialDataSource()
-            assert hasattr(adapter, "get_financial_indicators")
-            assert callable(getattr(adapter, "get_financial_indicators"))
+            assert hasattr(adapter, "get_financial_data")
+            assert callable(getattr(adapter, "get_financial_data"))
 
     def test_available_attribute(self):
         """测试available属性"""
         with patch("src.adapters.financial_adapter.FinancialDataSource") as mock_class:
             mock_instance = Mock()
-            mock_instance.available = True
+            mock_instance.efinance_available = True
             mock_class.return_value = mock_instance
 
             adapter = FinancialDataSource()
-            assert hasattr(adapter, "available")
+            assert hasattr(adapter, "efinance_available")
+            assert hasattr(adapter, "easyquotation_available")
 
     def test_class_structure(self):
         """测试类的结构完整性"""
@@ -127,15 +132,16 @@ class TestFinancialDataSourceSimple:
             adapter = FinancialDataSource()
 
             # 验证基本属性
-            assert hasattr(adapter, "api_key")
-            assert hasattr(adapter, "available")
+            assert hasattr(adapter, "efinance_available")
+            assert hasattr(adapter, "easyquotation_available")
+            assert hasattr(adapter, "data_cache")
 
             # 验证主要方法存在
             financial_methods = [
-                "get_income_statement",
-                "get_balance_sheet",
-                "get_cash_flow",
-                "get_financial_indicators",
+                "get_stock_daily",
+                "get_index_daily",
+                "get_stock_basic",
+                "get_financial_data",
             ]
 
             for method in financial_methods:
@@ -152,33 +158,47 @@ class TestFinancialDataSourceSimple:
 
             assert FinancialDataSource is not None
         except ImportError:
-            pytest.skip("FinancialDataSource不可用")
+            pytest.skip("FinancialDataSource不可用 owner=data-adapters issue=techdebt-expired-markers ttl=2026-06-30")
 
     def test_method_signature_validation(self):
         """测试方法签名基本验证"""
-        with patch("src.adapters.financial_adapter.FinancialDataSource") as mock_class:
-            mock_instance = Mock()
-            mock_instance.available = True
-            mock_instance.get_income_statement.return_value = pd.DataFrame()
-            mock_instance.get_balance_sheet.return_value = pd.DataFrame()
-            mock_instance.get_cash_flow.return_value = pd.DataFrame()
-            mock_instance.get_financial_indicators.return_value = pd.DataFrame()
-            mock_class.return_value = mock_instance
+        fake_efinance = Mock()
+        fake_efinance.stock = Mock()
+        fake_efinance.stock.get_quote_history.return_value = pd.DataFrame(
+            {
+                "日期": ["2024-01-01"],
+                "开盘": [10.0],
+                "收盘": [10.2],
+                "最高": [10.5],
+                "最低": [9.8],
+                "成交量": [1000000],
+                "成交额": [10200000],
+            }
+        )
+        fake_efinance.stock.get_base_info.return_value = pd.DataFrame(
+            {"股票代码": ["000001"], "股票名称": ["平安银行"]}
+        )
+        fake_efinance.stock.get_all_company_performance.return_value = pd.DataFrame(
+            {"股票代码": ["000001"], "股票简称": ["平安银行"]}
+        )
+        fake_efinance.stock.get_quarterly_performance.return_value = pd.DataFrame(
+            {"股票代码": ["000001"], "股票简称": ["平安银行"]}
+        )
 
+        with patch.dict("sys.modules", {"efinance": fake_efinance}):
             adapter = FinancialDataSource()
 
             # 测试方法调用不会抛出异常（模拟返回值）
             try:
-                result1 = adapter.get_income_statement("TEST")
-                result2 = adapter.get_balance_sheet("TEST")
-                result3 = adapter.get_cash_flow("TEST")
-                result4 = adapter.get_financial_indicators("TEST")
+                result1 = adapter.get_stock_daily("000001", "20240101", "20240102")
+                result2 = adapter.get_index_daily("000001", "20240101", "20240102")
+                result3 = adapter.get_stock_basic("000001")
+                result4 = adapter.get_financial_data("000001")
 
                 # 验证返回值类型
-                # 注意：这些是mock返回，所以总是DataFrame
                 assert isinstance(result1, pd.DataFrame)
                 assert isinstance(result2, pd.DataFrame)
-                assert isinstance(result3, pd.DataFrame)
+                assert isinstance(result3, dict)
                 assert isinstance(result4, pd.DataFrame)
 
             except Exception as e:
