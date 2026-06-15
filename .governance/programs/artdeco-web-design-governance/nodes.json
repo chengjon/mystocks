@@ -10166,5 +10166,62 @@
       "current_head": "3105d9689479c429617f433bce242911f14e9ec9",
       "prepared_at": "2026-06-15T01:36:41.595Z"
     }
+  },
+  {
+    "id": "b4-012-m3a-c3-query-builder-contract-authorization",
+    "title": "B4.012 M3a-C3 query builder SQL contract authorization",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-m3a-c-adapter-data-source-tests-split",
+    "status": "authorization-prepared",
+    "function_tree_ref": "b4-012-m3a-c-adapter-data-source-tests-split",
+    "current_head": "de691f2cd35331c205dda2c9f972a7ddb52d04f4",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-c3-query-builder-contract-authorization-prep-2026-06-15.md",
+        "note": "M3a-C3 QueryBuilder SQL connector contract no-source audit and authorization prep.",
+        "current_head": "de691f2cd35331c205dda2c9f972a7ddb52d04f4",
+        "recorded_at": "2026-06-15T02:24:38.081Z"
+      }
+    ],
+    "allowed_paths": [
+      "src/data_sources/real/query_builder.py",
+      "tests/data_sources/test_query_builder.py",
+      "docs/reports/worklogs/claude-auto/b4-012-m3a-c3-query-builder-contract-closeout-2026-06-15.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not modify production caller modules such as enhanced_postgresql_relational.py or connection_adapter.py.",
+      "Do not modify tests/unit/connection_pool/test_connection_pool_core.py; its E712 issue is separate existing hygiene.",
+      "Do not modify source/runtime/OpenSpec/API/frontend/ST-HOLD/marketKlineData or external dirty files outside allowed paths."
+    ],
+    "next_gate": "review and approve implementation authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-15T02:23:38.999Z",
+    "updated_at": "2026-06-15T02:24:56.770Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "",
+        "current_head": "de691f2cd35331c205dda2c9f972a7ddb52d04f4",
+        "transitioned_at": "2026-06-15T02:24:56.705Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "GitNexus impact evidence for QueryBuilder.where and QueryBuilder._build_select before implementation.",
+        "py_compile and ruff pass for src/data_sources/real/query_builder.py and tests/data_sources/test_query_builder.py.",
+        "Focused pytest passes for tests/data_sources/test_query_builder.py; related smoke passes for tests/unit/test_query_builder_functionality.py and tests/unit/connection_pool/test_connection_pool_core.py.",
+        "GitNexus verify-staged and detect-changes --scope staged pass; OPENDOG has no failing runs or cleanup blockers."
+      ],
+      "closeout_gate": [
+        "Closeout worklog records source contract repair, test results, GitNexus risk, OPENDOG status, and exact staged file list."
+      ]
+    }
   }
 ]
