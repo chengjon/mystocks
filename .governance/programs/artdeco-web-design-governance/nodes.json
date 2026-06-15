@@ -10173,11 +10173,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-c-adapter-data-source-tests-split",
-    "status": "authorization-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "b4-012-m3a-c-adapter-data-source-tests-split",
-    "current_head": "de691f2cd35331c205dda2c9f972a7ddb52d04f4",
+    "current_head": "1216caccf04e0d87dcd9565d62bfaabd03df4acd",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "baseline",
@@ -10185,6 +10185,13 @@
         "note": "M3a-C3 QueryBuilder SQL connector contract no-source audit and authorization prep.",
         "current_head": "de691f2cd35331c205dda2c9f972a7ddb52d04f4",
         "recorded_at": "2026-06-15T02:24:38.081Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "User approved B4.012-M3a-C3 implementation at HEAD 1216caccf; allowed paths remain src/data_sources/real/query_builder.py, tests/data_sources/test_query_builder.py, and closeout worklog.",
+        "note": "C3 implementation source authorization received; scope remains QueryBuilder SQL connector contract only.",
+        "current_head": "1216caccf04e0d87dcd9565d62bfaabd03df4acd",
+        "recorded_at": "2026-06-15T02:34:06.820Z"
       }
     ],
     "allowed_paths": [
@@ -10198,11 +10205,11 @@
       "Do not modify tests/unit/connection_pool/test_connection_pool_core.py; its E712 issue is separate existing hygiene.",
       "Do not modify source/runtime/OpenSpec/API/frontend/ST-HOLD/marketKlineData or external dirty files outside allowed paths."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T02:23:38.999Z",
-    "updated_at": "2026-06-15T02:24:56.770Z",
+    "updated_at": "2026-06-15T02:37:28.132Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -10210,6 +10217,20 @@
         "note": "",
         "current_head": "de691f2cd35331c205dda2c9f972a7ddb52d04f4",
         "transitioned_at": "2026-06-15T02:24:56.705Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "1216caccf04e0d87dcd9565d62bfaabd03df4acd",
+        "transitioned_at": "2026-06-15T02:34:06.902Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "1216caccf04e0d87dcd9565d62bfaabd03df4acd",
+        "transitioned_at": "2026-06-15T02:37:28.132Z"
       }
     ],
     "acceptance": {

@@ -105,8 +105,9 @@ class QueryBuilder:
         Returns:
             QueryBuilder: 链式调用
         """
+        if self._where_conditions:
+            self._where_connectors.append("AND")
         self._where_conditions.append(condition)
-        self._where_connectors.append("AND")
         self._values.extend(args)
         return self
 
@@ -123,8 +124,8 @@ class QueryBuilder:
         """
         if not self._where_conditions:
             raise ValueError("or_where() must be called after where()")
-        self._where_conditions.append(condition)
         self._where_connectors.append("OR")
+        self._where_conditions.append(condition)
         self._values.extend(args)
         return self
 

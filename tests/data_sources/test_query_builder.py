@@ -37,7 +37,7 @@ class MockConnectionProvider:
         pass
 
 
-@pytest.mark.skipif(not QUERY_BUILDER_AVAILABLE, reason="Query builder not available")
+@pytest.mark.skipif(not QUERY_BUILDER_AVAILABLE, reason="Query builder not available owner=data-platform issue=techdebt-expired-markers ttl=2026-06-30")
 class TestQueryBuilder:
     """查询构建器测试"""
 
@@ -79,6 +79,20 @@ class TestQueryBuilder:
         )
 
         expected_sql = "SELECT * FROM users WHERE age > %s AND status = %s"
+        assert sql == expected_sql
+        assert params == [18, "active"]
+
+    def test_select_with_or_condition(self):
+        """测试OR条件SELECT查询"""
+        sql, params = (
+            self.query_builder.select("*")
+            .from_table("users")
+            .where("age > %s", 18)
+            .or_where("status = %s", "active")
+            .build()
+        )
+
+        expected_sql = "SELECT * FROM users WHERE age > %s OR status = %s"
         assert sql == expected_sql
         assert params == [18, "active"]
 
@@ -257,7 +271,7 @@ class TestQueryBuilder:
             self.query_builder.update("users").build()
 
 
-@pytest.mark.skipif(not QUERY_BUILDER_AVAILABLE, reason="Query builder not available")
+@pytest.mark.skipif(not QUERY_BUILDER_AVAILABLE, reason="Query builder not available owner=data-platform issue=techdebt-expired-markers ttl=2026-06-30")
 class TestQueryExecution:
     """查询执行器测试"""
 
@@ -287,7 +301,7 @@ class TestQueryExecution:
         assert query._select_fields == []
 
 
-@pytest.mark.skipif(not QUERY_BUILDER_AVAILABLE, reason="Query builder not available")
+@pytest.mark.skipif(not QUERY_BUILDER_AVAILABLE, reason="Query builder not available owner=data-platform issue=techdebt-expired-markers ttl=2026-06-30")
 class TestQueryBuilderIntegration:
     """查询构建器集成测试"""
 
