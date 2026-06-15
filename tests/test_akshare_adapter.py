@@ -89,11 +89,13 @@ class TestAkshareAdapter:
         assert "close" in result.columns
         mock_hist.assert_called_once()
 
+    @patch("adapters.akshare_adapter.ak.stock_zh_a_spot")
     @patch("adapters.akshare_adapter.ak.stock_zh_a_hist")
-    def test_get_stock_daily_empty_result(self, mock_hist):
+    def test_get_stock_daily_empty_result(self, mock_hist, mock_spot):
         """测试获取日线数据返回空结果"""
         # Mock返回空DataFrame
         mock_hist.return_value = pd.DataFrame()
+        mock_spot.return_value = pd.DataFrame()
 
         # 调用方法
         result = self.adapter.get_stock_daily("INVALID", "2024-01-01", "2024-01-10")
@@ -103,11 +105,13 @@ class TestAkshareAdapter:
         assert isinstance(result, pd.DataFrame)
         assert len(result) == 0
 
+    @patch("adapters.akshare_adapter.ak.stock_zh_a_spot")
     @patch("adapters.akshare_adapter.ak.stock_zh_a_hist")
-    def test_get_stock_daily_exception_handling(self, mock_hist):
+    def test_get_stock_daily_exception_handling(self, mock_hist, mock_spot):
         """测试获取日线数据异常处理"""
         # Mock抛出异常
         mock_hist.side_effect = Exception("API Error")
+        mock_spot.return_value = pd.DataFrame()
 
         # 调用方法应该不抛出异常
         result = self.adapter.get_stock_daily("000001", "2024-01-01", "2024-01-10")
@@ -119,9 +123,10 @@ class TestAkshareAdapter:
         """测试无效参数"""
         # 适配器内部捕获异常并返回空DataFrame，而不是抛出异常
         result = self.adapter.get_stock_daily(None, "2024-01-01", "2024-01-10")
-        assert isinstance(result, pd.DataFrame) and len(result) == 0
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 0
 
-    @patch("adapters.akshare_adapter.ak.stock_zh_a_spot_em")
+    @patch("adapters.akshare_adapter.ak.stock_zh_a_spot")
     def test_get_real_time_data_success(self, mock_spot, sample_realtime_data):
         """测试获取实时数据成功场景"""
         # Mock返回数据
@@ -135,7 +140,7 @@ class TestAkshareAdapter:
         assert result is not None
         assert isinstance(result, (dict, pd.DataFrame))
 
-    @pytest.mark.skip(reason="AkshareDataSource未实现get_balance_sheet方法，请使用get_financial_data")
+    @pytest.mark.skip(reason="AkshareDataSource未实现get_balance_sheet方法，请使用get_financial_data owner=data-adapters issue=techdebt-expired-markers ttl=2026-06-30")
     @patch("adapters.akshare_adapter.ak")
     def test_get_balance_sheet(self, mock_ak, sample_financial_data):
         """测试获取资产负债表"""
@@ -151,7 +156,7 @@ class TestAkshareAdapter:
             if len(result) > 0:
                 assert "report_date" in result.columns or "total_assets" in str(result.columns)
 
-    @pytest.mark.skip(reason="AkshareDataSource未实现get_income_statement方法，请使用get_financial_data")
+    @pytest.mark.skip(reason="AkshareDataSource未实现get_income_statement方法，请使用get_financial_data owner=data-adapters issue=techdebt-expired-markers ttl=2026-06-30")
     @patch("adapters.akshare_adapter.ak")
     def test_get_income_statement(self, mock_ak, sample_financial_data):
         """测试获取利润表"""
@@ -165,7 +170,7 @@ class TestAkshareAdapter:
         if result is not None:
             assert isinstance(result, pd.DataFrame)
 
-    @pytest.mark.skip(reason="AkshareDataSource未实现get_cashflow_statement方法，请使用get_financial_data")
+    @pytest.mark.skip(reason="AkshareDataSource未实现get_cashflow_statement方法，请使用get_financial_data owner=data-adapters issue=techdebt-expired-markers ttl=2026-06-30")
     @patch("adapters.akshare_adapter.ak")
     def test_get_cashflow_statement(self, mock_ak, sample_financial_data):
         """测试获取现金流量表"""
@@ -179,8 +184,20 @@ class TestAkshareAdapter:
         if result is not None:
             assert isinstance(result, pd.DataFrame)
 
-    def test_symbol_format_conversion(self):
+    @patch("adapters.akshare_adapter.ak.stock_zh_a_hist")
+    def test_symbol_format_conversion(self, mock_hist):
         """测试股票代码格式转换"""
+        mock_hist.return_value = pd.DataFrame(
+            {
+                "日期": ["2024-01-01"],
+                "开盘": [10.0],
+                "最高": [11.0],
+                "最低": [9.0],
+                "收盘": [10.5],
+                "成交量": [1000000],
+            }
+        )
+
         # 测试各种格式
         test_cases = [
             ("000001", "000001"),
@@ -193,9 +210,22 @@ class TestAkshareAdapter:
             # 适配器应该能处理各种格式
             result = self.adapter.get_stock_daily(input_symbol, "2024-01-01", "2024-01-10")
             assert isinstance(result, pd.DataFrame)
+            assert result.empty is False
 
-    def test_date_format_validation(self):
+    @patch("adapters.akshare_adapter.ak.stock_zh_a_hist")
+    def test_date_format_validation(self, mock_hist):
         """测试日期格式验证"""
+        mock_hist.return_value = pd.DataFrame(
+            {
+                "日期": ["2024-01-01"],
+                "开盘": [10.0],
+                "最高": [11.0],
+                "最低": [9.0],
+                "收盘": [10.5],
+                "成交量": [1000000],
+            }
+        )
+
         valid_dates = ["2024-01-01", "2023-12-31"]
 
         for date_str in valid_dates:
@@ -212,6 +242,7 @@ class TestAkshareAdapterIntegration:
 
     @pytest.mark.integration
     @pytest.mark.slow
+    @pytest.mark.skip(reason="network integration is excluded from C4 focused test gate owner=test-governance issue=b4-012-m3a-c4 ttl=2026-06-30")
     def test_real_api_call(self):
         """测试真实API调用（可选）"""
         adapter = AkshareDataSource()
@@ -224,4 +255,4 @@ class TestAkshareAdapterIntegration:
                 assert "date" in result.columns or "close" in result.columns
         except Exception as e:
             # 网络问题或API限流，跳过
-            pytest.skip(f"API call failed: {str(e)}")
+            pytest.skip(f"API call failed: {str(e)} owner=data-adapters issue=techdebt-expired-markers ttl=2026-06-30")

@@ -28,27 +28,60 @@ Phase: 2 - Task 2.2.1
 Phase: 1 - Task 1.8 (添加市场总貌数据测试)
 """
 
-import asyncio
-import unittest
-from unittest.mock import patch, AsyncMock
+from unittest.mock import patch
 
 import pandas as pd
+import pytest
 
 from src.adapters.akshare.market_adapter import AkshareMarketDataAdapter
-from src.adapters.akshare_adapter import AkshareDataSource
+
+pytestmark = pytest.mark.asyncio
+
+
+def _akshare_fixture(name):
+    @pytest.fixture
+    def fixture():
+        with patch(f"akshare.{name}", create=True) as mock:
+            yield mock
+
+    return fixture
+
+
+mock_sse_summary = _akshare_fixture("stock_sse_summary")
+mock_szse_summary = _akshare_fixture("stock_szse_summary")
+mock_area_summary = _akshare_fixture("stock_szse_area_summary")
+mock_sector_summary = _akshare_fixture("stock_szse_sector_summary")
+mock_sse_deal = _akshare_fixture("stock_sse_deal_daily")
+mock_individual_info = _akshare_fixture("stock_individual_info_em")
+mock_basic_info_xq = _akshare_fixture("stock_individual_basic_info_xq")
+mock_zyjs_ths = _akshare_fixture("stock_zyjs_ths")
+mock_zygc_em = _akshare_fixture("stock_zygc_em")
+mock_comment_em = _akshare_fixture("stock_comment_em")
+mock_comment_detail = _akshare_fixture("stock_comment_detail_zlkp_jgcyd_em")
+mock_news_em = _akshare_fixture("stock_news_em")
+mock_bid_ask = _akshare_fixture("stock_bid_ask_em")
+mock_hsgt_summary = _akshare_fixture("stock_hsgt_fund_flow_summary_em")
+mock_hsgt_detail = _akshare_fixture("stock_hsgt_fund_flow_detail_em")
+mock_north_flow = _akshare_fixture("stock_hsgt_north_net_flow_in_em")
+mock_south_flow = _akshare_fixture("stock_hsgt_south_net_flow_in_em")
+mock_north_stock = _akshare_fixture("stock_hsgt_north_acc_flow_in_em")
+mock_south_stock = _akshare_fixture("stock_hsgt_south_acc_flow_in_em")
+mock_hsgt_hold = _akshare_fixture("stock_hsgt_hold_stock_em")
+mock_big_deal = _akshare_fixture("stock_fund_flow_big_deal")
+mock_cyq = _akshare_fixture("stock_cyq_em")
 
 
 class TestAkshareMarketDataAdapterCoreMixin:
     """TestAkshareMarketDataAdapter 方法集 Part 1"""
 
-    def setUp(self):
+    def setup_method(self):
         """测试前准备"""
         self.adapter = AkshareMarketDataAdapter()
 
-    def test_init(self):
+    async def test_init(self):
         """测试适配器初始化"""
-        self.assertIsNotNone(self.adapter)
-        self.assertIsNotNone(self.adapter.logger)
+        assert self.adapter is not None
+        assert self.adapter.logger is not None
 
     async def test_get_market_overview_sse_success(self, mock_sse_summary):
         """测试成功获取上海证券交易所市场总貌"""
@@ -70,13 +103,13 @@ class TestAkshareMarketDataAdapterCoreMixin:
         result = await self.adapter.get_market_overview_sse()
 
         # Verify
-        self.assertIsInstance(result, pd.DataFrame)
-        self.assertEqual(len(result), 2)
-        self.assertIn("index_code", result.columns)
-        self.assertIn("index_name", result.columns)
-        self.assertIn("latest_price", result.columns)
-        self.assertIn("change_percent", result.columns)
-        self.assertIn("query_timestamp", result.columns)
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 2
+        assert "index_code" in result.columns
+        assert "index_name" in result.columns
+        assert "latest_price" in result.columns
+        assert "change_percent" in result.columns
+        assert "query_timestamp" in result.columns
 
     async def test_get_market_overview_szse_success(self, mock_szse_summary):
         """测试成功获取深圳证券交易所市场总貌"""
@@ -97,12 +130,12 @@ class TestAkshareMarketDataAdapterCoreMixin:
         result = await self.adapter.get_market_overview_szse("2024-01-15")
 
         # Verify
-        self.assertIsInstance(result, pd.DataFrame)
-        self.assertEqual(len(result), 3)
-        self.assertIn("sector", result.columns)
-        self.assertIn("change_percent", result.columns)
-        self.assertIn("query_date", result.columns)
-        self.assertIn("query_timestamp", result.columns)
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 3
+        assert "sector" in result.columns
+        assert "change_percent" in result.columns
+        assert "query_date" in result.columns
+        assert "query_timestamp" in result.columns
 
     async def test_get_szse_area_trading_success(self, mock_area_summary):
         """测试成功获取深圳地区交易排序数据"""
@@ -123,11 +156,11 @@ class TestAkshareMarketDataAdapterCoreMixin:
         result = await self.adapter.get_szse_area_trading_summary("2024-01-15")
 
         # Verify
-        self.assertIsInstance(result, pd.DataFrame)
-        self.assertEqual(len(result), 3)
-        self.assertIn("region", result.columns)
-        self.assertIn("change_percent", result.columns)
-        self.assertIn("query_date", result.columns)
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 3
+        assert "region" in result.columns
+        assert "change_percent" in result.columns
+        assert "query_date" in result.columns
 
     async def test_get_szse_sector_trading_success(self, mock_sector_summary):
         """测试成功获取深圳行业成交数据"""
@@ -148,12 +181,12 @@ class TestAkshareMarketDataAdapterCoreMixin:
         result = await self.adapter.get_szse_sector_trading_summary("BK0477", "2024-01-15")
 
         # Verify
-        self.assertIsInstance(result, pd.DataFrame)
-        self.assertEqual(len(result), 2)
-        self.assertIn("sector_code", result.columns)
-        self.assertIn("sector_name", result.columns)
-        self.assertIn("query_symbol", result.columns)
-        self.assertIn("query_date", result.columns)
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 2
+        assert "sector_code" in result.columns
+        assert "sector_name" in result.columns
+        assert "query_symbol" in result.columns
+        assert "query_date" in result.columns
 
     async def test_get_sse_daily_deal_success(self, mock_sse_deal):
         """测试成功获取上海交易所每日概况"""
@@ -171,13 +204,13 @@ class TestAkshareMarketDataAdapterCoreMixin:
         result = await self.adapter.get_sse_daily_deal_summary("2024-01-15")
 
         # Verify
-        self.assertIsInstance(result, pd.DataFrame)
-        self.assertEqual(len(result), 3)
-        self.assertIn("item", result.columns)
-        self.assertIn("count", result.columns)
-        self.assertIn("amount", result.columns)
-        self.assertIn("percentage", result.columns)
-        self.assertIn("query_date", result.columns)
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 3
+        assert "item" in result.columns
+        assert "count" in result.columns
+        assert "amount" in result.columns
+        assert "percentage" in result.columns
+        assert "query_date" in result.columns
 
     async def test_get_market_overview_sse_empty_data(self):
         """测试SSE市场总貌返回空数据"""
@@ -189,8 +222,8 @@ class TestAkshareMarketDataAdapterCoreMixin:
             result = await self.adapter.get_market_overview_sse()
 
             # Verify
-            self.assertIsInstance(result, pd.DataFrame)
-            self.assertTrue(result.empty)
+            assert isinstance(result, pd.DataFrame)
+            assert result.empty
 
     async def test_get_market_overview_szse_empty_data(self):
         """测试SZSE市场总貌返回空数据"""
@@ -202,8 +235,8 @@ class TestAkshareMarketDataAdapterCoreMixin:
             result = await self.adapter.get_market_overview_szse("2024-01-15")
 
             # Verify
-            self.assertIsInstance(result, pd.DataFrame)
-            self.assertTrue(result.empty)
+            assert isinstance(result, pd.DataFrame)
+            assert result.empty
 
     async def test_get_szse_area_trading_empty_data(self):
         """测试SZSE地区交易返回空数据"""
@@ -215,8 +248,8 @@ class TestAkshareMarketDataAdapterCoreMixin:
             result = await self.adapter.get_szse_area_trading_summary("2024-01-15")
 
             # Verify
-            self.assertIsInstance(result, pd.DataFrame)
-            self.assertTrue(result.empty)
+            assert isinstance(result, pd.DataFrame)
+            assert result.empty
 
     async def test_get_szse_sector_trading_empty_data(self):
         """测试SZSE行业成交返回空数据"""
@@ -228,8 +261,8 @@ class TestAkshareMarketDataAdapterCoreMixin:
             result = await self.adapter.get_szse_sector_trading_summary("BK0477", "2024-01-15")
 
             # Verify
-            self.assertIsInstance(result, pd.DataFrame)
-            self.assertTrue(result.empty)
+            assert isinstance(result, pd.DataFrame)
+            assert result.empty
 
     async def test_get_sse_daily_deal_empty_data(self):
         """测试SSE每日概况返回空数据"""
@@ -241,8 +274,8 @@ class TestAkshareMarketDataAdapterCoreMixin:
             result = await self.adapter.get_sse_daily_deal_summary("2024-01-15")
 
             # Verify
-            self.assertIsInstance(result, pd.DataFrame)
-            self.assertTrue(result.empty)
+            assert isinstance(result, pd.DataFrame)
+            assert result.empty
 
     async def test_get_stock_individual_info_em_success(self, mock_individual_info):
         """测试成功获取个股信息查询-东财"""
@@ -255,10 +288,10 @@ class TestAkshareMarketDataAdapterCoreMixin:
         result = await self.adapter.get_stock_individual_info_em("000001")
 
         # Verify
-        self.assertIsInstance(result, dict)
-        self.assertEqual(result["symbol"], "000001")
-        self.assertIn("query_timestamp", result)
-        self.assertEqual(len([k for k in result.keys() if k not in ["symbol", "query_timestamp"]]), 3)
+        assert isinstance(result, dict)
+        assert result["symbol"] == "000001"
+        assert "query_timestamp" in result
+        assert len([k for k in result.keys() if k not in ["symbol", "query_timestamp"]]) == 3
 
     async def test_get_stock_individual_basic_info_xq_success(self, mock_basic_info_xq):
         """测试成功获取个股信息查询-雪球"""
@@ -271,9 +304,9 @@ class TestAkshareMarketDataAdapterCoreMixin:
         result = await self.adapter.get_stock_individual_basic_info_xq("SZ000001")
 
         # Verify
-        self.assertIsInstance(result, dict)
-        self.assertEqual(result["symbol"], "SZ000001")
-        self.assertIn("query_timestamp", result)
+        assert isinstance(result, dict)
+        assert result["symbol"] == "SZ000001"
+        assert "query_timestamp" in result
 
     async def test_get_stock_zyjs_ths_success(self, mock_zyjs_ths):
         """测试成功获取主营介绍-同花顺"""
@@ -286,9 +319,9 @@ class TestAkshareMarketDataAdapterCoreMixin:
         result = await self.adapter.get_stock_zyjs_ths("000001")
 
         # Verify
-        self.assertIsInstance(result, dict)
-        self.assertEqual(result["symbol"], "000001")
-        self.assertIn("query_timestamp", result)
+        assert isinstance(result, dict)
+        assert result["symbol"] == "000001"
+        assert "query_timestamp" in result
 
     async def test_get_stock_zygc_em_success(self, mock_zygc_em):
         """测试成功获取主营构成-东财"""
@@ -309,11 +342,11 @@ class TestAkshareMarketDataAdapterCoreMixin:
         result = await self.adapter.get_stock_zygc_em("000001")
 
         # Verify
-        self.assertIsInstance(result, pd.DataFrame)
-        self.assertEqual(len(result), 2)
-        self.assertIn("symbol", result.columns)
-        self.assertIn("business_segment", result.columns)
-        self.assertIn("query_timestamp", result.columns)
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 2
+        assert "symbol" in result.columns
+        assert "business_segment" in result.columns
+        assert "query_timestamp" in result.columns
 
     async def test_get_stock_comment_em_success(self, mock_comment_em):
         """测试成功获取千股千评"""
@@ -338,11 +371,11 @@ class TestAkshareMarketDataAdapterCoreMixin:
         result = await self.adapter.get_stock_comment_em("000001")
 
         # Verify
-        self.assertIsInstance(result, pd.DataFrame)
-        self.assertEqual(len(result), 1)
-        self.assertIn("symbol", result.columns)
-        self.assertIn("analyst_count", result.columns)
-        self.assertIn("query_timestamp", result.columns)
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 1
+        assert "symbol" in result.columns
+        assert "analyst_count" in result.columns
+        assert "query_timestamp" in result.columns
 
     async def test_get_stock_comment_detail_em_success(self, mock_comment_detail):
         """测试成功获取千股千评详情"""
@@ -363,11 +396,11 @@ class TestAkshareMarketDataAdapterCoreMixin:
         result = await self.adapter.get_stock_comment_detail_zlkp_jgcyd_em("000001")
 
         # Verify
-        self.assertIsInstance(result, pd.DataFrame)
-        self.assertEqual(len(result), 2)
-        self.assertIn("symbol", result.columns)
-        self.assertIn("analyst_name", result.columns)
-        self.assertIn("organization", result.columns)
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 2
+        assert "symbol" in result.columns
+        assert "analyst_name" in result.columns
+        assert "organization" in result.columns
 
     async def test_get_stock_news_em_success(self, mock_news_em):
         """测试成功获取个股新闻"""
@@ -387,11 +420,11 @@ class TestAkshareMarketDataAdapterCoreMixin:
         result = await self.adapter.get_stock_news_em("000001")
 
         # Verify
-        self.assertIsInstance(result, pd.DataFrame)
-        self.assertEqual(len(result), 2)
-        self.assertIn("symbol", result.columns)
-        self.assertIn("title", result.columns)
-        self.assertIn("content", result.columns)
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 2
+        assert "symbol" in result.columns
+        assert "title" in result.columns
+        assert "content" in result.columns
 
     async def test_get_stock_bid_ask_em_success(self, mock_bid_ask):
         """测试成功获取行情报价"""
@@ -426,11 +459,11 @@ class TestAkshareMarketDataAdapterCoreMixin:
         result = await self.adapter.get_stock_bid_ask_em("000001")
 
         # Verify
-        self.assertIsInstance(result, pd.DataFrame)
-        self.assertEqual(len(result), 1)
-        self.assertIn("symbol", result.columns)
-        self.assertIn("bid_price_1", result.columns)
-        self.assertIn("ask_price_1", result.columns)
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 1
+        assert "symbol" in result.columns
+        assert "bid_price_1" in result.columns
+        assert "ask_price_1" in result.columns
 
     async def test_get_stock_individual_info_em_empty_data(self):
         """测试个股信息查询-东财返回空数据"""
@@ -442,9 +475,9 @@ class TestAkshareMarketDataAdapterCoreMixin:
             result = await self.adapter.get_stock_individual_info_em("000001")
 
             # Verify
-            self.assertIsInstance(result, dict)
-            self.assertIn("error", result)
-            self.assertEqual(result["error"], "No data found")
+            assert isinstance(result, dict)
+            assert "error" in result
+            assert result["error"] == "No data found"
 
     async def test_get_stock_zygc_em_empty_data(self):
         """测试主营构成-东财返回空数据"""
@@ -456,8 +489,8 @@ class TestAkshareMarketDataAdapterCoreMixin:
             result = await self.adapter.get_stock_zygc_em("000001")
 
             # Verify
-            self.assertIsInstance(result, pd.DataFrame)
-            self.assertTrue(result.empty)
+            assert isinstance(result, pd.DataFrame)
+            assert result.empty
 
     async def test_get_stock_comment_em_empty_data(self):
         """测试千股千评返回空数据"""
@@ -469,8 +502,8 @@ class TestAkshareMarketDataAdapterCoreMixin:
             result = await self.adapter.get_stock_comment_em("000001")
 
             # Verify
-            self.assertIsInstance(result, pd.DataFrame)
-            self.assertTrue(result.empty)
+            assert isinstance(result, pd.DataFrame)
+            assert result.empty
 
     async def test_get_stock_news_em_empty_data(self):
         """测试个股新闻返回空数据"""
@@ -482,8 +515,8 @@ class TestAkshareMarketDataAdapterCoreMixin:
             result = await self.adapter.get_stock_news_em("000001")
 
             # Verify
-            self.assertIsInstance(result, pd.DataFrame)
-            self.assertTrue(result.empty)
+            assert isinstance(result, pd.DataFrame)
+            assert result.empty
 
     async def test_get_stock_bid_ask_em_empty_data(self):
         """测试行情报价返回空数据"""
@@ -495,8 +528,8 @@ class TestAkshareMarketDataAdapterCoreMixin:
             result = await self.adapter.get_stock_bid_ask_em("000001")
 
             # Verify
-            self.assertIsInstance(result, pd.DataFrame)
-            self.assertTrue(result.empty)
+            assert isinstance(result, pd.DataFrame)
+            assert result.empty
 
     async def test_get_stock_hsgt_fund_flow_summary_em_success(self, mock_hsgt_summary):
         """测试成功获取沪深港通资金流向汇总"""
@@ -516,11 +549,11 @@ class TestAkshareMarketDataAdapterCoreMixin:
         result = await self.adapter.get_stock_hsgt_fund_flow_summary_em("2024-01-01", "2024-01-02")
 
         # Verify
-        self.assertIsInstance(result, pd.DataFrame)
-        self.assertEqual(len(result), 2)
-        self.assertIn("date", result.columns)
-        self.assertIn("north_money", result.columns)
-        self.assertIn("south_money", result.columns)
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 2
+        assert "date" in result.columns
+        assert "north_money" in result.columns
+        assert "south_money" in result.columns
 
     async def test_get_stock_hsgt_fund_flow_detail_em_success(self, mock_hsgt_detail):
         """测试成功获取沪深港通资金流向明细"""
@@ -541,11 +574,11 @@ class TestAkshareMarketDataAdapterCoreMixin:
         result = await self.adapter.get_stock_hsgt_fund_flow_detail_em("2024-01-01", "2024-01-02")
 
         # Verify
-        self.assertIsInstance(result, pd.DataFrame)
-        self.assertEqual(len(result), 2)
-        self.assertIn("date", result.columns)
-        self.assertIn("market", result.columns)
-        self.assertIn("direction", result.columns)
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 2
+        assert "date" in result.columns
+        assert "market" in result.columns
+        assert "direction" in result.columns
 
     async def test_get_stock_hsgt_north_net_flow_in_em_success(self, mock_north_flow):
         """测试成功获取北向资金每日统计"""
@@ -564,12 +597,12 @@ class TestAkshareMarketDataAdapterCoreMixin:
         result = await self.adapter.get_stock_hsgt_north_net_flow_in_em("2024-01-01", "2024-01-02")
 
         # Verify
-        self.assertIsInstance(result, pd.DataFrame)
-        self.assertEqual(len(result), 2)
-        self.assertIn("date", result.columns)
-        self.assertIn("net_flow", result.columns)
-        self.assertIn("fund_direction", result.columns)
-        self.assertEqual(result["fund_direction"].iloc[0], "north")
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 2
+        assert "date" in result.columns
+        assert "net_flow" in result.columns
+        assert "fund_direction" in result.columns
+        assert result["fund_direction"].iloc[0] == "north"
 
     async def test_get_stock_hsgt_south_net_flow_in_em_success(self, mock_south_flow):
         """测试成功获取南向资金每日统计"""
@@ -588,10 +621,10 @@ class TestAkshareMarketDataAdapterCoreMixin:
         result = await self.adapter.get_stock_hsgt_south_net_flow_in_em("2024-01-01", "2024-01-02")
 
         # Verify
-        self.assertIsInstance(result, pd.DataFrame)
-        self.assertEqual(len(result), 2)
-        self.assertIn("fund_direction", result.columns)
-        self.assertEqual(result["fund_direction"].iloc[0], "south")
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 2
+        assert "fund_direction" in result.columns
+        assert result["fund_direction"].iloc[0] == "south"
 
     async def test_get_stock_hsgt_north_acc_flow_in_em_success(self, mock_north_stock):
         """测试成功获取北向资金个股统计"""
@@ -611,11 +644,11 @@ class TestAkshareMarketDataAdapterCoreMixin:
         result = await self.adapter.get_stock_hsgt_north_acc_flow_in_em("000001")
 
         # Verify
-        self.assertIsInstance(result, pd.DataFrame)
-        self.assertEqual(len(result), 2)
-        self.assertIn("symbol", result.columns)
-        self.assertIn("hold_amount", result.columns)
-        self.assertIn("fund_direction", result.columns)
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 2
+        assert "symbol" in result.columns
+        assert "hold_amount" in result.columns
+        assert "fund_direction" in result.columns
 
     async def test_get_stock_hsgt_south_acc_flow_in_em_success(self, mock_south_stock):
         """测试成功获取南向资金个股统计"""
@@ -635,10 +668,10 @@ class TestAkshareMarketDataAdapterCoreMixin:
         result = await self.adapter.get_stock_hsgt_south_acc_flow_in_em("000001")
 
         # Verify
-        self.assertIsInstance(result, pd.DataFrame)
-        self.assertEqual(len(result), 2)
-        self.assertIn("fund_direction", result.columns)
-        self.assertEqual(result["fund_direction"].iloc[0], "south")
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 2
+        assert "fund_direction" in result.columns
+        assert result["fund_direction"].iloc[0] == "south"
 
     async def test_get_stock_hsgt_hold_stock_em_success(self, mock_hsgt_hold):
         """测试成功获取沪深港通持股明细"""
@@ -658,11 +691,11 @@ class TestAkshareMarketDataAdapterCoreMixin:
         result = await self.adapter.get_stock_hsgt_hold_stock_em("000001")
 
         # Verify
-        self.assertIsInstance(result, pd.DataFrame)
-        self.assertEqual(len(result), 2)
-        self.assertIn("symbol", result.columns)
-        self.assertIn("participant_name", result.columns)
-        self.assertIn("hold_ratio", result.columns)
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 2
+        assert "symbol" in result.columns
+        assert "participant_name" in result.columns
+        assert "hold_ratio" in result.columns
 
     async def test_get_stock_fund_flow_big_deal_success(self, mock_big_deal):
         """测试成功获取资金流向大单统计"""
@@ -682,11 +715,11 @@ class TestAkshareMarketDataAdapterCoreMixin:
         result = await self.adapter.get_stock_fund_flow_big_deal()
 
         # Verify
-        self.assertIsInstance(result, pd.DataFrame)
-        self.assertEqual(len(result), 2)
-        self.assertIn("symbol", result.columns)
-        self.assertIn("name", result.columns)
-        self.assertIn("big_deal_amount", result.columns)
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 2
+        assert "symbol" in result.columns
+        assert "name" in result.columns
+        assert "big_deal_amount" in result.columns
 
     async def test_get_stock_cyq_em_success(self, mock_cyq):
         """测试成功获取筹码分布数据"""
@@ -705,11 +738,11 @@ class TestAkshareMarketDataAdapterCoreMixin:
         result = await self.adapter.get_stock_cyq_em("000001")
 
         # Verify
-        self.assertIsInstance(result, pd.DataFrame)
-        self.assertEqual(len(result), 3)
-        self.assertIn("symbol", result.columns)
-        self.assertIn("price_range", result.columns)
-        self.assertIn("chip_amount", result.columns)
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 3
+        assert "symbol" in result.columns
+        assert "price_range" in result.columns
+        assert "chip_amount" in result.columns
 
     async def test_get_stock_hsgt_fund_flow_summary_em_empty_data(self):
         """测试沪深港通资金流向汇总返回空数据"""
@@ -721,8 +754,8 @@ class TestAkshareMarketDataAdapterCoreMixin:
             result = await self.adapter.get_stock_hsgt_fund_flow_summary_em("2024-01-01", "2024-01-02")
 
             # Verify
-            self.assertIsInstance(result, pd.DataFrame)
-            self.assertTrue(result.empty)
+            assert isinstance(result, pd.DataFrame)
+            assert result.empty
 
     async def test_get_stock_hsgt_north_net_flow_in_em_empty_data(self):
         """测试北向资金每日统计返回空数据"""
@@ -734,8 +767,8 @@ class TestAkshareMarketDataAdapterCoreMixin:
             result = await self.adapter.get_stock_hsgt_north_net_flow_in_em("2024-01-01", "2024-01-02")
 
             # Verify
-            self.assertIsInstance(result, pd.DataFrame)
-            self.assertTrue(result.empty)
+            assert isinstance(result, pd.DataFrame)
+            assert result.empty
 
     async def test_get_stock_hsgt_north_acc_flow_in_em_empty_data(self):
         """测试北向资金个股统计返回空数据"""
@@ -747,8 +780,8 @@ class TestAkshareMarketDataAdapterCoreMixin:
             result = await self.adapter.get_stock_hsgt_north_acc_flow_in_em("000001")
 
             # Verify
-            self.assertIsInstance(result, pd.DataFrame)
-            self.assertTrue(result.empty)
+            assert isinstance(result, pd.DataFrame)
+            assert result.empty
 
     async def test_get_stock_fund_flow_big_deal_empty_data(self):
         """测试资金流向大单统计返回空数据"""
@@ -760,8 +793,8 @@ class TestAkshareMarketDataAdapterCoreMixin:
             result = await self.adapter.get_stock_fund_flow_big_deal()
 
             # Verify
-            self.assertIsInstance(result, pd.DataFrame)
-            self.assertTrue(result.empty)
+            assert isinstance(result, pd.DataFrame)
+            assert result.empty
 
     async def test_get_stock_cyq_em_empty_data(self):
         """测试筹码分布数据返回空数据"""
@@ -773,6 +806,5 @@ class TestAkshareMarketDataAdapterCoreMixin:
             result = await self.adapter.get_stock_cyq_em("000001")
 
             # Verify
-            self.assertIsInstance(result, pd.DataFrame)
-            self.assertTrue(result.empty)
-
+            assert isinstance(result, pd.DataFrame)
+            assert result.empty

@@ -28,18 +28,41 @@ Phase: 2 - Task 2.2.1
 Phase: 1 - Task 1.8 (添加市场总貌数据测试)
 """
 
-import asyncio
-import unittest
-from unittest.mock import patch, AsyncMock
+from unittest.mock import patch
 
 import pandas as pd
+import pytest
 
 from src.adapters.akshare.market_adapter import AkshareMarketDataAdapter
-from src.adapters.akshare_adapter import AkshareDataSource
+
+pytestmark = pytest.mark.asyncio
+
+
+def _akshare_fixture(name):
+    @pytest.fixture
+    def fixture():
+        with patch(f"akshare.{name}", create=True) as mock:
+            yield mock
+
+    return fixture
+
+
+mock_concept_hist = _akshare_fixture("stock_board_concept_hist_em")
+mock_concept_min = _akshare_fixture("stock_board_concept_hist_min_em")
+mock_industry_cons = _akshare_fixture("stock_board_industry_cons_em")
+mock_industry_hist = _akshare_fixture("stock_board_industry_hist_em")
+mock_industry_min = _akshare_fixture("stock_board_industry_hist_min_em")
+mock_sector_spot = _akshare_fixture("stock_sector_spot_em")
+mock_sector_fund_flow = _akshare_fixture("stock_sector_fund_flow_rank_em")
+mock_concept_cons = _akshare_fixture("stock_board_concept_cons_em")
 
 
 class TestAkshareMarketDataAdapterTestGetStockMixin:
     """TestAkshareMarketDataAdapter 方法集 Part 2"""
+
+    def setup_method(self):
+        """测试前准备"""
+        self.adapter = AkshareMarketDataAdapter()
 
     async def test_get_stock_board_concept_hist_em_success(self, mock_concept_hist):
         """测试成功获取概念板块行情"""
@@ -64,12 +87,12 @@ class TestAkshareMarketDataAdapterTestGetStockMixin:
         result = await self.adapter.get_stock_board_concept_hist_em("BK0477", "2024-01-01", "2024-01-02")
 
         # Verify
-        self.assertIsInstance(result, pd.DataFrame)
-        self.assertEqual(len(result), 2)
-        self.assertIn("date", result.columns)
-        self.assertIn("open", result.columns)
-        self.assertIn("close", result.columns)
-        self.assertIn("concept_code", result.columns)
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 2
+        assert "date" in result.columns
+        assert "open" in result.columns
+        assert "close" in result.columns
+        assert "concept_code" in result.columns
 
     async def test_get_stock_board_concept_hist_min_em_success(self, mock_concept_min):
         """测试成功获取概念板块分钟行情"""
@@ -82,11 +105,11 @@ class TestAkshareMarketDataAdapterTestGetStockMixin:
         result = await self.adapter.get_stock_board_concept_hist_min_em("BK0477")
 
         # Verify
-        self.assertIsInstance(result, pd.DataFrame)
-        self.assertEqual(len(result), 2)
-        self.assertIn("datetime", result.columns)
-        self.assertIn("price", result.columns)
-        self.assertIn("concept_code", result.columns)
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 2
+        assert "datetime" in result.columns
+        assert "price" in result.columns
+        assert "concept_code" in result.columns
 
     async def test_get_stock_board_industry_cons_em_success(self, mock_industry_cons):
         """测试成功获取行业板块成分股"""
@@ -109,11 +132,11 @@ class TestAkshareMarketDataAdapterTestGetStockMixin:
         result = await self.adapter.get_stock_board_industry_cons_em("BK0477")
 
         # Verify
-        self.assertIsInstance(result, pd.DataFrame)
-        self.assertEqual(len(result), 2)
-        self.assertIn("symbol", result.columns)
-        self.assertIn("industry_code", result.columns)
-        self.assertEqual(result["industry_code"].iloc[0], "BK0477")
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 2
+        assert "symbol" in result.columns
+        assert "industry_code" in result.columns
+        assert result["industry_code"].iloc[0] == "BK0477"
 
     async def test_get_stock_board_industry_hist_em_success(self, mock_industry_hist):
         """测试成功获取行业板块行情"""
@@ -138,10 +161,10 @@ class TestAkshareMarketDataAdapterTestGetStockMixin:
         result = await self.adapter.get_stock_board_industry_hist_em("BK0477", "2024-01-01", "2024-01-02")
 
         # Verify
-        self.assertIsInstance(result, pd.DataFrame)
-        self.assertEqual(len(result), 2)
-        self.assertIn("industry_code", result.columns)
-        self.assertEqual(result["industry_code"].iloc[0], "BK0477")
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 2
+        assert "industry_code" in result.columns
+        assert result["industry_code"].iloc[0] == "BK0477"
 
     async def test_get_stock_board_industry_hist_min_em_success(self, mock_industry_min):
         """测试成功获取行业板块分钟行情"""
@@ -154,9 +177,9 @@ class TestAkshareMarketDataAdapterTestGetStockMixin:
         result = await self.adapter.get_stock_board_industry_hist_min_em("BK0477")
 
         # Verify
-        self.assertIsInstance(result, pd.DataFrame)
-        self.assertEqual(len(result), 2)
-        self.assertIn("industry_code", result.columns)
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 2
+        assert "industry_code" in result.columns
 
     async def test_get_stock_sector_spot_em_success(self, mock_sector_spot):
         """测试成功获取热门行业排行"""
@@ -178,11 +201,11 @@ class TestAkshareMarketDataAdapterTestGetStockMixin:
         result = await self.adapter.get_stock_sector_spot_em()
 
         # Verify
-        self.assertIsInstance(result, pd.DataFrame)
-        self.assertEqual(len(result), 3)
-        self.assertIn("sector_name", result.columns)
-        self.assertIn("change_percent", result.columns)
-        self.assertIn("rise_count", result.columns)
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 3
+        assert "sector_name" in result.columns
+        assert "change_percent" in result.columns
+        assert "rise_count" in result.columns
 
     async def test_get_stock_sector_fund_flow_rank_em_success(self, mock_sector_fund_flow):
         """测试成功获取行业资金流向"""
@@ -205,11 +228,11 @@ class TestAkshareMarketDataAdapterTestGetStockMixin:
         result = await self.adapter.get_stock_sector_fund_flow_rank_em()
 
         # Verify
-        self.assertIsInstance(result, pd.DataFrame)
-        self.assertEqual(len(result), 3)
-        self.assertIn("sector_name", result.columns)
-        self.assertIn("main_net_inflow", result.columns)
-        self.assertIn("super_large_net_inflow", result.columns)
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 3
+        assert "sector_name" in result.columns
+        assert "main_net_inflow" in result.columns
+        assert "super_large_net_inflow" in result.columns
 
     async def test_get_stock_board_concept_cons_em_success(self, mock_concept_cons):
         """测试成功获取概念板块成分股"""
@@ -232,12 +255,12 @@ class TestAkshareMarketDataAdapterTestGetStockMixin:
         result = await self.adapter.get_stock_board_concept_cons_em("BK0477")
 
         # Verify
-        self.assertIsInstance(result, pd.DataFrame)
-        self.assertEqual(len(result), 2)
-        self.assertIn("symbol", result.columns)
-        self.assertIn("name", result.columns)
-        self.assertIn("concept_code", result.columns)
-        self.assertEqual(result["concept_code"].iloc[0], "BK0477")
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 2
+        assert "symbol" in result.columns
+        assert "name" in result.columns
+        assert "concept_code" in result.columns
+        assert result["concept_code"].iloc[0] == "BK0477"
 
     async def test_get_stock_board_concept_cons_em_empty_data(self):
         """测试概念板块成分股返回空数据"""
@@ -249,8 +272,8 @@ class TestAkshareMarketDataAdapterTestGetStockMixin:
             result = await self.adapter.get_stock_board_concept_cons_em("BK0477")
 
             # Verify
-            self.assertIsInstance(result, pd.DataFrame)
-            self.assertTrue(result.empty)
+            assert isinstance(result, pd.DataFrame)
+            assert result.empty
 
     async def test_get_stock_board_concept_hist_em_empty_data(self):
         """测试概念板块行情返回空数据"""
@@ -262,8 +285,8 @@ class TestAkshareMarketDataAdapterTestGetStockMixin:
             result = await self.adapter.get_stock_board_concept_hist_em("BK0477", "2024-01-01", "2024-01-02")
 
             # Verify
-            self.assertIsInstance(result, pd.DataFrame)
-            self.assertTrue(result.empty)
+            assert isinstance(result, pd.DataFrame)
+            assert result.empty
 
     async def test_get_stock_board_industry_cons_em_empty_data(self):
         """测试行业板块成分股返回空数据"""
@@ -275,8 +298,8 @@ class TestAkshareMarketDataAdapterTestGetStockMixin:
             result = await self.adapter.get_stock_board_industry_cons_em("BK0477")
 
             # Verify
-            self.assertIsInstance(result, pd.DataFrame)
-            self.assertTrue(result.empty)
+            assert isinstance(result, pd.DataFrame)
+            assert result.empty
 
     async def test_get_stock_sector_spot_em_empty_data(self):
         """测试热门行业排行返回空数据"""
@@ -288,8 +311,8 @@ class TestAkshareMarketDataAdapterTestGetStockMixin:
             result = await self.adapter.get_stock_sector_spot_em()
 
             # Verify
-            self.assertIsInstance(result, pd.DataFrame)
-            self.assertTrue(result.empty)
+            assert isinstance(result, pd.DataFrame)
+            assert result.empty
 
     async def test_get_stock_sector_fund_flow_rank_em_empty_data(self):
         """测试行业资金流向返回空数据"""
@@ -301,5 +324,5 @@ class TestAkshareMarketDataAdapterTestGetStockMixin:
             result = await self.adapter.get_stock_sector_fund_flow_rank_em()
 
             # Verify
-            self.assertIsInstance(result, pd.DataFrame)
-            self.assertTrue(result.empty)
+            assert isinstance(result, pd.DataFrame)
+            assert result.empty

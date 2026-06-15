@@ -10286,11 +10286,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-c-adapter-data-source-tests-split",
-    "status": "authorization-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "B4.012-M3a-C",
-    "current_head": "50b6d1df4d73dde911e2b50dc8a71c3575923a2f",
+    "current_head": "4ed2a7588444ead2daeddc99f8eaa7d0a25c4583",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "baseline",
@@ -10298,6 +10298,13 @@
         "note": "C4 Akshare adapter test-family no-source baseline and implementation authorization prep.",
         "current_head": "50b6d1df4d73dde911e2b50dc8a71c3575923a2f",
         "recorded_at": "2026-06-15T03:49:58.260Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "User approved C4 Akshare adapter test implementation at HEAD 4ed2a7588; allowed paths remain seven Akshare test files plus closeout worklog.",
+        "note": "C4 implementation source authorization received; scope remains test-only.",
+        "current_head": "4ed2a7588444ead2daeddc99f8eaa7d0a25c4583",
+        "recorded_at": "2026-06-15T03:53:32.442Z"
       }
     ],
     "allowed_paths": [
@@ -10315,11 +10322,11 @@
       "No src/runtime/OpenSpec/API/frontend edits.",
       "No C5/C6, generated/tooling, untracked provenance, ST-HOLD, marketKlineData, or external dirty edits."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T03:49:58.190Z",
-    "updated_at": "2026-06-15T03:50:16.537Z",
+    "updated_at": "2026-06-15T05:02:24.774Z",
     "acceptance": {
       "commit_gate": [
         "py_compile, ruff, focused pytest for the seven C4 files.",
@@ -10328,6 +10335,22 @@
       "closeout_gate": [
         "Closeout worklog records C4 files, preserved behavior, test evidence, GitNexus/OPENDOG evidence, and remaining C family next gate."
       ]
-    }
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "4ed2a7588444ead2daeddc99f8eaa7d0a25c4583",
+        "transitioned_at": "2026-06-15T03:53:32.499Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "4ed2a7588444ead2daeddc99f8eaa7d0a25c4583",
+        "transitioned_at": "2026-06-15T05:02:24.774Z"
+      }
+    ]
   }
 ]

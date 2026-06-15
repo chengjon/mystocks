@@ -2,18 +2,37 @@
 Akshare 市场数据适配器测试 - 分析类方法集
 """
 
-import asyncio
-import unittest
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch
 
 import pandas as pd
+import pytest
 
 from src.adapters.akshare.market_adapter import AkshareMarketDataAdapter
-from src.adapters.akshare_adapter import AkshareDataSource
+
+pytestmark = pytest.mark.asyncio
+
+
+def _akshare_fixture(name):
+    @pytest.fixture
+    def fixture():
+        with patch(f"akshare.{name}", create=True) as mock:
+            yield mock
+
+    return fixture
+
+
+mock_profit_forecast = _akshare_fixture("stock_profit_forecast_em")
+mock_profit_forecast_ths = _akshare_fixture("stock_profit_forecast_ths")
+mock_technical_indicator = _akshare_fixture("stock_technical_indicator_em")
+mock_account_statistics = _akshare_fixture("stock_account_statistics_em")
 
 
 class TestAkshareMarketDataAdapterAnalyticsMixin:
     """TestAkshareMarketDataAdapter 分析类方法集 Part 3"""
+
+    def setup_method(self):
+        """测试前准备"""
+        self.adapter = AkshareMarketDataAdapter()
 
     async def test_get_stock_profit_forecast_em_success(self, mock_profit_forecast):
         """测试成功获取盈利预测-东方财富"""
@@ -32,13 +51,13 @@ class TestAkshareMarketDataAdapterAnalyticsMixin:
 
         result = await self.adapter.get_stock_profit_forecast_em("000001")
 
-        self.assertIsInstance(result, pd.DataFrame)
-        self.assertEqual(len(result), 2)
-        self.assertIn("symbol", result.columns)
-        self.assertIn("year", result.columns)
-        self.assertIn("eps_forecast", result.columns)
-        self.assertIn("forecast_source", result.columns)
-        self.assertEqual(result["forecast_source"].iloc[0], "em")
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 2
+        assert "symbol" in result.columns
+        assert "year" in result.columns
+        assert "eps_forecast" in result.columns
+        assert "forecast_source" in result.columns
+        assert result["forecast_source"].iloc[0] == "em"
 
     async def test_get_stock_profit_forecast_ths_success(self, mock_profit_forecast_ths):
         """测试成功获取盈利预测-同花顺"""
@@ -57,13 +76,13 @@ class TestAkshareMarketDataAdapterAnalyticsMixin:
 
         result = await self.adapter.get_stock_profit_forecast_ths("000001")
 
-        self.assertIsInstance(result, pd.DataFrame)
-        self.assertEqual(len(result), 2)
-        self.assertIn("symbol", result.columns)
-        self.assertIn("report_date", result.columns)
-        self.assertIn("eps_forecast", result.columns)
-        self.assertIn("forecast_source", result.columns)
-        self.assertEqual(result["forecast_source"].iloc[0], "ths")
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 2
+        assert "symbol" in result.columns
+        assert "report_date" in result.columns
+        assert "eps_forecast" in result.columns
+        assert "forecast_source" in result.columns
+        assert result["forecast_source"].iloc[0] == "ths"
 
     async def test_get_stock_technical_indicator_em_success(self, mock_technical_indicator):
         """测试成功获取技术指标数据"""
@@ -91,14 +110,14 @@ class TestAkshareMarketDataAdapterAnalyticsMixin:
 
         result = await self.adapter.get_stock_technical_indicator_em("000001")
 
-        self.assertIsInstance(result, pd.DataFrame)
-        self.assertEqual(len(result), 1)
-        self.assertIn("symbol", result.columns)
-        self.assertIn("date", result.columns)
-        self.assertIn("ma5", result.columns)
-        self.assertIn("macd", result.columns)
-        self.assertIn("rsi", result.columns)
-        self.assertIn("boll_upper", result.columns)
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 1
+        assert "symbol" in result.columns
+        assert "date" in result.columns
+        assert "ma5" in result.columns
+        assert "macd" in result.columns
+        assert "rsi" in result.columns
+        assert "boll_upper" in result.columns
 
     async def test_get_stock_account_statistics_em_success(self, mock_account_statistics):
         """测试成功获取股票账户统计月度"""
@@ -118,12 +137,12 @@ class TestAkshareMarketDataAdapterAnalyticsMixin:
 
         result = await self.adapter.get_stock_account_statistics_em("2024-01")
 
-        self.assertIsInstance(result, pd.DataFrame)
-        self.assertEqual(len(result), 1)
-        self.assertIn("date", result.columns)
-        self.assertIn("total_accounts", result.columns)
-        self.assertIn("active_accounts", result.columns)
-        self.assertIn("trading_accounts", result.columns)
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 1
+        assert "date" in result.columns
+        assert "total_accounts" in result.columns
+        assert "active_accounts" in result.columns
+        assert "trading_accounts" in result.columns
 
     async def test_get_stock_profit_forecast_em_empty_data(self):
         """测试盈利预测-东方财富返回空数据"""
@@ -132,8 +151,8 @@ class TestAkshareMarketDataAdapterAnalyticsMixin:
 
             result = await self.adapter.get_stock_profit_forecast_em("000001")
 
-            self.assertIsInstance(result, pd.DataFrame)
-            self.assertTrue(result.empty)
+            assert isinstance(result, pd.DataFrame)
+            assert result.empty
 
     async def test_get_stock_profit_forecast_ths_empty_data(self):
         """测试盈利预测-同花顺返回空数据"""
@@ -142,8 +161,8 @@ class TestAkshareMarketDataAdapterAnalyticsMixin:
 
             result = await self.adapter.get_stock_profit_forecast_ths("000001")
 
-            self.assertIsInstance(result, pd.DataFrame)
-            self.assertTrue(result.empty)
+            assert isinstance(result, pd.DataFrame)
+            assert result.empty
 
     async def test_get_stock_technical_indicator_em_empty_data(self):
         """测试技术指标数据返回空数据"""
@@ -152,8 +171,8 @@ class TestAkshareMarketDataAdapterAnalyticsMixin:
 
             result = await self.adapter.get_stock_technical_indicator_em("000001")
 
-            self.assertIsInstance(result, pd.DataFrame)
-            self.assertTrue(result.empty)
+            assert isinstance(result, pd.DataFrame)
+            assert result.empty
 
     async def test_get_stock_account_statistics_em_empty_data(self):
         """测试股票账户统计月度返回空数据"""
@@ -162,5 +181,5 @@ class TestAkshareMarketDataAdapterAnalyticsMixin:
 
             result = await self.adapter.get_stock_account_statistics_em("2024-01")
 
-            self.assertIsInstance(result, pd.DataFrame)
-            self.assertTrue(result.empty)
+            assert isinstance(result, pd.DataFrame)
+            assert result.empty
