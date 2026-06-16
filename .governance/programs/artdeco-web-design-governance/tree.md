@@ -101,3 +101,4 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-013-m2e2-openstock-market-route-migration-audit: B4.013-M2-E2 OpenStock market route migration no-source audit (planning, FT: b4-013-runtime-mainline-bring-up)
 - [ ] b4-013-m2e2a-openstock-existing-market-api-tests: B4.013-M2-E2a OpenStock existing market API tests compatibility (planning, FT: b4-013-runtime-mainline-bring-up)
 - [ ] b4-013-m2e2b-openstock-route-import-lint-reconciliation: B4.013-M2-E2b OpenStock route import lint reconciliation (planning, FT: b4-013-runtime-mainline-bring-up)
+- [ ] b4-013-m2e3-openstock-category-coverage-audit: B4.013-M2-E3 OpenStock category coverage no-source audit (planning, FT: b4-013-runtime-mainline-bring-up)

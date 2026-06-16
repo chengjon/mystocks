@@ -10720,7 +10720,7 @@
     "parent": "",
     "status": "approved-for-implementation",
     "function_tree_ref": "docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance",
-    "current_head": "3ce1103de6e8b7f83e85e92de4baa1ac1bdff99f",
+    "current_head": "ddf13d74d22d53049fdd19cbe82a5d3ba8d7d312",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -10863,6 +10863,13 @@
         "note": "Refresh parent runtime mainline evidence after B4.013-M2-E2b import lint reconciliation.",
         "current_head": "3ce1103de6e8b7f83e85e92de4baa1ac1bdff99f",
         "recorded_at": "2026-06-16T15:05:49.152Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "ddf13d74d",
+        "note": "Refresh parent runtime mainline evidence before B4.013-M2-E3 no-source category audit.",
+        "current_head": "ddf13d74d22d53049fdd19cbe82a5d3ba8d7d312",
+        "recorded_at": "2026-06-16T15:33:09.312Z"
       }
     ],
     "allowed_paths": [
@@ -10888,7 +10895,7 @@
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T15:45:14.131Z",
-    "updated_at": "2026-06-16T15:05:49.152Z",
+    "updated_at": "2026-06-16T15:33:09.312Z",
     "acceptance": {
       "commit_gate": [
         "openspec validate adopt-mainline-alignment-governance --strict",
@@ -11898,5 +11905,50 @@
       "current_head": "3ce1103de6e8b7f83e85e92de4baa1ac1bdff99f",
       "prepared_at": "2026-06-16T15:06:36.534Z"
     }
+  },
+  {
+    "id": "b4-013-m2e3-openstock-category-coverage-audit",
+    "title": "B4.013-M2-E3 OpenStock category coverage no-source audit",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-013-m1e3-openstock-consumer-openspec-proposal",
+    "status": "decision-prepared",
+    "function_tree_ref": "b4-013-runtime-mainline-bring-up",
+    "current_head": "ddf13d74d22d53049fdd19cbe82a5d3ba8d7d312",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "ddf13d74d",
+        "note": "B4.013-M2-E3 no-source baseline before OpenStock category coverage route audit.",
+        "current_head": "ddf13d74d22d53049fdd19cbe82a5d3ba8d7d312",
+        "recorded_at": "2026-06-16T15:42:49.852Z"
+      },
+      {
+        "kind": "structural",
+        "path": "docs/reports/worklogs/claude-auto/b4-013-m2e3-openstock-category-coverage-no-source-audit-2026-06-16.md",
+        "note": "No-source route/category coverage matrix for remaining OpenStock consumer migration decisions.",
+        "current_head": "ddf13d74d22d53049fdd19cbe82a5d3ba8d7d312",
+        "recorded_at": "2026-06-16T15:44:56.346Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-16T15:33:54.121Z",
+    "updated_at": "2026-06-16T15:44:56.411Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "",
+        "current_head": "ddf13d74d22d53049fdd19cbe82a5d3ba8d7d312",
+        "transitioned_at": "2026-06-16T15:44:56.411Z"
+      }
+    ]
   }
 ]
