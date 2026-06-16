@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-16T09:06:29.869Z",
+  "updated_at": "2026-06-16T10:29:07.712Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -278,7 +278,24 @@
         "docs/reports/worklogs/claude-auto/b4-013-m0-runtime-mainline-no-source-audit-2026-06-16.md"
       ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-16T09:06:29.641Z"
+      "updated_at": "2026-06-16T10:24:44.089Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-013-m2e2-openstock-market-route-migration-audit",
+      "title": "B4.013-M2-E2 OpenStock market route migration no-source audit",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-013-m1e3-openstock-consumer-openspec-proposal",
+      "status": "decision-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "prepare authorization",
+      "function_tree_ref": "b4-013-runtime-mainline-bring-up",
+      "freshness": "current-head",
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-16T10:29:07.704Z"
     }
   ]
 }

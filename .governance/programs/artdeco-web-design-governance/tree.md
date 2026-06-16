@@ -98,3 +98,4 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-013-m1e2-openstock-consumer-boundary-audit: B4.013-M1-E2 OpenStock consumer boundary mapping audit (planning, FT: b4-013-runtime-mainline-bring-up)
 - [ ] b4-013-m1e3-openstock-consumer-openspec-proposal: B4.013-M1-E3 OpenStock consumer integration OpenSpec proposal (planning, FT: b4-013-runtime-mainline-bring-up)
 - [ ] b4-013-m2e1-openstock-backend-consumer-client-authorization: B4.013-M2-E1 OpenStock backend consumer client implementation authorization (planning, FT: b4-013-runtime-mainline-bring-up)
+- [ ] b4-013-m2e2-openstock-market-route-migration-audit: B4.013-M2-E2 OpenStock market route migration no-source audit (planning, FT: b4-013-runtime-mainline-bring-up)
