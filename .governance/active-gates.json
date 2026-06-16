@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-16T14:59:23.362Z",
+  "updated_at": "2026-06-16T15:06:59.539Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -251,30 +251,6 @@
     },
     {
       "program": "artdeco-web-design-governance",
-      "id": "b4-013-m2e2b-openstock-route-import-lint-reconciliation",
-      "title": "B4.013-M2-E2b OpenStock route import lint reconciliation",
-      "node_type": "decision",
-      "owner_lane": "artdeco-web-design-governance",
-      "parent": "b4-013-m2e2-openstock-market-route-migration-audit",
-      "status": "implementation-ready",
-      "source_edits_authorized": true,
-      "current_blocker": "",
-      "next_allowed": "land implementation with Git evidence",
-      "function_tree_ref": "b4-013-runtime-mainline-bring-up",
-      "freshness": "current-head",
-      "allowed_paths": [
-        "web/backend/app/api/market/market_data_request.py",
-        ".governance/active-gates.json",
-        ".governance/active-gates.md",
-        ".governance/programs/artdeco-web-design-governance/nodes.json",
-        ".governance/programs/artdeco-web-design-governance/tree.md",
-        ".governance/programs/artdeco-web-design-governance/cards/b4-013-m2e2b-openstock-route-import-lint-reconciliation.yaml"
-      ],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-16T14:58:15.108Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
       "id": "b4-013-runtime-mainline-bring-up",
       "title": "B4.013 Runtime mainline bring-up governance adoption",
       "node_type": "implementation",
@@ -302,57 +278,7 @@
         "docs/reports/worklogs/claude-auto/b4-013-m0-runtime-mainline-no-source-audit-2026-06-16.md"
       ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-16T14:59:23.240Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-013-m2e2-openstock-market-route-migration-audit",
-      "title": "B4.013-M2-E2 OpenStock market route migration no-source audit",
-      "node_type": "decision",
-      "owner_lane": "artdeco-web-design-governance",
-      "parent": "b4-013-m1e3-openstock-consumer-openspec-proposal",
-      "status": "implementation-ready",
-      "source_edits_authorized": false,
-      "current_blocker": "",
-      "next_allowed": "prepare decision or authorization",
-      "function_tree_ref": "b4-013-runtime-mainline-bring-up",
-      "freshness": "current-head",
-      "allowed_paths": [
-        "web/backend/app/api/market/market_data_request.py",
-        "web/backend/tests/test_openstock_market_routes.py",
-        "docs/reports/worklogs/claude-auto/b4-013-m2e2-openstock-market-route-migration-implementation-closeout-2026-06-16.md",
-        ".governance/active-gates.json",
-        ".governance/active-gates.md",
-        ".governance/programs/artdeco-web-design-governance/nodes.json",
-        ".governance/programs/artdeco-web-design-governance/tree.md",
-        ".governance/programs/artdeco-web-design-governance/cards/b4-013-m2e2-openstock-market-route-migration-audit.yaml"
-      ],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-16T14:59:23.296Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-013-m2e2a-openstock-existing-market-api-tests",
-      "title": "B4.013-M2-E2a OpenStock existing market API tests compatibility",
-      "node_type": "decision",
-      "owner_lane": "artdeco-web-design-governance",
-      "parent": "b4-013-m2e2-openstock-market-route-migration-audit",
-      "status": "implementation-ready",
-      "source_edits_authorized": false,
-      "current_blocker": "",
-      "next_allowed": "prepare decision or authorization",
-      "function_tree_ref": "b4-013-runtime-mainline-bring-up",
-      "freshness": "current-head",
-      "allowed_paths": [
-        "web/backend/tests/test_market_api.py",
-        ".governance/active-gates.json",
-        ".governance/active-gates.md",
-        ".governance/programs/artdeco-web-design-governance/nodes.json",
-        ".governance/programs/artdeco-web-design-governance/tree.md",
-        ".governance/programs/artdeco-web-design-governance/cards/b4-013-m2e2a-openstock-existing-market-api-tests.yaml"
-      ],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-16T14:59:23.354Z"
+      "updated_at": "2026-06-16T15:05:49.152Z"
     }
   ]
 }
