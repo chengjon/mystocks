@@ -10720,7 +10720,7 @@
     "parent": "",
     "status": "approved-for-implementation",
     "function_tree_ref": "docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance",
-    "current_head": "2109105bd895d9538876a3927423303a36e8b67b",
+    "current_head": "6b6207f077239d5003d3b87080b04e2037446b02",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -10849,6 +10849,13 @@
         "note": "Refresh parent runtime mainline evidence before B4.013-M2-E2 implementation commit.",
         "current_head": "2109105bd895d9538876a3927423303a36e8b67b",
         "recorded_at": "2026-06-16T14:09:21.345Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "6b6207f07",
+        "note": "Refresh parent runtime mainline evidence after B4.013-M2-E2 implementation commit.",
+        "current_head": "6b6207f077239d5003d3b87080b04e2037446b02",
+        "recorded_at": "2026-06-16T14:59:23.240Z"
       }
     ],
     "allowed_paths": [
@@ -10874,7 +10881,7 @@
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T15:45:14.131Z",
-    "updated_at": "2026-06-16T14:09:21.345Z",
+    "updated_at": "2026-06-16T14:59:23.240Z",
     "acceptance": {
       "commit_gate": [
         "openspec validate adopt-mainline-alignment-governance --strict",
@@ -11539,9 +11546,9 @@
     "parent": "b4-013-m1e3-openstock-consumer-openspec-proposal",
     "status": "implementation-ready",
     "function_tree_ref": "b4-013-runtime-mainline-bring-up",
-    "current_head": "2109105bd895d9538876a3927423303a36e8b67b",
+    "current_head": "6b6207f077239d5003d3b87080b04e2037446b02",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "structural",
@@ -11563,6 +11570,13 @@
         "note": "User approved proceeding with B4.013-M2-E2 source implementation after no-source audit and proposed source boundary.",
         "current_head": "2109105bd895d9538876a3927423303a36e8b67b",
         "recorded_at": "2026-06-16T13:51:04.722Z"
+      },
+      {
+        "kind": "implementation",
+        "path": "6b6207f07",
+        "note": "Implementation commit migrates market quotes and kline compatibility routes to the OpenStock backend consumer client.",
+        "current_head": "6b6207f077239d5003d3b87080b04e2037446b02",
+        "recorded_at": "2026-06-16T14:59:23.296Z"
       }
     ],
     "allowed_paths": [
@@ -11581,11 +11595,11 @@
       "Do not change MyStocks public route paths or direct frontend calls to OpenStock.",
       "Do not stage pre-existing unrelated dirty hunks in market_data_request.py."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "prepare decision or authorization",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-16T10:25:12.003Z",
-    "updated_at": "2026-06-16T14:06:44.552Z",
+    "updated_at": "2026-06-16T14:59:23.296Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -11628,9 +11642,9 @@
     "parent": "b4-013-m2e2-openstock-market-route-migration-audit",
     "status": "implementation-ready",
     "function_tree_ref": "b4-013-runtime-mainline-bring-up",
-    "current_head": "2109105bd895d9538876a3927423303a36e8b67b",
+    "current_head": "6b6207f077239d5003d3b87080b04e2037446b02",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "runtime",
@@ -11645,6 +11659,13 @@
         "note": "User approved continuing the M2-E2 route migration; child node limits the discovered existing-test update to test scope only.",
         "current_head": "2109105bd895d9538876a3927423303a36e8b67b",
         "recorded_at": "2026-06-16T13:58:07.262Z"
+      },
+      {
+        "kind": "implementation",
+        "path": "6b6207f07",
+        "note": "Implementation commit adapts existing quotes API tests to mock the OpenStock consumer client boundary.",
+        "current_head": "6b6207f077239d5003d3b87080b04e2037446b02",
+        "recorded_at": "2026-06-16T14:59:23.354Z"
       }
     ],
     "allowed_paths": [
@@ -11660,11 +11681,11 @@
       "Do not modify route source, OpenStock client source, provider adapters, data_source_factory, frontend, /opt/claude/openstock, or external dirty files.",
       "Only update existing market API tests to mock the OpenStock consumer client boundary."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "prepare decision or authorization",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-16T13:57:50.053Z",
-    "updated_at": "2026-06-16T14:06:44.624Z",
+    "updated_at": "2026-06-16T14:59:23.354Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -11694,6 +11715,84 @@
       ],
       "closeout_gate": [
         "Closeout records test-only compatibility update and confirms no source/provider files are staged by this child node."
+      ]
+    }
+  },
+  {
+    "id": "b4-013-m2e2b-openstock-route-import-lint-reconciliation",
+    "title": "B4.013-M2-E2b OpenStock route import lint reconciliation",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-013-m2e2-openstock-market-route-migration-audit",
+    "status": "implementation-ready",
+    "function_tree_ref": "b4-013-runtime-mainline-bring-up",
+    "current_head": "6b6207f077239d5003d3b87080b04e2037446b02",
+    "freshness": "current-head",
+    "source_edits_authorized": true,
+    "evidence": [
+      {
+        "kind": "runtime",
+        "path": "HEAD ruff check on market_data_request.py reports F401 for _error_response_spec and _success_response_spec; current worktree deletion fixes it.",
+        "note": "Implementation commit intentionally isolated the pre-existing import deletion, but clean HEAD ruff requires reconciling this route-file lint drift in a separate child package.",
+        "current_head": "6b6207f077239d5003d3b87080b04e2037446b02",
+        "recorded_at": "2026-06-16T14:57:07.197Z"
+      },
+      {
+        "kind": "authorization",
+        "path": "user:同意，请继续",
+        "note": "User approved continuing; child package is restricted to the lint reconciliation needed for the M2-E2 clean-HEAD gate.",
+        "current_head": "6b6207f077239d5003d3b87080b04e2037446b02",
+        "recorded_at": "2026-06-16T14:57:36.582Z"
+      }
+    ],
+    "allowed_paths": [
+      "web/backend/app/api/market/market_data_request.py",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/tree.md",
+      ".governance/programs/artdeco-web-design-governance/cards/b4-013-m2e2b-openstock-route-import-lint-reconciliation.yaml"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not modify route logic, OpenStock client behavior, tests, provider adapters, data_source_factory, frontend, /opt/claude/openstock, or any unrelated dirty files.",
+      "Only remove unused _error_response_spec and _success_response_spec imports from market_data_request.py."
+    ],
+    "next_gate": "land implementation with Git evidence",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-16T14:57:07.126Z",
+    "updated_at": "2026-06-16T14:58:15.108Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "Decision package ready: delete only two unused response-spec imports from the already-authorized route file.",
+        "current_head": "6b6207f077239d5003d3b87080b04e2037446b02",
+        "transitioned_at": "2026-06-16T14:57:07.264Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "Source authorization granted for route import lint reconciliation only.",
+        "current_head": "6b6207f077239d5003d3b87080b04e2037446b02",
+        "transitioned_at": "2026-06-16T14:57:36.642Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Two unused route imports removed; no runtime logic changed.",
+        "current_head": "6b6207f077239d5003d3b87080b04e2037446b02",
+        "transitioned_at": "2026-06-16T14:58:15.108Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "HEAD/worktree ruff check for market_data_request.py passes with --no-fix; py_compile passes; staged diff contains only the two import deletions plus governance files.",
+        "GitNexus verify-staged and detect-changes remain low; OPENDOG has zero blockers."
+      ],
+      "closeout_gate": [
+        "Closeout records that this reconciles the previously isolated import lint drift without behavior changes."
       ]
     }
   }

@@ -1,0 +1,29 @@
+task:
+  id: "b4-013-m2e2b-openstock-route-import-lint-reconciliation"
+  title: "B4.013-M2-E2b OpenStock route import lint reconciliation"
+
+scope:
+  allowed_paths:
+    - "web/backend/app/api/market/market_data_request.py"
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/tree.md"
+    - ".governance/programs/artdeco-web-design-governance/cards/b4-013-m2e2b-openstock-route-import-lint-reconciliation.yaml"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not modify route logic, OpenStock client behavior, tests, provider adapters, data_source_factory, frontend, /opt/claude/openstock, or any unrelated dirty files."
+  - "Only remove unused _error_response_spec and _success_response_spec imports from market_data_request.py."
+
+acceptance:
+  commit_gate:
+    - "HEAD/worktree ruff check for market_data_request.py passes with --no-fix; py_compile passes; staged diff contains only the two import deletions plus governance files."
+    - "GitNexus verify-staged and detect-changes remain low; OPENDOG has zero blockers."
+  closeout_gate:
+    - "Closeout records that this reconciles the previously isolated import lint drift without behavior changes."
+
+evidence:
+  current_head: "6b6207f077239d5003d3b87080b04e2037446b02"
+  notes: []
