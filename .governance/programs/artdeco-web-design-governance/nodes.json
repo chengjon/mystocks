@@ -9044,7 +9044,7 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "",
-    "status": "decision-prepared",
+    "status": "blocked",
     "function_tree_ref": "B4.012-M3",
     "current_head": "d69ed57970a787fe2e39003ba97d95f3e44bd7b1",
     "freshness": "current-head",
@@ -9061,11 +9061,11 @@
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
-    "blocker_reason": null,
-    "unblock_target_state": null,
+    "next_gate": "unblock to decision-prepared",
+    "blocker_reason": "B4.013 runtime-first mainline reset: residual cleanup/detail gate is paused until the active P0 mainline is runnable and separately reauthorized.",
+    "unblock_target_state": "decision-prepared",
     "created_at": "2026-06-14T04:12:20.696Z",
-    "updated_at": "2026-06-14T04:12:48.236Z",
+    "updated_at": "2026-06-15T15:51:34.420Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -9073,6 +9073,13 @@
         "note": "M3 rebaseline decision prepared: next safe queue is tests residual domain no-source audit; no source/deletion authorization granted.",
         "current_head": "d69ed57970a787fe2e39003ba97d95f3e44bd7b1",
         "transitioned_at": "2026-06-14T04:12:48.236Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "blocked",
+        "note": "Paused by B4.013 mainline alignment governance adoption.",
+        "current_head": "c7c2eb74fbc9a87658459321284f252923b09a7a",
+        "transitioned_at": "2026-06-15T15:51:34.420Z"
       }
     ]
   },
@@ -9082,7 +9089,7 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3-residual-dirty-atlas-rebaseline",
-    "status": "decision-prepared",
+    "status": "blocked",
     "function_tree_ref": "B4.012-M3a",
     "current_head": "6ab7c8acd7f0964096135708b61dccd068af05f7",
     "freshness": "current-head",
@@ -9106,11 +9113,11 @@
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
-    "blocker_reason": null,
-    "unblock_target_state": null,
+    "next_gate": "unblock to decision-prepared",
+    "blocker_reason": "B4.013 runtime-first mainline reset: residual cleanup/detail gate is paused until the active P0 mainline is runnable and separately reauthorized.",
+    "unblock_target_state": "decision-prepared",
     "created_at": "2026-06-14T05:21:56.026Z",
-    "updated_at": "2026-06-14T05:33:46.939Z",
+    "updated_at": "2026-06-15T15:51:34.478Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -9118,6 +9125,13 @@
         "note": "",
         "current_head": "77807e11d126e5e5a33ff2d7c5f982274cd82831",
         "transitioned_at": "2026-06-14T05:29:44.836Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "blocked",
+        "note": "Paused by B4.013 mainline alignment governance adoption.",
+        "current_head": "c7c2eb74fbc9a87658459321284f252923b09a7a",
+        "transitioned_at": "2026-06-15T15:51:34.478Z"
       }
     ]
   },
@@ -9302,7 +9316,7 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-tests-residual-domain-audit",
-    "status": "decision-prepared",
+    "status": "blocked",
     "function_tree_ref": "B4.012-M3a-B",
     "current_head": "fada290da42e8c6fd33b10654ecb53ea2f0980f5",
     "freshness": "current-head",
@@ -9319,11 +9333,11 @@
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
-    "blocker_reason": null,
-    "unblock_target_state": null,
+    "next_gate": "unblock to decision-prepared",
+    "blocker_reason": "B4.013 runtime-first mainline reset: residual cleanup/detail gate is paused until the active P0 mainline is runnable and separately reauthorized.",
+    "unblock_target_state": "decision-prepared",
     "created_at": "2026-06-14T05:49:59.649Z",
-    "updated_at": "2026-06-14T05:51:43.918Z",
+    "updated_at": "2026-06-15T15:51:34.538Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -9331,6 +9345,13 @@
         "note": "M3a-B split report ready; no source/test authorization.",
         "current_head": "fada290da42e8c6fd33b10654ecb53ea2f0980f5",
         "transitioned_at": "2026-06-14T05:51:43.918Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "blocked",
+        "note": "Paused by B4.013 mainline alignment governance adoption.",
+        "current_head": "c7c2eb74fbc9a87658459321284f252923b09a7a",
+        "transitioned_at": "2026-06-15T15:51:34.538Z"
       }
     ]
   },
@@ -9812,7 +9833,7 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-tests-residual-domain-audit",
-    "status": "decision-prepared",
+    "status": "blocked",
     "function_tree_ref": "B4.012-M3a-C",
     "current_head": "29b080886b105485c24d10306a155424c0bade83",
     "freshness": "current-head",
@@ -9836,11 +9857,11 @@
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare decision or authorization",
-    "blocker_reason": null,
-    "unblock_target_state": null,
+    "next_gate": "unblock to decision-prepared",
+    "blocker_reason": "B4.013 runtime-first mainline reset: residual cleanup/detail gate is paused until the active P0 mainline is runnable and separately reauthorized.",
+    "unblock_target_state": "decision-prepared",
     "created_at": "2026-06-14T07:29:56.581Z",
-    "updated_at": "2026-06-15T03:07:48.166Z",
+    "updated_at": "2026-06-15T15:51:34.770Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -9848,6 +9869,13 @@
         "note": "M3a-C split report ready; no source/test authorization.",
         "current_head": "a3b062523ed66987a19ad31c9d3c3507f50b7974",
         "transitioned_at": "2026-06-14T07:29:56.668Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "blocked",
+        "note": "Paused by B4.013 mainline alignment governance adoption.",
+        "current_head": "c7c2eb74fbc9a87658459321284f252923b09a7a",
+        "transitioned_at": "2026-06-15T15:51:34.769Z"
       }
     ]
   },
@@ -9857,7 +9885,7 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-tests-residual-domain-audit",
-    "status": "decision-prepared",
+    "status": "blocked",
     "function_tree_ref": "B4.012-M3a-D",
     "current_head": "cf1431f1fa93879b50be8ff0983bd5f0ff0dc2a1",
     "freshness": "current-head",
@@ -9874,11 +9902,11 @@
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
-    "blocker_reason": null,
-    "unblock_target_state": null,
+    "next_gate": "unblock to decision-prepared",
+    "blocker_reason": "B4.013 runtime-first mainline reset: residual cleanup/detail gate is paused until the active P0 mainline is runnable and separately reauthorized.",
+    "unblock_target_state": "decision-prepared",
     "created_at": "2026-06-14T07:33:55.819Z",
-    "updated_at": "2026-06-14T07:33:55.901Z",
+    "updated_at": "2026-06-15T15:51:34.596Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -9886,6 +9914,13 @@
         "note": "M3a-D split report ready; no source/test authorization.",
         "current_head": "cf1431f1fa93879b50be8ff0983bd5f0ff0dc2a1",
         "transitioned_at": "2026-06-14T07:33:55.901Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "blocked",
+        "note": "Paused by B4.013 mainline alignment governance adoption.",
+        "current_head": "c7c2eb74fbc9a87658459321284f252923b09a7a",
+        "transitioned_at": "2026-06-15T15:51:34.596Z"
       }
     ]
   },
@@ -9895,7 +9930,7 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-tests-residual-domain-audit",
-    "status": "decision-prepared",
+    "status": "blocked",
     "function_tree_ref": "B4.012-M3a-E",
     "current_head": "6cd2d7eadfb5905810aca81a76b1a914a4acbfe3",
     "freshness": "current-head",
@@ -9912,11 +9947,11 @@
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
-    "blocker_reason": null,
-    "unblock_target_state": null,
+    "next_gate": "unblock to decision-prepared",
+    "blocker_reason": "B4.013 runtime-first mainline reset: residual cleanup/detail gate is paused until the active P0 mainline is runnable and separately reauthorized.",
+    "unblock_target_state": "decision-prepared",
     "created_at": "2026-06-14T07:37:33.388Z",
-    "updated_at": "2026-06-14T07:37:33.491Z",
+    "updated_at": "2026-06-15T15:51:34.650Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -9924,6 +9959,13 @@
         "note": "M3a-E split report ready; no source/test authorization.",
         "current_head": "6cd2d7eadfb5905810aca81a76b1a914a4acbfe3",
         "transitioned_at": "2026-06-14T07:37:33.490Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "blocked",
+        "note": "Paused by B4.013 mainline alignment governance adoption.",
+        "current_head": "c7c2eb74fbc9a87658459321284f252923b09a7a",
+        "transitioned_at": "2026-06-15T15:51:34.649Z"
       }
     ]
   },
@@ -9933,7 +9975,7 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-tests-residual-domain-audit",
-    "status": "decision-prepared",
+    "status": "blocked",
     "function_tree_ref": "B4.012-M3a-U",
     "current_head": "85da979c16f4b8809a6d0b61c7c0eee0465d5ade",
     "freshness": "current-head",
@@ -9950,11 +9992,11 @@
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
-    "blocker_reason": null,
-    "unblock_target_state": null,
+    "next_gate": "unblock to decision-prepared",
+    "blocker_reason": "B4.013 runtime-first mainline reset: residual cleanup/detail gate is paused until the active P0 mainline is runnable and separately reauthorized.",
+    "unblock_target_state": "decision-prepared",
     "created_at": "2026-06-14T07:40:55.430Z",
-    "updated_at": "2026-06-14T07:40:55.516Z",
+    "updated_at": "2026-06-15T15:51:34.710Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -9962,6 +10004,13 @@
         "note": "M3a-U provenance review ready; no preserve/delete/ignore authorization.",
         "current_head": "85da979c16f4b8809a6d0b61c7c0eee0465d5ade",
         "transitioned_at": "2026-06-14T07:40:55.516Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "blocked",
+        "note": "Paused by B4.013 mainline alignment governance adoption.",
+        "current_head": "c7c2eb74fbc9a87658459321284f252923b09a7a",
+        "transitioned_at": "2026-06-15T15:51:34.709Z"
       }
     ]
   },
@@ -10607,7 +10656,7 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-d-e2e-frontend-tests-split",
-    "status": "authorization-prepared",
+    "status": "blocked",
     "function_tree_ref": "b4-012-m3a-d-e2e-frontend-tests-split",
     "current_head": "8e4d7facfb1082ceb05476c2fece7708022bba0f",
     "freshness": "current-head",
@@ -10636,11 +10685,11 @@
       "Do not touch tests/dashboard, tests/prototype, tests/performance, untracked contract E2E, generated/tooling, ST-HOLD, marketKlineData, or external dirty files.",
       "Do not change Playwright runtime behavior beyond metadata/style cleanup without explicit implementation authorization."
     ],
-    "next_gate": "review and approve implementation authorization",
-    "blocker_reason": null,
-    "unblock_target_state": null,
+    "next_gate": "unblock to authorization-prepared",
+    "blocker_reason": "B4.013 runtime-first mainline reset: residual cleanup/detail gate is paused until the active P0 mainline is runnable and separately reauthorized.",
+    "unblock_target_state": "authorization-prepared",
     "created_at": "2026-06-15T11:36:03.916Z",
-    "updated_at": "2026-06-15T11:36:04.024Z",
+    "updated_at": "2026-06-15T15:51:34.832Z",
     "acceptance": {
       "commit_gate": [
         "py_compile for Python E2E files and TypeScript syntax-focused check for Playwright specs",
@@ -10652,6 +10701,173 @@
       "closeout_gate": [
         "D1 closeout worklog records exact files, gates, residual environment warnings, and implementation commit"
       ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "blocked",
+        "note": "Paused by B4.013 mainline alignment governance adoption.",
+        "current_head": "c7c2eb74fbc9a87658459321284f252923b09a7a",
+        "transitioned_at": "2026-06-15T15:51:34.832Z"
+      }
+    ]
+  },
+  {
+    "id": "b4-013-runtime-mainline-bring-up",
+    "title": "B4.013 Runtime mainline bring-up governance adoption",
+    "node_type": "implementation",
+    "owner_lane": "mainline",
+    "parent": "",
+    "status": "approved-for-implementation",
+    "function_tree_ref": "docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance",
+    "current_head": "c7c2eb74fbc9a87658459321284f252923b09a7a",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "openspec/changes/adopt-mainline-alignment-governance/proposal.md",
+        "note": "B4.013-GOV-M0 OpenSpec proposal validated; user approved M1 governance adoption implementation.",
+        "current_head": "c7c2eb74fbc9a87658459321284f252923b09a7a",
+        "recorded_at": "2026-06-15T15:45:25.013Z"
+      },
+      {
+        "kind": "runtime",
+        "path": "docs/reports/worklogs/claude-auto/b4-013-m0-runtime-mainline-no-source-audit-2026-06-16.md",
+        "note": "B4.013-M0 no-source runtime audit: services online; login works; most domains render; /market fallback and watchlists 500 identified as P0 candidates.",
+        "current_head": "c7c2eb74fbc9a87658459321284f252923b09a7a",
+        "recorded_at": "2026-06-15T16:25:26.480Z"
+      }
+    ],
+    "allowed_paths": [
+      "architecture/STANDARDS.md",
+      "AGENTS.md",
+      "CLAUDE.md",
+      "docs/FUNCTION_TREE.md",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/tree.md",
+      ".governance/programs/artdeco-web-design-governance/cards/b4-013-runtime-mainline-bring-up.yaml",
+      "openspec/changes/adopt-mainline-alignment-governance/**",
+      "docs/reports/worklogs/claude-auto/b4-013-gov-m0-mainline-alignment-methodology-adoption-proposal-2026-06-15.md",
+      "docs/reports/worklogs/claude-auto/b4-013-gov-m1-mainline-alignment-governance-adoption-2026-06-15.md",
+      "docs/reports/worklogs/claude-auto/b4-013-m0-runtime-mainline-no-source-audit-2026-06-16.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No source, runtime, test, API, route, store, UI, PM2, marketKlineData, ST-HOLD, or external dirty-file changes."
+    ],
+    "next_gate": "prepare decision or authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-15T15:45:14.131Z",
+    "updated_at": "2026-06-15T16:25:26.480Z",
+    "acceptance": {
+      "commit_gate": [
+        "openspec validate adopt-mainline-alignment-governance --strict",
+        "node /root/.codex/skills/myskills/skills/function-tree/scripts/ft-governance.cjs validate --root /opt/claude/mystocks_spec"
+      ],
+      "closeout_gate": [
+        "Core governance entrypoints reference mainline alignment without duplicating source truth."
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved B4.013-GOV-M1 governance adoption implementation after validated M0 proposal.",
+        "current_head": "c7c2eb74fbc9a87658459321284f252923b09a7a",
+        "transitioned_at": "2026-06-15T15:45:53.906Z"
+      }
+    ]
+  },
+  {
+    "id": "b4-013-m1a-watchlist-runtime-import-reexport",
+    "title": "B4.013-M1-A Watchlist runtime import re-export repair",
+    "node_type": "implementation",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-013-runtime-mainline-bring-up",
+    "status": "closed",
+    "function_tree_ref": "B4.013",
+    "current_head": "c7c2eb74fbc9a87658459321284f252923b09a7a",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "runtime",
+        "path": "Runtime probe: /watchlist/manage shows user-visible 自选列表加载失败 from /api/v1/monitoring/watchlists 500; focused pytest RED shows postgresql_async_v3 missing get_postgres_async public export; GitNexus impact LOW for helper export and MEDIUM if DB class behavior is touched, so class behavior is non-goal.",
+        "note": "M1-A no-source diagnosis complete; minimal candidate is re-export singleton helpers from postgresql_async_v3 without changing DB class or route behavior.",
+        "current_head": "c7c2eb74fbc9a87658459321284f252923b09a7a",
+        "recorded_at": "2026-06-15T16:56:58.687Z"
+      }
+    ],
+    "allowed_paths": [
+      "src/monitoring/infrastructure/postgresql_async_v3.py",
+      "web/backend/tests/test_postgresql_async_public_exports.py",
+      "web/backend/tests/test_monitoring_watchlists_runtime_fallback.py",
+      "docs/reports/worklogs/claude-auto/b4-013-m1a-watchlist-runtime-import-reexport-closeout-2026-06-16.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No frontend route/view/store changes; no MonitoringPostgreSQLAccess behavior changes; no watchlist route contract changes; no B4.012 cleanup, ST-HOLD, marketKlineData, OpenSpec, or external dirty-file changes."
+    ],
+    "next_gate": "none",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-15T16:56:58.620Z",
+    "updated_at": "2026-06-15T18:22:55.314Z",
+    "acceptance": {
+      "commit_gate": [
+        "GitNexus impact completed: get_postgres_async helper LOW; avoid MonitoringPostgreSQLAccess behavior changes because impact is MEDIUM.",
+        "Focused pytest: pytest web/backend/tests/test_postgresql_async_public_exports.py web/backend/tests/test_monitoring_watchlists_runtime_fallback.py -q",
+        "Runtime visible result: authenticated /watchlist/manage no longer shows 自选列表加载失败 and /api/v1/monitoring/watchlists returns 200 or fallback unified response.",
+        "Scope-check only allowed M1-A files; git diff --check passes."
+      ],
+      "closeout_gate": [
+        "Closeout worklog records RED/GREEN evidence, runtime visible result, and remaining non-blocking observations."
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User agreed to continue B4.013 runtime mainline repair; M1-A scope is restricted to helper re-export and bound focused tests.",
+        "current_head": "c7c2eb74fbc9a87658459321284f252923b09a7a",
+        "transitioned_at": "2026-06-15T16:56:58.798Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Runtime remediation prepared: source diff is empty because HEAD already contains the public re-export; focused tests and live probes verify current source after backend reload.",
+        "current_head": "c7c2eb74fbc9a87658459321284f252923b09a7a",
+        "transitioned_at": "2026-06-15T18:22:55.149Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "PM2 backend restarted and reloaded current source; /api/v1/monitoring/watchlists and /watchlist/manage visible path restored.",
+        "current_head": "c7c2eb74fbc9a87658459321284f252923b09a7a",
+        "transitioned_at": "2026-06-15T18:22:55.203Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "M1-A runtime blocker closed; residual WatchlistManager missing-props warnings deferred to separate frontend props-chain task.",
+        "current_head": "c7c2eb74fbc9a87658459321284f252923b09a7a",
+        "transitioned_at": "2026-06-15T18:22:55.314Z"
+      }
+    ],
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-013-m1a-watchlist-runtime-import-reexport-closeout-2026-06-16.md",
+      "compatibility": "Preserved backend API response contract and frontend route behavior; no retained source diff.",
+      "gates": [
+        "Focused pytest 9/9 passed with --no-cov",
+        "Runtime /api/v1/monitoring/watchlists returned 200 after backend restart",
+        "Authenticated /watchlist/manage no longer shows 自选列表加载失败"
+      ],
+      "current_head": "c7c2eb74fbc9a87658459321284f252923b09a7a",
+      "prepared_at": "2026-06-15T18:22:55.261Z"
     }
   }
 ]

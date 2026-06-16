@@ -1,0 +1,32 @@
+task:
+  id: "b4-013-runtime-mainline-bring-up"
+  title: "B4.013 Runtime mainline bring-up governance adoption"
+
+scope:
+  allowed_paths:
+    - "architecture/STANDARDS.md"
+    - "AGENTS.md"
+    - "CLAUDE.md"
+    - "docs/FUNCTION_TREE.md"
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/tree.md"
+    - "openspec/changes/adopt-mainline-alignment-governance"
+    - "docs/reports/worklogs/claude-auto/b4-013-gov-m1-mainline-alignment-governance-adoption-2026-06-15.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No source, runtime, test, API, route, store, UI, PM2, marketKlineData, ST-HOLD, or external dirty-file changes."
+
+acceptance:
+  commit_gate:
+    - "openspec validate adopt-mainline-alignment-governance --strict"
+    - "node /root/.codex/skills/myskills/skills/function-tree/scripts/ft-governance.cjs validate --root /opt/claude/mystocks_spec"
+  closeout_gate:
+    - "Core governance entrypoints reference mainline alignment without duplicating source truth."
+
+evidence:
+  current_head: "c7c2eb74fbc9a87658459321284f252923b09a7a"
+  notes: []

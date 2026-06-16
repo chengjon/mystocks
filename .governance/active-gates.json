@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-15T11:36:04.031Z",
+  "updated_at": "2026-06-15T18:22:55.325Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -9,15 +9,17 @@
       "node_type": "decision",
       "owner_lane": "artdeco-web-design-governance",
       "parent": "",
-      "status": "decision-prepared",
+      "status": "blocked",
       "source_edits_authorized": false,
-      "current_blocker": "",
-      "next_allowed": "prepare authorization",
+      "current_blocker": "B4.013 runtime-first mainline reset: residual cleanup/detail gate is paused until the active P0 mainline is runnable and separately reauthorized.",
+      "blocker_reason": "B4.013 runtime-first mainline reset: residual cleanup/detail gate is paused until the active P0 mainline is runnable and separately reauthorized.",
+      "unblock_target_state": "decision-prepared",
+      "next_allowed": "unblock to decision-prepared",
       "function_tree_ref": "B4.012-M3",
       "freshness": "current-head",
       "allowed_paths": [],
       "forbidden_paths": [],
-      "updated_at": "2026-06-14T04:12:48.236Z"
+      "updated_at": "2026-06-15T15:51:34.420Z"
     },
     {
       "program": "artdeco-web-design-governance",
@@ -26,15 +28,17 @@
       "node_type": "decision",
       "owner_lane": "artdeco-web-design-governance",
       "parent": "b4-012-m3-residual-dirty-atlas-rebaseline",
-      "status": "decision-prepared",
+      "status": "blocked",
       "source_edits_authorized": false,
-      "current_blocker": "",
-      "next_allowed": "prepare authorization",
+      "current_blocker": "B4.013 runtime-first mainline reset: residual cleanup/detail gate is paused until the active P0 mainline is runnable and separately reauthorized.",
+      "blocker_reason": "B4.013 runtime-first mainline reset: residual cleanup/detail gate is paused until the active P0 mainline is runnable and separately reauthorized.",
+      "unblock_target_state": "decision-prepared",
+      "next_allowed": "unblock to decision-prepared",
       "function_tree_ref": "B4.012-M3a",
       "freshness": "current-head",
       "allowed_paths": [],
       "forbidden_paths": [],
-      "updated_at": "2026-06-14T05:33:46.939Z"
+      "updated_at": "2026-06-15T15:51:34.478Z"
     },
     {
       "program": "artdeco-web-design-governance",
@@ -43,15 +47,17 @@
       "node_type": "decision",
       "owner_lane": "artdeco-web-design-governance",
       "parent": "b4-012-m3a-tests-residual-domain-audit",
-      "status": "decision-prepared",
+      "status": "blocked",
       "source_edits_authorized": false,
-      "current_blocker": "",
-      "next_allowed": "prepare authorization",
+      "current_blocker": "B4.013 runtime-first mainline reset: residual cleanup/detail gate is paused until the active P0 mainline is runnable and separately reauthorized.",
+      "blocker_reason": "B4.013 runtime-first mainline reset: residual cleanup/detail gate is paused until the active P0 mainline is runnable and separately reauthorized.",
+      "unblock_target_state": "decision-prepared",
+      "next_allowed": "unblock to decision-prepared",
       "function_tree_ref": "B4.012-M3a-B",
       "freshness": "current-head",
       "allowed_paths": [],
       "forbidden_paths": [],
-      "updated_at": "2026-06-14T05:51:43.918Z"
+      "updated_at": "2026-06-15T15:51:34.538Z"
     },
     {
       "program": "artdeco-web-design-governance",
@@ -60,15 +66,17 @@
       "node_type": "decision",
       "owner_lane": "artdeco-web-design-governance",
       "parent": "b4-012-m3a-tests-residual-domain-audit",
-      "status": "decision-prepared",
+      "status": "blocked",
       "source_edits_authorized": false,
-      "current_blocker": "",
-      "next_allowed": "prepare authorization",
+      "current_blocker": "B4.013 runtime-first mainline reset: residual cleanup/detail gate is paused until the active P0 mainline is runnable and separately reauthorized.",
+      "blocker_reason": "B4.013 runtime-first mainline reset: residual cleanup/detail gate is paused until the active P0 mainline is runnable and separately reauthorized.",
+      "unblock_target_state": "decision-prepared",
+      "next_allowed": "unblock to decision-prepared",
       "function_tree_ref": "B4.012-M3a-D",
       "freshness": "current-head",
       "allowed_paths": [],
       "forbidden_paths": [],
-      "updated_at": "2026-06-14T07:33:55.901Z"
+      "updated_at": "2026-06-15T15:51:34.596Z"
     },
     {
       "program": "artdeco-web-design-governance",
@@ -77,15 +85,17 @@
       "node_type": "decision",
       "owner_lane": "artdeco-web-design-governance",
       "parent": "b4-012-m3a-tests-residual-domain-audit",
-      "status": "decision-prepared",
+      "status": "blocked",
       "source_edits_authorized": false,
-      "current_blocker": "",
-      "next_allowed": "prepare authorization",
+      "current_blocker": "B4.013 runtime-first mainline reset: residual cleanup/detail gate is paused until the active P0 mainline is runnable and separately reauthorized.",
+      "blocker_reason": "B4.013 runtime-first mainline reset: residual cleanup/detail gate is paused until the active P0 mainline is runnable and separately reauthorized.",
+      "unblock_target_state": "decision-prepared",
+      "next_allowed": "unblock to decision-prepared",
       "function_tree_ref": "B4.012-M3a-E",
       "freshness": "current-head",
       "allowed_paths": [],
       "forbidden_paths": [],
-      "updated_at": "2026-06-14T07:37:33.491Z"
+      "updated_at": "2026-06-15T15:51:34.650Z"
     },
     {
       "program": "artdeco-web-design-governance",
@@ -94,15 +104,17 @@
       "node_type": "decision",
       "owner_lane": "artdeco-web-design-governance",
       "parent": "b4-012-m3a-tests-residual-domain-audit",
-      "status": "decision-prepared",
+      "status": "blocked",
       "source_edits_authorized": false,
-      "current_blocker": "",
-      "next_allowed": "prepare authorization",
+      "current_blocker": "B4.013 runtime-first mainline reset: residual cleanup/detail gate is paused until the active P0 mainline is runnable and separately reauthorized.",
+      "blocker_reason": "B4.013 runtime-first mainline reset: residual cleanup/detail gate is paused until the active P0 mainline is runnable and separately reauthorized.",
+      "unblock_target_state": "decision-prepared",
+      "next_allowed": "unblock to decision-prepared",
       "function_tree_ref": "B4.012-M3a-U",
       "freshness": "current-head",
       "allowed_paths": [],
       "forbidden_paths": [],
-      "updated_at": "2026-06-14T07:40:55.516Z"
+      "updated_at": "2026-06-15T15:51:34.710Z"
     },
     {
       "program": "artdeco-web-design-governance",
@@ -111,15 +123,17 @@
       "node_type": "decision",
       "owner_lane": "artdeco-web-design-governance",
       "parent": "b4-012-m3a-tests-residual-domain-audit",
-      "status": "decision-prepared",
+      "status": "blocked",
       "source_edits_authorized": false,
-      "current_blocker": "",
-      "next_allowed": "prepare decision or authorization",
+      "current_blocker": "B4.013 runtime-first mainline reset: residual cleanup/detail gate is paused until the active P0 mainline is runnable and separately reauthorized.",
+      "blocker_reason": "B4.013 runtime-first mainline reset: residual cleanup/detail gate is paused until the active P0 mainline is runnable and separately reauthorized.",
+      "unblock_target_state": "decision-prepared",
+      "next_allowed": "unblock to decision-prepared",
       "function_tree_ref": "B4.012-M3a-C",
       "freshness": "current-head",
       "allowed_paths": [],
       "forbidden_paths": [],
-      "updated_at": "2026-06-15T03:07:48.166Z"
+      "updated_at": "2026-06-15T15:51:34.770Z"
     },
     {
       "program": "artdeco-web-design-governance",
@@ -128,10 +142,12 @@
       "node_type": "decision",
       "owner_lane": "artdeco-web-design-governance",
       "parent": "b4-012-m3a-d-e2e-frontend-tests-split",
-      "status": "authorization-prepared",
+      "status": "blocked",
       "source_edits_authorized": false,
-      "current_blocker": "",
-      "next_allowed": "review and approve implementation authorization",
+      "current_blocker": "B4.013 runtime-first mainline reset: residual cleanup/detail gate is paused until the active P0 mainline is runnable and separately reauthorized.",
+      "blocker_reason": "B4.013 runtime-first mainline reset: residual cleanup/detail gate is paused until the active P0 mainline is runnable and separately reauthorized.",
+      "unblock_target_state": "authorization-prepared",
+      "next_allowed": "unblock to authorization-prepared",
       "function_tree_ref": "b4-012-m3a-d-e2e-frontend-tests-split",
       "freshness": "current-head",
       "allowed_paths": [
@@ -144,7 +160,38 @@
         "docs/reports/worklogs/claude-auto/b4-012-m3a-d1-e2e-browser-smoke-closeout-2026-06-15.md"
       ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-15T11:36:04.024Z"
+      "updated_at": "2026-06-15T15:51:34.832Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-013-runtime-mainline-bring-up",
+      "title": "B4.013 Runtime mainline bring-up governance adoption",
+      "node_type": "implementation",
+      "owner_lane": "mainline",
+      "parent": "",
+      "status": "approved-for-implementation",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "prepare decision or authorization",
+      "function_tree_ref": "docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance",
+      "freshness": "current-head",
+      "allowed_paths": [
+        "architecture/STANDARDS.md",
+        "AGENTS.md",
+        "CLAUDE.md",
+        "docs/FUNCTION_TREE.md",
+        ".governance/active-gates.json",
+        ".governance/active-gates.md",
+        ".governance/programs/artdeco-web-design-governance/nodes.json",
+        ".governance/programs/artdeco-web-design-governance/tree.md",
+        ".governance/programs/artdeco-web-design-governance/cards/b4-013-runtime-mainline-bring-up.yaml",
+        "openspec/changes/adopt-mainline-alignment-governance/**",
+        "docs/reports/worklogs/claude-auto/b4-013-gov-m0-mainline-alignment-methodology-adoption-proposal-2026-06-15.md",
+        "docs/reports/worklogs/claude-auto/b4-013-gov-m1-mainline-alignment-governance-adoption-2026-06-15.md",
+        "docs/reports/worklogs/claude-auto/b4-013-m0-runtime-mainline-no-source-audit-2026-06-16.md"
+      ],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-15T16:25:26.480Z"
     }
   ]
 }
