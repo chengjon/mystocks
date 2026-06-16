@@ -10720,7 +10720,7 @@
     "parent": "",
     "status": "approved-for-implementation",
     "function_tree_ref": "docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance",
-    "current_head": "ddf13d74d22d53049fdd19cbe82a5d3ba8d7d312",
+    "current_head": "ee711359885383e5fb23f7c524cb01b41e9bd60e",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -10870,6 +10870,13 @@
         "note": "Refresh parent runtime mainline evidence before B4.013-M2-E3 no-source category audit.",
         "current_head": "ddf13d74d22d53049fdd19cbe82a5d3ba8d7d312",
         "recorded_at": "2026-06-16T15:33:09.312Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "ee7113598",
+        "note": "Refresh parent runtime mainline evidence after B4.013-M2-E3 category coverage audit commit.",
+        "current_head": "ee711359885383e5fb23f7c524cb01b41e9bd60e",
+        "recorded_at": "2026-06-16T16:03:40.433Z"
       }
     ],
     "allowed_paths": [
@@ -10895,7 +10902,7 @@
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T15:45:14.131Z",
-    "updated_at": "2026-06-16T15:33:09.312Z",
+    "updated_at": "2026-06-16T16:03:40.433Z",
     "acceptance": {
       "commit_gate": [
         "openspec validate adopt-mainline-alignment-governance --strict",
@@ -11914,7 +11921,7 @@
     "parent": "b4-013-m1e3-openstock-consumer-openspec-proposal",
     "status": "decision-prepared",
     "function_tree_ref": "b4-013-runtime-mainline-bring-up",
-    "current_head": "ddf13d74d22d53049fdd19cbe82a5d3ba8d7d312",
+    "current_head": "ee711359885383e5fb23f7c524cb01b41e9bd60e",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -11931,6 +11938,58 @@
         "note": "No-source route/category coverage matrix for remaining OpenStock consumer migration decisions.",
         "current_head": "ddf13d74d22d53049fdd19cbe82a5d3ba8d7d312",
         "recorded_at": "2026-06-16T15:44:56.346Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "ee7113598",
+        "note": "Refresh M2-E3 decision evidence before B4.013-M2-E4 OpenStock contract-gap handoff.",
+        "current_head": "ee711359885383e5fb23f7c524cb01b41e9bd60e",
+        "recorded_at": "2026-06-16T16:03:40.489Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare decision or authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-16T15:33:54.121Z",
+    "updated_at": "2026-06-16T16:03:40.489Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "",
+        "current_head": "ddf13d74d22d53049fdd19cbe82a5d3ba8d7d312",
+        "transitioned_at": "2026-06-16T15:44:56.411Z"
+      }
+    ]
+  },
+  {
+    "id": "b4-013-m2e4-openstock-contract-gap-handoff",
+    "title": "B4.013-M2-E4 OpenStock contract-gap handoff no-source design",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-013-m2e3-openstock-category-coverage-audit",
+    "status": "decision-prepared",
+    "function_tree_ref": "b4-013-runtime-mainline-bring-up",
+    "current_head": "ee711359885383e5fb23f7c524cb01b41e9bd60e",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "ee7113598",
+        "note": "No-source baseline for OpenStock contract-gap handoff design after M2-E3 category coverage audit.",
+        "current_head": "ee711359885383e5fb23f7c524cb01b41e9bd60e",
+        "recorded_at": "2026-06-16T16:04:04.922Z"
+      },
+      {
+        "kind": "structural",
+        "path": "docs/reports/worklogs/claude-auto/b4-013-m2e4-openstock-contract-gap-handoff-no-source-design-2026-06-17.md",
+        "note": "OpenStock contract-gap handoff for remaining MyStocks provider-backed compatibility families.",
+        "current_head": "ee711359885383e5fb23f7c524cb01b41e9bd60e",
+        "recorded_at": "2026-06-16T16:08:10.716Z"
       }
     ],
     "allowed_paths": [],
@@ -11939,15 +11998,15 @@
     "next_gate": "prepare authorization",
     "blocker_reason": null,
     "unblock_target_state": null,
-    "created_at": "2026-06-16T15:33:54.121Z",
-    "updated_at": "2026-06-16T15:44:56.411Z",
+    "created_at": "2026-06-16T16:04:04.860Z",
+    "updated_at": "2026-06-16T16:08:10.769Z",
     "transitions": [
       {
         "from": "evidence-prepared",
         "to": "decision-prepared",
         "note": "",
-        "current_head": "ddf13d74d22d53049fdd19cbe82a5d3ba8d7d312",
-        "transitioned_at": "2026-06-16T15:44:56.411Z"
+        "current_head": "ee711359885383e5fb23f7c524cb01b41e9bd60e",
+        "transitioned_at": "2026-06-16T16:08:10.769Z"
       }
     ]
   }
