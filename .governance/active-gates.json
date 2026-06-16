@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-16T07:29:19.554Z",
+  "updated_at": "2026-06-16T08:18:25.585Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -251,6 +251,37 @@
     },
     {
       "program": "artdeco-web-design-governance",
+      "id": "b4-013-m2e1-openstock-backend-consumer-client-authorization",
+      "title": "B4.013-M2-E1 OpenStock backend consumer client implementation authorization",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-013-m1e3-openstock-consumer-openspec-proposal",
+      "status": "authorization-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "review and approve implementation authorization",
+      "function_tree_ref": "b4-013-runtime-mainline-bring-up",
+      "freshness": "current-head",
+      "allowed_paths": [
+        "web/backend/app/services/openstock_client.py",
+        "tests/backend/test_openstock_client.py",
+        "docs/reports/worklogs/claude-auto/b4-013-m2e1-openstock-backend-consumer-client-closeout-2026-06-16.md"
+      ],
+      "forbidden_paths": [
+        "web/backend/app/api/market/market_data_request.py",
+        "web/backend/app/api/v1/strategy/indicators.py",
+        "web/backend/app/services/data_service.py",
+        "web/backend/app/services/data_source_factory/**",
+        "web/backend/app/services/adapters_split/**",
+        "src/adapters/**",
+        "src/data_sources/**",
+        "web/frontend/**",
+        "/opt/claude/openstock/**"
+      ],
+      "updated_at": "2026-06-16T08:17:24.553Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
       "id": "b4-013-runtime-mainline-bring-up",
       "title": "B4.013 Runtime mainline bring-up governance adoption",
       "node_type": "implementation",
@@ -278,7 +309,7 @@
         "docs/reports/worklogs/claude-auto/b4-013-m0-runtime-mainline-no-source-audit-2026-06-16.md"
       ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-16T07:29:19.543Z"
+      "updated_at": "2026-06-16T08:18:25.576Z"
     }
   ]
 }

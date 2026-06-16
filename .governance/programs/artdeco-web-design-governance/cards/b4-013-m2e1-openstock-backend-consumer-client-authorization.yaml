@@ -1,0 +1,42 @@
+task:
+  id: "b4-013-m2e1-openstock-backend-consumer-client-authorization"
+  title: "B4.013-M2-E1 OpenStock backend consumer client implementation authorization"
+
+scope:
+  allowed_paths:
+    - "web/backend/app/services/openstock_client.py"
+    - "tests/backend/test_openstock_client.py"
+    - "docs/reports/worklogs/claude-auto/b4-013-m2e1-openstock-backend-consumer-client-closeout-2026-06-16.md"
+  forbidden_paths:
+    - "web/backend/app/api/market/market_data_request.py"
+    - "web/backend/app/api/v1/strategy/indicators.py"
+    - "web/backend/app/services/data_service.py"
+    - "web/backend/app/services/data_source_factory/**"
+    - "web/backend/app/services/adapters_split/**"
+    - "src/adapters/**"
+    - "src/data_sources/**"
+    - "web/frontend/**"
+    - "/opt/claude/openstock/**"
+
+non_goals:
+  - "No route migration in M2-E1; /api/v1/market/quotes, /api/v1/market/kline, and strategy indicator routes stay unchanged until a later authorized batch."
+  - "No data provider implementation, SDK calls, cache warmers, registry mutation, or provider adapter repair is allowed in mystocks; provider ownership remains in /opt/claude/openstock."
+  - "No changes to frontend, OpenSpec specs, architecture standards, existing data service, data source factory, adapters_split, src/adapters, or src/data_sources provider code."
+
+acceptance:
+  commit_gate:
+    - "python -m py_compile web/backend/app/services/openstock_client.py tests/backend/test_openstock_client.py"
+    - "python -m ruff check web/backend/app/services/openstock_client.py tests/backend/test_openstock_client.py"
+    - "pytest tests/backend/test_openstock_client.py -q"
+    - "git diff --cached --check"
+    - "node .gitnexus/run.cjs verify-staged --repo mystocks --cwd /opt/claude/mystocks_spec --json"
+    - "node .gitnexus/run.cjs detect-changes --scope staged --repo mystocks --cwd /opt/claude/mystocks_spec"
+    - "OPENDOG verification blocker_count remains 0"
+  closeout_gate:
+    - "Only web/backend/app/services/openstock_client.py, tests/backend/test_openstock_client.py, and the M2-E1 closeout worklog may be modified in the implementation commit."
+    - "Client exposes a consumer-only OpenStock HTTP boundary with strict category validation, timeout/error normalization, and no provider runtime behavior."
+    - "Route migration is explicitly deferred to B4.013-M2-E2 after this client lands and receives separate authorization."
+
+evidence:
+  current_head: "0a14c05eeb1dff99e002f8d279541d8fadabdfce"
+  notes: []
