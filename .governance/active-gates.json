@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-16T03:34:47.695Z",
+  "updated_at": "2026-06-16T04:04:07.554Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -208,7 +208,7 @@
         "docs/reports/worklogs/claude-auto/b4-013-m0-runtime-mainline-no-source-audit-2026-06-16.md"
       ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-16T03:34:22.842Z"
+      "updated_at": "2026-06-16T03:36:38.114Z"
     },
     {
       "program": "artdeco-web-design-governance",
@@ -217,10 +217,10 @@
       "node_type": "decision",
       "owner_lane": "artdeco-web-design-governance",
       "parent": "b4-013-runtime-mainline-bring-up",
-      "status": "authorization-prepared",
-      "source_edits_authorized": false,
+      "status": "implementation-ready",
+      "source_edits_authorized": true,
       "current_blocker": "",
-      "next_allowed": "review and approve implementation authorization",
+      "next_allowed": "land implementation with Git evidence",
       "function_tree_ref": "B4.013-M1-D",
       "freshness": "current-head",
       "allowed_paths": [
@@ -232,7 +232,7 @@
         "docs/reports/worklogs/claude-auto/b4-013-m1d-dashboard-big-deal-dependency-isolation-closeout-2026-06-16.md"
       ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-16T03:34:47.684Z"
+      "updated_at": "2026-06-16T04:04:07.547Z"
     }
   ]
 }

@@ -72,6 +72,32 @@ const toTraceableError = (response: ErrorEnvelope, fallback: string): Error => {
   return new Error(message)
 }
 
+const OPTIONAL_DASHBOARD_PAYLOAD_TIMEOUT_MS = 1500
+const EMPTY_DASHBOARD_ROWS_RESPONSE = { data: [] }
+
+const resolveOptionalDashboardPayload = async (
+  request: Promise<unknown>,
+  fallback: unknown,
+  timeoutMs = OPTIONAL_DASHBOARD_PAYLOAD_TIMEOUT_MS
+): Promise<unknown> => {
+  return new Promise((resolve) => {
+    let settled = false
+    let timeoutId: ReturnType<typeof setTimeout> | undefined
+
+    const finish = (value: unknown): void => {
+      if (settled) return
+      settled = true
+      if (timeoutId !== undefined) {
+        clearTimeout(timeoutId)
+      }
+      resolve(value)
+    }
+
+    timeoutId = setTimeout(() => finish(fallback), timeoutMs)
+    request.then(finish).catch(() => finish(fallback))
+  })
+}
+
 export interface MarketOverviewData {
   symbol: string
   name: string
@@ -188,16 +214,19 @@ export const dashboardService = {
       start_date: targetDate,
       end_date: targetDate
     }
-    const [summaryResponse, bigDealResponse] = await Promise.all([
-      apiClient.get('/akshare/market/fund-flow/hsgt-summary', { params }),
-      apiClient.get('/akshare/market/fund-flow/big-deal')
-    ])
+    const summaryResponse = await apiClient.get('/akshare/market/fund-flow/hsgt-summary', { params })
     if (isErrorEnvelope(summaryResponse)) {
       throw toTraceableError(summaryResponse, 'fund flow summary unavailable')
     }
-    if (isErrorEnvelope(bigDealResponse)) {
-      throw toTraceableError(bigDealResponse, 'fund flow big deal unavailable')
-    }
+
+    const rawBigDealResponse = await resolveOptionalDashboardPayload(
+      apiClient.get('/akshare/market/fund-flow/big-deal'),
+      EMPTY_DASHBOARD_ROWS_RESPONSE
+    )
+    const bigDealResponse = isErrorEnvelope(rawBigDealResponse)
+      ? EMPTY_DASHBOARD_ROWS_RESPONSE
+      : rawBigDealResponse
+
     return withTrace(summaryResponse, normalizeDashboardFundFlow(summaryResponse, bigDealResponse))
   },
 

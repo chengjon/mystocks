@@ -10720,7 +10720,7 @@
     "parent": "",
     "status": "approved-for-implementation",
     "function_tree_ref": "docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance",
-    "current_head": "a77ff08c67676b731b8a18a921ee8be4c6d2638c",
+    "current_head": "8e02f6a84f2f7d3b79a5236083f447ef35b8c67b",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -10772,6 +10772,13 @@
         "note": "B4.013-M1-D no-source dashboard aggregate blocker audit commit is current HEAD before authorization prep.",
         "current_head": "a77ff08c67676b731b8a18a921ee8be4c6d2638c",
         "recorded_at": "2026-06-16T03:34:22.842Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "8e02f6a84",
+        "note": "B4.013-M1-D authorization prep commit is current HEAD; keep parent evidence aligned for later source authorization.",
+        "current_head": "8e02f6a84f2f7d3b79a5236083f447ef35b8c67b",
+        "recorded_at": "2026-06-16T03:36:38.114Z"
       }
     ],
     "allowed_paths": [
@@ -10797,7 +10804,7 @@
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T15:45:14.131Z",
-    "updated_at": "2026-06-16T03:34:22.842Z",
+    "updated_at": "2026-06-16T03:36:38.114Z",
     "acceptance": {
       "commit_gate": [
         "openspec validate adopt-mainline-alignment-governance --strict",
@@ -11061,11 +11068,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-013-runtime-mainline-bring-up",
-    "status": "authorization-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "B4.013-M1-D",
-    "current_head": "718f8ab247b88d10528f91cd63cd97aab22c80f6",
+    "current_head": "8e02f6a84f2f7d3b79a5236083f447ef35b8c67b",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "runtime",
@@ -11073,6 +11080,13 @@
         "note": "B4.013-M1-D no-source dashboard aggregate audit: big-deal endpoint is the dominant runtime blocker; synthetic big-deal bypass reaches DATA REAL / SYNC READY; prepare bounded frontend isolation authorization.",
         "current_head": "718f8ab247b88d10528f91cd63cd97aab22c80f6",
         "recorded_at": "2026-06-16T03:29:36.694Z"
+      },
+      {
+        "kind": "authorization",
+        "path": "8e02f6a84",
+        "note": "User approved B4.013-M1-D-FIX source implementation for dashboard big-deal dependency isolation; bind approval to current HEAD before source edits.",
+        "current_head": "8e02f6a84f2f7d3b79a5236083f447ef35b8c67b",
+        "recorded_at": "2026-06-16T03:44:04.068Z"
       }
     ],
     "allowed_paths": [
@@ -11089,11 +11103,11 @@
       "Do not touch ST-HOLD, marketKlineData, B4.012 residual gates, external dirty files, or unrelated ArtDeco components.",
       "Do not attempt to fix the technical-indicators 400 in the same package; keep it as a separately degraded follow-up."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-16T03:14:53.275Z",
-    "updated_at": "2026-06-16T03:34:47.684Z",
+    "updated_at": "2026-06-16T04:04:07.547Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -11101,6 +11115,20 @@
         "note": "M1-D no-source decision prepared: isolate dashboard big-deal dependency before broader runtime cleanup.",
         "current_head": "718f8ab247b88d10528f91cd63cd97aab22c80f6",
         "transitioned_at": "2026-06-16T03:29:53.049Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "Source-authorized by user for frontend-only dashboard big-deal dependency isolation.",
+        "current_head": "8e02f6a84f2f7d3b79a5236083f447ef35b8c67b",
+        "transitioned_at": "2026-06-16T03:44:24.903Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Dashboard big-deal dependency isolation implementation prepared with focused tests, type-check, and PM2 browser smoke evidence.",
+        "current_head": "8e02f6a84f2f7d3b79a5236083f447ef35b8c67b",
+        "transitioned_at": "2026-06-16T04:04:07.547Z"
       }
     ],
     "acceptance": {

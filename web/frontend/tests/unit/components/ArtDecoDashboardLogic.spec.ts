@@ -345,6 +345,21 @@ describe('ArtDecoDashboard Logic Integration', () => {
     expect(wrapper.find('.dashboard-alerts').text()).toContain('资金流向数据暂不可用')
   })
 
+  it('keeps aggregate provenance ready when auxiliary stock-flow ranking fails after core slices resolve', async () => {
+    vi.mocked(dashboardService.getStockFlowRanking).mockRejectedValueOnce(new Error('big-deal unavailable'))
+
+    const wrapper = mountDashboard()
+    await flushMicrotasks()
+
+    const meta = wrapper.find('.request-meta-bar').text()
+    expect(meta).toContain('DATA: REAL')
+    expect(meta).toContain('SYNC: READY')
+    expect(meta).not.toContain('REQ: N/A')
+    expect(meta).not.toContain('DATA: MIXED')
+    expect(meta).not.toContain('DATA: UNAVAILABLE')
+    expect(wrapper.find('.dashboard-alerts').exists()).toBe(false)
+  })
+
   it('reports pending aggregate provenance while every core dashboard slice is still unresolved', async () => {
     const never = new Promise(() => {})
     vi.mocked(dashboardService.getMarketOverview).mockReturnValueOnce(never as Promise<{ data: [] }>)

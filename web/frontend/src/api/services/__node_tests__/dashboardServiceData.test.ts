@@ -1,6 +1,8 @@
 import test from "node:test"
 import assert from "node:assert/strict"
 
+import { apiClient } from "../../apiClient.ts"
+import dashboardService from "../dashboardService.ts"
 import {
   normalizeDashboardFundFlow,
   normalizeDashboardIndustryFlow,
@@ -10,6 +12,45 @@ import {
   normalizeDashboardStockFlowRanking,
   normalizeDashboardSystemHealth,
 } from "../dashboardServiceData.ts"
+
+test("dashboardService.getFundFlow preserves summary snapshot when big-deal fails", async () => {
+  const originalGet = apiClient.get
+
+  apiClient.get = async (url: string) => {
+    if (url === "/akshare/market/fund-flow/hsgt-summary") {
+      return {
+        success: true,
+        request_id: "summary-request",
+        process_time: "12.5",
+        data: {
+          data: [
+            { 板块: "沪股通", 资金方向: "北向", 成交净买额: 120000000, 指数涨跌幅: 0.5 },
+            { 板块: "深股通", 资金方向: "北向", 成交净买额: 80000000, 指数涨跌幅: 1.5 },
+          ],
+        },
+      }
+    }
+
+    if (url === "/akshare/market/fund-flow/big-deal") {
+      throw new Error("big-deal unavailable")
+    }
+
+    throw new Error(`Unexpected URL: ${url}`)
+  }
+
+  try {
+    const result = await dashboardService.getFundFlow("2026-06-16")
+
+    assert.equal(result.request_id, "summary-request")
+    assert.equal(result.process_time, "12.5")
+    assert.deepEqual(result.data.hgt, { amount: 1.2, change: 0.5 })
+    assert.deepEqual(result.data.sgt, { amount: 0.8, change: 1.5 })
+    assert.deepEqual(result.data.northTotal, { amount: 2, monthly: 2 })
+    assert.deepEqual(result.data.mainForce, { amount: 0, percentage: 1 })
+  } finally {
+    apiClient.get = originalGet
+  }
+})
 
 test("normalizeDashboardMarketOverview unwraps nested quotes rows", () => {
   const rows = normalizeDashboardMarketOverview({
