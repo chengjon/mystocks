@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-16T16:54:07.255Z",
+  "updated_at": "2026-06-16T18:23:34.494Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -268,6 +268,23 @@
     },
     {
       "program": "artdeco-web-design-governance",
+      "id": "b4-013-m2e4-openstock-contract-gap-handoff",
+      "title": "B4.013-M2-E4 OpenStock contract-gap handoff no-source design",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-013-m2e3-openstock-category-coverage-audit",
+      "status": "decision-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "prepare decision or authorization",
+      "function_tree_ref": "b4-013-runtime-mainline-bring-up",
+      "freshness": "current-head",
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-16T18:22:03.418Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
       "id": "b4-013-runtime-mainline-bring-up",
       "title": "B4.013 Runtime mainline bring-up governance adoption",
       "node_type": "implementation",
@@ -295,24 +312,7 @@
         "docs/reports/worklogs/claude-auto/b4-013-m0-runtime-mainline-no-source-audit-2026-06-16.md"
       ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-16T16:54:07.188Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-013-m2e4-openstock-contract-gap-handoff",
-      "title": "B4.013-M2-E4 OpenStock contract-gap handoff no-source design",
-      "node_type": "decision",
-      "owner_lane": "artdeco-web-design-governance",
-      "parent": "b4-013-m2e3-openstock-category-coverage-audit",
-      "status": "decision-prepared",
-      "source_edits_authorized": false,
-      "current_blocker": "",
-      "next_allowed": "prepare decision or authorization",
-      "function_tree_ref": "b4-013-runtime-mainline-bring-up",
-      "freshness": "current-head",
-      "allowed_paths": [],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-16T16:54:07.247Z"
+      "updated_at": "2026-06-16T18:23:34.477Z"
     }
   ]
 }
