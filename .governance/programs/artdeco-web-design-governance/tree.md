@@ -93,3 +93,5 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-013-m1b-market-runtime-renderability-audit: B4.013-M1-B Market runtime renderability no-source audit (planning, FT: B4.013-M1-B)
 - [ ] b4-013-m1c-mainline-route-runtime-blockers-audit: B4.013-M1-C Remaining mainline route runtime blockers no-source audit (planning, FT: B4.013-M1-C)
 - [ ] b4-013-m1d-dashboard-aggregate-runtime-data-provenance-audit: B4.013-M1-D Dashboard aggregate runtime data/provenance no-source audit (planning, FT: B4.013-M1-D)
+- [ ] b4-013-m1e-backend-api-residual-slow-endpoint-attribution-audit: B4.013-M1-E Backend API residual slow endpoint attribution audit (planning, FT: B4.013-M1-E)
+- [ ] b4-013-m1e-openstock-data-source-boundary-audit: B4.013-M1-E OpenStock data-source boundary and mystocks consumer audit (planning, FT: B4.013-M1-E)

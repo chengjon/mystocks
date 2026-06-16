@@ -10720,7 +10720,7 @@
     "parent": "",
     "status": "approved-for-implementation",
     "function_tree_ref": "docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance",
-    "current_head": "c3ef33c136680f617ef1925c7c8118b2e7bcce88",
+    "current_head": "834663446cd3f4b87d5b7af2a51708df35470c19",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -10786,6 +10786,13 @@
         "note": "B4.013-M1-D implementation commit landed and child node closed; align parent governance evidence to current HEAD before closeout commit.",
         "current_head": "c3ef33c136680f617ef1925c7c8118b2e7bcce88",
         "recorded_at": "2026-06-16T04:14:55.918Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "834663446",
+        "note": "Align parent B4.013 runtime mainline evidence to current HEAD after M1-D closeout and M1-E OpenStock boundary reset.",
+        "current_head": "834663446cd3f4b87d5b7af2a51708df35470c19",
+        "recorded_at": "2026-06-16T04:43:01.015Z"
       }
     ],
     "allowed_paths": [
@@ -10811,7 +10818,7 @@
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T15:45:14.131Z",
-    "updated_at": "2026-06-16T04:14:55.918Z",
+    "updated_at": "2026-06-16T04:43:01.015Z",
     "acceptance": {
       "commit_gate": [
         "openspec validate adopt-mainline-alignment-governance --strict",
@@ -11180,5 +11187,88 @@
       "current_head": "c3ef33c136680f617ef1925c7c8118b2e7bcce88",
       "prepared_at": "2026-06-16T04:13:35.375Z"
     }
+  },
+  {
+    "id": "b4-013-m1e-backend-api-residual-slow-endpoint-attribution-audit",
+    "title": "B4.013-M1-E Backend API residual slow endpoint attribution audit",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-013-runtime-mainline-bring-up",
+    "status": "blocked",
+    "function_tree_ref": "B4.013-M1-E",
+    "current_head": "834663446cd3f4b87d5b7af2a51708df35470c19",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "834663446",
+        "note": "B4.013-M1-E no-source audit starts from current HEAD after M1-D dashboard big-deal isolation closeout.",
+        "current_head": "834663446cd3f4b87d5b7af2a51708df35470c19",
+        "recorded_at": "2026-06-16T04:26:58.558Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-013-m1e-openstock-data-source-boundary-reset-2026-06-16.md",
+        "note": "User corrected M1-E direction: do not continue backend data-provider repairs in mystocks; reframe to OpenStock data-source boundary.",
+        "current_head": "834663446cd3f4b87d5b7af2a51708df35470c19",
+        "recorded_at": "2026-06-16T04:42:10.986Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "unblock to decision-prepared",
+    "blocker_reason": "Superseded by user-confirmed OpenStock boundary: mystocks must not keep expanding or repairing data-source provider behavior; continue via OpenStock consumer boundary audit.",
+    "unblock_target_state": "decision-prepared",
+    "created_at": "2026-06-16T04:26:34.929Z",
+    "updated_at": "2026-06-16T04:42:11.041Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "blocked",
+        "note": "Freeze backend-provider-fix framing; no source edits authorized.",
+        "current_head": "834663446cd3f4b87d5b7af2a51708df35470c19",
+        "transitioned_at": "2026-06-16T04:42:11.040Z"
+      }
+    ]
+  },
+  {
+    "id": "b4-013-m1e-openstock-data-source-boundary-audit",
+    "title": "B4.013-M1-E OpenStock data-source boundary and mystocks consumer audit",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-013-runtime-mainline-bring-up",
+    "status": "decision-prepared",
+    "function_tree_ref": "B4.013-M1-E",
+    "current_head": "834663446cd3f4b87d5b7af2a51708df35470c19",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-013-m1e-openstock-data-source-boundary-reset-2026-06-16.md",
+        "note": "OpenStock owns provider functionality; mystocks owns consumer integration and business data usage only.",
+        "current_head": "834663446cd3f4b87d5b7af2a51708df35470c19",
+        "recorded_at": "2026-06-16T04:42:11.292Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-16T04:42:11.088Z",
+    "updated_at": "2026-06-16T04:42:11.344Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "No-source boundary decision prepared; source edits remain unauthorized pending OpenSpec-backed consumer integration proposal.",
+        "current_head": "834663446cd3f4b87d5b7af2a51708df35470c19",
+        "transitioned_at": "2026-06-16T04:42:11.343Z"
+      }
+    ]
   }
 ]

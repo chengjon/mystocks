@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-16T04:14:55.926Z",
+  "updated_at": "2026-06-16T04:43:01.023Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -181,6 +181,42 @@
     },
     {
       "program": "artdeco-web-design-governance",
+      "id": "b4-013-m1e-backend-api-residual-slow-endpoint-attribution-audit",
+      "title": "B4.013-M1-E Backend API residual slow endpoint attribution audit",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-013-runtime-mainline-bring-up",
+      "status": "blocked",
+      "source_edits_authorized": false,
+      "current_blocker": "Superseded by user-confirmed OpenStock boundary: mystocks must not keep expanding or repairing data-source provider behavior; continue via OpenStock consumer boundary audit.",
+      "blocker_reason": "Superseded by user-confirmed OpenStock boundary: mystocks must not keep expanding or repairing data-source provider behavior; continue via OpenStock consumer boundary audit.",
+      "next_allowed": "unblock to decision-prepared",
+      "unblock_target_state": "decision-prepared",
+      "function_tree_ref": "B4.013-M1-E",
+      "freshness": "current-head",
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-16T04:42:11.041Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-013-m1e-openstock-data-source-boundary-audit",
+      "title": "B4.013-M1-E OpenStock data-source boundary and mystocks consumer audit",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-013-runtime-mainline-bring-up",
+      "status": "decision-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "prepare authorization",
+      "function_tree_ref": "B4.013-M1-E",
+      "freshness": "current-head",
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-16T04:42:11.344Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
       "id": "b4-013-runtime-mainline-bring-up",
       "title": "B4.013 Runtime mainline bring-up governance adoption",
       "node_type": "implementation",
@@ -208,7 +244,7 @@
         "docs/reports/worklogs/claude-auto/b4-013-m0-runtime-mainline-no-source-audit-2026-06-16.md"
       ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-16T04:14:55.918Z"
+      "updated_at": "2026-06-16T04:43:01.015Z"
     }
   ]
 }
