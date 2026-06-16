@@ -96,3 +96,4 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-013-m1e-backend-api-residual-slow-endpoint-attribution-audit: B4.013-M1-E Backend API residual slow endpoint attribution audit (planning, FT: B4.013-M1-E)
 - [ ] b4-013-m1e-openstock-data-source-boundary-audit: B4.013-M1-E OpenStock data-source boundary and mystocks consumer audit (planning, FT: B4.013-M1-E)
 - [ ] b4-013-m1e2-openstock-consumer-boundary-audit: B4.013-M1-E2 OpenStock consumer boundary mapping audit (planning, FT: b4-013-runtime-mainline-bring-up)
+- [ ] b4-013-m1e3-openstock-consumer-openspec-proposal: B4.013-M1-E3 OpenStock consumer integration OpenSpec proposal (planning, FT: b4-013-runtime-mainline-bring-up)
