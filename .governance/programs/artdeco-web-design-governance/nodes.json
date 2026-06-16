@@ -10720,7 +10720,7 @@
     "parent": "",
     "status": "approved-for-implementation",
     "function_tree_ref": "docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance",
-    "current_head": "834663446cd3f4b87d5b7af2a51708df35470c19",
+    "current_head": "af6f582402b4b379c5656d4b2bacf5ed32984a00",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -10793,6 +10793,13 @@
         "note": "Align parent B4.013 runtime mainline evidence to current HEAD after M1-D closeout and M1-E OpenStock boundary reset.",
         "current_head": "834663446cd3f4b87d5b7af2a51708df35470c19",
         "recorded_at": "2026-06-16T04:43:01.015Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "af6f58240",
+        "note": "Align parent B4.013 runtime mainline evidence after OpenStock data-source boundary reset commit.",
+        "current_head": "af6f582402b4b379c5656d4b2bacf5ed32984a00",
+        "recorded_at": "2026-06-16T04:46:53.318Z"
       }
     ],
     "allowed_paths": [
@@ -10818,7 +10825,7 @@
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T15:45:14.131Z",
-    "updated_at": "2026-06-16T04:43:01.015Z",
+    "updated_at": "2026-06-16T04:46:53.318Z",
     "acceptance": {
       "commit_gate": [
         "openspec validate adopt-mainline-alignment-governance --strict",
