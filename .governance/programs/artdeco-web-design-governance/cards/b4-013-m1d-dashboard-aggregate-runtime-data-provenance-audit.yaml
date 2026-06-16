@@ -1,0 +1,34 @@
+task:
+  id: "b4-013-m1d-dashboard-aggregate-runtime-data-provenance-audit"
+  title: "B4.013-M1-D Dashboard aggregate runtime data/provenance no-source audit"
+
+scope:
+  allowed_paths:
+    - "web/frontend/src/api/services/dashboardService.ts"
+    - "web/frontend/src/api/services/dashboardServiceData.ts"
+    - "web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.fetchers.ts"
+    - "web/frontend/tests/unit/components/ArtDecoDashboardLogic.spec.ts"
+    - "web/frontend/src/api/services/__node_tests__/dashboardServiceData.test.ts"
+    - "docs/reports/worklogs/claude-auto/b4-013-m1d-dashboard-big-deal-dependency-isolation-closeout-2026-06-16.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not modify backend AkShare, market, strategy, trade, technical-indicators, auth, router, layout, store, or runtime server code in this frontend isolation package."
+  - "Do not touch ST-HOLD, marketKlineData, B4.012 residual gates, external dirty files, or unrelated ArtDeco components."
+  - "Do not attempt to fix the technical-indicators 400 in the same package; keep it as a separately degraded follow-up."
+
+acceptance:
+  commit_gate:
+    - "Run GitNexus impact before editing dashboardService/getFundFlow/getStockFlowRanking or fetcher symbols; warn if risk is HIGH or CRITICAL."
+    - "Run focused frontend unit/contract tests covering dashboardService fund-flow fallback and ArtDecoDashboard aggregate readiness."
+    - "Run web/frontend type-check, GitNexus verify-staged + detect-changes, and OPENDOG verification before commit."
+    - "Run PM2-backed Chromium dashboard smoke proving real big-deal timeout no longer forces P0 Dashboard UNAVAILABLE when market, HSGT summary, and sector flow return."
+  closeout_gate:
+    - "Dashboard reaches DATA REAL / SYNC READY, or explicitly justified DEGRADED for non-primary slices only, with REQ populated from a successful core request."
+    - "No backend/source domains outside allowed frontend paths are changed; staged files match authorization exactly."
+    - "Closeout worklog records real-endpoint smoke, tests, type-check, GitNexus, and OPENDOG results."
+
+evidence:
+  current_head: "718f8ab247b88d10528f91cd63cd97aab22c80f6"
+  notes: []

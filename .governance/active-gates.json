@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-16T03:29:53.057Z",
+  "updated_at": "2026-06-16T03:34:47.695Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -208,7 +208,7 @@
         "docs/reports/worklogs/claude-auto/b4-013-m0-runtime-mainline-no-source-audit-2026-06-16.md"
       ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-16T03:14:53.231Z"
+      "updated_at": "2026-06-16T03:34:22.842Z"
     },
     {
       "program": "artdeco-web-design-governance",
@@ -217,15 +217,22 @@
       "node_type": "decision",
       "owner_lane": "artdeco-web-design-governance",
       "parent": "b4-013-runtime-mainline-bring-up",
-      "status": "decision-prepared",
+      "status": "authorization-prepared",
       "source_edits_authorized": false,
       "current_blocker": "",
-      "next_allowed": "prepare authorization",
+      "next_allowed": "review and approve implementation authorization",
       "function_tree_ref": "B4.013-M1-D",
       "freshness": "current-head",
-      "allowed_paths": [],
+      "allowed_paths": [
+        "web/frontend/src/api/services/dashboardService.ts",
+        "web/frontend/src/api/services/dashboardServiceData.ts",
+        "web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.fetchers.ts",
+        "web/frontend/tests/unit/components/ArtDecoDashboardLogic.spec.ts",
+        "web/frontend/src/api/services/__node_tests__/dashboardServiceData.test.ts",
+        "docs/reports/worklogs/claude-auto/b4-013-m1d-dashboard-big-deal-dependency-isolation-closeout-2026-06-16.md"
+      ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-16T03:29:53.049Z"
+      "updated_at": "2026-06-16T03:34:47.684Z"
     }
   ]
 }

@@ -12,6 +12,6 @@
 | artdeco-web-design-governance | b4-012-m3a-d1-e2e-browser-smoke-authorization | blocked | B4.013 runtime-first mainline reset: residual cleanup/detail gate is paused until the active P0 mainline is runnable and separately reauthorized. | unblock to authorization-prepared | b4-012-m3a-d-e2e-frontend-tests-split |
 | artdeco-web-design-governance | b4-013-m1c-mainline-route-runtime-blockers-audit | decision-prepared | - | prepare authorization | B4.013-M1-C |
 | artdeco-web-design-governance | b4-013-runtime-mainline-bring-up | approved-for-implementation | - | prepare decision or authorization | docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance |
-| artdeco-web-design-governance | b4-013-m1d-dashboard-aggregate-runtime-data-provenance-audit | decision-prepared | - | prepare authorization | B4.013-M1-D |
+| artdeco-web-design-governance | b4-013-m1d-dashboard-aggregate-runtime-data-provenance-audit | authorization-prepared | - | review and approve implementation authorization | B4.013-M1-D |
 
 _Generated from `.governance/active-gates.json`._
