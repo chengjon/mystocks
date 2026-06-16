@@ -90,3 +90,4 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-012-m3a-d1-e2e-browser-smoke-authorization: B4.012-M3a-D1 E2E browser smoke tests authorization (planning, FT: b4-012-m3a-d-e2e-frontend-tests-split)
 - [ ] b4-013-runtime-mainline-bring-up: B4.013 Runtime mainline bring-up governance adoption (planning, FT: docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance)
 - [ ] b4-013-m1a-watchlist-runtime-import-reexport: B4.013-M1-A Watchlist runtime import re-export repair (planning, FT: B4.013)
+- [ ] b4-013-m1b-market-runtime-renderability-audit: B4.013-M1-B Market runtime renderability no-source audit (planning, FT: B4.013-M1-B)

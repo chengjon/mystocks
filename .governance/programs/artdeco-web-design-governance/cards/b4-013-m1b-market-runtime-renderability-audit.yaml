@@ -1,0 +1,36 @@
+task:
+  id: "b4-013-m1b-market-runtime-renderability-audit"
+  title: "B4.013-M1-B Market runtime renderability no-source audit"
+
+scope:
+  allowed_paths:
+    - "web/frontend/src/views/market/marketKlineData.ts"
+    - "web/frontend/src/views/market/__node_tests__/marketKlineData.test.ts"
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/tree.md"
+    - ".governance/programs/artdeco-web-design-governance/cards/b4-013-m1b-market-runtime-renderability-audit.yaml"
+    - "docs/reports/worklogs/claude-auto/b4-013-m1b-market-runtime-renderability-fix-closeout-2026-06-16.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No backend route validation changes unless frontend-only normalization proves insufficient and a separate authorization is granted."
+  - "No Technical.vue layout/chart behavior changes."
+  - "No LHB prop-warning cleanup, pageConfig endpoint cleanup, B4.012 residual work, ST-HOLD, OpenSpec, or external dirty-file changes."
+
+acceptance:
+  commit_gate:
+    - "git diff --cached --check"
+    - "GitNexus verify-staged and detect-changes remain low risk and scoped to allowed paths"
+    - "cd web/frontend && npm run type-check"
+    - "focused marketKlineData test passes"
+    - "PM2-backed browser smoke for /market/technical shows K-line API 200 and no K-line error banner"
+  closeout_gate:
+    - "OPENDOG verification reports no new blockers for the package"
+    - "post-commit GitNexus analyze --index-only completes"
+
+evidence:
+  current_head: "5b86c6c82cf6f1aa6398b6e5330ab594008bb866"
+  notes: []

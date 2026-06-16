@@ -10720,7 +10720,7 @@
     "parent": "",
     "status": "approved-for-implementation",
     "function_tree_ref": "docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance",
-    "current_head": "c7c2eb74fbc9a87658459321284f252923b09a7a",
+    "current_head": "5b86c6c82cf6f1aa6398b6e5330ab594008bb866",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -10737,6 +10737,13 @@
         "note": "B4.013-M0 no-source runtime audit: services online; login works; most domains render; /market fallback and watchlists 500 identified as P0 candidates.",
         "current_head": "c7c2eb74fbc9a87658459321284f252923b09a7a",
         "recorded_at": "2026-06-15T16:25:26.480Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "5b86c6c82",
+        "note": "B4.013-GOV adoption commit is current HEAD; refreshed parent gate evidence before M1-B child audit authorization preparation.",
+        "current_head": "5b86c6c82cf6f1aa6398b6e5330ab594008bb866",
+        "recorded_at": "2026-06-16T01:20:26.507Z"
       }
     ],
     "allowed_paths": [
@@ -10762,7 +10769,7 @@
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T15:45:14.131Z",
-    "updated_at": "2026-06-15T16:25:26.480Z",
+    "updated_at": "2026-06-16T01:20:26.507Z",
     "acceptance": {
       "commit_gate": [
         "openspec validate adopt-mainline-alignment-governance --strict",
@@ -10868,6 +10875,70 @@
       ],
       "current_head": "c7c2eb74fbc9a87658459321284f252923b09a7a",
       "prepared_at": "2026-06-15T18:22:55.261Z"
+    }
+  },
+  {
+    "id": "b4-013-m1b-market-runtime-renderability-audit",
+    "title": "B4.013-M1-B Market runtime renderability no-source audit",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-013-runtime-mainline-bring-up",
+    "status": "authorization-prepared",
+    "function_tree_ref": "B4.013-M1-B",
+    "current_head": "5b86c6c82cf6f1aa6398b6e5330ab594008bb866",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "runtime",
+        "path": "docs/reports/worklogs/claude-auto/b4-013-m1b-market-runtime-renderability-no-source-audit-2026-06-16.md",
+        "note": "B4.013-M1-B no-source audit found market realtime and LHB renderable; technical route visible but K-line data flow fails because frontend period=1d conflicts with backend daily|weekly|monthly contract.",
+        "current_head": "5b86c6c82cf6f1aa6398b6e5330ab594008bb866",
+        "recorded_at": "2026-06-16T01:17:49.297Z"
+      }
+    ],
+    "allowed_paths": [
+      "web/frontend/src/views/market/marketKlineData.ts",
+      "web/frontend/src/views/market/__node_tests__/marketKlineData.test.ts",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/tree.md",
+      ".governance/programs/artdeco-web-design-governance/cards/b4-013-m1b-market-runtime-renderability-audit.yaml",
+      "docs/reports/worklogs/claude-auto/b4-013-m1b-market-runtime-renderability-fix-closeout-2026-06-16.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No backend route validation changes unless frontend-only normalization proves insufficient and a separate authorization is granted.",
+      "No Technical.vue layout/chart behavior changes.",
+      "No LHB prop-warning cleanup, pageConfig endpoint cleanup, B4.012 residual work, ST-HOLD, OpenSpec, or external dirty-file changes."
+    ],
+    "next_gate": "review and approve implementation authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-16T00:54:06.591Z",
+    "updated_at": "2026-06-16T01:18:12.313Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "",
+        "current_head": "5b86c6c82cf6f1aa6398b6e5330ab594008bb866",
+        "transitioned_at": "2026-06-16T01:18:12.269Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "git diff --cached --check",
+        "GitNexus verify-staged and detect-changes remain low risk and scoped to allowed paths",
+        "cd web/frontend && npm run type-check",
+        "focused marketKlineData test passes",
+        "PM2-backed browser smoke for /market/technical shows K-line API 200 and no K-line error banner"
+      ],
+      "closeout_gate": [
+        "OPENDOG verification reports no new blockers for the package",
+        "post-commit GitNexus analyze --index-only completes"
+      ]
     }
   }
 ]
