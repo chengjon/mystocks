@@ -14,8 +14,9 @@
 """
 
 import logging
+import os
 from datetime import date, datetime
-from typing import List, Optional
+from typing import Any, List, Mapping, Optional
 
 from fastapi import APIRouter, Depends, Query
 from pydantic import ValidationError
@@ -35,11 +36,77 @@ from app.schemas.market_schemas import (
     MessageResponse,
 )
 from app.services.market_data_service import MarketDataService, get_market_data_service
+from app.services.openstock_client import OpenStockClient, OpenStockClientConfig, OpenStockFetchResult
 
 router = APIRouter()
 router.include_router(market_heatmap_router)
 router.include_router(market_health_router)
 logger = logging.getLogger(__name__)
+
+DEFAULT_OPENSTOCK_BASE_URL = "http://localhost:8050"
+
+
+def get_openstock_market_client() -> OpenStockClient:
+    base_url = (
+        os.getenv("OPENSTOCK_BASE_URL")
+        or os.getenv("OPENSTOCK_API_BASE_URL")
+        or DEFAULT_OPENSTOCK_BASE_URL
+    ).strip()
+    try:
+        timeout_seconds = float(os.getenv("OPENSTOCK_TIMEOUT_SECONDS", "5.0"))
+    except ValueError:
+        timeout_seconds = 5.0
+    return OpenStockClient(
+        OpenStockClientConfig(
+            base_url=base_url or DEFAULT_OPENSTOCK_BASE_URL,
+            timeout_seconds=timeout_seconds,
+        )
+    )
+
+
+def _quotes_payload_from_openstock(result: OpenStockFetchResult, symbols: list[str]) -> dict[str, Any]:
+    return build_quotes_response_payload(
+        {
+            "data": result.data,
+            "source": result.source or "openstock",
+            "endpoint": result.endpoint_name or "quotes",
+        },
+        symbols,
+    )
+
+
+def _normalize_openstock_kline_payload(
+    result: OpenStockFetchResult,
+    *,
+    stock_code: str,
+    period: str,
+    adjust: str,
+) -> dict[str, Any]:
+    payload = result.data
+    if isinstance(payload, Mapping):
+        rows = payload.get("data") or []
+        if not isinstance(rows, list):
+            rows = []
+        count_value = payload.get("count", len(rows))
+        count = count_value if isinstance(count_value, int) else len(rows)
+        return {
+            "stock_code": str(payload.get("stock_code") or payload.get("symbol") or stock_code),
+            "stock_name": str(payload.get("stock_name") or payload.get("name") or stock_code),
+            "period": str(payload.get("period") or period),
+            "adjust": str(payload.get("adjust") or adjust),
+            "data": rows,
+            "count": count,
+        }
+
+    rows = payload if isinstance(payload, list) else []
+    return {
+        "stock_code": stock_code,
+        "stock_name": stock_code,
+        "period": period,
+        "adjust": adjust,
+        "data": rows,
+        "count": len(rows),
+    }
 
 
 def _is_market_stock_list_mock_enabled() -> bool:
@@ -421,22 +488,20 @@ async def get_market_quotes(
     **返回**: 实时行情列表
     """
     try:
-        # 使用数据源工厂获取市场数据
-        from app.services.data_source_factory import get_data_source_factory
-
-        factory = await get_data_source_factory()
-
         # 如果未指定股票代码，返回热门股票
         if not symbols:
             symbols = "000001,600519,000858,601318,600036"  # 平安、茅台、五粮液、平安保险、招商银行
 
         symbol_list = [s.strip() for s in symbols.split(",")]
 
-        # 调用数据源工厂获取quotes数据
-        result = await factory.get_data("market", "quotes", {"symbols": symbol_list})
+        client = get_openstock_market_client()
+        try:
+            result = await client.fetch("REALTIME_QUOTES", params={"symbols": symbol_list})
+        finally:
+            await client.aclose()
 
         return create_success_response(
-            data=build_quotes_response_payload(result, symbol_list),
+            data=_quotes_payload_from_openstock(result, symbol_list),
             message=f"获取{len(symbol_list)}只股票实时行情成功",
         )
 
@@ -573,8 +638,6 @@ async def get_kline_data(
     try:
         from datetime import datetime as dt_convert
 
-        from app.services.stock_search_service import get_stock_search_service
-
         # 参数验证：日期格式验证（但不转换为datetime对象，因为service层期望字符串）
         if start_date:
             try:
@@ -600,15 +663,26 @@ async def get_kline_data(
                 detail="市场数据服务暂不可用，请稍后重试", status_code=503, error_code="MARKET_SERVICE_UNAVAILABLE"
             )
 
-        service = get_stock_search_service()
         try:
-            # FIX: 直接传递字符串参数给service层
-            result = service.get_a_stock_kline(
-                symbol=stock_code,
+            client = get_openstock_market_client()
+            try:
+                openstock_result = await client.fetch(
+                    "KLINES",
+                    params={
+                        "symbol": stock_code,
+                        "period": period,
+                        "adjust": adjust,
+                        "start_date": start_date,
+                        "end_date": end_date,
+                    },
+                )
+            finally:
+                await client.aclose()
+            result = _normalize_openstock_kline_payload(
+                openstock_result,
+                stock_code=stock_code,
                 period=period,
                 adjust=adjust,
-                start_date=start_date,  # 字符串格式 YYYY-MM-DD
-                end_date=end_date,  # 字符串格式 YYYY-MM-DD
             )
             # 成功调用，记录成功
             circuit_breaker.record_success()

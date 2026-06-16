@@ -15,7 +15,8 @@
 | artdeco-web-design-governance | b4-013-m1e-openstock-data-source-boundary-audit | decision-prepared | - | prepare authorization | B4.013-M1-E |
 | artdeco-web-design-governance | b4-013-m1e2-openstock-consumer-boundary-audit | decision-prepared | - | prepare authorization | b4-013-runtime-mainline-bring-up |
 | artdeco-web-design-governance | b4-013-m1e3-openstock-consumer-openspec-proposal | decision-prepared | - | prepare authorization | b4-013-runtime-mainline-bring-up |
+| artdeco-web-design-governance | b4-013-m2e2-openstock-market-route-migration-audit | implementation-ready | - | land implementation with Git evidence | b4-013-runtime-mainline-bring-up |
+| artdeco-web-design-governance | b4-013-m2e2a-openstock-existing-market-api-tests | implementation-ready | - | land implementation with Git evidence | b4-013-runtime-mainline-bring-up |
 | artdeco-web-design-governance | b4-013-runtime-mainline-bring-up | approved-for-implementation | - | prepare decision or authorization | docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance |
-| artdeco-web-design-governance | b4-013-m2e2-openstock-market-route-migration-audit | decision-prepared | - | prepare authorization | b4-013-runtime-mainline-bring-up |
 
 _Generated from `.governance/active-gates.json`._

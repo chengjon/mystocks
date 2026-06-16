@@ -9,6 +9,8 @@ Tests for market data APIs including:
 """
 
 import os
+import importlib.util
+from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
@@ -24,7 +26,9 @@ os.environ.setdefault("TESTING", "true")
 os.environ.setdefault("DEVELOPMENT_MODE", "true")
 
 from app.main import app
+from app.api.market import market_data_request
 from app.core.security import User, get_current_user
+from app.services.openstock_client import OpenStockFetchResult
 
 
 @pytest.fixture
@@ -50,6 +54,31 @@ def auth_client(mock_user):
 
 class TestStockQuotesAPI:
     """Test stock quotes API"""
+
+    @pytest.fixture(autouse=True)
+    def _mock_openstock_quotes_client(self, monkeypatch: pytest.MonkeyPatch):
+        class _QuotesClient:
+            async def fetch(
+                self,
+                data_category: str,
+                *,
+                params: dict[str, Any] | None = None,
+                request_id: str | None = None,
+            ) -> OpenStockFetchResult:
+                symbols = list((params or {}).get("symbols") or [])
+                return OpenStockFetchResult(
+                    data=[{"symbol": symbol, "price": 10.0 + index} for index, symbol in enumerate(symbols)],
+                    source="openstock",
+                    endpoint_name="realtime_quotes",
+                    data_category=data_category,
+                    request_id=request_id,
+                    raw=None,
+                )
+
+            async def aclose(self) -> None:
+                return None
+
+        monkeypatch.setattr(market_data_request, "get_openstock_market_client", _QuotesClient)
 
     def test_get_quotes_with_symbols(self, auth_client):
         """Test getting quotes for specific symbols"""
@@ -319,9 +348,7 @@ class TestDatabaseIntegration:
     def test_tdengine_connection(self, auth_client):
         """Test TDengine database connection"""
         # This test requires actual TDengine connection
-        try:
-            import taos
-        except ImportError:
+        if importlib.util.find_spec("taos") is None:
             pytest.skip("TDengine driver not installed")
 
         # Test minute-level K-line data

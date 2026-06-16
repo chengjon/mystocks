@@ -1,0 +1,33 @@
+task:
+  id: "b4-013-m2e2-openstock-market-route-migration-audit"
+  title: "B4.013-M2-E2 OpenStock market route migration no-source audit"
+
+scope:
+  allowed_paths:
+    - "web/backend/app/api/market/market_data_request.py"
+    - "web/backend/tests/test_openstock_market_routes.py"
+    - "docs/reports/worklogs/claude-auto/b4-013-m2e2-openstock-market-route-migration-implementation-closeout-2026-06-16.md"
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/tree.md"
+    - ".governance/programs/artdeco-web-design-governance/cards/b4-013-m2e2-openstock-market-route-migration-audit.yaml"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not modify src/adapters, src/data_sources, data_source_factory, adapters_split, frontend, /opt/claude/openstock, provider SDK behavior, unsupported OpenStock categories, or external dirty files."
+  - "Do not change MyStocks public route paths or direct frontend calls to OpenStock."
+  - "Do not stage pre-existing unrelated dirty hunks in market_data_request.py."
+
+acceptance:
+  commit_gate:
+    - "GitNexus impact for edited route functions remains reviewed; verify-staged and detect-changes risk stay low or explicitly accepted."
+    - "py_compile, ruff, focused backend route tests, and existing OpenStock client tests pass."
+    - "openspec validate externalize-data-source-provider-to-openstock --strict passes; OPENDOG reports no blockers."
+  closeout_gate:
+    - "Closeout records preserved route compatibility, OpenStock consumer-only boundary, staged-file allowlist, and remaining external dirty-file status."
+
+evidence:
+  current_head: "2109105bd895d9538876a3927423303a36e8b67b"
+  notes: []

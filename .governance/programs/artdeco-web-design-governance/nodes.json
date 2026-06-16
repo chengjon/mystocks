@@ -10720,7 +10720,7 @@
     "parent": "",
     "status": "approved-for-implementation",
     "function_tree_ref": "docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance",
-    "current_head": "c64f6b6cdf1a80205263bd8055e25fc4d34fd760",
+    "current_head": "2109105bd895d9538876a3927423303a36e8b67b",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -10842,6 +10842,13 @@
         "note": "Refresh parent runtime mainline evidence before B4.013-M2-E2 no-source route migration audit.",
         "current_head": "c64f6b6cdf1a80205263bd8055e25fc4d34fd760",
         "recorded_at": "2026-06-16T10:24:44.089Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "2109105bd",
+        "note": "Refresh parent runtime mainline evidence before B4.013-M2-E2 implementation commit.",
+        "current_head": "2109105bd895d9538876a3927423303a36e8b67b",
+        "recorded_at": "2026-06-16T14:09:21.345Z"
       }
     ],
     "allowed_paths": [
@@ -10867,7 +10874,7 @@
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T15:45:14.131Z",
-    "updated_at": "2026-06-16T10:24:44.089Z",
+    "updated_at": "2026-06-16T14:09:21.345Z",
     "acceptance": {
       "commit_gate": [
         "openspec validate adopt-mainline-alignment-governance --strict",
@@ -11530,11 +11537,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-013-m1e3-openstock-consumer-openspec-proposal",
-    "status": "decision-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "b4-013-runtime-mainline-bring-up",
-    "current_head": "c64f6b6cdf1a80205263bd8055e25fc4d34fd760",
+    "current_head": "2109105bd895d9538876a3927423303a36e8b67b",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "structural",
@@ -11542,16 +11549,43 @@
         "note": "No-source route migration matrix for OpenStock-backed quotes and kline compatibility routes.",
         "current_head": "c64f6b6cdf1a80205263bd8055e25fc4d34fd760",
         "recorded_at": "2026-06-16T10:28:28.318Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "2109105bd",
+        "note": "Refresh M2-E2 baseline to current HEAD before user-approved source implementation.",
+        "current_head": "2109105bd895d9538876a3927423303a36e8b67b",
+        "recorded_at": "2026-06-16T13:50:24.853Z"
+      },
+      {
+        "kind": "authorization",
+        "path": "user:同意，请继续",
+        "note": "User approved proceeding with B4.013-M2-E2 source implementation after no-source audit and proposed source boundary.",
+        "current_head": "2109105bd895d9538876a3927423303a36e8b67b",
+        "recorded_at": "2026-06-16T13:51:04.722Z"
       }
     ],
-    "allowed_paths": [],
+    "allowed_paths": [
+      "web/backend/app/api/market/market_data_request.py",
+      "web/backend/tests/test_openstock_market_routes.py",
+      "docs/reports/worklogs/claude-auto/b4-013-m2e2-openstock-market-route-migration-implementation-closeout-2026-06-16.md",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/tree.md",
+      ".governance/programs/artdeco-web-design-governance/cards/b4-013-m2e2-openstock-market-route-migration-audit.yaml"
+    ],
     "forbidden_paths": [],
-    "non_goals": [],
-    "next_gate": "prepare authorization",
+    "non_goals": [
+      "Do not modify src/adapters, src/data_sources, data_source_factory, adapters_split, frontend, /opt/claude/openstock, provider SDK behavior, unsupported OpenStock categories, or external dirty files.",
+      "Do not change MyStocks public route paths or direct frontend calls to OpenStock.",
+      "Do not stage pre-existing unrelated dirty hunks in market_data_request.py."
+    ],
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-16T10:25:12.003Z",
-    "updated_at": "2026-06-16T10:29:07.704Z",
+    "updated_at": "2026-06-16T14:06:44.552Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -11559,7 +11593,108 @@
         "note": "Route migration decision package is ready for explicit source authorization.",
         "current_head": "c64f6b6cdf1a80205263bd8055e25fc4d34fd760",
         "transitioned_at": "2026-06-16T10:29:07.703Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "Source implementation authorized for the route/test/worklog allowlist only.",
+        "current_head": "2109105bd895d9538876a3927423303a36e8b67b",
+        "transitioned_at": "2026-06-16T13:51:04.784Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "OpenStock route migration implementation prepared with focused tests passing.",
+        "current_head": "2109105bd895d9538876a3927423303a36e8b67b",
+        "transitioned_at": "2026-06-16T14:06:44.551Z"
       }
-    ]
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "GitNexus impact for edited route functions remains reviewed; verify-staged and detect-changes risk stay low or explicitly accepted.",
+        "py_compile, ruff, focused backend route tests, and existing OpenStock client tests pass.",
+        "openspec validate externalize-data-source-provider-to-openstock --strict passes; OPENDOG reports no blockers."
+      ],
+      "closeout_gate": [
+        "Closeout records preserved route compatibility, OpenStock consumer-only boundary, staged-file allowlist, and remaining external dirty-file status."
+      ]
+    }
+  },
+  {
+    "id": "b4-013-m2e2a-openstock-existing-market-api-tests",
+    "title": "B4.013-M2-E2a OpenStock existing market API tests compatibility",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-013-m2e2-openstock-market-route-migration-audit",
+    "status": "implementation-ready",
+    "function_tree_ref": "b4-013-runtime-mainline-bring-up",
+    "current_head": "2109105bd895d9538876a3927423303a36e8b67b",
+    "freshness": "current-head",
+    "source_edits_authorized": true,
+    "evidence": [
+      {
+        "kind": "runtime",
+        "path": "pytest web/backend/tests/test_market_api.py::TestStockQuotesAPI -q --no-cov",
+        "note": "Existing quotes route tests fail with OpenStock connection attempts after route migration unless the route client is mocked at the test boundary.",
+        "current_head": "2109105bd895d9538876a3927423303a36e8b67b",
+        "recorded_at": "2026-06-16T13:57:50.127Z"
+      },
+      {
+        "kind": "authorization",
+        "path": "user:同意，请继续",
+        "note": "User approved continuing the M2-E2 route migration; child node limits the discovered existing-test update to test scope only.",
+        "current_head": "2109105bd895d9538876a3927423303a36e8b67b",
+        "recorded_at": "2026-06-16T13:58:07.262Z"
+      }
+    ],
+    "allowed_paths": [
+      "web/backend/tests/test_market_api.py",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/tree.md",
+      ".governance/programs/artdeco-web-design-governance/cards/b4-013-m2e2a-openstock-existing-market-api-tests.yaml"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not modify route source, OpenStock client source, provider adapters, data_source_factory, frontend, /opt/claude/openstock, or external dirty files.",
+      "Only update existing market API tests to mock the OpenStock consumer client boundary."
+    ],
+    "next_gate": "land implementation with Git evidence",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-16T13:57:50.053Z",
+    "updated_at": "2026-06-16T14:06:44.624Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "Decision package ready: adapt existing focused market API tests to mock the OpenStock consumer client.",
+        "current_head": "2109105bd895d9538876a3927423303a36e8b67b",
+        "transitioned_at": "2026-06-16T13:57:50.182Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "Source authorization granted for existing TestStockQuotesAPI mock adaptation only.",
+        "current_head": "2109105bd895d9538876a3927423303a36e8b67b",
+        "transitioned_at": "2026-06-16T13:58:07.328Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Existing quotes route tests adapted to mock the OpenStock consumer boundary.",
+        "current_head": "2109105bd895d9538876a3927423303a36e8b67b",
+        "transitioned_at": "2026-06-16T14:06:44.624Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "Updated TestStockQuotesAPI passes without contacting real OpenStock; GitNexus staged verification remains low."
+      ],
+      "closeout_gate": [
+        "Closeout records test-only compatibility update and confirms no source/provider files are staged by this child node."
+      ]
+    }
   }
 ]

@@ -1,0 +1,28 @@
+task:
+  id: "b4-013-m2e2a-openstock-existing-market-api-tests"
+  title: "B4.013-M2-E2a OpenStock existing market API tests compatibility"
+
+scope:
+  allowed_paths:
+    - "web/backend/tests/test_market_api.py"
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/tree.md"
+    - ".governance/programs/artdeco-web-design-governance/cards/b4-013-m2e2a-openstock-existing-market-api-tests.yaml"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not modify route source, OpenStock client source, provider adapters, data_source_factory, frontend, /opt/claude/openstock, or external dirty files."
+  - "Only update existing market API tests to mock the OpenStock consumer client boundary."
+
+acceptance:
+  commit_gate:
+    - "Updated TestStockQuotesAPI passes without contacting real OpenStock; GitNexus staged verification remains low."
+  closeout_gate:
+    - "Closeout records test-only compatibility update and confirms no source/provider files are staged by this child node."
+
+evidence:
+  current_head: "2109105bd895d9538876a3927423303a36e8b67b"
+  notes: []
