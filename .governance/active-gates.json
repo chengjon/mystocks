@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-16T01:20:26.513Z",
+  "updated_at": "2026-06-16T02:19:37.307Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -164,32 +164,6 @@
     },
     {
       "program": "artdeco-web-design-governance",
-      "id": "b4-013-m1b-market-runtime-renderability-audit",
-      "title": "B4.013-M1-B Market runtime renderability no-source audit",
-      "node_type": "decision",
-      "owner_lane": "artdeco-web-design-governance",
-      "parent": "b4-013-runtime-mainline-bring-up",
-      "status": "authorization-prepared",
-      "source_edits_authorized": false,
-      "current_blocker": "",
-      "next_allowed": "review and approve implementation authorization",
-      "function_tree_ref": "B4.013-M1-B",
-      "freshness": "current-head",
-      "allowed_paths": [
-        "web/frontend/src/views/market/marketKlineData.ts",
-        "web/frontend/src/views/market/__node_tests__/marketKlineData.test.ts",
-        ".governance/active-gates.json",
-        ".governance/active-gates.md",
-        ".governance/programs/artdeco-web-design-governance/nodes.json",
-        ".governance/programs/artdeco-web-design-governance/tree.md",
-        ".governance/programs/artdeco-web-design-governance/cards/b4-013-m1b-market-runtime-renderability-audit.yaml",
-        "docs/reports/worklogs/claude-auto/b4-013-m1b-market-runtime-renderability-fix-closeout-2026-06-16.md"
-      ],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-16T01:18:12.313Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
       "id": "b4-013-runtime-mainline-bring-up",
       "title": "B4.013 Runtime mainline bring-up governance adoption",
       "node_type": "implementation",
@@ -217,7 +191,7 @@
         "docs/reports/worklogs/claude-auto/b4-013-m0-runtime-mainline-no-source-audit-2026-06-16.md"
       ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-16T01:20:26.507Z"
+      "updated_at": "2026-06-16T02:19:22.303Z"
     }
   ]
 }

@@ -6,15 +6,29 @@ import { buildMarketKlineParams, extractKlineRows, toMarketKlineDataPoints } fro
 test('buildMarketKlineParams uses stock_code for market kline requests', () => {
   assert.deepEqual(buildMarketKlineParams('000001'), {
     stock_code: '000001',
-    period: '1d',
+    period: 'daily',
     limit: 100,
   })
 })
 
-test('buildMarketKlineParams accepts explicit selector periods for market kline requests', () => {
+test('buildMarketKlineParams normalizes selector periods for backend market kline requests', () => {
   assert.deepEqual(buildMarketKlineParams('000001', '1w'), {
     stock_code: '000001',
-    period: '1w',
+    period: 'weekly',
+    limit: 100,
+  })
+
+  assert.deepEqual(buildMarketKlineParams('000001', '1m'), {
+    stock_code: '000001',
+    period: 'monthly',
+    limit: 100,
+  })
+})
+
+test('buildMarketKlineParams preserves backend-native periods for market kline requests', () => {
+  assert.deepEqual(buildMarketKlineParams('000001', 'daily'), {
+    stock_code: '000001',
+    period: 'daily',
     limit: 100,
   })
 })
@@ -22,7 +36,7 @@ test('buildMarketKlineParams accepts explicit selector periods for market kline 
 test('buildMarketKlineParams can add a refresh sequence to force observable refresh requests', () => {
   assert.deepEqual(buildMarketKlineParams('000001', '1d', 2), {
     stock_code: '000001',
-    period: '1d',
+    period: 'daily',
     limit: 100,
     refresh_seq: 2,
   })

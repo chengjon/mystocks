@@ -10720,7 +10720,7 @@
     "parent": "",
     "status": "approved-for-implementation",
     "function_tree_ref": "docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance",
-    "current_head": "5b86c6c82cf6f1aa6398b6e5330ab594008bb866",
+    "current_head": "6887e1adcc0d74e038b69deff74dce8be7cb897e",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -10744,6 +10744,13 @@
         "note": "B4.013-GOV adoption commit is current HEAD; refreshed parent gate evidence before M1-B child audit authorization preparation.",
         "current_head": "5b86c6c82cf6f1aa6398b6e5330ab594008bb866",
         "recorded_at": "2026-06-16T01:20:26.507Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "6887e1adc",
+        "note": "B4.013-M1-B no-source audit commit is current HEAD before M1-B-FIX implementation landing.",
+        "current_head": "6887e1adcc0d74e038b69deff74dce8be7cb897e",
+        "recorded_at": "2026-06-16T02:19:22.303Z"
       }
     ],
     "allowed_paths": [
@@ -10769,7 +10776,7 @@
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T15:45:14.131Z",
-    "updated_at": "2026-06-16T01:20:26.507Z",
+    "updated_at": "2026-06-16T02:19:22.303Z",
     "acceptance": {
       "commit_gate": [
         "openspec validate adopt-mainline-alignment-governance --strict",
@@ -10883,9 +10890,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-013-runtime-mainline-bring-up",
-    "status": "authorization-prepared",
+    "status": "closed",
     "function_tree_ref": "B4.013-M1-B",
-    "current_head": "5b86c6c82cf6f1aa6398b6e5330ab594008bb866",
+    "current_head": "6887e1adcc0d74e038b69deff74dce8be7cb897e",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -10895,6 +10902,13 @@
         "note": "B4.013-M1-B no-source audit found market realtime and LHB renderable; technical route visible but K-line data flow fails because frontend period=1d conflicts with backend daily|weekly|monthly contract.",
         "current_head": "5b86c6c82cf6f1aa6398b6e5330ab594008bb866",
         "recorded_at": "2026-06-16T01:17:49.297Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "6887e1adc",
+        "note": "B4.013-M1-B audit and authorization-prepared package committed; user approved source implementation at current HEAD.",
+        "current_head": "6887e1adcc0d74e038b69deff74dce8be7cb897e",
+        "recorded_at": "2026-06-16T02:12:08.449Z"
       }
     ],
     "allowed_paths": [
@@ -10913,11 +10927,11 @@
       "No Technical.vue layout/chart behavior changes.",
       "No LHB prop-warning cleanup, pageConfig endpoint cleanup, B4.012 residual work, ST-HOLD, OpenSpec, or external dirty-file changes."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-16T00:54:06.591Z",
-    "updated_at": "2026-06-16T01:18:12.313Z",
+    "updated_at": "2026-06-16T02:19:37.299Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -10925,6 +10939,34 @@
         "note": "",
         "current_head": "5b86c6c82cf6f1aa6398b6e5330ab594008bb866",
         "transitioned_at": "2026-06-16T01:18:12.269Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "6887e1adcc0d74e038b69deff74dce8be7cb897e",
+        "transitioned_at": "2026-06-16T02:12:08.500Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "B4.013-M1-B K-line period normalization source/test changes prepared; focused test, type-check, and PM2 browser smoke passed before staging.",
+        "current_head": "6887e1adcc0d74e038b69deff74dce8be7cb897e",
+        "transitioned_at": "2026-06-16T02:18:29.866Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Source/test changes are prepared and will land in the B4.013-M1-B-FIX commit with verification evidence.",
+        "current_head": "6887e1adcc0d74e038b69deff74dce8be7cb897e",
+        "transitioned_at": "2026-06-16T02:19:04.335Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "B4.013-M1-B-FIX verified: helper emits backend-compatible K-line periods; /market/technical PM2 smoke is green.",
+        "current_head": "6887e1adcc0d74e038b69deff74dce8be7cb897e",
+        "transitioned_at": "2026-06-16T02:19:37.299Z"
       }
     ],
     "acceptance": {
@@ -10939,6 +10981,19 @@
         "OPENDOG verification reports no new blockers for the package",
         "post-commit GitNexus analyze --index-only completes"
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-013-m1b-market-runtime-renderability-fix-closeout-2026-06-16.md",
+      "compatibility": "Existing callers may continue to pass selector-style periods; buildMarketKlineParams normalizes 1d/1w/1m to backend daily/weekly/monthly while leaving backend-native and unknown periods pass-through.",
+      "gates": [
+        "GitNexus impact buildMarketKlineParams upstream: LOW, 0 affected processes",
+        "TDD red: focused marketKlineData test failed on 1d/1w contract mismatch before implementation",
+        "Focused test: cd web/frontend && npx tsx src/views/market/__node_tests__/marketKlineData.test.ts -> 6 passed, 0 failed",
+        "Type-check: cd web/frontend && npm run type-check -> exit 0",
+        "PM2 browser smoke: /market/technical requested period=daily, K-line API 200, no K-line error banner"
+      ],
+      "current_head": "6887e1adcc0d74e038b69deff74dce8be7cb897e",
+      "prepared_at": "2026-06-16T02:19:04.391Z"
     }
   }
 ]

@@ -9,14 +9,21 @@ export interface KLineRow {
   volume: number
 }
 
+const MARKET_KLINE_PERIOD_ALIASES: Record<string, string> = {
+  '1d': 'daily',
+  '1w': 'weekly',
+  '1m': 'monthly',
+}
+
 export function buildMarketKlineParams(
   stockCode: string,
   period: string = "1d",
   refreshSequence?: number
 ): Record<string, unknown> {
+  const backendPeriod = MARKET_KLINE_PERIOD_ALIASES[period] ?? period
   const params: Record<string, unknown> = {
     stock_code: stockCode,
-    period,
+    period: backendPeriod,
     limit: 100,
   }
 
