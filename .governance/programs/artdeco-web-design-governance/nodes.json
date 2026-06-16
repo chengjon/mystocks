@@ -10720,7 +10720,7 @@
     "parent": "",
     "status": "approved-for-implementation",
     "function_tree_ref": "docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance",
-    "current_head": "8e02f6a84f2f7d3b79a5236083f447ef35b8c67b",
+    "current_head": "c3ef33c136680f617ef1925c7c8118b2e7bcce88",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -10779,6 +10779,13 @@
         "note": "B4.013-M1-D authorization prep commit is current HEAD; keep parent evidence aligned for later source authorization.",
         "current_head": "8e02f6a84f2f7d3b79a5236083f447ef35b8c67b",
         "recorded_at": "2026-06-16T03:36:38.114Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "c3ef33c13",
+        "note": "B4.013-M1-D implementation commit landed and child node closed; align parent governance evidence to current HEAD before closeout commit.",
+        "current_head": "c3ef33c136680f617ef1925c7c8118b2e7bcce88",
+        "recorded_at": "2026-06-16T04:14:55.918Z"
       }
     ],
     "allowed_paths": [
@@ -10804,7 +10811,7 @@
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T15:45:14.131Z",
-    "updated_at": "2026-06-16T03:36:38.114Z",
+    "updated_at": "2026-06-16T04:14:55.918Z",
     "acceptance": {
       "commit_gate": [
         "openspec validate adopt-mainline-alignment-governance --strict",
@@ -11068,11 +11075,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-013-runtime-mainline-bring-up",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "B4.013-M1-D",
     "current_head": "8e02f6a84f2f7d3b79a5236083f447ef35b8c67b",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "runtime",
@@ -11103,11 +11110,11 @@
       "Do not touch ST-HOLD, marketKlineData, B4.012 residual gates, external dirty files, or unrelated ArtDeco components.",
       "Do not attempt to fix the technical-indicators 400 in the same package; keep it as a separately degraded follow-up."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-16T03:14:53.275Z",
-    "updated_at": "2026-06-16T04:04:07.547Z",
+    "updated_at": "2026-06-16T04:13:59.710Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -11129,6 +11136,20 @@
         "note": "Dashboard big-deal dependency isolation implementation prepared with focused tests, type-check, and PM2 browser smoke evidence.",
         "current_head": "8e02f6a84f2f7d3b79a5236083f447ef35b8c67b",
         "transitioned_at": "2026-06-16T04:04:07.547Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Implementation landed in c3ef33c13 with Dashboard big-deal dependency isolated and post-commit GitNexus index refreshed.",
+        "current_head": "c3ef33c136680f617ef1925c7c8118b2e7bcce88",
+        "transitioned_at": "2026-06-16T04:13:24.333Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "Closed after implementation commit c3ef33c13, GitNexus post-commit analyze, focused tests, type-check, PM2 smoke, and OPENDOG fresh verification.",
+        "current_head": "c3ef33c136680f617ef1925c7c8118b2e7bcce88",
+        "transitioned_at": "2026-06-16T04:13:59.710Z"
       }
     ],
     "acceptance": {
@@ -11143,6 +11164,21 @@
         "No backend/source domains outside allowed frontend paths are changed; staged files match authorization exactly.",
         "Closeout worklog records real-endpoint smoke, tests, type-check, GitNexus, and OPENDOG results."
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-013-m1d-dashboard-big-deal-dependency-isolation-closeout-2026-06-16.md",
+      "compatibility": "Frontend-only isolation preserved backend API contracts, router, store, view ownership, and Dashboard provenance semantics.",
+      "gates": [
+        "implementation commit c3ef33c13",
+        "dashboardServiceData node tests: 8/8 passed",
+        "ArtDecoDashboardLogic Vitest: 25/25 passed",
+        "frontend type-check: vue-tsc --noEmit exit 0",
+        "PM2 Dashboard smoke: visible DATA REAL and SYNC READY with no dashboard alert",
+        "GitNexus staged detect: low risk, 0 affected processes",
+        "OPENDOG fresh verification: refactor_blockers []"
+      ],
+      "current_head": "c3ef33c136680f617ef1925c7c8118b2e7bcce88",
+      "prepared_at": "2026-06-16T04:13:35.375Z"
     }
   }
 ]
