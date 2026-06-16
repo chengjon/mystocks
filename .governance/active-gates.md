@@ -13,6 +13,7 @@
 | artdeco-web-design-governance | b4-013-m1c-mainline-route-runtime-blockers-audit | decision-prepared | - | prepare authorization | B4.013-M1-C |
 | artdeco-web-design-governance | b4-013-m1e-backend-api-residual-slow-endpoint-attribution-audit | blocked | Superseded by user-confirmed OpenStock boundary: mystocks must not keep expanding or repairing data-source provider behavior; continue via OpenStock consumer boundary audit. | unblock to decision-prepared | B4.013-M1-E |
 | artdeco-web-design-governance | b4-013-m1e-openstock-data-source-boundary-audit | decision-prepared | - | prepare authorization | B4.013-M1-E |
+| artdeco-web-design-governance | b4-013-m1e2-openstock-consumer-boundary-audit | decision-prepared | - | prepare authorization | b4-013-runtime-mainline-bring-up |
 | artdeco-web-design-governance | b4-013-runtime-mainline-bring-up | approved-for-implementation | - | prepare decision or authorization | docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance |
 
 _Generated from `.governance/active-gates.json`._

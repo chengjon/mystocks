@@ -10720,7 +10720,7 @@
     "parent": "",
     "status": "approved-for-implementation",
     "function_tree_ref": "docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance",
-    "current_head": "af6f582402b4b379c5656d4b2bacf5ed32984a00",
+    "current_head": "5304d6674a17f175e34580638fc651c25aff194e",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -10800,6 +10800,13 @@
         "note": "Align parent B4.013 runtime mainline evidence after OpenStock data-source boundary reset commit.",
         "current_head": "af6f582402b4b379c5656d4b2bacf5ed32984a00",
         "recorded_at": "2026-06-16T04:46:53.318Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "5304d6674",
+        "note": "Refresh parent runtime mainline evidence to current HEAD after B4.013-M1-E2 OpenStock consumer boundary audit.",
+        "current_head": "5304d6674a17f175e34580638fc651c25aff194e",
+        "recorded_at": "2026-06-16T06:34:27.196Z"
       }
     ],
     "allowed_paths": [
@@ -10825,7 +10832,7 @@
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T15:45:14.131Z",
-    "updated_at": "2026-06-16T04:46:53.318Z",
+    "updated_at": "2026-06-16T06:34:27.196Z",
     "acceptance": {
       "commit_gate": [
         "openspec validate adopt-mainline-alignment-governance --strict",
@@ -11275,6 +11282,44 @@
         "note": "No-source boundary decision prepared; source edits remain unauthorized pending OpenSpec-backed consumer integration proposal.",
         "current_head": "834663446cd3f4b87d5b7af2a51708df35470c19",
         "transitioned_at": "2026-06-16T04:42:11.343Z"
+      }
+    ]
+  },
+  {
+    "id": "b4-013-m1e2-openstock-consumer-boundary-audit",
+    "title": "B4.013-M1-E2 OpenStock consumer boundary mapping audit",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-013-m1e-openstock-data-source-boundary-audit",
+    "status": "decision-prepared",
+    "function_tree_ref": "b4-013-runtime-mainline-bring-up",
+    "current_head": "5304d6674a17f175e34580638fc651c25aff194e",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-013-m1e2-openstock-consumer-boundary-audit-2026-06-16.md",
+        "note": "B4.013-M1-E2 no-source audit maps OpenStock provider contracts to mystocks consumer and compatibility surfaces.",
+        "current_head": "5304d6674a17f175e34580638fc651c25aff194e",
+        "recorded_at": "2026-06-16T06:33:23.037Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-16T06:31:12.507Z",
+    "updated_at": "2026-06-16T06:33:35.351Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "",
+        "current_head": "5304d6674a17f175e34580638fc651c25aff194e",
+        "transitioned_at": "2026-06-16T06:33:35.351Z"
       }
     ]
   }

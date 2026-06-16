@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-16T04:46:53.330Z",
+  "updated_at": "2026-06-16T06:34:27.208Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -217,6 +217,23 @@
     },
     {
       "program": "artdeco-web-design-governance",
+      "id": "b4-013-m1e2-openstock-consumer-boundary-audit",
+      "title": "B4.013-M1-E2 OpenStock consumer boundary mapping audit",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-013-m1e-openstock-data-source-boundary-audit",
+      "status": "decision-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "prepare authorization",
+      "function_tree_ref": "b4-013-runtime-mainline-bring-up",
+      "freshness": "current-head",
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-16T06:33:35.351Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
       "id": "b4-013-runtime-mainline-bring-up",
       "title": "B4.013 Runtime mainline bring-up governance adoption",
       "node_type": "implementation",
@@ -244,7 +261,7 @@
         "docs/reports/worklogs/claude-auto/b4-013-m0-runtime-mainline-no-source-audit-2026-06-16.md"
       ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-16T04:46:53.318Z"
+      "updated_at": "2026-06-16T06:34:27.196Z"
     }
   ]
 }
