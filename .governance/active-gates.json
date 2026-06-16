@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-16T16:08:10.778Z",
+  "updated_at": "2026-06-16T16:54:07.255Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -251,6 +251,23 @@
     },
     {
       "program": "artdeco-web-design-governance",
+      "id": "b4-013-m2e3-openstock-category-coverage-audit",
+      "title": "B4.013-M2-E3 OpenStock category coverage no-source audit",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-013-m1e3-openstock-consumer-openspec-proposal",
+      "status": "decision-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "prepare decision or authorization",
+      "function_tree_ref": "b4-013-runtime-mainline-bring-up",
+      "freshness": "current-head",
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-16T16:03:40.489Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
       "id": "b4-013-runtime-mainline-bring-up",
       "title": "B4.013 Runtime mainline bring-up governance adoption",
       "node_type": "implementation",
@@ -278,24 +295,7 @@
         "docs/reports/worklogs/claude-auto/b4-013-m0-runtime-mainline-no-source-audit-2026-06-16.md"
       ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-16T16:03:40.433Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-013-m2e3-openstock-category-coverage-audit",
-      "title": "B4.013-M2-E3 OpenStock category coverage no-source audit",
-      "node_type": "decision",
-      "owner_lane": "artdeco-web-design-governance",
-      "parent": "b4-013-m1e3-openstock-consumer-openspec-proposal",
-      "status": "decision-prepared",
-      "source_edits_authorized": false,
-      "current_blocker": "",
-      "next_allowed": "prepare decision or authorization",
-      "function_tree_ref": "b4-013-runtime-mainline-bring-up",
-      "freshness": "current-head",
-      "allowed_paths": [],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-16T16:03:40.489Z"
+      "updated_at": "2026-06-16T16:54:07.188Z"
     },
     {
       "program": "artdeco-web-design-governance",
@@ -307,12 +307,12 @@
       "status": "decision-prepared",
       "source_edits_authorized": false,
       "current_blocker": "",
-      "next_allowed": "prepare authorization",
+      "next_allowed": "prepare decision or authorization",
       "function_tree_ref": "b4-013-runtime-mainline-bring-up",
       "freshness": "current-head",
       "allowed_paths": [],
       "forbidden_paths": [],
-      "updated_at": "2026-06-16T16:08:10.769Z"
+      "updated_at": "2026-06-16T16:54:07.247Z"
     }
   ]
 }

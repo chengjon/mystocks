@@ -10720,7 +10720,7 @@
     "parent": "",
     "status": "approved-for-implementation",
     "function_tree_ref": "docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance",
-    "current_head": "ee711359885383e5fb23f7c524cb01b41e9bd60e",
+    "current_head": "65aa592c8f0a941086d16ff77c16c18cbf5c19f3",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -10877,6 +10877,13 @@
         "note": "Refresh parent runtime mainline evidence after B4.013-M2-E3 category coverage audit commit.",
         "current_head": "ee711359885383e5fb23f7c524cb01b41e9bd60e",
         "recorded_at": "2026-06-16T16:03:40.433Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "65aa592c8",
+        "note": "Refresh parent runtime mainline evidence after B4.013-M2-E4 handoff commit.",
+        "current_head": "65aa592c8f0a941086d16ff77c16c18cbf5c19f3",
+        "recorded_at": "2026-06-16T16:54:07.188Z"
       }
     ],
     "allowed_paths": [
@@ -10902,7 +10909,7 @@
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T15:45:14.131Z",
-    "updated_at": "2026-06-16T16:03:40.433Z",
+    "updated_at": "2026-06-16T16:54:07.188Z",
     "acceptance": {
       "commit_gate": [
         "openspec validate adopt-mainline-alignment-governance --strict",
@@ -11973,7 +11980,7 @@
     "parent": "b4-013-m2e3-openstock-category-coverage-audit",
     "status": "decision-prepared",
     "function_tree_ref": "b4-013-runtime-mainline-bring-up",
-    "current_head": "ee711359885383e5fb23f7c524cb01b41e9bd60e",
+    "current_head": "65aa592c8f0a941086d16ff77c16c18cbf5c19f3",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -11990,16 +11997,23 @@
         "note": "OpenStock contract-gap handoff for remaining MyStocks provider-backed compatibility families.",
         "current_head": "ee711359885383e5fb23f7c524cb01b41e9bd60e",
         "recorded_at": "2026-06-16T16:08:10.716Z"
+      },
+      {
+        "kind": "structural",
+        "path": "openstock:1b8fcab docs/contracts/MYSTOCKS_MARKET_DATA_CATEGORY_GAPS.md",
+        "note": "OpenStock docs-only contract gap design landed for MyStocks market-data category gaps.",
+        "current_head": "65aa592c8f0a941086d16ff77c16c18cbf5c19f3",
+        "recorded_at": "2026-06-16T16:54:07.247Z"
       }
     ],
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
+    "next_gate": "prepare decision or authorization",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-16T16:04:04.860Z",
-    "updated_at": "2026-06-16T16:08:10.769Z",
+    "updated_at": "2026-06-16T16:54:07.247Z",
     "transitions": [
       {
         "from": "evidence-prepared",
