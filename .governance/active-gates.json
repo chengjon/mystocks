@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-16T02:19:37.307Z",
+  "updated_at": "2026-06-16T03:05:26.262Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -164,6 +164,23 @@
     },
     {
       "program": "artdeco-web-design-governance",
+      "id": "b4-013-m1c-mainline-route-runtime-blockers-audit",
+      "title": "B4.013-M1-C Remaining mainline route runtime blockers no-source audit",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-013-runtime-mainline-bring-up",
+      "status": "decision-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "prepare authorization",
+      "function_tree_ref": "B4.013-M1-C",
+      "freshness": "current-head",
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-16T03:05:14.867Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
       "id": "b4-013-runtime-mainline-bring-up",
       "title": "B4.013 Runtime mainline bring-up governance adoption",
       "node_type": "implementation",
@@ -191,7 +208,7 @@
         "docs/reports/worklogs/claude-auto/b4-013-m0-runtime-mainline-no-source-audit-2026-06-16.md"
       ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-16T02:19:22.303Z"
+      "updated_at": "2026-06-16T03:05:26.253Z"
     }
   ]
 }

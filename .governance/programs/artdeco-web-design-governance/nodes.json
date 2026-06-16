@@ -10720,7 +10720,7 @@
     "parent": "",
     "status": "approved-for-implementation",
     "function_tree_ref": "docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance",
-    "current_head": "6887e1adcc0d74e038b69deff74dce8be7cb897e",
+    "current_head": "4bbb3ded11119fe5a9a38fadebf6e40e3591f616",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -10751,6 +10751,13 @@
         "note": "B4.013-M1-B no-source audit commit is current HEAD before M1-B-FIX implementation landing.",
         "current_head": "6887e1adcc0d74e038b69deff74dce8be7cb897e",
         "recorded_at": "2026-06-16T02:19:22.303Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "4bbb3ded1",
+        "note": "B4.013-M1-B-FIX commit is current HEAD before M1-C no-source route audit closeout.",
+        "current_head": "4bbb3ded11119fe5a9a38fadebf6e40e3591f616",
+        "recorded_at": "2026-06-16T03:05:26.253Z"
       }
     ],
     "allowed_paths": [
@@ -10776,7 +10783,7 @@
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T15:45:14.131Z",
-    "updated_at": "2026-06-16T02:19:22.303Z",
+    "updated_at": "2026-06-16T03:05:26.253Z",
     "acceptance": {
       "commit_gate": [
         "openspec validate adopt-mainline-alignment-governance --strict",
@@ -10995,5 +11002,43 @@
       "current_head": "6887e1adcc0d74e038b69deff74dce8be7cb897e",
       "prepared_at": "2026-06-16T02:19:04.391Z"
     }
+  },
+  {
+    "id": "b4-013-m1c-mainline-route-runtime-blockers-audit",
+    "title": "B4.013-M1-C Remaining mainline route runtime blockers no-source audit",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-013-runtime-mainline-bring-up",
+    "status": "decision-prepared",
+    "function_tree_ref": "B4.013-M1-C",
+    "current_head": "4bbb3ded11119fe5a9a38fadebf6e40e3591f616",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "runtime",
+        "path": "docs/reports/worklogs/claude-auto/b4-013-m1c-mainline-route-runtime-blockers-no-source-audit-2026-06-16.md",
+        "note": "B4.013-M1-C no-source live audit: primary navigation default routes render after verification-ladder reruns; no confirmed P0 blank route remains; dashboard aggregate data/provenance remains pending and is the next mainline candidate.",
+        "current_head": "4bbb3ded11119fe5a9a38fadebf6e40e3591f616",
+        "recorded_at": "2026-06-16T03:05:14.808Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-16T02:44:52.422Z",
+    "updated_at": "2026-06-16T03:05:14.867Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "",
+        "current_head": "4bbb3ded11119fe5a9a38fadebf6e40e3591f616",
+        "transitioned_at": "2026-06-16T03:05:14.867Z"
+      }
+    ]
   }
 ]
