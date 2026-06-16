@@ -10720,7 +10720,7 @@
     "parent": "",
     "status": "approved-for-implementation",
     "function_tree_ref": "docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance",
-    "current_head": "4bbb3ded11119fe5a9a38fadebf6e40e3591f616",
+    "current_head": "718f8ab247b88d10528f91cd63cd97aab22c80f6",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -10758,6 +10758,13 @@
         "note": "B4.013-M1-B-FIX commit is current HEAD before M1-C no-source route audit closeout.",
         "current_head": "4bbb3ded11119fe5a9a38fadebf6e40e3591f616",
         "recorded_at": "2026-06-16T03:05:26.253Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "718f8ab247b88d10528f91cd63cd97aab22c80f6",
+        "note": "B4.013-M1-C no-source route blocker audit commit is current HEAD before M1-D dashboard aggregate data/provenance audit.",
+        "current_head": "718f8ab247b88d10528f91cd63cd97aab22c80f6",
+        "recorded_at": "2026-06-16T03:14:53.231Z"
       }
     ],
     "allowed_paths": [
@@ -10783,7 +10790,7 @@
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T15:45:14.131Z",
-    "updated_at": "2026-06-16T03:05:26.253Z",
+    "updated_at": "2026-06-16T03:14:53.231Z",
     "acceptance": {
       "commit_gate": [
         "openspec validate adopt-mainline-alignment-governance --strict",
@@ -11038,6 +11045,44 @@
         "note": "",
         "current_head": "4bbb3ded11119fe5a9a38fadebf6e40e3591f616",
         "transitioned_at": "2026-06-16T03:05:14.867Z"
+      }
+    ]
+  },
+  {
+    "id": "b4-013-m1d-dashboard-aggregate-runtime-data-provenance-audit",
+    "title": "B4.013-M1-D Dashboard aggregate runtime data/provenance no-source audit",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-013-runtime-mainline-bring-up",
+    "status": "decision-prepared",
+    "function_tree_ref": "B4.013-M1-D",
+    "current_head": "718f8ab247b88d10528f91cd63cd97aab22c80f6",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "runtime",
+        "path": "docs/reports/worklogs/claude-auto/b4-013-m1d-dashboard-aggregate-runtime-data-provenance-no-source-audit-2026-06-16.md",
+        "note": "B4.013-M1-D no-source dashboard aggregate audit: big-deal endpoint is the dominant runtime blocker; synthetic big-deal bypass reaches DATA REAL / SYNC READY; prepare bounded frontend isolation authorization.",
+        "current_head": "718f8ab247b88d10528f91cd63cd97aab22c80f6",
+        "recorded_at": "2026-06-16T03:29:36.694Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-16T03:14:53.275Z",
+    "updated_at": "2026-06-16T03:29:53.049Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "M1-D no-source decision prepared: isolate dashboard big-deal dependency before broader runtime cleanup.",
+        "current_head": "718f8ab247b88d10528f91cd63cd97aab22c80f6",
+        "transitioned_at": "2026-06-16T03:29:53.049Z"
       }
     ]
   }
