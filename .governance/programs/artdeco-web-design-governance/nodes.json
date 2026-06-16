@@ -10720,7 +10720,7 @@
     "parent": "",
     "status": "approved-for-implementation",
     "function_tree_ref": "docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance",
-    "current_head": "580a85b94c58f96918f2b747ca01ddb84e5f5049",
+    "current_head": "0ec167eae3c1e62bc9a0cbd6cc36aa1b7969d4b0",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -10828,6 +10828,13 @@
         "note": "Refresh parent runtime mainline evidence to current HEAD before B4.013-M2-E1 source implementation.",
         "current_head": "580a85b94c58f96918f2b747ca01ddb84e5f5049",
         "recorded_at": "2026-06-16T08:47:43.462Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "0ec167eae",
+        "note": "Refresh parent runtime mainline evidence after B4.013-M2-E1 OpenStock consumer client implementation commit.",
+        "current_head": "0ec167eae3c1e62bc9a0cbd6cc36aa1b7969d4b0",
+        "recorded_at": "2026-06-16T09:06:29.641Z"
       }
     ],
     "allowed_paths": [
@@ -10853,7 +10860,7 @@
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T15:45:14.131Z",
-    "updated_at": "2026-06-16T08:47:43.462Z",
+    "updated_at": "2026-06-16T09:06:29.641Z",
     "acceptance": {
       "commit_gate": [
         "openspec validate adopt-mainline-alignment-governance --strict",
@@ -11388,11 +11395,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-013-m1e3-openstock-consumer-openspec-proposal",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "b4-013-runtime-mainline-bring-up",
-    "current_head": "580a85b94c58f96918f2b747ca01ddb84e5f5049",
+    "current_head": "0ec167eae3c1e62bc9a0cbd6cc36aa1b7969d4b0",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "plan",
@@ -11407,6 +11414,13 @@
         "note": "User approved B4.013-M2-E1 source implementation after authorization prep commit; allowed paths remain the committed authorization card.",
         "current_head": "580a85b94c58f96918f2b747ca01ddb84e5f5049",
         "recorded_at": "2026-06-16T08:47:57.463Z"
+      },
+      {
+        "kind": "implementation",
+        "path": "0ec167eae",
+        "note": "B4.013-M2-E1 implementation commit adds a consumer-only OpenStock backend client and focused tests without route/provider changes.",
+        "current_head": "0ec167eae3c1e62bc9a0cbd6cc36aa1b7969d4b0",
+        "recorded_at": "2026-06-16T09:06:29.695Z"
       }
     ],
     "allowed_paths": [
@@ -11430,11 +11444,11 @@
       "No data provider implementation, SDK calls, cache warmers, registry mutation, or provider adapter repair is allowed in mystocks; provider ownership remains in /opt/claude/openstock.",
       "No changes to frontend, OpenSpec specs, architecture standards, existing data service, data source factory, adapters_split, src/adapters, or src/data_sources provider code."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-16T08:09:48.836Z",
-    "updated_at": "2026-06-16T08:56:07.701Z",
+    "updated_at": "2026-06-16T09:06:29.860Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -11456,6 +11470,20 @@
         "note": "OpenStock consumer client implementation and focused tests are prepared for staged verification; no route or provider files changed.",
         "current_head": "580a85b94c58f96918f2b747ca01ddb84e5f5049",
         "transitioned_at": "2026-06-16T08:56:07.701Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Implementation landed in commit 0ec167eae; GitNexus index refreshed.",
+        "current_head": "0ec167eae3c1e62bc9a0cbd6cc36aa1b7969d4b0",
+        "transitioned_at": "2026-06-16T09:06:29.752Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "B4.013-M2-E1 closed after implementation commit and closeout evidence.",
+        "current_head": "0ec167eae3c1e62bc9a0cbd6cc36aa1b7969d4b0",
+        "transitioned_at": "2026-06-16T09:06:29.859Z"
       }
     ],
     "acceptance": {
@@ -11473,6 +11501,20 @@
         "Client exposes a consumer-only OpenStock HTTP boundary with strict category validation, timeout/error normalization, and no provider runtime behavior.",
         "Route migration is explicitly deferred to B4.013-M2-E2 after this client lands and receives separate authorization."
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-013-m2e1-openstock-backend-consumer-client-closeout-2026-06-16.md",
+      "compatibility": "Existing MyStocks public routes remain unchanged; OpenStock client is consumer-only and deferred route migration stays in B4.013-M2-E2.",
+      "gates": [
+        "python -m py_compile web/backend/app/services/openstock_client.py tests/backend/test_openstock_client.py passed",
+        "python -m ruff check web/backend/app/services/openstock_client.py tests/backend/test_openstock_client.py passed",
+        "pytest tests/backend/test_openstock_client.py -q --no-cov passed: 5/5",
+        "git diff --cached --check passed before implementation commit",
+        "GitNexus verify-staged and detect-changes passed with risk low",
+        "OPENDOG verification fresh with no cleanup blockers or failing runs"
+      ],
+      "current_head": "0ec167eae3c1e62bc9a0cbd6cc36aa1b7969d4b0",
+      "prepared_at": "2026-06-16T09:06:29.805Z"
     }
   }
 ]
