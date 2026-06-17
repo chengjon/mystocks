@@ -5,7 +5,7 @@ task:
 scope:
   allowed_paths:
     - "web/backend/app/services/openstock_client.py"
-    - "web/backend/tests/test_openstock_client.py"
+    - "tests/backend/test_openstock_client.py"
   forbidden_paths:
     []
 

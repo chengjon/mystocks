@@ -7,7 +7,15 @@ from typing import Any
 import httpx
 
 
-DEFAULT_SUPPORTED_CATEGORIES = ("REALTIME_QUOTES", "KLINES")
+DEFAULT_SUPPORTED_CATEGORIES = (
+    "REALTIME_QUOTES",
+    "KLINES",
+    "FUND_FLOW",
+    "SECTOR_FUND_FLOW",
+    "DRAGON_TIGER",
+    "BLOCK_TRADE",
+    "ETF_SPOT",
+)
 
 
 @dataclass(frozen=True)

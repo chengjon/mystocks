@@ -114,6 +114,66 @@ async def test_fetch_bars_posts_data_bars_payload() -> None:
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "data_category",
+    [
+        "FUND_FLOW",
+        "SECTOR_FUND_FLOW",
+        "DRAGON_TIGER",
+        "BLOCK_TRADE",
+        "ETF_SPOT",
+    ],
+)
+async def test_fetch_supports_openstock_market_v2_contract_categories(data_category: str) -> None:
+    captured: list[dict[str, object]] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        payload = json.loads(request.content.decode())
+        captured.append(
+            {
+                "path": request.url.path,
+                "payload": payload,
+            }
+        )
+        return httpx.Response(
+            200,
+            json={
+                "data": [{"category": payload["data_category"]}],
+                "source": "akshare",
+                "endpoint_name": f"akshare.{payload['data_category'].lower()}",
+                "data_category": payload["data_category"],
+                "request_id": payload["request_id"],
+            },
+        )
+
+    client = OpenStockClient(
+        OpenStockClientConfig(base_url="http://openstock.local"),
+        transport=httpx.MockTransport(handler),
+    )
+
+    result = await client.fetch(
+        data_category,
+        params={"symbol": "000001"},
+        request_id=f"req-{data_category.lower()}",
+    )
+
+    assert captured == [
+        {
+            "path": "/data/fetch",
+            "payload": {
+                "data_category": data_category,
+                "params": {"symbol": "000001"},
+                "request_id": f"req-{data_category.lower()}",
+            },
+        }
+    ]
+    assert result.data == [{"category": data_category}]
+    assert result.source == "akshare"
+    assert result.data_category == data_category
+    assert result.request_id == f"req-{data_category.lower()}"
+
+
+@pytest.mark.asyncio
 async def test_provider_unavailable_is_mapped_without_raw_provider_leak() -> None:
     def handler(request: httpx.Request) -> httpx.Response:
         return httpx.Response(
