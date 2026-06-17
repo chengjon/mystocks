@@ -1,0 +1,23 @@
+task:
+  id: "b4-013-m3a-openstock-market-v2-consumer-contract-expansion"
+  title: "B4.013-M3a OpenStock market_v2 consumer contract expansion"
+
+scope:
+  allowed_paths:
+    - "web/backend/app/services/openstock_client.py"
+    - "web/backend/tests/test_openstock_client.py"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No provider SDK calls, provider fallback, adapter implementation, route edits, frontend changes, or OpenStock repository changes in this MyStocks batch."
+
+acceptance:
+  commit_gate:
+    - "GitNexus impact and staged checks pass; py_compile and focused OpenStock client tests pass; OPENDOG verification fresh."
+  closeout_gate:
+    - "B4.013-M3a-A closeout records category contract expansion, preserved MyStocks consumer-only boundary, and exact staged file list."
+
+evidence:
+  current_head: "c54a7660a9b61347e1fbcb28da73925feae55e0e"
+  notes: []

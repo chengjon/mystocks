@@ -17,6 +17,7 @@
 | artdeco-web-design-governance | b4-013-m1e3-openstock-consumer-openspec-proposal | decision-prepared | - | prepare authorization | b4-013-runtime-mainline-bring-up |
 | artdeco-web-design-governance | b4-013-m2e3-openstock-category-coverage-audit | decision-prepared | - | prepare decision or authorization | b4-013-runtime-mainline-bring-up |
 | artdeco-web-design-governance | b4-013-m2e4-openstock-contract-gap-handoff | decision-prepared | - | prepare decision or authorization | b4-013-runtime-mainline-bring-up |
+| artdeco-web-design-governance | b4-013-m3a-openstock-market-v2-consumer-contract-expansion | authorization-prepared | - | review and approve implementation authorization | b4-013-runtime-mainline-bring-up |
 | artdeco-web-design-governance | b4-013-runtime-mainline-bring-up | approved-for-implementation | - | prepare decision or authorization | docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance |
 
 _Generated from `.governance/active-gates.json`._
