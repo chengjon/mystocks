@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-17T16:35:29.355Z",
+  "updated_at": "2026-06-17T17:43:29.032Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -285,6 +285,27 @@
     },
     {
       "program": "artdeco-web-design-governance",
+      "id": "b4-013-m3a-b-market-v2-refresh-openstock-mapping",
+      "title": "B4.013-M3a-B market_v2 refresh OpenStock mapping",
+      "node_type": "implementation",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-013-m3a-openstock-market-v2-consumer-contract-expansion",
+      "status": "authorization-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "review and approve implementation authorization",
+      "function_tree_ref": "b4-013-runtime-mainline-bring-up",
+      "freshness": "current-head",
+      "allowed_paths": [
+        "web/backend/app/services/market_data_service_v2.py",
+        "web/backend/tests/services/test_market_data_service_v2_openstock_refresh.py",
+        "docs/reports/worklogs/claude-auto/b4-013-m3a-b1-etf-spot-refresh-closeout-2026-06-18.md"
+      ],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-17T17:42:55.650Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
       "id": "b4-013-runtime-mainline-bring-up",
       "title": "B4.013 Runtime mainline bring-up governance adoption",
       "node_type": "implementation",
@@ -312,7 +333,7 @@
         "docs/reports/worklogs/claude-auto/b4-013-m0-runtime-mainline-no-source-audit-2026-06-16.md"
       ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-17T16:35:14.122Z"
+      "updated_at": "2026-06-17T17:43:29.023Z"
     }
   ]
 }

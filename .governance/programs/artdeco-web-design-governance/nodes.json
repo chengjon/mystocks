@@ -10720,7 +10720,7 @@
     "parent": "",
     "status": "approved-for-implementation",
     "function_tree_ref": "docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance",
-    "current_head": "42f31b8dbcf6b9e65178020d8c04602c2ae0d72b",
+    "current_head": "e3a7415c3d15525d1ca6bc497de44a82968dd3b4",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -10912,6 +10912,13 @@
         "note": "Refreshed parent baseline after OpenStock consumer category contract landed.",
         "current_head": "42f31b8dbcf6b9e65178020d8c04602c2ae0d72b",
         "recorded_at": "2026-06-17T16:35:14.122Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "git HEAD e3a7415c3d15525d1ca6bc497de44a82968dd3b4 after B4.013-M3a-A closeout commit",
+        "note": "Refreshed parent baseline before M3a-B no-source mapping audit commit.",
+        "current_head": "e3a7415c3d15525d1ca6bc497de44a82968dd3b4",
+        "recorded_at": "2026-06-17T17:43:29.023Z"
       }
     ],
     "allowed_paths": [
@@ -10937,7 +10944,7 @@
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T15:45:14.131Z",
-    "updated_at": "2026-06-17T16:35:14.122Z",
+    "updated_at": "2026-06-17T17:43:29.023Z",
     "acceptance": {
       "commit_gate": [
         "openspec validate adopt-mainline-alignment-governance --strict",
@@ -12159,6 +12166,58 @@
       ],
       "current_head": "42f31b8dbcf6b9e65178020d8c04602c2ae0d72b",
       "prepared_at": "2026-06-17T16:34:59.967Z"
+    }
+  },
+  {
+    "id": "b4-013-m3a-b-market-v2-refresh-openstock-mapping",
+    "title": "B4.013-M3a-B market_v2 refresh OpenStock mapping",
+    "node_type": "implementation",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-013-m3a-openstock-market-v2-consumer-contract-expansion",
+    "status": "authorization-prepared",
+    "function_tree_ref": "b4-013-runtime-mainline-bring-up",
+    "current_head": "e3a7415c3d15525d1ca6bc497de44a82968dd3b4",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-013-m3a-b-market-v2-refresh-openstock-mapping-no-source-audit-2026-06-18.md",
+        "note": "No-source mapping audit recommends service-only ETF_SPOT refresh migration as the next safe batch.",
+        "current_head": "e3a7415c3d15525d1ca6bc497de44a82968dd3b4",
+        "recorded_at": "2026-06-17T17:42:42.549Z"
+      }
+    ],
+    "allowed_paths": [
+      "web/backend/app/services/market_data_service_v2.py",
+      "web/backend/tests/services/test_market_data_service_v2_openstock_refresh.py",
+      "docs/reports/worklogs/claude-auto/b4-013-m3a-b1-etf-spot-refresh-closeout-2026-06-18.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No route edits, no provider SDK calls, no OpenStock repository edits, no frontend changes, no query fallback cleanup, and no changes to externally dirty market_v2.py."
+    ],
+    "next_gate": "review and approve implementation authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-17T17:42:42.308Z",
+    "updated_at": "2026-06-17T17:42:55.650Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "",
+        "current_head": "e3a7415c3d15525d1ca6bc497de44a82968dd3b4",
+        "transitioned_at": "2026-06-17T17:42:42.759Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "GitNexus impact for MarketDataServiceV2/fetch_and_save_etf_spot; py_compile and focused pytest pass; GitNexus staged checks risk low; OPENDOG fresh."
+      ],
+      "closeout_gate": [
+        "Closeout records ETF_SPOT service-only refresh migration, preserved MyStocks consumer-only boundary, and exact staged file list."
+      ]
     }
   }
 ]

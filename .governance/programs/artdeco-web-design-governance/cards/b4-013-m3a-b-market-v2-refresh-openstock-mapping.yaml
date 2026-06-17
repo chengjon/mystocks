@@ -1,0 +1,24 @@
+task:
+  id: "b4-013-m3a-b-market-v2-refresh-openstock-mapping"
+  title: "B4.013-M3a-B market_v2 refresh OpenStock mapping"
+
+scope:
+  allowed_paths:
+    - "web/backend/app/services/market_data_service_v2.py"
+    - "web/backend/tests/services/test_market_data_service_v2_openstock_refresh.py"
+    - "docs/reports/worklogs/claude-auto/b4-013-m3a-b1-etf-spot-refresh-closeout-2026-06-18.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No route edits, no provider SDK calls, no OpenStock repository edits, no frontend changes, no query fallback cleanup, and no changes to externally dirty market_v2.py."
+
+acceptance:
+  commit_gate:
+    - "GitNexus impact for MarketDataServiceV2/fetch_and_save_etf_spot; py_compile and focused pytest pass; GitNexus staged checks risk low; OPENDOG fresh."
+  closeout_gate:
+    - "Closeout records ETF_SPOT service-only refresh migration, preserved MyStocks consumer-only boundary, and exact staged file list."
+
+evidence:
+  current_head: "e3a7415c3d15525d1ca6bc497de44a82968dd3b4"
+  notes: []

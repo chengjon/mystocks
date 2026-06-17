@@ -104,3 +104,4 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-013-m2e3-openstock-category-coverage-audit: B4.013-M2-E3 OpenStock category coverage no-source audit (planning, FT: b4-013-runtime-mainline-bring-up)
 - [ ] b4-013-m2e4-openstock-contract-gap-handoff: B4.013-M2-E4 OpenStock contract-gap handoff no-source design (planning, FT: b4-013-runtime-mainline-bring-up)
 - [ ] b4-013-m3a-openstock-market-v2-consumer-contract-expansion: B4.013-M3a OpenStock market_v2 consumer contract expansion (planning, FT: b4-013-runtime-mainline-bring-up)
+- [ ] b4-013-m3a-b-market-v2-refresh-openstock-mapping: B4.013-M3a-B market_v2 refresh OpenStock mapping (planning, FT: b4-013-runtime-mainline-bring-up)
