@@ -10720,7 +10720,7 @@
     "parent": "",
     "status": "approved-for-implementation",
     "function_tree_ref": "docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance",
-    "current_head": "e3a7415c3d15525d1ca6bc497de44a82968dd3b4",
+    "current_head": "73bc28c41d1aff0785d4caa41acff0140c2405c1",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -10919,6 +10919,13 @@
         "note": "Refreshed parent baseline before M3a-B no-source mapping audit commit.",
         "current_head": "e3a7415c3d15525d1ca6bc497de44a82968dd3b4",
         "recorded_at": "2026-06-17T17:43:29.023Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "git HEAD 73bc28c41d1aff0785d4caa41acff0140c2405c1 after B4.013-M3a-B no-source mapping audit",
+        "note": "Refreshed parent baseline before B4.013-M3a-B1 ETF_SPOT service implementation.",
+        "current_head": "73bc28c41d1aff0785d4caa41acff0140c2405c1",
+        "recorded_at": "2026-06-17T18:16:18.572Z"
       }
     ],
     "allowed_paths": [
@@ -10944,7 +10951,7 @@
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T15:45:14.131Z",
-    "updated_at": "2026-06-17T17:43:29.023Z",
+    "updated_at": "2026-06-17T18:16:18.572Z",
     "acceptance": {
       "commit_gate": [
         "openspec validate adopt-mainline-alignment-governance --strict",
@@ -12174,11 +12181,11 @@
     "node_type": "implementation",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-013-m3a-openstock-market-v2-consumer-contract-expansion",
-    "status": "authorization-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "b4-013-runtime-mainline-bring-up",
-    "current_head": "e3a7415c3d15525d1ca6bc497de44a82968dd3b4",
+    "current_head": "73bc28c41d1aff0785d4caa41acff0140c2405c1",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "baseline",
@@ -12186,6 +12193,13 @@
         "note": "No-source mapping audit recommends service-only ETF_SPOT refresh migration as the next safe batch.",
         "current_head": "e3a7415c3d15525d1ca6bc497de44a82968dd3b4",
         "recorded_at": "2026-06-17T17:42:42.549Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "source authorization approved by user on 2026-06-18 for B4.013-M3a-B1 ETF_SPOT allowed_paths only at HEAD 73bc28c41",
+        "note": "User continued into MyStocks source task; scope remains service-only ETF_SPOT refresh migration.",
+        "current_head": "73bc28c41d1aff0785d4caa41acff0140c2405c1",
+        "recorded_at": "2026-06-17T18:16:18.633Z"
       }
     ],
     "allowed_paths": [
@@ -12197,11 +12211,11 @@
     "non_goals": [
       "No route edits, no provider SDK calls, no OpenStock repository edits, no frontend changes, no query fallback cleanup, and no changes to externally dirty market_v2.py."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-17T17:42:42.308Z",
-    "updated_at": "2026-06-17T17:42:55.650Z",
+    "updated_at": "2026-06-17T18:25:13.365Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -12209,6 +12223,20 @@
         "note": "",
         "current_head": "e3a7415c3d15525d1ca6bc497de44a82968dd3b4",
         "transitioned_at": "2026-06-17T17:42:42.759Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "73bc28c41d1aff0785d4caa41acff0140c2405c1",
+        "transitioned_at": "2026-06-17T18:16:18.701Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "73bc28c41d1aff0785d4caa41acff0140c2405c1",
+        "transitioned_at": "2026-06-17T18:25:13.338Z"
       }
     ],
     "acceptance": {

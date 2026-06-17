@@ -9,10 +9,12 @@
 4. 数据刷新: 定时更新最新数据
 """
 
+import asyncio
 import logging
 import os
+import threading
 from datetime import date, datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Mapping, Optional
 
 import pandas as pd
 from sqlalchemy import and_, create_engine, or_
@@ -27,8 +29,10 @@ from app.models.market_data import (
     StockBlockTrade,
     StockDividend,
 )
+from app.services.openstock_client import OpenStockClient, OpenStockClientConfig, OpenStockFetchResult
 
 logger = logging.getLogger(__name__)
+DEFAULT_OPENSTOCK_BASE_URL = "http://localhost:8050"
 
 
 class MarketDataServiceV2:
@@ -42,6 +46,7 @@ class MarketDataServiceV2:
 
         # 初始化东方财富适配器
         self.em_adapter = get_eastmoney_adapter()
+        self._openstock_client_factory: Callable[[], OpenStockClient] = self._build_openstock_client
 
     def _build_db_url(self) -> str:
         """从环境变量构建数据库URL"""
@@ -58,6 +63,89 @@ class MarketDataServiceV2:
             os.getenv("TESTING", "false").lower() == "true"
             or os.getenv("DEVELOPMENT_MODE", "false").lower() == "true"
         )
+
+    def _build_openstock_client(self) -> OpenStockClient:
+        base_url = (
+            os.getenv("OPENSTOCK_BASE_URL")
+            or os.getenv("OPENSTOCK_API_BASE_URL")
+            or DEFAULT_OPENSTOCK_BASE_URL
+        ).strip()
+        try:
+            timeout_seconds = float(os.getenv("OPENSTOCK_TIMEOUT_SECONDS", "5.0"))
+        except ValueError:
+            timeout_seconds = 5.0
+        return OpenStockClient(
+            OpenStockClientConfig(
+                base_url=base_url or DEFAULT_OPENSTOCK_BASE_URL,
+                timeout_seconds=timeout_seconds,
+            )
+        )
+
+    def _fetch_openstock_sync(
+        self,
+        data_category: str,
+        *,
+        params: Mapping[str, Any] | None = None,
+    ) -> OpenStockFetchResult:
+        async def fetch_once() -> OpenStockFetchResult:
+            client = self._openstock_client_factory()
+            try:
+                return await client.fetch(data_category, params=params)
+            finally:
+                await client.aclose()
+
+        return self._run_async(fetch_once)
+
+    def _run_async(self, async_factory: Callable[[], Any]) -> Any:
+        try:
+            asyncio.get_running_loop()
+        except RuntimeError:
+            return asyncio.run(async_factory())
+
+        result: Any = None
+        error: BaseException | None = None
+
+        def run_in_thread() -> None:
+            nonlocal result, error
+            try:
+                result = asyncio.run(async_factory())
+            except BaseException as exc:
+                error = exc
+
+        thread = threading.Thread(target=run_in_thread, daemon=True)
+        thread.start()
+        thread.join()
+        if error is not None:
+            raise error
+        return result
+
+    def _fetch_openstock_records(
+        self,
+        data_category: str,
+        *,
+        params: Mapping[str, Any] | None = None,
+    ) -> List[Mapping[str, Any]]:
+        result = self._fetch_openstock_sync(data_category, params=params)
+        if not isinstance(result.data, list):
+            return []
+        return [record for record in result.data if isinstance(record, Mapping)]
+
+    @staticmethod
+    def _record_value(record: Mapping[str, Any], *keys: str, default: Any = 0) -> Any:
+        for key in keys:
+            value = record.get(key)
+            if value is not None:
+                return value
+        return default
+
+    @staticmethod
+    def _record_date(value: Any, fallback: date) -> date:
+        if value is None:
+            return fallback
+        parsed = pd.to_datetime(value, errors="coerce")
+        if pd.isna(parsed):
+            return fallback
+        return parsed.date()
 
     def _build_sector_fund_flow_runtime_rows(
         self,
@@ -206,10 +294,10 @@ class MarketDataServiceV2:
     def fetch_and_save_etf_spot(self) -> Dict[str, Any]:
         """获取并保存ETF实时数据(全市场)"""
         try:
-            # 1. 从东方财富获取全市场ETF数据
-            df = self.em_adapter.get_etf_spot()
+            # 1. 从OpenStock获取全市场ETF数据
+            records = self._fetch_openstock_records("ETF_SPOT", params={"limit": 500})
 
-            if df.empty:
+            if not records:
                 return {"success": False, "message": "未获取到ETF数据"}
 
             # 2. 批量保存到数据库
@@ -218,23 +306,30 @@ class MarketDataServiceV2:
                 today = datetime.now().date()
                 saved_count = 0
 
-                for _, row in df.iterrows():
+                for row in records:
+                    symbol = self._record_value(row, "symbol", default=None)
+                    if not symbol:
+                        continue
                     etf_data = ETFData(
-                        symbol=row["代码"],
-                        name=row["名称"],
-                        trade_date=today,
-                        latest_price=row.get("最新价", 0),
-                        change_percent=row.get("涨跌幅", 0),
-                        change_amount=row.get("涨跌额", 0),
-                        volume=row.get("成交量", 0),
-                        amount=row.get("成交额", 0),
-                        open_price=row.get("开盘价", 0),
-                        high_price=row.get("最高价", 0),
-                        low_price=row.get("最低价", 0),
-                        prev_close=row.get("昨收", 0),
-                        turnover_rate=row.get("换手率", 0),
-                        total_market_cap=row.get("总市值", 0),
-                        circulating_market_cap=row.get("流通市值", 0),
+                        symbol=symbol,
+                        name=self._record_value(row, "name", default=""),
+                        trade_date=self._record_date(self._record_value(row, "trade_date", default=None), today),
+                        latest_price=self._record_value(row, "latest_price", "price"),
+                        change_percent=self._record_value(row, "change_percent", "pct_chg"),
+                        change_amount=self._record_value(row, "change_amount", "change"),
+                        volume=self._record_value(row, "volume"),
+                        amount=self._record_value(row, "amount"),
+                        open_price=self._record_value(row, "open_price", "open"),
+                        high_price=self._record_value(row, "high_price", "high"),
+                        low_price=self._record_value(row, "low_price", "low"),
+                        prev_close=self._record_value(row, "prev_close"),
+                        turnover_rate=self._record_value(row, "turnover_rate"),
+                        total_market_cap=self._record_value(row, "total_market_cap", "market_cap"),
+                        circulating_market_cap=self._record_value(
+                            row,
+                            "circulating_market_cap",
+                            "float_market_cap",
+                        ),
                     )
 
                     # 检查是否已存在
@@ -259,7 +354,7 @@ class MarketDataServiceV2:
                 return {
                     "success": True,
                     "message": f"保存成功: {saved_count}条",
-                    "total": len(df),
+                    "total": len(records),
                     "saved": saved_count,
                 }
 
