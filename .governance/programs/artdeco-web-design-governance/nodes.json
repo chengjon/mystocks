@@ -10720,7 +10720,7 @@
     "parent": "",
     "status": "approved-for-implementation",
     "function_tree_ref": "docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance",
-    "current_head": "82380fceacf14c438924dd8097992f951a5cb86f",
+    "current_head": "42f31b8dbcf6b9e65178020d8c04602c2ae0d72b",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -10905,6 +10905,13 @@
         "note": "Refreshed runtime mainline bring-up baseline after M3a no-source audit commit; no source edits in this refresh.",
         "current_head": "82380fceacf14c438924dd8097992f951a5cb86f",
         "recorded_at": "2026-06-17T16:23:13.736Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "git HEAD 42f31b8dbcf6b9e65178020d8c04602c2ae0d72b after B4.013-M3a-A implementation commit",
+        "note": "Refreshed parent baseline after OpenStock consumer category contract landed.",
+        "current_head": "42f31b8dbcf6b9e65178020d8c04602c2ae0d72b",
+        "recorded_at": "2026-06-17T16:35:14.122Z"
       }
     ],
     "allowed_paths": [
@@ -10930,7 +10937,7 @@
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T15:45:14.131Z",
-    "updated_at": "2026-06-17T16:23:13.736Z",
+    "updated_at": "2026-06-17T16:35:14.122Z",
     "acceptance": {
       "commit_gate": [
         "openspec validate adopt-mainline-alignment-governance --strict",
@@ -12058,11 +12065,11 @@
     "node_type": "implementation",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-013-m2e4-openstock-contract-gap-handoff",
-    "status": "approved-for-implementation",
+    "status": "closed",
     "function_tree_ref": "b4-013-runtime-mainline-bring-up",
-    "current_head": "82380fceacf14c438924dd8097992f951a5cb86f",
+    "current_head": "42f31b8dbcf6b9e65178020d8c04602c2ae0d72b",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "baseline",
@@ -12077,6 +12084,13 @@
         "note": "User approved continuation into MyStocks source task; boundary remains OpenStock consumer client contract only.",
         "current_head": "82380fceacf14c438924dd8097992f951a5cb86f",
         "recorded_at": "2026-06-17T16:20:40.648Z"
+      },
+      {
+        "kind": "runtime",
+        "path": "docs/reports/worklogs/claude-auto/b4-013-m3a-a-openstock-consumer-category-contract-closeout-2026-06-18.md",
+        "note": "Implementation landed in commit 42f31b8db; focused build/lint/test, GitNexus, and OPENDOG gates passed.",
+        "current_head": "42f31b8dbcf6b9e65178020d8c04602c2ae0d72b",
+        "recorded_at": "2026-06-17T16:34:47.506Z"
       }
     ],
     "allowed_paths": [
@@ -12087,11 +12101,11 @@
     "non_goals": [
       "No provider SDK calls, provider fallback, adapter implementation, route edits, frontend changes, or OpenStock repository changes in this MyStocks batch."
     ],
-    "next_gate": "implement within allowed_paths",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-17T16:12:56.968Z",
-    "updated_at": "2026-06-17T16:20:52.546Z",
+    "updated_at": "2026-06-17T16:35:29.344Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -12106,6 +12120,27 @@
         "note": "",
         "current_head": "82380fceacf14c438924dd8097992f951a5cb86f",
         "transitioned_at": "2026-06-17T16:20:52.546Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "42f31b8dbcf6b9e65178020d8c04602c2ae0d72b",
+        "transitioned_at": "2026-06-17T16:34:47.577Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "42f31b8dbcf6b9e65178020d8c04602c2ae0d72b",
+        "transitioned_at": "2026-06-17T16:34:47.643Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "42f31b8dbcf6b9e65178020d8c04602c2ae0d72b",
+        "transitioned_at": "2026-06-17T16:35:29.344Z"
       }
     ],
     "acceptance": {
@@ -12115,6 +12150,15 @@
       "closeout_gate": [
         "B4.013-M3a-A closeout records category contract expansion, preserved MyStocks consumer-only boundary, and exact staged file list."
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-013-m3a-a-openstock-consumer-category-contract-closeout-2026-06-18.md",
+      "compatibility": "Public MyStocks routes and frontend integration unchanged; MyStocks remains backend OpenStock consumer only.",
+      "gates": [
+        "py_compile, ruff, focused pytest 10/10, GitNexus staged checks low risk, OPENDOG fresh, post-commit GitNexus analyze passed."
+      ],
+      "current_head": "42f31b8dbcf6b9e65178020d8c04602c2ae0d72b",
+      "prepared_at": "2026-06-17T16:34:59.967Z"
     }
   }
 ]
