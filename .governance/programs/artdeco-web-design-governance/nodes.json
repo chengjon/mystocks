@@ -12291,5 +12291,71 @@
       "current_head": "7bbe82ff9b03d650d13dbb5651534eef02b329c1",
       "prepared_at": "2026-06-17T18:34:38.915Z"
     }
+  },
+  {
+    "id": "b4-013-m3a-b2-blocktrade-dragon-tiger-refresh-openstock",
+    "title": "B4.013-M3a-B2 block trade and dragon tiger OpenStock refresh migration",
+    "node_type": "implementation",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-013-m3a-b-market-v2-refresh-openstock-mapping",
+    "status": "implementation-ready",
+    "function_tree_ref": "b4-013-runtime-mainline-bring-up",
+    "current_head": "5e958e42dd7bdc50f95e48eb1b39f1ef95b4d52b",
+    "freshness": "current-head",
+    "source_edits_authorized": true,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "B4.013-M3a-B2 baseline: target files clean; market_v2.py external dirty remains read-only; GitNexus impact LOW for MarketDataServiceV2, fetch_and_save_lhb_detail, fetch_and_save_blocktrade; scope is service-only OpenStock consumer migration for DRAGON_TIGER and BLOCK_TRADE date refreshes.",
+        "note": "No OpenStock repo edits, no provider SDK/fallback in MyStocks, no route/frontend/store/source-domain expansion.",
+        "current_head": "5e958e42dd7bdc50f95e48eb1b39f1ef95b4d52b",
+        "recorded_at": "2026-06-17T23:47:19.443Z"
+      }
+    ],
+    "allowed_paths": [
+      "web/backend/app/services/market_data_service_v2.py",
+      "web/backend/tests/services/test_market_data_service_v2_openstock_refresh.py",
+      "docs/reports/worklogs/claude-auto/b4-013-m3a-b2-blocktrade-dragon-tiger-refresh-closeout-2026-06-18.md",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/tree.md",
+      ".governance/programs/artdeco-web-design-governance/cards/b4-013-m3a-b2-blocktrade-dragon-tiger-refresh-openstock.yaml"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No route edits, no provider SDK calls, no OpenStock repository edits, no frontend/store/API path changes, no query fallback cleanup, no changes to externally dirty market_v2.py, no ST-HOLD or marketKlineData changes."
+    ],
+    "next_gate": "land implementation with Git evidence",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-17T23:47:10.896Z",
+    "updated_at": "2026-06-17T23:47:47.130Z",
+    "acceptance": {
+      "commit_gate": [
+        "GitNexus verify-staged and detect-changes pass with only authorized files staged.",
+        "py_compile, ruff, focused pytest for OpenStock refresh/service consumer coverage pass.",
+        "OPENDOG verification records build/lint/test evidence and remains fresh."
+      ],
+      "closeout_gate": [
+        "Closeout worklog records DRAGON_TIGER/BLOCK_TRADE consumer mapping, TDD red/green evidence, gates, boundaries, and residual risks."
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User authorized continuation for B4.013-M3a-B2 after B1 closeout; source edits limited to service-only OpenStock consumer refresh migration and bound tests.",
+        "current_head": "5e958e42dd7bdc50f95e48eb1b39f1ef95b4d52b",
+        "transitioned_at": "2026-06-17T23:47:39.709Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Starting TDD implementation for BLOCK_TRADE and DRAGON_TIGER date-based refresh migration.",
+        "current_head": "5e958e42dd7bdc50f95e48eb1b39f1ef95b4d52b",
+        "transitioned_at": "2026-06-17T23:47:47.130Z"
+      }
+    ]
   }
 ]

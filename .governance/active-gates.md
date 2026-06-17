@@ -18,5 +18,6 @@
 | artdeco-web-design-governance | b4-013-m2e3-openstock-category-coverage-audit | decision-prepared | - | prepare decision or authorization | b4-013-runtime-mainline-bring-up |
 | artdeco-web-design-governance | b4-013-m2e4-openstock-contract-gap-handoff | decision-prepared | - | prepare decision or authorization | b4-013-runtime-mainline-bring-up |
 | artdeco-web-design-governance | b4-013-runtime-mainline-bring-up | approved-for-implementation | - | prepare decision or authorization | docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance |
+| artdeco-web-design-governance | b4-013-m3a-b2-blocktrade-dragon-tiger-refresh-openstock | implementation-ready | - | land implementation with Git evidence | b4-013-runtime-mainline-bring-up |
 
 _Generated from `.governance/active-gates.json`._

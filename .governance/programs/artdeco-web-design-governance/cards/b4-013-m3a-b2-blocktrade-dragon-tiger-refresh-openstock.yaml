@@ -1,0 +1,31 @@
+task:
+  id: "b4-013-m3a-b2-blocktrade-dragon-tiger-refresh-openstock"
+  title: "B4.013-M3a-B2 block trade and dragon tiger OpenStock refresh migration"
+
+scope:
+  allowed_paths:
+    - "web/backend/app/services/market_data_service_v2.py"
+    - "web/backend/tests/services/test_market_data_service_v2_openstock_refresh.py"
+    - "docs/reports/worklogs/claude-auto/b4-013-m3a-b2-blocktrade-dragon-tiger-refresh-closeout-2026-06-18.md"
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/tree.md"
+    - ".governance/programs/artdeco-web-design-governance/cards/b4-013-m3a-b2-blocktrade-dragon-tiger-refresh-openstock.yaml"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No route edits, no provider SDK calls, no OpenStock repository edits, no frontend/store/API path changes, no query fallback cleanup, no changes to externally dirty market_v2.py, no ST-HOLD or marketKlineData changes."
+
+acceptance:
+  commit_gate:
+    - "GitNexus verify-staged and detect-changes pass with only authorized files staged."
+    - "py_compile, ruff, focused pytest for OpenStock refresh/service consumer coverage pass."
+    - "OPENDOG verification records build/lint/test evidence and remains fresh."
+  closeout_gate:
+    - "Closeout worklog records DRAGON_TIGER/BLOCK_TRADE consumer mapping, TDD red/green evidence, gates, boundaries, and residual risks."
+
+evidence:
+  current_head: "5e958e42dd7bdc50f95e48eb1b39f1ef95b4d52b"
+  notes: []

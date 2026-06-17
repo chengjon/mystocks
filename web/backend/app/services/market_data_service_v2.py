@@ -407,10 +407,9 @@ class MarketDataServiceV2:
     def fetch_and_save_lhb_detail(self, trade_date: str) -> Dict[str, Any]:
         """获取并保存龙虎榜数据"""
         try:
-            # 1. 从东方财富获取数据
-            df = self.em_adapter.get_stock_lhb_detail(trade_date)
+            records = self._fetch_openstock_records("DRAGON_TIGER", params={"trade_date": trade_date})
 
-            if df.empty:
+            if not records:
                 return {"success": False, "message": f"{trade_date}无龙虎榜数据"}
 
             # 2. 批量保存
@@ -419,18 +418,18 @@ class MarketDataServiceV2:
                 saved_count = 0
                 date_obj = datetime.strptime(trade_date, "%Y-%m-%d").date()
 
-                for _, row in df.iterrows():
+                for record in records:
                     lhb_data = LongHuBangData(
-                        symbol=row["代码"],
-                        name=row["名称"],
+                        symbol=record["symbol"],
+                        name=self._record_value(record, "name", default=""),
                         trade_date=date_obj,
-                        reason=row.get("解读"),
-                        buy_amount=row.get("龙虎榜买入额", 0),
-                        sell_amount=row.get("龙虎榜卖出额", 0),
-                        net_amount=row.get("龙虎榜净买额", 0),
-                        turnover_rate=row.get("换手率", 0),
-                        institution_buy=row.get("机构买入额"),
-                        institution_sell=row.get("机构卖出额"),
+                        reason=self._record_value(record, "reason", "interpretation", default=None),
+                        buy_amount=self._record_value(record, "buy_amount"),
+                        sell_amount=self._record_value(record, "sell_amount"),
+                        net_amount=self._record_value(record, "net_amount"),
+                        turnover_rate=self._record_value(record, "turnover_rate", "turnover"),
+                        institution_buy=self._record_value(record, "institution_buy", default=None),
+                        institution_sell=self._record_value(record, "institution_sell", default=None),
                     )
 
                     existing = (
@@ -681,10 +680,11 @@ class MarketDataServiceV2:
     def fetch_and_save_blocktrade(self, trade_date: Optional[str] = None) -> Dict[str, Any]:
         """获取并保存大宗交易数据"""
         try:
-            # 1. 从东方财富获取数据
-            df = self.em_adapter.get_stock_blocktrade(trade_date)
+            effective_trade_date = trade_date or date.today().isoformat()
+            fallback_trade_date = self._record_date(effective_trade_date, date.today())
+            records = self._fetch_openstock_records("BLOCK_TRADE", params={"trade_date": effective_trade_date})
 
-            if df.empty:
+            if not records:
                 return {"success": False, "message": "未获取到大宗交易数据"}
 
             # 2. 批量保存
@@ -692,19 +692,23 @@ class MarketDataServiceV2:
             try:
                 saved_count = 0
 
-                for _, row in df.iterrows():
+                for record in records:
                     blocktrade = StockBlockTrade(
-                        symbol=row["股票代码"],
-                        stock_name=row["股票名称"],
-                        trade_date=pd.to_datetime(row["交易日期"]).date(),
-                        deal_price=row.get("成交价", 0),
-                        close_price=row.get("收盘价", 0),
-                        premium_ratio=row.get("溢价率", 0),
-                        deal_amount=row.get("成交金额", 0),
-                        deal_volume=row.get("成交量", 0),
-                        turnover_rate=row.get("成交占比", 0),
-                        buyer_name=row.get("买方营业部"),
-                        seller_name=row.get("卖方营业部"),
+                        symbol=record["symbol"],
+                        stock_name=self._record_value(record, "stock_name", "name", default=""),
+                        trade_date=self._record_date(record.get("trade_date"), fallback_trade_date),
+                        deal_price=self._record_value(record, "deal_price"),
+                        close_price=self._record_value(record, "close_price", "close"),
+                        premium_ratio=self._record_value(record, "premium_ratio"),
+                        deal_amount=self._record_value(record, "deal_amount", "amount"),
+                        deal_volume=self._record_value(record, "deal_volume", "volume"),
+                        turnover_rate=self._record_value(
+                            record,
+                            "turnover_rate",
+                            "amount_float_market_cap_ratio",
+                        ),
+                        buyer_name=self._record_value(record, "buyer_name", default=None),
+                        seller_name=self._record_value(record, "seller_name", default=None),
                     )
 
                     db.add(blocktrade)
