@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-17T18:35:04.662Z",
+  "updated_at": "2026-06-17T18:43:10.175Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -312,7 +312,7 @@
         "docs/reports/worklogs/claude-auto/b4-013-m0-runtime-mainline-no-source-audit-2026-06-16.md"
       ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-17T18:35:04.521Z"
+      "updated_at": "2026-06-17T18:43:10.164Z"
     }
   ]
 }

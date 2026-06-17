@@ -10720,7 +10720,7 @@
     "parent": "",
     "status": "approved-for-implementation",
     "function_tree_ref": "docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance",
-    "current_head": "7bbe82ff9b03d650d13dbb5651534eef02b329c1",
+    "current_head": "677ba4096fcf2f399ad89a7712755422d782b152",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -10933,6 +10933,13 @@
         "note": "Refreshed parent baseline after ETF_SPOT refresh migration implementation commit.",
         "current_head": "7bbe82ff9b03d650d13dbb5651534eef02b329c1",
         "recorded_at": "2026-06-17T18:35:04.521Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "git HEAD 677ba4096fcf2f399ad89a7712755422d782b152 after B4.013-M3a-B1 closeout commit",
+        "note": "Refreshed parent baseline after ETF_SPOT closeout commit.",
+        "current_head": "677ba4096fcf2f399ad89a7712755422d782b152",
+        "recorded_at": "2026-06-17T18:43:10.164Z"
       }
     ],
     "allowed_paths": [
@@ -10958,7 +10965,7 @@
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T15:45:14.131Z",
-    "updated_at": "2026-06-17T18:35:04.521Z",
+    "updated_at": "2026-06-17T18:43:10.164Z",
     "acceptance": {
       "commit_gate": [
         "openspec validate adopt-mainline-alignment-governance --strict",
