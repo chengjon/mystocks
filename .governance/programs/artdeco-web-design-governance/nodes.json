@@ -10720,7 +10720,7 @@
     "parent": "",
     "status": "approved-for-implementation",
     "function_tree_ref": "docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance",
-    "current_head": "73bc28c41d1aff0785d4caa41acff0140c2405c1",
+    "current_head": "7bbe82ff9b03d650d13dbb5651534eef02b329c1",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -10926,6 +10926,13 @@
         "note": "Refreshed parent baseline before B4.013-M3a-B1 ETF_SPOT service implementation.",
         "current_head": "73bc28c41d1aff0785d4caa41acff0140c2405c1",
         "recorded_at": "2026-06-17T18:16:18.572Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "git HEAD 7bbe82ff9b03d650d13dbb5651534eef02b329c1 after B4.013-M3a-B1 ETF_SPOT service migration",
+        "note": "Refreshed parent baseline after ETF_SPOT refresh migration implementation commit.",
+        "current_head": "7bbe82ff9b03d650d13dbb5651534eef02b329c1",
+        "recorded_at": "2026-06-17T18:35:04.521Z"
       }
     ],
     "allowed_paths": [
@@ -10951,7 +10958,7 @@
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T15:45:14.131Z",
-    "updated_at": "2026-06-17T18:16:18.572Z",
+    "updated_at": "2026-06-17T18:35:04.521Z",
     "acceptance": {
       "commit_gate": [
         "openspec validate adopt-mainline-alignment-governance --strict",
@@ -12181,11 +12188,11 @@
     "node_type": "implementation",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-013-m3a-openstock-market-v2-consumer-contract-expansion",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "b4-013-runtime-mainline-bring-up",
-    "current_head": "73bc28c41d1aff0785d4caa41acff0140c2405c1",
+    "current_head": "7bbe82ff9b03d650d13dbb5651534eef02b329c1",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "baseline",
@@ -12200,6 +12207,13 @@
         "note": "User continued into MyStocks source task; scope remains service-only ETF_SPOT refresh migration.",
         "current_head": "73bc28c41d1aff0785d4caa41acff0140c2405c1",
         "recorded_at": "2026-06-17T18:16:18.633Z"
+      },
+      {
+        "kind": "runtime",
+        "path": "docs/reports/worklogs/claude-auto/b4-013-m3a-b1-etf-spot-refresh-closeout-2026-06-18.md",
+        "note": "B4.013-M3a-B1 ETF_SPOT service-only refresh migration landed in commit 7bbe82ff9; focused gates passed.",
+        "current_head": "7bbe82ff9b03d650d13dbb5651534eef02b329c1",
+        "recorded_at": "2026-06-17T18:34:38.781Z"
       }
     ],
     "allowed_paths": [
@@ -12211,11 +12225,11 @@
     "non_goals": [
       "No route edits, no provider SDK calls, no OpenStock repository edits, no frontend changes, no query fallback cleanup, and no changes to externally dirty market_v2.py."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-17T17:42:42.308Z",
-    "updated_at": "2026-06-17T18:25:13.365Z",
+    "updated_at": "2026-06-17T18:35:04.652Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -12237,6 +12251,20 @@
         "note": "",
         "current_head": "73bc28c41d1aff0785d4caa41acff0140c2405c1",
         "transitioned_at": "2026-06-17T18:25:13.338Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "7bbe82ff9b03d650d13dbb5651534eef02b329c1",
+        "transitioned_at": "2026-06-17T18:34:38.848Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "7bbe82ff9b03d650d13dbb5651534eef02b329c1",
+        "transitioned_at": "2026-06-17T18:35:04.651Z"
       }
     ],
     "acceptance": {
@@ -12246,6 +12274,15 @@
       "closeout_gate": [
         "Closeout records ETF_SPOT service-only refresh migration, preserved MyStocks consumer-only boundary, and exact staged file list."
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-013-m3a-b1-etf-spot-refresh-closeout-2026-06-18.md",
+      "compatibility": "Public MyStocks market_v2 routes unchanged; ETF refresh service now consumes OpenStock through backend client only.",
+      "gates": [
+        "py_compile, ruff, focused pytest 13/13, GitNexus staged checks low risk, OPENDOG fresh, post-commit GitNexus analyze passed."
+      ],
+      "current_head": "7bbe82ff9b03d650d13dbb5651534eef02b329c1",
+      "prepared_at": "2026-06-17T18:34:38.915Z"
     }
   }
 ]
