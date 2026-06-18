@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-18T09:22:46.556Z",
+  "updated_at": "2026-06-18T10:08:55.222Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -285,23 +285,6 @@
     },
     {
       "program": "artdeco-web-design-governance",
-      "id": "b4-013-m3a-b3-fund-flow-refresh-openstock-audit",
-      "title": "B4.013-M3a-B3 FUND_FLOW refresh OpenStock boundary audit",
-      "node_type": "decision",
-      "owner_lane": "backend",
-      "parent": "b4-013-m3a-b-market-v2-refresh-openstock-mapping",
-      "status": "decision-prepared",
-      "source_edits_authorized": false,
-      "current_blocker": "",
-      "next_allowed": "prepare authorization",
-      "function_tree_ref": "FUNCTION_TREE:B4.013 runtime mainline bring-up/OpenStock consumer contract",
-      "freshness": "current-head",
-      "allowed_paths": [],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-18T02:36:20.454Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
       "id": "b4-013-runtime-mainline-bring-up",
       "title": "B4.013 Runtime mainline bring-up governance adoption",
       "node_type": "implementation",
@@ -329,7 +312,41 @@
         "docs/reports/worklogs/claude-auto/b4-013-m0-runtime-mainline-no-source-audit-2026-06-16.md"
       ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-18T09:22:46.545Z"
+      "updated_at": "2026-06-18T10:07:24.042Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-013-m3a-b3-fund-flow-refresh-openstock-audit",
+      "title": "B4.013-M3a-B3 FUND_FLOW refresh OpenStock boundary audit",
+      "node_type": "decision",
+      "owner_lane": "backend",
+      "parent": "b4-013-m3a-b-market-v2-refresh-openstock-mapping",
+      "status": "decision-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "prepare decision or authorization",
+      "function_tree_ref": "FUNCTION_TREE:B4.013 runtime mainline bring-up/OpenStock consumer contract",
+      "freshness": "current-head",
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-18T10:07:24.146Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-013-m3a-b3b-fund-flow-all-market-multi-day-decision",
+      "title": "B4.013-M3a-B3b FUND_FLOW all-market and multi-day contract decision",
+      "node_type": "decision",
+      "owner_lane": "backend",
+      "parent": "b4-013-m3a-b3-fund-flow-refresh-openstock-audit",
+      "status": "decision-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "prepare authorization",
+      "function_tree_ref": "FUNCTION_TREE:B4.013 OpenStock consumer FUND_FLOW legacy compatibility decision",
+      "freshness": "current-head",
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-18T10:08:55.210Z"
     }
   ]
 }

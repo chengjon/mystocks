@@ -10720,7 +10720,7 @@
     "parent": "",
     "status": "approved-for-implementation",
     "function_tree_ref": "docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance",
-    "current_head": "af96c1f622557fd984e77ef3bad7000a5b432efb",
+    "current_head": "96ff8a2df012a77a73cc2cec5b9e56861a65ab0b",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -10954,6 +10954,13 @@
         "note": "Refreshed parent runtime mainline evidence after B3a FUND_FLOW implementation commit before closeout.",
         "current_head": "af96c1f622557fd984e77ef3bad7000a5b432efb",
         "recorded_at": "2026-06-18T09:22:46.545Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "git HEAD 96ff8a2df012c134c3a2d3d7f4e81d1ab90e5dd4 after B4.013-M3a-B3a closeout",
+        "note": "Refreshed parent runtime mainline evidence before B3b no-source FUND_FLOW contract decision audit.",
+        "current_head": "96ff8a2df012a77a73cc2cec5b9e56861a65ab0b",
+        "recorded_at": "2026-06-18T10:07:24.042Z"
       }
     ],
     "allowed_paths": [
@@ -10979,7 +10986,7 @@
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T15:45:14.131Z",
-    "updated_at": "2026-06-18T09:22:46.545Z",
+    "updated_at": "2026-06-18T10:07:24.042Z",
     "acceptance": {
       "commit_gate": [
         "openspec validate adopt-mainline-alignment-governance --strict",
@@ -12407,7 +12414,7 @@
     "parent": "b4-013-m3a-b-market-v2-refresh-openstock-mapping",
     "status": "decision-prepared",
     "function_tree_ref": "FUNCTION_TREE:B4.013 runtime mainline bring-up/OpenStock consumer contract",
-    "current_head": "f90dee916e60470212178a624ac75cd4e540c0d4",
+    "current_head": "96ff8a2df012a77a73cc2cec5b9e56861a65ab0b",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -12417,16 +12424,23 @@
         "note": "",
         "current_head": "f90dee916e60470212178a624ac75cd4e540c0d4",
         "recorded_at": "2026-06-18T02:36:10.432Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "git HEAD 96ff8a2df012c134c3a2d3d7f4e81d1ab90e5dd4 after B3a symbol/today migration closeout",
+        "note": "Refreshed B3 audit parent evidence before B3b all-market and multi-day contract decision.",
+        "current_head": "96ff8a2df012a77a73cc2cec5b9e56861a65ab0b",
+        "recorded_at": "2026-06-18T10:07:24.146Z"
       }
     ],
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
+    "next_gate": "prepare decision or authorization",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-18T02:35:06.633Z",
-    "updated_at": "2026-06-18T02:36:20.454Z",
+    "updated_at": "2026-06-18T10:07:24.146Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -12528,5 +12542,43 @@
       "current_head": "af96c1f622557fd984e77ef3bad7000a5b432efb",
       "prepared_at": "2026-06-18T09:21:00.047Z"
     }
+  },
+  {
+    "id": "b4-013-m3a-b3b-fund-flow-all-market-multi-day-decision",
+    "title": "B4.013-M3a-B3b FUND_FLOW all-market and multi-day contract decision",
+    "node_type": "decision",
+    "owner_lane": "backend",
+    "parent": "b4-013-m3a-b3-fund-flow-refresh-openstock-audit",
+    "status": "decision-prepared",
+    "function_tree_ref": "FUNCTION_TREE:B4.013 OpenStock consumer FUND_FLOW legacy compatibility decision",
+    "current_head": "96ff8a2df012a77a73cc2cec5b9e56861a65ab0b",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-013-m3a-b3b-fund-flow-all-market-multi-day-contract-decision-2026-06-18.md",
+        "note": "B3b no-source decision: all-market and multi-day FUND_FLOW slices require a dedicated OpenStock provider contract or separate deprecation decision; no MyStocks source edits authorized.",
+        "current_head": "96ff8a2df012a77a73cc2cec5b9e56861a65ab0b",
+        "recorded_at": "2026-06-18T10:08:55.140Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-18T10:07:24.209Z",
+    "updated_at": "2026-06-18T10:08:55.210Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "",
+        "current_head": "96ff8a2df012a77a73cc2cec5b9e56861a65ab0b",
+        "transitioned_at": "2026-06-18T10:08:55.210Z"
+      }
+    ]
   }
 ]
