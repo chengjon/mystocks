@@ -10718,7 +10718,7 @@
     "node_type": "implementation",
     "owner_lane": "mainline",
     "parent": "",
-    "status": "implementation-landed",
+    "status": "closed",
     "function_tree_ref": "docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance",
     "current_head": "e8738decae2b7c0bbf4f50071076bd03133c0fe0",
     "freshness": "current-head",
@@ -10996,11 +10996,11 @@
     "non_goals": [
       "No source, runtime, test, API, route, store, UI, PM2, marketKlineData, ST-HOLD, or external dirty-file changes."
     ],
-    "next_gate": "prepare closeout",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T15:45:14.131Z",
-    "updated_at": "2026-06-18T14:25:21.579Z",
+    "updated_at": "2026-06-18T17:07:32.768Z",
     "acceptance": {
       "commit_gate": [
         "openspec validate adopt-mainline-alignment-governance --strict",
@@ -11031,8 +11031,24 @@
         "note": "Parent governance adoption landed; B4.013 child work proceeds through independent no-source/source authorization nodes.",
         "current_head": "e8738decae2b7c0bbf4f50071076bd03133c0fe0",
         "transitioned_at": "2026-06-18T14:25:21.578Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "46ac24efe2ab1bcfdb951bbbcbf36f01efb06e6e",
+        "transitioned_at": "2026-06-18T17:07:32.768Z"
       }
-    ]
+    ],
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-013-runtime-mainline-bring-up-closeout-2026-06-19.md",
+      "compatibility": "MyStocks preserves existing API/read-model response contracts and consumes OpenStock only through backend consumer integration; unsupported provider gaps remain legacy/backlog rather than synthesized locally.",
+      "gates": [
+        "py_compile passed; ruff passed; focused OpenStock consumer pytest passed: 19 passed; no source edits in parent closeout."
+      ],
+      "current_head": "46ac24efe2ab1bcfdb951bbbcbf36f01efb06e6e",
+      "prepared_at": "2026-06-18T17:07:32.692Z"
+    }
   },
   {
     "id": "b4-013-m1a-watchlist-runtime-import-reexport",

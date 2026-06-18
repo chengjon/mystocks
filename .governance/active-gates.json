@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-18T16:16:08.911Z",
+  "updated_at": "2026-06-18T17:07:32.781Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -316,37 +316,6 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-18T14:12:41.795Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-013-runtime-mainline-bring-up",
-      "title": "B4.013 Runtime mainline bring-up governance adoption",
-      "node_type": "implementation",
-      "owner_lane": "mainline",
-      "parent": "",
-      "status": "implementation-landed",
-      "source_edits_authorized": false,
-      "current_blocker": "",
-      "next_allowed": "prepare closeout",
-      "function_tree_ref": "docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance",
-      "freshness": "current-head",
-      "allowed_paths": [
-        "architecture/STANDARDS.md",
-        "AGENTS.md",
-        "CLAUDE.md",
-        "docs/FUNCTION_TREE.md",
-        ".governance/active-gates.json",
-        ".governance/active-gates.md",
-        ".governance/programs/artdeco-web-design-governance/nodes.json",
-        ".governance/programs/artdeco-web-design-governance/tree.md",
-        ".governance/programs/artdeco-web-design-governance/cards/b4-013-runtime-mainline-bring-up.yaml",
-        "openspec/changes/adopt-mainline-alignment-governance/**",
-        "docs/reports/worklogs/claude-auto/b4-013-gov-m0-mainline-alignment-methodology-adoption-proposal-2026-06-15.md",
-        "docs/reports/worklogs/claude-auto/b4-013-gov-m1-mainline-alignment-governance-adoption-2026-06-15.md",
-        "docs/reports/worklogs/claude-auto/b4-013-m0-runtime-mainline-no-source-audit-2026-06-16.md"
-      ],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-18T14:25:21.579Z"
     }
   ]
 }
