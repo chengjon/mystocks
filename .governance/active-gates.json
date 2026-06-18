@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-18T18:50:24.513Z",
+  "updated_at": "2026-06-18T23:32:15.333Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -161,25 +161,6 @@
       ],
       "forbidden_paths": [],
       "updated_at": "2026-06-15T15:51:34.832Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-013-m1e-backend-api-residual-slow-endpoint-attribution-audit",
-      "title": "B4.013-M1-E Backend API residual slow endpoint attribution audit",
-      "node_type": "decision",
-      "owner_lane": "artdeco-web-design-governance",
-      "parent": "b4-013-runtime-mainline-bring-up",
-      "status": "blocked",
-      "source_edits_authorized": false,
-      "current_blocker": "Superseded by user-confirmed OpenStock boundary: mystocks must not keep expanding or repairing data-source provider behavior; continue via OpenStock consumer boundary audit.",
-      "blocker_reason": "Superseded by user-confirmed OpenStock boundary: mystocks must not keep expanding or repairing data-source provider behavior; continue via OpenStock consumer boundary audit.",
-      "next_allowed": "unblock to decision-prepared",
-      "unblock_target_state": "decision-prepared",
-      "function_tree_ref": "B4.013-M1-E",
-      "freshness": "current-head",
-      "allowed_paths": [],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-16T04:42:11.041Z"
     },
     {
       "program": "artdeco-web-design-governance",

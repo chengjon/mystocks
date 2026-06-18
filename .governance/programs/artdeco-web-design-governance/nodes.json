@@ -11420,9 +11420,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-013-runtime-mainline-bring-up",
-    "status": "blocked",
+    "status": "archived",
     "function_tree_ref": "B4.013-M1-E",
-    "current_head": "834663446cd3f4b87d5b7af2a51708df35470c19",
+    "current_head": "8d4f261508c1bce227368c73161286c759c27ed5",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -11439,16 +11439,23 @@
         "note": "User corrected M1-E direction: do not continue backend data-provider repairs in mystocks; reframe to OpenStock data-source boundary.",
         "current_head": "834663446cd3f4b87d5b7af2a51708df35470c19",
         "recorded_at": "2026-06-16T04:42:10.986Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-013-m1e-backend-api-residual-slow-endpoint-attribution-fresh-review-2026-06-19.md",
+        "note": "Fresh PM2 business smoke review shows no current MyStocks slow-endpoint runtime blocker; boundary reset remains evidence only, not a provider-repair track.",
+        "current_head": "8d4f261508c1bce227368c73161286c759c27ed5",
+        "recorded_at": "2026-06-18T23:32:15.147Z"
       }
     ],
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "unblock to decision-prepared",
-    "blocker_reason": "Superseded by user-confirmed OpenStock boundary: mystocks must not keep expanding or repairing data-source provider behavior; continue via OpenStock consumer boundary audit.",
-    "unblock_target_state": "decision-prepared",
+    "next_gate": "none",
+    "blocker_reason": null,
+    "unblock_target_state": null,
     "created_at": "2026-06-16T04:26:34.929Z",
-    "updated_at": "2026-06-16T04:42:11.041Z",
+    "updated_at": "2026-06-18T23:32:15.325Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -11456,6 +11463,20 @@
         "note": "Freeze backend-provider-fix framing; no source edits authorized.",
         "current_head": "834663446cd3f4b87d5b7af2a51708df35470c19",
         "transitioned_at": "2026-06-16T04:42:11.040Z"
+      },
+      {
+        "from": "blocked",
+        "to": "decision-prepared",
+        "note": "",
+        "current_head": "8d4f261508c1bce227368c73161286c759c27ed5",
+        "transitioned_at": "2026-06-18T23:32:15.219Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "archived",
+        "note": "Archived after fresh no-source review; no current MyStocks provider-repair blocker remains, and the boundary reset now lives as historical evidence.",
+        "current_head": "8d4f261508c1bce227368c73161286c759c27ed5",
+        "transitioned_at": "2026-06-18T23:32:15.325Z"
       }
     ]
   },
