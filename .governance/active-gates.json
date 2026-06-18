@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-18T10:08:55.222Z",
+  "updated_at": "2026-06-18T14:12:41.806Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -285,6 +285,23 @@
     },
     {
       "program": "artdeco-web-design-governance",
+      "id": "b4-013-m3a-b4-sector-fund-flow-readiness-audit",
+      "title": "B4.013-M3a-B4 SECTOR_FUND_FLOW readiness audit",
+      "node_type": "decision",
+      "owner_lane": "backend",
+      "parent": "b4-013-m3a-b-market-v2-refresh-openstock-mapping",
+      "status": "decision-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "prepare authorization",
+      "function_tree_ref": "b4-013-m3a-b4-sector-fund-flow-readiness-audit",
+      "freshness": "current-head",
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-18T14:10:18.258Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
       "id": "b4-013-runtime-mainline-bring-up",
       "title": "B4.013 Runtime mainline bring-up governance adoption",
       "node_type": "implementation",
@@ -312,7 +329,7 @@
         "docs/reports/worklogs/claude-auto/b4-013-m0-runtime-mainline-no-source-audit-2026-06-16.md"
       ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-18T10:07:24.042Z"
+      "updated_at": "2026-06-18T14:12:41.669Z"
     },
     {
       "program": "artdeco-web-design-governance",
@@ -329,7 +346,7 @@
       "freshness": "current-head",
       "allowed_paths": [],
       "forbidden_paths": [],
-      "updated_at": "2026-06-18T10:07:24.146Z"
+      "updated_at": "2026-06-18T14:12:41.733Z"
     },
     {
       "program": "artdeco-web-design-governance",
@@ -341,12 +358,12 @@
       "status": "decision-prepared",
       "source_edits_authorized": false,
       "current_blocker": "",
-      "next_allowed": "prepare authorization",
+      "next_allowed": "prepare decision or authorization",
       "function_tree_ref": "FUNCTION_TREE:B4.013 OpenStock consumer FUND_FLOW legacy compatibility decision",
       "freshness": "current-head",
       "allowed_paths": [],
       "forbidden_paths": [],
-      "updated_at": "2026-06-18T10:08:55.210Z"
+      "updated_at": "2026-06-18T14:12:41.795Z"
     }
   ]
 }
