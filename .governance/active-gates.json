@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-18T15:41:29.107Z",
+  "updated_at": "2026-06-18T16:16:08.911Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -347,23 +347,6 @@
       ],
       "forbidden_paths": [],
       "updated_at": "2026-06-18T14:25:21.579Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-013-m3a-b5-query-runtime-fallback-cleanup",
-      "title": "B4.013-M3a-B5 Query runtime fallback cleanup no-source audit",
-      "node_type": "decision",
-      "owner_lane": "runtime-mainline",
-      "parent": "b4-013-runtime-mainline-bring-up",
-      "status": "decision-prepared",
-      "source_edits_authorized": false,
-      "current_blocker": "",
-      "next_allowed": "prepare authorization",
-      "function_tree_ref": "b4-013-runtime-mainline-bring-up",
-      "freshness": "current-head",
-      "allowed_paths": [],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-18T15:41:29.095Z"
     }
   ]
 }

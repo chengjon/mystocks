@@ -20,6 +20,5 @@
 | artdeco-web-design-governance | b4-013-m3a-b3-fund-flow-refresh-openstock-audit | decision-prepared | - | prepare decision or authorization | FUNCTION_TREE:B4.013 runtime mainline bring-up/OpenStock consumer contract |
 | artdeco-web-design-governance | b4-013-m3a-b3b-fund-flow-all-market-multi-day-decision | decision-prepared | - | prepare decision or authorization | FUNCTION_TREE:B4.013 OpenStock consumer FUND_FLOW legacy compatibility decision |
 | artdeco-web-design-governance | b4-013-runtime-mainline-bring-up | implementation-landed | - | prepare closeout | docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance |
-| artdeco-web-design-governance | b4-013-m3a-b5-query-runtime-fallback-cleanup | decision-prepared | - | prepare authorization | b4-013-runtime-mainline-bring-up |
 
 _Generated from `.governance/active-gates.json`._

@@ -12731,9 +12731,9 @@
     "node_type": "decision",
     "owner_lane": "runtime-mainline",
     "parent": "b4-013-runtime-mainline-bring-up",
-    "status": "decision-prepared",
+    "status": "closed",
     "function_tree_ref": "b4-013-runtime-mainline-bring-up",
-    "current_head": "6a8a2881246e602c57d7bcab6a1e4a99140bb394",
+    "current_head": "22537751896752aa778ab731d87020b6bc824163",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -12743,16 +12743,29 @@
         "note": "No-source query runtime fallback cleanup boundary audit; source edits remain unauthorized.",
         "current_head": "6a8a2881246e602c57d7bcab6a1e4a99140bb394",
         "recorded_at": "2026-06-18T15:41:12.854Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "git HEAD 22537751896752aa778ab731d87020b6bc824163 before B5a authorization preparation",
+        "note": "Refresh B5 decision evidence after no-source audit commit; source edits remain unauthorized until B5a approval.",
+        "current_head": "22537751896752aa778ab731d87020b6bc824163",
+        "recorded_at": "2026-06-18T15:55:51.755Z"
       }
     ],
-    "allowed_paths": [],
+    "allowed_paths": [
+      "web/backend/app/services/market_data_service_v2.py",
+      "web/backend/tests/services/test_market_data_service_v2_runtime_fallback.py"
+    ],
     "forbidden_paths": [],
-    "non_goals": [],
-    "next_gate": "prepare authorization",
+    "non_goals": [
+      "Do not change routes, models, frontend, store, API paths, OpenStock repository, ST-HOLD, marketKlineData, or external dirty files.",
+      "Do not add provider logic or direct frontend-to-OpenStock calls."
+    ],
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-18T15:38:26.069Z",
-    "updated_at": "2026-06-18T15:41:29.095Z",
+    "updated_at": "2026-06-18T16:16:08.898Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -12760,7 +12773,52 @@
         "note": "",
         "current_head": "6a8a2881246e602c57d7bcab6a1e4a99140bb394",
         "transitioned_at": "2026-06-18T15:41:29.095Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "22537751896752aa778ab731d87020b6bc824163",
+        "transitioned_at": "2026-06-18T15:56:18.849Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "30e5a8501af7277e0b55dbbf1de968743162efb5",
+        "transitioned_at": "2026-06-18T16:15:18.681Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "30e5a8501af7277e0b55dbbf1de968743162efb5",
+        "transitioned_at": "2026-06-18T16:15:18.733Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "30e5a8501af7277e0b55dbbf1de968743162efb5",
+        "transitioned_at": "2026-06-18T16:16:08.898Z"
       }
-    ]
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "python -m py_compile web/backend/app/services/market_data_service_v2.py web/backend/tests/services/test_market_data_service_v2_runtime_fallback.py && python -m ruff check web/backend/app/services/market_data_service_v2.py web/backend/tests/services/test_market_data_service_v2_runtime_fallback.py && python -m pytest web/backend/tests/services/test_market_data_service_v2_runtime_fallback.py web/backend/tests/services/test_market_data_service_v2_openstock_refresh.py tests/backend/test_openstock_client.py -q --no-cov"
+      ],
+      "closeout_gate": [
+        "Query fallback standardization preserves runtime-disabled semantics and either standardizes supported OpenStock-backed fallback or explicitly retires provider-shaped fallback under the OpenStock consumer line."
+      ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-013-m3a-b5a-query-runtime-fallback-closeout-2026-06-18.md",
+      "compatibility": "Sector query runtime fallback now uses OpenStock SECTOR_FUND_FLOW for supported slices while preserving DB/read-model behavior and keeping 3日 on the legacy fallback path.",
+      "gates": [
+        "TDD RED/GREEN, py_compile, ruff, focused pytest 19 passed, GitNexus staged risk low, OPENDOG fresh, post-commit GitNexus analyze complete"
+      ],
+      "current_head": "30e5a8501af7277e0b55dbbf1de968743162efb5",
+      "prepared_at": "2026-06-18T16:16:08.836Z"
+    }
   }
 ]
