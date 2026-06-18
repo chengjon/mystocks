@@ -26,6 +26,19 @@ class _FailingEastMoneyAdapter:
     def get_stock_lhb_detail(self, _trade_date):
         raise AssertionError("EastMoney dragon tiger provider should not be called")
 
+    def get_sector_fund_flow(self, *_args, **_kwargs):
+        raise AssertionError("EastMoney sector fund flow provider should not be called")
+
+
+class _RecordingEastMoneyAdapter:
+    def __init__(self, frame):
+        self.frame = frame
+        self.sector_fund_flow_calls = []
+
+    def get_sector_fund_flow(self, sector_type, timeframe):
+        self.sector_fund_flow_calls.append((sector_type, timeframe))
+        return self.frame
+
 
 class _FakeOpenStockClient:
     def __init__(self, records):
@@ -305,3 +318,108 @@ async def test_fetch_and_save_fund_flow_symbol_today_consumes_openstock_without_
     assert saved.large_net_inflow == 700.0
     assert saved.medium_net_inflow == -50.0
     assert saved.small_net_inflow == -100.0
+
+
+@pytest.mark.asyncio
+async def test_fetch_and_save_sector_fund_flow_supported_timeframe_consumes_openstock_without_local_provider():
+    openstock_client = _FakeOpenStockClient(
+        [
+            {
+                "sector_name": "半导体",
+                "change_pct": 2.4,
+                "main_net_inflow": 1000.0,
+                "main_net_inflow_ratio": 1.2,
+                "super_large_net_inflow": 800.0,
+                "super_large_net_inflow_ratio": 0.8,
+                "large_net_inflow": 600.0,
+                "large_net_inflow_ratio": 0.6,
+                "medium_net_inflow": -100.0,
+                "medium_net_inflow_ratio": -0.1,
+                "small_net_inflow": -200.0,
+                "small_net_inflow_ratio": -0.2,
+                "leading_name": "中芯国际",
+            }
+        ]
+    )
+    session = _FakeSession()
+
+    service = MarketDataServiceV2()
+    service.em_adapter = _FailingEastMoneyAdapter()
+    service.SessionLocal = lambda: session
+    service._openstock_client_factory = lambda: openstock_client
+
+    result = service.fetch_and_save_sector_fund_flow("行业", "今日")
+
+    assert result == {"success": True, "message": "保存成功: 1条"}
+    assert openstock_client.fetch_calls == [
+        {
+            "data_category": "SECTOR_FUND_FLOW",
+            "params": {"sector_type": "industry", "indicator": "今日"},
+            "request_id": None,
+        }
+    ]
+    assert openstock_client.closed is True
+    assert session.committed is True
+    assert session.closed is True
+    assert len(session.added) == 1
+
+    saved = session.added[0]
+    assert saved.sector_code == "半导体"
+    assert saved.sector_name == "半导体"
+    assert saved.sector_type == "行业"
+    assert saved.trade_date == date.today()
+    assert saved.timeframe == "今日"
+    assert saved.latest_price == 0
+    assert saved.change_percent == 2.4
+    assert saved.main_net_inflow == 1000.0
+    assert saved.main_net_inflow_rate == 1.2
+    assert saved.super_large_net_inflow == 800.0
+    assert saved.super_large_net_inflow_rate == 0.8
+    assert saved.large_net_inflow == 600.0
+    assert saved.large_net_inflow_rate == 0.6
+    assert saved.medium_net_inflow == -100.0
+    assert saved.medium_net_inflow_rate == -0.1
+    assert saved.small_net_inflow == -200.0
+    assert saved.small_net_inflow_rate == -0.2
+    assert saved.leading_stock == "中芯国际"
+
+
+def test_fetch_and_save_sector_fund_flow_three_day_keeps_legacy_provider_path():
+    pd = pytest.importorskip("pandas")
+    frame = pd.DataFrame(
+        [
+            {
+                "代码": "BK1036",
+                "名称": "半导体",
+                "最新价": 1234.5,
+                "涨跌幅": 2.4,
+                "主力净流入": 1000.0,
+                "主力净流入占比": 1.2,
+                "超大单净流入": 800.0,
+                "超大单净流入占比": 0.8,
+                "大单净流入": 600.0,
+                "大单净流入占比": 0.6,
+                "中单净流入": -100.0,
+                "中单净流入占比": -0.1,
+                "小单净流入": -200.0,
+                "小单净流入占比": -0.2,
+            }
+        ]
+    )
+    eastmoney_adapter = _RecordingEastMoneyAdapter(frame)
+    openstock_client = _FakeOpenStockClient([])
+    session = _FakeSession()
+
+    service = MarketDataServiceV2()
+    service.em_adapter = eastmoney_adapter
+    service.SessionLocal = lambda: session
+    service._openstock_client_factory = lambda: openstock_client
+
+    result = service.fetch_and_save_sector_fund_flow("行业", "3日")
+
+    assert result == {"success": True, "message": "保存成功: 1条"}
+    assert eastmoney_adapter.sector_fund_flow_calls == [("行业", "3日")]
+    assert openstock_client.fetch_calls == []
+    assert len(session.added) == 1
+    assert session.added[0].sector_code == "BK1036"
+    assert session.added[0].timeframe == "3日"

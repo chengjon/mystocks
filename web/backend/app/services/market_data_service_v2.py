@@ -546,9 +546,105 @@ class MarketDataServiceV2:
 
     # ==================== 行业/概念资金流向 ====================
 
+    @staticmethod
+    def _openstock_sector_fund_flow_params(sector_type: str, timeframe: str) -> Dict[str, str] | None:
+        sector_type_map = {
+            "行业": "industry",
+            "概念": "concept",
+            "地域": "region",
+        }
+        if timeframe not in {"今日", "5日", "10日"}:
+            return None
+        mapped_sector_type = sector_type_map.get(sector_type)
+        if mapped_sector_type is None:
+            return None
+        return {"sector_type": mapped_sector_type, "indicator": timeframe}
+
+    def _fetch_and_save_openstock_sector_fund_flow(
+        self,
+        sector_type: str,
+        timeframe: str,
+        params: Mapping[str, Any],
+    ) -> Dict[str, Any]:
+        records = self._fetch_openstock_records("SECTOR_FUND_FLOW", params=params)
+
+        if not records:
+            return {"success": False, "message": "未获取到板块资金流向数据"}
+
+        db = self.SessionLocal()
+        try:
+            today = datetime.now().date()
+            saved_count = 0
+
+            for row in records:
+                sector_name = self._record_value(row, "sector_name", "name", default=None)
+                sector_code = self._record_value(row, "sector_code", default=sector_name)
+                if not sector_code or not sector_name:
+                    continue
+                sector_flow = SectorFundFlow(
+                    sector_code=sector_code,
+                    sector_name=sector_name,
+                    sector_type=sector_type,
+                    trade_date=today,
+                    timeframe=timeframe,
+                    latest_price=self._record_value(row, "latest_price", "price"),
+                    change_percent=self._record_value(row, "change_percent", "change_pct", "pct_chg"),
+                    main_net_inflow=self._record_value(row, "main_net_inflow"),
+                    main_net_inflow_rate=self._record_value(row, "main_net_inflow_rate", "main_net_inflow_ratio"),
+                    super_large_net_inflow=self._record_value(row, "super_large_net_inflow"),
+                    super_large_net_inflow_rate=self._record_value(
+                        row,
+                        "super_large_net_inflow_rate",
+                        "super_large_net_inflow_ratio",
+                    ),
+                    large_net_inflow=self._record_value(row, "large_net_inflow"),
+                    large_net_inflow_rate=self._record_value(row, "large_net_inflow_rate", "large_net_inflow_ratio"),
+                    medium_net_inflow=self._record_value(row, "medium_net_inflow"),
+                    medium_net_inflow_rate=self._record_value(
+                        row,
+                        "medium_net_inflow_rate",
+                        "medium_net_inflow_ratio",
+                    ),
+                    small_net_inflow=self._record_value(row, "small_net_inflow"),
+                    small_net_inflow_rate=self._record_value(row, "small_net_inflow_rate", "small_net_inflow_ratio"),
+                    leading_stock=self._record_value(row, "leading_stock", "leading_name", default=None),
+                    leading_stock_change_percent=self._record_value(
+                        row,
+                        "leading_stock_change_percent",
+                        "leading_change_percent",
+                        default=None,
+                    ),
+                )
+
+                existing = (
+                    db.query(SectorFundFlow)
+                    .filter(
+                        and_(
+                            SectorFundFlow.sector_code == sector_flow.sector_code,
+                            SectorFundFlow.trade_date == today,
+                            SectorFundFlow.timeframe == timeframe,
+                        )
+                    )
+                    .first()
+                )
+
+                if not existing:
+                    db.add(sector_flow)
+                    saved_count += 1
+
+            db.commit()
+            logger.info("保存%s资金流向成功: %s条", sector_type, saved_count)
+            return {"success": True, "message": f"保存成功: {saved_count}条"}
+        finally:
+            db.close()
+
     def fetch_and_save_sector_fund_flow(self, sector_type: str = "行业", timeframe: str = "今日") -> Dict[str, Any]:
         """获取并保存行业/概念资金流向"""
         try:
+            openstock_params = self._openstock_sector_fund_flow_params(sector_type, timeframe)
+            if openstock_params is not None:
+                return self._fetch_and_save_openstock_sector_fund_flow(sector_type, timeframe, openstock_params)
+
             # 1. 从东方财富获取数据
             df = self.em_adapter.get_sector_fund_flow(sector_type, timeframe)
 
