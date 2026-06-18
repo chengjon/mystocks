@@ -12629,9 +12629,9 @@
     "node_type": "decision",
     "owner_lane": "backend",
     "parent": "b4-013-m3a-b-market-v2-refresh-openstock-mapping",
-    "status": "authorization-prepared",
+    "status": "closed",
     "function_tree_ref": "b4-013-m3a-b4-sector-fund-flow-readiness-audit",
-    "current_head": "4ddc2d6a6b479cfd213fd5927b687392d531b218",
+    "current_head": "98cb0252c7de403e1ed3e34ec863c4ecadb9685d",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -12648,6 +12648,13 @@
         "note": "Prepared B4a source authorization draft with sector_code compatibility policy and limited allowed paths",
         "current_head": "4ddc2d6a6b479cfd213fd5927b687392d531b218",
         "recorded_at": "2026-06-18T14:44:24.081Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "git HEAD 98cb0252c7de403e1ed3e34ec863c4ecadb9685d after B4a source authorization draft commit",
+        "note": "Refreshed evidence at current HEAD before implementation approval; sector_code compatibility policy approved.",
+        "current_head": "98cb0252c7de403e1ed3e34ec863c4ecadb9685d",
+        "recorded_at": "2026-06-18T15:03:30.107Z"
       }
     ],
     "allowed_paths": [
@@ -12658,11 +12665,11 @@
     "non_goals": [
       "Do not modify routes, models, OpenStock repo, or query/read-model behavior."
     ],
-    "next_gate": "prepare decision or authorization",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-18T14:07:08.756Z",
-    "updated_at": "2026-06-18T14:44:24.081Z",
+    "updated_at": "2026-06-18T15:24:39.853Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -12670,6 +12677,34 @@
         "note": "",
         "current_head": "8946e165ce41b117ac7bf9aa9d65de10ff6842e0",
         "transitioned_at": "2026-06-18T14:10:18.258Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved B4a source implementation and sector_code compatibility policy.",
+        "current_head": "98cb0252c7de403e1ed3e34ec863c4ecadb9685d",
+        "transitioned_at": "2026-06-18T15:03:30.176Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "cda3c360b87ca0ae281c372f231fe4631b7823f2",
+        "transitioned_at": "2026-06-18T15:22:33.864Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "cda3c360b87ca0ae281c372f231fe4631b7823f2",
+        "transitioned_at": "2026-06-18T15:22:33.927Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "cda3c360b87ca0ae281c372f231fe4631b7823f2",
+        "transitioned_at": "2026-06-18T15:24:39.853Z"
       }
     ],
     "acceptance": {
@@ -12679,6 +12714,15 @@
       "closeout_gate": [
         "Limited SECTOR_FUND_FLOW consumer migration preserves 3日 legacy compatibility and records the sector_code compatibility decision."
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-013-m3a-b4a-sector-fund-flow-refresh-closeout-2026-06-18.md",
+      "compatibility": "Supported SECTOR_FUND_FLOW slices now consume OpenStock while preserving MyStocks Chinese read-model fields and keeping 3日 on the legacy provider path.",
+      "gates": [
+        "py_compile, ruff, focused pytest 18 passed, GitNexus staged risk low, OPENDOG fresh, post-commit GitNexus analyze complete"
+      ],
+      "current_head": "cda3c360b87ca0ae281c372f231fe4631b7823f2",
+      "prepared_at": "2026-06-18T15:23:49.673Z"
     }
   }
 ]

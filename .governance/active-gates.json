@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-18T14:44:24.092Z",
+  "updated_at": "2026-06-18T15:24:39.863Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -347,26 +347,6 @@
       ],
       "forbidden_paths": [],
       "updated_at": "2026-06-18T14:25:21.579Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-013-m3a-b4-sector-fund-flow-readiness-audit",
-      "title": "B4.013-M3a-B4 SECTOR_FUND_FLOW readiness audit",
-      "node_type": "decision",
-      "owner_lane": "backend",
-      "parent": "b4-013-m3a-b-market-v2-refresh-openstock-mapping",
-      "status": "authorization-prepared",
-      "source_edits_authorized": false,
-      "current_blocker": "",
-      "next_allowed": "prepare decision or authorization",
-      "function_tree_ref": "b4-013-m3a-b4-sector-fund-flow-readiness-audit",
-      "freshness": "current-head",
-      "allowed_paths": [
-        "web/backend/app/services/market_data_service_v2.py",
-        "web/backend/tests/services/test_market_data_service_v2_openstock_refresh.py"
-      ],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-18T14:44:24.081Z"
     }
   ]
 }
