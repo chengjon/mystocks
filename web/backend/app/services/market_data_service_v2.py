@@ -204,6 +204,9 @@ class MarketDataServiceV2:
             保存结果字典
         """
         try:
+            if symbol and timeframe in {"今日", "1"}:
+                return self._fetch_and_save_openstock_fund_flow(symbol)
+
             # 1. 从东方财富获取数据
             df = self.em_adapter.get_stock_fund_flow(symbol, timeframe)
 
@@ -265,6 +268,57 @@ class MarketDataServiceV2:
         except Exception as e:
             logger.error("获取资金流向失败: %(e)s")
             return {"success": False, "message": str(e)}
+
+    def _fetch_and_save_openstock_fund_flow(self, symbol: str) -> Dict[str, Any]:
+        records = self._fetch_openstock_records("FUND_FLOW", params={"symbol": symbol})
+
+        if not records:
+            return {"success": False, "message": "未获取到数据"}
+
+        db = self.SessionLocal()
+        try:
+            today = datetime.now().date()
+            saved_count = 0
+
+            for row in records:
+                trade_date = self._record_date(self._record_value(row, "trade_date", default=None), today)
+                fund_flow = FundFlow(
+                    symbol=self._record_value(row, "symbol", default=symbol),
+                    trade_date=trade_date,
+                    timeframe="1",
+                    main_net_inflow=self._record_value(row, "main_net_inflow"),
+                    main_net_inflow_rate=self._record_value(row, "main_net_inflow_ratio"),
+                    super_large_net_inflow=self._record_value(row, "super_large_net_inflow"),
+                    large_net_inflow=self._record_value(row, "large_net_inflow"),
+                    medium_net_inflow=self._record_value(row, "medium_net_inflow"),
+                    small_net_inflow=self._record_value(row, "small_net_inflow"),
+                )
+
+                existing = (
+                    db.query(FundFlow)
+                    .filter(
+                        and_(
+                            FundFlow.symbol == fund_flow.symbol,
+                            FundFlow.trade_date == fund_flow.trade_date,
+                            FundFlow.timeframe == fund_flow.timeframe,
+                        )
+                    )
+                    .first()
+                )
+
+                if not existing:
+                    db.add(fund_flow)
+                    saved_count += 1
+
+            db.commit()
+            logger.info("保存资金流向数据成功: %(saved_count)s条")
+            return {
+                "success": True,
+                "message": f"保存成功: {saved_count}条",
+                "saved": saved_count,
+            }
+        finally:
+            db.close()
 
     def query_fund_flow(
         self,

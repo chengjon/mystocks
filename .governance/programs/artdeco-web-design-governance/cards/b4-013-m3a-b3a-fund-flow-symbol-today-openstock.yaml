@@ -1,0 +1,27 @@
+task:
+  id: "b4-013-m3a-b3a-fund-flow-symbol-today-openstock"
+  title: "B4.013-M3a-B3a FUND_FLOW symbol today OpenStock migration"
+
+scope:
+  allowed_paths:
+    - "web/backend/app/services/market_data_service_v2.py"
+    - "web/backend/tests/services/test_market_data_service_v2_openstock_refresh.py"
+    - "docs/reports/worklogs/claude-auto/b4-013-m3a-b3a-fund-flow-symbol-today-openstock-closeout-2026-06-18.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not modify web/backend/app/api/market_v2.py or any route/API path."
+  - "Do not modify OpenStock repository or add provider/data-source logic to MyStocks."
+  - "Do not implement symbol=None all-market refresh or 3/5/10-day aggregate semantics."
+  - "Do not touch frontend, stores, OpenSpec, ST-HOLD, marketKlineData, BaseLayout, or external dirty files."
+
+acceptance:
+  commit_gate:
+    - "TDD red-green for FUND_FLOW symbol/today refresh; py_compile, ruff, focused pytest, GitNexus verify/detect, OPENDOG fresh."
+  closeout_gate:
+    - "Closeout worklog records field mapping, unsupported legacy slice, verification evidence, and exact staged files."
+
+evidence:
+  current_head: "084930709fa9a2f66f440a255f2a762d20231530"
+  notes: []

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-18T02:36:20.468Z",
+  "updated_at": "2026-06-18T09:09:26.785Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -285,6 +285,44 @@
     },
     {
       "program": "artdeco-web-design-governance",
+      "id": "b4-013-m3a-b3-fund-flow-refresh-openstock-audit",
+      "title": "B4.013-M3a-B3 FUND_FLOW refresh OpenStock boundary audit",
+      "node_type": "decision",
+      "owner_lane": "backend",
+      "parent": "b4-013-m3a-b-market-v2-refresh-openstock-mapping",
+      "status": "decision-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "prepare authorization",
+      "function_tree_ref": "FUNCTION_TREE:B4.013 runtime mainline bring-up/OpenStock consumer contract",
+      "freshness": "current-head",
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-18T02:36:20.454Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-013-m3a-b3a-fund-flow-symbol-today-openstock",
+      "title": "B4.013-M3a-B3a FUND_FLOW symbol today OpenStock migration",
+      "node_type": "implementation",
+      "owner_lane": "backend",
+      "parent": "b4-013-m3a-b3-fund-flow-refresh-openstock-audit",
+      "status": "implementation-ready",
+      "source_edits_authorized": true,
+      "current_blocker": "",
+      "next_allowed": "land implementation with Git evidence",
+      "function_tree_ref": "FUNCTION_TREE:B4.013 OpenStock consumer FUND_FLOW refresh",
+      "freshness": "current-head",
+      "allowed_paths": [
+        "web/backend/app/services/market_data_service_v2.py",
+        "web/backend/tests/services/test_market_data_service_v2_openstock_refresh.py",
+        "docs/reports/worklogs/claude-auto/b4-013-m3a-b3a-fund-flow-symbol-today-openstock-closeout-2026-06-18.md"
+      ],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-18T08:57:35.367Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
       "id": "b4-013-runtime-mainline-bring-up",
       "title": "B4.013 Runtime mainline bring-up governance adoption",
       "node_type": "implementation",
@@ -312,24 +350,7 @@
         "docs/reports/worklogs/claude-auto/b4-013-m0-runtime-mainline-no-source-audit-2026-06-16.md"
       ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-17T18:43:10.164Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-013-m3a-b3-fund-flow-refresh-openstock-audit",
-      "title": "B4.013-M3a-B3 FUND_FLOW refresh OpenStock boundary audit",
-      "node_type": "decision",
-      "owner_lane": "backend",
-      "parent": "b4-013-m3a-b-market-v2-refresh-openstock-mapping",
-      "status": "decision-prepared",
-      "source_edits_authorized": false,
-      "current_blocker": "",
-      "next_allowed": "prepare authorization",
-      "function_tree_ref": "FUNCTION_TREE:B4.013 runtime mainline bring-up/OpenStock consumer contract",
-      "freshness": "current-head",
-      "allowed_paths": [],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-18T02:36:20.454Z"
+      "updated_at": "2026-06-18T09:09:26.771Z"
     }
   ]
 }

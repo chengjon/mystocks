@@ -17,7 +17,8 @@
 | artdeco-web-design-governance | b4-013-m1e3-openstock-consumer-openspec-proposal | decision-prepared | - | prepare authorization | b4-013-runtime-mainline-bring-up |
 | artdeco-web-design-governance | b4-013-m2e3-openstock-category-coverage-audit | decision-prepared | - | prepare decision or authorization | b4-013-runtime-mainline-bring-up |
 | artdeco-web-design-governance | b4-013-m2e4-openstock-contract-gap-handoff | decision-prepared | - | prepare decision or authorization | b4-013-runtime-mainline-bring-up |
-| artdeco-web-design-governance | b4-013-runtime-mainline-bring-up | approved-for-implementation | - | prepare decision or authorization | docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance |
 | artdeco-web-design-governance | b4-013-m3a-b3-fund-flow-refresh-openstock-audit | decision-prepared | - | prepare authorization | FUNCTION_TREE:B4.013 runtime mainline bring-up/OpenStock consumer contract |
+| artdeco-web-design-governance | b4-013-m3a-b3a-fund-flow-symbol-today-openstock | implementation-ready | - | land implementation with Git evidence | FUNCTION_TREE:B4.013 OpenStock consumer FUND_FLOW refresh |
+| artdeco-web-design-governance | b4-013-runtime-mainline-bring-up | approved-for-implementation | - | prepare decision or authorization | docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance |
 
 _Generated from `.governance/active-gates.json`._

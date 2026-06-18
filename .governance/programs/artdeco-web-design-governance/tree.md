@@ -107,3 +107,4 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-013-m3a-b-market-v2-refresh-openstock-mapping: B4.013-M3a-B market_v2 refresh OpenStock mapping (planning, FT: b4-013-runtime-mainline-bring-up)
 - [ ] b4-013-m3a-b2-blocktrade-dragon-tiger-refresh-openstock: B4.013-M3a-B2 block trade and dragon tiger OpenStock refresh migration (planning, FT: b4-013-runtime-mainline-bring-up)
 - [ ] b4-013-m3a-b3-fund-flow-refresh-openstock-audit: B4.013-M3a-B3 FUND_FLOW refresh OpenStock boundary audit (planning, FT: FUNCTION_TREE:B4.013 runtime mainline bring-up/OpenStock consumer contract)
+- [ ] b4-013-m3a-b3a-fund-flow-symbol-today-openstock: B4.013-M3a-B3a FUND_FLOW symbol today OpenStock migration (planning, FT: FUNCTION_TREE:B4.013 OpenStock consumer FUND_FLOW refresh)

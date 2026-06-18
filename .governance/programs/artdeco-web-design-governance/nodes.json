@@ -10720,7 +10720,7 @@
     "parent": "",
     "status": "approved-for-implementation",
     "function_tree_ref": "docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance",
-    "current_head": "677ba4096fcf2f399ad89a7712755422d782b152",
+    "current_head": "084930709fa9a2f66f440a255f2a762d20231530",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -10940,6 +10940,13 @@
         "note": "Refreshed parent baseline after ETF_SPOT closeout commit.",
         "current_head": "677ba4096fcf2f399ad89a7712755422d782b152",
         "recorded_at": "2026-06-17T18:43:10.164Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "git HEAD 084930709fa9a2f66f440a255f2a762d20231530 before B4.013-M3a-B3a FUND_FLOW implementation commit",
+        "note": "Refreshed parent runtime mainline evidence before committing B3a FUND_FLOW symbol/today OpenStock migration.",
+        "current_head": "084930709fa9a2f66f440a255f2a762d20231530",
+        "recorded_at": "2026-06-18T09:09:26.771Z"
       }
     ],
     "allowed_paths": [
@@ -10965,7 +10972,7 @@
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T15:45:14.131Z",
-    "updated_at": "2026-06-17T18:43:10.164Z",
+    "updated_at": "2026-06-18T09:09:26.771Z",
     "acceptance": {
       "commit_gate": [
         "openspec validate adopt-mainline-alignment-governance --strict",
@@ -12422,5 +12429,74 @@
         "transitioned_at": "2026-06-18T02:36:20.453Z"
       }
     ]
+  },
+  {
+    "id": "b4-013-m3a-b3a-fund-flow-symbol-today-openstock",
+    "title": "B4.013-M3a-B3a FUND_FLOW symbol today OpenStock migration",
+    "node_type": "implementation",
+    "owner_lane": "backend",
+    "parent": "b4-013-m3a-b3-fund-flow-refresh-openstock-audit",
+    "status": "implementation-ready",
+    "function_tree_ref": "FUNCTION_TREE:B4.013 OpenStock consumer FUND_FLOW refresh",
+    "current_head": "084930709fa9a2f66f440a255f2a762d20231530",
+    "freshness": "current-head",
+    "source_edits_authorized": true,
+    "evidence": [
+      {
+        "kind": "source-authorization-input",
+        "path": "docs/reports/worklogs/claude-auto/b4-013-m3a-b3-fund-flow-refresh-openstock-boundary-audit-2026-06-18.md",
+        "note": "User replied '同意，请继续' after B3 audit recommended source-authorized B3a service/test slice.",
+        "current_head": "084930709fa9a2f66f440a255f2a762d20231530",
+        "recorded_at": "2026-06-18T08:57:17.576Z"
+      }
+    ],
+    "allowed_paths": [
+      "web/backend/app/services/market_data_service_v2.py",
+      "web/backend/tests/services/test_market_data_service_v2_openstock_refresh.py",
+      "docs/reports/worklogs/claude-auto/b4-013-m3a-b3a-fund-flow-symbol-today-openstock-closeout-2026-06-18.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not modify web/backend/app/api/market_v2.py or any route/API path.",
+      "Do not modify OpenStock repository or add provider/data-source logic to MyStocks.",
+      "Do not implement symbol=None all-market refresh or 3/5/10-day aggregate semantics.",
+      "Do not touch frontend, stores, OpenSpec, ST-HOLD, marketKlineData, BaseLayout, or external dirty files."
+    ],
+    "next_gate": "land implementation with Git evidence",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-18T08:57:17.510Z",
+    "updated_at": "2026-06-18T08:57:35.367Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "",
+        "current_head": "084930709fa9a2f66f440a255f2a762d20231530",
+        "transitioned_at": "2026-06-18T08:57:17.639Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "084930709fa9a2f66f440a255f2a762d20231530",
+        "transitioned_at": "2026-06-18T08:57:35.291Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "084930709fa9a2f66f440a255f2a762d20231530",
+        "transitioned_at": "2026-06-18T08:57:35.367Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "TDD red-green for FUND_FLOW symbol/today refresh; py_compile, ruff, focused pytest, GitNexus verify/detect, OPENDOG fresh."
+      ],
+      "closeout_gate": [
+        "Closeout worklog records field mapping, unsupported legacy slice, verification evidence, and exact staged files."
+      ]
+    }
   }
 ]

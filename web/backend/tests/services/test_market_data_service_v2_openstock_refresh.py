@@ -14,6 +14,9 @@ from web.backend.app.services.openstock_client import OpenStockFetchResult
 
 
 class _FailingEastMoneyAdapter:
+    def get_stock_fund_flow(self, *_args, **_kwargs):
+        raise AssertionError("EastMoney fund flow provider should not be called")
+
     def get_etf_spot(self):
         raise AssertionError("EastMoney ETF provider should not be called")
 
@@ -248,3 +251,57 @@ async def test_fetch_and_save_lhb_detail_consumes_openstock_without_local_provid
     assert saved.turnover_rate == 3.4
     assert saved.institution_buy is None
     assert saved.institution_sell is None
+
+
+@pytest.mark.asyncio
+async def test_fetch_and_save_fund_flow_symbol_today_consumes_openstock_without_local_provider():
+    openstock_client = _FakeOpenStockClient(
+        [
+            {
+                "symbol": "000001",
+                "trade_date": "2026-06-17",
+                "main_net_inflow": 1000.5,
+                "main_net_inflow_ratio": 1.25,
+                "super_large_net_inflow": 900.0,
+                "large_net_inflow": 700.0,
+                "medium_net_inflow": -50.0,
+                "small_net_inflow": -100.0,
+            }
+        ]
+    )
+    session = _FakeSession()
+
+    service = MarketDataServiceV2()
+    service.em_adapter = _FailingEastMoneyAdapter()
+    service.SessionLocal = lambda: session
+    service._openstock_client_factory = lambda: openstock_client
+
+    result = service.fetch_and_save_fund_flow("000001", "今日")
+
+    assert result == {
+        "success": True,
+        "message": "保存成功: 1条",
+        "saved": 1,
+    }
+    assert openstock_client.fetch_calls == [
+        {
+            "data_category": "FUND_FLOW",
+            "params": {"symbol": "000001"},
+            "request_id": None,
+        }
+    ]
+    assert openstock_client.closed is True
+    assert session.committed is True
+    assert session.closed is True
+    assert len(session.added) == 1
+
+    saved = session.added[0]
+    assert saved.symbol == "000001"
+    assert saved.trade_date == date(2026, 6, 17)
+    assert saved.timeframe == "1"
+    assert saved.main_net_inflow == 1000.5
+    assert saved.main_net_inflow_rate == 1.25
+    assert saved.super_large_net_inflow == 900.0
+    assert saved.large_net_inflow == 700.0
+    assert saved.medium_net_inflow == -50.0
+    assert saved.small_net_inflow == -100.0
