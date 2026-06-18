@@ -12629,9 +12629,9 @@
     "node_type": "decision",
     "owner_lane": "backend",
     "parent": "b4-013-m3a-b-market-v2-refresh-openstock-mapping",
-    "status": "decision-prepared",
+    "status": "authorization-prepared",
     "function_tree_ref": "b4-013-m3a-b4-sector-fund-flow-readiness-audit",
-    "current_head": "8946e165ce41b117ac7bf9aa9d65de10ff6842e0",
+    "current_head": "4ddc2d6a6b479cfd213fd5927b687392d531b218",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -12641,16 +12641,28 @@
         "note": "SECTOR_FUND_FLOW readiness matrix and B4a source-slice recommendation recorded",
         "current_head": "8946e165ce41b117ac7bf9aa9d65de10ff6842e0",
         "recorded_at": "2026-06-18T14:09:49.517Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-013-m3a-b4a-sector-fund-flow-implementation-authorization-2026-06-18.md",
+        "note": "Prepared B4a source authorization draft with sector_code compatibility policy and limited allowed paths",
+        "current_head": "4ddc2d6a6b479cfd213fd5927b687392d531b218",
+        "recorded_at": "2026-06-18T14:44:24.081Z"
       }
     ],
-    "allowed_paths": [],
+    "allowed_paths": [
+      "web/backend/app/services/market_data_service_v2.py",
+      "web/backend/tests/services/test_market_data_service_v2_openstock_refresh.py"
+    ],
     "forbidden_paths": [],
-    "non_goals": [],
-    "next_gate": "prepare authorization",
+    "non_goals": [
+      "Do not modify routes, models, OpenStock repo, or query/read-model behavior."
+    ],
+    "next_gate": "prepare decision or authorization",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-18T14:07:08.756Z",
-    "updated_at": "2026-06-18T14:10:18.258Z",
+    "updated_at": "2026-06-18T14:44:24.081Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -12659,6 +12671,14 @@
         "current_head": "8946e165ce41b117ac7bf9aa9d65de10ff6842e0",
         "transitioned_at": "2026-06-18T14:10:18.258Z"
       }
-    ]
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "python -m py_compile web/backend/app/services/market_data_service_v2.py web/backend/tests/services/test_market_data_service_v2_openstock_refresh.py && python -m ruff check web/backend/app/services/market_data_service_v2.py web/backend/tests/services/test_market_data_service_v2_openstock_refresh.py && python -m pytest web/backend/tests/services/test_market_data_service_v2_openstock_refresh.py web/backend/tests/services/test_market_data_service_v2_runtime_fallback.py tests/backend/test_openstock_client.py -q --no-cov"
+      ],
+      "closeout_gate": [
+        "Limited SECTOR_FUND_FLOW consumer migration preserves 3日 legacy compatibility and records the sector_code compatibility decision."
+      ]
+    }
   }
 ]
