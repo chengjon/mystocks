@@ -110,3 +110,4 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-013-m3a-b3a-fund-flow-symbol-today-openstock: B4.013-M3a-B3a FUND_FLOW symbol today OpenStock migration (planning, FT: FUNCTION_TREE:B4.013 OpenStock consumer FUND_FLOW refresh)
 - [ ] b4-013-m3a-b3b-fund-flow-all-market-multi-day-decision: B4.013-M3a-B3b FUND_FLOW all-market and multi-day contract decision (planning, FT: FUNCTION_TREE:B4.013 OpenStock consumer FUND_FLOW legacy compatibility decision)
 - [ ] b4-013-m3a-b4-sector-fund-flow-readiness-audit: B4.013-M3a-B4 SECTOR_FUND_FLOW readiness audit (planning, FT: b4-013-m3a-b4-sector-fund-flow-readiness-audit)
+- [ ] b4-013-m3a-b5-query-runtime-fallback-cleanup: B4.013-M3a-B5 Query runtime fallback cleanup no-source audit (planning, FT: b4-013-runtime-mainline-bring-up)

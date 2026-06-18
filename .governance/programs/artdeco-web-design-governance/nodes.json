@@ -12724,5 +12724,43 @@
       "current_head": "cda3c360b87ca0ae281c372f231fe4631b7823f2",
       "prepared_at": "2026-06-18T15:23:49.673Z"
     }
+  },
+  {
+    "id": "b4-013-m3a-b5-query-runtime-fallback-cleanup",
+    "title": "B4.013-M3a-B5 Query runtime fallback cleanup no-source audit",
+    "node_type": "decision",
+    "owner_lane": "runtime-mainline",
+    "parent": "b4-013-runtime-mainline-bring-up",
+    "status": "decision-prepared",
+    "function_tree_ref": "b4-013-runtime-mainline-bring-up",
+    "current_head": "6a8a2881246e602c57d7bcab6a1e4a99140bb394",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "structural",
+        "path": "docs/reports/worklogs/claude-auto/b4-013-m3a-b5-query-runtime-fallback-cleanup-no-source-audit-2026-06-18.md",
+        "note": "No-source query runtime fallback cleanup boundary audit; source edits remain unauthorized.",
+        "current_head": "6a8a2881246e602c57d7bcab6a1e4a99140bb394",
+        "recorded_at": "2026-06-18T15:41:12.854Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-18T15:38:26.069Z",
+    "updated_at": "2026-06-18T15:41:29.095Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "",
+        "current_head": "6a8a2881246e602c57d7bcab6a1e4a99140bb394",
+        "transitioned_at": "2026-06-18T15:41:29.095Z"
+      }
+    ]
   }
 ]
