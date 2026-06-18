@@ -153,6 +153,55 @@ class MarketDataServiceV2:
         timeframe: str,
         limit: int,
     ) -> List[Dict[str, Any]]:
+        openstock_params = self._openstock_sector_fund_flow_params(sector_type, timeframe)
+        if openstock_params is not None:
+            today = datetime.now().date().isoformat()
+            rows: List[Dict[str, Any]] = []
+            for row in self._fetch_openstock_records("SECTOR_FUND_FLOW", params=openstock_params)[:limit]:
+                sector_name = self._record_value(row, "sector_name", "name", default=None)
+                sector_code = self._record_value(row, "sector_code", default=sector_name)
+                if not sector_code or not sector_name:
+                    continue
+                rows.append(
+                    {
+                        "id": None,
+                        "sector_code": sector_code,
+                        "sector_name": sector_name,
+                        "sector_type": sector_type,
+                        "trade_date": today,
+                        "timeframe": timeframe,
+                        "latest_price": self._record_value(row, "latest_price", "price"),
+                        "change_percent": self._record_value(row, "change_percent", "change_pct", "pct_chg"),
+                        "main_net_inflow": self._record_value(row, "main_net_inflow"),
+                        "main_net_inflow_rate": self._record_value(row, "main_net_inflow_rate", "main_net_inflow_ratio"),
+                        "super_large_net_inflow": self._record_value(row, "super_large_net_inflow"),
+                        "super_large_net_inflow_rate": self._record_value(
+                            row,
+                            "super_large_net_inflow_rate",
+                            "super_large_net_inflow_ratio",
+                        ),
+                        "large_net_inflow": self._record_value(row, "large_net_inflow"),
+                        "large_net_inflow_rate": self._record_value(row, "large_net_inflow_rate", "large_net_inflow_ratio"),
+                        "medium_net_inflow": self._record_value(row, "medium_net_inflow"),
+                        "medium_net_inflow_rate": self._record_value(
+                            row,
+                            "medium_net_inflow_rate",
+                            "medium_net_inflow_ratio",
+                        ),
+                        "small_net_inflow": self._record_value(row, "small_net_inflow"),
+                        "small_net_inflow_rate": self._record_value(row, "small_net_inflow_rate", "small_net_inflow_ratio"),
+                        "leading_stock": self._record_value(row, "leading_stock", "leading_name", default=None),
+                        "leading_stock_change_percent": self._record_value(
+                            row,
+                            "leading_stock_change_percent",
+                            "leading_change_percent",
+                            default=0,
+                        ),
+                        "created_at": None,
+                    }
+                )
+            return rows
+
         df = self.em_adapter.get_sector_fund_flow(sector_type, timeframe)
 
         if df.empty:
