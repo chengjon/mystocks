@@ -10720,7 +10720,7 @@
     "parent": "",
     "status": "approved-for-implementation",
     "function_tree_ref": "docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance",
-    "current_head": "084930709fa9a2f66f440a255f2a762d20231530",
+    "current_head": "af96c1f622557fd984e77ef3bad7000a5b432efb",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -10947,6 +10947,13 @@
         "note": "Refreshed parent runtime mainline evidence before committing B3a FUND_FLOW symbol/today OpenStock migration.",
         "current_head": "084930709fa9a2f66f440a255f2a762d20231530",
         "recorded_at": "2026-06-18T09:09:26.771Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "git HEAD af96c1f622557fd984e77ef3bad7000a5b432efb after B4.013-M3a-B3a FUND_FLOW symbol refresh implementation",
+        "note": "Refreshed parent runtime mainline evidence after B3a FUND_FLOW implementation commit before closeout.",
+        "current_head": "af96c1f622557fd984e77ef3bad7000a5b432efb",
+        "recorded_at": "2026-06-18T09:22:46.545Z"
       }
     ],
     "allowed_paths": [
@@ -10972,7 +10979,7 @@
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T15:45:14.131Z",
-    "updated_at": "2026-06-18T09:09:26.771Z",
+    "updated_at": "2026-06-18T09:22:46.545Z",
     "acceptance": {
       "commit_gate": [
         "openspec validate adopt-mainline-alignment-governance --strict",
@@ -12436,11 +12443,11 @@
     "node_type": "implementation",
     "owner_lane": "backend",
     "parent": "b4-013-m3a-b3-fund-flow-refresh-openstock-audit",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "FUNCTION_TREE:B4.013 OpenStock consumer FUND_FLOW refresh",
     "current_head": "084930709fa9a2f66f440a255f2a762d20231530",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "source-authorization-input",
@@ -12462,11 +12469,11 @@
       "Do not implement symbol=None all-market refresh or 3/5/10-day aggregate semantics.",
       "Do not touch frontend, stores, OpenSpec, ST-HOLD, marketKlineData, BaseLayout, or external dirty files."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-18T08:57:17.510Z",
-    "updated_at": "2026-06-18T08:57:35.367Z",
+    "updated_at": "2026-06-18T09:21:43.452Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -12488,6 +12495,20 @@
         "note": "",
         "current_head": "084930709fa9a2f66f440a255f2a762d20231530",
         "transitioned_at": "2026-06-18T08:57:35.367Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Implementation committed as af96c1f62 B4.013-M3a-B3a: migrate FUND_FLOW symbol refresh.",
+        "current_head": "af96c1f622557fd984e77ef3bad7000a5b432efb",
+        "transitioned_at": "2026-06-18T09:20:59.976Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "B3a implementation and closeout evidence recorded; node closed.",
+        "current_head": "af96c1f622557fd984e77ef3bad7000a5b432efb",
+        "transitioned_at": "2026-06-18T09:21:43.452Z"
       }
     ],
     "acceptance": {
@@ -12497,6 +12518,15 @@
       "closeout_gate": [
         "Closeout worklog records field mapping, unsupported legacy slice, verification evidence, and exact staged files."
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-013-m3a-b3a-fund-flow-symbol-today-openstock-closeout-2026-06-18.md",
+      "compatibility": "Public MyStocks routes unchanged; only symbol/today FUND_FLOW refresh consumes OpenStock; symbol=None and multi-day legacy slices remain deferred to B3b.",
+      "gates": [
+        "py_compile pass; ruff pass; focused pytest 16 passed; GitNexus post-commit analyze pass; OPENDOG fresh."
+      ],
+      "current_head": "af96c1f622557fd984e77ef3bad7000a5b432efb",
+      "prepared_at": "2026-06-18T09:21:00.047Z"
     }
   }
 ]
