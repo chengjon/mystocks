@@ -12298,11 +12298,11 @@
     "node_type": "implementation",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-013-m3a-b-market-v2-refresh-openstock-mapping",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "b4-013-runtime-mainline-bring-up",
     "current_head": "5e958e42dd7bdc50f95e48eb1b39f1ef95b4d52b",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "baseline",
@@ -12326,11 +12326,11 @@
     "non_goals": [
       "No route edits, no provider SDK calls, no OpenStock repository edits, no frontend/store/API path changes, no query fallback cleanup, no changes to externally dirty market_v2.py, no ST-HOLD or marketKlineData changes."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-17T23:47:10.896Z",
-    "updated_at": "2026-06-17T23:47:47.130Z",
+    "updated_at": "2026-06-18T00:06:30.410Z",
     "acceptance": {
       "commit_gate": [
         "GitNexus verify-staged and detect-changes pass with only authorized files staged.",
@@ -12355,7 +12355,34 @@
         "note": "Starting TDD implementation for BLOCK_TRADE and DRAGON_TIGER date-based refresh migration.",
         "current_head": "5e958e42dd7bdc50f95e48eb1b39f1ef95b4d52b",
         "transitioned_at": "2026-06-17T23:47:47.130Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Implementation committed as ce1a0b005; GitNexus analyze refreshed 222630 nodes, 279576 edges, 2929 clusters, 300 flows.",
+        "current_head": "ce1a0b005efb62ff02cc6cdd54521486bd32ffd5",
+        "transitioned_at": "2026-06-18T00:05:30.724Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "B4.013-M3a-B2 implementation and closeout complete; residual provider availability remains OpenStock-owned.",
+        "current_head": "ce1a0b005efb62ff02cc6cdd54521486bd32ffd5",
+        "transitioned_at": "2026-06-18T00:06:30.410Z"
       }
-    ]
+    ],
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-013-m3a-b2-blocktrade-dragon-tiger-refresh-closeout-2026-06-18.md",
+      "compatibility": "Public MyStocks refresh service methods remain synchronous and route-compatible; acquisition now goes through backend OpenStock consumer categories BLOCK_TRADE and DRAGON_TIGER.",
+      "gates": [
+        "py_compile passed",
+        "ruff passed",
+        "focused pytest passed: OpenStock refresh 3/3 and related consumer suite 15/15",
+        "GitNexus verify-staged and detect-changes risk low",
+        "OPENDOG recorded latest build/lint/test passing evidence"
+      ],
+      "current_head": "ce1a0b005efb62ff02cc6cdd54521486bd32ffd5",
+      "prepared_at": "2026-06-18T00:06:19.716Z"
+    }
   }
 ]
