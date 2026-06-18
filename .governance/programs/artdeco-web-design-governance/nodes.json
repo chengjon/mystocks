@@ -10718,9 +10718,9 @@
     "node_type": "implementation",
     "owner_lane": "mainline",
     "parent": "",
-    "status": "approved-for-implementation",
+    "status": "implementation-landed",
     "function_tree_ref": "docs/FUNCTION_TREE.md#cross-domain-runtime-mainline-governance",
-    "current_head": "8946e165ce41b117ac7bf9aa9d65de10ff6842e0",
+    "current_head": "e8738decae2b7c0bbf4f50071076bd03133c0fe0",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -10968,6 +10968,13 @@
         "note": "Refreshed parent runtime mainline evidence after B3b closeout; no source edits authorized.",
         "current_head": "8946e165ce41b117ac7bf9aa9d65de10ff6842e0",
         "recorded_at": "2026-06-18T14:12:41.669Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "git HEAD e8738decae2b7c0bbf4f50071076bd03133c0fe0 after B4.013-M3a-B4 no-source readiness audit commit",
+        "note": "Refresh parent runtime governance head before landing historical implementation authorization; child packages continue with independent authorization.",
+        "current_head": "e8738decae2b7c0bbf4f50071076bd03133c0fe0",
+        "recorded_at": "2026-06-18T14:25:21.442Z"
       }
     ],
     "allowed_paths": [
@@ -10989,11 +10996,11 @@
     "non_goals": [
       "No source, runtime, test, API, route, store, UI, PM2, marketKlineData, ST-HOLD, or external dirty-file changes."
     ],
-    "next_gate": "prepare decision or authorization",
+    "next_gate": "prepare closeout",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T15:45:14.131Z",
-    "updated_at": "2026-06-18T14:12:41.669Z",
+    "updated_at": "2026-06-18T14:25:21.579Z",
     "acceptance": {
       "commit_gate": [
         "openspec validate adopt-mainline-alignment-governance --strict",
@@ -11010,6 +11017,20 @@
         "note": "User approved B4.013-GOV-M1 governance adoption implementation after validated M0 proposal.",
         "current_head": "c7c2eb74fbc9a87658459321284f252923b09a7a",
         "transitioned_at": "2026-06-15T15:45:53.906Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Historical governance adoption package is ready to land; no current source edits authorized by this parent node.",
+        "current_head": "e8738decae2b7c0bbf4f50071076bd03133c0fe0",
+        "transitioned_at": "2026-06-18T14:25:21.507Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Parent governance adoption landed; B4.013 child work proceeds through independent no-source/source authorization nodes.",
+        "current_head": "e8738decae2b7c0bbf4f50071076bd03133c0fe0",
+        "transitioned_at": "2026-06-18T14:25:21.578Z"
       }
     ]
   },
