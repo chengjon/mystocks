@@ -11256,9 +11256,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-013-runtime-mainline-bring-up",
-    "status": "decision-prepared",
+    "status": "archived",
     "function_tree_ref": "B4.013-M1-C",
-    "current_head": "4bbb3ded11119fe5a9a38fadebf6e40e3591f616",
+    "current_head": "35501309408d041cd030baba8e97ffb83d24cb1c",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -11268,16 +11268,23 @@
         "note": "B4.013-M1-C no-source live audit: primary navigation default routes render after verification-ladder reruns; no confirmed P0 blank route remains; dashboard aggregate data/provenance remains pending and is the next mainline candidate.",
         "current_head": "4bbb3ded11119fe5a9a38fadebf6e40e3591f616",
         "recorded_at": "2026-06-16T03:05:14.808Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-013-m1c-mainline-route-runtime-blockers-fresh-review-2026-06-19.md",
+        "note": "Fresh PM2 business smoke review: 55/55 passed, no current P0 route-runtime blocker confirmed; archive node as absorbed by B4.013 parent/mainline slices, no source authorization needed.",
+        "current_head": "35501309408d041cd030baba8e97ffb83d24cb1c",
+        "recorded_at": "2026-06-18T18:50:24.439Z"
       }
     ],
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-16T02:44:52.422Z",
-    "updated_at": "2026-06-16T03:05:14.867Z",
+    "updated_at": "2026-06-18T18:50:24.502Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -11285,6 +11292,13 @@
         "note": "",
         "current_head": "4bbb3ded11119fe5a9a38fadebf6e40e3591f616",
         "transitioned_at": "2026-06-16T03:05:14.867Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "archived",
+        "note": "Archived after fresh no-source review; no P0 route blocker remains and node should not proceed to source authorization.",
+        "current_head": "35501309408d041cd030baba8e97ffb83d24cb1c",
+        "transitioned_at": "2026-06-18T18:50:24.502Z"
       }
     ]
   },
