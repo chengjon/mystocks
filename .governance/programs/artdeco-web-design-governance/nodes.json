@@ -12384,5 +12384,43 @@
       "current_head": "ce1a0b005efb62ff02cc6cdd54521486bd32ffd5",
       "prepared_at": "2026-06-18T00:06:19.716Z"
     }
+  },
+  {
+    "id": "b4-013-m3a-b3-fund-flow-refresh-openstock-audit",
+    "title": "B4.013-M3a-B3 FUND_FLOW refresh OpenStock boundary audit",
+    "node_type": "decision",
+    "owner_lane": "backend",
+    "parent": "b4-013-m3a-b-market-v2-refresh-openstock-mapping",
+    "status": "decision-prepared",
+    "function_tree_ref": "FUNCTION_TREE:B4.013 runtime mainline bring-up/OpenStock consumer contract",
+    "current_head": "f90dee916e60470212178a624ac75cd4e540c0d4",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-013-m3a-b3-fund-flow-refresh-openstock-boundary-audit-2026-06-18.md",
+        "note": "",
+        "current_head": "f90dee916e60470212178a624ac75cd4e540c0d4",
+        "recorded_at": "2026-06-18T02:36:10.432Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-18T02:35:06.633Z",
+    "updated_at": "2026-06-18T02:36:20.454Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "",
+        "current_head": "f90dee916e60470212178a624ac75cd4e540c0d4",
+        "transitioned_at": "2026-06-18T02:36:20.453Z"
+      }
+    ]
   }
 ]
