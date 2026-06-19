@@ -9875,9 +9875,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-tests-residual-domain-audit",
-    "status": "blocked",
+    "status": "decision-prepared",
     "function_tree_ref": "B4.012-M3a-C",
-    "current_head": "29b080886b105485c24d10306a155424c0bade83",
+    "current_head": "188deee6916c617a997f60d5410d5331bc2202df",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -9894,16 +9894,23 @@
         "note": "C family residual no-source rebaseline after C1/C2/C3 closeout; 17 modified tracked candidates remain across C4/C5/C6 families.",
         "current_head": "29b080886b105485c24d10306a155424c0bade83",
         "recorded_at": "2026-06-15T03:07:48.166Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-c-adapter-data-source-tests-fresh-review-2026-06-19.md",
+        "note": "No-source fresh review after B4.013 closeout and M3a parent reactivation; restore adapter/data-source tests parent only with OpenStock boundary retained.",
+        "current_head": "188deee6916c617a997f60d5410d5331bc2202df",
+        "recorded_at": "2026-06-19T02:19:37.055Z"
       }
     ],
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "unblock to decision-prepared",
-    "blocker_reason": "B4.013 runtime-first mainline reset: residual cleanup/detail gate is paused until the active P0 mainline is runnable and separately reauthorized.",
-    "unblock_target_state": "decision-prepared",
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
     "created_at": "2026-06-14T07:29:56.581Z",
-    "updated_at": "2026-06-15T15:51:34.770Z",
+    "updated_at": "2026-06-19T02:19:37.139Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -9918,6 +9925,13 @@
         "note": "Paused by B4.013 mainline alignment governance adoption.",
         "current_head": "c7c2eb74fbc9a87658459321284f252923b09a7a",
         "transitioned_at": "2026-06-15T15:51:34.769Z"
+      },
+      {
+        "from": "blocked",
+        "to": "decision-prepared",
+        "note": "B4.013 runtime-first blocker removed for adapter/data-source tests parent; C1-C6 remain closed and new residual work requires separate authorization.",
+        "current_head": "188deee6916c617a997f60d5410d5331bc2202df",
+        "transitioned_at": "2026-06-19T02:19:37.139Z"
       }
     ]
   },

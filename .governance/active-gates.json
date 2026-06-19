@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-19T02:01:17.074Z",
+  "updated_at": "2026-06-19T02:19:37.156Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -58,25 +58,6 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-15T15:51:34.710Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-012-m3a-c-adapter-data-source-tests-split",
-      "title": "B4.012 M3a-C adapter and data-source tests no-source split",
-      "node_type": "decision",
-      "owner_lane": "artdeco-web-design-governance",
-      "parent": "b4-012-m3a-tests-residual-domain-audit",
-      "status": "blocked",
-      "source_edits_authorized": false,
-      "current_blocker": "B4.013 runtime-first mainline reset: residual cleanup/detail gate is paused until the active P0 mainline is runnable and separately reauthorized.",
-      "blocker_reason": "B4.013 runtime-first mainline reset: residual cleanup/detail gate is paused until the active P0 mainline is runnable and separately reauthorized.",
-      "unblock_target_state": "decision-prepared",
-      "next_allowed": "unblock to decision-prepared",
-      "function_tree_ref": "B4.012-M3a-C",
-      "freshness": "current-head",
-      "allowed_paths": [],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-15T15:51:34.770Z"
     },
     {
       "program": "artdeco-web-design-governance",
@@ -155,6 +136,23 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-19T02:01:17.064Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-012-m3a-c-adapter-data-source-tests-split",
+      "title": "B4.012 M3a-C adapter and data-source tests no-source split",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-012-m3a-tests-residual-domain-audit",
+      "status": "decision-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "prepare authorization",
+      "function_tree_ref": "B4.012-M3a-C",
+      "freshness": "current-head",
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-19T02:19:37.139Z"
     }
   ]
 }
