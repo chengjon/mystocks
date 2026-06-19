@@ -9941,9 +9941,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-tests-residual-domain-audit",
-    "status": "blocked",
+    "status": "decision-prepared",
     "function_tree_ref": "B4.012-M3a-D",
-    "current_head": "cf1431f1fa93879b50be8ff0983bd5f0ff0dc2a1",
+    "current_head": "aae6b6bed47abdbb63ad4277f5487cf802f87437",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -9953,16 +9953,23 @@
         "note": "M3a-D no-source split: 8 tracked E2E/frontend/UI candidates, API/backend/runtime/untracked overlaps routed to existing packages.",
         "current_head": "cf1431f1fa93879b50be8ff0983bd5f0ff0dc2a1",
         "recorded_at": "2026-06-14T07:33:55.862Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-d-e2e-frontend-tests-fresh-review-2026-06-19.md",
+        "note": "No-source fresh review after B4.013 closeout and M3a parent reactivation; restore E2E/frontend tests parent only.",
+        "current_head": "aae6b6bed47abdbb63ad4277f5487cf802f87437",
+        "recorded_at": "2026-06-19T02:47:37.446Z"
       }
     ],
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "unblock to decision-prepared",
-    "blocker_reason": "B4.013 runtime-first mainline reset: residual cleanup/detail gate is paused until the active P0 mainline is runnable and separately reauthorized.",
-    "unblock_target_state": "decision-prepared",
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
     "created_at": "2026-06-14T07:33:55.819Z",
-    "updated_at": "2026-06-15T15:51:34.596Z",
+    "updated_at": "2026-06-19T02:47:37.508Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -9977,6 +9984,13 @@
         "note": "Paused by B4.013 mainline alignment governance adoption.",
         "current_head": "c7c2eb74fbc9a87658459321284f252923b09a7a",
         "transitioned_at": "2026-06-15T15:51:34.596Z"
+      },
+      {
+        "from": "blocked",
+        "to": "decision-prepared",
+        "note": "B4.013 runtime-first blocker removed for E2E/frontend tests parent; D1 browser smoke remains blocked pending separate authorization refresh.",
+        "current_head": "aae6b6bed47abdbb63ad4277f5487cf802f87437",
+        "transitioned_at": "2026-06-19T02:47:37.507Z"
       }
     ]
   },
