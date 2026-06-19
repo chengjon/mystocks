@@ -11486,9 +11486,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-013-runtime-mainline-bring-up",
-    "status": "decision-prepared",
+    "status": "archived",
     "function_tree_ref": "B4.013-M1-E",
-    "current_head": "834663446cd3f4b87d5b7af2a51708df35470c19",
+    "current_head": "04826dcfa9df70d0df0764861ff1f197f396cca6",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -11498,16 +11498,23 @@
         "note": "OpenStock owns provider functionality; mystocks owns consumer integration and business data usage only.",
         "current_head": "834663446cd3f4b87d5b7af2a51708df35470c19",
         "recorded_at": "2026-06-16T04:42:11.292Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-013-m1e-openstock-boundary-family-fresh-review-2026-06-19.md",
+        "note": "Fresh family review: boundary reset is historical evidence; OpenSpec remains active separately; no MyStocks source authorization needed from this node.",
+        "current_head": "04826dcfa9df70d0df0764861ff1f197f396cca6",
+        "recorded_at": "2026-06-19T00:00:51.672Z"
       }
     ],
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-16T04:42:11.088Z",
-    "updated_at": "2026-06-16T04:42:11.344Z",
+    "updated_at": "2026-06-19T00:00:51.738Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -11515,6 +11522,13 @@
         "note": "No-source boundary decision prepared; source edits remain unauthorized pending OpenSpec-backed consumer integration proposal.",
         "current_head": "834663446cd3f4b87d5b7af2a51708df35470c19",
         "transitioned_at": "2026-06-16T04:42:11.343Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "archived",
+        "note": "Archived as boundary evidence absorbed by B4.013 parent closeout; not an active source authorization gate.",
+        "current_head": "04826dcfa9df70d0df0764861ff1f197f396cca6",
+        "transitioned_at": "2026-06-19T00:00:51.738Z"
       }
     ]
   },
@@ -11524,9 +11538,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-013-m1e-openstock-data-source-boundary-audit",
-    "status": "decision-prepared",
+    "status": "archived",
     "function_tree_ref": "b4-013-runtime-mainline-bring-up",
-    "current_head": "5304d6674a17f175e34580638fc651c25aff194e",
+    "current_head": "04826dcfa9df70d0df0764861ff1f197f396cca6",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -11536,16 +11550,23 @@
         "note": "B4.013-M1-E2 no-source audit maps OpenStock provider contracts to mystocks consumer and compatibility surfaces.",
         "current_head": "5304d6674a17f175e34580638fc651c25aff194e",
         "recorded_at": "2026-06-16T06:33:23.037Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-013-m1e-openstock-boundary-family-fresh-review-2026-06-19.md",
+        "note": "Fresh family review: consumer boundary mapping remains evidence for future OpenSpec/consumer packages, not an active source authorization gate.",
+        "current_head": "04826dcfa9df70d0df0764861ff1f197f396cca6",
+        "recorded_at": "2026-06-19T00:00:51.806Z"
       }
     ],
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-16T06:31:12.507Z",
-    "updated_at": "2026-06-16T06:33:35.351Z",
+    "updated_at": "2026-06-19T00:00:51.875Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -11553,6 +11574,13 @@
         "note": "",
         "current_head": "5304d6674a17f175e34580638fc651c25aff194e",
         "transitioned_at": "2026-06-16T06:33:35.351Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "archived",
+        "note": "Archived as consumer-boundary evidence absorbed by later B4.013 OpenStock consumer work.",
+        "current_head": "04826dcfa9df70d0df0764861ff1f197f396cca6",
+        "transitioned_at": "2026-06-19T00:00:51.875Z"
       }
     ]
   },
@@ -11562,9 +11590,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-013-m1e2-openstock-consumer-boundary-audit",
-    "status": "decision-prepared",
+    "status": "archived",
     "function_tree_ref": "b4-013-runtime-mainline-bring-up",
-    "current_head": "8c43b1c308d8c79dcae8b50af36a9da74a82f94e",
+    "current_head": "04826dcfa9df70d0df0764861ff1f197f396cca6",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -11574,16 +11602,23 @@
         "note": "B4.013-M1-E3 prepares OpenSpec change externalize-data-source-provider-to-openstock from the M1-E2 OpenStock consumer boundary audit.",
         "current_head": "8c43b1c308d8c79dcae8b50af36a9da74a82f94e",
         "recorded_at": "2026-06-16T07:28:47.059Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-013-m1e-openstock-boundary-family-fresh-review-2026-06-19.md",
+        "note": "Fresh family review: OpenSpec proposal remains active and valid separately; FUNCTION_TREE proposal-prep node should not remain an active authorization gate.",
+        "current_head": "04826dcfa9df70d0df0764861ff1f197f396cca6",
+        "recorded_at": "2026-06-19T00:00:51.938Z"
       }
     ],
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-16T07:26:33.493Z",
-    "updated_at": "2026-06-16T07:28:47.120Z",
+    "updated_at": "2026-06-19T00:00:52.007Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -11591,6 +11626,13 @@
         "note": "",
         "current_head": "8c43b1c308d8c79dcae8b50af36a9da74a82f94e",
         "transitioned_at": "2026-06-16T07:28:47.120Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "archived",
+        "note": "Archived as proposal-preparation evidence; OpenSpec change lifecycle is separate and not modified here.",
+        "current_head": "04826dcfa9df70d0df0764861ff1f197f396cca6",
+        "transitioned_at": "2026-06-19T00:00:52.007Z"
       }
     ]
   },
