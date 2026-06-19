@@ -9103,9 +9103,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3-residual-dirty-atlas-rebaseline",
-    "status": "blocked",
+    "status": "decision-prepared",
     "function_tree_ref": "B4.012-M3a",
-    "current_head": "6ab7c8acd7f0964096135708b61dccd068af05f7",
+    "current_head": "7f384fc57e51546dcfe73cdccaa053eee0c562ea",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -9122,16 +9122,23 @@
         "note": "B4.012-M3a no-source tests residual domain audit; canonical parent-linked node supersedes orphan duplicate.",
         "current_head": "6ab7c8acd7f0964096135708b61dccd068af05f7",
         "recorded_at": "2026-06-14T05:33:46.939Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-tests-residual-domain-fresh-review-2026-06-19.md",
+        "note": "No-source fresh review after B4.013 closeout and B4.012-M3 parent reactivation; restore tests residual domain parent only.",
+        "current_head": "7f384fc57e51546dcfe73cdccaa053eee0c562ea",
+        "recorded_at": "2026-06-19T01:41:37.730Z"
       }
     ],
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "unblock to decision-prepared",
-    "blocker_reason": "B4.013 runtime-first mainline reset: residual cleanup/detail gate is paused until the active P0 mainline is runnable and separately reauthorized.",
-    "unblock_target_state": "decision-prepared",
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
     "created_at": "2026-06-14T05:21:56.026Z",
-    "updated_at": "2026-06-15T15:51:34.478Z",
+    "updated_at": "2026-06-19T01:41:37.795Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -9146,6 +9153,13 @@
         "note": "Paused by B4.013 mainline alignment governance adoption.",
         "current_head": "c7c2eb74fbc9a87658459321284f252923b09a7a",
         "transitioned_at": "2026-06-15T15:51:34.478Z"
+      },
+      {
+        "from": "blocked",
+        "to": "decision-prepared",
+        "note": "B4.013 runtime-first blocker removed for tests residual domain parent; child family nodes remain blocked pending separate refresh/authorization.",
+        "current_head": "7f384fc57e51546dcfe73cdccaa053eee0c562ea",
+        "transitioned_at": "2026-06-19T01:41:37.795Z"
       }
     ]
   },
