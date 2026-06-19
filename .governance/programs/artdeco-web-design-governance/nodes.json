@@ -9344,9 +9344,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-tests-residual-domain-audit",
-    "status": "blocked",
+    "status": "decision-prepared",
     "function_tree_ref": "B4.012-M3a-B",
-    "current_head": "fada290da42e8c6fd33b10654ecb53ea2f0980f5",
+    "current_head": "a8a276ce22069ba633d2b4dfbbdcc2396e0bc99e",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -9356,16 +9356,23 @@
         "note": "B4.012-M3a-B no-source split: API/backend/contract tests broad 61-entry discovery split into B1-B4 plus M3a-U/M3a-E routes.",
         "current_head": "fada290da42e8c6fd33b10654ecb53ea2f0980f5",
         "recorded_at": "2026-06-14T05:51:43.852Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-b-api-backend-contract-tests-fresh-review-2026-06-19.md",
+        "note": "No-source fresh review after B4.013 closeout and M3a parent reactivation; restore API/backend contract tests parent only.",
+        "current_head": "a8a276ce22069ba633d2b4dfbbdcc2396e0bc99e",
+        "recorded_at": "2026-06-19T02:01:17.002Z"
       }
     ],
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "unblock to decision-prepared",
-    "blocker_reason": "B4.013 runtime-first mainline reset: residual cleanup/detail gate is paused until the active P0 mainline is runnable and separately reauthorized.",
-    "unblock_target_state": "decision-prepared",
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
     "created_at": "2026-06-14T05:49:59.649Z",
-    "updated_at": "2026-06-15T15:51:34.538Z",
+    "updated_at": "2026-06-19T02:01:17.064Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -9380,6 +9387,13 @@
         "note": "Paused by B4.013 mainline alignment governance adoption.",
         "current_head": "c7c2eb74fbc9a87658459321284f252923b09a7a",
         "transitioned_at": "2026-06-15T15:51:34.538Z"
+      },
+      {
+        "from": "blocked",
+        "to": "decision-prepared",
+        "note": "B4.013 runtime-first blocker removed for API/backend contract tests parent; B1-B4 remain closed and new residual child packages require separate authorization.",
+        "current_head": "a8a276ce22069ba633d2b4dfbbdcc2396e0bc99e",
+        "transitioned_at": "2026-06-19T02:01:17.064Z"
       }
     ]
   },
