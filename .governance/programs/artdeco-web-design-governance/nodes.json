@@ -12561,9 +12561,9 @@
     "node_type": "decision",
     "owner_lane": "backend",
     "parent": "b4-013-m3a-b-market-v2-refresh-openstock-mapping",
-    "status": "decision-prepared",
+    "status": "archived",
     "function_tree_ref": "FUNCTION_TREE:B4.013 runtime mainline bring-up/OpenStock consumer contract",
-    "current_head": "8946e165ce41b117ac7bf9aa9d65de10ff6842e0",
+    "current_head": "053a89c56c5a5c4271caed38d8913ecf6c5ac57d",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -12587,16 +12587,23 @@
         "note": "Refreshed B3 decision evidence after B3b closeout; no source edits authorized.",
         "current_head": "8946e165ce41b117ac7bf9aa9d65de10ff6842e0",
         "recorded_at": "2026-06-18T14:12:41.733Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-013-m3a-b3-fund-flow-contract-boundary-family-fresh-review-2026-06-19.md",
+        "note": "Fresh no-source review archived FUND_FLOW contract-boundary evidence family after B4.013 closeout.",
+        "current_head": "053a89c56c5a5c4271caed38d8913ecf6c5ac57d",
+        "recorded_at": "2026-06-19T00:52:38.849Z"
       }
     ],
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare decision or authorization",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-18T02:35:06.633Z",
-    "updated_at": "2026-06-18T14:12:41.733Z",
+    "updated_at": "2026-06-19T00:52:38.918Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -12604,6 +12611,13 @@
         "note": "",
         "current_head": "f90dee916e60470212178a624ac75cd4e540c0d4",
         "transitioned_at": "2026-06-18T02:36:20.453Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "archived",
+        "note": "Archived as retained FUND_FLOW boundary evidence; no MyStocks source implementation gate remains.",
+        "current_head": "053a89c56c5a5c4271caed38d8913ecf6c5ac57d",
+        "transitioned_at": "2026-06-19T00:52:38.918Z"
       }
     ]
   },
@@ -12705,9 +12719,9 @@
     "node_type": "decision",
     "owner_lane": "backend",
     "parent": "b4-013-m3a-b3-fund-flow-refresh-openstock-audit",
-    "status": "decision-prepared",
+    "status": "archived",
     "function_tree_ref": "FUNCTION_TREE:B4.013 OpenStock consumer FUND_FLOW legacy compatibility decision",
-    "current_head": "8946e165ce41b117ac7bf9aa9d65de10ff6842e0",
+    "current_head": "053a89c56c5a5c4271caed38d8913ecf6c5ac57d",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -12724,16 +12738,23 @@
         "note": "Refreshed B3b decision evidence at current HEAD; no source edits authorized.",
         "current_head": "8946e165ce41b117ac7bf9aa9d65de10ff6842e0",
         "recorded_at": "2026-06-18T14:12:41.795Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-013-m3a-b3-fund-flow-contract-boundary-family-fresh-review-2026-06-19.md",
+        "note": "Fresh no-source review archived FUND_FLOW contract-boundary evidence family after B4.013 closeout.",
+        "current_head": "053a89c56c5a5c4271caed38d8913ecf6c5ac57d",
+        "recorded_at": "2026-06-19T00:52:38.988Z"
       }
     ],
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare decision or authorization",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-18T10:07:24.209Z",
-    "updated_at": "2026-06-18T14:12:41.795Z",
+    "updated_at": "2026-06-19T00:52:39.058Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -12741,6 +12762,13 @@
         "note": "",
         "current_head": "96ff8a2df012a77a73cc2cec5b9e56861a65ab0b",
         "transitioned_at": "2026-06-18T10:08:55.210Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "archived",
+        "note": "Archived as retained FUND_FLOW boundary evidence; no MyStocks source implementation gate remains.",
+        "current_head": "053a89c56c5a5c4271caed38d8913ecf6c5ac57d",
+        "transitioned_at": "2026-06-19T00:52:39.058Z"
       }
     ]
   },
