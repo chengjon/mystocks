@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-19T00:00:52.022Z",
+  "updated_at": "2026-06-19T00:35:30.289Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -161,40 +161,6 @@
       ],
       "forbidden_paths": [],
       "updated_at": "2026-06-15T15:51:34.832Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-013-m2e3-openstock-category-coverage-audit",
-      "title": "B4.013-M2-E3 OpenStock category coverage no-source audit",
-      "node_type": "decision",
-      "owner_lane": "artdeco-web-design-governance",
-      "parent": "b4-013-m1e3-openstock-consumer-openspec-proposal",
-      "status": "decision-prepared",
-      "source_edits_authorized": false,
-      "current_blocker": "",
-      "next_allowed": "prepare decision or authorization",
-      "function_tree_ref": "b4-013-runtime-mainline-bring-up",
-      "freshness": "current-head",
-      "allowed_paths": [],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-16T16:03:40.489Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-013-m2e4-openstock-contract-gap-handoff",
-      "title": "B4.013-M2-E4 OpenStock contract-gap handoff no-source design",
-      "node_type": "decision",
-      "owner_lane": "artdeco-web-design-governance",
-      "parent": "b4-013-m2e3-openstock-category-coverage-audit",
-      "status": "decision-prepared",
-      "source_edits_authorized": false,
-      "current_blocker": "",
-      "next_allowed": "prepare decision or authorization",
-      "function_tree_ref": "b4-013-runtime-mainline-bring-up",
-      "freshness": "current-head",
-      "allowed_paths": [],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-16T18:22:03.418Z"
     },
     {
       "program": "artdeco-web-design-governance",

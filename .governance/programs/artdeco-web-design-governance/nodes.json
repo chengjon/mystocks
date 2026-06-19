@@ -12124,9 +12124,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-013-m1e3-openstock-consumer-openspec-proposal",
-    "status": "decision-prepared",
+    "status": "archived",
     "function_tree_ref": "b4-013-runtime-mainline-bring-up",
-    "current_head": "ee711359885383e5fb23f7c524cb01b41e9bd60e",
+    "current_head": "a069ceb8092da412b4cc0d6aed4af9cd44c36d2d",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -12150,16 +12150,23 @@
         "note": "Refresh M2-E3 decision evidence before B4.013-M2-E4 OpenStock contract-gap handoff.",
         "current_head": "ee711359885383e5fb23f7c524cb01b41e9bd60e",
         "recorded_at": "2026-06-16T16:03:40.489Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-013-m2e-openstock-category-contract-family-fresh-review-2026-06-19.md",
+        "note": "Fresh no-source review archived OpenStock category/contract evidence family after B4.013 closeout.",
+        "current_head": "a069ceb8092da412b4cc0d6aed4af9cd44c36d2d",
+        "recorded_at": "2026-06-19T00:35:29.885Z"
       }
     ],
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare decision or authorization",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-16T15:33:54.121Z",
-    "updated_at": "2026-06-16T16:03:40.489Z",
+    "updated_at": "2026-06-19T00:35:30.097Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -12167,6 +12174,13 @@
         "note": "",
         "current_head": "ddf13d74d22d53049fdd19cbe82a5d3ba8d7d312",
         "transitioned_at": "2026-06-16T15:44:56.411Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "archived",
+        "note": "Archived as retained OpenStock category/contract evidence; no MyStocks source implementation gate remains.",
+        "current_head": "a069ceb8092da412b4cc0d6aed4af9cd44c36d2d",
+        "transitioned_at": "2026-06-19T00:35:30.097Z"
       }
     ]
   },
@@ -12176,9 +12190,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-013-m2e3-openstock-category-coverage-audit",
-    "status": "decision-prepared",
+    "status": "archived",
     "function_tree_ref": "b4-013-runtime-mainline-bring-up",
-    "current_head": "34ac1fcaa18e093c60d954c3409ddf6a20fc0659",
+    "current_head": "a069ceb8092da412b4cc0d6aed4af9cd44c36d2d",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -12209,16 +12223,23 @@
         "note": "OpenStock-C1 registered public category vocabulary and fake-adapter runtime contract tests for MyStocks market-data gaps; provider adapters remain pending.",
         "current_head": "34ac1fcaa18e093c60d954c3409ddf6a20fc0659",
         "recorded_at": "2026-06-16T18:22:03.418Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-013-m2e-openstock-category-contract-family-fresh-review-2026-06-19.md",
+        "note": "Fresh no-source review archived OpenStock category/contract evidence family after B4.013 closeout.",
+        "current_head": "a069ceb8092da412b4cc0d6aed4af9cd44c36d2d",
+        "recorded_at": "2026-06-19T00:35:30.190Z"
       }
     ],
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare decision or authorization",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-16T16:04:04.860Z",
-    "updated_at": "2026-06-16T18:22:03.418Z",
+    "updated_at": "2026-06-19T00:35:30.277Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -12226,6 +12247,13 @@
         "note": "",
         "current_head": "ee711359885383e5fb23f7c524cb01b41e9bd60e",
         "transitioned_at": "2026-06-16T16:08:10.769Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "archived",
+        "note": "Archived as retained OpenStock category/contract evidence; no MyStocks source implementation gate remains.",
+        "current_head": "a069ceb8092da412b4cc0d6aed4af9cd44c36d2d",
+        "transitioned_at": "2026-06-19T00:35:30.277Z"
       }
     ]
   },
