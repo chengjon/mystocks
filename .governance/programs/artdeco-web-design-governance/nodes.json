@@ -13525,5 +13525,46 @@
         "transitioned_at": "2026-06-21T17:08:32.681Z"
       }
     ]
+  },
+  {
+    "id": "b4-012-m3a-e3b-a-repository-hygiene-docs-truth-baseline-decision",
+    "title": "B4.012 M3a-E3b-A repository hygiene docs truth baseline decision",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-m3a-e3b-repository-hygiene-docs-truth-drift-decision",
+    "status": "decision-prepared",
+    "function_tree_ref": "B4.012-M3a-E3b-A",
+    "current_head": "723b058e247f40461027277ab41477d6abef2568",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-a-repository-hygiene-docs-truth-baseline-decision-2026-06-22.md",
+        "note": "No-source baseline decision: classify repository-hygiene docs truth failures and recommend E3a-R1 lint-only recovery with explicit pytest baseline waiver.",
+        "current_head": "723b058e247f40461027277ab41477d6abef2568",
+        "recorded_at": "2026-06-21T17:23:07.631Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-21T17:21:48.781Z",
+    "updated_at": "2026-06-21T17:23:20.893Z",
+    "track": "backlog",
+    "mainline_id": "b4-012-m3-residual-dirty-atlas-rebaseline",
+    "depth": 2,
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "Decision prepared: keep docs truth drift as baseline debt for E3a; next gate is explicit authorization for E3a-R1 lint-only recovery or E3b-B docs truth atlas.",
+        "current_head": "723b058e247f40461027277ab41477d6abef2568",
+        "transitioned_at": "2026-06-21T17:23:20.892Z"
+      }
+    ]
   }
 ]
