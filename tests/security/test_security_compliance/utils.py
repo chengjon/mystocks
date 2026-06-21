@@ -6,16 +6,10 @@ MyStocks 安全合规测试套件
 提供全面的安全合规性验证，包括GDPR、PCI DSS、SOX等合规性测试。
 """
 
-import asyncio
-import json
 import logging
-from dataclasses import dataclass
 from datetime import datetime
-from enum import Enum
-from typing import Any, Dict, List, Optional
 
 import pytest
-from cryptography.fernet import Fernet
 
 from .compliance_test_engine import ComplianceTestEngine
 from .helpers import ComplianceLevel, ComplianceReport, ComplianceStandard
@@ -50,7 +44,7 @@ async def test_compliance_gdpr():
             control.implementation_status = result["status"]
             control.last_tested = datetime.now()
             control.test_results = result
-        except Exception as e:
+        except Exception:
             logger.error("测试GDPR控制项 {control.control_id} 失败: {str(e)}")
 
     # 验证结果
@@ -84,7 +78,7 @@ async def test_compliance_pci_dss():
             control.implementation_status = result["status"]
             control.last_tested = datetime.now()
             control.test_results = result
-        except Exception as e:
+        except Exception:
             logger.error("测试PCI DSS控制项 {control.control_id} 失败: {str(e)}")
 
     # 验证结果
@@ -118,7 +112,7 @@ async def test_compliance_sox():
             control.implementation_status = result["status"]
             control.last_tested = datetime.now()
             control.test_results = result
-        except Exception as e:
+        except Exception:
             logger.error("测试SOX控制项 {control.control_id} 失败: {str(e)}")
 
     # 验证结果
@@ -152,7 +146,7 @@ async def test_compliance_owasp():
             control.implementation_status = result["status"]
             control.last_tested = datetime.now()
             control.test_results = result
-        except Exception as e:
+        except Exception:
             logger.error("测试OWASP控制项 {control.control_id} 失败: {str(e)}")
 
     # 验证结果

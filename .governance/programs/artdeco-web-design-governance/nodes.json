@@ -13257,9 +13257,9 @@
     "node_type": "authorization",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-e-performance-runtime-security-tests-split",
-    "status": "authorization-prepared",
+    "status": "closed",
     "function_tree_ref": "B4.012-M3a-E2",
-    "current_head": "01845f3a4769e878cf6e207b6c9eb565aa0349ba",
+    "current_head": "0484a5aa58bed541e10c0da53b7d51c1c1d2c6b2",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -13269,6 +13269,20 @@
         "note": "No-source E2 tracked security/compliance boundary review: 7 tracked tests/security files, 0 untracked; implementation still requires explicit approval.",
         "current_head": "01845f3a4769e878cf6e207b6c9eb565aa0349ba",
         "recorded_at": "2026-06-21T15:07:02.218Z"
+      },
+      {
+        "kind": "authorization",
+        "path": ".governance/programs/artdeco-web-design-governance/cards/b4-012-m3a-e2-security-compliance-tracked-authorization.yaml",
+        "note": "User approved E2 security compliance tracked implementation at current HEAD; scope remains limited to authorization card allowed paths.",
+        "current_head": "0484a5aa58bed541e10c0da53b7d51c1c1d2c6b2",
+        "recorded_at": "2026-06-21T15:41:02.431Z"
+      },
+      {
+        "kind": "closeout",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-e2-security-compliance-tracked-closeout-2026-06-21.md",
+        "note": "E2 security/compliance tracked tests verified with py_compile, ruff, and explicit focused pytest evidence; no assertion weakening.",
+        "current_head": "0484a5aa58bed541e10c0da53b7d51c1c1d2c6b2",
+        "recorded_at": "2026-06-21T15:44:03.123Z"
       }
     ],
     "allowed_paths": [
@@ -13285,11 +13299,11 @@
     "non_goals": [
       "No assertion weakening, scanner threshold relaxation, production source/runtime changes, OpenSpec/OpenStock provider runtime changes, E1 performance files, D/D1 E2E files, U untracked provenance candidates, frontend/backend source, ST-HOLD, marketKlineData, deletion, restore, migration, or broad refactor."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-21T15:05:56.684Z",
-    "updated_at": "2026-06-21T15:07:28.410Z",
+    "updated_at": "2026-06-21T15:45:29.298Z",
     "acceptance": {
       "commit_gate": [
         "git diff --cached --check; FUNCTION_TREE validate; GitNexus verify-staged and detect-changes; OPENDOG verification; exact staged scope only.",
@@ -13298,6 +13312,45 @@
       "closeout_gate": [
         "E2 closeout worklog records changed files, security/compliance assertion-preservation posture, gates, any environment blockers, and confirms staged index contains only E2 allowed files and generated governance state."
       ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "E2 source/test implementation approved; no assertion weakening, source/runtime, OpenStock/OpenSpec, or out-of-scope test domains authorized.",
+        "current_head": "0484a5aa58bed541e10c0da53b7d51c1c1d2c6b2",
+        "transitioned_at": "2026-06-21T15:41:02.504Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "E2 verified and ready for precise staging; security/compliance behavior preserved.",
+        "current_head": "0484a5aa58bed541e10c0da53b7d51c1c1d2c6b2",
+        "transitioned_at": "2026-06-21T15:44:03.183Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Committed in 7d437cddd with E2 tracked security/compliance test standardization.",
+        "current_head": "7d437cddd5526cebad6475abf8d161cd7b599a24",
+        "transitioned_at": "2026-06-21T15:45:29.163Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "E2 implementation landed and closeout evidence recorded; out-of-scope security/source/runtime domains remain untouched.",
+        "current_head": "7d437cddd5526cebad6475abf8d161cd7b599a24",
+        "transitioned_at": "2026-06-21T15:45:29.298Z"
+      }
+    ],
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m3a-e2-security-compliance-tracked-closeout-2026-06-21.md",
+      "compatibility": "No production source/runtime/OpenStock behavior changed; security/compliance assertions and scanner thresholds preserved.",
+      "gates": [
+        "py_compile exit 0; ruff exit 0; explicit focused pytest collected 11 items with 11 skipped and exit 0; GitNexus staged risk low; OPENDOG failing_runs 0."
+      ],
+      "current_head": "7d437cddd5526cebad6475abf8d161cd7b599a24",
+      "prepared_at": "2026-06-21T15:45:29.232Z"
     }
   }
 ]
