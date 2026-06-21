@@ -1,0 +1,24 @@
+task:
+  id: "b4-012-m3a-e3a-r1-repository-hygiene-lint-only-recovery-authorization"
+  title: "B4.012 M3a-E3a-R1 repository hygiene lint-only recovery authorization"
+
+scope:
+  allowed_paths:
+    - "tests/unit/scripts/test_repository_hygiene_paths.py"
+    - "docs/reports/worklogs/claude-auto/b4-012-m3a-e3a-r1-repository-hygiene-lint-only-closeout-2026-06-22.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No assertion deletion or weakening, no skip/xfail, no docs/README/AGENTS/index/OpenSpec/OpenStock/source/runtime/frontend/backend edits, no broad rewrite, no attempt to make all repository-hygiene pytest cases green, no external dirty files."
+
+acceptance:
+  commit_gate:
+    - "git diff --cached --check; FUNCTION_TREE validate; GitNexus verify-staged and detect-changes; OPENDOG verification; exact staged scope only."
+    - "python -m py_compile and ruff check for tests/unit/scripts/test_repository_hygiene_paths.py must pass; focused pytest must be executed and remaining failures must match the E3b-A docs-truth baseline with no new failure family."
+  closeout_gate:
+    - "Closeout worklog records exact lint fixes, assertion-preservation proof, py_compile, ruff, focused pytest baseline comparison, staged scope, GitNexus, OPENDOG, and separation from E3b-B docs truth repair."
+
+evidence:
+  current_head: "4452d8c508cc6e84e63f916e24bd41f151681e25"
+  notes: []

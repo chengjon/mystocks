@@ -115,3 +115,6 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-012-m3a-e2-security-compliance-tracked-authorization: B4.012 M3a-E2 security compliance tracked authorization (planning, FT: B4.012-M3a-E2)
 - [ ] b4-012-m3a-e3-governance-script-tests-split: B4.012 M3a-E3 governance script tests no-source split (planning, FT: B4.012-M3a-E3)
 - [ ] b4-012-m3a-e3a-repository-hygiene-unit-script-authorization: B4.012 M3a-E3a repository hygiene unit script authorization (planning, FT: B4.012-M3a-E3a)
+- [ ] b4-012-m3a-e3b-repository-hygiene-docs-truth-drift-decision: B4.012 M3a-E3b repository hygiene docs truth drift decision (planning, FT: B4.012-M3a-E3b)
+- [ ] b4-012-m3a-e3b-a-repository-hygiene-docs-truth-baseline-decision: B4.012 M3a-E3b-A repository hygiene docs truth baseline decision (planning, FT: B4.012-M3a-E3b-A)
+- [ ] b4-012-m3a-e3a-r1-repository-hygiene-lint-only-recovery-authorization: B4.012 M3a-E3a-R1 repository hygiene lint-only recovery authorization (planning, FT: B4.012-M3a-E3a-R1)
