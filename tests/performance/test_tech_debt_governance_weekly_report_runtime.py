@@ -56,6 +56,9 @@ def test_weekly_report_includes_runtime_observability_kpis(tmp_path: Path):
                     "overall_p95_ms": 22.94,
                     "observability_status": "healthy",
                     "slow_http_requests_total_delta": 0.0,
+                    "technical_analysis_history_requests_total_delta": 3.0,
+                    "technical_analysis_history_fallback_total_delta": 0.0,
+                    "technical_analysis_history_fallback_ratio_delta": 0.0,
                 },
                 "monitoring_auth_performance": {
                     "alert_rules_p95_ms": 271.53,
@@ -98,6 +101,9 @@ def test_weekly_report_includes_runtime_observability_kpis(tmp_path: Path):
                     "overall_p95_ms": 22.94,
                     "observability_status": "healthy",
                     "slow_http_requests_total_delta": 0.0,
+                    "technical_analysis_history_requests_total_delta": 5.0,
+                    "technical_analysis_history_fallback_total_delta": 1.0,
+                    "technical_analysis_history_fallback_ratio_delta": 0.5,
                     "trading_status": {"p95_ms": 13.7},
                     "trading_market_snapshot": {"p95_ms": 10.84},
                     "trading_risk_metrics": {"p95_ms": 12.9},
@@ -210,11 +216,14 @@ def test_weekly_report_includes_runtime_observability_kpis(tmp_path: Path):
     assert "Anonymous API overall P95 (ms): measured=`22.94` baseline=`22.94` target=`<= 300`" in report_text
     assert "API performance drift gate: measured=`PASS` baseline=`PASS` target=`PASS`" in report_text
     assert "API performance drift violations: measured=`0` baseline=`0` target=`0`" in report_text
+    assert "Technical analysis history requests delta: measured=`5.0` baseline=`3.0` target=`>= baseline`" in report_text
+    assert "Technical analysis fallback total delta: measured=`1.0` baseline=`0.0` target=`<= baseline`" in report_text
+    assert "Technical analysis fallback ratio delta: measured=`0.5` baseline=`0.0` target=`<= baseline + 1.0`" in report_text
     assert "Graphiti closeout coverage: `5/5` valid closeouts, missing=`0` invalid=`0`" in report_text
     assert "Graphiti closeout validity gate: `PASS`" in report_text
     assert "Monitoring auth alert-rules P95 (ms): measured=`271.53` baseline=`271.53` target=`<= 300`" in report_text
     assert "Docker runtime smoke status: measured=`PASS/PASS/PASS` baseline=`PASS/PASS/PASS` target=`PASS/PASS/PASS`" in report_text
-    assert "Runtime drift gate: `PASS` violations=`0` not_measured=`0`" in report_text
+    assert "Runtime drift gate: `FAIL` violations=`2` not_measured=`0`" in report_text
 
 
 def test_weekly_report_degrades_invalid_closeout_payload_to_report_line(tmp_path: Path):

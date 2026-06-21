@@ -22,6 +22,7 @@ class BenchmarkResult:
 
     endpoint: str
     method: str
+    workload_class: str = "business"
     total_requests: int = 0
     successful_requests: int = 0
     failed_requests: int = 0
@@ -78,14 +79,43 @@ class PerformanceBenchmark:
         concurrent_users: int = 10,
         iterations: int = 100,
         default_headers: Optional[Dict[str, str]] = None,
+        warmup_requests: int = 0,
     ):
         self.base_url = base_url.rstrip("/")
         self.concurrent_users = concurrent_users
         self.iterations = iterations
         self.default_headers = default_headers or {}
+        self.warmup_requests = max(warmup_requests, 0)
         self.results: Dict[str, BenchmarkResult] = {}
         self.slow_threshold_ms = 300
         self.critical_threshold_ms = 500
+
+    async def warmup_endpoint(
+        self,
+        session: aiohttp.ClientSession,
+        endpoint: str,
+        method: str = "GET",
+        payload: Optional[Dict] = None,
+        headers: Optional[Dict[str, str]] = None,
+    ) -> None:
+        """Run non-measured warmup traffic for an endpoint."""
+        for _ in range(self.warmup_requests):
+            await self.benchmark_endpoint(session, endpoint, method, payload, headers)
+
+    @staticmethod
+    def _build_summary(results: List[BenchmarkResult]) -> Dict[str, Any]:
+        if not results:
+            return {
+                "endpoint_count": 0,
+                "overall_avg_ms": 0,
+                "overall_p95_ms": 0,
+            }
+
+        return {
+            "endpoint_count": len(results),
+            "overall_avg_ms": round(statistics.mean(r.avg_response_time for r in results) * 1000, 2),
+            "overall_p95_ms": round(statistics.mean(r.p95_response_time for r in results) * 1000, 2),
+        }
 
     async def benchmark_endpoint(
         self,
@@ -137,10 +167,15 @@ class PerformanceBenchmark:
                 method = endpoint_config.get("method", "GET")
                 payload = endpoint_config.get("payload")
                 headers = endpoint_config.get("headers")
+                workload_class = str(endpoint_config.get("workload_class", "business")).strip() or "business"
 
                 print(f"Benchmarking: {method} {endpoint}")
 
-                result = BenchmarkResult(endpoint=endpoint, method=method)
+                result = BenchmarkResult(endpoint=endpoint, method=method, workload_class=workload_class)
+
+                if self.warmup_requests:
+                    print(f"  Warmup: {self.warmup_requests} request(s) excluded from metrics")
+                    await self.warmup_endpoint(session, endpoint, method, payload, headers)
 
                 semaphore = asyncio.Semaphore(max(self.concurrent_users, 1))
 
@@ -268,6 +303,7 @@ class PerformanceBenchmark:
                 {
                     "endpoint": result.endpoint,
                     "method": result.method,
+                    "workload_class": result.workload_class,
                     "total_requests": result.total_requests,
                     "successful_requests": result.successful_requests,
                     "failed_requests": result.failed_requests,
@@ -283,10 +319,9 @@ class PerformanceBenchmark:
                 }
             )
 
-        overall_avg_ms = statistics.mean(r.avg_response_time for r in self.results.values()) * 1000 if self.results else 0
-        overall_p95_ms = (
-            statistics.mean(r.p95_response_time for r in self.results.values()) * 1000 if self.results else 0
-        )
+        all_results = list(self.results.values())
+        business_results = [result for result in all_results if result.workload_class == "business"]
+        infrastructure_results = [result for result in all_results if result.workload_class == "infrastructure"]
 
         return {
             "generated_at": datetime.now().isoformat(),
@@ -294,10 +329,10 @@ class PerformanceBenchmark:
             "concurrent_users": self.concurrent_users,
             "iterations": self.iterations,
             "slo_status": self.get_slo_status(),
-            "summary": {
-                "endpoint_count": len(endpoint_reports),
-                "overall_avg_ms": round(overall_avg_ms, 2),
-                "overall_p95_ms": round(overall_p95_ms, 2),
+            "summary": self._build_summary(all_results),
+            "workload_classes": {
+                "business": self._build_summary(business_results),
+                "infrastructure": self._build_summary(infrastructure_results),
             },
             "endpoints": endpoint_reports,
         }
@@ -376,14 +411,14 @@ def load_endpoints(default_base_url: str, endpoints_file: Optional[str]) -> List
     """Load endpoint configs from a JSON file or use the default benchmark set."""
     if not endpoints_file:
         return [
-            {"endpoint": "/health", "method": "GET"},
-            {"endpoint": "/api/health/ready", "method": "GET"},
-            {"endpoint": "/api/csrf-token", "method": "GET"},
-            {"endpoint": "/api/socketio-status", "method": "GET"},
-            {"endpoint": "/api/v1/market/quotes", "method": "GET"},
-            {"endpoint": "/api/v2/market/lhb?limit=20", "method": "GET"},
-            {"endpoint": "/api/v1/strategy/strategies", "method": "GET"},
-            {"endpoint": "/metrics", "method": "GET"},
+            {"endpoint": "/health", "method": "GET", "workload_class": "infrastructure"},
+            {"endpoint": "/api/health/ready", "method": "GET", "workload_class": "infrastructure"},
+            {"endpoint": "/api/csrf-token", "method": "GET", "workload_class": "infrastructure"},
+            {"endpoint": "/api/socketio-status", "method": "GET", "workload_class": "infrastructure"},
+            {"endpoint": "/api/v1/market/quotes", "method": "GET", "workload_class": "business"},
+            {"endpoint": "/api/v2/market/lhb?limit=20", "method": "GET", "workload_class": "business"},
+            {"endpoint": "/api/v1/strategy/strategies", "method": "GET", "workload_class": "business"},
+            {"endpoint": "/metrics", "method": "GET", "workload_class": "infrastructure"},
         ]
 
     path = Path(endpoints_file)
@@ -417,6 +452,7 @@ async def main():
     parser.add_argument("--json-output", default="", help="Optional JSON output file")
     parser.add_argument("--endpoints-file", default="", help="JSON file containing endpoint configs")
     parser.add_argument("--headers-file", default="", help="JSON file containing default request headers")
+    parser.add_argument("--warmup-requests", type=int, default=0, help="Warmup requests per endpoint excluded from metrics")
     parser.add_argument("--fail-on-slo", action="store_true", help="Exit non-zero when the SLO check fails")
 
     args = parser.parse_args()
@@ -428,6 +464,7 @@ async def main():
         concurrent_users=args.users,
         iterations=args.iterations,
         default_headers=load_headers(args.headers_file or None),
+        warmup_requests=args.warmup_requests,
     )
 
     await benchmark.run_benchmark(endpoints)

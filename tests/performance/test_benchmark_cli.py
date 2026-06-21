@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 
+import pytest
+
 from tests.performance.benchmark import PerformanceBenchmark, load_endpoints, load_headers
 
 
@@ -28,6 +30,7 @@ def test_generate_json_report_contains_summary():
         "/health": type("Result", (), {
             "endpoint": "/health",
             "method": "GET",
+            "workload_class": "infrastructure",
             "total_requests": 5,
             "successful_requests": 5,
             "failed_requests": 0,
@@ -56,6 +59,7 @@ def test_slo_status_fails_when_any_endpoint_exceeds_threshold():
         "/health": type("Result", (), {
             "endpoint": "/health",
             "method": "GET",
+            "workload_class": "infrastructure",
             "total_requests": 5,
             "successful_requests": 5,
             "failed_requests": 0,
@@ -75,3 +79,22 @@ def test_slo_status_fails_when_any_endpoint_exceeds_threshold():
 
     assert status["compliant"] is False
     assert any("Endpoints exceeding P95 target" in item for item in status["violations"])
+
+
+@pytest.mark.asyncio
+async def test_run_benchmark_excludes_warmup_requests_from_recorded_totals(monkeypatch):
+    benchmark = PerformanceBenchmark("http://localhost:8020", concurrent_users=2, iterations=3, warmup_requests=2)
+    calls = []
+
+    async def fake_benchmark_endpoint(*args, **kwargs):
+        calls.append((args, kwargs))
+        return 200, 0.01
+
+    monkeypatch.setattr(benchmark, "benchmark_endpoint", fake_benchmark_endpoint)
+
+    await benchmark.run_benchmark([{"endpoint": "/health", "method": "GET", "workload_class": "infrastructure"}])
+
+    assert len(calls) == 5
+    result = benchmark.results["/health"]
+    assert result.total_requests == 3
+    assert result.successful_requests == 3

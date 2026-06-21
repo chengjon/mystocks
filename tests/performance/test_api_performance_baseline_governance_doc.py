@@ -40,11 +40,21 @@ def test_weekly_governance_template_surfaces_containerized_deployment_entrypoint
 
     assert "Container deployment contract pass" in template
     assert "Deployment env contract pass" in template
+    assert "Technical analysis fallback total delta" in template
+    assert "Technical analysis fallback ratio delta" in template
     assert "Docker runtime service role" in template
     assert "Canonical PM2 ports" in template
     assert "Backup smoke ports" in template
     assert "POSTGRES_PASSWORD=postgres TDENGINE_PASSWORD=taosdata bash scripts/run_containerized_runtime_smoke.sh" in template
     assert "bash scripts/run_full_runtime_delivery_gate.sh" in template
+
+
+def test_governance_readme_surfaces_technical_analysis_fallback_runtime_baseline_fields():
+    readme = Path("reports/governance/README.md").read_text(encoding="utf-8")
+
+    assert "technical_analysis_history_requests_total_delta" in readme
+    assert "technical_analysis_history_fallback_total_delta" in readme
+    assert "technical_analysis_history_fallback_ratio_delta" in readme
 
 
 def test_scripts_readme_surfaces_containerized_runtime_delivery_entrypoints():

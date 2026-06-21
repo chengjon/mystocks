@@ -13150,9 +13150,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-e-performance-runtime-security-tests-split",
-    "status": "authorization-prepared",
+    "status": "closed",
     "function_tree_ref": "B4.012-M3a-E1",
-    "current_head": "17a4f99436d59caafcc06a8e407a592e2a04a48e",
+    "current_head": "6491f4400f225d1c04778a081e731e13f165f143",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -13162,6 +13162,20 @@
         "note": "Prepared E1 tracked performance/runtime authorization boundary; no test/source edits.",
         "current_head": "17a4f99436d59caafcc06a8e407a592e2a04a48e",
         "recorded_at": "2026-06-21T13:56:16.817Z"
+      },
+      {
+        "kind": "baseline",
+        "path": ".governance/programs/artdeco-web-design-governance/cards/b4-012-m3a-e1-performance-runtime-tracked-authorization.yaml",
+        "note": "E1 implementation approval at current HEAD after user agreed to continue; scope limited to authorization card allowed paths.",
+        "current_head": "6491f4400f225d1c04778a081e731e13f165f143",
+        "recorded_at": "2026-06-21T14:16:56.978Z"
+      },
+      {
+        "kind": "closeout",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-e1-performance-runtime-tracked-closeout-2026-06-21.md",
+        "note": "E1 tracked performance/runtime tests standardized with py_compile, ruff, default pytest skip gate, and --run-performance focused pytest evidence.",
+        "current_head": "6491f4400f225d1c04778a081e731e13f165f143",
+        "recorded_at": "2026-06-21T14:43:56.656Z"
       }
     ],
     "allowed_paths": [
@@ -13183,11 +13197,11 @@
     "non_goals": [
       "No untracked tests/performance provenance candidates; no tests/security, tests/e2e, tests/unit, scripts/tests, web/backend/tests, web/frontend, source/runtime, OpenSpec, OpenStock provider runtime, ST-HOLD, marketKlineData, deletion, restore, or assertion weakening."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-21T13:56:16.739Z",
-    "updated_at": "2026-06-21T13:56:38.507Z",
+    "updated_at": "2026-06-21T14:45:41.854Z",
     "acceptance": {
       "commit_gate": [
         "git diff --cached --check; FUNCTION_TREE validate; GitNexus verify-staged and detect-changes; OPENDOG verification; exact staged scope only.",
@@ -13196,6 +13210,45 @@
       "closeout_gate": [
         "E1 closeout worklog records changed files, gates, any environment blockers, and confirms staged index contains only E1 allowed files and generated governance state."
       ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved E1 performance/runtime tracked implementation; no untracked performance provenance or out-of-scope files authorized.",
+        "current_head": "6491f4400f225d1c04778a081e731e13f165f143",
+        "transitioned_at": "2026-06-21T14:16:57.047Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "E1 implementation verified and ready for precise staging; untracked performance provenance remains excluded.",
+        "current_head": "6491f4400f225d1c04778a081e731e13f165f143",
+        "transitioned_at": "2026-06-21T14:43:56.714Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Committed in be5a4c9a1 with E1 tracked performance/runtime tests and closeout evidence.",
+        "current_head": "be5a4c9a12c7f7aa9328c940df223ce13595e521",
+        "transitioned_at": "2026-06-21T14:45:41.725Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "E1 implementation landed and closeout evidence recorded; remaining untracked performance provenance stays out of scope.",
+        "current_head": "be5a4c9a12c7f7aa9328c940df223ce13595e521",
+        "transitioned_at": "2026-06-21T14:45:41.854Z"
+      }
+    ],
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m3a-e1-performance-runtime-tracked-closeout-2026-06-21.md",
+      "compatibility": "No source/runtime/OpenStock behavior changed; tracked performance tests only.",
+      "gates": [
+        "py_compile exit 0; ruff exit 0; pytest default 30 skipped; pytest --run-performance 30 passed; GitNexus staged risk low; OPENDOG failing_runs 0."
+      ],
+      "current_head": "be5a4c9a12c7f7aa9328c940df223ce13595e521",
+      "prepared_at": "2026-06-21T14:45:41.795Z"
     }
   }
 ]

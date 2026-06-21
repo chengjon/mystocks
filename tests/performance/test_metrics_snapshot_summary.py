@@ -23,6 +23,9 @@ mystocks_db_connections_active{database="redis"} 1
 mystocks_cache_hits_total 10
 # HELP mystocks_cache_misses_total Total cache misses
 mystocks_cache_misses_total 5
+technical_analysis_history_requests_total{source="real"} 3
+technical_analysis_history_requests_total{source="fallback"} 2
+technical_analysis_history_fallback_total 2
 process_resident_memory_bytes 123456
 process_cpu_seconds_total 8.5
 """.strip()
@@ -34,6 +37,9 @@ http_requests_total{endpoint="/health",method="GET",status_code="200"} 20
 http_requests_total{endpoint="/metrics",method="GET",status_code="200"} 4
 # HELP slow_http_requests_total 慢请求计数(>300ms)
 slow_http_requests_total{endpoint="/api/health/ready",method="GET"} 1
+technical_analysis_history_requests_total{source="real"} 2
+technical_analysis_history_requests_total{source="fallback"} 1
+technical_analysis_history_fallback_total 1
 """.strip()
 
     snapshot = build_snapshot(metrics_text, health_payload, baseline_metrics_text=baseline_metrics_text)
@@ -49,6 +55,12 @@ slow_http_requests_total{endpoint="/api/health/ready",method="GET"} 1
     assert prometheus["cache_hits_total"] == 10.0
     assert prometheus["cache_misses_total"] == 5.0
     assert prometheus["cache_hit_ratio"] == 0.6667
+    assert prometheus["technical_analysis_history_requests_total"] == 5.0
+    assert prometheus["technical_analysis_history_requests_total_delta"] == 2.0
+    assert prometheus["technical_analysis_history_fallback_total"] == 2.0
+    assert prometheus["technical_analysis_history_fallback_total_delta"] == 1.0
+    assert prometheus["technical_analysis_history_fallback_ratio"] == 0.4
+    assert prometheus["technical_analysis_history_fallback_ratio_delta"] == 0.5
     assert prometheus["slow_request_endpoints"] == [
         {"endpoint": "/api/health/ready", "method": "GET", "count": 2.0}
     ]

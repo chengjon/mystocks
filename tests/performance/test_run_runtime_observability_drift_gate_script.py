@@ -14,6 +14,8 @@ def _baseline_payload() -> dict:
             "overall_p95_ms": 22.94,
             "observability_status": "healthy",
             "slow_http_requests_total_delta": 0.0,
+            "technical_analysis_history_fallback_total_delta": 1.0,
+            "technical_analysis_history_fallback_ratio_delta": 0.25,
         },
         "monitoring_auth_performance": {
             "alert_rules_p95_ms": 271.53,
@@ -43,6 +45,8 @@ def _summary_payload() -> dict:
             "overall_p95_ms": 22.94,
             "observability_status": "healthy",
             "slow_http_requests_total_delta": 0.0,
+            "technical_analysis_history_fallback_total_delta": 1.0,
+            "technical_analysis_history_fallback_ratio_delta": 0.25,
         },
         "monitoring_auth_performance": {
             "alert_rules": {"p95_ms": 271.53},

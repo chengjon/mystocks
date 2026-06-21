@@ -7,7 +7,7 @@ MyStocks 压力测试套件
 """
 
 import asyncio
-import json
+import random
 import threading
 import time
 from dataclasses import dataclass
@@ -16,17 +16,12 @@ from enum import Enum
 from typing import Any, Dict, List
 
 import aiohttp
-import numpy as np
 import psutil
-import pytest
 
 from tests.config.test_config import test_env
 from tests.performance._stress_test_runtime_tail import (
     SystemMonitor,
     run_stress_test_example,
-    test_burst_stress,
-    test_extreme_stress,
-    test_gradual_stress,
 )
 from tests.performance._stress_test_tail import StressTestSuiteTailMixin
 
@@ -227,7 +222,7 @@ class StressTestSuite(StressTestSuiteTailMixin):
                 ) as response:
                     await response.text()
                 await asyncio.sleep(0.1)
-            except:
+            except Exception:
                 pass
 
     async def _run_gradual_stress_test(self):
@@ -539,12 +534,9 @@ class StressTestSuite(StressTestSuiteTailMixin):
                 timeout=aiohttp.ClientTimeout(total=self.config.request_timeout),
             ) as response:
                 if response.status == 200:
-                    response_text = await response.text()
+                    await response.text()
                     success = True
                     status_code = response.status
-
-                    # 记录响应大小（测试带宽）
-                    response_size = len(response_text)
                 else:
                     status_code = response.status
                     error_msg = f"HTTP {status_code}"
@@ -611,7 +603,7 @@ class StressTestSuite(StressTestSuiteTailMixin):
 
             overload_threshold = cpu_percent > 90 or memory_percent > 90
             return overload_threshold
-        except:
+        except Exception:
             return False
 
     def _check_system_recovered(self) -> bool:
@@ -622,7 +614,7 @@ class StressTestSuite(StressTestSuiteTailMixin):
 
             recovery_threshold = cpu_percent < 70 and memory_percent < 70
             return recovery_threshold
-        except:
+        except Exception:
             return True
 
     async def _monitor_extreme_state(self):

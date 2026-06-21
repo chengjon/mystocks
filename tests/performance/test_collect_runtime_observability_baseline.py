@@ -25,6 +25,9 @@ def test_collect_runtime_observability_baseline_writes_machine_readable_snapshot
             "overall_p95_ms": 22.94,
             "observability_status": "healthy",
             "slow_http_requests_total_delta": 0.0,
+            "technical_analysis_history_requests_total_delta": 4.0,
+            "technical_analysis_history_fallback_total_delta": 1.0,
+            "technical_analysis_history_fallback_ratio_delta": 0.25,
             "trading_status": {"p95_ms": 13.7},
             "trading_market_snapshot": {"p95_ms": 10.84},
             "trading_risk_metrics": {"p95_ms": 12.9},
@@ -74,6 +77,9 @@ def test_collect_runtime_observability_baseline_writes_machine_readable_snapshot
     assert baseline["frontend_runtime"]["accessibility_smoke"]["passed"] == 4
     assert baseline["frontend_runtime"]["regression_pytest"]["skipped"] == 18
     assert baseline["api_performance"]["overall_p95_ms"] == 22.94
+    assert baseline["api_performance"]["technical_analysis_history_requests_total_delta"] == 4.0
+    assert baseline["api_performance"]["technical_analysis_history_fallback_total_delta"] == 1.0
+    assert baseline["api_performance"]["technical_analysis_history_fallback_ratio_delta"] == 0.25
     assert baseline["monitoring_auth_performance"]["alert_rules_p95_ms"] == 271.53
     assert baseline["docker_runtime"]["http_requests_total_delta"] == 4.0
     assert baseline["docker_runtime"]["db_connections_active"]["tdengine"] == 2.0

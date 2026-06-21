@@ -28,6 +28,9 @@ def _build_baseline_payload() -> dict:
             "overall_p95_ms": 22.94,
             "observability_status": "healthy",
             "slow_http_requests_total_delta": 0.0,
+            "technical_analysis_history_requests_total_delta": 4.0,
+            "technical_analysis_history_fallback_total_delta": 1.0,
+            "technical_analysis_history_fallback_ratio_delta": 0.25,
             "trading_status_p95_ms": 13.7,
             "trading_market_snapshot_p95_ms": 10.84,
             "trading_risk_metrics_p95_ms": 12.9,
@@ -75,6 +78,9 @@ def _build_summary_payload() -> dict:
             "overall_p95_ms": 22.94,
             "observability_status": "healthy",
             "slow_http_requests_total_delta": 0.0,
+            "technical_analysis_history_requests_total_delta": 4.0,
+            "technical_analysis_history_fallback_total_delta": 1.0,
+            "technical_analysis_history_fallback_ratio_delta": 0.25,
             "trading_status": {"p95_ms": 13.7},
             "trading_market_snapshot": {"p95_ms": 10.84},
             "trading_risk_metrics": {"p95_ms": 12.9},
@@ -161,6 +167,44 @@ def test_validate_runtime_observability_drift_fails_on_p95_regression(tmp_path: 
     assert proc.returncode == 1
     assert payload["pass"] is False
     assert any(item["path"] == "api_performance.overall_p95_ms" for item in payload["violations"])
+
+
+def test_validate_runtime_observability_drift_fails_on_technical_analysis_fallback_regression(tmp_path: Path):
+    baseline_path = tmp_path / "runtime-observability-baseline.json"
+    summary_path = tmp_path / "summary.json"
+    output_path = tmp_path / "runtime-observability-drift-report.json"
+
+    summary_payload = _build_summary_payload()
+    summary_payload["api_performance"]["technical_analysis_history_fallback_total_delta"] = 3.0
+    summary_payload["api_performance"]["technical_analysis_history_fallback_ratio_delta"] = 0.75
+
+    baseline_path.write_text(json.dumps(_build_baseline_payload(), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    summary_path.write_text(json.dumps(summary_payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+    proc = subprocess.run(
+        [
+            "python",
+            "scripts/dev/quality_gate/validate_runtime_observability_drift.py",
+            "--baseline",
+            str(baseline_path),
+            "--current-summary-json",
+            str(summary_path),
+            "--output",
+            str(output_path),
+        ],
+        cwd=Path(__file__).resolve().parents[2],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    payload = json.loads(output_path.read_text(encoding="utf-8"))
+    assert proc.returncode == 1
+    assert payload["pass"] is False
+    assert any(
+        item["path"] == "api_performance.technical_analysis_history_fallback_total_delta"
+        for item in payload["violations"]
+    )
 
 
 def test_validate_runtime_observability_drift_fails_when_docker_request_delta_drops(tmp_path: Path):

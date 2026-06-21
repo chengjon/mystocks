@@ -4,6 +4,37 @@ import subprocess
 from pathlib import Path
 
 
+def _write_gate_closeouts(tmp_path: Path) -> dict[str, str]:
+    closeouts = {
+        "RUNTIME_GATE_CLOSEOUT_JSON": (
+            "runtime-delivery-gate-graphiti-closeout.json",
+            {"status": "completed", "episode_uuid": "ep-runtime", "group_id": "mystocks_spec_runtime_delivery_gates", "ingest_status": "warming"},
+        ),
+        "FRONTEND_GATE_CLOSEOUT_JSON": (
+            "frontend-runtime-gate-graphiti-closeout.json",
+            {"status": "completed", "episode_uuid": "ep-frontend", "group_id": "mystocks_spec_quality_gates", "ingest_status": "warming"},
+        ),
+        "API_GATE_CLOSEOUT_JSON": (
+            "api-performance-gate-graphiti-closeout.json",
+            {"status": "completed", "episode_uuid": "ep-api", "group_id": "mystocks_spec_quality_gates", "ingest_status": "warming"},
+        ),
+        "MONITORING_GATE_CLOSEOUT_JSON": (
+            "monitoring-auth-performance-gate-graphiti-closeout.json",
+            {"status": "completed", "episode_uuid": "ep-monitoring", "group_id": "mystocks_spec_quality_gates", "ingest_status": "warming"},
+        ),
+        "DOCKER_GATE_CLOSEOUT_JSON": (
+            "docker-runtime-smoke-graphiti-closeout.json",
+            {"status": "completed", "episode_uuid": "ep-docker", "group_id": "mystocks_spec_quality_gates", "ingest_status": "warming"},
+        ),
+    }
+    env_paths = {}
+    for env_name, (filename, payload) in closeouts.items():
+        path = tmp_path / filename
+        path.write_text(json.dumps(payload) + "\n", encoding="utf-8")
+        env_paths[env_name] = str(path)
+    return env_paths
+
+
 def test_tech_debt_weekly_report_script_has_stable_entrypoint_contract():
     script = Path("scripts/run_tech_debt_weekly_report.sh").read_text(encoding="utf-8")
 
@@ -27,6 +58,7 @@ def test_tech_debt_weekly_report_script_has_stable_entrypoint_contract():
     assert '--api-performance-baseline "${API_PERFORMANCE_BASELINE_PATH}"' in script
     assert 'if [ -n "${RUNTIME_GATE_DIR}" ] && [ -z "${RUNTIME_SUMMARY_JSON}" ]; then' in script
     assert 'resolve_latest_dir()' in script
+    assert 'RUNTIME_GATE_DIR="$(resolve_latest_dir "${PROJECT_ROOT}/reports/analysis/runtime-delivery-gate/*")"' in script
     assert 'if [ -n "${RUNTIME_GATE_CLOSEOUT_JSON}" ]; then' in script
     assert 'if [ -n "${FRONTEND_GATE_CLOSEOUT_JSON}" ]; then' in script
     assert 'if [ -n "${API_GATE_CLOSEOUT_JSON}" ]; then' in script
@@ -69,6 +101,9 @@ def test_tech_debt_weekly_report_script_generates_runtime_kpi_report(tmp_path: P
                     "overall_p95_ms": 22.94,
                     "observability_status": "healthy",
                     "slow_http_requests_total_delta": 0.0,
+                    "technical_analysis_history_requests_total_delta": 3.0,
+                    "technical_analysis_history_fallback_total_delta": 0.0,
+                    "technical_analysis_history_fallback_ratio_delta": 0.0,
                 },
                 "monitoring_auth_performance": {
                     "alert_rules_p95_ms": 271.53,
@@ -108,6 +143,9 @@ def test_tech_debt_weekly_report_script_generates_runtime_kpi_report(tmp_path: P
                     "overall_p95_ms": 22.94,
                     "observability_status": "healthy",
                     "slow_http_requests_total_delta": 0.0,
+                    "technical_analysis_history_requests_total_delta": 5.0,
+                    "technical_analysis_history_fallback_total_delta": 1.0,
+                    "technical_analysis_history_fallback_ratio_delta": 0.5,
                     "trading_status": {"p95_ms": 13.7},
                     "trading_market_snapshot": {"p95_ms": 10.84},
                     "trading_risk_metrics": {"p95_ms": 12.9},
@@ -155,6 +193,7 @@ def test_tech_debt_weekly_report_script_generates_runtime_kpi_report(tmp_path: P
             "RUNTIME_OBSERVABILITY_BASELINE_JSON": str(runtime_baseline_path),
             "API_PERFORMANCE_BASELINE_JSON": str(api_performance_baseline_path),
             "RUNTIME_SUMMARY_JSON": str(runtime_summary_path),
+            **_write_gate_closeouts(tmp_path),
             "TECH_DEBT_WEEKLY_THRESHOLD": "999999",
             "TECH_DEBT_WEEKLY_TOP_N": "1",
         },
@@ -166,7 +205,7 @@ def test_tech_debt_weekly_report_script_generates_runtime_kpi_report(tmp_path: P
     assert "## 4.1 Graphiti Gate Closeouts" in report_text
     assert "PM2 runtime overall gate status: measured=`PASS` baseline=`PASS` target=`PASS`" in report_text
     assert "API performance drift gate: measured=`PASS` baseline=`PASS` target=`PASS`" in report_text
-    assert "Runtime drift gate: `PASS` violations=`0` not_measured=`0`" in report_text
+    assert "Runtime drift gate: `FAIL` violations=`2` not_measured=`0`" in report_text
 
 
 def test_tech_debt_weekly_report_script_can_resolve_runtime_summary_from_gate_dir(tmp_path: Path):
@@ -203,6 +242,9 @@ def test_tech_debt_weekly_report_script_can_resolve_runtime_summary_from_gate_di
                     "overall_p95_ms": 22.94,
                     "observability_status": "healthy",
                     "slow_http_requests_total_delta": 0.0,
+                    "technical_analysis_history_requests_total_delta": 3.0,
+                    "technical_analysis_history_fallback_total_delta": 0.0,
+                    "technical_analysis_history_fallback_ratio_delta": 0.0,
                 },
                 "monitoring_auth_performance": {
                     "alert_rules_p95_ms": 271.53,
@@ -242,6 +284,9 @@ def test_tech_debt_weekly_report_script_can_resolve_runtime_summary_from_gate_di
                     "overall_p95_ms": 22.94,
                     "observability_status": "healthy",
                     "slow_http_requests_total_delta": 0.0,
+                    "technical_analysis_history_requests_total_delta": 5.0,
+                    "technical_analysis_history_fallback_total_delta": 1.0,
+                    "technical_analysis_history_fallback_ratio_delta": 0.5,
                     "trading_status": {"p95_ms": 13.7},
                     "trading_market_snapshot": {"p95_ms": 10.84},
                     "trading_risk_metrics": {"p95_ms": 12.9},
@@ -289,6 +334,7 @@ def test_tech_debt_weekly_report_script_can_resolve_runtime_summary_from_gate_di
             "RUNTIME_OBSERVABILITY_BASELINE_JSON": str(runtime_baseline_path),
             "API_PERFORMANCE_BASELINE_JSON": str(api_performance_baseline_path),
             "RUNTIME_DELIVERY_GATE_DIR": str(runtime_gate_dir),
+            **_write_gate_closeouts(tmp_path),
             "TECH_DEBT_WEEKLY_THRESHOLD": "999999",
             "TECH_DEBT_WEEKLY_TOP_N": "1",
         },
@@ -298,4 +344,4 @@ def test_tech_debt_weekly_report_script_can_resolve_runtime_summary_from_gate_di
     report_text = output_path.read_text(encoding="utf-8")
     assert "Docker runtime smoke status: measured=`PASS/PASS/PASS` baseline=`PASS/PASS/PASS` target=`PASS/PASS/PASS`" in report_text
     assert "API performance drift gate: measured=`PASS` baseline=`PASS` target=`PASS`" in report_text
-    assert "Runtime drift gate: `PASS` violations=`0` not_measured=`0`" in report_text
+    assert "Runtime drift gate: `FAIL` violations=`2` not_measured=`0`" in report_text
