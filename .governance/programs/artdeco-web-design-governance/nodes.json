@@ -13573,11 +13573,11 @@
     "node_type": "authorization",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-e3a-repository-hygiene-unit-script-authorization",
-    "status": "authorization-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "B4.012-M3a-E3a-R1",
-    "current_head": "4452d8c508cc6e84e63f916e24bd41f151681e25",
+    "current_head": "53b4a06554351a8eb78caab47ca487b8a092cbb5",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "authorization",
@@ -13585,6 +13585,13 @@
         "note": "Prepare narrow E3a-R1 lint-only recovery authorization after E3b-A baseline decision.",
         "current_head": "4452d8c508cc6e84e63f916e24bd41f151681e25",
         "recorded_at": "2026-06-21T17:33:54.622Z"
+      },
+      {
+        "kind": "decision",
+        "path": "Current HEAD after governance-only E3b/E3b-A/E3a-R1 prep commits: lint-only recovery remains authorized and still limited to three variable hygiene fixes in tests/unit/scripts/test_repository_hygiene_paths.py.",
+        "note": "Refresh current_head after governance-only commits; no scope change.",
+        "current_head": "53b4a06554351a8eb78caab47ca487b8a092cbb5",
+        "recorded_at": "2026-06-21T17:47:10.666Z"
       }
     ],
     "allowed_paths": [
@@ -13595,11 +13602,11 @@
     "non_goals": [
       "No assertion deletion or weakening, no skip/xfail, no docs/README/AGENTS/index/OpenSpec/OpenStock/source/runtime/frontend/backend edits, no broad rewrite, no attempt to make all repository-hygiene pytest cases green, no external dirty files."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-21T17:33:08.491Z",
-    "updated_at": "2026-06-21T17:34:18.604Z",
+    "updated_at": "2026-06-21T17:52:25.793Z",
     "track": "backlog",
     "mainline_id": "b4-012-m3-residual-dirty-atlas-rebaseline",
     "depth": 2,
@@ -13610,6 +13617,20 @@
         "note": "Authorization decision package prepared for lint-only recovery; no implementation permission yet.",
         "current_head": "4452d8c508cc6e84e63f916e24bd41f151681e25",
         "transitioned_at": "2026-06-21T17:34:03.261Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "Fresh evidence recorded at current HEAD; user-approved lint-only recovery may proceed.",
+        "current_head": "53b4a06554351a8eb78caab47ca487b8a092cbb5",
+        "transitioned_at": "2026-06-21T17:47:21.423Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Lint-only test-file edits and verification results are ready to land.",
+        "current_head": "53b4a06554351a8eb78caab47ca487b8a092cbb5",
+        "transitioned_at": "2026-06-21T17:52:25.793Z"
       }
     ],
     "acceptance": {

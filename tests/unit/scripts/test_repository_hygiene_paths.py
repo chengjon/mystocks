@@ -1671,6 +1671,7 @@ def test_governance_guides_are_converged_under_guides_governance_family() -> Non
     cleanup_index_root = (
         PROJECT_ROOT / "docs" / "reports" / "cleanup" / "index-artifacts" / "INDEX_root.md"
     ).read_text(encoding="utf-8")
+    guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
     governance_index = (PROJECT_ROOT / "docs" / "guides" / "governance" / "INDEX.md").read_text(encoding="utf-8")
 
     governance_docs = [
@@ -1691,7 +1692,6 @@ def test_governance_guides_are_converged_under_guides_governance_family() -> Non
 
 def test_onboarding_guides_are_converged_under_guides_onboarding_family() -> None:
     docs_index = (PROJECT_ROOT / "docs" / "INDEX.md").read_text(encoding="utf-8")
-    guides_index = (PROJECT_ROOT / "docs" / "guides" / "INDEX.md").read_text(encoding="utf-8")
     cleanup_index_root = (
         PROJECT_ROOT / "docs" / "reports" / "cleanup" / "index-artifacts" / "INDEX_root.md"
     ).read_text(encoding="utf-8")
@@ -1742,9 +1742,6 @@ def test_ai_test_optimizer_guides_are_converged_under_guides_ai_tools_family() -
 def test_maestro_and_multicli_runtime_docs_are_converged_under_guides_multicli_tasks() -> None:
     task_md = (PROJECT_ROOT / "TASK.md").read_text(encoding="utf-8")
     maestro_readme = (PROJECT_ROOT / "src" / "services" / "maestro" / "README.md").read_text(encoding="utf-8")
-    maestro_quick_start = (PROJECT_ROOT / "docs" / "guides" / "multi-cli-tasks" / "MAESTRO_QUICK_START.md").read_text(
-        encoding="utf-8"
-    ) if (PROJECT_ROOT / "docs" / "guides" / "multi-cli-tasks" / "MAESTRO_QUICK_START.md").exists() else ""
     mongodb_impl_plan = (
         PROJECT_ROOT / "docs" / "plans" / "2026-03-13-mongodb-multicli-coordination-implementation-plan.md"
     ).read_text(encoding="utf-8")
