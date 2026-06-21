@@ -13250,5 +13250,54 @@
       "current_head": "be5a4c9a12c7f7aa9328c940df223ce13595e521",
       "prepared_at": "2026-06-21T14:45:41.795Z"
     }
+  },
+  {
+    "id": "b4-012-m3a-e2-security-compliance-tracked-authorization",
+    "title": "B4.012 M3a-E2 security compliance tracked authorization",
+    "node_type": "authorization",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-m3a-e-performance-runtime-security-tests-split",
+    "status": "authorization-prepared",
+    "function_tree_ref": "B4.012-M3a-E2",
+    "current_head": "01845f3a4769e878cf6e207b6c9eb565aa0349ba",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-e2-security-compliance-tracked-authorization-prep-2026-06-21.md",
+        "note": "No-source E2 tracked security/compliance boundary review: 7 tracked tests/security files, 0 untracked; implementation still requires explicit approval.",
+        "current_head": "01845f3a4769e878cf6e207b6c9eb565aa0349ba",
+        "recorded_at": "2026-06-21T15:07:02.218Z"
+      }
+    ],
+    "allowed_paths": [
+      "tests/security/test_security_compliance/compliance_test_engine_methods/part1.py",
+      "tests/security/test_security_compliance/compliance_test_engine_methods/part2.py",
+      "tests/security/test_security_compliance/helpers.py",
+      "tests/security/test_security_compliance/utils.py",
+      "tests/security/test_security_vulnerabilities/security_vulnerability_scanner_methods/part1.py",
+      "tests/security/test_security_vulnerabilities/security_vulnerability_scanner_methods/part2.py",
+      "tests/security/test_security_vulnerabilities/utils.py",
+      "docs/reports/worklogs/claude-auto/b4-012-m3a-e2-security-compliance-tracked-closeout-2026-06-21.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No assertion weakening, scanner threshold relaxation, production source/runtime changes, OpenSpec/OpenStock provider runtime changes, E1 performance files, D/D1 E2E files, U untracked provenance candidates, frontend/backend source, ST-HOLD, marketKlineData, deletion, restore, migration, or broad refactor."
+    ],
+    "next_gate": "review and approve implementation authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-21T15:05:56.684Z",
+    "updated_at": "2026-06-21T15:07:28.410Z",
+    "acceptance": {
+      "commit_gate": [
+        "git diff --cached --check; FUNCTION_TREE validate; GitNexus verify-staged and detect-changes; OPENDOG verification; exact staged scope only.",
+        "python -m py_compile and ruff check for the 7 E2 Python files; focused pytest for security compliance and vulnerability families, documenting environment-only blockers separately."
+      ],
+      "closeout_gate": [
+        "E2 closeout worklog records changed files, security/compliance assertion-preservation posture, gates, any environment blockers, and confirms staged index contains only E2 allowed files and generated governance state."
+      ]
+    }
   }
 ]

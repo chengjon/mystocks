@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-21T14:45:41.864Z",
+  "updated_at": "2026-06-21T15:07:28.432Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -120,6 +120,32 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-21T09:52:27.924Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-012-m3a-e2-security-compliance-tracked-authorization",
+      "title": "B4.012 M3a-E2 security compliance tracked authorization",
+      "node_type": "authorization",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-012-m3a-e-performance-runtime-security-tests-split",
+      "status": "authorization-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "review and approve implementation authorization",
+      "function_tree_ref": "B4.012-M3a-E2",
+      "freshness": "current-head",
+      "allowed_paths": [
+        "tests/security/test_security_compliance/compliance_test_engine_methods/part1.py",
+        "tests/security/test_security_compliance/compliance_test_engine_methods/part2.py",
+        "tests/security/test_security_compliance/helpers.py",
+        "tests/security/test_security_compliance/utils.py",
+        "tests/security/test_security_vulnerabilities/security_vulnerability_scanner_methods/part1.py",
+        "tests/security/test_security_vulnerabilities/security_vulnerability_scanner_methods/part2.py",
+        "tests/security/test_security_vulnerabilities/utils.py",
+        "docs/reports/worklogs/claude-auto/b4-012-m3a-e2-security-compliance-tracked-closeout-2026-06-21.md"
+      ],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-21T15:07:28.410Z"
     }
   ]
 }
