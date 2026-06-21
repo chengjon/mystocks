@@ -49,3 +49,35 @@ Option B: repository-hygiene policy update
 ## Disposition
 
 E3a is blocked until the implementation authorization is clarified. No test file was staged or committed in this blocker package.
+
+## 2026-06-22 Strict Hygiene Follow-Up
+
+After user approval, E3a was temporarily unblocked for the strict hygiene route:
+
+- restore/preserve the removed `OMC_WORKFLOW_GUIDE` repository-hygiene assertions;
+- avoid README/docs policy edits;
+- avoid assertion weakening, skip/xfail additions, broad test rewrites, and source/runtime changes.
+
+The OMC assertion deletion was restored to the HEAD contract, leaving `tests/unit/scripts/test_repository_hygiene_paths.py` with no OMC-removal diff.
+
+Read-only and verification evidence from the strict route:
+
+- `python -m py_compile tests/unit/scripts/test_repository_hygiene_paths.py`: passed.
+- `ruff check tests/unit/scripts/test_repository_hygiene_paths.py`: initially found lint-only issues in the same file (`guides_index` scope/unused local and `maestro_quick_start` unused local). A minimal lint fix was tested but not landed because the full E3a gate below failed.
+- `pytest tests/unit/scripts/test_repository_hygiene_paths.py -q --tb=short --no-cov`: failed with `87 failed, 15 passed`.
+
+The pytest failures are broad repository-hygiene/documentation-truth drift, not a safe lint-only E3a closure. Representative failure classes:
+
+- docs root file list drift (`PRODUCT.md`, `README.md`, `troubleshooting.md`);
+- missing generated/cleanup indexes such as `docs/reports/reviews/INDEX.md` and `docs/reports/cleanup/index-artifacts/INDEX_root.md`;
+- missing guide-family indexes such as `docs/guides/tdx-integration/INDEX.md` and `docs/guides/buger/INDEX.md`;
+- existing documentation navigation/assertion drift across docs reports, guides, API, testing, operations, and AI tooling families;
+- root `AGENTS.md` no longer containing the exact historical GitNexus staged microbatch snippet asserted by the test.
+
+Because the required focused pytest gate did not pass, no lint fix or test change was staged or committed. The target test file was returned to a clean worktree state before recording this blocker update.
+
+Updated disposition:
+
+- E3a remains blocked as a lint/import hygiene implementation package.
+- Unblocking requires a separate no-source decision package for repository-hygiene docs truth drift, or a revised E3a acceptance scope that explicitly treats the current broad pytest failures as pre-existing baseline debt.
+- Do not repair README/docs/index artifacts inside E3a without separate authorization.

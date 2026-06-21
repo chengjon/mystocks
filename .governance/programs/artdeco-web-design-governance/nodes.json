@@ -13399,7 +13399,7 @@
     "parent": "b4-012-m3a-e3-governance-script-tests-split",
     "status": "blocked",
     "function_tree_ref": "B4.012-M3a-E3a",
-    "current_head": "c5432adc92845db1c1a88f6114b41d4f0e103baa",
+    "current_head": "62f8eb5b51f00e3c281fa879123d2fef1a5b7404",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -13416,6 +13416,20 @@
         "note": "E3a implementation blocked: current dirty diff removes OMC repository-hygiene assertions, exceeding lint/import hygiene authorization.",
         "current_head": "c5432adc92845db1c1a88f6114b41d4f0e103baa",
         "recorded_at": "2026-06-21T16:25:02.918Z"
+      },
+      {
+        "kind": "decision",
+        "path": "User approved strict E3a continuation at current HEAD: restore/preserve removed OMC repository-hygiene assertions only; no README/docs policy changes and no assertion weakening.",
+        "note": "Strict hygiene unblock evidence after blocker commit; implementation remains limited to preserving existing repository-hygiene assertions.",
+        "current_head": "62f8eb5b51f00e3c281fa879123d2fef1a5b7404",
+        "recorded_at": "2026-06-21T16:40:59.903Z"
+      },
+      {
+        "kind": "blocker",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3a-repository-hygiene-unit-script-implementation-blocker-2026-06-22.md",
+        "note": "Strict E3a route restored OMC assertion deletion to HEAD, but focused repository-hygiene pytest remains broadly red (87 failed, 15 passed); no test change landed.",
+        "current_head": "62f8eb5b51f00e3c281fa879123d2fef1a5b7404",
+        "recorded_at": "2026-06-21T16:46:32.701Z"
       }
     ],
     "allowed_paths": [
@@ -13427,10 +13441,10 @@
       "No scripts/tests, no untracked tests/unit/scripts files, no source/runtime changes, no OpenSpec/OpenStock provider runtime changes, no assertion weakening, skip/xfail addition, deletion, restore, migration, broad refactor, ST-HOLD, or marketKlineData."
     ],
     "next_gate": "unblock to authorization-prepared",
-    "blocker_reason": "Current dirty diff removes OMC_WORKFLOW_GUIDE repository-hygiene assertions; E3a authorization only permits syntax/lint/import hygiene and forbids assertion weakening.",
+    "blocker_reason": "Strict E3a hygiene implementation cannot close: focused pytest for tests/unit/scripts/test_repository_hygiene_paths.py currently fails with 87 failed / 15 passed due broad repository-hygiene docs truth drift outside E3a lint/import scope.",
     "unblock_target_state": "authorization-prepared",
     "created_at": "2026-06-21T16:07:53.710Z",
-    "updated_at": "2026-06-21T16:25:02.986Z",
+    "updated_at": "2026-06-21T16:46:43.288Z",
     "acceptance": {
       "commit_gate": [
         "git diff --cached --check; FUNCTION_TREE validate; GitNexus verify-staged and detect-changes; OPENDOG verification; exact staged scope only.",
@@ -13447,6 +13461,27 @@
         "note": "Requires clarified authorization: restore assertions under strict hygiene or create separate repository-hygiene policy update.",
         "current_head": "c5432adc92845db1c1a88f6114b41d4f0e103baa",
         "transitioned_at": "2026-06-21T16:25:02.985Z"
+      },
+      {
+        "from": "blocked",
+        "to": "authorization-prepared",
+        "note": "User approved strict E3a continuation; unblock returns to authorization-prepared with no assertion weakening.",
+        "current_head": "62f8eb5b51f00e3c281fa879123d2fef1a5b7404",
+        "transitioned_at": "2026-06-21T16:41:10.650Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "Source/test edit approved by user for strict hygiene only: restore/preserve OMC repository-hygiene assertions; no README/docs changes.",
+        "current_head": "62f8eb5b51f00e3c281fa879123d2fef1a5b7404",
+        "transitioned_at": "2026-06-21T16:41:21.725Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "blocked",
+        "note": "Return to authorization prep only after repository-hygiene docs truth drift decision or revised acceptance scope.",
+        "current_head": "62f8eb5b51f00e3c281fa879123d2fef1a5b7404",
+        "transitioned_at": "2026-06-21T16:46:43.288Z"
       }
     ]
   }
