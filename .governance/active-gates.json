@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-21T15:57:30.738Z",
+  "updated_at": "2026-06-21T16:08:41.629Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -137,6 +137,26 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-21T15:57:30.729Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-012-m3a-e3a-repository-hygiene-unit-script-authorization",
+      "title": "B4.012 M3a-E3a repository hygiene unit script authorization",
+      "node_type": "authorization",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-012-m3a-e3-governance-script-tests-split",
+      "status": "authorization-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "review and approve implementation authorization",
+      "function_tree_ref": "B4.012-M3a-E3a",
+      "freshness": "current-head",
+      "allowed_paths": [
+        "tests/unit/scripts/test_repository_hygiene_paths.py",
+        "docs/reports/worklogs/claude-auto/b4-012-m3a-e3a-repository-hygiene-unit-script-closeout-2026-06-21.md"
+      ],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-21T16:08:41.611Z"
     }
   ]
 }

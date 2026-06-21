@@ -114,3 +114,4 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-012-m3a-e1-performance-runtime-tracked-authorization: B4.012 M3a-E1 performance runtime tracked authorization (planning, FT: B4.012-M3a-E1)
 - [ ] b4-012-m3a-e2-security-compliance-tracked-authorization: B4.012 M3a-E2 security compliance tracked authorization (planning, FT: B4.012-M3a-E2)
 - [ ] b4-012-m3a-e3-governance-script-tests-split: B4.012 M3a-E3 governance script tests no-source split (planning, FT: B4.012-M3a-E3)
+- [ ] b4-012-m3a-e3a-repository-hygiene-unit-script-authorization: B4.012 M3a-E3a repository hygiene unit script authorization (planning, FT: B4.012-M3a-E3a)
