@@ -10,25 +10,34 @@ scope:
     - "tests/e2e/test_login.py"
     - "tests/e2e/test_risk.py"
     - "tests/e2e/test_web_e2e.py"
-    - "docs/reports/worklogs/claude-auto/b4-012-m3a-d1-e2e-browser-smoke-closeout-2026-06-15.md"
+    - "docs/reports/worklogs/claude-auto/b4-012-m3a-d1-e2e-browser-smoke-closeout-2026-06-21.md"
   forbidden_paths:
-    []
+    - "src/"
+    - "web/frontend/src/"
+    - "web/frontend/tests/"
+    - "web/backend/"
+    - "tests/dashboard/"
+    - "tests/prototype/"
+    - "tests/performance/"
+    - "tests/data_sources/"
+    - "openspec/"
 
 non_goals:
-  - "No frontend/source/runtime/API/backend/OpenSpec edits."
-  - "Do not touch tests/dashboard, tests/prototype, tests/performance, untracked contract E2E, generated/tooling, ST-HOLD, marketKlineData, or external dirty files."
-  - "Do not change Playwright runtime behavior beyond metadata/style cleanup without explicit implementation authorization."
+  - "No source/runtime/API/backend/OpenSpec/OpenStock edits."
+  - "Do not touch frontend source tests, untracked frontend provenance, marketKlineData, trading-style-normalization.spec.ts, ST-HOLD, generated/tooling, or external dirty files."
+  - "Do not claim E2E pass status unless the selected PM2-backed browser smoke command is run in the implementation package."
 
 acceptance:
   commit_gate:
-    - "py_compile for Python E2E files and TypeScript syntax-focused check for Playwright specs"
-    - "focused pytest or documented environment skip for Python E2E files"
-    - "Playwright/E2E gate command selected by implementation scope or explicitly documented as environment-blocked"
-    - "GitNexus verify-staged and detect-changes remain low risk"
-    - "OPENDOG lint/test verification recorded"
+    - "git diff --cached --check passes."
+    - "Python E2E files pass py_compile or document environment-blocked syntax gate."
+    - "Playwright specs pass syntax/list check or implementation-scoped browser smoke gate."
+    - "Focused pytest/E2E gates pass or document environment-blocked skips without weakening assertions."
+    - "GitNexus verify-staged and detect-changes remain low risk; OPENDOG verification is fresh with no new failures."
+    - "Staged files are limited to the D1 allowed paths."
   closeout_gate:
-    - "D1 closeout worklog records exact files, gates, residual environment warnings, and implementation commit"
+    - "D1 closeout worklog records exact files, gates, E2E/browser smoke result or documented environment block, residual risks, and implementation commit."
 
 evidence:
-  current_head: "8e4d7facfb1082ceb05476c2fece7708022bba0f"
+  current_head: "34cb5748321a2f952ef17f2a38afe0b3de4f56bb"
   notes: []
