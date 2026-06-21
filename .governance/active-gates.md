@@ -11,5 +11,6 @@
 | artdeco-web-design-governance | b4-012-m3a-u-untracked-tests-provenance-review | decision-prepared | - | prepare authorization | B4.012-M3a-U |
 | artdeco-web-design-governance | b4-012-m3a-e3-governance-script-tests-split | decision-prepared | - | prepare authorization | B4.012-M3a-E3 |
 | artdeco-web-design-governance | b4-012-m3a-e3a-repository-hygiene-unit-script-authorization | blocked | Strict E3a hygiene implementation cannot close: focused pytest for tests/unit/scripts/test_repository_hygiene_paths.py currently fails with 87 failed / 15 passed due broad repository-hygiene docs truth drift outside E3a lint/import scope. | unblock to authorization-prepared | B4.012-M3a-E3a |
+| artdeco-web-design-governance | b4-012-m3a-e3b-repository-hygiene-docs-truth-drift-decision | decision-prepared | - | prepare authorization | B4.012-M3a-E3b |
 
 _Generated from `.governance/active-gates.json`._
