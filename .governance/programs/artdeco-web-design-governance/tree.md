@@ -119,3 +119,4 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-012-m3a-e3b-a-repository-hygiene-docs-truth-baseline-decision: B4.012 M3a-E3b-A repository hygiene docs truth baseline decision (planning, FT: B4.012-M3a-E3b-A)
 - [ ] b4-012-m3a-e3a-r1-repository-hygiene-lint-only-recovery-authorization: B4.012 M3a-E3a-R1 repository hygiene lint-only recovery authorization (planning, FT: B4.012-M3a-E3a-R1)
 - [ ] b4-012-m3a-e3b-b-repository-hygiene-docs-truth-repair-atlas: B4.012 M3a-E3b-B repository hygiene docs truth repair atlas (planning, FT: B4.012-M3a-E3b-B)
+- [ ] b4-012-m3a-e3b-c-repository-hygiene-reports-index-family: B4.012 M3a-E3b-C repository hygiene reports/index family decision (planning, FT: B4.012-M3a-E3b-C)

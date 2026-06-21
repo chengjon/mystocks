@@ -13713,5 +13713,46 @@
         "transitioned_at": "2026-06-21T18:15:16.272Z"
       }
     ]
+  },
+  {
+    "id": "b4-012-m3a-e3b-c-repository-hygiene-reports-index-family",
+    "title": "B4.012 M3a-E3b-C repository hygiene reports/index family decision",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-m3a-e3b-b-repository-hygiene-docs-truth-repair-atlas",
+    "status": "decision-prepared",
+    "function_tree_ref": "B4.012-M3a-E3b-C",
+    "current_head": "085f56e74cf2615bbab116e40dcfa2f9be38c61c",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-c-repository-hygiene-reports-index-family-2026-06-22.md",
+        "note": "First family slice under docs-truth atlas; low-risk reports/index boundary prepared from 87/15 repository hygiene baseline.",
+        "current_head": "085f56e74cf2615bbab116e40dcfa2f9be38c61c",
+        "recorded_at": "2026-06-21T18:54:13.420Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-21T18:53:36.105Z",
+    "updated_at": "2026-06-21T18:54:22.136Z",
+    "track": "backlog",
+    "mainline_id": "b4-012-m3-residual-dirty-atlas-rebaseline",
+    "depth": 2,
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "Decision prepared: first low-risk reports/index family can proceed to explicit authorization package; no source edits authorized in this package.",
+        "current_head": "085f56e74cf2615bbab116e40dcfa2f9be38c61c",
+        "transitioned_at": "2026-06-21T18:54:22.136Z"
+      }
+    ]
   }
 ]
