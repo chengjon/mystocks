@@ -13352,5 +13352,43 @@
       "current_head": "7d437cddd5526cebad6475abf8d161cd7b599a24",
       "prepared_at": "2026-06-21T15:45:29.232Z"
     }
+  },
+  {
+    "id": "b4-012-m3a-e3-governance-script-tests-split",
+    "title": "B4.012 M3a-E3 governance script tests no-source split",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-m3a-e-performance-runtime-security-tests-split",
+    "status": "decision-prepared",
+    "function_tree_ref": "B4.012-M3a-E3",
+    "current_head": "863846bd5b113dd5abe243d449372a94325747b3",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3-governance-script-tests-no-source-split-2026-06-21.md",
+        "note": "No-source E3 split: one tracked tests/unit/scripts hygiene candidate, three untracked provenance files, and 28 scripts/tests files deferred to family split.",
+        "current_head": "863846bd5b113dd5abe243d449372a94325747b3",
+        "recorded_at": "2026-06-21T15:57:30.529Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-21T15:56:18.221Z",
+    "updated_at": "2026-06-21T15:57:30.729Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "E3 decision prepared: implement E3a separately; defer scripts/tests and untracked provenance.",
+        "current_head": "863846bd5b113dd5abe243d449372a94325747b3",
+        "transitioned_at": "2026-06-21T15:57:30.729Z"
+      }
+    ]
   }
 ]
