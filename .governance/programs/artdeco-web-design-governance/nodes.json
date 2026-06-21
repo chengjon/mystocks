@@ -13672,5 +13672,46 @@
       "current_head": "a68d6a60455e3cb6571b31aad21070ed3a9f5d5e",
       "prepared_at": "2026-06-21T17:55:35.081Z"
     }
+  },
+  {
+    "id": "b4-012-m3a-e3b-b-repository-hygiene-docs-truth-repair-atlas",
+    "title": "B4.012 M3a-E3b-B repository hygiene docs truth repair atlas",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-m3a-e3b-repository-hygiene-docs-truth-drift-decision",
+    "status": "decision-prepared",
+    "function_tree_ref": "B4.012-M3a-E3b-B",
+    "current_head": "8727c81073a0f67ee9c64dd224ce85a478887aee",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-b-repository-hygiene-docs-truth-repair-atlas-2026-06-22.md",
+        "note": "No-source docs-truth atlas baseline for repository hygiene after focused pytest remained broad at 87 failed / 15 passed; family classification prepared for next authorization package.",
+        "current_head": "8727c81073a0f67ee9c64dd224ce85a478887aee",
+        "recorded_at": "2026-06-21T18:15:16.217Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-21T18:11:08.614Z",
+    "updated_at": "2026-06-21T18:15:16.272Z",
+    "track": "backlog",
+    "mainline_id": "b4-012-m3-residual-dirty-atlas-rebaseline",
+    "depth": 2,
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "Decision package ready: docs-truth atlas identifies next family-based repair boundary; no source edits authorized yet.",
+        "current_head": "8727c81073a0f67ee9c64dd224ce85a478887aee",
+        "transitioned_at": "2026-06-21T18:15:16.272Z"
+      }
+    ]
   }
 ]
