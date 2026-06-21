@@ -12,8 +12,8 @@
  * 生成时间: 2025-11-14
  */
 
-import { test, expect, Page } from '@playwright/test';
-import { LoginPage } from '../utils/page-objects';
+import { test, expect, type Page } from '@playwright/test';
+import { LoginPage } from '../utils/page-objects/part-1';
 import {
   UserAuth,
   ScreenshotHelper,
@@ -23,7 +23,112 @@ import {
   ReportHelper
 } from '../utils/test-helpers';
 
-test.describe('用户认证流程 - 优化版本', () => {
+const DEMO_ADMIN = {
+  username: 'admin',
+  password: 'admin123',
+};
+
+async function openCurrentLogin(page: Page) {
+  await page.goto('/login', { waitUntil: 'domcontentloaded' });
+
+  await expect(page.getByRole('heading', { name: 'LOGIN' })).toBeVisible();
+  await expect(page.getByTestId('username-input')).toBeVisible();
+  await expect(page.getByTestId('password-input')).toBeVisible();
+  await expect(page.getByTestId('login-button')).toBeVisible();
+}
+
+async function fillCurrentLoginForm(page: Page, username: string, password: string) {
+  await page.getByTestId('username-input').fill(username);
+  await page.getByTestId('password-input').fill(password);
+}
+
+async function loginAsCurrentDemoAdmin(page: Page) {
+  await openCurrentLogin(page);
+  await fillCurrentLoginForm(page, DEMO_ADMIN.username, DEMO_ADMIN.password);
+
+  await page.getByTestId('login-button').click();
+
+  await expect(page.getByRole('heading', { name: '量化驾驶舱' })).toBeVisible({ timeout: 45_000 });
+  await expect(page).toHaveURL(/\/dashboard$/);
+}
+
+test.describe('用户认证流程 - 当前浏览器冒烟', () => {
+  test.describe.configure({ mode: 'serial' });
+
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.clear();
+      window.sessionStorage.clear();
+    });
+  });
+
+  test('登录页暴露当前表单契约', async ({ page }) => {
+    await openCurrentLogin(page);
+
+    await expect(page.getByText('MYSTOCKS ACCESS GATE')).toBeVisible();
+    await expect(page.getByTestId('admin-account-hint')).toContainText('admin');
+    await expect(page.getByTestId('user-account-hint')).toContainText('user');
+  });
+
+  test('受保护路由会把未登录用户带回登录页', async ({ page }) => {
+    await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
+
+    await expect(page).toHaveURL(/\/login\?redirect=(?:\/|%2F)dashboard$/);
+    await expect(page.getByRole('heading', { name: 'LOGIN' })).toBeVisible();
+    await expect(page.getByTestId('username-input')).toBeVisible();
+  });
+
+  test('种子管理员账号可登录并落到主仪表盘', async ({ page }) => {
+    await loginAsCurrentDemoAdmin(page);
+
+    const authState = await page.evaluate(() => ({
+      token: window.localStorage.getItem('auth_token'),
+      user: window.localStorage.getItem('auth_user'),
+    }));
+
+    expect(authState.token).toBeTruthy();
+    expect(authState.user).toContain(DEMO_ADMIN.username);
+    await expect(page.locator('.artdeco-sidebar-v3')).toBeVisible();
+  });
+
+  test('登录失败不会写入认证状态', async ({ page }) => {
+    await openCurrentLogin(page);
+    await fillCurrentLoginForm(page, 'notadmin', DEMO_ADMIN.password);
+    await page.getByTestId('login-button').click();
+
+    await expect(page).toHaveURL(/\/login$/);
+
+    const authState = await page.evaluate(() => ({
+      token: window.localStorage.getItem('auth_token'),
+      user: window.localStorage.getItem('auth_user'),
+    }));
+
+    expect(authState.token).toBeNull();
+    expect(authState.user).toBeNull();
+  });
+
+  test('登录表单保留基础校验反馈', async ({ page }) => {
+    await openCurrentLogin(page);
+    await fillCurrentLoginForm(page, DEMO_ADMIN.username, 'bad');
+    await page.getByTestId('login-button').click();
+
+    await expect(page.getByText('PASSWORD MUST BE AT LEAST 6 CHARACTERS').first()).toBeVisible();
+    await expect(page).toHaveURL(/\/login$/);
+  });
+
+  test('带 redirect 的登录保持主线跳转闭环', async ({ page }) => {
+    await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
+    await expect(page).toHaveURL(/\/login\?redirect=(?:\/|%2F)dashboard$/);
+
+    await fillCurrentLoginForm(page, DEMO_ADMIN.username, DEMO_ADMIN.password);
+    await page.getByTestId('login-button').click();
+
+    await expect(page.getByRole('heading', { name: '量化驾驶舱' })).toBeVisible({ timeout: 45_000 });
+    await expect(page).toHaveURL(/\/dashboard$/);
+  });
+});
+
+test.describe.skip('用户认证流程 - 优化版本（legacy stale contract）', () => {
   let page: Page;
   let loginPage: LoginPage;
 
@@ -40,7 +145,7 @@ test.describe('用户认证流程 - 优化版本', () => {
     // 每个测试后记录结果
     const testName = test.info().title;
     const result = test.info().expectedStatus === 'passed' ? 'passed' : 'failed';
-    await ReportHelper.recordTestResult(page, testName, result as any);
+    await ReportHelper.recordTestResult(page, testName, result as any); // TODO owner=frontend-platform issue=techdebt-expired-markers ttl=2026-06-30: tighten test result type instead of any cast
   });
 
   test('登录页面加载和元素验证', async () => {

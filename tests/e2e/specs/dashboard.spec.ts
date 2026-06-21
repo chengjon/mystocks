@@ -11,8 +11,8 @@
  * 生成时间: 2025-11-14
  */
 
-import { test, expect } from '@playwright/test';
-import { DashboardPage } from '../utils/page-objects';
+import { test, expect, type Page } from '@playwright/test';
+import { DashboardPage } from '../utils/page-objects/part-1';
 import {
   UserAuth,
   ScreenshotHelper,
@@ -22,7 +22,85 @@ import {
 } from '../utils/test-helpers';
 import { performance } from '../playwright.config';
 
-test.describe('仪表盘功能', () => {
+const DEMO_ADMIN = {
+  username: 'admin',
+  password: 'admin123',
+};
+
+async function loginToCurrentDashboard(page: Page) {
+  await page.goto('/login', { waitUntil: 'domcontentloaded' });
+  await expect(page.getByRole('heading', { name: 'LOGIN' })).toBeVisible();
+  await page.getByTestId('username-input').fill(DEMO_ADMIN.username);
+  await page.getByTestId('password-input').fill(DEMO_ADMIN.password);
+
+  await page.getByTestId('login-button').click();
+
+  await expect(page.getByRole('heading', { name: '量化驾驶舱' })).toBeVisible({ timeout: 45_000 });
+  await expect(page).toHaveURL(/\/dashboard$/);
+}
+
+test.describe('仪表盘功能 - 当前浏览器冒烟', () => {
+  test.describe.configure({ mode: 'serial' });
+
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.clear();
+      window.sessionStorage.clear();
+    });
+
+    await loginToCurrentDashboard(page);
+  });
+
+  test('仪表盘主 shell 与内容区正常渲染', async ({ page }) => {
+    await expect(page).toHaveURL(/\/dashboard$/);
+    await expect(page.locator('.app-shell')).toBeVisible();
+    await expect(page.locator('.artdeco-sidebar-v3')).toBeVisible();
+    await expect(page.getByRole('heading', { name: '量化驾驶舱' })).toBeVisible();
+    await expect(page.getByText('QUANTIX · 实时洞察 · 策略执行')).toBeVisible();
+  });
+
+  test('主业务域导航入口保持可见', async ({ page }) => {
+    for (const label of ['市场行情', '数据分析', '自选管理', '策略管理', '交易管理', '风险管理', '系统设置']) {
+      await expect(page.getByText(label, { exact: true }).first()).toBeVisible();
+    }
+  });
+
+  test('当前 dashboard 运行时面板保持主线真值', async ({ page }) => {
+    await expect(page.getByText('市场资金流向概览')).toBeVisible();
+    await expect(page.getByText('主要市场指标')).toBeVisible();
+    await expect(page.getByText('技术指标概览')).toBeVisible();
+    await expect(page.getByText('快速导航')).toBeVisible();
+    await expect(page.getByText('自选池真实接口尚未接入')).toBeVisible();
+  });
+
+  test('刷新动作存在且不会破坏页面主结构', async ({ page }) => {
+    await page.getByRole('button', { name: '刷新数据' }).click();
+
+    await expect(page.getByRole('heading', { name: '量化驾驶舱' })).toBeVisible();
+    await expect(page.locator('.artdeco-sidebar-v3')).toBeVisible();
+  });
+
+  test('快速导航卡片覆盖核心业务域', async ({ page }) => {
+    for (const label of ['实时报价与技术分析', '自选股与投资组合', '深度数据分析工具', '信号到订单的闭环', '量化策略开发平台', '实时风险评估系统']) {
+      await expect(page.getByText(label)).toBeVisible();
+    }
+  });
+
+  test('当前主线不再暴露旧 mock 股票表格契约', async ({ page }) => {
+    await expect(page.locator('[data-testid=favorite-stocks-table]')).toHaveCount(0);
+    await expect(page.getByText('当前页面不再展示 mock 股票数据')).toBeVisible();
+  });
+
+  test('窄屏下 dashboard 仍保留主内容与侧边导航', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+
+    await expect(page.getByRole('heading', { name: '量化驾驶舱' })).toBeVisible();
+    await expect(page.locator('.artdeco-sidebar-v3')).toBeVisible();
+    await expect(page.getByText('刷新数据')).toBeVisible();
+  });
+});
+
+test.describe.skip('仪表盘功能（legacy stale contract）', () => {
   let dashboardPage: DashboardPage;
 
   test.beforeEach(async ({ page }) => {
@@ -39,7 +117,7 @@ test.describe('仪表盘功能', () => {
       } catch (error) {
         console.log('localStorage not available, using fallback storage');
         // 如果localStorage不可用，设置内存存储
-        (window as any).testStorage = {
+        (window as any).testStorage = { // TODO owner=frontend-platform issue=techdebt-expired-markers ttl=2026-06-30: replace any with typed window test storage
           token: 'test-auth-token-for-phase11-1'
         };
       }

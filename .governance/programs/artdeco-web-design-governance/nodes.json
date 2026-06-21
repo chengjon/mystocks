@@ -10754,9 +10754,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-d-e2e-frontend-tests-split",
-    "status": "authorization-prepared",
+    "status": "closed",
     "function_tree_ref": "b4-012-m3a-d-e2e-frontend-tests-split",
-    "current_head": "34cb5748321a2f952ef17f2a38afe0b3de4f56bb",
+    "current_head": "b4c56d88b97d9eee4a4453d0f1bc0e9ad81556e5",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -10773,6 +10773,20 @@
         "note": "No-source D1 authorization refresh after D parent reactivation; implementation remains unapproved.",
         "current_head": "34cb5748321a2f952ef17f2a38afe0b3de4f56bb",
         "recorded_at": "2026-06-21T09:05:05.062Z"
+      },
+      {
+        "kind": "baseline",
+        "path": ".governance/programs/artdeco-web-design-governance/cards/b4-012-m3a-d1-e2e-browser-smoke-authorization.yaml",
+        "note": "D1 implementation approval refresh at current HEAD; user approved continuing with D1 implementation after U parent reactivation.",
+        "current_head": "b4c56d88b97d9eee4a4453d0f1bc0e9ad81556e5",
+        "recorded_at": "2026-06-21T10:02:43.553Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-d1-e2e-browser-smoke-closeout-2026-06-21.md",
+        "note": "D1 current browser smoke implementation landed against current runtime truth; closeout worklog recorded.",
+        "current_head": "b4c56d88b97d9eee4a4453d0f1bc0e9ad81556e5",
+        "recorded_at": "2026-06-21T13:18:04.674Z"
       }
     ],
     "allowed_paths": [
@@ -10800,11 +10814,11 @@
       "Do not touch frontend source tests, untracked frontend provenance, marketKlineData, trading-style-normalization.spec.ts, ST-HOLD, generated/tooling, or external dirty files.",
       "Do not claim E2E pass status unless the selected PM2-backed browser smoke command is run in the implementation package."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-15T11:36:03.916Z",
-    "updated_at": "2026-06-21T09:05:05.176Z",
+    "updated_at": "2026-06-21T13:21:30.146Z",
     "acceptance": {
       "commit_gate": [
         "git diff --cached --check passes.",
@@ -10832,8 +10846,45 @@
         "note": "B4.013 runtime-first blocker removed for D1; exact E2E browser smoke implementation boundary refreshed.",
         "current_head": "34cb5748321a2f952ef17f2a38afe0b3de4f56bb",
         "transitioned_at": "2026-06-21T09:05:05.121Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved D1 implementation; scope limited to six E2E browser-smoke files and D1 closeout worklog.",
+        "current_head": "b4c56d88b97d9eee4a4453d0f1bc0e9ad81556e5",
+        "transitioned_at": "2026-06-21T10:02:43.622Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "D1 browser smoke implementation verified: chromium 13 passed / 24 skipped; Python syntax green; frontend type-check green.",
+        "current_head": "b4c56d88b97d9eee4a4453d0f1bc0e9ad81556e5",
+        "transitioned_at": "2026-06-21T13:18:04.752Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Implementation landed in d173e7c57: current auth/dashboard browser smoke stabilized within D1 allowed paths.",
+        "current_head": "d173e7c574c1ba98b8a2e8867acce048e29cd615",
+        "transitioned_at": "2026-06-21T13:21:14.254Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "D1 browser smoke closeout complete; residual Python E2E blockers remain outside D1 authorization and documented.",
+        "current_head": "d173e7c574c1ba98b8a2e8867acce048e29cd615",
+        "transitioned_at": "2026-06-21T13:21:30.146Z"
       }
-    ]
+    ],
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m3a-d1-e2e-browser-smoke-closeout-2026-06-21.md",
+      "compatibility": "No source/runtime/OpenSpec changes; OpenStock provider/data-source runtime untouched; Python E2E fixture/browser blockers documented as outside D1 authorization.",
+      "gates": [
+        "Playwright chromium focused: 13 passed / 24 skipped; py_compile passed; frontend type-check passed; GitNexus staged risk low; OPENDOG blockers 0."
+      ],
+      "current_head": "d173e7c574c1ba98b8a2e8867acce048e29cd615",
+      "prepared_at": "2026-06-21T13:21:14.311Z"
+    }
   },
   {
     "id": "b4-013-runtime-mainline-bring-up",

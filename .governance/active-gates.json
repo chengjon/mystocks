@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-21T09:52:27.933Z",
+  "updated_at": "2026-06-21T13:21:30.162Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -86,41 +86,6 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-19T02:47:37.508Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-012-m3a-d1-e2e-browser-smoke-authorization",
-      "title": "B4.012-M3a-D1 E2E browser smoke tests authorization",
-      "node_type": "decision",
-      "owner_lane": "artdeco-web-design-governance",
-      "parent": "b4-012-m3a-d-e2e-frontend-tests-split",
-      "status": "authorization-prepared",
-      "source_edits_authorized": false,
-      "current_blocker": "",
-      "next_allowed": "review and approve implementation authorization",
-      "function_tree_ref": "b4-012-m3a-d-e2e-frontend-tests-split",
-      "freshness": "current-head",
-      "allowed_paths": [
-        "tests/e2e/specs/auth-optimized.spec.ts",
-        "tests/e2e/specs/dashboard.spec.ts",
-        "tests/e2e/test_fund_flow.py",
-        "tests/e2e/test_login.py",
-        "tests/e2e/test_risk.py",
-        "tests/e2e/test_web_e2e.py",
-        "docs/reports/worklogs/claude-auto/b4-012-m3a-d1-e2e-browser-smoke-closeout-2026-06-21.md"
-      ],
-      "forbidden_paths": [
-        "src/",
-        "web/frontend/src/",
-        "web/frontend/tests/",
-        "web/backend/",
-        "tests/dashboard/",
-        "tests/prototype/",
-        "tests/performance/",
-        "tests/data_sources/",
-        "openspec/"
-      ],
-      "updated_at": "2026-06-21T09:05:05.176Z"
     },
     {
       "program": "artdeco-web-design-governance",
