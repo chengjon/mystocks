@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-21T17:52:25.804Z",
+  "updated_at": "2026-06-21T17:56:10.242Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -193,26 +193,6 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-21T17:23:20.893Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-012-m3a-e3a-r1-repository-hygiene-lint-only-recovery-authorization",
-      "title": "B4.012 M3a-E3a-R1 repository hygiene lint-only recovery authorization",
-      "node_type": "authorization",
-      "owner_lane": "artdeco-web-design-governance",
-      "parent": "b4-012-m3a-e3a-repository-hygiene-unit-script-authorization",
-      "status": "implementation-ready",
-      "source_edits_authorized": true,
-      "current_blocker": "",
-      "next_allowed": "land implementation with Git evidence",
-      "function_tree_ref": "B4.012-M3a-E3a-R1",
-      "freshness": "current-head",
-      "allowed_paths": [
-        "tests/unit/scripts/test_repository_hygiene_paths.py",
-        "docs/reports/worklogs/claude-auto/b4-012-m3a-e3a-r1-repository-hygiene-lint-only-closeout-2026-06-22.md"
-      ],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-21T17:52:25.793Z"
     }
   ]
 }

@@ -13573,11 +13573,11 @@
     "node_type": "authorization",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-e3a-repository-hygiene-unit-script-authorization",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "B4.012-M3a-E3a-R1",
-    "current_head": "53b4a06554351a8eb78caab47ca487b8a092cbb5",
+    "current_head": "a68d6a60455e3cb6571b31aad21070ed3a9f5d5e",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "authorization",
@@ -13592,6 +13592,13 @@
         "note": "Refresh current_head after governance-only commits; no scope change.",
         "current_head": "53b4a06554351a8eb78caab47ca487b8a092cbb5",
         "recorded_at": "2026-06-21T17:47:10.666Z"
+      },
+      {
+        "kind": "closeout",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3a-r1-repository-hygiene-lint-only-closeout-2026-06-22.md",
+        "note": "Lint-only recovery commit a68d6a604 recorded; awaiting governance landed/closeout state update.",
+        "current_head": "a68d6a60455e3cb6571b31aad21070ed3a9f5d5e",
+        "recorded_at": "2026-06-21T17:54:52.925Z"
       }
     ],
     "allowed_paths": [
@@ -13602,11 +13609,11 @@
     "non_goals": [
       "No assertion deletion or weakening, no skip/xfail, no docs/README/AGENTS/index/OpenSpec/OpenStock/source/runtime/frontend/backend edits, no broad rewrite, no attempt to make all repository-hygiene pytest cases green, no external dirty files."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-21T17:33:08.491Z",
-    "updated_at": "2026-06-21T17:52:25.793Z",
+    "updated_at": "2026-06-21T17:56:10.230Z",
     "track": "backlog",
     "mainline_id": "b4-012-m3-residual-dirty-atlas-rebaseline",
     "depth": 2,
@@ -13631,6 +13638,20 @@
         "note": "Lint-only test-file edits and verification results are ready to land.",
         "current_head": "53b4a06554351a8eb78caab47ca487b8a092cbb5",
         "transitioned_at": "2026-06-21T17:52:25.793Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Lint-only recovery committed as a68d6a604 and verified with py_compile, ruff, and focused pytest against the E3b-A docs-truth baseline.",
+        "current_head": "a68d6a60455e3cb6571b31aad21070ed3a9f5d5e",
+        "transitioned_at": "2026-06-21T17:55:03.486Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "E3a-R1 lint-only recovery closed: three ruff issues resolved, assertion semantics preserved, docs-truth failures retained as E3b-A baseline debt.",
+        "current_head": "a68d6a60455e3cb6571b31aad21070ed3a9f5d5e",
+        "transitioned_at": "2026-06-21T17:56:10.230Z"
       }
     ],
     "acceptance": {
@@ -13641,6 +13662,15 @@
       "closeout_gate": [
         "Closeout worklog records exact lint fixes, assertion-preservation proof, py_compile, ruff, focused pytest baseline comparison, staged scope, GitNexus, OPENDOG, and separation from E3b-B docs truth repair."
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3a-r1-repository-hygiene-lint-only-closeout-2026-06-22.md",
+      "compatibility": "Assertion semantics preserved; only lint-only variable hygiene changed inside tests/unit/scripts/test_repository_hygiene_paths.py.",
+      "gates": [
+        "python -m py_compile passed; ruff check passed; focused pytest executed and remained at the E3b-A docs-truth baseline of 87 failed / 15 passed; GitNexus verify-staged/detect-changes low; OPENDOG fresh."
+      ],
+      "current_head": "a68d6a60455e3cb6571b31aad21070ed3a9f5d5e",
+      "prepared_at": "2026-06-21T17:55:35.081Z"
     }
   }
 ]
