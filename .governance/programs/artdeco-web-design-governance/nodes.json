@@ -13397,9 +13397,9 @@
     "node_type": "authorization",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-e3-governance-script-tests-split",
-    "status": "authorization-prepared",
+    "status": "blocked",
     "function_tree_ref": "B4.012-M3a-E3a",
-    "current_head": "dbfa8a2ada3fda759263e36da7e538c374bf2085",
+    "current_head": "c5432adc92845db1c1a88f6114b41d4f0e103baa",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -13409,6 +13409,13 @@
         "note": "No-source E3a authorization prep: exact tracked repository hygiene unit-script candidate, untracked siblings excluded.",
         "current_head": "dbfa8a2ada3fda759263e36da7e538c374bf2085",
         "recorded_at": "2026-06-21T16:08:41.430Z"
+      },
+      {
+        "kind": "blocker",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3a-repository-hygiene-unit-script-implementation-blocker-2026-06-22.md",
+        "note": "E3a implementation blocked: current dirty diff removes OMC repository-hygiene assertions, exceeding lint/import hygiene authorization.",
+        "current_head": "c5432adc92845db1c1a88f6114b41d4f0e103baa",
+        "recorded_at": "2026-06-21T16:25:02.918Z"
       }
     ],
     "allowed_paths": [
@@ -13419,11 +13426,11 @@
     "non_goals": [
       "No scripts/tests, no untracked tests/unit/scripts files, no source/runtime changes, no OpenSpec/OpenStock provider runtime changes, no assertion weakening, skip/xfail addition, deletion, restore, migration, broad refactor, ST-HOLD, or marketKlineData."
     ],
-    "next_gate": "review and approve implementation authorization",
-    "blocker_reason": null,
-    "unblock_target_state": null,
+    "next_gate": "unblock to authorization-prepared",
+    "blocker_reason": "Current dirty diff removes OMC_WORKFLOW_GUIDE repository-hygiene assertions; E3a authorization only permits syntax/lint/import hygiene and forbids assertion weakening.",
+    "unblock_target_state": "authorization-prepared",
     "created_at": "2026-06-21T16:07:53.710Z",
-    "updated_at": "2026-06-21T16:08:41.611Z",
+    "updated_at": "2026-06-21T16:25:02.986Z",
     "acceptance": {
       "commit_gate": [
         "git diff --cached --check; FUNCTION_TREE validate; GitNexus verify-staged and detect-changes; OPENDOG verification; exact staged scope only.",
@@ -13432,6 +13439,15 @@
       "closeout_gate": [
         "E3a closeout worklog records changed file, assertion-preservation posture, gates, and confirms staged index contains only E3a allowed files and generated governance state."
       ]
-    }
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "blocked",
+        "note": "Requires clarified authorization: restore assertions under strict hygiene or create separate repository-hygiene policy update.",
+        "current_head": "c5432adc92845db1c1a88f6114b41d4f0e103baa",
+        "transitioned_at": "2026-06-21T16:25:02.985Z"
+      }
+    ]
   }
 ]
