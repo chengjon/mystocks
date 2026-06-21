@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-21T13:21:30.162Z",
+  "updated_at": "2026-06-21T13:56:38.544Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -120,6 +120,37 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-21T09:52:27.924Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-012-m3a-e1-performance-runtime-tracked-authorization",
+      "title": "B4.012 M3a-E1 performance runtime tracked authorization",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-012-m3a-e-performance-runtime-security-tests-split",
+      "status": "authorization-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "review and approve implementation authorization",
+      "function_tree_ref": "B4.012-M3a-E1",
+      "freshness": "current-head",
+      "allowed_paths": [
+        "tests/performance/api_smoke_endpoints.json",
+        "tests/performance/benchmark.py",
+        "tests/performance/test_api_performance_baseline_governance_doc.py",
+        "tests/performance/test_benchmark_cli.py",
+        "tests/performance/test_build_runtime_quality_summary.py",
+        "tests/performance/test_collect_runtime_observability_baseline.py",
+        "tests/performance/test_metrics_snapshot_summary.py",
+        "tests/performance/test_run_runtime_observability_drift_gate_script.py",
+        "tests/performance/test_stress_test.py",
+        "tests/performance/test_tech_debt_governance_weekly_report_runtime.py",
+        "tests/performance/test_tech_debt_weekly_report_script.py",
+        "tests/performance/test_validate_runtime_observability_drift.py",
+        "docs/reports/worklogs/claude-auto/b4-012-m3a-e1-performance-runtime-tracked-closeout-2026-06-21.md"
+      ],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-21T13:56:38.507Z"
     }
   ]
 }

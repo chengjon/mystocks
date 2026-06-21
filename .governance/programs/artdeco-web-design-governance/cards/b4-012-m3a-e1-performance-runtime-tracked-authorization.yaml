@@ -1,0 +1,35 @@
+task:
+  id: "b4-012-m3a-e1-performance-runtime-tracked-authorization"
+  title: "B4.012 M3a-E1 performance runtime tracked authorization"
+
+scope:
+  allowed_paths:
+    - "tests/performance/api_smoke_endpoints.json"
+    - "tests/performance/benchmark.py"
+    - "tests/performance/test_api_performance_baseline_governance_doc.py"
+    - "tests/performance/test_benchmark_cli.py"
+    - "tests/performance/test_build_runtime_quality_summary.py"
+    - "tests/performance/test_collect_runtime_observability_baseline.py"
+    - "tests/performance/test_metrics_snapshot_summary.py"
+    - "tests/performance/test_run_runtime_observability_drift_gate_script.py"
+    - "tests/performance/test_stress_test.py"
+    - "tests/performance/test_tech_debt_governance_weekly_report_runtime.py"
+    - "tests/performance/test_tech_debt_weekly_report_script.py"
+    - "tests/performance/test_validate_runtime_observability_drift.py"
+    - "docs/reports/worklogs/claude-auto/b4-012-m3a-e1-performance-runtime-tracked-closeout-2026-06-21.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No untracked tests/performance provenance candidates; no tests/security, tests/e2e, tests/unit, scripts/tests, web/backend/tests, web/frontend, source/runtime, OpenSpec, OpenStock provider runtime, ST-HOLD, marketKlineData, deletion, restore, or assertion weakening."
+
+acceptance:
+  commit_gate:
+    - "git diff --cached --check; FUNCTION_TREE validate; GitNexus verify-staged and detect-changes; OPENDOG verification; exact staged scope only."
+    - "python -m py_compile and ruff check for allowed Python files; focused pytest for E1 allowed tests with --no-cov, documenting environment-only blockers separately."
+  closeout_gate:
+    - "E1 closeout worklog records changed files, gates, any environment blockers, and confirms staged index contains only E1 allowed files and generated governance state."
+
+evidence:
+  current_head: "17a4f99436d59caafcc06a8e407a592e2a04a48e"
+  notes: []
