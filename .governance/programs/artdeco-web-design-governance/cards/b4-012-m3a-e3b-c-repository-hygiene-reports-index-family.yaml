@@ -1,0 +1,24 @@
+task:
+  id: "b4-012-m3a-e3b-c-repository-hygiene-reports-index-family"
+  title: "B4.012 M3a-E3b-C repository hygiene reports/index family decision"
+
+scope:
+  allowed_paths:
+    - "docs/reports"
+    - "reports"
+    - "docs/README.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No tests, source, runtime, OpenSpec, docs/guides, docs/INDEX.md, architecture, overview, or external dirty files; split if those surfaces are required."
+
+acceptance:
+  commit_gate:
+    - "git diff --cached --check; FUNCTION_TREE validate; GitNexus verify-staged; GitNexus detect-changes --scope staged; OPENDOG verification fresh; focused pytest reports/index subset or documented unchanged baseline."
+  closeout_gate:
+    - "Only authorized reports/index documentation paths and governance evidence are staged; no source/runtime/test/OpenSpec paths; repository hygiene focused before/after delta recorded."
+
+evidence:
+  current_head: "f3845ee50162518d869543ebb4ee91cd255d22e1"
+  notes: []
