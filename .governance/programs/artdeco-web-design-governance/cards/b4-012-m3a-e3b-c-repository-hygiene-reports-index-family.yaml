@@ -4,8 +4,8 @@ task:
 
 scope:
   allowed_paths:
-    - "docs/reports"
-    - "reports"
+    - "docs/reports/"
+    - "reports/"
     - "docs/README.md"
   forbidden_paths:
     []

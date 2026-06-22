@@ -8,6 +8,8 @@
 
 - [`README.md`](README.md): reports 历史证据主入口
 - [`documentation-governance/`](documentation-governance): 本轮文档治理盘点、决策和波次记录
+- [`reviews/`](reviews): 归档后的审阅、治理审批与目录组织复核
+- [`cleanup/`](cleanup): 清理批次、目录组织与索引产物
 
 ## Evidence Families
 
@@ -15,10 +17,23 @@
 - [`quality/`](quality)
   - [`quality/BUG_LESSONS_LEARNED.md`](quality/BUG_LESSONS_LEARNED.md)
 - [`reviews/`](reviews)
+  - [`reviews/PHASE1_GOVERNANCE_APPROVAL.md`](reviews/PHASE1_GOVERNANCE_APPROVAL.md)
+  - [`reviews/DIRECTORY_ORGANIZATION_REVIEW.md`](reviews/DIRECTORY_ORGANIZATION_REVIEW.md)
 - [`test-reports/`](test-reports)
 - [`test-reports-e2e/`](test-reports-e2e)
 - [`api_verification/`](api_verification)
 - [`cleanup/`](cleanup)
+  - [`cleanup/FILE_CLEANUP_TASK.md`](cleanup/FILE_CLEANUP_TASK.md)
+  - [`cleanup/INDEX.md`](cleanup/INDEX.md)
+  - [`cleanup/index-artifacts/INDEX_root.md`](cleanup/index-artifacts/INDEX_root.md)
+  - [`cleanup/directory-organization/INDEX.md`](cleanup/directory-organization/INDEX.md)
+  - [`cleanup/directory-organization/DIRECTORY_ORGANIZATION_PLAN.md`](cleanup/directory-organization/DIRECTORY_ORGANIZATION_PLAN.md)
+  - [`cleanup/directory-organization/legacy/INDEX.md`](cleanup/directory-organization/legacy/INDEX.md)
+  - [`cleanup/directory-organization/legacy/DIRECTORY_ORGANIZATION_PLAN_OPTIMIZED.md`](cleanup/directory-organization/legacy/DIRECTORY_ORGANIZATION_PLAN_OPTIMIZED.md)
+  - [`cleanup/directory-organization/legacy/DIRECTORY_ORGANIZATION_PLAN_REVIEW_SUGGESTIONS.md`](cleanup/directory-organization/legacy/DIRECTORY_ORGANIZATION_PLAN_REVIEW_SUGGESTIONS.md)
+  - [`cleanup/directory-organization/legacy/PROJECT_DIRECTORY_MANAGEMENT_PLAN.md`](cleanup/directory-organization/legacy/PROJECT_DIRECTORY_MANAGEMENT_PLAN.md)
+  - [`cleanup/directory-organization/legacy/deliverable.md`](cleanup/directory-organization/legacy/deliverable.md)
+  - [`cleanup/directory-organization/legacy/task_plan.md`](cleanup/directory-organization/legacy/task_plan.md)
 - [`completion_reports/`](completion_reports)
   - [`completion_reports/P1_TESTING_COMPLETION_REPORT.md`](completion_reports/P1_TESTING_COMPLETION_REPORT.md)
   - [`completion_reports/PHASE1_UI_UX_FOUNDATION_COMPLETION_REPORT.md`](completion_reports/PHASE1_UI_UX_FOUNDATION_COMPLETION_REPORT.md)

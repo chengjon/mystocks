@@ -56,6 +56,9 @@
 - 不应被当作当前 canonical trunk
 - 若与当前代码、OpenSpec 或仓库级规则冲突，以主线 truth 为准
 
+文档治理证据目录仍可从 `/opt/claude/mystocks_spec/docs/reports/documentation-governance/` 回溯。
+仓库共享规则主入口的物理路径是 `/opt/claude/mystocks_spec/architecture/STANDARDS.md`。
+
 ## Legacy And Archive
 
 - 中文 legacy cluster 已迁出 active tree：`archive/docs/reports/legacy-cn-2026-04-08/`

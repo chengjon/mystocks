@@ -28,6 +28,8 @@
 | API 文档导航 | [`docs/api/README.md`](api/README.md) | API 文档入口与导航，但不覆盖真实契约 |
 | 历史证据 | [`docs/reports/README.md`](reports/README.md) | 历史报告、验证记录、审计证据 |
 
+历史证据主入口的物理路径是 `/opt/claude/mystocks_spec/docs/reports/README.md`。
+
 ## Reader Routing
 
 - 要看共享规则、审批门禁、迁移/删除判定：先看 [`architecture/STANDARDS.md`](../architecture/STANDARDS.md)

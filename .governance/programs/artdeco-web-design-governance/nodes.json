@@ -13720,11 +13720,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-e3b-b-repository-hygiene-docs-truth-repair-atlas",
-    "status": "authorization-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "B4.012-M3a-E3b-C",
-    "current_head": "f3845ee50162518d869543ebb4ee91cd255d22e1",
+    "current_head": "ce145af56bb6ea0c80849686eceb75954cbf8ec3",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "baseline",
@@ -13739,22 +13739,36 @@
         "note": "Authorization preparation evidence for reports/index family; current HEAD refreshed before task card generation.",
         "current_head": "f3845ee50162518d869543ebb4ee91cd255d22e1",
         "recorded_at": "2026-06-22T01:33:28.533Z"
+      },
+      {
+        "kind": "authorization",
+        "path": "User approved B4.012-M3a-E3b-C reports/index family implementation; allowed paths remain docs/reports, reports, docs/README.md only.",
+        "note": "Implementation authorization approved by user; refresh current HEAD before approved-for-implementation transition.",
+        "current_head": "ce145af56bb6ea0c80849686eceb75954cbf8ec3",
+        "recorded_at": "2026-06-22T03:50:47.000Z"
+      },
+      {
+        "kind": "implementation",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-c-repository-hygiene-reports-index-implementation-closeout-2026-06-22.md",
+        "note": "Reports/index family implementation evidence; TASK-REPORT.md residual remains out of allowed scope.",
+        "current_head": "ce145af56bb6ea0c80849686eceb75954cbf8ec3",
+        "recorded_at": "2026-06-22T09:48:44.662Z"
       }
     ],
     "allowed_paths": [
-      "docs/reports",
-      "reports",
+      "docs/reports/",
+      "reports/",
       "docs/README.md"
     ],
     "forbidden_paths": [],
     "non_goals": [
       "No tests, source, runtime, OpenSpec, docs/guides, docs/INDEX.md, architecture, overview, or external dirty files; split if those surfaces are required."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-21T18:53:36.105Z",
-    "updated_at": "2026-06-22T01:33:28.551Z",
+    "updated_at": "2026-06-22T09:48:56.364Z",
     "track": "backlog",
     "mainline_id": "b4-012-m3-residual-dirty-atlas-rebaseline",
     "depth": 2,
@@ -13765,6 +13779,20 @@
         "note": "Decision prepared: first low-risk reports/index family can proceed to explicit authorization package; no source edits authorized in this package.",
         "current_head": "085f56e74cf2615bbab116e40dcfa2f9be38c61c",
         "transitioned_at": "2026-06-21T18:54:22.136Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved the reports/index family implementation authorization; proceed only within docs/reports, reports, docs/README.md.",
+        "current_head": "ce145af56bb6ea0c80849686eceb75954cbf8ec3",
+        "transitioned_at": "2026-06-22T03:51:02.655Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Reports/index family changes prepared inside allowed paths; remaining TASK-REPORT.md assertion is outside this authorization.",
+        "current_head": "ce145af56bb6ea0c80849686eceb75954cbf8ec3",
+        "transitioned_at": "2026-06-22T09:48:56.363Z"
       }
     ],
     "acceptance": {
