@@ -13833,11 +13833,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-e3b-b-repository-hygiene-docs-truth-repair-atlas",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "B4.012-M3a-E3b-D",
     "current_head": "e9fc1214bc32d80169271ef7b7418fbca26304c2",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "decision",
@@ -13870,11 +13870,11 @@
     "non_goals": [
       "No source/runtime/test/OpenSpec/docs/guides/docs/INDEX.md edits; do not stage unrelated pre-existing TASK-REPORT.md append hunks or external dirty files."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-22T10:37:06.141Z",
-    "updated_at": "2026-06-22T14:47:12.675Z",
+    "updated_at": "2026-06-22T14:54:33.371Z",
     "track": "backlog",
     "mainline_id": "b4-012-m3-residual-dirty-atlas-rebaseline",
     "depth": 2,
@@ -13899,6 +13899,20 @@
         "note": "Changes prepared inside allowed paths; focused root task index-artifacts assertion passes.",
         "current_head": "e9fc1214bc32d80169271ef7b7418fbca26304c2",
         "transitioned_at": "2026-06-22T14:47:12.675Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Implementation landed in commit 917b38a34 (root TASK-REPORT index artifact link repair).",
+        "current_head": "917b38a34022ee9704c6ac288b638fd613dbc86e",
+        "transitioned_at": "2026-06-22T14:54:03.513Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "Closed after implementation commit 917b38a34 and fresh verification evidence.",
+        "current_head": "917b38a34022ee9704c6ac288b638fd613dbc86e",
+        "transitioned_at": "2026-06-22T14:54:33.371Z"
       }
     ],
     "acceptance": {
@@ -13908,6 +13922,15 @@
       "closeout_gate": [
         "Focused repository-hygiene assertion passes or residual blocker is documented; OPENDOG fresh; GitNexus post-commit analyze; staged index empty; external TASK-REPORT.md append hunk remains isolated if still present."
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-d-root-task-report-index-artifacts-implementation-closeout-2026-06-22.md",
+      "compatibility": "Root task artifact documentation only; no source/runtime/test/OpenSpec behavior changes.",
+      "gates": [
+        "Focused pytest passed; GitNexus staged risk low; OPENDOG fresh; external TASK-REPORT append hunk preserved unstaged."
+      ],
+      "current_head": "917b38a34022ee9704c6ac288b638fd613dbc86e",
+      "prepared_at": "2026-06-22T14:54:19.320Z"
     }
   }
 ]
