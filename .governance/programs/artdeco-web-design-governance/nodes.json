@@ -13826,5 +13826,60 @@
       "current_head": "0ba95134597319536fe41d59aead8260924dadf9",
       "prepared_at": "2026-06-22T10:10:36.251Z"
     }
+  },
+  {
+    "id": "b4-012-m3a-e3b-d-root-task-report-index-artifacts-family",
+    "title": "B4.012 M3a-E3b-D root TASK-REPORT index artifacts family",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-m3a-e3b-b-repository-hygiene-docs-truth-repair-atlas",
+    "status": "authorization-prepared",
+    "function_tree_ref": "B4.012-M3a-E3b-D",
+    "current_head": "76eef58dd914fe2bc137f55601c0a6a3242001a9",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-d-root-task-report-index-artifacts-no-source-review-2026-06-22.md",
+        "note": "No-source review for root TASK-REPORT index-artifacts residual after E3b-C closeout.",
+        "current_head": "76eef58dd914fe2bc137f55601c0a6a3242001a9",
+        "recorded_at": "2026-06-22T10:37:42.719Z"
+      }
+    ],
+    "allowed_paths": [
+      "TASK-REPORT.md",
+      "docs/reports/cleanup/index-artifacts/INDEX_root.md",
+      "docs/reports/worklogs/claude-auto/"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No source/runtime/test/OpenSpec/docs/guides/docs/INDEX.md edits; do not stage unrelated pre-existing TASK-REPORT.md append hunks or external dirty files."
+    ],
+    "next_gate": "review and approve implementation authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-22T10:37:06.141Z",
+    "updated_at": "2026-06-22T10:38:59.005Z",
+    "track": "backlog",
+    "mainline_id": "b4-012-m3-residual-dirty-atlas-rebaseline",
+    "depth": 2,
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "Root TASK-REPORT index-artifacts residual is now classified; ready for authorization prep.",
+        "current_head": "76eef58dd914fe2bc137f55601c0a6a3242001a9",
+        "transitioned_at": "2026-06-22T10:37:55.562Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "Precise staging only for the intended root task artifact hunk plus package worklog/governance; git diff --cached --check; GitNexus verify-staged and detect-changes risk low; focused pytest for test_guides_index_root_is_converged_under_reports_cleanup."
+      ],
+      "closeout_gate": [
+        "Focused repository-hygiene assertion passes or residual blocker is documented; OPENDOG fresh; GitNexus post-commit analyze; staged index empty; external TASK-REPORT.md append hunk remains isolated if still present."
+      ]
+    }
   }
 ]

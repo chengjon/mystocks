@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-22T10:13:07.880Z",
+  "updated_at": "2026-06-22T10:38:59.039Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -210,6 +210,27 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-21T18:15:16.272Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-012-m3a-e3b-d-root-task-report-index-artifacts-family",
+      "title": "B4.012 M3a-E3b-D root TASK-REPORT index artifacts family",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-012-m3a-e3b-b-repository-hygiene-docs-truth-repair-atlas",
+      "status": "authorization-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "review and approve implementation authorization",
+      "function_tree_ref": "B4.012-M3a-E3b-D",
+      "freshness": "current-head",
+      "allowed_paths": [
+        "TASK-REPORT.md",
+        "docs/reports/cleanup/index-artifacts/INDEX_root.md",
+        "docs/reports/worklogs/claude-auto/"
+      ],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-22T10:38:59.005Z"
     }
   ]
 }
