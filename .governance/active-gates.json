@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-22T10:38:59.039Z",
+  "updated_at": "2026-06-22T14:47:12.726Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -218,10 +218,10 @@
       "node_type": "decision",
       "owner_lane": "artdeco-web-design-governance",
       "parent": "b4-012-m3a-e3b-b-repository-hygiene-docs-truth-repair-atlas",
-      "status": "authorization-prepared",
-      "source_edits_authorized": false,
+      "status": "implementation-ready",
+      "source_edits_authorized": true,
       "current_blocker": "",
-      "next_allowed": "review and approve implementation authorization",
+      "next_allowed": "land implementation with Git evidence",
       "function_tree_ref": "B4.012-M3a-E3b-D",
       "freshness": "current-head",
       "allowed_paths": [
@@ -230,7 +230,7 @@
         "docs/reports/worklogs/claude-auto/"
       ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-22T10:38:59.005Z"
+      "updated_at": "2026-06-22T14:47:12.675Z"
     }
   ]
 }

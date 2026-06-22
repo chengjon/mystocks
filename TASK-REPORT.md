@@ -10,6 +10,7 @@
 - Pending Request: `False`
 
 > Governance reference: `docs/standards/technical-debt-governance-charter-v1.md`
+> Repository hygiene cleanup index: `docs/reports/cleanup/index-artifacts/INDEX_root.md`
 
 ## Updates
 - `2026-04-03T03:13:51.689000` [in_progress] main: Verified the design cutover gap: root TASK.md and TASK-REPORT.md were still hybrid/manual artifacts instead of Mongo-exported snapshots.
