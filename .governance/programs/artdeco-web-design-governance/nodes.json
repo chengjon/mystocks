@@ -13720,11 +13720,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-e3b-b-repository-hygiene-docs-truth-repair-atlas",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "B4.012-M3a-E3b-C",
     "current_head": "ce145af56bb6ea0c80849686eceb75954cbf8ec3",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "baseline",
@@ -13764,11 +13764,11 @@
     "non_goals": [
       "No tests, source, runtime, OpenSpec, docs/guides, docs/INDEX.md, architecture, overview, or external dirty files; split if those surfaces are required."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-21T18:53:36.105Z",
-    "updated_at": "2026-06-22T09:48:56.364Z",
+    "updated_at": "2026-06-22T10:13:07.870Z",
     "track": "backlog",
     "mainline_id": "b4-012-m3-residual-dirty-atlas-rebaseline",
     "depth": 2,
@@ -13793,6 +13793,20 @@
         "note": "Reports/index family changes prepared inside allowed paths; remaining TASK-REPORT.md assertion is outside this authorization.",
         "current_head": "ce145af56bb6ea0c80849686eceb75954cbf8ec3",
         "transitioned_at": "2026-06-22T09:48:56.363Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Implementation landed in commit 0ba951345 (reports/index docs truth repair).",
+        "current_head": "0ba95134597319536fe41d59aead8260924dadf9",
+        "transitioned_at": "2026-06-22T10:10:25.597Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "Closed after implementation commit 0ba951345 and fresh verification evidence.",
+        "current_head": "0ba95134597319536fe41d59aead8260924dadf9",
+        "transitioned_at": "2026-06-22T10:13:07.870Z"
       }
     ],
     "acceptance": {
@@ -13802,6 +13816,15 @@
       "closeout_gate": [
         "Only authorized reports/index documentation paths and governance evidence are staged; no source/runtime/test/OpenSpec paths; repository hygiene focused before/after delta recorded."
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-c-repository-hygiene-reports-index-implementation-closeout-2026-06-22.md",
+      "compatibility": "Reports/index docs only; no source/runtime/OpenSpec/test code changes.",
+      "gates": [
+        "git diff --cached --check, GitNexus verify-staged/detect-changes, OPENDOG fresh verification, focused repository-hygiene tests"
+      ],
+      "current_head": "0ba95134597319536fe41d59aead8260924dadf9",
+      "prepared_at": "2026-06-22T10:10:36.251Z"
     }
   }
 ]
