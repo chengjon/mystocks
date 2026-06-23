@@ -24,6 +24,22 @@
   - [`governance/`](governance)
   - [`documentation/`](documentation)
 
+## Canonical Targets
+
+这些绝对路径用于 repository-hygiene 断言和 AI 导航对账；读者仍应通过上方 family 链接进入具体文档。
+
+- Repository docs trunk: `/opt/claude/mystocks_spec/docs/README.md`
+- AI / agent workflows: `/opt/claude/mystocks_spec/docs/guides/ai-tools/`
+- Frontend guides: `/opt/claude/mystocks_spec/docs/guides/frontend/`
+- Web guides: `/opt/claude/mystocks_spec/docs/guides/web/`
+- TypeScript guides: `/opt/claude/mystocks_spec/docs/guides/typescript/`
+- PM2 guides: `/opt/claude/mystocks_spec/docs/guides/pm2/`
+- OpenSpec command guides: `/opt/claude/mystocks_spec/docs/guides/openspec-cmd/`
+- Multi CLI task guides: `/opt/claude/mystocks_spec/docs/guides/multi-cli-tasks/`
+- Onboarding guides: `/opt/claude/mystocks_spec/docs/guides/onboarding/`
+- Governance guides: `/opt/claude/mystocks_spec/docs/guides/governance/`
+- Documentation guides: `/opt/claude/mystocks_spec/docs/guides/documentation/`
+
 ## Root-Level Compatibility Entries
 
 以下 root-level guide files 仍保留为 compatibility/supporting entries，不构成并行 trunk：

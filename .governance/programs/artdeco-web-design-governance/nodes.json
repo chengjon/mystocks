@@ -13980,11 +13980,11 @@
     "node_type": "authorization",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-e3b-e-docs-guides-family-split",
-    "status": "authorization-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "B4.012-M3a-E3b-E1",
-    "current_head": "ddc167e2c39c2a90a4c4f69cb4fa19ab88c885c3",
+    "current_head": "5d166b72a84f83393adc83d55957f04e23addcb2",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "authorization",
@@ -13992,6 +13992,13 @@
         "note": "Authorization candidate derived from E3b-E no-source matrix: E1 entrypoints/navigation has 5 focused failures.",
         "current_head": "ddc167e2c39c2a90a4c4f69cb4fa19ab88c885c3",
         "recorded_at": "2026-06-23T03:38:13.351Z"
+      },
+      {
+        "kind": "authorization",
+        "path": "User approved E3b-E1 docs/guides entrypoints/navigation implementation in conversation on 2026-06-23.",
+        "note": "User-approved implementation authorization for entrypoints/navigation docs family.",
+        "current_head": "5d166b72a84f83393adc83d55957f04e23addcb2",
+        "recorded_at": "2026-06-23T04:05:09.354Z"
       }
     ],
     "allowed_paths": [
@@ -14007,11 +14014,11 @@
     "non_goals": [
       "No source/runtime/test/OpenSpec/root AGENTS/CLAUDE edits; no docs-reports/docs-api/docs-architecture/root-agent-rules families; do not stage external TASK-REPORT.md append hunk."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-23T03:37:54.136Z",
-    "updated_at": "2026-06-23T03:38:45.239Z",
+    "updated_at": "2026-06-23T04:15:37.794Z",
     "track": "backlog",
     "mainline_id": "b4-012-m3-residual-dirty-atlas-rebaseline",
     "depth": 2,
@@ -14022,6 +14029,20 @@
         "note": "Entrypoints/navigation is the first docs-guides slice; prepare implementation authorization without source edits.",
         "current_head": "ddc167e2c39c2a90a4c4f69cb4fa19ab88c885c3",
         "transitioned_at": "2026-06-23T03:38:29.138Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User-approved docs/guides entrypoints/navigation implementation; ready to edit allowed docs only.",
+        "current_head": "5d166b72a84f83393adc83d55957f04e23addcb2",
+        "transitioned_at": "2026-06-23T04:05:09.424Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "E1 entrypoint/navigation docs edits prepared; focused test surface reduced to authorized-outside residual blockers.",
+        "current_head": "5d166b72a84f83393adc83d55957f04e23addcb2",
+        "transitioned_at": "2026-06-23T04:15:37.793Z"
       }
     ],
     "acceptance": {

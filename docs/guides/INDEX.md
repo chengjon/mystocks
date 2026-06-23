@@ -21,6 +21,21 @@
 - [`governance/`](governance)
 - [`documentation/`](documentation)
 
+## Canonical Targets
+
+这些绝对路径用于兼容旧索引入口与 repository-hygiene 对账：
+
+- `/opt/claude/mystocks_spec/docs/guides/ai-tools/`
+- `/opt/claude/mystocks_spec/docs/guides/frontend/`
+- `/opt/claude/mystocks_spec/docs/guides/web/`
+- `/opt/claude/mystocks_spec/docs/guides/typescript/`
+- `/opt/claude/mystocks_spec/docs/guides/pm2/`
+- `/opt/claude/mystocks_spec/docs/guides/openspec-cmd/`
+- `/opt/claude/mystocks_spec/docs/guides/multi-cli-tasks/`
+- `/opt/claude/mystocks_spec/docs/guides/onboarding/`
+- `/opt/claude/mystocks_spec/docs/guides/governance/`
+- `/opt/claude/mystocks_spec/docs/guides/documentation/`
+
 ## Historical Compatibility
 
 root-level compatibility entries are retained, but they should be treated as supporting documents rather than a separate guide trunk.
