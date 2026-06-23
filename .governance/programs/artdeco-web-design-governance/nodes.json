@@ -14228,9 +14228,9 @@
     "parent": "b4-012-m3a-e3b-e2-web-frontend-guides-family-split",
     "status": "implementation-ready",
     "function_tree_ref": "B4.012-M3a-E3b-E2a-R",
-    "current_head": "b1d9d76ff991cd0d0ff25b7d5a6b9a9c83832e99",
+    "current_head": "f058d673965b6734a676dc1b97fd6fd783605c5b",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "authorization",
@@ -14245,6 +14245,13 @@
         "note": "Fresh user approval after E2a-R authorization card commit; reports-only implementation may proceed at current HEAD.",
         "current_head": "b1d9d76ff991cd0d0ff25b7d5a6b9a9c83832e99",
         "recorded_at": "2026-06-23T07:44:00.309Z"
+      },
+      {
+        "kind": "implementation",
+        "path": "Follow-up implementation evidence: completion_reports INDEX plus P1/Phase4 report anchors staged; selected_completion_reports now only blocked by cleanup index root outside E2a-R allowed_paths.",
+        "note": "Complete reports-anchor records within docs/reports/completion_reports; cleanup index bridge remains separate authorization boundary.",
+        "current_head": "f058d673965b6734a676dc1b97fd6fd783605c5b",
+        "recorded_at": "2026-06-23T08:30:01.038Z"
       }
     ],
     "allowed_paths": [
@@ -14265,11 +14272,11 @@
     "non_goals": [
       "No guide-family, OpenSpec, test, source/runtime, root agent-rule, or external dirty edits; no provider/data-source runtime work."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "prepare decision or authorization",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-23T07:31:00.707Z",
-    "updated_at": "2026-06-23T07:48:26.432Z",
+    "updated_at": "2026-06-23T08:30:01.038Z",
     "acceptance": {
       "commit_gate": [
         "Precise staging only for reports anchors and governance evidence; git diff --cached --check; FUNCTION_TREE validate; GitNexus verify-staged and detect-changes risk low; OPENDOG fresh.",

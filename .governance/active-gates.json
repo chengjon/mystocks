@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-23T07:48:26.445Z",
+  "updated_at": "2026-06-23T08:30:01.047Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -253,9 +253,9 @@
       "owner_lane": "artdeco-web-design-governance",
       "parent": "b4-012-m3a-e3b-e2-web-frontend-guides-family-split",
       "status": "implementation-ready",
-      "source_edits_authorized": true,
+      "source_edits_authorized": false,
       "current_blocker": "",
-      "next_allowed": "land implementation with Git evidence",
+      "next_allowed": "prepare decision or authorization",
       "function_tree_ref": "B4.012-M3a-E3b-E2a-R",
       "freshness": "current-head",
       "allowed_paths": [
@@ -273,7 +273,7 @@
         "src/",
         "web/backend/"
       ],
-      "updated_at": "2026-06-23T07:48:26.432Z"
+      "updated_at": "2026-06-23T08:30:01.038Z"
     }
   ]
 }
