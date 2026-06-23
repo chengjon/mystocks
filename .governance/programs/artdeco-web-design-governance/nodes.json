@@ -14446,5 +14446,60 @@
       "current_head": "0f3e896284e17a9dd9b55baa1cb9f70446805135",
       "prepared_at": "2026-06-23T09:16:00.523Z"
     }
+  },
+  {
+    "id": "b4-012-m3a-e3b-e2b-openspec-frontend-optimization-docs-bridge",
+    "title": "OpenSpec frontend optimization docs bridge",
+    "node_type": "authorization",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-m3a-e3b-e2-web-frontend-guides-family-split",
+    "status": "authorization-prepared",
+    "function_tree_ref": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e2b-openspec-frontend-optimization-docs-bridge-no-source-review-2026-06-23.md",
+    "current_head": "424ebd3a02cccf92dc511d6f8eaf1cdb62c6d59b",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e2b-openspec-frontend-optimization-docs-bridge-no-source-review-2026-06-23.md",
+        "note": "No-source review: direct OpenSpec doc restore is invalid without a minimal documentation-governance delta; safe restore simulated successfully with delta.",
+        "current_head": "424ebd3a02cccf92dc511d6f8eaf1cdb62c6d59b",
+        "recorded_at": "2026-06-23T09:38:40.821Z"
+      }
+    ],
+    "allowed_paths": [
+      "openspec/changes/frontend-optimization-six-phase/README.md",
+      "openspec/changes/frontend-optimization-six-phase/proposal.md",
+      "openspec/changes/frontend-optimization-six-phase/design.md",
+      "openspec/changes/frontend-optimization-six-phase/tasks.md",
+      "openspec/changes/frontend-optimization-six-phase/implementation-plan.md",
+      "openspec/changes/frontend-optimization-six-phase/specs/documentation-governance/spec.md",
+      "docs/reports/worklogs/claude-auto/"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No source/runtime edits",
+      "No tests edits",
+      "No docs/guides edits",
+      "No root agent-rule edits or external dirty staging"
+    ],
+    "next_gate": "review and approve implementation authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-23T09:38:40.655Z",
+    "updated_at": "2026-06-23T09:41:40.598Z",
+    "acceptance": {
+      "commit_gate": [
+        "openspec validate frontend-optimization-six-phase --strict --no-interactive",
+        "focused repository-hygiene OpenSpec web guide tests",
+        "git diff --cached --check",
+        "FUNCTION_TREE validate",
+        "GitNexus verify-staged and detect-changes risk low",
+        "OPENDOG fresh with no blockers"
+      ],
+      "closeout_gate": [
+        "OpenSpec strict validation passes and the two focused web-guide repository-hygiene tests pass"
+      ]
+    }
   }
 ]
