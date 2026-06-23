@@ -14219,5 +14219,58 @@
       "current_head": "66f6af42ef1864d47edb79fe9ecf9f19903c4a43",
       "prepared_at": "2026-06-23T06:28:07.503Z"
     }
+  },
+  {
+    "id": "b4-012-m3a-e3b-e2a-r-reports-anchors-authorization",
+    "title": "B4.012 M3a-E3b-E2a-R reports anchors authorization",
+    "node_type": "authorization",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-m3a-e3b-e2-web-frontend-guides-family-split",
+    "status": "authorization-prepared",
+    "function_tree_ref": "B4.012-M3a-E3b-E2a-R",
+    "current_head": "e255e27fe7751f25d8e729fb256aebc56a132e63",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "authorization",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e2a-r-reports-anchors-no-source-review-2026-06-23.md",
+        "note": "No-source review after E2a closeout identifies 3 reports-anchor blockers and separates OpenSpec/chrome-devtools residuals.",
+        "current_head": "e255e27fe7751f25d8e729fb256aebc56a132e63",
+        "recorded_at": "2026-06-23T07:31:00.787Z"
+      }
+    ],
+    "allowed_paths": [
+      "docs/reports/reviews/",
+      "docs/reports/completion_reports/",
+      "docs/reports/worklogs/claude-auto/"
+    ],
+    "forbidden_paths": [
+      "docs/guides/",
+      "openspec/",
+      "tests/",
+      "web/frontend/",
+      "AGENTS.md",
+      "CLAUDE.md",
+      "src/",
+      "web/backend/"
+    ],
+    "non_goals": [
+      "No guide-family, OpenSpec, test, source/runtime, root agent-rule, or external dirty edits; no provider/data-source runtime work."
+    ],
+    "next_gate": "review and approve implementation authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-23T07:31:00.707Z",
+    "updated_at": "2026-06-23T07:31:00.841Z",
+    "acceptance": {
+      "commit_gate": [
+        "Precise staging only for reports anchors and governance evidence; git diff --cached --check; FUNCTION_TREE validate; GitNexus verify-staged and detect-changes risk low; OPENDOG fresh.",
+        "Focused E2 pytest evidence records reports-anchor improvement without claiming broad E2 pass."
+      ],
+      "closeout_gate": [
+        "Reports-anchor blockers are fixed or residuals documented; E2 focused subset and full repository-hygiene counts recorded; GitNexus post-commit analyze succeeds; staged index empty."
+      ]
+    }
   }
 ]

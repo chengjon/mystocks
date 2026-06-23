@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-23T06:28:07.581Z",
+  "updated_at": "2026-06-23T07:31:00.859Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -244,6 +244,36 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-23T05:40:36.659Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-012-m3a-e3b-e2a-r-reports-anchors-authorization",
+      "title": "B4.012 M3a-E3b-E2a-R reports anchors authorization",
+      "node_type": "authorization",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-012-m3a-e3b-e2-web-frontend-guides-family-split",
+      "status": "authorization-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "review and approve implementation authorization",
+      "function_tree_ref": "B4.012-M3a-E3b-E2a-R",
+      "freshness": "current-head",
+      "allowed_paths": [
+        "docs/reports/reviews/",
+        "docs/reports/completion_reports/",
+        "docs/reports/worklogs/claude-auto/"
+      ],
+      "forbidden_paths": [
+        "docs/guides/",
+        "openspec/",
+        "tests/",
+        "web/frontend/",
+        "AGENTS.md",
+        "CLAUDE.md",
+        "src/",
+        "web/backend/"
+      ],
+      "updated_at": "2026-06-23T07:31:00.841Z"
     }
   ]
 }

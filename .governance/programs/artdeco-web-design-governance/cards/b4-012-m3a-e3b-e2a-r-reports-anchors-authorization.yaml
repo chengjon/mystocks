@@ -1,0 +1,32 @@
+task:
+  id: "b4-012-m3a-e3b-e2a-r-reports-anchors-authorization"
+  title: "B4.012 M3a-E3b-E2a-R reports anchors authorization"
+
+scope:
+  allowed_paths:
+    - "docs/reports/reviews/"
+    - "docs/reports/completion_reports/"
+    - "docs/reports/worklogs/claude-auto/"
+  forbidden_paths:
+    - "docs/guides/"
+    - "openspec/"
+    - "tests/"
+    - "web/frontend/"
+    - "AGENTS.md"
+    - "CLAUDE.md"
+    - "src/"
+    - "web/backend/"
+
+non_goals:
+  - "No guide-family, OpenSpec, test, source/runtime, root agent-rule, or external dirty edits; no provider/data-source runtime work."
+
+acceptance:
+  commit_gate:
+    - "Precise staging only for reports anchors and governance evidence; git diff --cached --check; FUNCTION_TREE validate; GitNexus verify-staged and detect-changes risk low; OPENDOG fresh."
+    - "Focused E2 pytest evidence records reports-anchor improvement without claiming broad E2 pass."
+  closeout_gate:
+    - "Reports-anchor blockers are fixed or residuals documented; E2 focused subset and full repository-hygiene counts recorded; GitNexus post-commit analyze succeeds; staged index empty."
+
+evidence:
+  current_head: "e255e27fe7751f25d8e729fb256aebc56a132e63"
+  notes: []
