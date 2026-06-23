@@ -14336,5 +14336,52 @@
       "current_head": "96685858602ac7ab882f923c45ae55281ed393ab",
       "prepared_at": "2026-06-23T08:43:43.367Z"
     }
+  },
+  {
+    "id": "b4-012-m3a-e3b-e2a-r-ci-cleanup-index-report-anchor-bridge",
+    "title": "Cleanup index report anchor bridge",
+    "node_type": "authorization",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-m3a-e3b-e2-web-frontend-guides-family-split",
+    "status": "authorization-prepared",
+    "function_tree_ref": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e2a-r-ci-cleanup-index-report-anchor-bridge-no-source-review-2026-06-23.md",
+    "current_head": "f71835e1d81aec0396a63469cdc0b6162235f4b3",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e2a-r-ci-cleanup-index-report-anchor-bridge-no-source-review-2026-06-23.md",
+        "note": "No-source review: selected_completion_reports residual requires cleanup index bridge outside E2a-R allowed_paths.",
+        "current_head": "f71835e1d81aec0396a63469cdc0b6162235f4b3",
+        "recorded_at": "2026-06-23T08:50:58.781Z"
+      }
+    ],
+    "allowed_paths": [
+      "docs/reports/cleanup/index-artifacts/INDEX_root.md",
+      "docs/reports/worklogs/claude-auto/"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No docs/guides edits",
+      "No docs/reports/completion_reports edits",
+      "No tests/source/runtime/OpenSpec/root agent-rule/external dirty edits"
+    ],
+    "next_gate": "review and approve implementation authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-23T08:50:58.689Z",
+    "updated_at": "2026-06-23T08:50:58.842Z",
+    "acceptance": {
+      "commit_gate": [
+        "git diff --cached --check",
+        "FUNCTION_TREE validate",
+        "GitNexus verify-staged and detect-changes risk low",
+        "OPENDOG fresh with no blockers"
+      ],
+      "closeout_gate": [
+        "Focused selected_completion_reports repository-hygiene test passes"
+      ]
+    }
   }
 ]

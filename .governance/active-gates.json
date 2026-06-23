@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-23T08:43:43.451Z",
+  "updated_at": "2026-06-23T08:50:58.855Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -244,6 +244,26 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-23T05:40:36.659Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-012-m3a-e3b-e2a-r-ci-cleanup-index-report-anchor-bridge",
+      "title": "Cleanup index report anchor bridge",
+      "node_type": "authorization",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-012-m3a-e3b-e2-web-frontend-guides-family-split",
+      "status": "authorization-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "review and approve implementation authorization",
+      "function_tree_ref": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e2a-r-ci-cleanup-index-report-anchor-bridge-no-source-review-2026-06-23.md",
+      "freshness": "current-head",
+      "allowed_paths": [
+        "docs/reports/cleanup/index-artifacts/INDEX_root.md",
+        "docs/reports/worklogs/claude-auto/"
+      ],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-23T08:50:58.842Z"
     }
   ]
 }

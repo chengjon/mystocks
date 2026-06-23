@@ -126,3 +126,4 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-012-m3a-e3b-e2-web-frontend-guides-family-split: B4.012 M3a-E3b-E2 web/frontend guides family split (planning, FT: B4.012-M3a-E3b-E2)
 - [ ] b4-012-m3a-e3b-e2a-cleanup-index-bridge-authorization: B4.012 M3a-E3b-E2a cleanup index bridge authorization (planning, FT: B4.012-M3a-E3b-E2a)
 - [ ] b4-012-m3a-e3b-e2a-r-reports-anchors-authorization: B4.012 M3a-E3b-E2a-R reports anchors authorization (planning, FT: B4.012-M3a-E3b-E2a-R)
+- [ ] b4-012-m3a-e3b-e2a-r-ci-cleanup-index-report-anchor-bridge: Cleanup index report anchor bridge (planning, FT: docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e2a-r-ci-cleanup-index-report-anchor-bridge-no-source-review-2026-06-23.md)

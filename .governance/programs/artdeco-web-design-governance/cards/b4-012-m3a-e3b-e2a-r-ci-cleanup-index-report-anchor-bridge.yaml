@@ -1,0 +1,28 @@
+task:
+  id: "b4-012-m3a-e3b-e2a-r-ci-cleanup-index-report-anchor-bridge"
+  title: "Cleanup index report anchor bridge"
+
+scope:
+  allowed_paths:
+    - "docs/reports/cleanup/index-artifacts/INDEX_root.md"
+    - "docs/reports/worklogs/claude-auto/"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No docs/guides edits"
+  - "No docs/reports/completion_reports edits"
+  - "No tests/source/runtime/OpenSpec/root agent-rule/external dirty edits"
+
+acceptance:
+  commit_gate:
+    - "git diff --cached --check"
+    - "FUNCTION_TREE validate"
+    - "GitNexus verify-staged and detect-changes risk low"
+    - "OPENDOG fresh with no blockers"
+  closeout_gate:
+    - "Focused selected_completion_reports repository-hygiene test passes"
+
+evidence:
+  current_head: "f71835e1d81aec0396a63469cdc0b6162235f4b3"
+  notes: []
