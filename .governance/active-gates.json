@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-23T17:09:42.690Z",
+  "updated_at": "2026-06-23T17:17:30.635Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -244,26 +244,6 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-23T05:40:36.659Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-012-m3a-e3b-e2c-chrome-devtools-guide-bootstrap",
-      "title": "Chrome DevTools guide family bootstrap",
-      "node_type": "authorization",
-      "owner_lane": "artdeco-web-design-governance",
-      "parent": "b4-012-m3a-e3b-e2-web-frontend-guides-family-split",
-      "status": "implementation-ready",
-      "source_edits_authorized": true,
-      "current_blocker": "",
-      "next_allowed": "land implementation with Git evidence",
-      "function_tree_ref": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e2c-chrome-devtools-guide-bootstrap-no-source-review-2026-06-24.md",
-      "freshness": "current-head",
-      "allowed_paths": [
-        "docs/guides/chrome-devtools/",
-        "docs/reports/worklogs/claude-auto/"
-      ],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-23T17:09:42.678Z"
     }
   ]
 }
