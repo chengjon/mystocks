@@ -14453,11 +14453,11 @@
     "node_type": "authorization",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-e3b-e2-web-frontend-guides-family-split",
-    "status": "authorization-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e2b-openspec-frontend-optimization-docs-bridge-no-source-review-2026-06-23.md",
-    "current_head": "424ebd3a02cccf92dc511d6f8eaf1cdb62c6d59b",
+    "current_head": "db92cc98b22dd460c0a147f822e8a05589be4683",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "decision",
@@ -14465,6 +14465,20 @@
         "note": "No-source review: direct OpenSpec doc restore is invalid without a minimal documentation-governance delta; safe restore simulated successfully with delta.",
         "current_head": "424ebd3a02cccf92dc511d6f8eaf1cdb62c6d59b",
         "recorded_at": "2026-06-23T09:38:40.821Z"
+      },
+      {
+        "kind": "authorization",
+        "path": "User approved implementation by saying 同意，请继续 on 2026-06-23; scope remains the authorized OpenSpec frontend-optimization-six-phase docs bridge files plus closeout worklog only.",
+        "note": "Implementation authorization granted for OpenSpec docs bridge; no tests/source/runtime/docs-guides edits.",
+        "current_head": "db92cc98b22dd460c0a147f822e8a05589be4683",
+        "recorded_at": "2026-06-23T10:13:05.792Z"
+      },
+      {
+        "kind": "implementation",
+        "path": "Implementation validation passed: openspec validate frontend-optimization-six-phase --strict --no-interactive => valid; focused repository-hygiene web-guide OpenSpec tests => 2 passed.",
+        "note": "Restored OpenSpec frontend-optimization-six-phase docs bridge and minimal documentation-governance delta.",
+        "current_head": "db92cc98b22dd460c0a147f822e8a05589be4683",
+        "recorded_at": "2026-06-23T10:14:33.054Z"
       }
     ],
     "allowed_paths": [
@@ -14483,11 +14497,11 @@
       "No docs/guides edits",
       "No root agent-rule edits or external dirty staging"
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-23T09:38:40.655Z",
-    "updated_at": "2026-06-23T09:41:40.598Z",
+    "updated_at": "2026-06-23T10:14:33.226Z",
     "acceptance": {
       "commit_gate": [
         "openspec validate frontend-optimization-six-phase --strict --no-interactive",
@@ -14500,6 +14514,22 @@
       "closeout_gate": [
         "OpenSpec strict validation passes and the two focused web-guide repository-hygiene tests pass"
       ]
-    }
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "Approved to restore OpenSpec frontend-optimization-six-phase documentation from test mirror and add minimal documentation-governance delta.",
+        "current_head": "db92cc98b22dd460c0a147f822e8a05589be4683",
+        "transitioned_at": "2026-06-23T10:13:05.965Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "OpenSpec docs bridge implemented and focused validations pass.",
+        "current_head": "db92cc98b22dd460c0a147f822e8a05589be4683",
+        "transitioned_at": "2026-06-23T10:14:33.226Z"
+      }
+    ]
   }
 ]
