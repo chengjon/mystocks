@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-23T16:52:11.524Z",
+  "updated_at": "2026-06-23T17:09:42.690Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -252,10 +252,10 @@
       "node_type": "authorization",
       "owner_lane": "artdeco-web-design-governance",
       "parent": "b4-012-m3a-e3b-e2-web-frontend-guides-family-split",
-      "status": "authorization-prepared",
-      "source_edits_authorized": false,
+      "status": "implementation-ready",
+      "source_edits_authorized": true,
       "current_blocker": "",
-      "next_allowed": "review and approve implementation authorization",
+      "next_allowed": "land implementation with Git evidence",
       "function_tree_ref": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e2c-chrome-devtools-guide-bootstrap-no-source-review-2026-06-24.md",
       "freshness": "current-head",
       "allowed_paths": [
@@ -263,7 +263,7 @@
         "docs/reports/worklogs/claude-auto/"
       ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-23T16:52:11.511Z"
+      "updated_at": "2026-06-23T17:09:42.678Z"
     }
   ]
 }
