@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-23T10:14:33.240Z",
+  "updated_at": "2026-06-23T15:31:42.700Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -244,31 +244,6 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-23T05:40:36.659Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-012-m3a-e3b-e2b-openspec-frontend-optimization-docs-bridge",
-      "title": "OpenSpec frontend optimization docs bridge",
-      "node_type": "authorization",
-      "owner_lane": "artdeco-web-design-governance",
-      "parent": "b4-012-m3a-e3b-e2-web-frontend-guides-family-split",
-      "status": "implementation-ready",
-      "source_edits_authorized": true,
-      "current_blocker": "",
-      "next_allowed": "land implementation with Git evidence",
-      "function_tree_ref": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e2b-openspec-frontend-optimization-docs-bridge-no-source-review-2026-06-23.md",
-      "freshness": "current-head",
-      "allowed_paths": [
-        "openspec/changes/frontend-optimization-six-phase/README.md",
-        "openspec/changes/frontend-optimization-six-phase/proposal.md",
-        "openspec/changes/frontend-optimization-six-phase/design.md",
-        "openspec/changes/frontend-optimization-six-phase/tasks.md",
-        "openspec/changes/frontend-optimization-six-phase/implementation-plan.md",
-        "openspec/changes/frontend-optimization-six-phase/specs/documentation-governance/spec.md",
-        "docs/reports/worklogs/claude-auto/"
-      ],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-23T10:14:33.226Z"
     }
   ]
 }
