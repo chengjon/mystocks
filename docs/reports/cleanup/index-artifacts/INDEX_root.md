@@ -7,6 +7,13 @@ This generated index preserves historical cleanup root navigation for reports.
 - `reports/reviews/PHASE1_GOVERNANCE_APPROVAL.md`
 - `reports/reviews/DIRECTORY_ORGANIZATION_REVIEW.md`
 
+## Completion Reports
+
+- `completion_reports/P1_TESTING_COMPLETION_REPORT.md`
+- `completion_reports/PHASE1_UI_UX_FOUNDATION_COMPLETION_REPORT.md`
+- `completion_reports/PHASE4_API_INTEGRATION_REPORT.md`
+- `completion_reports/MYSTOCKS_HTML_VUE_CONVERSION_SUMMARY.md`
+
 ## Cleanup Directory Organization
 
 - `reports/cleanup/directory-organization/legacy/DIRECTORY_ORGANIZATION_PLAN_OPTIMIZED.md`

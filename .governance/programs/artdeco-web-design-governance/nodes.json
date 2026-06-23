@@ -14343,11 +14343,11 @@
     "node_type": "authorization",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-e3b-e2-web-frontend-guides-family-split",
-    "status": "authorization-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e2a-r-ci-cleanup-index-report-anchor-bridge-no-source-review-2026-06-23.md",
-    "current_head": "f71835e1d81aec0396a63469cdc0b6162235f4b3",
+    "current_head": "fbd87d71c7fd23061b8569805f2c00d7d5493d57",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "decision",
@@ -14355,6 +14355,20 @@
         "note": "No-source review: selected_completion_reports residual requires cleanup index bridge outside E2a-R allowed_paths.",
         "current_head": "f71835e1d81aec0396a63469cdc0b6162235f4b3",
         "recorded_at": "2026-06-23T08:50:58.781Z"
+      },
+      {
+        "kind": "authorization",
+        "path": "User approved implementation by saying 请继续 on 2026-06-23; scope remains docs/reports/cleanup/index-artifacts/INDEX_root.md plus closeout worklog only.",
+        "note": "Source/docs edit authorization granted for cleanup index report anchor bridge only.",
+        "current_head": "fbd87d71c7fd23061b8569805f2c00d7d5493d57",
+        "recorded_at": "2026-06-23T09:02:08.688Z"
+      },
+      {
+        "kind": "implementation",
+        "path": "Focused validation passed: pytest -q --no-cov -o addopts='' --tb=no tests/unit/scripts/test_repository_hygiene_paths.py::test_selected_completion_reports_are_converged_under_reports_completion_reports => 1 passed.",
+        "note": "Added completion_reports bridge entries to cleanup index root.",
+        "current_head": "fbd87d71c7fd23061b8569805f2c00d7d5493d57",
+        "recorded_at": "2026-06-23T09:03:25.933Z"
       }
     ],
     "allowed_paths": [
@@ -14367,11 +14381,11 @@
       "No docs/reports/completion_reports edits",
       "No tests/source/runtime/OpenSpec/root agent-rule/external dirty edits"
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-23T08:50:58.689Z",
-    "updated_at": "2026-06-23T08:50:58.842Z",
+    "updated_at": "2026-06-23T09:03:26.007Z",
     "acceptance": {
       "commit_gate": [
         "git diff --cached --check",
@@ -14382,6 +14396,22 @@
       "closeout_gate": [
         "Focused selected_completion_reports repository-hygiene test passes"
       ]
-    }
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "Approved to add completion_reports bridge entries to cleanup index root; no source/test/OpenSpec/docs-gୁides edits.",
+        "current_head": "fbd87d71c7fd23061b8569805f2c00d7d5493d57",
+        "transitioned_at": "2026-06-23T09:02:08.765Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Cleanup index bridge implemented and focused selected_completion_reports test passes.",
+        "current_head": "fbd87d71c7fd23061b8569805f2c00d7d5493d57",
+        "transitioned_at": "2026-06-23T09:03:26.007Z"
+      }
+    ]
   }
 ]

@@ -16,6 +16,6 @@
 | artdeco-web-design-governance | b4-012-m3a-e3b-b-repository-hygiene-docs-truth-repair-atlas | decision-prepared | - | prepare authorization | B4.012-M3a-E3b-B |
 | artdeco-web-design-governance | b4-012-m3a-e3b-e-docs-guides-family-split | decision-prepared | - | prepare authorization | B4.012-M3a-E3b-E |
 | artdeco-web-design-governance | b4-012-m3a-e3b-e2-web-frontend-guides-family-split | decision-prepared | - | prepare authorization | B4.012-M3a-E3b-E2 |
-| artdeco-web-design-governance | b4-012-m3a-e3b-e2a-r-ci-cleanup-index-report-anchor-bridge | authorization-prepared | - | review and approve implementation authorization | docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e2a-r-ci-cleanup-index-report-anchor-bridge-no-source-review-2026-06-23.md |
+| artdeco-web-design-governance | b4-012-m3a-e3b-e2a-r-ci-cleanup-index-report-anchor-bridge | implementation-ready | - | land implementation with Git evidence | docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e2a-r-ci-cleanup-index-report-anchor-bridge-no-source-review-2026-06-23.md |
 
 _Generated from `.governance/active-gates.json`._
