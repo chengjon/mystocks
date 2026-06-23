@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-23T17:26:52.836Z",
+  "updated_at": "2026-06-23T17:58:28.144Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -252,10 +252,10 @@
       "node_type": "decision",
       "owner_lane": "governance",
       "parent": "b4-012-m3a-e3b-e2-web-frontend-guides-family-split",
-      "status": "authorization-prepared",
-      "source_edits_authorized": false,
+      "status": "implementation-ready",
+      "source_edits_authorized": true,
       "current_blocker": "",
-      "next_allowed": "review and approve implementation authorization",
+      "next_allowed": "land implementation with Git evidence",
       "function_tree_ref": "FUNCTION_TREE.md",
       "freshness": "current-head",
       "allowed_paths": [
@@ -263,7 +263,7 @@
         "docs/reports/worklogs/claude-auto/"
       ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-23T17:26:52.822Z"
+      "updated_at": "2026-06-23T17:58:28.136Z"
     }
   ]
 }

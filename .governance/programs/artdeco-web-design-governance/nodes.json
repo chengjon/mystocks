@@ -14672,11 +14672,11 @@
     "node_type": "decision",
     "owner_lane": "governance",
     "parent": "b4-012-m3a-e3b-e2-web-frontend-guides-family-split",
-    "status": "authorization-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "FUNCTION_TREE.md",
-    "current_head": "03dee82c461b452a8d2ff502fb0c95c85c50f5cf",
+    "current_head": "c5734f50614044ef57f23e0ee93e9f4ce8ffdba4",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "decision",
@@ -14684,6 +14684,13 @@
         "note": "No-source review isolated hooks guide failure to cleanup index root bridge entries only.",
         "current_head": "03dee82c461b452a8d2ff502fb0c95c85c50f5cf",
         "recorded_at": "2026-06-23T17:26:38.444Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e2d-hooks-guide-cleanup-index-bridge-no-source-review-2026-06-24.md",
+        "note": "Post-authorization commit evidence refresh at c5734f506 before approved-for-implementation transition.",
+        "current_head": "c5734f50614044ef57f23e0ee93e9f4ce8ffdba4",
+        "recorded_at": "2026-06-23T17:53:28.511Z"
       }
     ],
     "allowed_paths": [
@@ -14696,11 +14703,11 @@
       "Do not edit docs/INDEX.md, docs/guides/INDEX.md, or docs/guides/hooks/INDEX.md.",
       "Do not edit source, runtime, tests, OpenSpec, root agent-rule files, or external dirty files."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-23T17:26:16.410Z",
-    "updated_at": "2026-06-23T17:26:52.822Z",
+    "updated_at": "2026-06-23T17:58:28.136Z",
     "track": "backlog",
     "mainline_id": "b4-012-m3a-e3b-e2-web-frontend-guides-family-split",
     "depth": 2,
@@ -14715,6 +14722,22 @@
       "closeout_gate": [
         "Exact staged files contain only authorized files and the node closeout worklog records landed bridge entries."
       ]
-    }
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved E2d implementation; scope is limited to cleanup index root bridge entries and closeout worklog.",
+        "current_head": "c5734f50614044ef57f23e0ee93e9f4ce8ffdba4",
+        "transitioned_at": "2026-06-23T17:53:42.570Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Cleanup index root hooks bridge entries added; focused repository-hygiene hook guide test passed and OPENDOG evidence recorded.",
+        "current_head": "c5734f50614044ef57f23e0ee93e9f4ce8ffdba4",
+        "transitioned_at": "2026-06-23T17:58:28.135Z"
+      }
+    ]
   }
 ]

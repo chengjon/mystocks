@@ -106,3 +106,15 @@ This generated index preserves historical cleanup root navigation for reports.
 - `chrome-devtools/CHROME_DEVTOOLS_MCP_SOLUTION.md`
 - `chrome-devtools/chrome-devtools-wsl2-guide.md`
 - `chrome-devtools/mystocks-chromedevtools-testing-guide.md`
+
+## Hooks Guide Bridge
+
+- `hooks/WEB_DEV_HOOKS_GUIDE.md`
+- `hooks/web-dev-hooks-guide.md`
+- `hooks/hooks使用指南.md`
+- `hooks/hooks详细说明.md`
+- `hooks/hooks错误处理方法.md`
+- `hooks/hook-analysis-report.md`
+- `hooks/hook-optimization-summary.md`
+- `hooks/post_tool_use_hook_error_diagnosis.md`
+- `hooks/pre_commit_hook_setup_guide.md`
