@@ -14565,5 +14565,54 @@
       "current_head": "46841950c14d20e4fa9b7a367f1ef60336a8efed",
       "prepared_at": "2026-06-23T15:31:42.637Z"
     }
+  },
+  {
+    "id": "b4-012-m3a-e3b-e2c-chrome-devtools-guide-bootstrap",
+    "title": "Chrome DevTools guide family bootstrap",
+    "node_type": "authorization",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-m3a-e3b-e2-web-frontend-guides-family-split",
+    "status": "authorization-prepared",
+    "function_tree_ref": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e2c-chrome-devtools-guide-bootstrap-no-source-review-2026-06-24.md",
+    "current_head": "6f26c403fe21c595ee6e44e8d26a5b3cfd012309",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e2c-chrome-devtools-guide-bootstrap-no-source-review-2026-06-24.md",
+        "note": "No-source review: canonical docs/guides/chrome-devtools family is missing; existing source family is under docs/guides/ai-tools/chrome-devtools.",
+        "current_head": "6f26c403fe21c595ee6e44e8d26a5b3cfd012309",
+        "recorded_at": "2026-06-23T16:52:11.461Z"
+      }
+    ],
+    "allowed_paths": [
+      "docs/guides/chrome-devtools/",
+      "docs/reports/worklogs/claude-auto/"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No source/runtime/test edits",
+      "No docs/guides/ai-tools/chrome-devtools edits or deletions",
+      "No docs/INDEX.md or cleanup index edits",
+      "No OpenSpec/root agent-rule/external dirty edits"
+    ],
+    "next_gate": "review and approve implementation authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-23T16:52:11.391Z",
+    "updated_at": "2026-06-23T16:52:11.511Z",
+    "acceptance": {
+      "commit_gate": [
+        "focused Chrome DevTools repository-hygiene test passes",
+        "git diff --cached --check",
+        "FUNCTION_TREE validate",
+        "GitNexus verify-staged and detect-changes risk low",
+        "OPENDOG fresh with no blockers"
+      ],
+      "closeout_gate": [
+        "Canonical docs/guides/chrome-devtools family exists and focused Chrome DevTools test passes"
+      ]
+    }
   }
 ]

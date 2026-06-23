@@ -1,0 +1,30 @@
+task:
+  id: "b4-012-m3a-e3b-e2c-chrome-devtools-guide-bootstrap"
+  title: "Chrome DevTools guide family bootstrap"
+
+scope:
+  allowed_paths:
+    - "docs/guides/chrome-devtools/"
+    - "docs/reports/worklogs/claude-auto/"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No source/runtime/test edits"
+  - "No docs/guides/ai-tools/chrome-devtools edits or deletions"
+  - "No docs/INDEX.md or cleanup index edits"
+  - "No OpenSpec/root agent-rule/external dirty edits"
+
+acceptance:
+  commit_gate:
+    - "focused Chrome DevTools repository-hygiene test passes"
+    - "git diff --cached --check"
+    - "FUNCTION_TREE validate"
+    - "GitNexus verify-staged and detect-changes risk low"
+    - "OPENDOG fresh with no blockers"
+  closeout_gate:
+    - "Canonical docs/guides/chrome-devtools family exists and focused Chrome DevTools test passes"
+
+evidence:
+  current_head: "6f26c403fe21c595ee6e44e8d26a5b3cfd012309"
+  notes: []
