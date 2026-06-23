@@ -13932,5 +13932,105 @@
       "current_head": "917b38a34022ee9704c6ac288b638fd613dbc86e",
       "prepared_at": "2026-06-22T14:54:19.320Z"
     }
+  },
+  {
+    "id": "b4-012-m3a-e3b-e-docs-guides-family-split",
+    "title": "B4.012 M3a-E3b-E docs guides family split",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-m3a-e3b-b-repository-hygiene-docs-truth-repair-atlas",
+    "status": "decision-prepared",
+    "function_tree_ref": "B4.012-M3a-E3b-E",
+    "current_head": "ddc167e2c39c2a90a4c4f69cb4fa19ab88c885c3",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e-docs-guides-family-no-source-review-2026-06-23.md",
+        "note": "No-source docs/guides residual family split after E3b-D closeout; fresh repository hygiene count 81 failed / 21 passed.",
+        "current_head": "ddc167e2c39c2a90a4c4f69cb4fa19ab88c885c3",
+        "recorded_at": "2026-06-23T03:37:15.256Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-23T03:37:03.095Z",
+    "updated_at": "2026-06-23T03:37:35.572Z",
+    "track": "backlog",
+    "mainline_id": "b4-012-m3-residual-dirty-atlas-rebaseline",
+    "depth": 2,
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "Docs/guides residual family is classified; recommended first implementation slice is E1 entrypoints/navigation.",
+        "current_head": "ddc167e2c39c2a90a4c4f69cb4fa19ab88c885c3",
+        "transitioned_at": "2026-06-23T03:37:35.572Z"
+      }
+    ]
+  },
+  {
+    "id": "b4-012-m3a-e3b-e1-docs-guides-entrypoints-navigation-family",
+    "title": "B4.012 M3a-E3b-E1 docs guides entrypoints navigation family",
+    "node_type": "authorization",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-m3a-e3b-e-docs-guides-family-split",
+    "status": "authorization-prepared",
+    "function_tree_ref": "B4.012-M3a-E3b-E1",
+    "current_head": "ddc167e2c39c2a90a4c4f69cb4fa19ab88c885c3",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "authorization",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e-docs-guides-family-no-source-review-2026-06-23.md",
+        "note": "Authorization candidate derived from E3b-E no-source matrix: E1 entrypoints/navigation has 5 focused failures.",
+        "current_head": "ddc167e2c39c2a90a4c4f69cb4fa19ab88c885c3",
+        "recorded_at": "2026-06-23T03:38:13.351Z"
+      }
+    ],
+    "allowed_paths": [
+      "docs/README.md",
+      "docs/guides/README.md",
+      "docs/guides/INDEX.md",
+      "docs/operations/",
+      "docs/overview/",
+      "docs/reports/cleanup/index-artifacts/",
+      "docs/reports/worklogs/claude-auto/"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No source/runtime/test/OpenSpec/root AGENTS/CLAUDE edits; no docs-reports/docs-api/docs-architecture/root-agent-rules families; do not stage external TASK-REPORT.md append hunk."
+    ],
+    "next_gate": "review and approve implementation authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-23T03:37:54.136Z",
+    "updated_at": "2026-06-23T03:38:45.239Z",
+    "track": "backlog",
+    "mainline_id": "b4-012-m3-residual-dirty-atlas-rebaseline",
+    "depth": 2,
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "authorization-prepared",
+        "note": "Entrypoints/navigation is the first docs-guides slice; prepare implementation authorization without source edits.",
+        "current_head": "ddc167e2c39c2a90a4c4f69cb4fa19ab88c885c3",
+        "transitioned_at": "2026-06-23T03:38:29.138Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "Precise staging only for E1 entrypoints/navigation docs and governance evidence; git diff --cached --check; GitNexus verify-staged and detect-changes risk low; focused pytest for the 5 E1 entrypoint/navigation repository-hygiene assertions."
+      ],
+      "closeout_gate": [
+        "Focused E1 assertions pass or residual blockers are documented; full repository hygiene count recorded; OPENDOG fresh; GitNexus post-commit analyze; staged index empty; external dirty files unchanged."
+      ]
+    }
   }
 ]

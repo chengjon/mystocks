@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-22T14:54:33.382Z",
+  "updated_at": "2026-06-23T03:38:45.249Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -210,6 +210,48 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-21T18:15:16.272Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-012-m3a-e3b-e-docs-guides-family-split",
+      "title": "B4.012 M3a-E3b-E docs guides family split",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-012-m3a-e3b-b-repository-hygiene-docs-truth-repair-atlas",
+      "status": "decision-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "prepare authorization",
+      "function_tree_ref": "B4.012-M3a-E3b-E",
+      "freshness": "current-head",
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-23T03:37:35.572Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-012-m3a-e3b-e1-docs-guides-entrypoints-navigation-family",
+      "title": "B4.012 M3a-E3b-E1 docs guides entrypoints navigation family",
+      "node_type": "authorization",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-012-m3a-e3b-e-docs-guides-family-split",
+      "status": "authorization-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "review and approve implementation authorization",
+      "function_tree_ref": "B4.012-M3a-E3b-E1",
+      "freshness": "current-head",
+      "allowed_paths": [
+        "docs/README.md",
+        "docs/guides/README.md",
+        "docs/guides/INDEX.md",
+        "docs/operations/",
+        "docs/overview/",
+        "docs/reports/cleanup/index-artifacts/",
+        "docs/reports/worklogs/claude-auto/"
+      ],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-23T03:38:45.239Z"
     }
   ]
 }

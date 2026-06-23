@@ -120,3 +120,6 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-012-m3a-e3a-r1-repository-hygiene-lint-only-recovery-authorization: B4.012 M3a-E3a-R1 repository hygiene lint-only recovery authorization (planning, FT: B4.012-M3a-E3a-R1)
 - [ ] b4-012-m3a-e3b-b-repository-hygiene-docs-truth-repair-atlas: B4.012 M3a-E3b-B repository hygiene docs truth repair atlas (planning, FT: B4.012-M3a-E3b-B)
 - [ ] b4-012-m3a-e3b-c-repository-hygiene-reports-index-family: B4.012 M3a-E3b-C repository hygiene reports/index family decision (planning, FT: B4.012-M3a-E3b-C)
+- [ ] b4-012-m3a-e3b-d-root-task-report-index-artifacts-family: B4.012 M3a-E3b-D root TASK-REPORT index artifacts family (planning, FT: B4.012-M3a-E3b-D)
+- [ ] b4-012-m3a-e3b-e-docs-guides-family-split: B4.012 M3a-E3b-E docs guides family split (planning, FT: B4.012-M3a-E3b-E)
+- [ ] b4-012-m3a-e3b-e1-docs-guides-entrypoints-navigation-family: B4.012 M3a-E3b-E1 docs guides entrypoints navigation family (planning, FT: B4.012-M3a-E3b-E1)
