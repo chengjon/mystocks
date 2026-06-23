@@ -10,3 +10,7 @@ This plan records cleanup-family directory organization evidence.
 ## Runtime Artifact Routing
 
 - Web development edit tracing belongs under `var/log/web-dev/tracing/`.
+
+## Superpowers Guide Bridge
+
+- Canonical superpowers guide assets live under `docs/guides/superpowers/`.
