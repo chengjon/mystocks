@@ -14672,11 +14672,11 @@
     "node_type": "decision",
     "owner_lane": "governance",
     "parent": "b4-012-m3a-e3b-e2-web-frontend-guides-family-split",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "FUNCTION_TREE.md",
     "current_head": "c5734f50614044ef57f23e0ee93e9f4ce8ffdba4",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "decision",
@@ -14703,11 +14703,11 @@
       "Do not edit docs/INDEX.md, docs/guides/INDEX.md, or docs/guides/hooks/INDEX.md.",
       "Do not edit source, runtime, tests, OpenSpec, root agent-rule files, or external dirty files."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-23T17:26:16.410Z",
-    "updated_at": "2026-06-23T17:58:28.136Z",
+    "updated_at": "2026-06-23T18:05:09.204Z",
     "track": "backlog",
     "mainline_id": "b4-012-m3a-e3b-e2-web-frontend-guides-family-split",
     "depth": 2,
@@ -14737,7 +14737,35 @@
         "note": "Cleanup index root hooks bridge entries added; focused repository-hygiene hook guide test passed and OPENDOG evidence recorded.",
         "current_head": "c5734f50614044ef57f23e0ee93e9f4ce8ffdba4",
         "transitioned_at": "2026-06-23T17:58:28.135Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Implementation landed in commit 298d64b5a: cleanup index root now includes hooks guide bridge entries; focused test passed.",
+        "current_head": "298d64b5a01e52872a099e2e90f2de24d7648267",
+        "transitioned_at": "2026-06-23T18:04:04.773Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "Closeout reviewed in worklog; hooks cleanup index bridge landed and verified.",
+        "current_head": "298d64b5a01e52872a099e2e90f2de24d7648267",
+        "transitioned_at": "2026-06-23T18:05:09.203Z"
       }
-    ]
+    ],
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e2d-hooks-guide-cleanup-index-bridge-closeout-2026-06-24.md",
+      "compatibility": "Canonical docs/guides/hooks content and public docs indexes preserved; only cleanup index root bridge entries were added.",
+      "gates": [
+        "git diff --cached --check passed",
+        "FUNCTION_TREE validate passed",
+        "GitNexus verify-staged and detect-changes passed, risk low",
+        "Focused repository-hygiene hook guide test passed",
+        "OPENDOG focused test evidence recorded",
+        "GitNexus post-commit analyze succeeded"
+      ],
+      "current_head": "298d64b5a01e52872a099e2e90f2de24d7648267",
+      "prepared_at": "2026-06-23T18:04:49.801Z"
+    }
   }
 ]
