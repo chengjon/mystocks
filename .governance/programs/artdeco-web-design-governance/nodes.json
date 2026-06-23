@@ -14226,9 +14226,9 @@
     "node_type": "authorization",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-e3b-e2-web-frontend-guides-family-split",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "B4.012-M3a-E3b-E2a-R",
-    "current_head": "f058d673965b6734a676dc1b97fd6fd783605c5b",
+    "current_head": "96685858602ac7ab882f923c45ae55281ed393ab",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -14252,6 +14252,13 @@
         "note": "Complete reports-anchor records within docs/reports/completion_reports; cleanup index bridge remains separate authorization boundary.",
         "current_head": "f058d673965b6734a676dc1b97fd6fd783605c5b",
         "recorded_at": "2026-06-23T08:30:01.038Z"
+      },
+      {
+        "kind": "implementation",
+        "path": "Implementation commits landed: f058d6739 reports anchor records; 966858586 completion_reports INDEX plus P1/Phase4 anchor records. Remaining selected_completion_reports assertion requires cleanup index bridge outside this node allowed_paths.",
+        "note": "Post-commit GitNexus analyze succeeded at 966858586; implementation evidence refreshed before landed transition.",
+        "current_head": "96685858602ac7ab882f923c45ae55281ed393ab",
+        "recorded_at": "2026-06-23T08:40:03.224Z"
       }
     ],
     "allowed_paths": [
@@ -14272,11 +14279,11 @@
     "non_goals": [
       "No guide-family, OpenSpec, test, source/runtime, root agent-rule, or external dirty edits; no provider/data-source runtime work."
     ],
-    "next_gate": "prepare decision or authorization",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-23T07:31:00.707Z",
-    "updated_at": "2026-06-23T08:30:01.038Z",
+    "updated_at": "2026-06-23T08:43:43.440Z",
     "acceptance": {
       "commit_gate": [
         "Precise staging only for reports anchors and governance evidence; git diff --cached --check; FUNCTION_TREE validate; GitNexus verify-staged and detect-changes risk low; OPENDOG fresh.",
@@ -14300,7 +14307,34 @@
         "note": "E2a-R reports anchor edits prepared; focused E2 result improved to 11/14 with OpenSpec and chrome-devtools residual blockers.",
         "current_head": "b1d9d76ff991cd0d0ff25b7d5a6b9a9c83832e99",
         "transitioned_at": "2026-06-23T07:48:26.431Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Reports-anchor implementation landed in f058d6739 and 966858586; cleanup-index bridge remains split out due allowed_paths boundary.",
+        "current_head": "96685858602ac7ab882f923c45ae55281ed393ab",
+        "transitioned_at": "2026-06-23T08:40:03.300Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "E2a-R reports anchors closed; cleanup index bridge and guide/OpenSpec/chrome-devtools residuals remain split to follow-up packages.",
+        "current_head": "96685858602ac7ab882f923c45ae55281ed393ab",
+        "transitioned_at": "2026-06-23T08:43:43.439Z"
       }
-    ]
+    ],
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e2a-r-reports-anchors-closeout-2026-06-23.md",
+      "compatibility": "Preserved docs/guides, OpenSpec, tests, root-agent files, source/runtime files, cleanup index, and external dirty files unchanged in this package.",
+      "gates": [
+        "Implementation commits f058d6739 and 966858586 landed; post-commit GitNexus analyze succeeded after each.",
+        "GitNexus staged verification for follow-up commit: 6 files, 0 symbols, 0 affected processes, risk low.",
+        "OPENDOG verification fresh with 0 failing runs and 0 cleanup/refactor blockers.",
+        "Focused repository-hygiene subset remains 4 failed / 3 passed; cleanup index bridge is outside E2a-R authorization and is split to next package.",
+        "Full repository-hygiene baseline recorded: 67 failed / 35 passed."
+      ],
+      "current_head": "96685858602ac7ab882f923c45ae55281ed393ab",
+      "prepared_at": "2026-06-23T08:43:43.367Z"
+    }
   }
 ]
