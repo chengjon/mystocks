@@ -1,0 +1,34 @@
+task:
+  id: "b4-012-m3a-e3b-e2a-cleanup-index-bridge-authorization"
+  title: "B4.012 M3a-E3b-E2a cleanup index bridge authorization"
+
+scope:
+  allowed_paths:
+    - "docs/reports/cleanup/index-artifacts/"
+    - "docs/reports/cleanup/directory-organization/"
+    - "docs/reports/worklogs/claude-auto/"
+  forbidden_paths:
+    - "docs/guides/web/"
+    - "docs/guides/frontend/"
+    - "docs/guides/typescript/"
+    - "docs/guides/chrome-devtools/"
+    - "docs/reports/completion_reports/"
+    - "openspec/"
+    - "AGENTS.md"
+    - "CLAUDE.md"
+    - "tests/"
+    - "web/frontend/"
+
+non_goals:
+  - "No guide-family content edits; no OpenSpec, completion report, root agent-rule, source/runtime/test, or web/frontend edits."
+
+acceptance:
+  commit_gate:
+    - "Precise staging only for E2a cleanup-index bridge docs and governance evidence; git diff --cached --check; FUNCTION_TREE validate; GitNexus verify-staged and detect-changes risk low; OPENDOG fresh."
+    - "Focused E2a pytest evidence records improvement or residual blockers without claiming broad E2 pass."
+  closeout_gate:
+    - "Cleanup index bridge entries updated or residual blockers documented; broad E2 14-test result recorded; GitNexus post-commit analyze succeeds; staged index empty; external dirty files unchanged."
+
+evidence:
+  current_head: "6d09223c0f8899273ac40f4bacf834264a21e00c"
+  notes: []

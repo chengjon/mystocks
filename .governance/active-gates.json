@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-23T05:40:36.672Z",
+  "updated_at": "2026-06-23T05:52:48.226Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -244,6 +244,38 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-23T05:40:36.659Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-012-m3a-e3b-e2a-cleanup-index-bridge-authorization",
+      "title": "B4.012 M3a-E3b-E2a cleanup index bridge authorization",
+      "node_type": "authorization",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-012-m3a-e3b-e2-web-frontend-guides-family-split",
+      "status": "authorization-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "review and approve implementation authorization",
+      "function_tree_ref": "B4.012-M3a-E3b-E2a",
+      "freshness": "current-head",
+      "allowed_paths": [
+        "docs/reports/cleanup/index-artifacts/",
+        "docs/reports/cleanup/directory-organization/",
+        "docs/reports/worklogs/claude-auto/"
+      ],
+      "forbidden_paths": [
+        "docs/guides/web/",
+        "docs/guides/frontend/",
+        "docs/guides/typescript/",
+        "docs/guides/chrome-devtools/",
+        "docs/reports/completion_reports/",
+        "openspec/",
+        "AGENTS.md",
+        "CLAUDE.md",
+        "tests/",
+        "web/frontend/"
+      ],
+      "updated_at": "2026-06-23T05:52:48.206Z"
     }
   ]
 }
