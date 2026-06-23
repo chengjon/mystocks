@@ -6,3 +6,7 @@ This plan records cleanup-family directory organization evidence.
 
 - `legacy/INDEX.md`
 - `legacy/task_plan.md`
+
+## Runtime Artifact Routing
+
+- Web development edit tracing belongs under `var/log/web-dev/tracing/`.

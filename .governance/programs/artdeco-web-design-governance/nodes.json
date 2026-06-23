@@ -14123,11 +14123,11 @@
     "node_type": "authorization",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-e3b-e2-web-frontend-guides-family-split",
-    "status": "authorization-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "B4.012-M3a-E3b-E2a",
-    "current_head": "6d09223c0f8899273ac40f4bacf834264a21e00c",
+    "current_head": "67f53bf1f06f09ad250cd6fe805d4f69021e8283",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "authorization",
@@ -14135,6 +14135,13 @@
         "note": "E2 no-source review recommends first narrow package for cleanup index bridge only.",
         "current_head": "6d09223c0f8899273ac40f4bacf834264a21e00c",
         "recorded_at": "2026-06-23T05:52:48.140Z"
+      },
+      {
+        "kind": "authorization",
+        "path": "User approved B4.012-M3a-E3b-E2a cleanup index bridge implementation in conversation on 2026-06-23.",
+        "note": "Fresh user approval after E2a authorization card commit; unlock implementation at current HEAD.",
+        "current_head": "67f53bf1f06f09ad250cd6fe805d4f69021e8283",
+        "recorded_at": "2026-06-23T06:17:44.443Z"
       }
     ],
     "allowed_paths": [
@@ -14157,11 +14164,11 @@
     "non_goals": [
       "No guide-family content edits; no OpenSpec, completion report, root agent-rule, source/runtime/test, or web/frontend edits."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-23T05:52:48.033Z",
-    "updated_at": "2026-06-23T05:52:48.206Z",
+    "updated_at": "2026-06-23T06:22:09.125Z",
     "acceptance": {
       "commit_gate": [
         "Precise staging only for E2a cleanup-index bridge docs and governance evidence; git diff --cached --check; FUNCTION_TREE validate; GitNexus verify-staged and detect-changes risk low; OPENDOG fresh.",
@@ -14170,6 +14177,22 @@
       "closeout_gate": [
         "Cleanup index bridge entries updated or residual blockers documented; broad E2 14-test result recorded; GitNexus post-commit analyze succeeds; staged index empty; external dirty files unchanged."
       ]
-    }
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved E2a cleanup index bridge implementation in conversation on 2026-06-23.",
+        "current_head": "67f53bf1f06f09ad250cd6fe805d4f69021e8283",
+        "transitioned_at": "2026-06-23T06:17:44.514Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "E2a cleanup index bridge edits prepared; focused E2 result improved from 0/14 to 9/14 with residual blockers outside authorization.",
+        "current_head": "67f53bf1f06f09ad250cd6fe805d4f69021e8283",
+        "transitioned_at": "2026-06-23T06:22:09.125Z"
+      }
+    ]
   }
 ]
