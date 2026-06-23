@@ -14226,11 +14226,11 @@
     "node_type": "authorization",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-e3b-e2-web-frontend-guides-family-split",
-    "status": "authorization-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "B4.012-M3a-E3b-E2a-R",
-    "current_head": "e255e27fe7751f25d8e729fb256aebc56a132e63",
+    "current_head": "b1d9d76ff991cd0d0ff25b7d5a6b9a9c83832e99",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "authorization",
@@ -14238,6 +14238,13 @@
         "note": "No-source review after E2a closeout identifies 3 reports-anchor blockers and separates OpenSpec/chrome-devtools residuals.",
         "current_head": "e255e27fe7751f25d8e729fb256aebc56a132e63",
         "recorded_at": "2026-06-23T07:31:00.787Z"
+      },
+      {
+        "kind": "authorization",
+        "path": "User approved B4.012-M3a-E3b-E2a-R reports anchors implementation in conversation on 2026-06-23.",
+        "note": "Fresh user approval after E2a-R authorization card commit; reports-only implementation may proceed at current HEAD.",
+        "current_head": "b1d9d76ff991cd0d0ff25b7d5a6b9a9c83832e99",
+        "recorded_at": "2026-06-23T07:44:00.309Z"
       }
     ],
     "allowed_paths": [
@@ -14258,11 +14265,11 @@
     "non_goals": [
       "No guide-family, OpenSpec, test, source/runtime, root agent-rule, or external dirty edits; no provider/data-source runtime work."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-23T07:31:00.707Z",
-    "updated_at": "2026-06-23T07:31:00.841Z",
+    "updated_at": "2026-06-23T07:48:26.432Z",
     "acceptance": {
       "commit_gate": [
         "Precise staging only for reports anchors and governance evidence; git diff --cached --check; FUNCTION_TREE validate; GitNexus verify-staged and detect-changes risk low; OPENDOG fresh.",
@@ -14271,6 +14278,22 @@
       "closeout_gate": [
         "Reports-anchor blockers are fixed or residuals documented; E2 focused subset and full repository-hygiene counts recorded; GitNexus post-commit analyze succeeds; staged index empty."
       ]
-    }
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved E2a-R reports anchors implementation in conversation on 2026-06-23.",
+        "current_head": "b1d9d76ff991cd0d0ff25b7d5a6b9a9c83832e99",
+        "transitioned_at": "2026-06-23T07:44:00.386Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "E2a-R reports anchor edits prepared; focused E2 result improved to 11/14 with OpenSpec and chrome-devtools residual blockers.",
+        "current_head": "b1d9d76ff991cd0d0ff25b7d5a6b9a9c83832e99",
+        "transitioned_at": "2026-06-23T07:48:26.431Z"
+      }
+    ]
   }
 ]

@@ -10,3 +10,4 @@ This review captures reports-side directory organization evidence for the cleanu
 
 - Historical evidence only.
 - The review is intentionally stored under `docs/reports/reviews/`.
+- Web development edit tracing is routed to `var/log/web-dev/tracing/web-edit-tracker.jsonl`.
