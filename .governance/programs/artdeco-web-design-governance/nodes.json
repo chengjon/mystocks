@@ -13980,11 +13980,11 @@
     "node_type": "authorization",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-e3b-e-docs-guides-family-split",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "B4.012-M3a-E3b-E1",
     "current_head": "5d166b72a84f83393adc83d55957f04e23addcb2",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "authorization",
@@ -14014,11 +14014,11 @@
     "non_goals": [
       "No source/runtime/test/OpenSpec/root AGENTS/CLAUDE edits; no docs-reports/docs-api/docs-architecture/root-agent-rules families; do not stage external TASK-REPORT.md append hunk."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-23T03:37:54.136Z",
-    "updated_at": "2026-06-23T04:15:37.794Z",
+    "updated_at": "2026-06-23T04:25:33.015Z",
     "track": "backlog",
     "mainline_id": "b4-012-m3-residual-dirty-atlas-rebaseline",
     "depth": 2,
@@ -14043,6 +14043,20 @@
         "note": "E1 entrypoint/navigation docs edits prepared; focused test surface reduced to authorized-outside residual blockers.",
         "current_head": "5d166b72a84f83393adc83d55957f04e23addcb2",
         "transitioned_at": "2026-06-23T04:15:37.793Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Implementation landed in d0957bfe2: docs/guides entrypoint canonical targets aligned; authorized-outside residual blockers documented for closeout.",
+        "current_head": "d0957bfe23d79648bc7c5eb2bf1712d5e35314d8",
+        "transitioned_at": "2026-06-23T04:24:46.665Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "E1 entrypoints/navigation package closed with residual blockers split to separate authorization.",
+        "current_head": "d0957bfe23d79648bc7c5eb2bf1712d5e35314d8",
+        "transitioned_at": "2026-06-23T04:25:33.015Z"
       }
     ],
     "acceptance": {
@@ -14052,6 +14066,17 @@
       "closeout_gate": [
         "Focused E1 assertions pass or residual blockers are documented; full repository hygiene count recorded; OPENDOG fresh; GitNexus post-commit analyze; staged index empty; external dirty files unchanged."
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e1-docs-guides-entrypoints-navigation-closeout-2026-06-23.md",
+      "compatibility": "Preserved docs/guides as supporting transition surface; no source/runtime/test/OpenSpec/root agent-rule edits.",
+      "gates": [
+        "Focused E1 assertions: 3 passed, 2 residual authorization-outside FileNotFound blockers documented",
+        "Full repository-hygiene baseline recorded: 24 passed, 78 failed",
+        "GitNexus staged checks risk low; OPENDOG fresh; post-commit analyze succeeded"
+      ],
+      "current_head": "d0957bfe23d79648bc7c5eb2bf1712d5e35314d8",
+      "prepared_at": "2026-06-23T04:25:32.948Z"
     }
   }
 ]
