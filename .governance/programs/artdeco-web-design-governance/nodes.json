@@ -14078,5 +14078,43 @@
       "current_head": "d0957bfe23d79648bc7c5eb2bf1712d5e35314d8",
       "prepared_at": "2026-06-23T04:25:32.948Z"
     }
+  },
+  {
+    "id": "b4-012-m3a-e3b-e2-web-frontend-guides-family-split",
+    "title": "B4.012 M3a-E3b-E2 web/frontend guides family split",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-m3a-e3b-e-docs-guides-family-split",
+    "status": "decision-prepared",
+    "function_tree_ref": "B4.012-M3a-E3b-E2",
+    "current_head": "54ccaff48d02f20cd5c4bcfe07281d58b42dece7",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e2-web-frontend-guides-no-source-review-2026-06-23.md",
+        "note": "No-source E2 review: 14 focused failures classify into cleanup index, web, frontend, typescript, chrome-devtools, reports-anchor, and OpenSpec buckets.",
+        "current_head": "54ccaff48d02f20cd5c4bcfe07281d58b42dece7",
+        "recorded_at": "2026-06-23T05:40:21.979Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-23T05:40:21.898Z",
+    "updated_at": "2026-06-23T05:40:36.659Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "E2 should be split before implementation; no broad E2 source/docs authorization recommended.",
+        "current_head": "54ccaff48d02f20cd5c4bcfe07281d58b42dece7",
+        "transitioned_at": "2026-06-23T05:40:36.658Z"
+      }
+    ]
   }
 ]
