@@ -131,3 +131,4 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-012-m3a-e3b-e2c-chrome-devtools-guide-bootstrap: Chrome DevTools guide family bootstrap (planning, FT: docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e2c-chrome-devtools-guide-bootstrap-no-source-review-2026-06-24.md)
 - [ ] b4-012-m3a-e3b-e2d-hooks-guide-cleanup-index-bridge: Hooks guide cleanup index bridge (planning, FT: FUNCTION_TREE.md)
 - [ ] b4-012-m3a-e3b-e2e-superpowers-guide-bootstrap: Superpowers guide bootstrap (planning, FT: FUNCTION_TREE.md)
+- [ ] b4-012-m3a-e3b-e2f-api-standards-cleanup-index-roots: API and standards cleanup index roots (planning, FT: FUNCTION_TREE.md)
