@@ -14878,11 +14878,11 @@
     "node_type": "decision",
     "owner_lane": "governance",
     "parent": "b4-012-m3a-e3b-e2-web-frontend-guides-family-split",
-    "status": "authorization-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "FUNCTION_TREE.md",
-    "current_head": "b1d89e4db1544a2be75d10b47dc6ad12c4770792",
+    "current_head": "14bc1fe60dce86d35d18417cf6ac01ae1bf1b8b5",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "decision",
@@ -14890,6 +14890,13 @@
         "note": "No-source review found archived API and standards cleanup index roots and missing canonical reports cleanup anchors.",
         "current_head": "b1d89e4db1544a2be75d10b47dc6ad12c4770792",
         "recorded_at": "2026-06-24T01:34:05.984Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e2f-api-standards-cleanup-index-roots-no-source-review-2026-06-24.md",
+        "note": "Post-authorization commit evidence refresh at 14bc1fe60 before approved-for-implementation transition.",
+        "current_head": "14bc1fe60dce86d35d18417cf6ac01ae1bf1b8b5",
+        "recorded_at": "2026-06-24T02:32:24.271Z"
       }
     ],
     "allowed_paths": [
@@ -14906,11 +14913,11 @@
       "Do not edit docs/api/INDEX.md or docs/standards/INDEX.md.",
       "Do not edit source, runtime, tests, OpenSpec, root agent-rule files, or external dirty files."
     ],
-    "next_gate": "review and approve implementation authorization",
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-24T01:33:50.182Z",
-    "updated_at": "2026-06-24T01:34:30.364Z",
+    "updated_at": "2026-06-24T03:27:50.232Z",
     "track": "backlog",
     "mainline_id": "b4-012-m3a-e3b-e2-web-frontend-guides-family-split",
     "depth": 2,
@@ -14925,6 +14932,22 @@
       "closeout_gate": [
         "Exact staged files contain only authorized files and closeout records archive compatibility preserved."
       ]
-    }
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved E2f implementation; restore API and standards cleanup index roots from archive and add reports cleanup anchors only.",
+        "current_head": "14bc1fe60dce86d35d18417cf6ac01ae1bf1b8b5",
+        "transitioned_at": "2026-06-24T02:32:39.491Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "API and standards cleanup index roots restored from archive; reports cleanup anchors added; focused repository-hygiene tests passed and OPENDOG evidence recorded.",
+        "current_head": "14bc1fe60dce86d35d18417cf6ac01ae1bf1b8b5",
+        "transitioned_at": "2026-06-24T03:27:50.232Z"
+      }
+    ]
   }
 ]

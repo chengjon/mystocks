@@ -26,6 +26,8 @@
   - [`cleanup/FILE_CLEANUP_TASK.md`](cleanup/FILE_CLEANUP_TASK.md)
   - [`cleanup/INDEX.md`](cleanup/INDEX.md)
   - [`cleanup/index-artifacts/INDEX_root.md`](cleanup/index-artifacts/INDEX_root.md)
+  - [`cleanup/index-artifacts/api/INDEX_root.md`](cleanup/index-artifacts/api/INDEX_root.md)
+  - [`cleanup/index-artifacts/standards/INDEX_root.md`](cleanup/index-artifacts/standards/INDEX_root.md)
   - [`cleanup/directory-organization/INDEX.md`](cleanup/directory-organization/INDEX.md)
   - [`cleanup/directory-organization/DIRECTORY_ORGANIZATION_PLAN.md`](cleanup/directory-organization/DIRECTORY_ORGANIZATION_PLAN.md)
   - [`cleanup/directory-organization/legacy/INDEX.md`](cleanup/directory-organization/legacy/INDEX.md)

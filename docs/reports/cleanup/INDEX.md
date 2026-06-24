@@ -14,3 +14,5 @@ This directory stores cleanup batch evidence for reports historical navigation a
 - `directory-organization/legacy/PROJECT_DIRECTORY_MANAGEMENT_PLAN.md`
 - `directory-organization/legacy/deliverable.md`
 - `directory-organization/legacy/task_plan.md`
+- `index-artifacts/api/INDEX_root.md`
+- `index-artifacts/standards/INDEX_root.md`
