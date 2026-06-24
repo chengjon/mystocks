@@ -13399,7 +13399,7 @@
     "parent": "b4-012-m3a-e3-governance-script-tests-split",
     "status": "blocked",
     "function_tree_ref": "B4.012-M3a-E3a",
-    "current_head": "62f8eb5b51f00e3c281fa879123d2fef1a5b7404",
+    "current_head": "a44b85d9e2b54a4799e2c0d1bc58f811eff49d5b",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -13430,6 +13430,13 @@
         "note": "Strict E3a route restored OMC assertion deletion to HEAD, but focused repository-hygiene pytest remains broadly red (87 failed, 15 passed); no test change landed.",
         "current_head": "62f8eb5b51f00e3c281fa879123d2fef1a5b7404",
         "recorded_at": "2026-06-21T16:46:32.701Z"
+      },
+      {
+        "kind": "blocker",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3a-repository-hygiene-unit-script-blocked-revalidation-2026-06-24.md",
+        "note": "No-source blocked revalidation at HEAD a44b85d9e: py_compile and ruff pass, but focused pytest remains red at 58 failed / 44 passed; E3a remains blocked.",
+        "current_head": "a44b85d9e2b54a4799e2c0d1bc58f811eff49d5b",
+        "recorded_at": "2026-06-24T10:23:46.473Z"
       }
     ],
     "allowed_paths": [
@@ -13441,10 +13448,10 @@
       "No scripts/tests, no untracked tests/unit/scripts files, no source/runtime changes, no OpenSpec/OpenStock provider runtime changes, no assertion weakening, skip/xfail addition, deletion, restore, migration, broad refactor, ST-HOLD, or marketKlineData."
     ],
     "next_gate": "unblock to authorization-prepared",
-    "blocker_reason": "Strict E3a hygiene implementation cannot close: focused pytest for tests/unit/scripts/test_repository_hygiene_paths.py currently fails with 87 failed / 15 passed due broad repository-hygiene docs truth drift outside E3a lint/import scope.",
+    "blocker_reason": "No-source revalidation shows py_compile and ruff pass, but focused pytest for tests/unit/scripts/test_repository_hygiene_paths.py remains red at 58 failed / 44 passed due broad repository-hygiene docs truth drift outside E3a lint/import scope.",
     "unblock_target_state": "authorization-prepared",
     "created_at": "2026-06-21T16:07:53.710Z",
-    "updated_at": "2026-06-21T16:46:43.288Z",
+    "updated_at": "2026-06-24T10:27:20.475Z",
     "acceptance": {
       "commit_gate": [
         "git diff --cached --check; FUNCTION_TREE validate; GitNexus verify-staged and detect-changes; OPENDOG verification; exact staged scope only.",
@@ -13482,6 +13489,13 @@
         "note": "Return to authorization prep only after repository-hygiene docs truth drift decision or revised acceptance scope.",
         "current_head": "62f8eb5b51f00e3c281fa879123d2fef1a5b7404",
         "transitioned_at": "2026-06-21T16:46:43.288Z"
+      },
+      {
+        "from": "blocked",
+        "to": "blocked",
+        "note": "Refresh blocked gate after no-source revalidation; E3a remains blocked until a separate disposition/test-policy or docs-truth package resolves the focused pytest surface.",
+        "current_head": "a44b85d9e2b54a4799e2c0d1bc58f811eff49d5b",
+        "transitioned_at": "2026-06-24T10:27:20.474Z"
       }
     ]
   },

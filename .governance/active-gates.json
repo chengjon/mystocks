@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-24T09:30:19.295Z",
+  "updated_at": "2026-06-24T10:27:20.484Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -147,10 +147,10 @@
       "parent": "b4-012-m3a-e3-governance-script-tests-split",
       "status": "blocked",
       "source_edits_authorized": false,
-      "current_blocker": "Strict E3a hygiene implementation cannot close: focused pytest for tests/unit/scripts/test_repository_hygiene_paths.py currently fails with 87 failed / 15 passed due broad repository-hygiene docs truth drift outside E3a lint/import scope.",
-      "blocker_reason": "Strict E3a hygiene implementation cannot close: focused pytest for tests/unit/scripts/test_repository_hygiene_paths.py currently fails with 87 failed / 15 passed due broad repository-hygiene docs truth drift outside E3a lint/import scope.",
-      "next_allowed": "unblock to authorization-prepared",
+      "current_blocker": "No-source revalidation shows py_compile and ruff pass, but focused pytest for tests/unit/scripts/test_repository_hygiene_paths.py remains red at 58 failed / 44 passed due broad repository-hygiene docs truth drift outside E3a lint/import scope.",
+      "blocker_reason": "No-source revalidation shows py_compile and ruff pass, but focused pytest for tests/unit/scripts/test_repository_hygiene_paths.py remains red at 58 failed / 44 passed due broad repository-hygiene docs truth drift outside E3a lint/import scope.",
       "unblock_target_state": "authorization-prepared",
+      "next_allowed": "unblock to authorization-prepared",
       "function_tree_ref": "B4.012-M3a-E3a",
       "freshness": "current-head",
       "allowed_paths": [
@@ -158,7 +158,7 @@
         "docs/reports/worklogs/claude-auto/b4-012-m3a-e3a-repository-hygiene-unit-script-closeout-2026-06-21.md"
       ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-21T16:46:43.288Z"
+      "updated_at": "2026-06-24T10:27:20.475Z"
     }
   ]
 }
