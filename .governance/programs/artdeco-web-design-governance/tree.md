@@ -134,3 +134,4 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-012-m3a-e3b-e2f-api-standards-cleanup-index-roots: API and standards cleanup index roots (planning, FT: FUNCTION_TREE.md)
 - [ ] b4-012-m3a-e3a-r2-repository-hygiene-remaining-failure-disposition: B4.012 M3a-E3a-R2 repository hygiene remaining failure disposition (planning, FT: B4.012-M3a-E3a-R2)
 - [ ] b4-012-m3a-e3a-r3-root-overview-docs-truth-review: B4.012 M3a-E3a-R3 root overview docs truth review (planning, FT: B4.012-M3a-E3a-R3)
+- [ ] b4-012-m3a-e3a-r4-active-docs-guides-canonical-family-review: B4.012 M3a-E3a-R4 active docs guides canonical family review (planning, FT: B4.012-M3a-E3a-R4)

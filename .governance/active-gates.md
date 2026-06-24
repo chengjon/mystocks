@@ -13,5 +13,6 @@
 | artdeco-web-design-governance | b4-012-m3a-e3a-repository-hygiene-unit-script-authorization | blocked | No-source revalidation shows py_compile and ruff pass, but focused pytest for tests/unit/scripts/test_repository_hygiene_paths.py remains red at 58 failed / 44 passed due broad repository-hygiene docs truth drift outside E3a lint/import scope. | unblock to authorization-prepared | B4.012-M3a-E3a |
 | artdeco-web-design-governance | b4-012-m3a-e3a-r2-repository-hygiene-remaining-failure-disposition | decision-prepared | - | prepare authorization | B4.012-M3a-E3a-R2 |
 | artdeco-web-design-governance | b4-012-m3a-e3a-r3-root-overview-docs-truth-review | decision-prepared | - | prepare authorization | B4.012-M3a-E3a-R3 |
+| artdeco-web-design-governance | b4-012-m3a-e3a-r4-active-docs-guides-canonical-family-review | decision-prepared | - | prepare authorization | B4.012-M3a-E3a-R4 |
 
 _Generated from `.governance/active-gates.json`._

@@ -15367,5 +15367,43 @@
         "transitioned_at": "2026-06-24T10:52:00.045Z"
       }
     ]
+  },
+  {
+    "id": "b4-012-m3a-e3a-r4-active-docs-guides-canonical-family-review",
+    "title": "B4.012 M3a-E3a-R4 active docs guides canonical family review",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-m3a-e3a-repository-hygiene-unit-script-authorization",
+    "status": "decision-prepared",
+    "function_tree_ref": "B4.012-M3a-E3a-R4",
+    "current_head": "7b63e838f94711bb66ea698314287921d8b50def",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3a-r4-active-docs-guides-canonical-family-review-2026-06-24.md",
+        "note": "No-source R4 review: active docs/guides failures split into seven canonical families with OpenStock provider boundary preserved.",
+        "current_head": "7b63e838f94711bb66ea698314287921d8b50def",
+        "recorded_at": "2026-06-24T11:00:37.101Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-24T10:58:08.376Z",
+    "updated_at": "2026-06-24T11:00:49.319Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "Active docs/guides canonical review complete; follow-up packages need separate allowed-path authorization.",
+        "current_head": "7b63e838f94711bb66ea698314287921d8b50def",
+        "transitioned_at": "2026-06-24T11:00:49.319Z"
+      }
+    ]
   }
 ]
