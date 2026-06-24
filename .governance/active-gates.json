@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-24T04:05:22.832Z",
+  "updated_at": "2026-06-24T04:12:14.052Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -227,28 +227,6 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-23T03:37:35.572Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-012-m3a-e3b-e2-web-frontend-guides-family-split",
-      "title": "B4.012 M3a-E3b-E2 web/frontend guides family split",
-      "node_type": "decision",
-      "owner_lane": "artdeco-web-design-governance",
-      "parent": "b4-012-m3a-e3b-e-docs-guides-family-split",
-      "status": "implementation-ready",
-      "source_edits_authorized": true,
-      "current_blocker": "",
-      "next_allowed": "land implementation with Git evidence",
-      "function_tree_ref": "B4.012-M3a-E3b-E2",
-      "freshness": "current-head",
-      "allowed_paths": [
-        ".governance/active-gates.json",
-        ".governance/active-gates.md",
-        ".governance/programs/artdeco-web-design-governance/nodes.json",
-        "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e2-web-frontend-guides-family-closeout-2026-06-24.md"
-      ],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-24T04:05:22.820Z"
     }
   ]
 }
