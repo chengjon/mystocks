@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-24T10:27:20.484Z",
+  "updated_at": "2026-06-24T10:43:13.642Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -159,6 +159,23 @@
       ],
       "forbidden_paths": [],
       "updated_at": "2026-06-24T10:27:20.475Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-012-m3a-e3a-r2-repository-hygiene-remaining-failure-disposition",
+      "title": "B4.012 M3a-E3a-R2 repository hygiene remaining failure disposition",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-012-m3a-e3a-repository-hygiene-unit-script-authorization",
+      "status": "decision-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "prepare authorization",
+      "function_tree_ref": "B4.012-M3a-E3a-R2",
+      "freshness": "current-head",
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-24T10:43:13.634Z"
     }
   ]
 }

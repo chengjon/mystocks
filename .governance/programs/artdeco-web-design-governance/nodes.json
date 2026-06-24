@@ -15291,5 +15291,43 @@
       "current_head": "02d0048d4c69307cb10cb24fad9b4e8207c97801",
       "prepared_at": "2026-06-24T03:34:37.394Z"
     }
+  },
+  {
+    "id": "b4-012-m3a-e3a-r2-repository-hygiene-remaining-failure-disposition",
+    "title": "B4.012 M3a-E3a-R2 repository hygiene remaining failure disposition",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-m3a-e3a-repository-hygiene-unit-script-authorization",
+    "status": "decision-prepared",
+    "function_tree_ref": "B4.012-M3a-E3a-R2",
+    "current_head": "27a10e5667636fb3939a9e7894f4c67e55f1474b",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3a-r2-repository-hygiene-remaining-failure-disposition-2026-06-24.md",
+        "note": "No-source R2 disposition: repository-hygiene focused pytest remains 58 failed / 44 passed; split remaining failures into family-level follow-up packages.",
+        "current_head": "27a10e5667636fb3939a9e7894f4c67e55f1474b",
+        "recorded_at": "2026-06-24T10:43:02.414Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-24T10:39:42.780Z",
+    "updated_at": "2026-06-24T10:43:13.634Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "R2 no-source disposition complete; follow-up requires family-level authorization packages before any docs/test edits.",
+        "current_head": "27a10e5667636fb3939a9e7894f4c67e55f1474b",
+        "transitioned_at": "2026-06-24T10:43:13.633Z"
+      }
+    ]
   }
 ]
