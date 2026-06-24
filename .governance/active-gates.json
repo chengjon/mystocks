@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-24T08:58:23.193Z",
+  "updated_at": "2026-06-24T09:08:45.310Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -176,28 +176,6 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-21T17:08:32.682Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-012-m3a-e3b-a-repository-hygiene-docs-truth-baseline-decision",
-      "title": "B4.012 M3a-E3b-A repository hygiene docs truth baseline decision",
-      "node_type": "decision",
-      "owner_lane": "artdeco-web-design-governance",
-      "parent": "b4-012-m3a-e3b-repository-hygiene-docs-truth-drift-decision",
-      "status": "implementation-ready",
-      "source_edits_authorized": true,
-      "current_blocker": "",
-      "next_allowed": "land implementation with Git evidence",
-      "function_tree_ref": "B4.012-M3a-E3b-A",
-      "freshness": "current-head",
-      "allowed_paths": [
-        ".governance/active-gates.json",
-        ".governance/active-gates.md",
-        ".governance/programs/artdeco-web-design-governance/nodes.json",
-        "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-a-repository-hygiene-docs-truth-baseline-decision-closeout-2026-06-24.md"
-      ],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-24T08:58:23.181Z"
     }
   ]
 }
