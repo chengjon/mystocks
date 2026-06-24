@@ -13679,11 +13679,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-e3b-repository-hygiene-docs-truth-drift-decision",
-    "status": "decision-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "B4.012-M3a-E3b-B",
-    "current_head": "8727c81073a0f67ee9c64dd224ce85a478887aee",
+    "current_head": "f4f4a707c439875a04de67e57a20b1f5c7b2fa5e",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "baseline",
@@ -13691,16 +13691,31 @@
         "note": "No-source docs-truth atlas baseline for repository hygiene after focused pytest remained broad at 87 failed / 15 passed; family classification prepared for next authorization package.",
         "current_head": "8727c81073a0f67ee9c64dd224ce85a478887aee",
         "recorded_at": "2026-06-21T18:15:16.217Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-b-repository-hygiene-docs-truth-repair-atlas-2026-06-22.md",
+        "note": "B repair-atlas parent closeout readiness refresh after C, D, and E child families reached closed at HEAD f4f4a707c.",
+        "current_head": "f4f4a707c439875a04de67e57a20b1f5c7b2fa5e",
+        "recorded_at": "2026-06-24T04:30:31.907Z"
       }
     ],
-    "allowed_paths": [],
+    "allowed_paths": [
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-b-repository-hygiene-docs-truth-repair-atlas-closeout-2026-06-24.md"
+    ],
     "forbidden_paths": [],
-    "non_goals": [],
-    "next_gate": "prepare authorization",
+    "non_goals": [
+      "No source/runtime/test/OpenSpec/root agent-rule edits.",
+      "No docs/report/index/archive movement or content repair in this parent closeout."
+    ],
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-21T18:11:08.614Z",
-    "updated_at": "2026-06-21T18:15:16.272Z",
+    "updated_at": "2026-06-24T04:32:03.619Z",
     "track": "backlog",
     "mainline_id": "b4-012-m3-residual-dirty-atlas-rebaseline",
     "depth": 2,
@@ -13711,8 +13726,31 @@
         "note": "Decision package ready: docs-truth atlas identifies next family-based repair boundary; no source edits authorized yet.",
         "current_head": "8727c81073a0f67ee9c64dd224ce85a478887aee",
         "transitioned_at": "2026-06-21T18:15:16.272Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved governance-only B repair-atlas parent closeout after C, D, and E were verified closed.",
+        "current_head": "f4f4a707c439875a04de67e57a20b1f5c7b2fa5e",
+        "transitioned_at": "2026-06-24T04:31:02.396Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "B repair-atlas parent closeout worklog prepared; C, D, and E child families are closed.",
+        "current_head": "f4f4a707c439875a04de67e57a20b1f5c7b2fa5e",
+        "transitioned_at": "2026-06-24T04:32:03.618Z"
       }
-    ]
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "Exact staging only governance state plus B parent closeout worklog.",
+        "FUNCTION_TREE validate, GitNexus staged low risk, OPENDOG fresh."
+      ],
+      "closeout_gate": [
+        "B parent closed only after C, D, and E child families are verified closed and active gates no longer include B."
+      ]
+    }
   },
   {
     "id": "b4-012-m3a-e3b-c-repository-hygiene-reports-index-family",
