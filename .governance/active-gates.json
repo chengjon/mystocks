@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-24T04:32:03.629Z",
+  "updated_at": "2026-06-24T04:38:27.969Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -193,28 +193,6 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-21T17:23:20.893Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-012-m3a-e3b-b-repository-hygiene-docs-truth-repair-atlas",
-      "title": "B4.012 M3a-E3b-B repository hygiene docs truth repair atlas",
-      "node_type": "decision",
-      "owner_lane": "artdeco-web-design-governance",
-      "parent": "b4-012-m3a-e3b-repository-hygiene-docs-truth-drift-decision",
-      "status": "implementation-ready",
-      "source_edits_authorized": true,
-      "current_blocker": "",
-      "next_allowed": "land implementation with Git evidence",
-      "function_tree_ref": "B4.012-M3a-E3b-B",
-      "freshness": "current-head",
-      "allowed_paths": [
-        ".governance/active-gates.json",
-        ".governance/active-gates.md",
-        ".governance/programs/artdeco-web-design-governance/nodes.json",
-        "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-b-repository-hygiene-docs-truth-repair-atlas-closeout-2026-06-24.md"
-      ],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-24T04:32:03.619Z"
     }
   ]
 }

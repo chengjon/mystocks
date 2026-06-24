@@ -13679,11 +13679,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-e3b-repository-hygiene-docs-truth-drift-decision",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "B4.012-M3a-E3b-B",
     "current_head": "f4f4a707c439875a04de67e57a20b1f5c7b2fa5e",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "baseline",
@@ -13711,11 +13711,11 @@
       "No source/runtime/test/OpenSpec/root agent-rule edits.",
       "No docs/report/index/archive movement or content repair in this parent closeout."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-21T18:11:08.614Z",
-    "updated_at": "2026-06-24T04:32:03.619Z",
+    "updated_at": "2026-06-24T04:38:27.960Z",
     "track": "backlog",
     "mainline_id": "b4-012-m3-residual-dirty-atlas-rebaseline",
     "depth": 2,
@@ -13740,6 +13740,20 @@
         "note": "B repair-atlas parent closeout worklog prepared; C, D, and E child families are closed.",
         "current_head": "f4f4a707c439875a04de67e57a20b1f5c7b2fa5e",
         "transitioned_at": "2026-06-24T04:32:03.618Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "B repair-atlas parent closeout preparation landed in commit abf43ae96 and GitNexus post-commit index refreshed.",
+        "current_head": "abf43ae96dee466c5ccb58c7107f2293b44791cc",
+        "transitioned_at": "2026-06-24T04:38:01.766Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "B repair-atlas parent closed after C, D, and E child families closed and parent closeout evidence committed.",
+        "current_head": "abf43ae96dee466c5ccb58c7107f2293b44791cc",
+        "transitioned_at": "2026-06-24T04:38:27.959Z"
       }
     ],
     "acceptance": {
@@ -13750,6 +13764,15 @@
       "closeout_gate": [
         "B parent closed only after C, D, and E child families are verified closed and active gates no longer include B."
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-b-repository-hygiene-docs-truth-repair-atlas-closeout-2026-06-24.md",
+      "compatibility": "Runtime behavior unchanged; no source/runtime/test/OpenSpec/root agent-rule edits; C, D, and E child families closed.",
+      "gates": [
+        "FUNCTION_TREE validate passed; GitNexus staged checks risk low; OPENDOG fresh; exact staging limited to governance and B parent closeout worklog."
+      ],
+      "current_head": "abf43ae96dee466c5ccb58c7107f2293b44791cc",
+      "prepared_at": "2026-06-24T04:38:17.046Z"
     }
   },
   {
