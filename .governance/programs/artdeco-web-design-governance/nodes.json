@@ -13532,11 +13532,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-e3b-repository-hygiene-docs-truth-drift-decision",
-    "status": "decision-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "B4.012-M3a-E3b-A",
-    "current_head": "723b058e247f40461027277ab41477d6abef2568",
+    "current_head": "f60914dcb02894e65371df116d8c8963b0bc6a34",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "decision",
@@ -13544,16 +13544,31 @@
         "note": "No-source baseline decision: classify repository-hygiene docs truth failures and recommend E3a-R1 lint-only recovery with explicit pytest baseline waiver.",
         "current_head": "723b058e247f40461027277ab41477d6abef2568",
         "recorded_at": "2026-06-21T17:23:07.631Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-a-repository-hygiene-docs-truth-baseline-decision-2026-06-22.md",
+        "note": "A baseline decision closeout readiness refresh at HEAD f60914dcb; downstream E3a-R1 is closed, B repair-atlas is closed, E3a parent remains separately blocked.",
+        "current_head": "f60914dcb02894e65371df116d8c8963b0bc6a34",
+        "recorded_at": "2026-06-24T08:55:21.147Z"
       }
     ],
-    "allowed_paths": [],
+    "allowed_paths": [
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-a-repository-hygiene-docs-truth-baseline-decision-closeout-2026-06-24.md"
+    ],
     "forbidden_paths": [],
-    "non_goals": [],
-    "next_gate": "prepare authorization",
+    "non_goals": [
+      "No source/runtime/test/OpenSpec/root agent-rule edits.",
+      "No E3a parent unblock, no test-policy implementation, no docs truth repair in this A closeout."
+    ],
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-21T17:21:48.781Z",
-    "updated_at": "2026-06-21T17:23:20.893Z",
+    "updated_at": "2026-06-24T08:58:23.181Z",
     "track": "backlog",
     "mainline_id": "b4-012-m3-residual-dirty-atlas-rebaseline",
     "depth": 2,
@@ -13564,8 +13579,31 @@
         "note": "Decision prepared: keep docs truth drift as baseline debt for E3a; next gate is explicit authorization for E3a-R1 lint-only recovery or E3b-B docs truth atlas.",
         "current_head": "723b058e247f40461027277ab41477d6abef2568",
         "transitioned_at": "2026-06-21T17:23:20.892Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved governance-only A baseline decision closeout; no source/test/docs truth implementation included.",
+        "current_head": "f60914dcb02894e65371df116d8c8963b0bc6a34",
+        "transitioned_at": "2026-06-24T08:57:39.561Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "A baseline decision closeout worklog prepared; E3a-R1 and B repair-atlas downstream decisions have been consumed.",
+        "current_head": "f60914dcb02894e65371df116d8c8963b0bc6a34",
+        "transitioned_at": "2026-06-24T08:58:23.181Z"
       }
-    ]
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "Exact staging only governance state plus A closeout worklog.",
+        "FUNCTION_TREE validate, GitNexus staged low risk, OPENDOG fresh."
+      ],
+      "closeout_gate": [
+        "A closed only as a consumed baseline decision; remaining E3a parent blocker and any future test-policy package stay outside this node."
+      ]
+    }
   },
   {
     "id": "b4-012-m3a-e3a-r1-repository-hygiene-lint-only-recovery-authorization",
