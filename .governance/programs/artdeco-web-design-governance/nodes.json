@@ -14085,11 +14085,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-e3b-e-docs-guides-family-split",
-    "status": "decision-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "B4.012-M3a-E3b-E2",
-    "current_head": "54ccaff48d02f20cd5c4bcfe07281d58b42dece7",
+    "current_head": "579dd25b84c2f52c03f550d843a72ad2ef3000fd",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "decision",
@@ -14097,16 +14097,31 @@
         "note": "No-source E2 review: 14 focused failures classify into cleanup index, web, frontend, typescript, chrome-devtools, reports-anchor, and OpenSpec buckets.",
         "current_head": "54ccaff48d02f20cd5c4bcfe07281d58b42dece7",
         "recorded_at": "2026-06-23T05:40:21.979Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e2-web-frontend-guides-no-source-review-2026-06-23.md",
+        "note": "E2 parent closeout readiness refresh after E2a through E2f child packages reached closed at HEAD 579dd25b8.",
+        "current_head": "579dd25b84c2f52c03f550d843a72ad2ef3000fd",
+        "recorded_at": "2026-06-24T04:03:26.939Z"
       }
     ],
-    "allowed_paths": [],
+    "allowed_paths": [
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e2-web-frontend-guides-family-closeout-2026-06-24.md"
+    ],
     "forbidden_paths": [],
-    "non_goals": [],
-    "next_gate": "prepare authorization",
+    "non_goals": [
+      "No source/runtime/test/OpenSpec/root agent-rule edits.",
+      "No new docs guide bootstrap or archive mutation in this parent closeout."
+    ],
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-23T05:40:21.898Z",
-    "updated_at": "2026-06-23T05:40:36.659Z",
+    "updated_at": "2026-06-24T04:05:22.820Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -14114,8 +14129,31 @@
         "note": "E2 should be split before implementation; no broad E2 source/docs authorization recommended.",
         "current_head": "54ccaff48d02f20cd5c4bcfe07281d58b42dece7",
         "transitioned_at": "2026-06-23T05:40:36.658Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved governance-only E2 family closeout after all E2 child packages were verified closed.",
+        "current_head": "579dd25b84c2f52c03f550d843a72ad2ef3000fd",
+        "transitioned_at": "2026-06-24T04:03:56.054Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "E2 family closeout worklog prepared; all direct E2 child packages are closed.",
+        "current_head": "579dd25b84c2f52c03f550d843a72ad2ef3000fd",
+        "transitioned_at": "2026-06-24T04:05:22.820Z"
       }
-    ]
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "Exact staging only governance state plus E2 parent closeout worklog.",
+        "FUNCTION_TREE validate, GitNexus staged low risk, OPENDOG fresh."
+      ],
+      "closeout_gate": [
+        "E2 parent closed only after E2a through E2f children are verified closed and active gates no longer include E2."
+      ]
+    }
   },
   {
     "id": "b4-012-m3a-e3b-e2a-cleanup-index-bridge-authorization",
