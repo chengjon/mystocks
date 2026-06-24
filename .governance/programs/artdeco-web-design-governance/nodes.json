@@ -9044,9 +9044,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "",
-    "status": "decision-prepared",
+    "status": "blocked",
     "function_tree_ref": "B4.012-M3",
-    "current_head": "7a48081e9b4b993ae3dd4f4e7d456a2be3ab352f",
+    "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -9063,16 +9063,23 @@
         "note": "No-source reactivation review after B4.013 closeout; parent cleanup line can return to decision-prepared only.",
         "current_head": "7a48081e9b4b993ae3dd4f4e7d456a2be3ab352f",
         "recorded_at": "2026-06-19T01:13:55.722Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-014-mainline-runtime-usability-strategic-pivot-2026-06-24.md",
+        "note": "Strategic pivot freezes B4.012 governance work as backlog-hold; mainline runtime usability is the only active execution line.",
+        "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
+        "recorded_at": "2026-06-24T12:52:09.941Z"
       }
     ],
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
-    "blocker_reason": null,
-    "unblock_target_state": null,
+    "next_gate": "unblock to decision-prepared",
+    "blocker_reason": "backlog-hold: mainline runtime usability is not proven; B4.012 governance repair is forbidden until the A-share quant runtime mainline is stable.",
+    "unblock_target_state": "decision-prepared",
     "created_at": "2026-06-14T04:12:20.696Z",
-    "updated_at": "2026-06-19T01:13:55.799Z",
+    "updated_at": "2026-06-24T12:52:10.046Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -9094,6 +9101,13 @@
         "note": "B4.013 runtime-first blocker removed for parent no-source rebaseline; child nodes remain blocked pending family refresh.",
         "current_head": "7a48081e9b4b993ae3dd4f4e7d456a2be3ab352f",
         "transitioned_at": "2026-06-19T01:13:55.799Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "blocked",
+        "note": "Strategic backlog-hold: governance repair paused until B4.014 runtime usability mainline is stable.",
+        "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
+        "transitioned_at": "2026-06-24T12:52:10.046Z"
       }
     ]
   },
@@ -9103,9 +9117,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3-residual-dirty-atlas-rebaseline",
-    "status": "decision-prepared",
+    "status": "blocked",
     "function_tree_ref": "B4.012-M3a",
-    "current_head": "7f384fc57e51546dcfe73cdccaa053eee0c562ea",
+    "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -9129,16 +9143,23 @@
         "note": "No-source fresh review after B4.013 closeout and B4.012-M3 parent reactivation; restore tests residual domain parent only.",
         "current_head": "7f384fc57e51546dcfe73cdccaa053eee0c562ea",
         "recorded_at": "2026-06-19T01:41:37.730Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-014-mainline-runtime-usability-strategic-pivot-2026-06-24.md",
+        "note": "Strategic pivot freezes B4.012 governance work as backlog-hold; mainline runtime usability is the only active execution line.",
+        "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
+        "recorded_at": "2026-06-24T12:52:10.167Z"
       }
     ],
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
-    "blocker_reason": null,
-    "unblock_target_state": null,
+    "next_gate": "unblock to decision-prepared",
+    "blocker_reason": "backlog-hold: mainline runtime usability is not proven; B4.012 governance repair is forbidden until the A-share quant runtime mainline is stable.",
+    "unblock_target_state": "decision-prepared",
     "created_at": "2026-06-14T05:21:56.026Z",
-    "updated_at": "2026-06-19T01:41:37.795Z",
+    "updated_at": "2026-06-24T12:52:10.265Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -9160,6 +9181,13 @@
         "note": "B4.013 runtime-first blocker removed for tests residual domain parent; child family nodes remain blocked pending separate refresh/authorization.",
         "current_head": "7f384fc57e51546dcfe73cdccaa053eee0c562ea",
         "transitioned_at": "2026-06-19T01:41:37.795Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "blocked",
+        "note": "Strategic backlog-hold: governance repair paused until B4.014 runtime usability mainline is stable.",
+        "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
+        "transitioned_at": "2026-06-24T12:52:10.265Z"
       }
     ]
   },
@@ -9344,9 +9372,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-tests-residual-domain-audit",
-    "status": "decision-prepared",
+    "status": "blocked",
     "function_tree_ref": "B4.012-M3a-B",
-    "current_head": "a8a276ce22069ba633d2b4dfbbdcc2396e0bc99e",
+    "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -9363,16 +9391,23 @@
         "note": "No-source fresh review after B4.013 closeout and M3a parent reactivation; restore API/backend contract tests parent only.",
         "current_head": "a8a276ce22069ba633d2b4dfbbdcc2396e0bc99e",
         "recorded_at": "2026-06-19T02:01:17.002Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-014-mainline-runtime-usability-strategic-pivot-2026-06-24.md",
+        "note": "Strategic pivot freezes B4.012 governance work as backlog-hold; mainline runtime usability is the only active execution line.",
+        "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
+        "recorded_at": "2026-06-24T12:52:10.362Z"
       }
     ],
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
-    "blocker_reason": null,
-    "unblock_target_state": null,
+    "next_gate": "unblock to decision-prepared",
+    "blocker_reason": "backlog-hold: mainline runtime usability is not proven; B4.012 governance repair is forbidden until the A-share quant runtime mainline is stable.",
+    "unblock_target_state": "decision-prepared",
     "created_at": "2026-06-14T05:49:59.649Z",
-    "updated_at": "2026-06-19T02:01:17.064Z",
+    "updated_at": "2026-06-24T12:52:10.490Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -9394,6 +9429,13 @@
         "note": "B4.013 runtime-first blocker removed for API/backend contract tests parent; B1-B4 remain closed and new residual child packages require separate authorization.",
         "current_head": "a8a276ce22069ba633d2b4dfbbdcc2396e0bc99e",
         "transitioned_at": "2026-06-19T02:01:17.064Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "blocked",
+        "note": "Strategic backlog-hold: governance repair paused until B4.014 runtime usability mainline is stable.",
+        "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
+        "transitioned_at": "2026-06-24T12:52:10.490Z"
       }
     ]
   },
@@ -9875,9 +9917,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-tests-residual-domain-audit",
-    "status": "decision-prepared",
+    "status": "blocked",
     "function_tree_ref": "B4.012-M3a-C",
-    "current_head": "188deee6916c617a997f60d5410d5331bc2202df",
+    "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -9901,16 +9943,23 @@
         "note": "No-source fresh review after B4.013 closeout and M3a parent reactivation; restore adapter/data-source tests parent only with OpenStock boundary retained.",
         "current_head": "188deee6916c617a997f60d5410d5331bc2202df",
         "recorded_at": "2026-06-19T02:19:37.055Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-014-mainline-runtime-usability-strategic-pivot-2026-06-24.md",
+        "note": "Strategic pivot freezes B4.012 governance work as backlog-hold; mainline runtime usability is the only active execution line.",
+        "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
+        "recorded_at": "2026-06-24T12:52:10.579Z"
       }
     ],
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
-    "blocker_reason": null,
-    "unblock_target_state": null,
+    "next_gate": "unblock to decision-prepared",
+    "blocker_reason": "backlog-hold: mainline runtime usability is not proven; B4.012 governance repair is forbidden until the A-share quant runtime mainline is stable.",
+    "unblock_target_state": "decision-prepared",
     "created_at": "2026-06-14T07:29:56.581Z",
-    "updated_at": "2026-06-19T02:19:37.139Z",
+    "updated_at": "2026-06-24T12:52:10.681Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -9932,6 +9981,13 @@
         "note": "B4.013 runtime-first blocker removed for adapter/data-source tests parent; C1-C6 remain closed and new residual work requires separate authorization.",
         "current_head": "188deee6916c617a997f60d5410d5331bc2202df",
         "transitioned_at": "2026-06-19T02:19:37.139Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "blocked",
+        "note": "Strategic backlog-hold: governance repair paused until B4.014 runtime usability mainline is stable.",
+        "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
+        "transitioned_at": "2026-06-24T12:52:10.681Z"
       }
     ]
   },
@@ -9941,9 +9997,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-tests-residual-domain-audit",
-    "status": "decision-prepared",
+    "status": "blocked",
     "function_tree_ref": "B4.012-M3a-D",
-    "current_head": "aae6b6bed47abdbb63ad4277f5487cf802f87437",
+    "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -9960,16 +10016,23 @@
         "note": "No-source fresh review after B4.013 closeout and M3a parent reactivation; restore E2E/frontend tests parent only.",
         "current_head": "aae6b6bed47abdbb63ad4277f5487cf802f87437",
         "recorded_at": "2026-06-19T02:47:37.446Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-014-mainline-runtime-usability-strategic-pivot-2026-06-24.md",
+        "note": "Strategic pivot freezes B4.012 governance work as backlog-hold; mainline runtime usability is the only active execution line.",
+        "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
+        "recorded_at": "2026-06-24T12:52:10.806Z"
       }
     ],
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
-    "blocker_reason": null,
-    "unblock_target_state": null,
+    "next_gate": "unblock to decision-prepared",
+    "blocker_reason": "backlog-hold: mainline runtime usability is not proven; B4.012 governance repair is forbidden until the A-share quant runtime mainline is stable.",
+    "unblock_target_state": "decision-prepared",
     "created_at": "2026-06-14T07:33:55.819Z",
-    "updated_at": "2026-06-19T02:47:37.508Z",
+    "updated_at": "2026-06-24T12:52:10.893Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -9991,6 +10054,13 @@
         "note": "B4.013 runtime-first blocker removed for E2E/frontend tests parent; D1 browser smoke remains blocked pending separate authorization refresh.",
         "current_head": "aae6b6bed47abdbb63ad4277f5487cf802f87437",
         "transitioned_at": "2026-06-19T02:47:37.507Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "blocked",
+        "note": "Strategic backlog-hold: governance repair paused until B4.014 runtime usability mainline is stable.",
+        "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
+        "transitioned_at": "2026-06-24T12:52:10.893Z"
       }
     ]
   },
@@ -10000,9 +10070,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-tests-residual-domain-audit",
-    "status": "decision-prepared",
+    "status": "blocked",
     "function_tree_ref": "B4.012-M3a-E",
-    "current_head": "c093808ed5d671d1d78c41db8558c40904f632ca",
+    "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -10019,16 +10089,23 @@
         "note": "No-source fresh review after B4.013 closeout and M3a parent reactivation; restore performance/runtime/security tests parent only.",
         "current_head": "c093808ed5d671d1d78c41db8558c40904f632ca",
         "recorded_at": "2026-06-21T09:39:26.391Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-014-mainline-runtime-usability-strategic-pivot-2026-06-24.md",
+        "note": "Strategic pivot freezes B4.012 governance work as backlog-hold; mainline runtime usability is the only active execution line.",
+        "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
+        "recorded_at": "2026-06-24T12:52:10.971Z"
       }
     ],
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
-    "blocker_reason": null,
-    "unblock_target_state": null,
+    "next_gate": "unblock to decision-prepared",
+    "blocker_reason": "backlog-hold: mainline runtime usability is not proven; B4.012 governance repair is forbidden until the A-share quant runtime mainline is stable.",
+    "unblock_target_state": "decision-prepared",
     "created_at": "2026-06-14T07:37:33.388Z",
-    "updated_at": "2026-06-21T09:39:26.465Z",
+    "updated_at": "2026-06-24T12:52:11.054Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -10050,6 +10127,13 @@
         "note": "B4.013 runtime-first blocker removed for performance/runtime/security tests parent; implementation remains unapproved.",
         "current_head": "c093808ed5d671d1d78c41db8558c40904f632ca",
         "transitioned_at": "2026-06-21T09:39:26.464Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "blocked",
+        "note": "Strategic backlog-hold: governance repair paused until B4.014 runtime usability mainline is stable.",
+        "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
+        "transitioned_at": "2026-06-24T12:52:11.054Z"
       }
     ]
   },
@@ -10059,9 +10143,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-tests-residual-domain-audit",
-    "status": "decision-prepared",
+    "status": "blocked",
     "function_tree_ref": "B4.012-M3a-U",
-    "current_head": "3c5afab6f585671896fc5b36ce9fb24b2fe4bd91",
+    "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -10078,16 +10162,23 @@
         "note": "No-source fresh provenance review after B4.013 closeout and M3a B/C/D/E parent reactivation; no untracked test acceptance.",
         "current_head": "3c5afab6f585671896fc5b36ce9fb24b2fe4bd91",
         "recorded_at": "2026-06-21T09:52:27.858Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-014-mainline-runtime-usability-strategic-pivot-2026-06-24.md",
+        "note": "Strategic pivot freezes B4.012 governance work as backlog-hold; mainline runtime usability is the only active execution line.",
+        "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
+        "recorded_at": "2026-06-24T12:52:11.132Z"
       }
     ],
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
-    "blocker_reason": null,
-    "unblock_target_state": null,
+    "next_gate": "unblock to decision-prepared",
+    "blocker_reason": "backlog-hold: mainline runtime usability is not proven; B4.012 governance repair is forbidden until the A-share quant runtime mainline is stable.",
+    "unblock_target_state": "decision-prepared",
     "created_at": "2026-06-14T07:40:55.430Z",
-    "updated_at": "2026-06-21T09:52:27.924Z",
+    "updated_at": "2026-06-24T12:52:11.255Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -10109,6 +10200,13 @@
         "note": "B4.013 runtime-first blocker removed for untracked tests provenance parent; preserve/delete/ignore remains unapproved.",
         "current_head": "3c5afab6f585671896fc5b36ce9fb24b2fe4bd91",
         "transitioned_at": "2026-06-21T09:52:27.924Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "blocked",
+        "note": "Strategic backlog-hold: governance repair paused until B4.014 runtime usability mainline is stable.",
+        "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
+        "transitioned_at": "2026-06-24T12:52:11.255Z"
       }
     ]
   },
@@ -13359,9 +13457,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-e-performance-runtime-security-tests-split",
-    "status": "decision-prepared",
+    "status": "blocked",
     "function_tree_ref": "B4.012-M3a-E3",
-    "current_head": "863846bd5b113dd5abe243d449372a94325747b3",
+    "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -13371,16 +13469,23 @@
         "note": "No-source E3 split: one tracked tests/unit/scripts hygiene candidate, three untracked provenance files, and 28 scripts/tests files deferred to family split.",
         "current_head": "863846bd5b113dd5abe243d449372a94325747b3",
         "recorded_at": "2026-06-21T15:57:30.529Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-014-mainline-runtime-usability-strategic-pivot-2026-06-24.md",
+        "note": "Strategic pivot freezes B4.012 governance work as backlog-hold; mainline runtime usability is the only active execution line.",
+        "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
+        "recorded_at": "2026-06-24T12:52:11.364Z"
       }
     ],
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
-    "blocker_reason": null,
-    "unblock_target_state": null,
+    "next_gate": "unblock to decision-prepared",
+    "blocker_reason": "backlog-hold: mainline runtime usability is not proven; B4.012 governance repair is forbidden until the A-share quant runtime mainline is stable.",
+    "unblock_target_state": "decision-prepared",
     "created_at": "2026-06-21T15:56:18.221Z",
-    "updated_at": "2026-06-21T15:57:30.729Z",
+    "updated_at": "2026-06-24T12:52:11.461Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -13388,6 +13493,13 @@
         "note": "E3 decision prepared: implement E3a separately; defer scripts/tests and untracked provenance.",
         "current_head": "863846bd5b113dd5abe243d449372a94325747b3",
         "transitioned_at": "2026-06-21T15:57:30.729Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "blocked",
+        "note": "Strategic backlog-hold: governance repair paused until B4.014 runtime usability mainline is stable.",
+        "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
+        "transitioned_at": "2026-06-24T12:52:11.461Z"
       }
     ]
   },
@@ -13399,7 +13511,7 @@
     "parent": "b4-012-m3a-e3-governance-script-tests-split",
     "status": "blocked",
     "function_tree_ref": "B4.012-M3a-E3a",
-    "current_head": "a44b85d9e2b54a4799e2c0d1bc58f811eff49d5b",
+    "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -13437,6 +13549,13 @@
         "note": "No-source blocked revalidation at HEAD a44b85d9e: py_compile and ruff pass, but focused pytest remains red at 58 failed / 44 passed; E3a remains blocked.",
         "current_head": "a44b85d9e2b54a4799e2c0d1bc58f811eff49d5b",
         "recorded_at": "2026-06-24T10:23:46.473Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-014-mainline-runtime-usability-strategic-pivot-2026-06-24.md",
+        "note": "Strategic pivot freezes B4.012 governance work as backlog-hold; mainline runtime usability is the only active execution line.",
+        "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
+        "recorded_at": "2026-06-24T12:52:11.568Z"
       }
     ],
     "allowed_paths": [
@@ -13447,11 +13566,11 @@
     "non_goals": [
       "No scripts/tests, no untracked tests/unit/scripts files, no source/runtime changes, no OpenSpec/OpenStock provider runtime changes, no assertion weakening, skip/xfail addition, deletion, restore, migration, broad refactor, ST-HOLD, or marketKlineData."
     ],
-    "next_gate": "unblock to authorization-prepared",
-    "blocker_reason": "No-source revalidation shows py_compile and ruff pass, but focused pytest for tests/unit/scripts/test_repository_hygiene_paths.py remains red at 58 failed / 44 passed due broad repository-hygiene docs truth drift outside E3a lint/import scope.",
-    "unblock_target_state": "authorization-prepared",
+    "next_gate": "unblock to decision-prepared",
+    "blocker_reason": "backlog-hold: mainline runtime usability is not proven; B4.012 governance repair is forbidden until the A-share quant runtime mainline is stable.",
+    "unblock_target_state": "decision-prepared",
     "created_at": "2026-06-21T16:07:53.710Z",
-    "updated_at": "2026-06-24T10:27:20.475Z",
+    "updated_at": "2026-06-24T12:52:11.667Z",
     "acceptance": {
       "commit_gate": [
         "git diff --cached --check; FUNCTION_TREE validate; GitNexus verify-staged and detect-changes; OPENDOG verification; exact staged scope only.",
@@ -13496,6 +13615,13 @@
         "note": "Refresh blocked gate after no-source revalidation; E3a remains blocked until a separate disposition/test-policy or docs-truth package resolves the focused pytest surface.",
         "current_head": "a44b85d9e2b54a4799e2c0d1bc58f811eff49d5b",
         "transitioned_at": "2026-06-24T10:27:20.474Z"
+      },
+      {
+        "from": "blocked",
+        "to": "blocked",
+        "note": "Strategic backlog-hold: governance repair paused until B4.014 runtime usability mainline is stable.",
+        "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
+        "transitioned_at": "2026-06-24T12:52:11.666Z"
       }
     ]
   },
@@ -15298,9 +15424,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-e3a-repository-hygiene-unit-script-authorization",
-    "status": "decision-prepared",
+    "status": "blocked",
     "function_tree_ref": "B4.012-M3a-E3a-R2",
-    "current_head": "27a10e5667636fb3939a9e7894f4c67e55f1474b",
+    "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -15310,16 +15436,23 @@
         "note": "No-source R2 disposition: repository-hygiene focused pytest remains 58 failed / 44 passed; split remaining failures into family-level follow-up packages.",
         "current_head": "27a10e5667636fb3939a9e7894f4c67e55f1474b",
         "recorded_at": "2026-06-24T10:43:02.414Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-014-mainline-runtime-usability-strategic-pivot-2026-06-24.md",
+        "note": "Strategic pivot freezes B4.012 governance work as backlog-hold; mainline runtime usability is the only active execution line.",
+        "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
+        "recorded_at": "2026-06-24T12:52:11.759Z"
       }
     ],
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
-    "blocker_reason": null,
-    "unblock_target_state": null,
+    "next_gate": "unblock to decision-prepared",
+    "blocker_reason": "backlog-hold: mainline runtime usability is not proven; B4.012 governance repair is forbidden until the A-share quant runtime mainline is stable.",
+    "unblock_target_state": "decision-prepared",
     "created_at": "2026-06-24T10:39:42.780Z",
-    "updated_at": "2026-06-24T10:43:13.634Z",
+    "updated_at": "2026-06-24T12:52:11.846Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -15327,6 +15460,13 @@
         "note": "R2 no-source disposition complete; follow-up requires family-level authorization packages before any docs/test edits.",
         "current_head": "27a10e5667636fb3939a9e7894f4c67e55f1474b",
         "transitioned_at": "2026-06-24T10:43:13.633Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "blocked",
+        "note": "Strategic backlog-hold: governance repair paused until B4.014 runtime usability mainline is stable.",
+        "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
+        "transitioned_at": "2026-06-24T12:52:11.846Z"
       }
     ]
   },
@@ -15336,9 +15476,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-e3a-repository-hygiene-unit-script-authorization",
-    "status": "decision-prepared",
+    "status": "blocked",
     "function_tree_ref": "B4.012-M3a-E3a-R3",
-    "current_head": "8803d240a383e3575ba65d0d019897023d5d1a6a",
+    "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -15348,16 +15488,23 @@
         "note": "No-source R3 review: root docs entrypoint and overview CLAUDE/IFLOW truth drift isolated; implementation requires separate docs/test authorization.",
         "current_head": "8803d240a383e3575ba65d0d019897023d5d1a6a",
         "recorded_at": "2026-06-24T10:51:49.340Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-014-mainline-runtime-usability-strategic-pivot-2026-06-24.md",
+        "note": "Strategic pivot freezes B4.012 governance work as backlog-hold; mainline runtime usability is the only active execution line.",
+        "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
+        "recorded_at": "2026-06-24T12:52:11.929Z"
       }
     ],
     "allowed_paths": [],
     "forbidden_paths": [],
     "non_goals": [],
-    "next_gate": "prepare authorization",
-    "blocker_reason": null,
-    "unblock_target_state": null,
+    "next_gate": "unblock to decision-prepared",
+    "blocker_reason": "backlog-hold: mainline runtime usability is not proven; B4.012 governance repair is forbidden until the A-share quant runtime mainline is stable.",
+    "unblock_target_state": "decision-prepared",
     "created_at": "2026-06-24T10:51:01.272Z",
-    "updated_at": "2026-06-24T10:52:00.046Z",
+    "updated_at": "2026-06-24T12:52:12.013Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -15365,6 +15512,13 @@
         "note": "Root overview docs truth review complete; follow-up implementation must be separately authorized and keep untracked/external docs isolated.",
         "current_head": "8803d240a383e3575ba65d0d019897023d5d1a6a",
         "transitioned_at": "2026-06-24T10:52:00.045Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "blocked",
+        "note": "Strategic backlog-hold: governance repair paused until B4.014 runtime usability mainline is stable.",
+        "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
+        "transitioned_at": "2026-06-24T12:52:12.012Z"
       }
     ]
   },
@@ -15374,9 +15528,9 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-e3a-repository-hygiene-unit-script-authorization",
-    "status": "decision-prepared",
+    "status": "blocked",
     "function_tree_ref": "B4.012-M3a-E3a-R4",
-    "current_head": "7b63e838f94711bb66ea698314287921d8b50def",
+    "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
     "freshness": "current-head",
     "source_edits_authorized": false,
     "evidence": [
@@ -15386,6 +15540,58 @@
         "note": "No-source R4 review: active docs/guides failures split into seven canonical families with OpenStock provider boundary preserved.",
         "current_head": "7b63e838f94711bb66ea698314287921d8b50def",
         "recorded_at": "2026-06-24T11:00:37.101Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-014-mainline-runtime-usability-strategic-pivot-2026-06-24.md",
+        "note": "Strategic pivot freezes B4.012 governance work as backlog-hold; mainline runtime usability is the only active execution line.",
+        "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
+        "recorded_at": "2026-06-24T12:52:12.113Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "unblock to decision-prepared",
+    "blocker_reason": "backlog-hold: mainline runtime usability is not proven; B4.012 governance repair is forbidden until the A-share quant runtime mainline is stable.",
+    "unblock_target_state": "decision-prepared",
+    "created_at": "2026-06-24T10:58:08.376Z",
+    "updated_at": "2026-06-24T12:52:12.194Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "Active docs/guides canonical review complete; follow-up packages need separate allowed-path authorization.",
+        "current_head": "7b63e838f94711bb66ea698314287921d8b50def",
+        "transitioned_at": "2026-06-24T11:00:49.319Z"
+      },
+      {
+        "from": "decision-prepared",
+        "to": "blocked",
+        "note": "Strategic backlog-hold: governance repair paused until B4.014 runtime usability mainline is stable.",
+        "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
+        "transitioned_at": "2026-06-24T12:52:12.194Z"
+      }
+    ]
+  },
+  {
+    "id": "b4-014-mainline-a-share-quant-runtime-usability-recovery",
+    "title": "B4.014 mainline A-share quant runtime usability recovery",
+    "node_type": "external",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "",
+    "status": "decision-prepared",
+    "function_tree_ref": "B4.014",
+    "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-014-mainline-runtime-usability-strategic-pivot-2026-06-24.md",
+        "note": "Strategic pivot: B4.014 becomes the only active business mainline; B4.012 governance repair is frozen as backlog-hold.",
+        "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
+        "recorded_at": "2026-06-24T12:59:33.327Z"
       }
     ],
     "allowed_paths": [],
@@ -15394,16 +15600,75 @@
     "next_gate": "prepare authorization",
     "blocker_reason": null,
     "unblock_target_state": null,
-    "created_at": "2026-06-24T10:58:08.376Z",
-    "updated_at": "2026-06-24T11:00:49.319Z",
+    "created_at": "2026-06-24T12:52:38.902Z",
+    "updated_at": "2026-06-24T12:59:46.409Z",
     "transitions": [
       {
         "from": "evidence-prepared",
         "to": "decision-prepared",
-        "note": "Active docs/guides canonical review complete; follow-up packages need separate allowed-path authorization.",
-        "current_head": "7b63e838f94711bb66ea698314287921d8b50def",
-        "transitioned_at": "2026-06-24T11:00:49.319Z"
+        "note": "Runtime usability is now the only active business mainline; implementation still requires stage-specific authorization.",
+        "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
+        "transitioned_at": "2026-06-24T12:59:46.409Z"
       }
     ]
+  },
+  {
+    "id": "b4-014-m0-a-share-quant-runtime-truth-audit",
+    "title": "B4.014-M0 A-share quant runtime truth audit",
+    "node_type": "evidence",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-014-mainline-a-share-quant-runtime-usability-recovery",
+    "status": "decision-prepared",
+    "function_tree_ref": "B4.014-M0",
+    "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "runtime",
+        "path": "docs/reports/worklogs/claude-auto/b4-014-m0-a-share-quant-runtime-truth-audit-2026-06-24.md",
+        "note": "M0 runtime truth audit: services reachable, business routes render login only, strategy health has 500, OpenStock base URL is unreachable.",
+        "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
+        "recorded_at": "2026-06-24T13:00:04.354Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-24T12:52:50.146Z",
+    "updated_at": "2026-06-24T13:00:18.103Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "M0 runtime truth audit complete; next stage is M1 core runtime blocker repair authorization.",
+        "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
+        "transitioned_at": "2026-06-24T13:00:18.102Z"
+      }
+    ]
+  },
+  {
+    "id": "b4-014-m1-core-runtime-blocker-repair",
+    "title": "B4.014-M1 core runtime blocker repair",
+    "node_type": "external",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-014-mainline-a-share-quant-runtime-usability-recovery",
+    "status": "planning",
+    "function_tree_ref": "B4.014-M1",
+    "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "collect baseline evidence",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-24T13:00:33.419Z",
+    "updated_at": "2026-06-24T13:00:33.419Z"
   }
 ]

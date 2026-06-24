@@ -135,3 +135,6 @@ Generated summary lives in `.governance/active-gates.md`.
 - [ ] b4-012-m3a-e3a-r2-repository-hygiene-remaining-failure-disposition: B4.012 M3a-E3a-R2 repository hygiene remaining failure disposition (planning, FT: B4.012-M3a-E3a-R2)
 - [ ] b4-012-m3a-e3a-r3-root-overview-docs-truth-review: B4.012 M3a-E3a-R3 root overview docs truth review (planning, FT: B4.012-M3a-E3a-R3)
 - [ ] b4-012-m3a-e3a-r4-active-docs-guides-canonical-family-review: B4.012 M3a-E3a-R4 active docs guides canonical family review (planning, FT: B4.012-M3a-E3a-R4)
+- [ ] b4-014-mainline-a-share-quant-runtime-usability-recovery: B4.014 mainline A-share quant runtime usability recovery (planning, FT: B4.014)
+- [ ] b4-014-m0-a-share-quant-runtime-truth-audit: B4.014-M0 A-share quant runtime truth audit (planning, FT: B4.014-M0)
+- [ ] b4-014-m1-core-runtime-blocker-repair: B4.014-M1 core runtime blocker repair (planning, FT: B4.014-M1)
