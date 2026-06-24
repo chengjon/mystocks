@@ -14878,11 +14878,11 @@
     "node_type": "decision",
     "owner_lane": "governance",
     "parent": "b4-012-m3a-e3b-e2-web-frontend-guides-family-split",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "FUNCTION_TREE.md",
     "current_head": "14bc1fe60dce86d35d18417cf6ac01ae1bf1b8b5",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "decision",
@@ -14913,11 +14913,11 @@
       "Do not edit docs/api/INDEX.md or docs/standards/INDEX.md.",
       "Do not edit source, runtime, tests, OpenSpec, root agent-rule files, or external dirty files."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-24T01:33:50.182Z",
-    "updated_at": "2026-06-24T03:27:50.232Z",
+    "updated_at": "2026-06-24T03:34:49.727Z",
     "track": "backlog",
     "mainline_id": "b4-012-m3a-e3b-e2-web-frontend-guides-family-split",
     "depth": 2,
@@ -14947,7 +14947,30 @@
         "note": "API and standards cleanup index roots restored from archive; reports cleanup anchors added; focused repository-hygiene tests passed and OPENDOG evidence recorded.",
         "current_head": "14bc1fe60dce86d35d18417cf6ac01ae1bf1b8b5",
         "transitioned_at": "2026-06-24T03:27:50.232Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Implementation commit 02d0048d4 restored API and standards cleanup index roots and refreshed GitNexus post-commit index.",
+        "current_head": "02d0048d4c69307cb10cb24fad9b4e8207c97801",
+        "transitioned_at": "2026-06-24T03:33:58.082Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "E2f closeout accepted after implementation commit 02d0048d4 and recorded verification evidence.",
+        "current_head": "02d0048d4c69307cb10cb24fad9b4e8207c97801",
+        "transitioned_at": "2026-06-24T03:34:49.727Z"
       }
-    ]
+    ],
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e2f-api-standards-cleanup-index-roots-closeout-2026-06-24.md",
+      "compatibility": "Runtime behavior unchanged; archive evidence preserved; docs/api and docs/standards active roots were not recreated.",
+      "gates": [
+        "focused repository-hygiene tests passed; GitNexus staged risk low; OPENDOG fresh; post-commit GitNexus analyze completed."
+      ],
+      "current_head": "02d0048d4c69307cb10cb24fad9b4e8207c97801",
+      "prepared_at": "2026-06-24T03:34:37.394Z"
+    }
   }
 ]

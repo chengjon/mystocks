@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-24T03:27:50.247Z",
+  "updated_at": "2026-06-24T03:34:49.741Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -244,29 +244,6 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-23T05:40:36.659Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-012-m3a-e3b-e2f-api-standards-cleanup-index-roots",
-      "title": "API and standards cleanup index roots",
-      "node_type": "decision",
-      "owner_lane": "governance",
-      "parent": "b4-012-m3a-e3b-e2-web-frontend-guides-family-split",
-      "status": "implementation-ready",
-      "source_edits_authorized": true,
-      "current_blocker": "",
-      "next_allowed": "land implementation with Git evidence",
-      "function_tree_ref": "FUNCTION_TREE.md",
-      "freshness": "current-head",
-      "allowed_paths": [
-        "docs/reports/cleanup/index-artifacts/api/INDEX_root.md",
-        "docs/reports/cleanup/index-artifacts/standards/INDEX_root.md",
-        "docs/reports/INDEX.md",
-        "docs/reports/cleanup/INDEX.md",
-        "docs/reports/worklogs/claude-auto/"
-      ],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-24T03:27:50.232Z"
     }
   ]
 }
