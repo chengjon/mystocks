@@ -14,6 +14,6 @@
 | artdeco-web-design-governance | b4-012-m3a-e3b-repository-hygiene-docs-truth-drift-decision | decision-prepared | - | prepare authorization | B4.012-M3a-E3b |
 | artdeco-web-design-governance | b4-012-m3a-e3b-a-repository-hygiene-docs-truth-baseline-decision | decision-prepared | - | prepare authorization | B4.012-M3a-E3b-A |
 | artdeco-web-design-governance | b4-012-m3a-e3b-b-repository-hygiene-docs-truth-repair-atlas | decision-prepared | - | prepare authorization | B4.012-M3a-E3b-B |
-| artdeco-web-design-governance | b4-012-m3a-e3b-e-docs-guides-family-split | decision-prepared | - | prepare authorization | B4.012-M3a-E3b-E |
+| artdeco-web-design-governance | b4-012-m3a-e3b-e-docs-guides-family-split | implementation-ready | - | land implementation with Git evidence | B4.012-M3a-E3b-E |
 
 _Generated from `.governance/active-gates.json`._

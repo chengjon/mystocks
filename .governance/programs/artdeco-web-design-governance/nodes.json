@@ -13939,11 +13939,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-e3b-b-repository-hygiene-docs-truth-repair-atlas",
-    "status": "decision-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "B4.012-M3a-E3b-E",
-    "current_head": "ddc167e2c39c2a90a4c4f69cb4fa19ab88c885c3",
+    "current_head": "929152a506d122ee4f74cc2a420d40e2ef30bb35",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "decision",
@@ -13951,16 +13951,31 @@
         "note": "No-source docs/guides residual family split after E3b-D closeout; fresh repository hygiene count 81 failed / 21 passed.",
         "current_head": "ddc167e2c39c2a90a4c4f69cb4fa19ab88c885c3",
         "recorded_at": "2026-06-23T03:37:15.256Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e-docs-guides-family-no-source-review-2026-06-23.md",
+        "note": "E docs-guides parent closeout readiness refresh after E1 and E2 child families reached closed at HEAD 929152a50.",
+        "current_head": "929152a506d122ee4f74cc2a420d40e2ef30bb35",
+        "recorded_at": "2026-06-24T04:18:16.716Z"
       }
     ],
-    "allowed_paths": [],
+    "allowed_paths": [
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e-docs-guides-family-closeout-2026-06-24.md"
+    ],
     "forbidden_paths": [],
-    "non_goals": [],
-    "next_gate": "prepare authorization",
+    "non_goals": [
+      "No source/runtime/test/OpenSpec/root agent-rule edits.",
+      "No new docs guide movement, bootstrap, archive mutation, or report index change in this parent closeout."
+    ],
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-23T03:37:03.095Z",
-    "updated_at": "2026-06-23T03:37:35.572Z",
+    "updated_at": "2026-06-24T04:19:52.632Z",
     "track": "backlog",
     "mainline_id": "b4-012-m3-residual-dirty-atlas-rebaseline",
     "depth": 2,
@@ -13971,8 +13986,31 @@
         "note": "Docs/guides residual family is classified; recommended first implementation slice is E1 entrypoints/navigation.",
         "current_head": "ddc167e2c39c2a90a4c4f69cb4fa19ab88c885c3",
         "transitioned_at": "2026-06-23T03:37:35.572Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved governance-only E docs-guides family closeout after E1 and E2 were verified closed.",
+        "current_head": "929152a506d122ee4f74cc2a420d40e2ef30bb35",
+        "transitioned_at": "2026-06-24T04:18:42.961Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "E docs-guides family closeout worklog prepared; E1 and E2 child families are closed.",
+        "current_head": "929152a506d122ee4f74cc2a420d40e2ef30bb35",
+        "transitioned_at": "2026-06-24T04:19:52.632Z"
       }
-    ]
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "Exact staging only governance state plus E parent closeout worklog.",
+        "FUNCTION_TREE validate, GitNexus staged low risk, OPENDOG fresh."
+      ],
+      "closeout_gate": [
+        "E parent closed only after E1 and E2 child families are verified closed and active gates no longer include E."
+      ]
+    }
   },
   {
     "id": "b4-012-m3a-e3b-e1-docs-guides-entrypoints-navigation-family",
