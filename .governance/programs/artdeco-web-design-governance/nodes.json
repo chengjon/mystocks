@@ -14774,11 +14774,11 @@
     "node_type": "decision",
     "owner_lane": "governance",
     "parent": "b4-012-m3a-e3b-e2-web-frontend-guides-family-split",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "FUNCTION_TREE.md",
     "current_head": "91f70ad5bd6b3ab69c4e46afd6976a24c30b3976",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "decision",
@@ -14807,11 +14807,11 @@
       "Do not edit docs/INDEX.md.",
       "Do not edit source, runtime, tests, OpenSpec, root agent-rule files, or external dirty files."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-23T18:29:05.668Z",
-    "updated_at": "2026-06-23T23:57:02.655Z",
+    "updated_at": "2026-06-24T00:03:21.109Z",
     "track": "backlog",
     "mainline_id": "b4-012-m3a-e3b-e2-web-frontend-guides-family-split",
     "depth": 2,
@@ -14841,7 +14841,35 @@
         "note": "Canonical superpowers guides copied from archive assets; directory plan anchor added; focused repository-hygiene test passed and OPENDOG evidence recorded.",
         "current_head": "91f70ad5bd6b3ab69c4e46afd6976a24c30b3976",
         "transitioned_at": "2026-06-23T23:57:02.655Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Implementation landed in commit 72fc3a220: canonical docs/guides/superpowers family restored from archive and directory plan anchor added.",
+        "current_head": "72fc3a2209081e01f4a844b3d7d6b1e686178b14",
+        "transitioned_at": "2026-06-24T00:02:28.751Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "Closeout reviewed in worklog; superpowers guide bootstrap landed and verified.",
+        "current_head": "72fc3a2209081e01f4a844b3d7d6b1e686178b14",
+        "transitioned_at": "2026-06-24T00:03:21.109Z"
       }
-    ]
+    ],
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e2e-superpowers-guide-bootstrap-closeout-2026-06-24.md",
+      "compatibility": "Archived superpowers source assets preserved; docs/INDEX.md preserved; canonical docs/guides/superpowers restored from archive.",
+      "gates": [
+        "git diff --cached --check passed",
+        "FUNCTION_TREE validate passed",
+        "GitNexus verify-staged and detect-changes passed, risk low",
+        "Focused repository-hygiene superpowers guide test passed",
+        "OPENDOG focused test evidence recorded",
+        "GitNexus post-commit analyze succeeded"
+      ],
+      "current_head": "72fc3a2209081e01f4a844b3d7d6b1e686178b14",
+      "prepared_at": "2026-06-24T00:03:08.169Z"
+    }
   }
 ]
