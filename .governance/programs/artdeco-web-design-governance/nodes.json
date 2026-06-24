@@ -15329,5 +15329,43 @@
         "transitioned_at": "2026-06-24T10:43:13.633Z"
       }
     ]
+  },
+  {
+    "id": "b4-012-m3a-e3a-r3-root-overview-docs-truth-review",
+    "title": "B4.012 M3a-E3a-R3 root overview docs truth review",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-012-m3a-e3a-repository-hygiene-unit-script-authorization",
+    "status": "decision-prepared",
+    "function_tree_ref": "B4.012-M3a-E3a-R3",
+    "current_head": "8803d240a383e3575ba65d0d019897023d5d1a6a",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3a-r3-root-overview-docs-truth-review-2026-06-24.md",
+        "note": "No-source R3 review: root docs entrypoint and overview CLAUDE/IFLOW truth drift isolated; implementation requires separate docs/test authorization.",
+        "current_head": "8803d240a383e3575ba65d0d019897023d5d1a6a",
+        "recorded_at": "2026-06-24T10:51:49.340Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-24T10:51:01.272Z",
+    "updated_at": "2026-06-24T10:52:00.046Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "Root overview docs truth review complete; follow-up implementation must be separately authorized and keep untracked/external docs isolated.",
+        "current_head": "8803d240a383e3575ba65d0d019897023d5d1a6a",
+        "transitioned_at": "2026-06-24T10:52:00.045Z"
+      }
+    ]
   }
 ]
