@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-24T09:23:15.487Z",
+  "updated_at": "2026-06-24T09:30:19.295Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -159,28 +159,6 @@
       ],
       "forbidden_paths": [],
       "updated_at": "2026-06-21T16:46:43.288Z"
-    },
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "b4-012-m3a-e3b-repository-hygiene-docs-truth-drift-decision",
-      "title": "B4.012 M3a-E3b repository hygiene docs truth drift decision",
-      "node_type": "decision",
-      "owner_lane": "artdeco-web-design-governance",
-      "parent": "b4-012-m3a-e3-governance-script-tests-split",
-      "status": "implementation-ready",
-      "source_edits_authorized": true,
-      "current_blocker": "",
-      "next_allowed": "land implementation with Git evidence",
-      "function_tree_ref": "B4.012-M3a-E3b",
-      "freshness": "current-head",
-      "allowed_paths": [
-        ".governance/active-gates.json",
-        ".governance/active-gates.md",
-        ".governance/programs/artdeco-web-design-governance/nodes.json",
-        "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-repository-hygiene-docs-truth-drift-decision-closeout-2026-06-24.md"
-      ],
-      "forbidden_paths": [],
-      "updated_at": "2026-06-24T09:23:15.473Z"
     }
   ]
 }

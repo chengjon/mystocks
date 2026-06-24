@@ -13491,11 +13491,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-e3-governance-script-tests-split",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "B4.012-M3a-E3b",
     "current_head": "76f1028d8d84635b54de3eddd7108a91737ff4cc",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "decision",
@@ -13523,11 +13523,11 @@
       "No source/runtime/test/OpenSpec/root agent-rule edits.",
       "No E3a parent unblock, no new docs truth repair, no test-policy implementation in this E3b parent closeout."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-21T17:07:14.048Z",
-    "updated_at": "2026-06-24T09:23:15.473Z",
+    "updated_at": "2026-06-24T09:30:19.285Z",
     "track": "backlog",
     "mainline_id": "b4-012-m3-residual-dirty-atlas-rebaseline",
     "depth": 2,
@@ -13552,6 +13552,20 @@
         "note": "E3b parent closeout worklog prepared; A and B child nodes are closed.",
         "current_head": "76f1028d8d84635b54de3eddd7108a91737ff4cc",
         "transitioned_at": "2026-06-24T09:23:15.472Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "E3b parent closeout preparation landed in commit 5d29d10df and GitNexus post-commit index refreshed.",
+        "current_head": "5d29d10dfc2bd0453e3fd9d4c08e25cf4d02aa4c",
+        "transitioned_at": "2026-06-24T09:29:39.286Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "E3b parent closed after A and B child nodes closed and parent closeout evidence committed.",
+        "current_head": "5d29d10dfc2bd0453e3fd9d4c08e25cf4d02aa4c",
+        "transitioned_at": "2026-06-24T09:30:19.284Z"
       }
     ],
     "acceptance": {
@@ -13562,6 +13576,15 @@
       "closeout_gate": [
         "E3b parent closed only after A and B child nodes are verified closed and active gates no longer include E3b."
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-repository-hygiene-docs-truth-drift-decision-closeout-2026-06-24.md",
+      "compatibility": "Runtime behavior unchanged; no source/runtime/test/OpenSpec/root agent-rule edits; A and B child nodes closed; E3a remains separate.",
+      "gates": [
+        "FUNCTION_TREE validate passed; GitNexus staged checks risk low; OPENDOG fresh; exact staging limited to governance and E3b parent closeout worklog."
+      ],
+      "current_head": "5d29d10dfc2bd0453e3fd9d4c08e25cf4d02aa4c",
+      "prepared_at": "2026-06-24T09:30:00.036Z"
     }
   },
   {
