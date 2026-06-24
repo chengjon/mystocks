@@ -13939,11 +13939,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-e3b-b-repository-hygiene-docs-truth-repair-atlas",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "B4.012-M3a-E3b-E",
     "current_head": "929152a506d122ee4f74cc2a420d40e2ef30bb35",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "decision",
@@ -13971,11 +13971,11 @@
       "No source/runtime/test/OpenSpec/root agent-rule edits.",
       "No new docs guide movement, bootstrap, archive mutation, or report index change in this parent closeout."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-23T03:37:03.095Z",
-    "updated_at": "2026-06-24T04:19:52.632Z",
+    "updated_at": "2026-06-24T04:25:27.773Z",
     "track": "backlog",
     "mainline_id": "b4-012-m3-residual-dirty-atlas-rebaseline",
     "depth": 2,
@@ -14000,6 +14000,20 @@
         "note": "E docs-guides family closeout worklog prepared; E1 and E2 child families are closed.",
         "current_head": "929152a506d122ee4f74cc2a420d40e2ef30bb35",
         "transitioned_at": "2026-06-24T04:19:52.632Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "E docs-guides parent closeout preparation landed in commit 41ca7dd02 and GitNexus post-commit index refreshed.",
+        "current_head": "41ca7dd0224733039eff0cc4c930c7c9ea4d20d8",
+        "transitioned_at": "2026-06-24T04:25:01.986Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "E docs-guides parent closed after E1 and E2 child families closed and parent closeout evidence committed.",
+        "current_head": "41ca7dd0224733039eff0cc4c930c7c9ea4d20d8",
+        "transitioned_at": "2026-06-24T04:25:27.772Z"
       }
     ],
     "acceptance": {
@@ -14010,6 +14024,15 @@
       "closeout_gate": [
         "E parent closed only after E1 and E2 child families are verified closed and active gates no longer include E."
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-e-docs-guides-family-closeout-2026-06-24.md",
+      "compatibility": "Runtime behavior unchanged; no source/runtime/test/OpenSpec/root agent-rule edits; E1 and E2 child families closed.",
+      "gates": [
+        "FUNCTION_TREE validate passed; GitNexus staged checks risk low; OPENDOG fresh; exact staging limited to governance and E parent closeout worklog."
+      ],
+      "current_head": "41ca7dd0224733039eff0cc4c930c7c9ea4d20d8",
+      "prepared_at": "2026-06-24T04:25:14.578Z"
     }
   },
   {
