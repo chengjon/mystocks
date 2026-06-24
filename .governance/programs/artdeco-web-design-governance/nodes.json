@@ -13491,11 +13491,11 @@
     "node_type": "decision",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-012-m3a-e3-governance-script-tests-split",
-    "status": "decision-prepared",
+    "status": "implementation-ready",
     "function_tree_ref": "B4.012-M3a-E3b",
-    "current_head": "941898da31d6c87877b9751eba5c8fc29f907a5d",
+    "current_head": "76f1028d8d84635b54de3eddd7108a91737ff4cc",
     "freshness": "current-head",
-    "source_edits_authorized": false,
+    "source_edits_authorized": true,
     "evidence": [
       {
         "kind": "decision",
@@ -13503,16 +13503,31 @@
         "note": "No-source repository-hygiene docs truth drift decision after E3a focused gate failed broadly.",
         "current_head": "941898da31d6c87877b9751eba5c8fc29f907a5d",
         "recorded_at": "2026-06-21T17:08:11.927Z"
+      },
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-repository-hygiene-docs-truth-drift-decision-2026-06-22.md",
+        "note": "E3b parent closeout readiness refresh at HEAD 76f1028d8; A baseline decision and B repair-atlas are both closed.",
+        "current_head": "76f1028d8d84635b54de3eddd7108a91737ff4cc",
+        "recorded_at": "2026-06-24T09:16:02.893Z"
       }
     ],
-    "allowed_paths": [],
+    "allowed_paths": [
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      "docs/reports/worklogs/claude-auto/b4-012-m3a-e3b-repository-hygiene-docs-truth-drift-decision-closeout-2026-06-24.md"
+    ],
     "forbidden_paths": [],
-    "non_goals": [],
-    "next_gate": "prepare authorization",
+    "non_goals": [
+      "No source/runtime/test/OpenSpec/root agent-rule edits.",
+      "No E3a parent unblock, no new docs truth repair, no test-policy implementation in this E3b parent closeout."
+    ],
+    "next_gate": "land implementation with Git evidence",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-21T17:07:14.048Z",
-    "updated_at": "2026-06-21T17:08:32.682Z",
+    "updated_at": "2026-06-24T09:23:15.473Z",
     "track": "backlog",
     "mainline_id": "b4-012-m3-residual-dirty-atlas-rebaseline",
     "depth": 2,
@@ -13523,8 +13538,31 @@
         "note": "Decision package prepared: keep E3a blocked; next authorization must decide baseline-vs-docs-truth repair before implementation.",
         "current_head": "941898da31d6c87877b9751eba5c8fc29f907a5d",
         "transitioned_at": "2026-06-21T17:08:32.681Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved governance-only E3b parent closeout after A and B were verified closed.",
+        "current_head": "76f1028d8d84635b54de3eddd7108a91737ff4cc",
+        "transitioned_at": "2026-06-24T09:18:44.270Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "E3b parent closeout worklog prepared; A and B child nodes are closed.",
+        "current_head": "76f1028d8d84635b54de3eddd7108a91737ff4cc",
+        "transitioned_at": "2026-06-24T09:23:15.472Z"
       }
-    ]
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "Exact staging only governance state plus E3b parent closeout worklog.",
+        "FUNCTION_TREE validate, GitNexus staged low risk, OPENDOG fresh."
+      ],
+      "closeout_gate": [
+        "E3b parent closed only after A and B child nodes are verified closed and active gates no longer include E3b."
+      ]
+    }
   },
   {
     "id": "b4-012-m3a-e3b-a-repository-hygiene-docs-truth-baseline-decision",
