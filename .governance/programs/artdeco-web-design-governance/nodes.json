@@ -15580,6 +15580,9 @@
     "node_type": "external",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "",
+    "track": "mainline",
+    "mainline_id": "b4-014-mainline-a-share-quant-runtime-usability-recovery",
+    "depth": 0,
     "status": "decision-prepared",
     "function_tree_ref": "B4.014",
     "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
@@ -15618,6 +15621,9 @@
     "node_type": "evidence",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-014-mainline-a-share-quant-runtime-usability-recovery",
+    "track": "mainline",
+    "mainline_id": "b4-014-mainline-a-share-quant-runtime-usability-recovery",
+    "depth": 1,
     "status": "decision-prepared",
     "function_tree_ref": "B4.014-M0",
     "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
@@ -15656,6 +15662,9 @@
     "node_type": "external",
     "owner_lane": "artdeco-web-design-governance",
     "parent": "b4-014-mainline-a-share-quant-runtime-usability-recovery",
+    "track": "mainline",
+    "mainline_id": "b4-014-mainline-a-share-quant-runtime-usability-recovery",
+    "depth": 1,
     "status": "planning",
     "function_tree_ref": "B4.014-M1",
     "current_head": "092d8e156ec133138282c1e42fded6dd10728384",
@@ -15670,5 +15679,188 @@
     "unblock_target_state": null,
     "created_at": "2026-06-24T13:00:33.419Z",
     "updated_at": "2026-06-24T13:00:33.419Z"
+  },
+  {
+    "id": "b4-014-m1a-strategy-health-tdengine-interface-repair",
+    "title": "B4.014-M1a strategy health TDengine interface repair",
+    "node_type": "external",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-014-m1-core-runtime-blocker-repair",
+    "track": "mainline",
+    "mainline_id": "b4-014-mainline-a-share-quant-runtime-usability-recovery",
+    "depth": 2,
+    "status": "approved-for-implementation",
+    "function_tree_ref": "B4.014-M1a",
+    "current_head": "ecc5b7e4967de6dcfb336b14a911578be06e8f65",
+    "freshness": "current-head",
+    "source_edits_authorized": true,
+    "evidence": [
+      {
+        "kind": "runtime",
+        "path": "docs/reports/worklogs/claude-auto/b4-014-m1a-strategy-health-tdengine-interface-repair-authorization-2026-06-24.md",
+        "note": "M1a diagnosis: strategy health 500 is caused by TDengineTimeSeriesDataSource failing the ITimeSeriesDataSource factory registration guard.",
+        "current_head": "ecc5b7e4967de6dcfb336b14a911578be06e8f65",
+        "recorded_at": "2026-06-24T13:41:00.242Z"
+      }
+    ],
+    "allowed_paths": [
+      "src/data_sources/real/tdengine_timeseries/t_dengine_time_series_data_source_methods/__init__.py",
+      "web/backend/tests/test_strategy_mgmt_backtest_regressions.py"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No B4.012 governance repair, docs cleanup, OpenSpec edits, frontend/login repair, OpenStock provider/runtime work, TDengine query/schema refactor, or API response redesign."
+    ],
+    "next_gate": "implement within allowed_paths",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-24T13:40:15.594Z",
+    "updated_at": "2026-06-24T13:44:28.219Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "P0 source repair scope is ready for explicit authorization.",
+        "current_head": "ecc5b7e4967de6dcfb336b14a911578be06e8f65",
+        "transitioned_at": "2026-06-24T13:41:16.418Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved continuation into B4.014-M1 runtime blocker repair; M1a scope is limited to TDengine interface contract restoration for strategy health.",
+        "current_head": "ecc5b7e4967de6dcfb336b14a911578be06e8f65",
+        "transitioned_at": "2026-06-24T13:44:28.219Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "python -m py_compile on changed source/test files; focused pytest for TDengine interface regression; runtime probe GET /api/strategy-mgmt/health returns non-500; GitNexus verify-staged/detect-changes low risk; OPENDOG fresh; exact staging only."
+      ],
+      "closeout_gate": [
+        "M1a closeout records strategy health runtime result and confirms no non-authorized files were staged."
+      ]
+    }
+  },
+  {
+    "id": "b4-014-m1b-strategy-health-postgresql-interface-repair",
+    "title": "B4.014-M1b strategy health PostgreSQL interface repair",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-014-m1-core-runtime-blocker-repair",
+    "track": "mainline",
+    "mainline_id": "b4-014-mainline-a-share-quant-runtime-usability-recovery",
+    "depth": 2,
+    "status": "approved-for-implementation",
+    "function_tree_ref": "B4.014-M1b",
+    "current_head": "ecc5b7e4967de6dcfb336b14a911578be06e8f65",
+    "freshness": "current-head",
+    "source_edits_authorized": true,
+    "evidence": [
+      {
+        "kind": "runtime",
+        "path": "docs/reports/worklogs/claude-auto/b4-014-m1b-strategy-health-postgresql-interface-repair-authorization-2026-06-25.md",
+        "note": "M1b diagnosis: strategy health 500 now fails at PostgreSQLRelationalDataSource not satisfying IRelationalDataSource factory registration guard.",
+        "current_head": "ecc5b7e4967de6dcfb336b14a911578be06e8f65",
+        "recorded_at": "2026-06-24T16:13:59.308Z"
+      }
+    ],
+    "allowed_paths": [
+      "src/data_sources/real/postgresql_relational/postgre_sql_relational_data_source_methods/__init__.py",
+      "web/backend/tests/test_strategy_mgmt_backtest_regressions.py"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No B4.012 governance repair, docs cleanup, OpenSpec edits, frontend/login repair, OpenStock provider/runtime work, PostgreSQL query/schema/connection refactor, or API response redesign."
+    ],
+    "next_gate": "implement within allowed_paths",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-24T16:12:33.382Z",
+    "updated_at": "2026-06-24T16:14:40.679Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "PostgreSQL relational interface contract repair is ready for explicit authorization as part of the same strategy health P0 blocker chain.",
+        "current_head": "ecc5b7e4967de6dcfb336b14a911578be06e8f65",
+        "transitioned_at": "2026-06-24T16:14:12.321Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved continuing B4.014-M1 runtime blocker repair; M1b scope is limited to PostgreSQL relational interface contract restoration for strategy health.",
+        "current_head": "ecc5b7e4967de6dcfb336b14a911578be06e8f65",
+        "transitioned_at": "2026-06-24T16:14:40.679Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "python -m py_compile on changed source/test files; focused pytest for PostgreSQL interface regression and strategy management regression file; runtime probe GET /api/strategy-mgmt/health exits the PostgreSQL interface registration 500; GitNexus verify-staged/detect-changes low risk; OPENDOG fresh; exact staging only."
+      ],
+      "closeout_gate": [
+        "M1b closeout records strategy health runtime result and confirms no non-authorized files were staged."
+      ]
+    }
+  },
+  {
+    "id": "b4-014-m1c-datasource-factory-reentrant-lock-repair",
+    "title": "B4.014-M1c datasource factory reentrant lock repair",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-014-m1-core-runtime-blocker-repair",
+    "track": "mainline",
+    "mainline_id": "b4-014-mainline-a-share-quant-runtime-usability-recovery",
+    "depth": 2,
+    "status": "approved-for-implementation",
+    "function_tree_ref": "B4.014-M1c",
+    "current_head": "ecc5b7e4967de6dcfb336b14a911578be06e8f65",
+    "freshness": "current-head",
+    "source_edits_authorized": true,
+    "evidence": [
+      {
+        "kind": "runtime",
+        "path": "docs/reports/worklogs/claude-auto/b4-014-m1c-datasource-factory-reentrant-lock-repair-authorization-2026-06-25.md",
+        "note": "M1c diagnosis: strategy health hangs because DataSourceFactory uses a non-reentrant lock while CompositeBusinessDataSource constructor re-enters the singleton factory.",
+        "current_head": "ecc5b7e4967de6dcfb336b14a911578be06e8f65",
+        "recorded_at": "2026-06-24T16:28:43.543Z"
+      }
+    ],
+    "allowed_paths": [
+      "src/data_sources/factory.py",
+      "web/backend/tests/test_strategy_mgmt_backtest_regressions.py"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No data source provider/runtime development, OpenStock provider/runtime work, database schema/query/connection/env changes, API response redesign, frontend changes, B4.012 governance repair, or repository hygiene work."
+    ],
+    "next_gate": "implement within allowed_paths",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-24T16:27:22.890Z",
+    "updated_at": "2026-06-24T16:29:32.415Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "Factory deadlock repair is ready for explicit authorization as part of the strategy health P0 blocker chain.",
+        "current_head": "ecc5b7e4967de6dcfb336b14a911578be06e8f65",
+        "transitioned_at": "2026-06-24T16:28:57.908Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved continuing B4.014-M1 runtime blocker repair; M1c scope is limited to reentrant factory locking for strategy health initialization.",
+        "current_head": "ecc5b7e4967de6dcfb336b14a911578be06e8f65",
+        "transitioned_at": "2026-06-24T16:29:32.414Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "python -m py_compile on changed source/test files; focused pytest for nested factory construction and strategy management regression file; runtime probe GET /api/strategy-mgmt/health returns instead of hanging on factory initialization; GitNexus verify-staged/detect-changes; OPENDOG fresh; exact staging only."
+      ],
+      "closeout_gate": [
+        "M1c closeout records strategy health runtime result and confirms no non-authorized files were staged."
+      ]
+    }
   }
 ]

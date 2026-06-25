@@ -1,0 +1,23 @@
+task:
+  id: "b4-014-m1b-strategy-health-postgresql-interface-repair"
+  title: "B4.014-M1b strategy health PostgreSQL interface repair"
+
+scope:
+  allowed_paths:
+    - "src/data_sources/real/postgresql_relational/postgre_sql_relational_data_source_methods/__init__.py"
+    - "web/backend/tests/test_strategy_mgmt_backtest_regressions.py"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No B4.012 governance repair, docs cleanup, OpenSpec edits, frontend/login repair, OpenStock provider/runtime work, PostgreSQL query/schema/connection refactor, or API response redesign."
+
+acceptance:
+  commit_gate:
+    - "python -m py_compile on changed source/test files; focused pytest for PostgreSQL interface regression and strategy management regression file; runtime probe GET /api/strategy-mgmt/health exits the PostgreSQL interface registration 500; GitNexus verify-staged/detect-changes low risk; OPENDOG fresh; exact staging only."
+  closeout_gate:
+    - "M1b closeout records strategy health runtime result and confirms no non-authorized files were staged."
+
+evidence:
+  current_head: "ecc5b7e4967de6dcfb336b14a911578be06e8f65"
+  notes: []

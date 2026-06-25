@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-24T13:00:33.443Z",
+  "updated_at": "2026-06-24T16:29:32.425Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -283,6 +283,66 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-24T13:00:33.419Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-014-m1a-strategy-health-tdengine-interface-repair",
+      "title": "B4.014-M1a strategy health TDengine interface repair",
+      "node_type": "external",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-014-m1-core-runtime-blocker-repair",
+      "status": "approved-for-implementation",
+      "source_edits_authorized": true,
+      "current_blocker": "",
+      "next_allowed": "implement within allowed_paths",
+      "function_tree_ref": "B4.014-M1a",
+      "freshness": "current-head",
+      "allowed_paths": [
+        "src/data_sources/real/tdengine_timeseries/t_dengine_time_series_data_source_methods/__init__.py",
+        "web/backend/tests/test_strategy_mgmt_backtest_regressions.py"
+      ],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-24T13:44:28.219Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-014-m1b-strategy-health-postgresql-interface-repair",
+      "title": "B4.014-M1b strategy health PostgreSQL interface repair",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-014-m1-core-runtime-blocker-repair",
+      "status": "approved-for-implementation",
+      "source_edits_authorized": true,
+      "current_blocker": "",
+      "next_allowed": "implement within allowed_paths",
+      "function_tree_ref": "B4.014-M1b",
+      "freshness": "current-head",
+      "allowed_paths": [
+        "src/data_sources/real/postgresql_relational/postgre_sql_relational_data_source_methods/__init__.py",
+        "web/backend/tests/test_strategy_mgmt_backtest_regressions.py"
+      ],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-24T16:14:40.679Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-014-m1c-datasource-factory-reentrant-lock-repair",
+      "title": "B4.014-M1c datasource factory reentrant lock repair",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-014-m1-core-runtime-blocker-repair",
+      "status": "approved-for-implementation",
+      "source_edits_authorized": true,
+      "current_blocker": "",
+      "next_allowed": "implement within allowed_paths",
+      "function_tree_ref": "B4.014-M1c",
+      "freshness": "current-head",
+      "allowed_paths": [
+        "src/data_sources/factory.py",
+        "web/backend/tests/test_strategy_mgmt_backtest_regressions.py"
+      ],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-24T16:29:32.415Z"
     }
   ]
 }

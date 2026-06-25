@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib
 import os
 import sys
+import threading
 from datetime import date, datetime
 from pathlib import Path
 from types import SimpleNamespace
@@ -29,6 +30,51 @@ os.environ.setdefault("TESTING", "true")
 def _load_module():
     sys.modules.pop("app.api.strategy_mgmt", None)
     return importlib.import_module("app.api.strategy_mgmt")
+
+
+def test_tdengine_timeseries_source_satisfies_factory_interface_contract():
+    from src.data_sources.real.tdengine_timeseries import TDengineTimeSeriesDataSource
+    from src.interfaces.timeseries_data_source import ITimeSeriesDataSource
+
+    assert issubclass(TDengineTimeSeriesDataSource, ITimeSeriesDataSource)
+
+
+def test_postgresql_relational_source_satisfies_factory_interface_contract():
+    from src.data_sources.real.postgresql_relational import PostgreSQLRelationalDataSource
+    from src.interfaces.relational_data_source import IRelationalDataSource
+
+    assert issubclass(PostgreSQLRelationalDataSource, IRelationalDataSource)
+
+
+def test_business_source_factory_construction_allows_nested_source_lookup():
+    from src.data_sources.factory import DataSourceFactory
+    from src.data_sources.mock.business_mock import MockBusinessDataSource
+
+    factory = DataSourceFactory()
+    constructed = []
+
+    class _NestedFactoryBusinessSource(MockBusinessDataSource):
+        def __init__(self):
+            self.ts = factory.get_timeseries_source(source_type="mock")
+            constructed.append(type(self.ts).__name__)
+
+    factory.register_business_source("composite", _NestedFactoryBusinessSource)
+    result = {}
+
+    def _build_source():
+        try:
+            result["source"] = factory.get_business_source(source_type="composite")
+        except Exception as exc:  # pragma: no cover - surfaced by assertions below
+            result["error"] = exc
+
+    thread = threading.Thread(target=_build_source, daemon=True)
+    thread.start()
+    thread.join(timeout=1)
+
+    assert not thread.is_alive()
+    assert "error" not in result
+    assert isinstance(result["source"], _NestedFactoryBusinessSource)
+    assert constructed == ["MockTimeSeriesDataSource"]
 
 
 class _FakeAsyncResult:

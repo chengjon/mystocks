@@ -1,0 +1,23 @@
+task:
+  id: "b4-014-m1a-strategy-health-tdengine-interface-repair"
+  title: "B4.014-M1a strategy health TDengine interface repair"
+
+scope:
+  allowed_paths:
+    - "src/data_sources/real/tdengine_timeseries/t_dengine_time_series_data_source_methods/__init__.py"
+    - "web/backend/tests/test_strategy_mgmt_backtest_regressions.py"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No B4.012 governance repair, docs cleanup, OpenSpec edits, frontend/login repair, OpenStock provider/runtime work, TDengine query/schema refactor, or API response redesign."
+
+acceptance:
+  commit_gate:
+    - "python -m py_compile on changed source/test files; focused pytest for TDengine interface regression; runtime probe GET /api/strategy-mgmt/health returns non-500; GitNexus verify-staged/detect-changes low risk; OPENDOG fresh; exact staging only."
+  closeout_gate:
+    - "M1a closeout records strategy health runtime result and confirms no non-authorized files were staged."
+
+evidence:
+  current_head: "ecc5b7e4967de6dcfb336b14a911578be06e8f65"
+  notes: []

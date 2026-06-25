@@ -1,0 +1,23 @@
+task:
+  id: "b4-014-m1c-datasource-factory-reentrant-lock-repair"
+  title: "B4.014-M1c datasource factory reentrant lock repair"
+
+scope:
+  allowed_paths:
+    - "src/data_sources/factory.py"
+    - "web/backend/tests/test_strategy_mgmt_backtest_regressions.py"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No data source provider/runtime development, OpenStock provider/runtime work, database schema/query/connection/env changes, API response redesign, frontend changes, B4.012 governance repair, or repository hygiene work."
+
+acceptance:
+  commit_gate:
+    - "python -m py_compile on changed source/test files; focused pytest for nested factory construction and strategy management regression file; runtime probe GET /api/strategy-mgmt/health returns instead of hanging on factory initialization; GitNexus verify-staged/detect-changes; OPENDOG fresh; exact staging only."
+  closeout_gate:
+    - "M1c closeout records strategy health runtime result and confirms no non-authorized files were staged."
+
+evidence:
+  current_head: "ecc5b7e4967de6dcfb336b14a911578be06e8f65"
+  notes: []
