@@ -12,7 +12,8 @@ import logging
 from datetime import datetime
 from typing import Optional
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Path, Query, Header
+from fastapi import APIRouter, BackgroundTasks, Body, Depends, HTTPException, Path, Query, Header
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.api.strategy_management.backtest_status_contract import (
@@ -495,7 +496,7 @@ async def health_check(db: Session = Depends(get_db), data_source=Depends(get_da
     """健康检查端点"""
     try:
         # 检查数据库连接
-        db.execute("SELECT 1")
+        db.execute(text("SELECT 1"))
 
         # 检查数据源
         health = data_source.health_check()
