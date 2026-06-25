@@ -17,8 +17,8 @@
 | artdeco-web-design-governance | b4-014-mainline-a-share-quant-runtime-usability-recovery | decision-prepared | - | prepare authorization | B4.014 |
 | artdeco-web-design-governance | b4-014-m0-a-share-quant-runtime-truth-audit | decision-prepared | - | prepare authorization | B4.014-M0 |
 | artdeco-web-design-governance | b4-014-m1-core-runtime-blocker-repair | planning | - | collect baseline evidence | B4.014-M1 |
-| artdeco-web-design-governance | b4-014-m1a-strategy-health-tdengine-interface-repair | approved-for-implementation | - | implement within allowed_paths | B4.014-M1a |
-| artdeco-web-design-governance | b4-014-m1b-strategy-health-postgresql-interface-repair | approved-for-implementation | - | implement within allowed_paths | B4.014-M1b |
-| artdeco-web-design-governance | b4-014-m1c-datasource-factory-reentrant-lock-repair | approved-for-implementation | - | implement within allowed_paths | B4.014-M1c |
+| artdeco-web-design-governance | b4-014-m1a-strategy-health-tdengine-interface-repair | closeout-prepared | - | review closeout and close node | B4.014-M1a |
+| artdeco-web-design-governance | b4-014-m1b-strategy-health-postgresql-interface-repair | closeout-prepared | - | review closeout and close node | B4.014-M1b |
+| artdeco-web-design-governance | b4-014-m1c-datasource-factory-reentrant-lock-repair | closeout-prepared | - | review closeout and close node | B4.014-M1c |
 
 _Generated from `.governance/active-gates.json`._

@@ -9,6 +9,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from fastapi import BackgroundTasks
+from sqlalchemy.sql.elements import TextClause
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -79,6 +80,28 @@ def test_business_source_factory_construction_allows_nested_source_lookup():
 
 class _FakeAsyncResult:
     id = "celery-task-456"
+
+
+async def test_strategy_health_database_probe_uses_sqlalchemy_text_clause(monkeypatch):
+    module = _load_module()
+    captured = {}
+
+    class _FakeDb:
+        def execute(self, statement):
+            captured["statement"] = statement
+
+        def query(self, model):
+            return SimpleNamespace(count=lambda: 0)
+
+    class _FakeDataSource:
+        def health_check(self):
+            return {"status": "healthy"}
+
+    payload = await module.health_check(db=_FakeDb(), data_source=_FakeDataSource())
+
+    assert isinstance(captured["statement"], TextClause)
+    assert str(captured["statement"]) == "SELECT 1"
+    assert payload["database"] == "connected"
 
 
 async def test_execute_backtest_registers_runtime_task_mapping(monkeypatch):

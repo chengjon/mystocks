@@ -15689,11 +15689,11 @@
     "track": "mainline",
     "mainline_id": "b4-014-mainline-a-share-quant-runtime-usability-recovery",
     "depth": 2,
-    "status": "approved-for-implementation",
+    "status": "closeout-prepared",
     "function_tree_ref": "B4.014-M1a",
     "current_head": "ecc5b7e4967de6dcfb336b14a911578be06e8f65",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "runtime",
@@ -15711,11 +15711,11 @@
     "non_goals": [
       "No B4.012 governance repair, docs cleanup, OpenSpec edits, frontend/login repair, OpenStock provider/runtime work, TDengine query/schema refactor, or API response redesign."
     ],
-    "next_gate": "implement within allowed_paths",
+    "next_gate": "review closeout and close node",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-24T13:40:15.594Z",
-    "updated_at": "2026-06-24T13:44:28.219Z",
+    "updated_at": "2026-06-25T13:36:16.450Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -15730,6 +15730,20 @@
         "note": "User approved continuation into B4.014-M1 runtime blocker repair; M1a scope is limited to TDengine interface contract restoration for strategy health.",
         "current_head": "ecc5b7e4967de6dcfb336b14a911578be06e8f65",
         "transitioned_at": "2026-06-24T13:44:28.219Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Implementation landed in commit 817568ffc; preparing node closeout at current HEAD.",
+        "current_head": "817568ffccb1fc4c3209b882f314070e08ceefa1",
+        "transitioned_at": "2026-06-25T13:33:37.495Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Landed in commit 817568ffc: strategy health moved beyond TDengine interface factory 500.",
+        "current_head": "817568ffccb1fc4c3209b882f314070e08ceefa1",
+        "transitioned_at": "2026-06-25T13:35:22.370Z"
       }
     ],
     "acceptance": {
@@ -15739,6 +15753,15 @@
       "closeout_gate": [
         "M1a closeout records strategy health runtime result and confirms no non-authorized files were staged."
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-014-m1-strategy-health-runtime-blocker-closeout-2026-06-25.md",
+      "compatibility": "TDengine data source query behavior and API route shape preserved; only factory interface conformance restored.",
+      "gates": [
+        "Commit 817568ffc landed; focused strategy regression file passed; strategy health advanced beyond TDengine interface 500."
+      ],
+      "current_head": "817568ffccb1fc4c3209b882f314070e08ceefa1",
+      "prepared_at": "2026-06-25T13:36:16.450Z"
     }
   },
   {
@@ -15750,11 +15773,11 @@
     "track": "mainline",
     "mainline_id": "b4-014-mainline-a-share-quant-runtime-usability-recovery",
     "depth": 2,
-    "status": "approved-for-implementation",
+    "status": "closeout-prepared",
     "function_tree_ref": "B4.014-M1b",
     "current_head": "ecc5b7e4967de6dcfb336b14a911578be06e8f65",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "runtime",
@@ -15772,11 +15795,11 @@
     "non_goals": [
       "No B4.012 governance repair, docs cleanup, OpenSpec edits, frontend/login repair, OpenStock provider/runtime work, PostgreSQL query/schema/connection refactor, or API response redesign."
     ],
-    "next_gate": "implement within allowed_paths",
+    "next_gate": "review closeout and close node",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-24T16:12:33.382Z",
-    "updated_at": "2026-06-24T16:14:40.679Z",
+    "updated_at": "2026-06-25T13:36:34.084Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -15791,6 +15814,20 @@
         "note": "User approved continuing B4.014-M1 runtime blocker repair; M1b scope is limited to PostgreSQL relational interface contract restoration for strategy health.",
         "current_head": "ecc5b7e4967de6dcfb336b14a911578be06e8f65",
         "transitioned_at": "2026-06-24T16:14:40.679Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Implementation landed in commit 817568ffc; preparing node closeout at current HEAD.",
+        "current_head": "817568ffccb1fc4c3209b882f314070e08ceefa1",
+        "transitioned_at": "2026-06-25T13:33:57.131Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Landed in commit 817568ffc: strategy health moved beyond PostgreSQL interface factory 500.",
+        "current_head": "817568ffccb1fc4c3209b882f314070e08ceefa1",
+        "transitioned_at": "2026-06-25T13:35:46.040Z"
       }
     ],
     "acceptance": {
@@ -15800,6 +15837,15 @@
       "closeout_gate": [
         "M1b closeout records strategy health runtime result and confirms no non-authorized files were staged."
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-014-m1-strategy-health-runtime-blocker-closeout-2026-06-25.md",
+      "compatibility": "PostgreSQL relational data source query behavior and API route shape preserved; only factory interface conformance restored.",
+      "gates": [
+        "Commit 817568ffc landed; focused strategy regression file passed; strategy health advanced beyond PostgreSQL interface 500."
+      ],
+      "current_head": "817568ffccb1fc4c3209b882f314070e08ceefa1",
+      "prepared_at": "2026-06-25T13:36:34.084Z"
     }
   },
   {
@@ -15811,11 +15857,11 @@
     "track": "mainline",
     "mainline_id": "b4-014-mainline-a-share-quant-runtime-usability-recovery",
     "depth": 2,
-    "status": "approved-for-implementation",
+    "status": "closeout-prepared",
     "function_tree_ref": "B4.014-M1c",
     "current_head": "ecc5b7e4967de6dcfb336b14a911578be06e8f65",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "runtime",
@@ -15833,11 +15879,11 @@
     "non_goals": [
       "No data source provider/runtime development, OpenStock provider/runtime work, database schema/query/connection/env changes, API response redesign, frontend changes, B4.012 governance repair, or repository hygiene work."
     ],
-    "next_gate": "implement within allowed_paths",
+    "next_gate": "review closeout and close node",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-24T16:27:22.890Z",
-    "updated_at": "2026-06-24T16:29:32.415Z",
+    "updated_at": "2026-06-25T13:36:46.048Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -15852,6 +15898,20 @@
         "note": "User approved continuing B4.014-M1 runtime blocker repair; M1c scope is limited to reentrant factory locking for strategy health initialization.",
         "current_head": "ecc5b7e4967de6dcfb336b14a911578be06e8f65",
         "transitioned_at": "2026-06-24T16:29:32.414Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Implementation landed in commit 817568ffc; preparing node closeout at current HEAD.",
+        "current_head": "817568ffccb1fc4c3209b882f314070e08ceefa1",
+        "transitioned_at": "2026-06-25T13:33:56.878Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Landed in commit 817568ffc: strategy health no longer hangs during data source factory initialization.",
+        "current_head": "817568ffccb1fc4c3209b882f314070e08ceefa1",
+        "transitioned_at": "2026-06-25T13:36:01.935Z"
       }
     ],
     "acceptance": {
@@ -15860,6 +15920,104 @@
       ],
       "closeout_gate": [
         "M1c closeout records strategy health runtime result and confirms no non-authorized files were staged."
+      ]
+    },
+    "closeout": {
+      "summary": "docs/reports/worklogs/claude-auto/b4-014-m1-strategy-health-runtime-blocker-closeout-2026-06-25.md",
+      "compatibility": "Data source selection, registration, cache keys, and API route shape preserved; only singleton/factory lock reentrancy changed.",
+      "gates": [
+        "Commit 817568ffc landed; focused strategy regression file passed; strategy health no longer hangs during data source factory initialization."
+      ],
+      "current_head": "817568ffccb1fc4c3209b882f314070e08ceefa1",
+      "prepared_at": "2026-06-25T13:36:46.048Z"
+    }
+  },
+  {
+    "id": "b4-014-m1d-strategy-health-sqlalchemy-text-probe-repair",
+    "title": "B4.014-M1d strategy health SQLAlchemy text probe repair",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-014-m1-core-runtime-blocker-repair",
+    "track": "mainline",
+    "mainline_id": "b4-014-mainline-a-share-quant-runtime-usability-recovery",
+    "depth": 2,
+    "status": "closed",
+    "function_tree_ref": "B4.014-M1d",
+    "current_head": "817568ffccb1fc4c3209b882f314070e08ceefa1",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "runtime",
+        "path": "docs/reports/worklogs/claude-auto/b4-014-m1d-strategy-health-sqlalchemy-text-probe-repair-authorization-2026-06-25.md",
+        "note": "M1d diagnosis: strategy health returns HTTP 200 but database probe reports SQLAlchemy 2 textual SQL error from db.execute('SELECT 1').",
+        "current_head": "817568ffccb1fc4c3209b882f314070e08ceefa1",
+        "recorded_at": "2026-06-25T13:32:09.446Z"
+      }
+    ],
+    "allowed_paths": [
+      "web/backend/app/api/strategy_mgmt.py",
+      "web/backend/tests/test_strategy_mgmt_backtest_regressions.py"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No data source factory changes, database schema/connection/pool/env changes, API route or response redesign, frontend changes, OpenStock provider/runtime work, B4.012 governance repair, or repository hygiene work."
+    ],
+    "next_gate": "none",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-25T13:30:42.663Z",
+    "updated_at": "2026-06-25T20:39:27.132Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "SQLAlchemy text probe repair is ready for explicit source authorization.",
+        "current_head": "817568ffccb1fc4c3209b882f314070e08ceefa1",
+        "transitioned_at": "2026-06-25T13:32:27.550Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved continuing B4.014-M1 runtime blocker repair; M1d scope is limited to SQLAlchemy text wrapping for the strategy health database probe.",
+        "current_head": "817568ffccb1fc4c3209b882f314070e08ceefa1",
+        "transitioned_at": "2026-06-25T13:33:04.730Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Implementation landed in commit 817568ffc; preparing node closeout at current HEAD.",
+        "current_head": "817568ffccb1fc4c3209b882f314070e08ceefa1",
+        "transitioned_at": "2026-06-25T17:10:17.622Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Landed in commit 817568ffc: strategy health SQLAlchemy textual SQL probe fixed.",
+        "current_head": "817568ffccb1fc4c3209b882f314070e08ceefa1",
+        "transitioned_at": "2026-06-25T17:10:17.699Z"
+      },
+      {
+        "from": "implementation-landed",
+        "to": "closeout-prepared",
+        "note": "Closeout evidence recorded after runtime verification; remaining issue is next-layer user_strategies table absence.",
+        "current_head": "817568ffccb1fc4c3209b882f314070e08ceefa1",
+        "transitioned_at": "2026-06-25T17:10:17.769Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "M1d closed: SQLAlchemy textual SQL probe error removed; next P0 blocker is user_strategies table absence.",
+        "current_head": "817568ffccb1fc4c3209b882f314070e08ceefa1",
+        "transitioned_at": "2026-06-25T20:39:27.132Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "python -m py_compile on changed source/test files; focused pytest for strategy health SQLAlchemy text probe and strategy management regression file; runtime probe GET /api/strategy-mgmt/health no longer reports SQLAlchemy textual SQL expression error; GitNexus verify-staged/detect-changes; OPENDOG fresh; exact staging only."
+      ],
+      "closeout_gate": [
+        "M1d closeout records strategy health runtime result and confirms no non-authorized files were staged."
       ]
     }
   }
