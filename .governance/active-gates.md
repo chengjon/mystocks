@@ -21,5 +21,6 @@
 | artdeco-web-design-governance | b4-014-m1b-strategy-health-postgresql-interface-repair | closeout-prepared | - | review closeout and close node | B4.014-M1b |
 | artdeco-web-design-governance | b4-014-m1c-datasource-factory-reentrant-lock-repair | closeout-prepared | - | review closeout and close node | B4.014-M1c |
 | artdeco-web-design-governance | b4-014-m1e-strategy-runtime-schema-readiness-repair | decision-prepared | - | prepare authorization | B4.014-M1e |
+| artdeco-web-design-governance | b4-014-m1f-strategy-data-source-dependency-runtime-audit | decision-prepared | - | prepare authorization | docs/reports/worklogs/claude-auto/b4-014-m1f-strategy-data-source-dependency-runtime-audit-2026-06-26.md |
 
 _Generated from `.governance/active-gates.json`._

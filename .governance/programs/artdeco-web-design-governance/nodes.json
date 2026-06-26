@@ -16154,5 +16154,46 @@
       "current_head": "1a3d782eb8f2b85466f82b612e76786f1079dc60",
       "prepared_at": "2026-06-26T04:36:10.135Z"
     }
+  },
+  {
+    "id": "b4-014-m1f-strategy-data-source-dependency-runtime-audit",
+    "title": "B4.014-M1f strategy data-source dependency runtime audit",
+    "node_type": "decision",
+    "owner_lane": "mainline-runtime",
+    "parent": "b4-014-m1-core-runtime-blocker-repair",
+    "status": "decision-prepared",
+    "function_tree_ref": "docs/reports/worklogs/claude-auto/b4-014-m1f-strategy-data-source-dependency-runtime-audit-2026-06-26.md",
+    "current_head": "d57ffa3f31dcab47a73a850f6a6f98d0408c11a6",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-014-m1f-strategy-data-source-dependency-runtime-audit-2026-06-26.md",
+        "note": "No-source runtime audit found strategy list/result list healthy; backtest status 500 is varchar/int identifier compatibility, not a data-source dependency blocker.",
+        "current_head": "d57ffa3f31dcab47a73a850f6a6f98d0408c11a6",
+        "recorded_at": "2026-06-26T10:06:18.102Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-26T10:06:08.655Z",
+    "updated_at": "2026-06-26T10:06:29.978Z",
+    "track": "mainline",
+    "mainline_id": "b4-014-mainline-a-share-quant-runtime-usability-recovery",
+    "depth": 2,
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "Runtime blocker triaged: defer degraded timeseries_source until execution smoke proves impact; next repair should address backtest status ID/schema compatibility.",
+        "current_head": "d57ffa3f31dcab47a73a850f6a6f98d0408c11a6",
+        "transitioned_at": "2026-06-26T10:06:29.978Z"
+      }
+    ]
   }
 ]
