@@ -9,6 +9,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from fastapi import BackgroundTasks
+from sqlalchemy.dialects import postgresql
 from sqlalchemy.sql.elements import TextClause
 
 
@@ -85,6 +86,11 @@ class _FakeAsyncResult:
 async def test_strategy_health_database_probe_uses_sqlalchemy_text_clause(monkeypatch):
     module = _load_module()
     captured = {}
+    monkeypatch.setattr(
+        module,
+        "ensure_strategy_runtime_schema_ready",
+        lambda db: {"created_tables": [], "added_columns": []},
+    )
 
     class _FakeDb:
         def execute(self, statement):
@@ -102,6 +108,105 @@ async def test_strategy_health_database_probe_uses_sqlalchemy_text_clause(monkey
     assert isinstance(captured["statement"], TextClause)
     assert str(captured["statement"]) == "SELECT 1"
     assert payload["database"] == "connected"
+
+
+def test_strategy_runtime_schema_readiness_is_additive_and_idempotent(monkeypatch):
+    module = _load_module()
+    from app.repositories.backtest_repository import BacktestResultModel
+    from app.repositories.strategy_repository import UserStrategyModel
+
+    created_tables = []
+    executed = []
+    commits = []
+
+    monkeypatch.setattr(
+        UserStrategyModel.__table__,
+        "create",
+        lambda bind, checkfirst=True: created_tables.append(("user_strategies", checkfirst)),
+    )
+    monkeypatch.setattr(
+        BacktestResultModel.__table__,
+        "create",
+        lambda bind, checkfirst=True: created_tables.append(("backtest_results", checkfirst)),
+    )
+
+    class _FakeInspector:
+        def has_table(self, table_name):
+            return table_name == "backtest_results"
+
+        def get_columns(self, table_name):
+            if table_name == "backtest_results":
+                return [{"name": "backtest_id"}, {"name": "strategy_id"}, {"name": "created_at"}]
+            return []
+
+    class _FakeDb:
+        def get_bind(self):
+            return SimpleNamespace(dialect=postgresql.dialect())
+
+        def execute(self, statement):
+            executed.append(str(statement))
+
+        def commit(self):
+            commits.append(True)
+
+    monkeypatch.setattr(module, "inspect", lambda bind: _FakeInspector(), raising=False)
+
+    result = module.ensure_strategy_runtime_schema_ready(_FakeDb())
+
+    assert created_tables == [("user_strategies", True)]
+    assert any("ALTER TABLE backtest_results ADD COLUMN IF NOT EXISTS user_id" in sql for sql in executed)
+    assert any("ALTER TABLE backtest_results ADD COLUMN IF NOT EXISTS status" in sql for sql in executed)
+    assert all("DROP TABLE" not in sql.upper() for sql in executed)
+    assert commits == [True]
+    assert result["created_tables"] == ["user_strategies"]
+    assert "backtest_results.user_id" in result["added_columns"]
+
+
+async def test_strategy_health_runs_schema_readiness_before_table_counts(monkeypatch):
+    module = _load_module()
+    calls = []
+
+    def _ready(db):
+        calls.append(db)
+        return {"created_tables": [], "added_columns": []}
+
+    class _FakeDb:
+        def execute(self, statement):
+            pass
+
+        def query(self, model):
+            return SimpleNamespace(count=lambda: 0)
+
+    class _FakeDataSource:
+        def health_check(self):
+            return {"status": "healthy"}
+
+    monkeypatch.setattr(module, "ensure_strategy_runtime_schema_ready", _ready, raising=False)
+
+    db = _FakeDb()
+    payload = await module.health_check(db=db, data_source=_FakeDataSource())
+
+    assert calls == [db]
+    assert payload["database"] == "connected"
+
+
+def test_strategy_repository_dependencies_prepare_runtime_schema(monkeypatch):
+    module = _load_module()
+    calls = []
+
+    def _ready(db):
+        calls.append(db)
+        return {"created_tables": [], "added_columns": []}
+
+    monkeypatch.setattr(module, "ensure_strategy_runtime_schema_ready", _ready)
+
+    db = object()
+    strategy_repo = module.get_strategy_repository(db=db)
+    backtest_repo = module.get_backtest_repository(db=db)
+
+    assert isinstance(strategy_repo, module.StrategyRepository)
+    assert isinstance(backtest_repo, module.BacktestRepository)
+    assert calls == [db, db]
 
 
 async def test_execute_backtest_registers_runtime_task_mapping(monkeypatch):

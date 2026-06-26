@@ -1,0 +1,25 @@
+task:
+  id: "b4-014-m1e-a-strategy-runtime-schema-readiness-implementation"
+  title: "B4.014-M1e-A strategy runtime schema readiness implementation"
+
+scope:
+  allowed_paths:
+    - "web/backend/app/api/strategy_mgmt.py"
+    - "web/backend/app/repositories/strategy_repository.py"
+    - "web/backend/app/repositories/backtest_repository.py"
+    - "web/backend/tests/test_strategy_mgmt_backtest_regressions.py"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No OpenStock provider/runtime development, frontend changes, B4.012 cleanup, repository hygiene, broad migration framework rewrite, destructive database operations, table drops, unrelated schema cleanup, or route/response redesign beyond strategy runtime schema readiness."
+
+acceptance:
+  commit_gate:
+    - "GitNexus impact before edits; TDD red/green focused tests; python -m py_compile changed files; focused pytest strategy management regression file; runtime probes for /api/strategy-mgmt/health, /strategies?user_id=1001, /backtest/results?user_id=1001; GitNexus verify-staged/detect-changes; OPENDOG fresh; exact staging only."
+  closeout_gate:
+    - "Closeout records runtime API response status before/after and confirms no destructive database operation or non-authorized files were staged."
+
+evidence:
+  current_head: "1a3d782eb8f2b85466f82b612e76786f1079dc60"
+  notes: []
