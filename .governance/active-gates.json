@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-26T17:13:53.662Z",
+  "updated_at": "2026-06-26T23:53:05.576Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -385,10 +385,10 @@
       "node_type": "implementation",
       "owner_lane": "mainline-runtime",
       "parent": "b4-014-m1-core-runtime-blocker-repair",
-      "status": "authorization-prepared",
+      "status": "closeout-prepared",
       "source_edits_authorized": false,
       "current_blocker": "",
-      "next_allowed": "review and approve implementation authorization",
+      "next_allowed": "review closeout and close node",
       "function_tree_ref": "docs/reports/worklogs/claude-auto/b4-014-m1g-backtest-status-identifier-compatibility-authorization-2026-06-27.md",
       "freshness": "current-head",
       "allowed_paths": [
@@ -397,7 +397,7 @@
         "web/backend/tests/test_strategy_mgmt_backtest_regressions.py"
       ],
       "forbidden_paths": [],
-      "updated_at": "2026-06-26T17:13:53.610Z"
+      "updated_at": "2026-06-26T23:53:05.557Z"
     }
   ]
 }

@@ -22,6 +22,6 @@
 | artdeco-web-design-governance | b4-014-m1c-datasource-factory-reentrant-lock-repair | closeout-prepared | - | review closeout and close node | B4.014-M1c |
 | artdeco-web-design-governance | b4-014-m1e-strategy-runtime-schema-readiness-repair | decision-prepared | - | prepare authorization | B4.014-M1e |
 | artdeco-web-design-governance | b4-014-m1f-strategy-data-source-dependency-runtime-audit | decision-prepared | - | prepare authorization | docs/reports/worklogs/claude-auto/b4-014-m1f-strategy-data-source-dependency-runtime-audit-2026-06-26.md |
-| artdeco-web-design-governance | b4-014-m1g-backtest-status-identifier-compatibility-repair | authorization-prepared | - | review and approve implementation authorization | docs/reports/worklogs/claude-auto/b4-014-m1g-backtest-status-identifier-compatibility-authorization-2026-06-27.md |
+| artdeco-web-design-governance | b4-014-m1g-backtest-status-identifier-compatibility-repair | closeout-prepared | - | review closeout and close node | docs/reports/worklogs/claude-auto/b4-014-m1g-backtest-status-identifier-compatibility-authorization-2026-06-27.md |
 
 _Generated from `.governance/active-gates.json`._

@@ -80,6 +80,10 @@ def _trade_row_total_cost(trade: "BacktestTradeModel") -> Decimal:
     return Decimal(str(trade.price or 0)) * Decimal(str(trade.amount or 0))
 
 
+def _backtest_id_lookup_value(backtest_id: int | str) -> str:
+    return str(backtest_id)
+
+
 # ============================================================
 # SQLAlchemy ORM Models
 # ============================================================
@@ -260,8 +264,9 @@ class BacktestRepository:
             回测结果对象，不存在时返回None
         """
         try:
+            lookup_id = _backtest_id_lookup_value(backtest_id)
             backtest_orm = (
-                self.db.query(BacktestResultModel).filter(BacktestResultModel.backtest_id == backtest_id).first()
+                self.db.query(BacktestResultModel).filter(BacktestResultModel.backtest_id == lookup_id).first()
             )
 
             if backtest_orm is None:
@@ -336,8 +341,9 @@ class BacktestRepository:
         """
         try:
             normalized_status = status if isinstance(status, BacktestStatus) else BacktestStatus(status)
+            lookup_id = _backtest_id_lookup_value(backtest_id)
             backtest_orm = (
-                self.db.query(BacktestResultModel).filter(BacktestResultModel.backtest_id == backtest_id).first()
+                self.db.query(BacktestResultModel).filter(BacktestResultModel.backtest_id == lookup_id).first()
             )
 
             if backtest_orm is None:
@@ -382,8 +388,9 @@ class BacktestRepository:
             更新后的回测结果
         """
         try:
+            lookup_id = _backtest_id_lookup_value(backtest_id)
             backtest_orm = (
-                self.db.query(BacktestResultModel).filter(BacktestResultModel.backtest_id == backtest_id).first()
+                self.db.query(BacktestResultModel).filter(BacktestResultModel.backtest_id == lookup_id).first()
             )
 
             if backtest_orm is None:

@@ -301,3 +301,28 @@ async def test_execute_backtest_registers_runtime_task_mapping(monkeypatch):
             "benchmark": "000300.SH",
         },
     }
+
+
+def test_backtest_repository_uses_string_compatible_id_lookup_for_legacy_runtime_schema():
+    from app.repositories.backtest_repository import BacktestRepository
+
+    captured = {}
+
+    class _FakeQuery:
+        def filter(self, expression):
+            captured["where"] = str(expression.compile(dialect=postgresql.dialect(), compile_kwargs={"literal_binds": True}))
+            return self
+
+        def first(self):
+            return None
+
+    class _FakeDb:
+        def query(self, model):
+            captured["model"] = model.__name__
+            return _FakeQuery()
+
+    result = BacktestRepository(_FakeDb()).get_backtest(1)
+
+    assert result is None
+    assert captured["model"] == "BacktestResultModel"
+    assert captured["where"] == "backtest_results.backtest_id = '1'"
