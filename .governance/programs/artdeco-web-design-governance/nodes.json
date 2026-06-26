@@ -16020,5 +16020,46 @@
         "M1d closeout records strategy health runtime result and confirms no non-authorized files were staged."
       ]
     }
+  },
+  {
+    "id": "b4-014-m1e-strategy-runtime-schema-readiness-repair",
+    "title": "B4.014-M1e strategy runtime schema readiness repair",
+    "node_type": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-014-m1-core-runtime-blocker-repair",
+    "status": "decision-prepared",
+    "function_tree_ref": "B4.014-M1e",
+    "current_head": "8785486d59c2ad1f793c254573dde82e927ad873",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "runtime",
+        "path": "docs/reports/worklogs/claude-auto/b4-014-m1e-strategy-runtime-schema-readiness-no-source-review-2026-06-26.md",
+        "note": "No-source runtime review: strategy health/list/backtest list are blocked by strategy schema readiness drift; source edits remain unauthorized.",
+        "current_head": "8785486d59c2ad1f793c254573dde82e927ad873",
+        "recorded_at": "2026-06-26T01:14:40.984Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-26T01:14:40.915Z",
+    "updated_at": "2026-06-26T01:14:41.048Z",
+    "track": "mainline",
+    "mainline_id": "b4-014-mainline-a-share-quant-runtime-usability-recovery",
+    "depth": 2,
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "P0 schema readiness blocker confirmed; prepare explicit source authorization before any implementation.",
+        "current_head": "8785486d59c2ad1f793c254573dde82e927ad873",
+        "transitioned_at": "2026-06-26T01:14:41.048Z"
+      }
+    ]
   }
 ]

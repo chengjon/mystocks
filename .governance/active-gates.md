@@ -20,5 +20,6 @@
 | artdeco-web-design-governance | b4-014-m1a-strategy-health-tdengine-interface-repair | closeout-prepared | - | review closeout and close node | B4.014-M1a |
 | artdeco-web-design-governance | b4-014-m1b-strategy-health-postgresql-interface-repair | closeout-prepared | - | review closeout and close node | B4.014-M1b |
 | artdeco-web-design-governance | b4-014-m1c-datasource-factory-reentrant-lock-repair | closeout-prepared | - | review closeout and close node | B4.014-M1c |
+| artdeco-web-design-governance | b4-014-m1e-strategy-runtime-schema-readiness-repair | decision-prepared | - | prepare authorization | B4.014-M1e |
 
 _Generated from `.governance/active-gates.json`._

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-25T20:39:27.143Z",
+  "updated_at": "2026-06-26T01:14:41.059Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -343,6 +343,23 @@
       ],
       "forbidden_paths": [],
       "updated_at": "2026-06-25T13:36:46.048Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-014-m1e-strategy-runtime-schema-readiness-repair",
+      "title": "B4.014-M1e strategy runtime schema readiness repair",
+      "node_type": "decision",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-014-m1-core-runtime-blocker-repair",
+      "status": "decision-prepared",
+      "source_edits_authorized": false,
+      "current_blocker": "",
+      "next_allowed": "prepare authorization",
+      "function_tree_ref": "B4.014-M1e",
+      "freshness": "current-head",
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-26T01:14:41.048Z"
     }
   ]
 }
