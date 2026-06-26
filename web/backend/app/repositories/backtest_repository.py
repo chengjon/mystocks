@@ -39,6 +39,50 @@ logger = logging.getLogger(__name__)
 Base = declarative_base()
 
 
+def _trade_field(trade: TradeRecord | dict, name: str, default=None):
+    if isinstance(trade, dict):
+        return trade.get(name, default)
+    return getattr(trade, name, default)
+
+
+def _normalize_trade_date(value):
+    if isinstance(value, datetime):
+        return value.date()
+    return value
+
+
+def _resolve_trade_quantity(trade) -> int:
+    quantity = _trade_field(trade, "quantity")
+    if quantity is not None:
+        return int(quantity)
+    if isinstance(trade, dict):
+        raise ValueError("trade payload missing required quantity field")
+    fallback_quantity = _trade_field(trade, "amount", 0)
+    return int(fallback_quantity or 0)
+
+
+def _resolve_trade_direction(trade) -> str:
+    direction = _trade_field(trade, "direction", _trade_field(trade, "action", "buy"))
+    return str(direction).lower()
+
+
+def _resolve_trade_total_cost(trade, quantity: int, price) -> Decimal:
+    explicit_amount = _trade_field(trade, "amount")
+    if explicit_amount is not None:
+        return Decimal(str(explicit_amount))
+    return Decimal(str(price or 0)) * Decimal(str(quantity))
+
+
+def _trade_row_total_cost(trade: "BacktestTradeModel") -> Decimal:
+    if trade.total_cost is not None:
+        return Decimal(str(trade.total_cost))
+    return Decimal(str(trade.price or 0)) * Decimal(str(trade.amount or 0))
+
+
+def _backtest_id_lookup_value(backtest_id: int | str) -> str:
+    return str(backtest_id)
+
+
 # ============================================================
 # SQLAlchemy ORM Models
 # ============================================================
@@ -219,8 +263,9 @@ class BacktestRepository:
             回测结果对象，不存在时返回None
         """
         try:
+            lookup_id = _backtest_id_lookup_value(backtest_id)
             backtest_orm = (
-                self.db.query(BacktestResultModel).filter(BacktestResultModel.backtest_id == backtest_id).first()
+                self.db.query(BacktestResultModel).filter(BacktestResultModel.backtest_id == lookup_id).first()
             )
 
             if backtest_orm is None:
@@ -294,9 +339,9 @@ class BacktestRepository:
             更新后的回测结果，回测不存在时返回None
         """
         try:
+            normalized_status = status if isinstance(status, BacktestStatus) else BacktestStatus(status)
             backtest_orm = (
-                self.db.query(BacktestResultModel).filter(BacktestResultModel.backtest_id == backtest_id).first()
-            )
+                self.db.query(BacktestResultModel).filter(BacktestResultModel.backtest_id == lookup_id).first()
 
             if backtest_orm is None:
                 logger.warning("回测不存在: backtest_id=%(backtest_id)s")
@@ -340,8 +385,9 @@ class BacktestRepository:
             更新后的回测结果
         """
         try:
+            lookup_id = _backtest_id_lookup_value(backtest_id)
             backtest_orm = (
-                self.db.query(BacktestResultModel).filter(BacktestResultModel.backtest_id == backtest_id).first()
+                self.db.query(BacktestResultModel).filter(BacktestResultModel.backtest_id == lookup_id).first()
             )
 
             if backtest_orm is None:
