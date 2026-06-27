@@ -23,5 +23,6 @@
 | artdeco-web-design-governance | b4-014-m1e-strategy-runtime-schema-readiness-repair | decision-prepared | - | prepare authorization | B4.014-M1e |
 | artdeco-web-design-governance | b4-014-m1f-strategy-data-source-dependency-runtime-audit | decision-prepared | - | prepare authorization | docs/reports/worklogs/claude-auto/b4-014-m1f-strategy-data-source-dependency-runtime-audit-2026-06-26.md |
 | artdeco-web-design-governance | b4-014-m1h-minimal-backtest-execution-write-boundary-audit | decision-prepared | - | prepare authorization | docs/reports/worklogs/claude-auto/b4-014-m1h-minimal-backtest-execution-write-boundary-audit-2026-06-27.md |
+| artdeco-web-design-governance | b4-014-m1i-controlled-minimal-backtest-execution-smoke | decision-prepared | - | prepare authorization | unlinked |
 
 _Generated from `.governance/active-gates.json`._

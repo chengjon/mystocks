@@ -16337,5 +16337,47 @@
         "transitioned_at": "2026-06-27T01:07:10.889Z"
       }
     ]
+  },
+  {
+    "id": "b4-014-m1i-controlled-minimal-backtest-execution-smoke",
+    "title": "B4.014-M1i controlled minimal backtest execution smoke",
+    "node_type": "decision",
+    "node_type_input": "decision",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "b4-014-m1-core-runtime-blocker-repair",
+    "status": "decision-prepared",
+    "function_tree_ref": "unlinked",
+    "current_head": "a9f005d5a085ad94a20b15c4750233b3b5b182f6",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-014-m1i-controlled-minimal-backtest-execution-smoke-2026-06-28.md",
+        "note": "Controlled minimal backtest execution smoke reached BacktestEngine and isolated date-format contract mismatch between BacktestEngine and StrategyService history fetch.",
+        "current_head": "a9f005d5a085ad94a20b15c4750233b3b5b182f6",
+        "recorded_at": "2026-06-27T18:12:40.013Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-27T18:12:23.233Z",
+    "updated_at": "2026-06-27T18:12:52.874Z",
+    "track": "mainline",
+    "mainline_id": "b4-014-mainline-a-share-quant-runtime-usability-recovery",
+    "depth": 2,
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "Runtime smoke completed without source edits; minimal backtest execution is blocked by date-format contract mismatch and requires B4.014-M1j repair authorization.",
+        "current_head": "a9f005d5a085ad94a20b15c4750233b3b5b182f6",
+        "transitioned_at": "2026-06-27T18:12:52.873Z"
+      }
+    ]
   }
 ]
