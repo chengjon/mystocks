@@ -16203,7 +16203,7 @@
     "node_type_input": "implementation",
     "owner_lane": "mainline-runtime",
     "parent": "b4-014-m1-core-runtime-blocker-repair",
-    "status": "closeout-prepared",
+    "status": "closed",
     "function_tree_ref": "docs/reports/worklogs/claude-auto/b4-014-m1g-backtest-status-identifier-compatibility-authorization-2026-06-27.md",
     "current_head": "964abd7125ee13ee2088e6fadf78408d90ed7594",
     "freshness": "current-head",
@@ -16233,11 +16233,11 @@
     "non_goals": [
       "No OpenStock provider/runtime development, no data-source runtime repair, no strategy core/backtest engine rewrite, no frontend changes, no API path redesign, no destructive schema migration, no B4.012 cleanup, no unrelated dirty files."
     ],
-    "next_gate": "review closeout and close node",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-06-26T17:12:46.659Z",
-    "updated_at": "2026-06-26T23:53:05.557Z",
+    "updated_at": "2026-06-27T01:03:59.144Z",
     "track": "mainline",
     "mainline_id": "b4-014-mainline-a-share-quant-runtime-usability-recovery",
     "depth": 2,
@@ -16269,6 +16269,13 @@
         "note": "Code and focused test changes landed locally; py_compile, focused pytest, and runtime smoke passed.",
         "current_head": "964abd7125ee13ee2088e6fadf78408d90ed7594",
         "transitioned_at": "2026-06-26T23:52:55.275Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "Closeout reviewed after commit c3ab72854; runtime smoke confirmed status endpoint no longer emits varchar/int SQL 500.",
+        "current_head": "c3ab728543c02004ac6f1c4b2892817a410ba23d",
+        "transitioned_at": "2026-06-27T01:03:59.144Z"
       }
     ],
     "acceptance": {
@@ -16288,5 +16295,47 @@
       "current_head": "964abd7125ee13ee2088e6fadf78408d90ed7594",
       "prepared_at": "2026-06-26T23:53:05.557Z"
     }
+  },
+  {
+    "id": "b4-014-m1h-minimal-backtest-execution-write-boundary-audit",
+    "title": "B4.014-M1h minimal backtest execution write-boundary audit",
+    "node_type": "decision",
+    "node_type_input": "decision",
+    "owner_lane": "mainline-runtime",
+    "parent": "b4-014-m1-core-runtime-blocker-repair",
+    "status": "decision-prepared",
+    "function_tree_ref": "docs/reports/worklogs/claude-auto/b4-014-m1h-minimal-backtest-execution-write-boundary-audit-2026-06-27.md",
+    "current_head": "c3ab728543c02004ac6f1c4b2892817a410ba23d",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "decision",
+        "path": "docs/reports/worklogs/claude-auto/b4-014-m1h-minimal-backtest-execution-write-boundary-audit-2026-06-27.md",
+        "note": "No-source/write-boundary audit for minimal backtest execution; write endpoint and Celery worker boundary identified without calling POST.",
+        "current_head": "c3ab728543c02004ac6f1c4b2892817a410ba23d",
+        "recorded_at": "2026-06-27T01:07:00.586Z"
+      }
+    ],
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "non_goals": [],
+    "next_gate": "prepare authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-27T01:06:47.202Z",
+    "updated_at": "2026-06-27T01:07:10.889Z",
+    "track": "mainline",
+    "mainline_id": "b4-014-mainline-a-share-quant-runtime-usability-recovery",
+    "depth": 2,
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "Ready for explicit decision: authorize controlled write enqueue smoke or controlled synchronous/worker execution smoke; no source edits authorized.",
+        "current_head": "c3ab728543c02004ac6f1c4b2892817a410ba23d",
+        "transitioned_at": "2026-06-27T01:07:10.889Z"
+      }
+    ]
   }
 ]
