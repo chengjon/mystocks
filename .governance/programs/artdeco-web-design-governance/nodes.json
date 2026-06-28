@@ -16396,7 +16396,7 @@
       {
         "kind": "implementation",
         "path": "docs/reports/worklogs/claude-auto/b4-014-m1j-backtest-date-contract-normalization-repair-2026-06-28.md",
-        "note": "P0 backtest mainline repair: date contract normalization, runtime legacy schema compatibility, repository/task persistence, and controlled PostgreSQL/Celery smoke evidence.",
+        "note": "P0 backtest mainline repair: date contract normalization, runtime legacy schema compatibility, repository/task persistence, controlled PostgreSQL/Celery smoke evidence. Verification corrections landed 2026-06-28: (1) M1j-scope regression files = 19 passed / 19 collected (not 27); the 27 figure counted two pre-existing April schema-guard files. (2) Runtime schema bootstrap covers both backtest_equity_curves and backtest_trades (earlier summary omitted the trades side). (3) gitnexus_detect_changes(compare, base_ref=717157393~1) reports risk_level=high (changed_count=1355, affected_count=6, changed_files=470) due to dirty-worktree scope expansion (~595 sibling-track files); a clean-checkout re-run is required before citing any lower risk level in downstream authorization.",
         "current_head": "85f45841493d7ee40185a5ff0a54230fcbbd0ea8",
         "recorded_at": "2026-06-28T12:15:06.520Z"
       }
