@@ -9,7 +9,8 @@ import subprocess
 import sys
 
 # 设置项目根目录的Python路径
-project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# start_server.py 位于 web/backend/，项目根目录需要再向上一级
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, project_root)
 
 # 设置环境变量
