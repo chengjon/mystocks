@@ -149,18 +149,18 @@ module.exports = {
         PYTHONPATH: projectRoot,
         PYTHONUNBUFFERED: '1',
 
-        // 数据库配置
-        POSTGRESQL_HOST: 'localhost',
-        POSTGRESQL_USER: 'postgres',
+        // 数据库配置 (从 .env 读取,缺省回退到 localhost)
+        POSTGRESQL_HOST: process.env.POSTGRESQL_HOST || 'localhost',
+        POSTGRESQL_USER: process.env.POSTGRESQL_USER || 'postgres',
         POSTGRESQL_PASSWORD: process.env.POSTGRESQL_PASSWORD || '',
-        POSTGRESQL_DATABASE: 'mystocks',
-        POSTGRESQL_PORT: '5438',
+        POSTGRESQL_DATABASE: process.env.POSTGRESQL_DATABASE || 'mystocks',
+        POSTGRESQL_PORT: process.env.POSTGRESQL_PORT || '5438',
 
-        TDENGINE_HOST: 'localhost',
-        TDENGINE_USER: 'root',
+        TDENGINE_HOST: process.env.TDENGINE_HOST || 'localhost',
+        TDENGINE_USER: process.env.TDENGINE_USER || 'root',
         TDENGINE_PASSWORD: process.env.TDENGINE_PASSWORD || '',
-        TDENGINE_DATABASE: 'market_data_cache',
-        TDENGINE_PORT: '6030',
+        TDENGINE_DATABASE: process.env.TDENGINE_DATABASE || 'market_data_cache',
+        TDENGINE_PORT: process.env.TDENGINE_PORT || '6030',
 
         // 服务配置
         API_HOST: '0.0.0.0',
