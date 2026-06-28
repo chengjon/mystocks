@@ -43,7 +43,7 @@ router.include_router(market_heatmap_router)
 router.include_router(market_health_router)
 logger = logging.getLogger(__name__)
 
-DEFAULT_OPENSTOCK_BASE_URL = "http://localhost:8050"
+DEFAULT_OPENSTOCK_BASE_URL = "http://192.168.123.104:8040"
 
 
 def get_openstock_market_client() -> OpenStockClient:
@@ -56,10 +56,12 @@ def get_openstock_market_client() -> OpenStockClient:
         timeout_seconds = float(os.getenv("OPENSTOCK_TIMEOUT_SECONDS", "5.0"))
     except ValueError:
         timeout_seconds = 5.0
+    api_key = os.getenv("OPENSTOCK_API_KEY", "").strip() or None
     return OpenStockClient(
         OpenStockClientConfig(
             base_url=base_url or DEFAULT_OPENSTOCK_BASE_URL,
             timeout_seconds=timeout_seconds,
+            api_key=api_key,
         )
     )
 
@@ -664,15 +666,14 @@ async def get_kline_data(
         try:
             client = get_openstock_market_client()
             try:
-                openstock_result = await client.fetch(
-                    "KLINES",
-                    params={
-                        "symbol": stock_code,
-                        "period": period,
-                        "adjust": adjust,
-                        "start_date": start_date,
-                        "end_date": end_date,
-                    },
+                # OpenStock /data/bars 仅接受 day/week/month (或 1m/5m/15m/30m/60m)。
+                # 第一阶段：translate daily/weekly/monthly → day/week/month；adjust 与 start_date/end_date 暂不透传。
+                period_map = {"daily": "day", "weekly": "week", "monthly": "month"}
+                openstock_period = period_map.get(period, "day")
+                openstock_result = await client.fetch_bars(
+                    symbol=stock_code,
+                    period=openstock_period,
+                    count=60,
                 )
             finally:
                 await client.aclose()

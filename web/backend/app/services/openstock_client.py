@@ -23,6 +23,7 @@ class OpenStockClientConfig:
     base_url: str
     timeout_seconds: float = 5.0
     supported_categories: Sequence[str] = DEFAULT_SUPPORTED_CATEGORIES
+    api_key: str | None = None
 
 
 @dataclass(frozen=True)
@@ -80,9 +81,13 @@ class OpenStockClient:
     ) -> None:
         self._config = config
         self._supported_categories = frozenset(config.supported_categories)
+        headers: dict[str, str] = {}
+        if config.api_key:
+            headers["X-API-Key"] = config.api_key
         self._client = httpx.AsyncClient(
             base_url=config.base_url.rstrip("/"),
             timeout=config.timeout_seconds,
+            headers=headers,
             transport=transport,
         )
 
@@ -132,7 +137,7 @@ class OpenStockClient:
 
     async def ready(self) -> bool:
         try:
-            response = await self._client.get("/health")
+            response = await self._client.get("/health/ready")
         except httpx.HTTPError:
             return False
         return response.status_code < 500
