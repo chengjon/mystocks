@@ -5,6 +5,7 @@ Backtest Repository Layer
 """
 
 import logging
+import uuid
 from datetime import datetime, timezone
 from typing import List, Optional
 
@@ -83,6 +84,46 @@ def _backtest_id_lookup_value(backtest_id: int | str) -> str:
     return str(backtest_id)
 
 
+def _model_dump_or_dict(value):
+    if isinstance(value, dict):
+        return value
+    if hasattr(value, "model_dump"):
+        return value.model_dump()
+    return value.dict()
+
+
+def _equity_field(point: EquityCurvePoint | dict, name: str, default=None):
+    if isinstance(point, dict):
+        return point.get(name, default)
+    if name == "trade_date":
+        return getattr(point, "date_field", getattr(point, "date", default))
+    return getattr(point, name, default)
+
+
+def _normalize_equity_date(value):
+    if isinstance(value, datetime):
+        return value.date()
+    return value
+
+
+def _normalize_performance_metrics(value) -> PerformanceMetrics:
+    metrics = dict(value or {})
+    metrics.setdefault("total_return", 0.0)
+    metrics.setdefault("annual_return", metrics.get("annualized_return", 0.0))
+    metrics.setdefault("benchmark_return", None)
+    metrics.setdefault("alpha", None)
+    metrics.setdefault("beta", None)
+    metrics.setdefault("sharpe_ratio", 0.0)
+    metrics.setdefault("max_drawdown", 0.0)
+    metrics.setdefault("volatility", 0.0)
+    metrics.setdefault("total_trades", 0)
+    metrics.setdefault("win_rate", 0.0)
+    metrics.setdefault("profit_factor", 0.0)
+    metrics.setdefault("calmar_ratio", None)
+    metrics.setdefault("sortino_ratio", None)
+    return PerformanceMetrics(**metrics)
+
+
 # ============================================================
 # SQLAlchemy ORM Models
 # ============================================================
@@ -96,6 +137,9 @@ class BacktestResultModel(Base):
     backtest_id = Column(Integer, primary_key=True, autoincrement=True)
     strategy_id = Column(Integer, nullable=False, index=True)
     user_id = Column(Integer, nullable=False, index=True)
+    strategy_name = Column(String(255), nullable=False, default="")
+    backtest_start_date = Column(Date, nullable=False)
+    backtest_end_date = Column(Date, nullable=False)
 
     # 回测配置
     symbols = Column(ARRAY(Text), nullable=False)
@@ -108,6 +152,19 @@ class BacktestResultModel(Base):
 
     # 回测结果
     final_capital = Column(Numeric(15, 2), nullable=True)
+    total_return = Column(Numeric(15, 6), nullable=False, default=0)
+    annualized_return = Column(Numeric(15, 6), nullable=True)
+    max_drawdown = Column(Numeric(15, 6), nullable=False, default=0)
+    sharpe_ratio = Column(Numeric(15, 6), nullable=True)
+    sortino_ratio = Column(Numeric(15, 6), nullable=True)
+    calmar_ratio = Column(Numeric(15, 6), nullable=True)
+    win_rate = Column(Numeric(15, 6), nullable=True)
+    profit_factor = Column(Numeric(15, 6), nullable=True)
+    total_trades = Column(Integer, nullable=False, default=0)
+    winning_trades = Column(Integer, nullable=True)
+    losing_trades = Column(Integer, nullable=True)
+    avg_winning_trade = Column(Numeric(15, 6), nullable=True)
+    avg_losing_trade = Column(Numeric(15, 6), nullable=True)
     performance_metrics = Column(JSON, nullable=True)
 
     # 回测状态
@@ -227,26 +284,66 @@ class BacktestRepository:
             SQLAlchemyError: 数据库操作失败
         """
         try:
+            runtime_backtest_id = uuid.uuid4().int % 2_000_000_000 + 1
+            created_at = datetime.now(timezone.utc)
             backtest_orm = BacktestResultModel(
-                strategy_id=request.strategy_id,
+                backtest_id=runtime_backtest_id,
+                strategy_id=str(request.strategy_id),
+                strategy_name=f"strategy-{request.strategy_id}",
                 user_id=request.user_id,
                 symbols=request.symbols,
+                backtest_start_date=request.start_date,
+                backtest_end_date=request.end_date,
                 start_date=request.start_date,
                 end_date=request.end_date,
                 initial_capital=request.initial_capital,
                 commission_rate=request.commission_rate,
                 slippage_rate=request.slippage_rate,
                 benchmark=request.benchmark,
+                final_capital=request.initial_capital,
+                total_return=0,
+                annualized_return=0,
+                max_drawdown=0,
+                sharpe_ratio=0,
+                sortino_ratio=0,
+                calmar_ratio=0,
+                win_rate=0,
+                profit_factor=0,
+                total_trades=0,
+                winning_trades=0,
+                losing_trades=0,
+                avg_winning_trade=0,
+                avg_losing_trade=0,
+                performance_metrics={},
                 status="pending",
+                created_at=created_at,
             )
 
             self.db.add(backtest_orm)
             self.db.commit()
-            self.db.refresh(backtest_orm)
 
             logger.info("创建回测任务成功: backtest_id={backtest_orm.backtest_id}, strategy_id={request.strategy_id}")
 
-            return self._orm_to_pydantic(backtest_orm)
+            return BacktestResult(
+                backtest_id=runtime_backtest_id,
+                strategy_id=request.strategy_id,
+                user_id=request.user_id,
+                symbols=request.symbols,
+                start_date=request.start_date,
+                end_date=request.end_date,
+                initial_capital=float(request.initial_capital),
+                commission_rate=float(request.commission_rate),
+                slippage_rate=float(request.slippage_rate),
+                benchmark=request.benchmark,
+                final_capital=float(request.initial_capital),
+                performance=_normalize_performance_metrics({}),
+                equity_curve=[],
+                trades=[],
+                status=BacktestStatus.PENDING,
+                error_message=None,
+                created_at=created_at,
+                completed_at=None,
+            )
 
         except SQLAlchemyError:
             self.db.rollback()
@@ -302,7 +399,7 @@ class BacktestRepository:
             query = self.db.query(BacktestResultModel).filter(BacktestResultModel.user_id == user_id)
 
             if strategy_id:
-                query = query.filter(BacktestResultModel.strategy_id == strategy_id)
+                query = query.filter(BacktestResultModel.strategy_id == str(strategy_id))
 
             if status:
                 query = query.filter(BacktestResultModel.status == status.value)
@@ -395,7 +492,7 @@ class BacktestRepository:
                 return None
 
             backtest_orm.final_capital = final_capital
-            backtest_orm.performance_metrics = performance_metrics.dict()
+            backtest_orm.performance_metrics = _model_dump_or_dict(performance_metrics)
             backtest_orm.status = "completed"
             backtest_orm.completed_at = datetime.now(timezone.utc)
 
@@ -426,10 +523,10 @@ class BacktestRepository:
             equity_models = [
                 BacktestEquityCurveModel(
                     backtest_id=backtest_id,
-                    trade_date=point.date,
-                    equity=point.equity,
-                    drawdown=point.drawdown,
-                    benchmark_equity=point.benchmark_equity,
+                    trade_date=_normalize_equity_date(_equity_field(point, "trade_date")),
+                    equity=_equity_field(point, "equity"),
+                    drawdown=_equity_field(point, "drawdown"),
+                    benchmark_equity=_equity_field(point, "benchmark_equity"),
                 )
                 for point in equity_curve
             ]
@@ -590,9 +687,7 @@ class BacktestRepository:
             Pydantic BacktestResult模型
         """
         # 转换performance_metrics
-        performance_metrics = None
-        if backtest_orm.performance_metrics:
-            performance_metrics = PerformanceMetrics(**backtest_orm.performance_metrics)
+        performance_metrics = _normalize_performance_metrics(backtest_orm.performance_metrics)
 
         # 获取权益曲线和交易记录（如果已加载）
         equity_curve = []
@@ -634,8 +729,8 @@ class BacktestRepository:
             commission_rate=float(backtest_orm.commission_rate),
             slippage_rate=float(backtest_orm.slippage_rate),
             benchmark=backtest_orm.benchmark,
-            final_capital=float(backtest_orm.final_capital) if backtest_orm.final_capital else None,
-            performance_metrics=performance_metrics,
+            final_capital=float(backtest_orm.final_capital or backtest_orm.initial_capital),
+            performance=performance_metrics,
             equity_curve=equity_curve,
             trades=trades,
             status=BacktestStatus(backtest_orm.status),

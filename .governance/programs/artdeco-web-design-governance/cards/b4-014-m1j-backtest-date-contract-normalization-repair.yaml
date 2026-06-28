@@ -1,0 +1,22 @@
+task:
+  id: "b4-014-m1j-backtest-date-contract-normalization-repair"
+  title: "B4.014-M1j backtest date contract normalization repair"
+
+scope:
+  allowed_paths:
+    - "web/backend/app/backtest/backtest_engine.py; web/backend/app/repositories/backtest_repository.py; web/backend/app/api/strategy_mgmt.py; web/backend/app/tasks/backtest_tasks.py; web/backend/tests/test_backtest_tasks_regressions.py; web/backend/tests/test_strategy_mgmt_backtest_regressions.py"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No OpenStock provider/runtime development; no frontend changes; no routes/views/stores; no ST-HOLD; no marketKlineData; no OpenSpec; no external dirty files; no unrelated governance cleanup"
+
+acceptance:
+  commit_gate:
+    - "py_compile; focused pytest; PostgreSQL repository create/save/get/list smoke; controlled Celery backtest smoke; GitNexus verify-staged/detect-changes; OPENDOG verification"
+  closeout_gate:
+    - "worklog evidence recorded and staged files limited to B4.014-M1j target files"
+
+evidence:
+  current_head: "85f45841493d7ee40185a5ff0a54230fcbbd0ea8"
+  notes: []
