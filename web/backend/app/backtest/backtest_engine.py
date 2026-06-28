@@ -139,12 +139,14 @@ class BacktestEngine:
     def _load_market_data(self):
         """从数据源加载市场数据"""
         logger.info("加载市场数据...")
+        source_start_date = self._format_data_source_date(self.start_date)
+        source_end_date = self._format_data_source_date(self.end_date)
 
         for symbol in self.symbols:
             try:
                 # 从数据源获取历史数据
                 df = self.data_source.get_stock_history(
-                    symbol=symbol, start_date=self.start_date, end_date=self.end_date
+                    symbol=symbol, start_date=source_start_date, end_date=source_end_date
                 )
 
                 if df is None or df.empty:
@@ -154,7 +156,7 @@ class BacktestEngine:
                 # 转换为MarketEvent并缓存
                 self.market_data[symbol] = {}
                 for idx, row in df.iterrows():
-                    trade_date = row.get("trade_date") or idx
+                    trade_date = row.get("trade_date") or row.get("date") or idx
                     if not isinstance(trade_date, datetime):
                         trade_date = datetime.strptime(str(trade_date), "%Y-%m-%d")
 
@@ -186,6 +188,13 @@ class BacktestEngine:
         self.total_days = len(sorted(all_dates))
 
         logger.info("市场数据加载完成: {len(self.market_data)} 只股票, {self.total_days} 个交易日")
+
+    @staticmethod
+    def _format_data_source_date(value: Any) -> str:
+        """Format engine dates for strategy history providers."""
+        if isinstance(value, datetime):
+            return value.strftime("%Y%m%d")
+        return str(value).replace("-", "")
 
     def _run_backtest_loop(self):
         """执行回测主循环"""

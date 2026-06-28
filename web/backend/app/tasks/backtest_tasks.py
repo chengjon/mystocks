@@ -137,11 +137,14 @@ def _save_backtest_results(backtest_id: int, results: dict):
             repo = BacktestRepository(db)
 
             # 保存主要结果
-            repo.save_backtest_results(
+            saved_backtest = repo.save_backtest_results(
                 backtest_id=backtest_id,
                 final_capital=Decimal(str(results["final_capital"])),
                 performance_metrics=results["performance_metrics"],
             )
+            if saved_backtest is None:
+                logger.warning("回测主结果不存在，跳过明细保存: backtest_id=%(backtest_id)s")
+                return
 
             # 保存资金曲线
             if results.get("equity_curve"):

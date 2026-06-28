@@ -112,7 +112,7 @@ async def test_strategy_health_database_probe_uses_sqlalchemy_text_clause(monkey
 
 def test_strategy_runtime_schema_readiness_is_additive_and_idempotent(monkeypatch):
     module = _load_module()
-    from app.repositories.backtest_repository import BacktestResultModel
+    from app.repositories.backtest_repository import BacktestEquityCurveModel, BacktestResultModel, BacktestTradeModel
     from app.repositories.strategy_repository import UserStrategyModel
 
     created_tables = []
@@ -129,6 +129,16 @@ def test_strategy_runtime_schema_readiness_is_additive_and_idempotent(monkeypatc
         "create",
         lambda bind, checkfirst=True: created_tables.append(("backtest_results", checkfirst)),
     )
+    monkeypatch.setattr(
+        BacktestEquityCurveModel.__table__,
+        "create",
+        lambda bind, checkfirst=True: created_tables.append(("backtest_equity_curves", checkfirst)),
+    )
+    monkeypatch.setattr(
+        BacktestTradeModel.__table__,
+        "create",
+        lambda bind, checkfirst=True: created_tables.append(("backtest_trades", checkfirst)),
+    )
 
     class _FakeInspector:
         def has_table(self, table_name):
@@ -137,6 +147,12 @@ def test_strategy_runtime_schema_readiness_is_additive_and_idempotent(monkeypatc
         def get_columns(self, table_name):
             if table_name == "backtest_results":
                 return [{"name": "backtest_id"}, {"name": "strategy_id"}, {"name": "created_at"}]
+            return []
+
+        def get_pk_constraint(self, table_name):
+            return {"constrained_columns": ["id"]} if table_name == "backtest_results" else {}
+
+        def get_unique_constraints(self, table_name):
             return []
 
     class _FakeDb:
@@ -156,10 +172,58 @@ def test_strategy_runtime_schema_readiness_is_additive_and_idempotent(monkeypatc
     assert created_tables == [("user_strategies", True)]
     assert any("ALTER TABLE backtest_results ADD COLUMN IF NOT EXISTS user_id" in sql for sql in executed)
     assert any("ALTER TABLE backtest_results ADD COLUMN IF NOT EXISTS status" in sql for sql in executed)
+    assert any("CREATE TABLE IF NOT EXISTS backtest_equity_curves" in sql for sql in executed)
+    assert any("CREATE INDEX IF NOT EXISTS idx_equity_curves_backtest_id" in sql for sql in executed)
+    assert any("CREATE TABLE IF NOT EXISTS backtest_trades" in sql for sql in executed)
     assert all("DROP TABLE" not in sql.upper() for sql in executed)
     assert commits == [True]
-    assert result["created_tables"] == ["user_strategies"]
+    assert result["created_tables"] == ["user_strategies", "backtest_equity_curves", "backtest_trades"]
     assert "backtest_results.user_id" in result["added_columns"]
+
+
+def test_strategy_runtime_schema_readiness_commits_legacy_detail_table_creation(monkeypatch):
+    module = _load_module()
+    from app.repositories.backtest_repository import BacktestResultModel, BacktestTradeModel
+    from app.repositories.strategy_repository import UserStrategyModel
+
+    executed = []
+    commits = []
+    existing_columns = {
+        "backtest_results": [{"name": column.name} for column in BacktestResultModel.__table__.columns],
+        "backtest_trades": [{"name": column.name} for column in BacktestTradeModel.__table__.columns],
+        "user_strategies": [{"name": column.name} for column in UserStrategyModel.__table__.columns],
+    }
+
+    class _FakeInspector:
+        def has_table(self, table_name):
+            return table_name in {"backtest_results", "backtest_trades", "user_strategies"}
+
+        def get_columns(self, table_name):
+            return existing_columns.get(table_name, [])
+
+        def get_pk_constraint(self, table_name):
+            return {"constrained_columns": ["id"]} if table_name == "backtest_results" else {}
+
+        def get_unique_constraints(self, table_name):
+            return []
+
+    class _FakeDb:
+        def get_bind(self):
+            return SimpleNamespace(dialect=postgresql.dialect())
+
+        def execute(self, statement):
+            executed.append(str(statement))
+
+        def commit(self):
+            commits.append(True)
+
+    monkeypatch.setattr(module, "inspect", lambda bind: _FakeInspector(), raising=False)
+
+    result = module.ensure_strategy_runtime_schema_ready(_FakeDb())
+
+    assert any("CREATE TABLE IF NOT EXISTS backtest_equity_curves" in sql for sql in executed)
+    assert commits == [True]
+    assert result == {"created_tables": ["backtest_equity_curves"], "added_columns": []}
 
 
 async def test_strategy_health_runs_schema_readiness_before_table_counts(monkeypatch):
@@ -326,3 +390,42 @@ def test_backtest_repository_uses_string_compatible_id_lookup_for_legacy_runtime
     assert result is None
     assert captured["model"] == "BacktestResultModel"
     assert captured["where"] == "backtest_results.backtest_id = '1'"
+
+
+def test_backtest_repository_uses_string_compatible_strategy_filter_for_legacy_runtime_schema():
+    from app.repositories.backtest_repository import BacktestRepository
+
+    captured = []
+
+    class _FakeQuery:
+        def filter(self, expression):
+            captured.append(str(expression.compile(dialect=postgresql.dialect(), compile_kwargs={"literal_binds": True})))
+            return self
+
+        def count(self):
+            return 0
+
+        def order_by(self, *_args):
+            return self
+
+        def offset(self, *_args):
+            return self
+
+        def limit(self, *_args):
+            return self
+
+        def all(self):
+            return []
+
+    class _FakeDb:
+        def query(self, _model):
+            return _FakeQuery()
+
+    backtests, total = BacktestRepository(_FakeDb()).list_backtests(user_id=1001, strategy_id=123)
+
+    assert backtests == []
+    assert total == 0
+    assert captured == [
+        "backtest_results.user_id = 1001",
+        "backtest_results.strategy_id = '123'",
+    ]

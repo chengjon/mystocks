@@ -99,7 +99,7 @@ def ensure_strategy_runtime_schema_ready(db: Session) -> dict[str, list[str]]:
     This is additive only: create missing ORM tables with checkfirst and add
     missing columns. It never drops, renames, or rewrites existing tables.
     """
-    from app.repositories.backtest_repository import BacktestResultModel
+    from app.repositories.backtest_repository import BacktestEquityCurveModel, BacktestResultModel, BacktestTradeModel
     from app.repositories.strategy_repository import UserStrategyModel
 
     bind = db.get_bind()
@@ -107,11 +107,21 @@ def ensure_strategy_runtime_schema_ready(db: Session) -> dict[str, list[str]]:
     created_tables: list[str] = []
     added_columns: list[str] = []
 
-    for model in (UserStrategyModel, BacktestResultModel):
+    def _create_table_additive(model) -> None:
+        table = model.__table__
+        if (
+            table.name in {"backtest_equity_curves", "backtest_trades"}
+            and not _backtest_results_backtest_id_is_unique(inspector)
+        ):
+            _create_backtest_detail_table_without_fk(db, table.name)
+        else:
+            table.create(bind=bind, checkfirst=True)
+        created_tables.append(table.name)
+
+    for model in (UserStrategyModel, BacktestResultModel, BacktestEquityCurveModel, BacktestTradeModel):
         table = model.__table__
         if not inspector.has_table(table.name):
-            table.create(bind=bind, checkfirst=True)
-            created_tables.append(table.name)
+            _create_table_additive(model)
             continue
 
         existing_columns = {column["name"] for column in inspector.get_columns(table.name)}
@@ -125,10 +135,69 @@ def ensure_strategy_runtime_schema_ready(db: Session) -> dict[str, list[str]]:
             db.execute(text(f"ALTER TABLE {table.name} ADD COLUMN IF NOT EXISTS {column.name} {column_type}{default}"))
             added_columns.append(f"{table.name}.{column.name}")
 
-    if added_columns:
+    if created_tables or added_columns:
         db.commit()
 
     return {"created_tables": created_tables, "added_columns": added_columns}
+
+
+def _backtest_results_backtest_id_is_unique(inspector) -> bool:
+    pk = inspector.get_pk_constraint("backtest_results") or {}
+    if "backtest_id" in set(pk.get("constrained_columns") or []):
+        return True
+
+    for constraint in inspector.get_unique_constraints("backtest_results") or []:
+        if "backtest_id" in set(constraint.get("column_names") or []):
+            return True
+
+    return False
+
+
+def _create_backtest_detail_table_without_fk(db: Session, table_name: str) -> None:
+    if table_name == "backtest_equity_curves":
+        db.execute(
+            text(
+                """
+                CREATE TABLE IF NOT EXISTS backtest_equity_curves (
+                    id SERIAL PRIMARY KEY,
+                    backtest_id INTEGER NOT NULL,
+                    trade_date DATE NOT NULL,
+                    equity NUMERIC(15, 2) NOT NULL,
+                    drawdown NUMERIC(5, 2) NOT NULL,
+                    benchmark_equity NUMERIC(15, 2),
+                    CONSTRAINT uq_backtest_trade_date UNIQUE (backtest_id, trade_date)
+                )
+                """
+            )
+        )
+        db.execute(text("CREATE INDEX IF NOT EXISTS idx_equity_curves_backtest_id ON backtest_equity_curves (backtest_id)"))
+        db.execute(text("CREATE INDEX IF NOT EXISTS idx_equity_curves_trade_date ON backtest_equity_curves (trade_date)"))
+        return
+
+    if table_name == "backtest_trades":
+        db.execute(
+            text(
+                """
+                CREATE TABLE IF NOT EXISTS backtest_trades (
+                    id SERIAL PRIMARY KEY,
+                    backtest_id INTEGER NOT NULL,
+                    trade_date DATE NOT NULL,
+                    symbol VARCHAR NOT NULL,
+                    direction VARCHAR NOT NULL,
+                    amount INTEGER,
+                    price NUMERIC,
+                    commission NUMERIC,
+                    stamp_tax NUMERIC,
+                    total_cost NUMERIC,
+                    created_at TIMESTAMP WITH TIME ZONE
+                )
+                """
+            )
+        )
+        db.execute(text("CREATE INDEX IF NOT EXISTS idx_backtest_trades_backtest_id ON backtest_trades (backtest_id)"))
+        return
+
+    raise ValueError(f"Unsupported backtest detail table: {table_name}")
 
 
 def _require_write_auth(authorization: Optional[str]) -> None:

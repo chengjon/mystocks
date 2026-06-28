@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-06-27T18:12:52.892Z",
+  "updated_at": "2026-06-28T12:16:50.817Z",
   "gates": [
     {
       "program": "artdeco-web-design-governance",
@@ -411,6 +411,25 @@
       "allowed_paths": [],
       "forbidden_paths": [],
       "updated_at": "2026-06-27T18:12:52.874Z"
+    },
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "b4-014-m1j-backtest-date-contract-normalization-repair",
+      "title": "B4.014-M1j backtest date contract normalization repair",
+      "node_type": "implementation",
+      "owner_lane": "artdeco-web-design-governance",
+      "parent": "b4-014-m1-core-runtime-blocker-repair",
+      "status": "implementation-ready",
+      "source_edits_authorized": true,
+      "current_blocker": "",
+      "next_allowed": "land implementation with Git evidence",
+      "function_tree_ref": "unlinked",
+      "freshness": "current-head",
+      "allowed_paths": [
+        "web/backend/app/backtest/backtest_engine.py; web/backend/app/repositories/backtest_repository.py; web/backend/app/api/strategy_mgmt.py; web/backend/app/tasks/backtest_tasks.py; web/backend/tests/test_backtest_tasks_regressions.py; web/backend/tests/test_strategy_mgmt_backtest_regressions.py"
+      ],
+      "forbidden_paths": [],
+      "updated_at": "2026-06-28T12:16:50.797Z"
     }
   ]
 }
