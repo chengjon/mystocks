@@ -103,13 +103,18 @@ export const mockApiClient = {
 
     // 3. Fund Flow
     if (matchesMockRoute(url, '/akshare/market/fund-flow/hsgt-summary')) {
-      const flowData = {
-        hgt: { amount: 28.6, change: 5.2 },
-        sgt: { amount: 30.2, change: 8.9 },
-        northTotal: { amount: 58.8, monthly: 1256 },
-        mainForce: { amount: 126.5, percentage: 68 }
-      };
-      return toMockResult<T>(createMockResponse(flowData));
+      // P0 fix (B4.014, 2026-06-29): mock 契约对齐前端 fundFlowPageData.ts 真相源
+      // (板块/资金方向/成交净买额/指数涨跌幅/交易日 中文宽表).
+      // 真实后端经 src/adapters/akshare/market_adapter/fund_flow.py 透传 akshare
+      // stock_hsgt_fund_flow_summary_em 原始 13 列, 字段名与此处一致.
+      const today = new Date().toISOString().slice(0, 10)
+      const flowRows = [
+        { 交易日: today, 类型: '沪港通', 板块: '沪股通', 资金方向: '北向', 交易状态: '3', 成交净买额: 28.6, 资金净流入: 28.6, 当日资金余额: 525, 上涨数: 930, 持平数: 38, 下跌数: 668, 相关指数: '上证指数', 指数涨跌幅: 0.85 },
+        { 交易日: today, 类型: '沪港通', 板块: '港股通(沪)', 资金方向: '南向', 交易状态: '3', 成交净买额: 18.2, 资金净流入: 18.2, 当日资金余额: 425, 上涨数: 436, 持平数: 30, 下跌数: 146, 相关指数: '恒生指数', 指数涨跌幅: 0.64 },
+        { 交易日: today, 类型: '深港通', 板块: '深股通', 资金方向: '北向', 交易状态: '3', 成交净买额: 30.2, 资金净流入: 30.2, 当日资金余额: 510, 上涨数: 817, 持平数: 35, 下跌数: 1017, 相关指数: '深证成指', 指数涨跌幅: 0.19 },
+        { 交易日: today, 类型: '深港通', 板块: '港股通(深)', 资金方向: '南向', 交易状态: '3', 成交净买额: 12.4, 资金净流入: 12.4, 当日资金余额: 480, 上涨数: 280, 持平数: 22, 下跌数: 110, 相关指数: '恒生指数', 指数涨跌幅: 0.57 },
+      ]
+      return toMockResult<T>(createMockResponse(flowRows))
     }
 
     if (url.includes('/api/market/fund-flow')) {
@@ -140,14 +145,19 @@ export const mockApiClient = {
 
     // 5. Stock Flow Ranking
     if (matchesMockRoute(url, '/akshare/market/fund-flow/big-deal')) {
+      // P0 fix (B4.014, 2026-06-29): mock 契约对齐前端 buildStockRanking 真相源
+      // (symbol/股票简称/成交价格/成交额/大单性质/涨跌幅 中文宽表).
+      // 真实后端经 src/adapters/akshare/market_adapter/fund_flow.py 透传 akshare
+      // stock_fund_flow_big_deal 原始字段 + 股票代码→symbol 重命名.
+      const now = new Date().toISOString().replace('T', ' ').slice(0, 19)
       const stocks = [
-        { code: '600519', name: '贵州茅台', amount: 12.5, change: 2.1 },
-        { code: '300750', name: '宁德时代', amount: 8.9, change: 3.5 },
-        { code: '600028', name: '中国石化', amount: -5.2, change: -1.8 },
-        { code: '600036', name: '招商银行', amount: 6.7, change: 1.2 },
-        { code: '000002', name: '万科A', amount: -3.1, change: -0.9 }
-      ];
-      return toMockResult<T>(createMockResponse(stocks));
+        { 成交时间: now, symbol: '600519', 股票简称: '贵州茅台', 成交价格: 1850.0, 成交量: 70000, 成交额: 12.5, 大单性质: '买盘', 涨跌幅: '2.10%', 涨跌额: 38.2 },
+        { 成交时间: now, symbol: '300750', 股票简称: '宁德时代', 成交价格: 245.0, 成交量: 40000, 成交额: 8.9, 大单性质: '买盘', 涨跌幅: '3.50%', 涨跌额: 8.3 },
+        { 成交时间: now, symbol: '600028', 股票简称: '中国石化', 成交价格: 6.2, 成交量: 950000, 成交额: 5.2, 大单性质: '卖盘', 涨跌幅: '-1.80%', 涨跌额: -0.11 },
+        { 成交时间: now, symbol: '600036', 股票简称: '招商银行', 成交价格: 35.8, 成交量: 200000, 成交额: 6.7, 大单性质: '买盘', 涨跌幅: '1.20%', 涨跌额: 0.42 },
+        { 成交时间: now, symbol: '000002', 股票简称: '万科A', 成交价格: 9.1, 成交量: 380000, 成交额: 3.1, 大单性质: '卖盘', 涨跌幅: '-0.90%', 涨跌额: -0.08 }
+      ]
+      return toMockResult<T>(createMockResponse(stocks))
     }
 
     if (url.includes('/api/monitoring/stock/flow/ranking')) {
