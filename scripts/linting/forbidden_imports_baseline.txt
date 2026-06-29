@@ -1,0 +1,5 @@
+70
+# Phase 1.1 baseline (2026-06-29)
+# Source: scripts/linting/forbidden_imports.py
+# Rule: PR must not increase this count. Phase 2 PRs decrement it.
+# Phase 3 cutoff: switch to --strict mode after baseline reaches 0.

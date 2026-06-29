@@ -15,6 +15,9 @@ DEFAULT_SUPPORTED_CATEGORIES = (
     "DRAGON_TIGER",
     "BLOCK_TRADE",
     "ETF_SPOT",
+    # Phase 1.1 fund-flow domain (B4.014):
+    "NORTHBOUND_FLOW",     # /api/akshare/market/fund-flow/hsgt-summary
+    "NORTHBOUND_HOLDING",  # /api/akshare/market/fund-flow/north-stock/{symbol}
 )
 
 
