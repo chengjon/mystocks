@@ -77,6 +77,21 @@ def _quotes_payload_from_openstock(result: OpenStockFetchResult, symbols: list[s
     )
 
 
+_OPENSTOCK_PERIOD_TO_INTERVAL = {
+    "day": "1d",
+    "daily": "1d",
+    "week": "1w",
+    "weekly": "1w",
+    "month": "1M",
+    "monthly": "1M",
+    "1m": "1m",
+    "5m": "5m",
+    "15m": "15m",
+    "30m": "30m",
+    "60m": "1h",
+}
+
+
 def _normalize_openstock_kline_payload(
     result: OpenStockFetchResult,
     *,
@@ -84,6 +99,17 @@ def _normalize_openstock_kline_payload(
     period: str,
     adjust: str,
 ) -> dict[str, Any]:
+    """Convert OpenStock /data/bars response to the frontend KLineResponse shape.
+
+    Frontend contract (kline.ts):
+        {code, data: {symbol, interval, adjust, candles: [{timestamp, OHLCV}]}}
+    Backend wraps as:
+        {success, stock_code, stock_name, period, adjust,
+         data: {symbol, interval, adjust, candles: [...]}, count, timestamp}
+
+    The candles envelope + `time`→`timestamp` rename lives here so neither
+    OpenStock nor the frontend needs to track the other's shape.
+    """
     payload = result.data
     if isinstance(payload, Mapping):
         rows = payload.get("data") or []
@@ -91,24 +117,54 @@ def _normalize_openstock_kline_payload(
             rows = []
         count_value = payload.get("count", len(rows))
         count = count_value if isinstance(count_value, int) else len(rows)
+        symbol_value = str(payload.get("stock_code") or payload.get("symbol") or stock_code)
+        period_value = str(payload.get("period") or period)
+        adjust_value = str(payload.get("adjust") or adjust or "qfq") or "qfq"
+        interval_value = _OPENSTOCK_PERIOD_TO_INTERVAL.get(period_value, period)
         return {
-            "stock_code": str(payload.get("stock_code") or payload.get("symbol") or stock_code),
+            "stock_code": symbol_value,
             "stock_name": str(payload.get("stock_name") or payload.get("name") or stock_code),
-            "period": str(payload.get("period") or period),
-            "adjust": str(payload.get("adjust") or adjust),
-            "data": rows,
+            "period": period_value,
+            "adjust": adjust_value,
+            "data": {
+                "symbol": symbol_value,
+                "interval": interval_value,
+                "adjust": adjust_value,
+                "candles": [_convert_openstock_bar_to_candle(bar) for bar in rows],
+            },
             "count": count,
         }
 
     rows = payload if isinstance(payload, list) else []
+    interval_value = _OPENSTOCK_PERIOD_TO_INTERVAL.get(period, period)
     return {
         "stock_code": stock_code,
         "stock_name": stock_code,
         "period": period,
-        "adjust": adjust,
-        "data": rows,
+        "adjust": adjust or "qfq",
+        "data": {
+            "symbol": stock_code,
+            "interval": interval_value,
+            "adjust": adjust or "qfq",
+            "candles": [_convert_openstock_bar_to_candle(bar) for bar in rows],
+        },
         "count": len(rows),
     }
+
+
+def _convert_openstock_bar_to_candle(bar: Any) -> dict[str, Any]:
+    """OpenStock bar uses `time`; frontend candle uses `timestamp`."""
+    if not isinstance(bar, Mapping):
+        return {}
+    candle: dict[str, Any] = {}
+    if "time" in bar:
+        candle["timestamp"] = bar["time"]
+    elif "timestamp" in bar:
+        candle["timestamp"] = bar["timestamp"]
+    for field in ("open", "high", "low", "close", "volume", "amount"):
+        if field in bar:
+            candle[field] = bar[field]
+    return candle
 
 
 def _is_market_stock_list_mock_enabled() -> bool:
@@ -608,47 +664,76 @@ async def get_stock_list(
 
 @router.get("/kline", summary="查询K线数据", responses=KLINE_DATA_RESPONSES)
 async def get_kline_data(
-    stock_code: str = Query(..., description="股票代码（6位数字或带交易所后缀）"),
-    period: str = Query(
-        default="daily", description="时间周期: daily/weekly/monthly", pattern=r"^(daily|weekly|monthly)$"
+    stock_code: Optional[str] = Query(None, description="股票代码（6位数字或带交易所后缀，与 symbol 二选一）"),
+    symbol: Optional[str] = Query(None, description="股票代码别名（前端使用），与 stock_code 二选一"),
+    period: Optional[str] = Query(
+        None, description="时间周期: daily/weekly/monthly（与 interval 二选一）"
     ),
-    adjust: str = Query(default="qfq", description="复权类型: qfq/hfq/空字符串", pattern=r"^(qfq|hfq|)$"),
-    start_date: Optional[str] = Query(None, description="开始日期 YYYY-MM-DD"),
-    end_date: Optional[str] = Query(None, description="结束日期 YYYY-MM-DD"),
+    interval: Optional[str] = Query(
+        None, description="时间周期别名（前端使用）: 1d/1w/1M/1m/5m/15m/1h"
+    ),
+    adjust: str = Query(default="qfq", description="复权类型: qfq/hfq/none"),
+    start_date: Optional[str] = Query(None, description="开始日期 YYYY-MM-DD（已接收，暂不透传给 OpenStock）"),
+    end_date: Optional[str] = Query(None, description="结束日期 YYYY-MM-DD（已接收，暂不透传给 OpenStock）"),
 ):
     """
     获取股票K线（蜡烛图）历史数据
 
-    **参数说明**:
-    - stock_code: 股票代码，支持 "600519" 或 "600519.SH" 格式
-    - period:
-      - "daily" (日K线)
-      - "weekly" (周K线)
-      - "monthly" (月K线)
-    - adjust:
-      - "qfq" (前复权，推荐)
-      - "hfq" (后复权)
-      - "" (不复权)
-    - start_date/end_date: 日期范围（可选，默认最近60个交易日）
+    **参数说明（前端友好别名）**:
+    - stock_code / symbol: 股票代码（两者二选一；前端用 symbol）
+    - period / interval: 周期（两者二选一；前端用 interval）
+      - period: daily / weekly / monthly
+      - interval: 1d / 1w / 1M / 1m / 5m / 15m / 1h
+    - adjust: qfq (前复权，推荐) / hfq (后复权) / none (不复权)
+    - start_date/end_date: 日期范围（已接收，当前实现暂不透传给 OpenStock）
 
-    **数据源**: AKShare stock_zh_a_hist()
-    **验证**: P0改进 Task 2 - 使用MarketDataQueryModel验证参数
-    **返回**: K线数据数组，包含OHLCV及技术指标
+    **数据源**: OpenStock /data/bars
+    **返回**: 包含 candles 数组的 KLineResponse 形状
     """
     try:
         from datetime import datetime as dt_convert
 
-        # 参数验证：日期格式验证（但不转换为datetime对象，因为service层期望字符串）
+        # 兼容前端 symbol/interval 别名
+        effective_stock_code = stock_code or symbol
+        if not effective_stock_code:
+            raise ValidationException(
+                detail="必须提供 stock_code 或 symbol 参数", field="stock_code"
+            )
+
+        # 将 interval (前端值域) 翻译为 period (内部值域)；period 优先若同时给出
+        interval_to_period = {
+            "1d": "daily",
+            "1w": "weekly",
+            "1M": "monthly",
+            "1m": "minute_1",
+            "5m": "minute_5",
+            "15m": "minute_15",
+            "1h": "minute_60",
+        }
+        if period:
+            effective_period = period
+        elif interval:
+            effective_period = interval_to_period.get(interval)
+            if not effective_period:
+                raise ValidationException(
+                    detail=f"不支持的 interval 值: {interval}（支持: 1d/1w/1M/1m/5m/15m/1h）",
+                    field="interval",
+                )
+        else:
+            effective_period = "daily"
+
+        # 规范化 adjust：前端 "none" → 内部 ""（OpenStock 端当前忽略，仅回显）
+        effective_adjust = "" if adjust == "none" else adjust
+
+        # 参数验证：日期格式验证（已接收，当前不透传，但保留格式校验）
         if start_date:
             try:
-                # 验证日期格式但不转换
                 dt_convert.strptime(start_date, "%Y-%m-%d")
             except ValueError:
                 raise ValidationException(detail=f"开始日期格式错误: {start_date}，应为 YYYY-MM-DD", field="start_date")
 
         if end_date:
             try:
-                # 验证日期格式但不转换
                 dt_convert.strptime(end_date, "%Y-%m-%d")
             except ValueError:
                 raise ValidationException(detail=f"结束日期格式错误: {end_date}，应为 YYYY-MM-DD", field="end_date")
@@ -666,12 +751,21 @@ async def get_kline_data(
         try:
             client = get_openstock_market_client()
             try:
-                # OpenStock /data/bars 仅接受 day/week/month (或 1m/5m/15m/30m/60m)。
-                # 第一阶段：translate daily/weekly/monthly → day/week/month；adjust 与 start_date/end_date 暂不透传。
-                period_map = {"daily": "day", "weekly": "week", "monthly": "month"}
-                openstock_period = period_map.get(period, "day")
+                # OpenStock /data/bars 接受 day/week/month (或 1m/5m/15m/30m/60m)。
+                # 第一阶段：translate daily/weekly/monthly → day/week/month；
+                #          adjust/start_date/end_date 已接收但暂不透传（OpenStock execute_bars_payload 当前忽略）。
+                period_map = {
+                    "daily": "day",
+                    "weekly": "week",
+                    "monthly": "month",
+                    "minute_1": "1m",
+                    "minute_5": "5m",
+                    "minute_15": "15m",
+                    "minute_60": "60m",
+                }
+                openstock_period = period_map.get(effective_period, "day")
                 openstock_result = await client.fetch_bars(
-                    symbol=stock_code,
+                    symbol=effective_stock_code,
                     period=openstock_period,
                     count=60,
                 )
@@ -679,9 +773,9 @@ async def get_kline_data(
                 await client.aclose()
             result = _normalize_openstock_kline_payload(
                 openstock_result,
-                stock_code=stock_code,
-                period=period,
-                adjust=adjust,
+                stock_code=effective_stock_code,
+                period=effective_period,
+                adjust=effective_adjust,
             )
             # 成功调用，记录成功
             circuit_breaker.record_success()
@@ -692,7 +786,7 @@ async def get_kline_data(
             raise
 
         if result is None:
-            raise NotFoundException(resource="股票K线数据", identifier=stock_code)
+            raise NotFoundException(resource="股票K线数据", identifier=effective_stock_code)
 
         # Validate data availability
         if result.get("count", 0) < 10:

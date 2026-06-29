@@ -83,6 +83,12 @@ def register_api_routes(app: FastAPI, *, use_mock_apis: bool, logger: logging.Lo
             app.include_router(router_modules[key], prefix=config["prefix"], tags=config["tags"])
             logger.info("✅ Registered %s router at %s", key, config["prefix"])
 
+    # B4.014-M1m: Frontend axios baseURL is '/api', so /market/kline resolves to
+    # /api/market/kline. Mount the market router under the unversioned prefix as
+    # an alias to keep the frontend contract stable without touching 22 files.
+    app.include_router(router_modules["market"], prefix="/api/market", tags=["market-alias"])
+    logger.info("✅ Registered market router alias at /api/market")
+
     app.include_router(auth_compat.compat_router, prefix="/api/auth", tags=["auth-compat"])
     app.include_router(akshare_market.router)
 
