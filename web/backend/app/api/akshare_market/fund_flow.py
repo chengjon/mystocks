@@ -427,7 +427,7 @@ async def get_north_fund_stock(
     TODO(B4.014-Phase1.1-batch2): 切换 OpenStock NORTHBOUND_HOLDING.
     """
     return create_error_response(
-        ErrorCodes.INTERNAL_ERROR,
+        ErrorCodes.INTERNAL_SERVER_ERROR,
         f"north-stock/{symbol} 暂不可用: akshare.stock_hsgt_north_acc_flow_in_em "
         f"在 akshare 1.18.60 已移除, 待 OpenStock NORTHBOUND_HOLDING 切换恢复"
     )
