@@ -23,10 +23,14 @@
 - [ ] 3.2 Rewrite `FundFlowMixin.get_stock_hsgt_fund_flow_summary_em(self, start_date, end_date)` to: call `self._openstock_client.fetch("NORTHBOUND_FLOW", params={start_date, end_date})`, translate each row, return a DataFrame matching the akshare-era column shape.
 - [ ] 3.3 Rewrite `FundFlowMixin.get_stock_hsgt_north_acc_flow_in_em(self, symbol)` similarly against `NORTHBOUND_HOLDING`.
 - [ ] 3.4 Revert the endpoint-layer switch in `web/backend/app/api/akshare_market/fund_flow.py` — handlers call the adapter mixin instead of `_build_openstock_client()`. Remove the now-unused `_build_openstock_client` / `_translate_*_row` endpoint helpers (they've been moved to the Mixin).
-- [ ] 3.5 Add Mixin-level unit tests in `tests/adapters/test_fund_flow_mixin.py` with stubbed `OpenStockClient` covering: success, empty data, `OpenStockClientError`. Reuse fixtures from `tests/api/test_fund_flow_openstock.py`.
-- [ ] 3.6 Extend `tests/api/test_fund_flow_openstock.py` (or rename it) — verify the endpoint still produces the same envelope after the Wave-1 refactor (no behavioral regression).
-- [ ] 3.7 Browser verification per `docs/guides/openstock-migration/DOMAIN_MIGRATION_PLAYBOOK.md` §4.2 for `hsgt-summary` and `north-stock/{symbol}` endpoints.
-- [ ] 3.8 Confirm `import akshare as ak` is no longer needed by these two methods (other methods in the file may still need it — full removal waits for Wave 3).
+- [x] 3.5 Add Mixin-level unit tests in `tests/adapters/test_fund_flow_mixin.py` with stubbed `OpenStockClient` covering: success, empty data, `OpenStockClientError`. Reuse fixtures from `tests/api/test_fund_flow_openstock.py.
+  - Done in Wave 0 commit `614290989`: 9 unit tests (3 constructor injection + 3 × success/empty/error for `get_stock_hsgt_fund_flow_summary_em` + 3 × success/empty/error for `get_stock_hsgt_north_acc_flow_in_em`).
+- [x] 3.6 Extend `tests/api/test_fund_flow_openstock.py` (or rename it) — verify the endpoint still produces the same envelope after the Wave-1 refactor (no behavioral regression).
+  - Done in Wave 0 commit `614290989`: 6 API e2e tests cover success/empty/error × (`hsgt-summary` + `north-stock/{symbol}`), monkeypatch target updated to `akshare_market_adapter._openstock_client`.
+- [x] 3.7 Browser verification per `docs/guides/openstock-migration/DOMAIN_MIGRATION_PLAYBOOK.md` §4.2 for `hsgt-summary` and `north-stock/{symbol}` endpoints.
+  - Verified 2026-06-30 against live OpenStock middle-tier at `http://192.168.123.104:8040` (akshare provider, API key auth). Drived Mixin directly in async context (bypassing TestClient's ephemeral-loop issue). Results: Test 1 `hsgt-summary` returned 4 real rows (沪股通/深股通/沪港通/深港通, 2026-06-30), all 5 truth-source columns present (`板块/资金方向/成交净买额/指数涨跌幅/交易日`); Test 2 `north-stock/600519` returned 50 real holding rows from 2017-03-16 onward, all 6 truth-source columns present (`持股日期/持股数量/持股市值/持股比例/增持数量/增持金额`); Test 3 unknown symbol correctly surfaced OpenStock middle-tier error as `INTERNAL_SERVER_ERROR` per Wave 1 contract.
+- [x] 3.8 Confirm `import akshare as ak` is no longer needed by these two methods (other methods in the file may still need it — full removal waits for Wave 3).
+  - Verified 2026-06-30: Wave 1 methods (lines 71–109) contain zero `ak.*` calls. `import akshare as ak` (line 12) is still required by Wave 2/3 methods at lines 124, 162, 199, 236, 274, 314, 348 (7 methods total). Full removal deferred to Wave 3 task 5.5.
 
 ## 4. Wave 2 — switch 4 daily/detail methods (blocked on OpenStock categories)
 
