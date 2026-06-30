@@ -14,23 +14,22 @@ mainline:
 
 classification:
   task_type: "fix"
-  secondary_type: "docs"
-  secondary_change_budget_percent: 30
+  secondary_type: "cleanup"
+  secondary_change_budget_percent: 20
   secondary_allowed_paths:
     - "openspec/changes/migrate-akshare-fundflow-mixin-to-openstock/**"
     - "tests/api/test_fund_flow_openstock.py"
 
 openspec:
   change_id: "migrate-akshare-fundflow-mixin-to-openstock"
-  approval_status: "proposed"
+  approval_status: "pending"
 
 function_tree:
-  domain_id: "data"
+  domain_id: "api"
   node_id: "data-fundflow-backend"
   affected_entrypoints:
-    - "data"
-    - "strategy"
-    - "system"
+    - "api"
+    - "core"
   update_status: "not-needed"
   secondary_domains: []
   exemption_reason: ""
@@ -89,8 +88,8 @@ governance:
   stop_rule_owner: "main"
   stop_rule_sla_hours: 24
   approval:
-    required: false
+    required: true
     approved_by: "main"
     approved_at: "2026-06-30T00:00:00Z"
     approval_note: "auto-generated for PR #489"
-    secondary_approved: false
+    secondary_approved: true
