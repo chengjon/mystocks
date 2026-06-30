@@ -32,9 +32,9 @@
 - [x] 3.8 Confirm `import akshare as ak` is no longer needed by these two methods (other methods in the file may still need it — full removal waits for Wave 3).
   - Verified 2026-06-30: Wave 1 methods (lines 71–109) contain zero `ak.*` calls. `import akshare as ak` (line 12) is still required by Wave 2/3 methods at lines 124, 162, 199, 236, 274, 314, 348 (7 methods total). Full removal deferred to Wave 3 task 5.5.
 
-## 4. Wave 2 — switch 4 daily/detail methods (blocked on OpenStock categories)
+## 4. Wave 2 — switch 4 daily/detail methods (partially blocked)
 
-> **Blocked**: requires OpenStock to expose `NORTHBOUND_DAILY_HISTORY`, `SOUTHBOUND_DAILY_HISTORY`, `SOUTHBOUND_HOLDING`, `NORTHBOUND_FLOW_DETAIL`.
+> **Status (re-audited 2026-06-30)**: see `design.md` → "Wave 2/3 category re-audit". 3 methods truly blocked (need new OpenStock categories), 1 method (4.5) has a candidate with semantic mismatch requiring design decision.
 
 - [ ] 4.1 Confirm OpenStock category `NORTHBOUND_FLOW_DETAIL` is live and returns expected fields.
 - [ ] 4.2 Confirm `NORTHBOUND_DAILY_HISTORY` is live.
@@ -45,9 +45,9 @@
 - [ ] 4.7 Rewrite `get_stock_hsgt_south_net_flow_in_em` against `SOUTHBOUND_DAILY_HISTORY` + tests + browser verify.
 - [ ] 4.8 Rewrite `get_stock_hsgt_south_acc_flow_in_em` against `SOUTHBOUND_HOLDING` + tests + browser verify.
 
-## 5. Wave 3 — switch final 2 methods + remove akshare import
+## 5. Wave 3 — switch final 2 methods + remove akshare import (partially blocked)
 
-> **Blocked**: requires OpenStock categories `HSGT_INDIVIDUAL_HOLDING`, `MARKET_BIG_DEAL_RANK`.
+> **Status (re-audited 2026-06-30)**: see `design.md` → "Wave 2/3 category re-audit". Both methods (5.3/5.4) have live category candidates but with semantic mismatch — design decision required before implementation.
 
 - [ ] 5.1 Confirm `HSGT_INDIVIDUAL_HOLDING` is live.
 - [ ] 5.2 Confirm `MARKET_BIG_DEAL_RANK` is live.

@@ -2,9 +2,9 @@
 
 **日期**: 2026-06-30
 **作者**: Claude (session 5bacdfb1)
-**状态**: 已应用审核修正（BLOCK_TRADE 误判已撤回）
+**状态**: v3 — Wave 1 已完成 + 中台缺口实测修正（6→3 硬需求 + 3 设计决策）
 **关联提案**: `openspec/changes/migrate-akshare-fundflow-mixin-to-openstock/` (PR #488)
-**关联分支**: `feat/b4-014-fundflow-mixin-openspec-proposal` (HEAD `cafa9429c`)
+**关联分支**: `feat/b4-014-fundflow-mixin-openspec-proposal` (HEAD `2e12e593d`)
 **前序文档**:
 - `docs/reports/analysis/2026-06-30-b4-014-branch-b-strategy-realignment.md` (v2)
 - `docs/reports/analysis/2026-06-30-b4-014-branch-b-strategy-realignment-REVIEW.md` (CodeWhale 审核)
@@ -45,6 +45,17 @@ DEFAULT_SUPPORTED_CATEGORIES = (
 - **撤回**: 用户基于先前审计给出的 P0 优先级（"补充 BLOCK_TRADE 至 DEFAULT_SUPPORTED_CATEGORIES"）
 - **保留**: 其他审计发现（架构分歧、akshare 残留、缺失中台类别、注入规范技术债）经复核均成立
 - **改进**: 本文档把所有可量化清单（调用点、文件、行号、类别对照）以可验证表格呈现，作为 PR #488 评审与中台需求同步的事实底稿
+
+### 0.4 v3 修正（2026-06-30 实测，会话 5bacdfb1）
+
+**触发**: Wave 1 完工后，对活中台 `http://192.168.123.104:8040` 70 个已注册类别做 POST `/data/fetch` 实测，发现 §2.3 与 §5 P2 的"6 个类别全阻塞"前提部分错误。
+
+**修正项**:
+1. `BLOCK_TRADE` 不能映射 `get_stock_fund_flow_big_deal` — 业务语义不同（大宗交易 vs 盘口大单）。正确候选是 `DRAGON_TIGER`，但同样存在语义差异（龙虎榜 vs 大单成交），归入"设计决策"而非"可直接启动"。
+2. §5 P2 的 6 项缺失修正为：3 项真正缺失（P2.A）+ 3 项有候选但语义不同（P2.B）。
+3. `HSGT_HOLDINGS` / `MARKET_SENTIMENT` 撤出 P2（`get_stock_cyq_em` 不在本提案范围）。
+
+**保留**: §1（OpenStockClient 调用链路）、§3（akshare 残留台账）、§4（架构 D1/D2/D3 决策记录）、§6（参考文件清单）均不变。
 
 ---
 
@@ -128,22 +139,26 @@ DEFAULT_SUPPORTED_CATEGORIES = (
 
 | Mixin 方法（fund_flow.py） | 行号 | 提案映射类别 | 中台支持 | 状态 |
 |---------------------------|-----|-------------|---------|------|
-| `get_stock_hsgt_fund_flow_summary_em` | L23 | `NORTHBOUND_FLOW` | ✅ 白名单 | **Wave 1 可启动** |
-| `get_stock_hsgt_north_acc_flow_in_em` | L183（参数 symbol） | `NORTHBOUND_HOLDING` | ✅ 白名单 | **Wave 1 可启动** |
-| `get_stock_hsgt_fund_flow_detail_em` | L56 | 待定（建议 `NORTHBOUND_FLOW_DETAIL`） | ❌ 缺失 | Wave 2 阻塞 |
-| `get_stock_hsgt_north_net_flow_in_em` | L94 | 待定（建议 `NORTHBOUND_NET_FLOW`） | ❌ 缺失 | Wave 2 阻塞 |
-| `get_stock_hsgt_south_net_flow_in_em` | L131 | 待定（建议 `SOUTHBOUND_NET_FLOW`） | ❌ 缺失 | Wave 2 阻塞 |
-| `get_stock_hsgt_south_acc_flow_in_em` | L183 | 待定（建议 `SOUTHBOUND_HOLDING`） | ❌ 缺失 | Wave 2 阻塞 |
-| `get_stock_hsgt_hold_stock_em` | L221 | 待定（建议 `HSGT_HOLDINGS`） | ❌ 缺失 | Wave 2 阻塞 |
-| `get_stock_fund_flow_big_deal` | L261 | 已声明 `BLOCK_TRADE` | ✅ 白名单 | Wave 3 可启动 |
-| `get_stock_cyq_em`（选股宝情绪） | L295 | 待定（建议 `MARKET_SENTIMENT`） | ❌ 缺失 | Wave 3 阻塞 |
+| `get_stock_hsgt_fund_flow_summary_em` | L23 | `NORTHBOUND_FLOW` | ✅ 白名单 + Wave 1 已迁移 (commit `614290989`) | **Wave 1 完成** |
+| `get_stock_hsgt_north_acc_flow_in_em` | L93 | `NORTHBOUND_HOLDING` | ✅ 白名单 + Wave 1 已迁移 (commit `614290989`) | **Wave 1 完成** |
+| `get_stock_hsgt_fund_flow_detail_em` | L115 | `NORTHBOUND_FLOW_DETAIL` (原计划) | ⚠️ `FUND_FLOW` 存在但语义不同（个股 vs 大盘） | Wave 2 — 设计决策 |
+| `get_stock_hsgt_north_net_flow_in_em` | L153 | `NORTHBOUND_DAILY_HISTORY` (原计划) | ❌ 真正缺失 | Wave 2 — 阻塞 |
+| `get_stock_hsgt_south_net_flow_in_em` | L190 | `SOUTHBOUND_DAILY_HISTORY` (原计划) | ❌ 真正缺失 | Wave 2 — 阻塞 |
+| `get_stock_hsgt_south_acc_flow_in_em` | L227 | `SOUTHBOUND_HOLDING` (原计划) | ❌ 真正缺失 | Wave 2 — 阻塞 |
+| `get_stock_hsgt_hold_stock_em` | L265 | `HSGT_INDIVIDUAL_HOLDING` (原计划) | ⚠️ `INSTITUTION_HOLDING` 存在但语义不同（机构 vs 参与者） | Wave 3 — 设计决策 |
+| `get_stock_fund_flow_big_deal` | L305 | `MARKET_BIG_DEAL_RANK` (原计划) | ⚠️ `DRAGON_TIGER` 存在但语义不同（龙虎榜 vs 大单成交） | Wave 3 — 设计决策 |
 
-**统计**:
-- ✅ 可立即启动: **3 个方法**（NORTHBOUND_FLOW × 1, NORTHBOUND_HOLDING × 1, BLOCK_TRADE × 1）
-- ❌ 阻塞中台: **6 个方法**（需 OpenStock 中台扩展 6 个新类别）
-- ⚠️ Wave 1 实际可启动范围 = 2 个方法（提案原计划），BLOCK_TRADE 可独立作为 Wave 3 的起点
+> **注**: `get_stock_cyq_em` (筹码分布) 不在本提案范围内（独立 Mixin 域）。
 
-**结论**: 提案 Wave 1（2 方法）= 真正可立即执行；Wave 2（4 方法）= 阻塞中台；Wave 3（2 方法，含 `akshare` import 禁用）= 部分阻塞。
+**修正记录（v2 → v3, 2026-06-30 实测）**: 原表 v2 声明 `get_stock_fund_flow_big_deal` → `BLOCK_TRADE` 已就绪、Wave 3 可启动 — 这是错的。`BLOCK_TRADE` 是大宗交易（机构间场外），与 `stock_fund_flow_big_deal`（盘口大单成交）业务语义不同，**不能直接替代**。正确映射候选是 `DRAGON_TIGER`（龙虎榜），但同样存在语义差异，需要设计决策。
+
+**统计（v3 实测修正后）**:
+- ✅ Wave 1 完成: **2 个方法**（已合并 commit `614290989`，PR #488 等待评审）
+- ❌ Wave 2 真正阻塞: **3 个方法**（4.6/4.7/4.8 — 需 OpenStock 中台扩展 3 个新类别）
+- ⚠️ Wave 2/3 设计决策: **3 个方法**（4.5/5.3/5.4 — 中台有候选类别但语义不同，需对齐前端契约）
+- 修正前 (v2) 错误声称的 BLOCK_TRADE 已就绪、6 个全阻塞均不成立
+
+**结论**: 提案 Wave 1（2 方法）已完成；Wave 2（4 方法）= 3 个硬阻塞 + 1 个设计决策；Wave 3（2 方法）= 2 个设计决策；`import akshare` 移除仍需 Wave 2/3 全部完工。
 
 ---
 
@@ -290,16 +305,32 @@ OpenStock 中台
 
 ### P2 — OpenStock 中台需求同步（Wave 2/3 解阻塞前提）
 
-| # | 缺失类别 | 对应 Mixin 方法 | 业务语义 |
-|---|---------|----------------|---------|
-| P2.1 | `NORTHBOUND_FLOW_DETAIL` | `get_stock_hsgt_fund_flow_detail_em` | 北向资金明细 |
-| P2.2 | `NORTHBOUND_NET_FLOW` | `get_stock_hsgt_north_net_flow_in_em` | 北向净流入（时间序列） |
-| P2.3 | `SOUTHBOUND_NET_FLOW` | `get_stock_hsgt_south_net_flow_in_em` | 南向净流入（时间序列） |
-| P2.4 | `SOUTHBOUND_HOLDING` | `get_stock_hsgt_south_acc_flow_in_em` | 南向持股（按 symbol） |
-| P2.5 | `HSGT_HOLDINGS` | `get_stock_hsgt_hold_stock_em` | HSGT 持股榜 |
-| P2.6 | `MARKET_SENTIMENT` | `get_stock_cyq_em` | 选股宝情绪 |
+**v3 修正（2026-06-30 实测后）**: 原清单 6 项中，3 项有等价中台类别，仅 3 项真正缺失。
 
-**动作**: 把此 6 项类别需求清单同步给 OpenStock 中台维护方，等待中台扩展后再启动 Wave 2/3。
+#### P2.A — 真正缺失，需中台新增（3 项，硬阻塞 Wave 2）
+
+| # | 缺失类别 | 对应 Mixin 方法 | 业务语义 | 实测验证 |
+|---|---------|----------------|---------|---------|
+| P2.A.1 | `NORTHBOUND_DAILY_HISTORY` | `get_stock_hsgt_north_net_flow_in_em` (4.6) | 北向资金每日净流入时间序列 | `POST /data/fetch` 70 类别中无匹配 |
+| P2.A.2 | `SOUTHBOUND_DAILY_HISTORY` | `get_stock_hsgt_south_net_flow_in_em` (4.7) | 南向资金每日净流入时间序列 | 同上 |
+| P2.A.3 | `SOUTHBOUND_HOLDING` | `get_stock_hsgt_south_acc_flow_in_em` (4.8) | 南向资金持股明细（按 symbol） | 同上（`INSTITUTION_HOLDING` 语义不符） |
+
+#### P2.B — 有候选类别但语义不同，需设计决策（3 项）
+
+| # | akshare 方法 | 中台候选 | 语义差异 | 决策路径 |
+|---|-------------|---------|---------|---------|
+| P2.B.1 | `get_stock_hsgt_fund_flow_detail_em` (4.5) | `FUND_FLOW`（个股，120 行 @600519） | FUND_FLOW 是个股主力/超大单/大单/中单/小单净流入；原方法是沪深港通大盘明细 | (a) 重谈前端契约 (b) 中台新增 `NORTHBOUND_FLOW_DETAIL` |
+| P2.B.2 | `get_stock_hsgt_hold_stock_em` (5.3) | `INSTITUTION_HOLDING`（2115 行 @600519） | INSTITUTION_HOLDING 是机构持仓（fund/holder_count）；原方法是沪深港通参与者持股（participant_name/market_type） | (a) 重谈前端契约 (b) 中台新增 `HSGT_INDIVIDUAL_HOLDING` |
+| P2.B.3 | `get_stock_fund_flow_big_deal` (5.4) | `DRAGON_TIGER`（2115 行 @2026-06） | DRAGON_TIGER 是龙虎榜（top trader 排名）；原方法是盘口大单成交 | (a) 重谈前端契约 (b) 中台新增 `MARKET_BIG_DEAL_RANK` |
+
+**修正撤回**: v2 清单中的 `HSGT_HOLDINGS`（P2.5）与 `MARKET_SENTIMENT`（P2.6，对应 `get_stock_cyq_em`）不在本提案范围内，从 P2 移除。`get_stock_cyq_em`（筹码分布）属于独立 Mixin 域。
+
+**推荐处置（默认）**: P2.B 全部走路径 (b) — 中台新增类别匹配 akshare-era 语义。理由：
+1. 前端契约是真相源，不应为迁移而变更
+2. 已确认中台有新增类别的能力（70 个已上线）
+3. (a) 路径会引入前端工作 + 风险扩散
+
+**动作**: 把 P2.A 的 3 项硬需求 + P2.B 的 3 项设计决策同步给 OpenStock 中台维护方。
 
 ### P3 — 注入规范重构（架构一致性）
 
@@ -351,19 +382,19 @@ OpenStock 中台
 
 | 维度 | 状态 |
 |------|------|
-| 提案 Wave 1 可执行性 | ✅ 2 个方法（NORTHBOUND_FLOW + NORTHBOUND_HOLDING）有中台支持，可立即启动 |
-| 提案 Wave 2 可执行性 | ❌ 4 个方法阻塞，需中台扩展 4 个新类别 |
-| 提案 Wave 3 可执行性 | ⚠️ 部分阻塞，BLOCK_TRADE 可启动，MARKET_SENTIMENT 阻塞 |
-| 架构方向（提案 vs 现状） | ⚠️ 服务层方案已落地，与提案 Mixin 方案偏离，需 P1 决策 |
-| 注入规范一致性 | ❌ 三种形态并存，技术债 |
-| 仓库 akshare 残留 | 25 文件，Task #11 仅覆盖 1/25（fund_flow Mixin） |
+| 提案 Wave 1 执行性 | ✅ **已完成**（commit `614290989`，2 方法已迁移，PR #488 评审中） |
+| 提案 Wave 2 执行性 | ⚠️ **3 方法硬阻塞 + 1 方法待设计决策**（v3 修正：原 v2 声明"4 方法全阻塞"是错的） |
+| 提案 Wave 3 执行性 | ⚠️ **2 方法待设计决策**（v3 修正：原 v2 声明"BLOCK_TRADE 可启动"是错的，BLOCK_TRADE 语义不符） |
+| 架构方向（提案 vs 现状） | ✅ **D1 已选定**（Mixin 层方案，Wave 0 抬升已落地） |
+| 注入规范一致性 | ❌ 三种形态并存，技术债（P3 待处理） |
+| 仓库 akshare 残留 | 25 文件，Task #11 覆盖 1/25（fund_flow Mixin）；Wave 1 后已减 2 个 ak.* 调用点 |
 | 提案 spec 准确性 | ✅ `openspec validate --strict` 通过，spec 是 SOT |
 | PR #488 合并阻塞 | 仅人工 review，无技术阻塞 |
 
 **下一步建议**:
-1. PR #488 评审期间决策 §4.4 D1/D2/D3 路径（架构方向）
-2. 把 §5 P2 的 6 项类别需求清单同步给 OpenStock 中台维护方
-3. PR #488 合并后，新会话基于 main 干净分支启动 Wave 1（按 P4.1-P4.4 流程）
+1. PR #488 评审期间，把 v3 实测修正告知 reviewer（中台缺口从 6 项修正为 3 项硬需求 + 3 项设计决策）
+2. 把 §5 P2.A 的 3 项硬需求 + P2.B 的 3 项设计决策同步给 OpenStock 中台维护方
+3. PR #488 合并后，新提案推进 Wave 2/3（避免单 PR 承载过多变更）
 4. wip/root-dirty-20260403 治理与 OpenStock 议题解耦，独立会话处理
 
 ---

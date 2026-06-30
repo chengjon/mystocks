@@ -143,14 +143,44 @@ Wave 1 (this proposal, unblocked):
 3. Move translation functions into Mixin; rewrite 2 methods; revert endpoint-layer switch (tasks §3)
 4. Tests + browser verify (tasks §3.5–3.7)
 
-Wave 2 (blocked — OpenStock categories):
+Wave 2 (partially blocked — see "Wave 2/3 category re-audit" below):
 
 5. Per-method: confirm category live → rewrite method → unit test → API test → browser verify
 6. Each method is a separate commit so partial progress is preserved if OpenStock rollout staggers
 
-Wave 3 (blocked — final 2 categories):
+Wave 3 (partially blocked — see "Wave 2/3 category re-audit" below):
 
-7. Final 2 methods + remove `import akshare` + update lint rule (tasks §5)
+7. Remaining methods + remove `import akshare` + update lint rule (tasks §5)
+
+### Wave 2/3 category re-audit (2026-06-30)
+
+**Background**: The original `tasks.md` §4/§5 marked all 6 remaining methods as "blocked on OpenStock categories". A live probe against the running OpenStock middle-tier at `http://192.168.123.104:8040` (70 categories registered) revealed this premise was partially wrong: only 3 categories are truly missing, the other 3 have live equivalents.
+
+**Method**: POST `/data/fetch` with valid params against every candidate category; confirm field shape matches the akshare-era method contract before declaring equivalence.
+
+| Method | Original plan | Live equivalent (verified 2026-06-30) | Status |
+|--------|--------------|---------------------------------------|--------|
+| `get_stock_hsgt_fund_flow_detail_em` (4.5) | `NORTHBOUND_FLOW_DETAIL` | `FUND_FLOW` (per-symbol, 120 rows on 600519) | ⚠️ Candidate exists, **field semantics differ** — `FUND_FLOW` returns per-share main/super-large/large/medium/small net inflow, while `stock_hsgt_fund_flow_detail_em` returns market-wide 北向/南向 detail. Need design decision: align to per-share semantics (breaks frontend contract) or request new category. |
+| `get_stock_hsgt_north_net_flow_in_em` (4.6) | `NORTHBOUND_DAILY_HISTORY` | **Truly missing** — no category exposes north-bound daily time series | ❌ Blocked |
+| `get_stock_hsgt_south_net_flow_in_em` (4.7) | `SOUTHBOUND_DAILY_HISTORY` | **Truly missing** — no category exposes south-bound daily time series | ❌ Blocked |
+| `get_stock_hsgt_south_acc_flow_in_em` (4.8) | `SOUTHBOUND_HOLDING` | **Truly missing** — only `INSTITUTION_HOLDING` (机构持仓, different semantic) and `NORTHBOUND_HOLDING` exist | ❌ Blocked |
+| `get_stock_hsgt_hold_stock_em` (5.3) | `HSGT_INDIVIDUAL_HOLDING` | `INSTITUTION_HOLDING` (2115 rows on 600519@2025-12-31) | ⚠️ Candidate exists, **field semantics differ** — `INSTITUTION_HOLDING` returns 机构持仓 (fund/holder_count/holding_change), while `stock_hsgt_hold_stock_em` returns 沪深港通参与者持股 (participant_name/market_type). Need design decision. |
+| `get_stock_fund_flow_big_deal` (5.4) | `MARKET_BIG_DEAL_RANK` | `DRAGON_TIGER` (2115 rows on 2026-06-01..06-30) | ⚠️ Candidate exists, **field semantics differ** — `DRAGON_TIGER` is the龙虎榜 (top traders/seat rankings), while `stock_fund_flow_big_deal` is大单成交 (per-share big-deal flow). Different data, cannot directly substitute. |
+
+**Revised gap summary**:
+
+- **3 truly missing categories** (block Wave 2 methods 4.6/4.7/4.8): `NORTHBOUND_DAILY_HISTORY`, `SOUTHBOUND_DAILY_HISTORY`, `SOUTHBOUND_HOLDING`. These are the 沪深港通 daily time series and southbound holding detail — must be added by OpenStock maintainers.
+- **3 candidates with semantic mismatch** (Wave 2 method 4.5 + Wave 3 methods 5.3/5.4): live categories exist but encode different business semantics. Direct substitution would break frontend contracts. Need either:
+  - (a) Frontend contract renegotiation to consume the new semantic, or
+  - (b) New OpenStock categories that match the akshare-era semantics.
+
+**Implication for tasks.md**: §4 "Blocked" header is no longer accurate (Wave 2 is partially blocked, not fully blocked). §5 likewise. Tasks 4.5/5.3/5.4 require design decisions before they can be implemented against the existing candidates. Tasks 4.6/4.7/4.8 remain hard-blocked.
+
+**Action items**:
+
+1. Sync the revised gap summary to OpenStock maintainers — 3 missing categories still need to be added.
+2. For the 3 semantic-mismatch candidates, decide (a) renegotiate frontend contract vs (b) request new categories. Default recommendation: (b) — frontend contracts are truth-source, OpenStock should provide equivalent semantics.
+3. Update tasks.md §4/§5 headers to reflect partial-blocked status.
 
 Closeout:
 
