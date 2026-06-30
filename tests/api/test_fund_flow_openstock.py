@@ -1,19 +1,19 @@
-"""Phase 1.1 batch 2 API e2e tests for fund_flow OpenStock switch (B4.014).
+"""Phase 1.1 / Wave 1 API e2e tests for fund_flow OpenStock switch (B4.014).
 
 Verifies that the two switched endpoints (`hsgt-summary` and
 `north-stock/{symbol}`) correctly:
-1. Invoke OpenStockClient.fetch with the right category and params.
+1. Invoke FundFlowMixin (via AkshareMarketDataAdapter), which delegates to
+   OpenStockClient.fetch with the right category and params.
 2. Translate OpenStock normalized fields into the frontend truth-source
    contract (Chinese wide-table).
 3. Propagate `source=openstock` and `provider=akshare` provenance.
 4. Return DATA_NOT_FOUND when OpenStock yields an empty list.
 5. Return INTERNAL_SERVER_ERROR when OpenStockClient raises.
 
-Scope decision: these tests stub the OpenStockClient at the boundary
-the endpoint actually uses (`app.api.akshare_market.fund_flow._build_openstock_client`)
-to keep the test hermetic while still exercising the FastAPI request →
-response pipeline end-to-end (dependency override for `get_current_user`,
-real router, real Pydantic response shaping).
+Scope: these tests stub ``AkshareMarketDataAdapter._openstock_client``
+so the adapter's Mixin methods use a fake client.  The FastAPI
+request → response pipeline is exercised end-to-end (dependency override
+for ``get_current_user``, real router, real Pydantic response shaping).
 """
 
 from __future__ import annotations
@@ -34,6 +34,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from app.api.akshare_market import router
+from app.api.akshare_market.base import akshare_market_adapter
 from app.core.security import User, get_current_user
 from app.services.openstock_client import (
     OpenStockClientError,
@@ -80,7 +81,8 @@ def _result(rows: list[dict[str, Any]], data_category: str) -> OpenStockFetchRes
 def test_hsgt_summary_translates_openstock_northbound_flow_to_chinese_wide_table(
     api_client, monkeypatch
 ):
-    """Endpoint should call OpenStockClient with NORTHBOUND_FLOW and translate
+    """Endpoint should delegate to FundFlowMixin, which calls
+    self._openstock_client.fetch(NORTHBOUND_FLOW) and translates
     the normalized fields into the frontend truth-source contract."""
     rows = [
         {
@@ -111,12 +113,8 @@ def test_hsgt_summary_translates_openstock_northbound_flow_to_chinese_wide_table
 
     fake_client = MagicMock()
     fake_client.fetch = AsyncMock(return_value=_result(rows, "NORTHBOUND_FLOW"))
-    fake_client.aclose = AsyncMock()
 
-    monkeypatch.setattr(
-        "app.api.akshare_market.fund_flow._build_openstock_client",
-        lambda: fake_client,
-    )
+    monkeypatch.setattr(akshare_market_adapter, "_openstock_client", fake_client)
 
     resp = api_client.get(
         "/api/akshare/market/fund-flow/hsgt-summary",
@@ -148,12 +146,11 @@ def test_hsgt_summary_translates_openstock_northbound_flow_to_chinese_wide_table
     assert first["关联指数"] == "上证指数"
     assert first["同期上涨家数"] == 930
 
-    # Verify the client was actually called with the right category + params
+    # Verify the Mixin called fetch with the right category + params
     fake_client.fetch.assert_awaited_once_with(
         "NORTHBOUND_FLOW",
         params={"start_date": "2026-06-20", "end_date": "2026-06-29"},
     )
-    fake_client.aclose.assert_awaited_once()
 
 
 def test_hsgt_summary_empty_openstock_payload_returns_data_not_found(
@@ -163,12 +160,8 @@ def test_hsgt_summary_empty_openstock_payload_returns_data_not_found(
     a DATA_NOT_FOUND error (HTTP 200 with success=False per project envelope)."""
     fake_client = MagicMock()
     fake_client.fetch = AsyncMock(return_value=_result([], "NORTHBOUND_FLOW"))
-    fake_client.aclose = AsyncMock()
 
-    monkeypatch.setattr(
-        "app.api.akshare_market.fund_flow._build_openstock_client",
-        lambda: fake_client,
-    )
+    monkeypatch.setattr(akshare_market_adapter, "_openstock_client", fake_client)
 
     resp = api_client.get(
         "/api/akshare/market/fund-flow/hsgt-summary",
@@ -190,12 +183,8 @@ def test_hsgt_summary_openstock_client_error_returns_internal_error(
     fake_client.fetch = AsyncMock(
         side_effect=OpenStockClientError("simulated upstream timeout")
     )
-    fake_client.aclose = AsyncMock()
 
-    monkeypatch.setattr(
-        "app.api.akshare_market.fund_flow._build_openstock_client",
-        lambda: fake_client,
-    )
+    monkeypatch.setattr(akshare_market_adapter, "_openstock_client", fake_client)
 
     resp = api_client.get(
         "/api/akshare/market/fund-flow/hsgt-summary",
@@ -206,7 +195,6 @@ def test_hsgt_summary_openstock_client_error_returns_internal_error(
     payload = resp.json()
     assert payload["success"] is False
     assert payload["error"]["code"] == "INTERNAL_SERVER_ERROR"
-    fake_client.aclose.assert_awaited_once()
 
 
 # ---------------------------------------------------------------------------
@@ -217,8 +205,9 @@ def test_hsgt_summary_openstock_client_error_returns_internal_error(
 def test_north_stock_translates_openstock_northbound_holding_to_chinese_wide_table(
     api_client, monkeypatch
 ):
-    """Endpoint should call OpenStockClient with NORTHBOUND_HOLDING and
-    translate per-share holding rows into the akshare-era Chinese contract."""
+    """Endpoint should delegate to FundFlowMixin, which calls
+    self._openstock_client.fetch(NORTHBOUND_HOLDING) and translates
+    per-share holding rows into the akshare-era Chinese contract."""
     rows = [
         {
             "trade_date": "2017-03-16",
@@ -246,12 +235,8 @@ def test_north_stock_translates_openstock_northbound_holding_to_chinese_wide_tab
 
     fake_client = MagicMock()
     fake_client.fetch = AsyncMock(return_value=_result(rows, "NORTHBOUND_HOLDING"))
-    fake_client.aclose = AsyncMock()
 
-    monkeypatch.setattr(
-        "app.api.akshare_market.fund_flow._build_openstock_client",
-        lambda: fake_client,
-    )
+    monkeypatch.setattr(akshare_market_adapter, "_openstock_client", fake_client)
 
     resp = api_client.get("/api/akshare/market/fund-flow/north-stock/600519")
 
@@ -282,7 +267,7 @@ def test_north_stock_translates_openstock_northbound_holding_to_chinese_wide_tab
     assert first["持股比例"] == pytest.approx(5.87)
     assert first["收盘价"] == pytest.approx(374.77)
 
-    # Verify the upstream call passed the symbol through to NORTHBOUND_HOLDING
+    # Verify the Mixin called fetch with the right category + params
     fake_client.fetch.assert_awaited_once_with(
         "NORTHBOUND_HOLDING", params={"symbol": "600519"}
     )
@@ -295,12 +280,8 @@ def test_north_stock_empty_openstock_payload_returns_data_not_found(
     payload (matches the akshare-era contract)."""
     fake_client = MagicMock()
     fake_client.fetch = AsyncMock(return_value=_result([], "NORTHBOUND_HOLDING"))
-    fake_client.aclose = AsyncMock()
 
-    monkeypatch.setattr(
-        "app.api.akshare_market.fund_flow._build_openstock_client",
-        lambda: fake_client,
-    )
+    monkeypatch.setattr(akshare_market_adapter, "_openstock_client", fake_client)
 
     resp = api_client.get("/api/akshare/market/fund-flow/north-stock/000000")
 
@@ -319,12 +300,8 @@ def test_north_stock_openstock_client_error_returns_internal_error(
     fake_client.fetch = AsyncMock(
         side_effect=OpenStockClientError("upstream 502 from OpenStock")
     )
-    fake_client.aclose = AsyncMock()
 
-    monkeypatch.setattr(
-        "app.api.akshare_market.fund_flow._build_openstock_client",
-        lambda: fake_client,
-    )
+    monkeypatch.setattr(akshare_market_adapter, "_openstock_client", fake_client)
 
     resp = api_client.get("/api/akshare/market/fund-flow/north-stock/600519")
 

@@ -1,88 +1,14 @@
 """
 资金流向路由 (Fund Flow)
 """
-import os
 
 from fastapi import APIRouter, Depends, Path, Query
 from app.core.responses import ErrorCodes, create_error_response, create_success_response
 from app.core.security import User, get_current_user
-from app.services.openstock_client import (
-    OpenStockClient,
-    OpenStockClientConfig,
-    OpenStockClientError,
-)
+from app.services.openstock_client import OpenStockClientError
 from .base import akshare_market_adapter
 
 router = APIRouter()
-
-DEFAULT_OPENSTOCK_BASE_URL = "http://192.168.123.104:8040"
-
-
-def _build_openstock_client() -> OpenStockClient:
-    """Build an OpenStockClient from environment.
-
-    Mirrors `market_data_request.get_openstock_market_client` so endpoint-layer
-    switches share the same configuration source.
-    """
-    base_url = (
-        os.getenv("OPENSTOCK_BASE_URL")
-        or os.getenv("OPENSTOCK_API_BASE_URL")
-        or DEFAULT_OPENSTOCK_BASE_URL
-    ).strip()
-    try:
-        timeout_seconds = float(os.getenv("OPENSTOCK_TIMEOUT_SECONDS", "5.0"))
-    except ValueError:
-        timeout_seconds = 5.0
-    api_key = os.getenv("OPENSTOCK_API_KEY", "").strip() or None
-    return OpenStockClient(
-        OpenStockClientConfig(
-            base_url=base_url or DEFAULT_OPENSTOCK_BASE_URL,
-            timeout_seconds=timeout_seconds,
-            api_key=api_key,
-        )
-    )
-
-
-def _translate_northbound_flow_row(record: dict) -> dict:
-    """Translate OpenStock NORTHBOUND_FLOW row → frontend truth-source contract.
-
-    Truth source: `web/frontend/src/views/data/fundFlowPageData.ts` consumes
-    `板块 / 资金方向 / 成交净买额 / 指数涨跌幅 / 交易日`.
-    """
-    return {
-        "板块": record.get("board_name"),
-        "资金方向": record.get("fund_direction"),
-        "成交净买额": record.get("net_buy_amount"),
-        "指数涨跌幅": record.get("index_change_pct"),
-        "交易日": record.get("trade_date"),
-        # Preserved extra fields for downstream observability (not consumed by frontend):
-        "同期上涨家数": record.get("up_count"),
-        "同期下跌家数": record.get("down_count"),
-        "同期平盘家数": record.get("flat_count"),
-        "关联指数": record.get("related_index"),
-        "资金净流入": record.get("fund_net_inflow"),
-    }
-
-
-def _translate_northbound_holding_row(record: dict, symbol: str) -> dict:
-    """Translate OpenStock NORTHBOUND_HOLDING row → frontend-friendly columns.
-
-    Frontend FundFlow.vue currently does not consume north-stock; this contract
-    mirrors the akshare predecessor (Chinese wide-table) for parity with future
-    consumer code and preserves OpenStock richer fields.
-    """
-    return {
-        "symbol": symbol,
-        "持股日期": record.get("trade_date"),
-        "收盘价": record.get("close"),
-        "涨跌幅": record.get("change_pct"),
-        "持股数量": record.get("holding_shares"),
-        "持股市值": record.get("holding_market_cap"),
-        "持股比例": record.get("holding_shares_ratio"),
-        "增持数量": record.get("add_shares"),
-        "增持金额": record.get("add_amount"),
-        "持股市值变化": record.get("holding_market_cap_change"),
-    }
 
 
 def _success_response_spec(description: str, example: dict) -> dict[int, dict]:
@@ -358,32 +284,21 @@ async def get_hsgt_fund_flow_summary(
     """
     获取沪深港通资金流向汇总 (OpenStock NORTHBOUND_FLOW).
 
-    Phase 1.1 batch 2 (B4.014, 2026-06-29): 切换至 OpenStock. 字段契约为
-    前端真相源 `fundFlowPageData.ts` 期望的中文宽表 (`板块/资金方向/成交净买额/
-    指数涨跌幅/交易日`), 由 OpenStock 标准字段经 `board_name/fund_direction/
-    net_buy_amount/index_change_pct/trade_date` 翻译而来.
+    Wave 1 (B4.014 Task #11): 切换至 FundFlowMixin OpenStock 实现.
+    翻译逻辑已移入 Mixin, 端点仅做"调 adapter → 塑响应".
     """
     try:
-        client = _build_openstock_client()
-        try:
-            result_obj = await client.fetch(
-                "NORTHBOUND_FLOW",
-                params={"start_date": start_date, "end_date": end_date},
-            )
-        finally:
-            await client.aclose()
+        df = await akshare_market_adapter.get_stock_hsgt_fund_flow_summary_em(start_date, end_date)
 
-        records = result_obj.data if isinstance(result_obj.data, list) else []
-        if not records:
+        if df.empty:
             return create_error_response(
                 ErrorCodes.DATA_NOT_FOUND,
                 f"No HSGT fund flow summary data found for date range {start_date} to {end_date}"
             )
 
-        translated = [_translate_northbound_flow_row(r) for r in records if isinstance(r, dict)]
         result = {
-            "data": translated,
-            "count": len(translated),
+            "data": df.to_dict("records"),
+            "count": len(df),
             "columns": ["板块", "资金方向", "成交净买额", "指数涨跌幅", "交易日"],
             "date_range": {"start": start_date, "end": end_date},
             "source": "openstock",
@@ -533,33 +448,22 @@ async def get_north_fund_stock(
     """
     获取北向资金个股统计 (OpenStock NORTHBOUND_HOLDING).
 
-    Phase 1.1 batch 2 (B4.014, 2026-06-29): 切换至 OpenStock. 之前因 akshare
-    `stock_hsgt_north_acc_flow_in_em` 在 akshare 1.18.60 移除而返回 501; 现在
-    由 OpenStock `NORTHBOUND_HOLDING` 类别接管. 返回中文宽表契约, 与 akshare
-    时代字段名保持兼容.
+    Wave 1 (B4.014 Task #11): 切换至 FundFlowMixin OpenStock 实现.
+    返回中文宽表契约, 与 akshare 时代字段名保持兼容.
     """
     try:
-        client = _build_openstock_client()
-        try:
-            result_obj = await client.fetch(
-                "NORTHBOUND_HOLDING",
-                params={"symbol": symbol},
-            )
-        finally:
-            await client.aclose()
+        df = await akshare_market_adapter.get_stock_hsgt_north_acc_flow_in_em(symbol)
 
-        records = result_obj.data if isinstance(result_obj.data, list) else []
-        if not records:
+        if df.empty:
             return create_error_response(
                 ErrorCodes.DATA_NOT_FOUND,
                 f"No north fund stock data found for symbol {symbol}"
             )
 
-        translated = [_translate_northbound_holding_row(r, symbol) for r in records if isinstance(r, dict)]
         result = {
             "symbol": symbol,
-            "data": translated,
-            "count": len(translated),
+            "data": df.to_dict("records"),
+            "count": len(df),
             "columns": ["持股日期", "持股数量", "持股市值", "持股比例", "增持数量", "增持金额"],
             "fund_direction": "north",
             "source": "openstock",

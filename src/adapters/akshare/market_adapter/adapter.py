@@ -4,14 +4,21 @@ AkShare Market Data Adapter (Facade)
 聚合拆分后的市场数据方法实现。
 """
 
-import logging
+from __future__ import annotations
 
+import logging
+from typing import TYPE_CHECKING
+
+from ._openstock import _build_default_openstock_client
 from .board_sector import BoardSectorMixin
 from .forecast_analysis import ForecastAnalysisMixin
 from .fund_flow import FundFlowMixin
 from .market_overview import MarketOverviewMixin
 from .stock_profile import StockProfileMixin
 from .stock_sentiment import StockSentimentMixin
+
+if TYPE_CHECKING:
+    from app.services.openstock_client import OpenStockClient
 
 
 class AkshareMarketDataAdapter(
@@ -24,8 +31,9 @@ class AkshareMarketDataAdapter(
 ):
     """AkShare市场数据适配器（拆分后的聚合入口）"""
 
-    def __init__(self):
+    def __init__(self, *, openstock_client: OpenStockClient | None = None):
         self.logger = logging.getLogger(__name__)
+        self._openstock_client = openstock_client or _build_default_openstock_client()
 
     @staticmethod
     def _retry_api_call(func, max_retries: int = 3, delay: int = 1):
