@@ -107,6 +107,39 @@
         "User-Agent": "MyStocks-Web-API/1.0",
         "Accept": "application/json"
       }
+    },
+    "openstock_market": {
+      "name": "OpenStock Market Data Source",
+      "type": "openstock_market",
+      "enabled": true,
+      "mode": "real",
+      "base_url": "http://192.168.123.104:8040",
+      "timeout": 5.0,
+      "retry_count": 2,
+      "retry_delay": 0.5,
+      "health_check_interval": 60.0,
+      "fallback_enabled": true,
+      "cache_enabled": true,
+      "cache_ttl": 60,
+      "custom_headers": {
+        "User-Agent": "MyStocks-Web-API/1.0",
+        "Accept": "application/json"
+      }
+    },
+    "openstock_market_mock": {
+      "name": "OpenStock Market Data Source (Mock Fallback)",
+      "type": "market",
+      "enabled": true,
+      "mode": "mock",
+      "base_url": null,
+      "timeout": 5.0,
+      "retry_count": 1,
+      "retry_delay": 0.2,
+      "health_check_interval": 60.0,
+      "fallback_enabled": false,
+      "cache_enabled": true,
+      "cache_ttl": 60,
+      "custom_headers": {}
     }
   },
   "global_settings": {
