@@ -129,9 +129,18 @@ class OpenStockMarketDataSourceAdapter(IDataSource):
         rows = self._coerce_rows(fetch_result.data)
         candles = [self._transform_kline_row(row) for row in rows]
         return {
+            "status": "success",
+            "data": candles,
             "candles": candles,
-            "source": fetch_result.source,
+            "timestamp": datetime.utcnow().isoformat(),
+            "source": fetch_result.source or "openstock",
+            "endpoint": "klines",
             "data_category": fetch_result.data_category,
+            "parameters": {
+                "symbol": symbol,
+                "period": period_input,
+                "count": count,
+            },
         }
 
     async def _fetch_quotes(
@@ -152,9 +161,14 @@ class OpenStockMarketDataSourceAdapter(IDataSource):
         rows = self._coerce_rows(fetch_result.data)
         quotes = [self._transform_quote_row(row) for row in rows]
         return {
+            "status": "success",
+            "data": quotes,
             "quotes": quotes,
-            "source": fetch_result.source,
+            "timestamp": datetime.utcnow().isoformat(),
+            "source": fetch_result.source or "openstock",
+            "endpoint": "quotes",
             "data_category": fetch_result.data_category,
+            "parameters": {"symbols": symbols_str} if symbols_str else {},
         }
 
     @staticmethod

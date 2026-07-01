@@ -374,8 +374,10 @@ async def get_market_quotes(
 
         symbol_list = [s.strip() for s in symbols.split(",")]
 
-        # 调用数据源工厂获取quotes数据
-        result = await factory.get_data("market", "quotes", {"symbols": symbol_list})
+        # 调用数据源工厂获取quotes数据（OpenStock primary + mock fallback）
+        result = await factory.get_data_with_fallback(
+            "openstock_market", "quotes", {"symbols": symbol_list}
+        )
 
         return create_success_response(
             data=build_quotes_response_payload(result, symbol_list),
@@ -548,6 +550,40 @@ async def get_kline_data(
             )
 
         service = get_stock_search_service()
+
+        # 优先走 OpenStock factory（M1k-4），失败时二级 fallback 回 akshare
+        from app.services.data_source_factory import get_data_source_factory
+
+        factory = await get_data_source_factory()
+        count = 60  # 默认近 60 个交易日
+        try:
+            openstock_result = await factory.get_data_with_fallback(
+                "openstock_market",
+                "klines",
+                {"symbol": stock_code, "period": period, "count": count},
+            )
+            candles = openstock_result.get("candles") or openstock_result.get("data") or []
+            if not candles:
+                raise RuntimeError("OpenStock returned empty candles")
+
+            # 字段映射后已为前端 extractKlineRows 期望的 schema（datetime/open/high/low/close/volume）
+            result = {
+                "success": True,
+                "data": candles,
+                "count": len(candles),
+                "symbol": stock_code,
+                "period": period,
+                "source": openstock_result.get("source", "openstock"),
+                "timestamp": datetime.now().isoformat(),
+            }
+            circuit_breaker.record_success()
+            return {**result, "timestamp": datetime.now().isoformat()}
+        except Exception as openstock_exc:
+            logger.warning(
+                f"⚠️ OpenStock factory klines failed, fallback to akshare: {openstock_exc}"
+            )
+
+        # 二级 fallback：akshare（原 service 直连）
         try:
             # FIX: 直接传递字符串参数给service层
             result = service.get_a_stock_kline(
