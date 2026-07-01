@@ -555,16 +555,37 @@ async def get_kline_data(
         from app.services.data_source_factory import get_data_source_factory
 
         factory = await get_data_source_factory()
-        count = 60  # 默认近 60 个交易日
+
+        # count 计算：若指定 start_date，按天数差推算；否则默认 60 个交易日
+        # （OpenStock API 当前不支持日期范围查询，task #11 会推动 OpenStock API 改造）
+        count = 60
+        if start_date:
+            try:
+                start_dt = dt_convert.strptime(start_date, "%Y-%m-%d")
+                end_dt = dt_convert.strptime(end_date, "%Y-%m-%d") if end_date else datetime.now()
+                # daily=日历日差；weekly/monthly 按 5/21 个日历日一根粗略折算
+                day_delta = (end_dt - start_dt).days
+                if period == "weekly":
+                    count = max(2, day_delta // 7)
+                elif period == "monthly":
+                    count = max(2, day_delta // 30)
+                else:
+                    count = max(2, day_delta)
+            except ValueError:
+                pass  # 日期格式已在上游校验，此处兜底
+
         try:
             openstock_result = await factory.get_data_with_fallback(
                 "openstock_market",
                 "klines",
                 {"symbol": stock_code, "period": period, "count": count},
             )
-            candles = openstock_result.get("candles") or openstock_result.get("data") or []
-            if not candles:
-                raise RuntimeError("OpenStock returned empty candles")
+            # 区分 None（真失败）与 []（合法空响应，如停牌股票）
+            candles = openstock_result.get("candles")
+            if candles is None:
+                candles = openstock_result.get("data")
+            if candles is None:
+                raise RuntimeError("OpenStock returned None candles")
 
             # 字段映射后已为前端 extractKlineRows 期望的 schema（datetime/open/high/low/close/volume）
             result = {

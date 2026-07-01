@@ -247,7 +247,7 @@ class TestKlineRouteViaOpenStockFactory:
         patch_stock_search_service.get_a_stock_kline.assert_not_called()
         patch_circuit_breaker.record_success.assert_called_once()
 
-    def test_kline_factory_empty_candles_triggers_service_fallback(
+    def test_kline_factory_empty_candles_returns_empty_without_service_fallback(
         self,
         auth_client,
         patch_factory,
@@ -255,12 +255,41 @@ class TestKlineRouteViaOpenStockFactory:
         patch_circuit_breaker,
         patch_stock_search_service,
     ):
-        """OpenStock 返回空 candles,路由应进入 except 分支,
-        回退到 service.get_a_stock_kline。"""
+        """OpenStock 返回空 candles 列表(停牌股票的合法空响应),
+        路由应直接返回 count=0,不触发 akshare 二级 fallback。"""
         mock_factory.get_data_with_fallback.return_value = {
             "status": "success",
             "data": [],
             "candles": [],
+            "source": "openstock",
+            "endpoint": "klines",
+        }
+
+        resp = auth_client.get(
+            "/api/v1/market/kline?stock_code=000001&period=daily"
+        )
+
+        assert resp.status_code == 200, resp.text
+        body = resp.json()
+        assert body["success"] is True
+        assert body["count"] == 0
+        # 关键:不应触发 akshare fallback
+        patch_stock_search_service.get_a_stock_kline.assert_not_called()
+        patch_circuit_breaker.record_success.assert_called_once()
+
+    def test_kline_factory_none_candles_triggers_service_fallback(
+        self,
+        auth_client,
+        patch_factory,
+        mock_factory,
+        patch_circuit_breaker,
+        patch_stock_search_service,
+    ):
+        """OpenStock 返回 None candles(真失败信号),路由应进入 fallback。"""
+        mock_factory.get_data_with_fallback.return_value = {
+            "status": "success",
+            "data": None,
+            "candles": None,
             "source": "openstock",
             "endpoint": "klines",
         }
@@ -278,16 +307,7 @@ class TestKlineRouteViaOpenStockFactory:
         )
 
         assert resp.status_code == 200, resp.text
-        body = resp.json()
-        assert body["success"] is True
-        # service 路径返回数据
-        assert body.get("count") == 20 or body.get("data") is not None
-
-        # 二级 fallback 触发
         patch_stock_search_service.get_a_stock_kline.assert_called_once()
-        kwargs = patch_stock_search_service.get_a_stock_kline.call_args.kwargs
-        assert kwargs["symbol"] == "000001"
-        assert kwargs["period"] == "daily"
 
     def test_kline_factory_exception_triggers_service_fallback(
         self,
@@ -345,6 +365,63 @@ class TestKlineRouteViaOpenStockFactory:
             "/api/v1/market/kline?stock_code=000001&period=hourly"
         )
         assert resp.status_code == 422
+
+    def test_kline_start_date_derives_count_for_factory_call(
+        self,
+        auth_client,
+        patch_factory,
+        mock_factory,
+        patch_circuit_breaker,
+    ):
+        """指定 start_date+end_date 时,路由按天数差推算 count 传给 factory。
+        默认 count=60,但日期范围会让 count 接近天数差(为 daily)。
+        """
+        candles = [{"datetime": "2026-06-01", "open": 10.0, "close": 10.5}] * 30
+        mock_factory.get_data_with_fallback.return_value = {
+            "status": "success",
+            "data": candles,
+            "candles": candles,
+            "source": "openstock",
+            "endpoint": "klines",
+        }
+
+        # 30 天范围 → daily count 应 ≈ 30
+        resp = auth_client.get(
+            "/api/v1/market/kline?stock_code=000001&period=daily"
+            "&start_date=2026-05-01&end_date=2026-05-31"
+        )
+
+        assert resp.status_code == 200, resp.text
+        mock_factory.get_data_with_fallback.assert_awaited_once()
+        call_args = mock_factory.get_data_with_fallback.call_args[0]
+        params = call_args[2]
+        assert params["symbol"] == "000001"
+        assert params["count"] == 30  # 31 - 1 = 30 天
+
+    def test_kline_default_count_is_60_when_no_start_date(
+        self,
+        auth_client,
+        patch_factory,
+        mock_factory,
+        patch_circuit_breaker,
+    ):
+        """不传 start_date 时,count 默认 60。"""
+        candles = [{"datetime": "2026-06-01", "open": 10.0, "close": 10.5}] * 60
+        mock_factory.get_data_with_fallback.return_value = {
+            "status": "success",
+            "data": candles,
+            "candles": candles,
+            "source": "openstock",
+            "endpoint": "klines",
+        }
+
+        resp = auth_client.get(
+            "/api/v1/market/kline?stock_code=000001&period=daily"
+        )
+
+        assert resp.status_code == 200
+        params = mock_factory.get_data_with_fallback.call_args[0][2]
+        assert params["count"] == 60
 
 
 # ---------------------------------------------------------------------------

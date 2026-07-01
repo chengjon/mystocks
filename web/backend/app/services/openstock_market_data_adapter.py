@@ -182,6 +182,11 @@ class OpenStockMarketDataSourceAdapter(IDataSource):
                 inner = data.get(key)
                 if isinstance(inner, list):
                     return inner
+            logger.warning(
+                "OpenStock _coerce_rows: mapping shape unrecognized, "
+                "returning empty list. keys=%(keys)s",
+                {"keys": list(data.keys())},
+            )
         return []
 
     @staticmethod
