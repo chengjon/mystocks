@@ -19,6 +19,7 @@ import urllib.request
 import json
 
 OPENSTOCK_BASE_URL = os.environ.get("OPENSTOCK_BASE_URL", "").rstrip("/")
+OPENSTOCK_API_KEY = os.environ.get("OPENSTOCK_API_KEY", "")
 pytestmark = pytest.mark.skipif(
     not OPENSTOCK_BASE_URL,
     reason="set OPENSTOCK_BASE_URL env to run real OpenStock integration tests",
@@ -28,10 +29,13 @@ pytest_plugins: list[str] = []
 
 
 def _post(path: str, body: dict[str, Any]) -> dict[str, Any]:
+    headers = {"Content-Type": "application/json"}
+    if OPENSTOCK_API_KEY:
+        headers["X-API-Key"] = OPENSTOCK_API_KEY
     req = urllib.request.Request(
         OPENSTOCK_BASE_URL + path,
         data=json.dumps(body).encode(),
-        headers={"Content-Type": "application/json"},
+        headers=headers,
         method="POST",
     )
     with urllib.request.urlopen(req, timeout=10) as resp:

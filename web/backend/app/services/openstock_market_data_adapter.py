@@ -12,6 +12,7 @@ factory 通过新增 source_type="openstock_market" 分支调用本类(见步骤
 from __future__ import annotations
 
 import logging
+import os
 import time
 from datetime import datetime
 from typing import Any, Dict, Mapping, Optional
@@ -65,9 +66,11 @@ class OpenStockMarketDataSourceAdapter(IDataSource):
         super().__init__(config)
         base_url = str(config.get("base_url") or DEFAULT_BASE_URL)
         timeout_seconds = float(config.get("timeout") or DEFAULT_TIMEOUT_SECONDS)
+        merged_headers = self._build_headers(config.get("custom_headers") or {})
         self._client_config = OpenStockClientConfig(
             base_url=base_url,
             timeout_seconds=timeout_seconds,
+            headers=merged_headers if merged_headers else None,
         )
         self._client: Optional[OpenStockClient] = None
         self._metrics: Dict[str, Any] = {
@@ -82,6 +85,23 @@ class OpenStockMarketDataSourceAdapter(IDataSource):
         if self._client is None:
             self._client = OpenStockClient(self._client_config)
         return self._client
+
+    @staticmethod
+    def _build_headers(custom_headers: Mapping[str, Any]) -> Dict[str, str]:
+        """合并 config.custom_headers 与 OPENSTOCK_API_KEY env(env 优先)。
+
+        优先级: env OPENSTOCK_API_KEY > config.custom_headers。
+        返回空 dict 表示无 header。
+        """
+        headers: Dict[str, str] = {}
+        if isinstance(custom_headers, Mapping):
+            for k, v in custom_headers.items():
+                if isinstance(k, str) and isinstance(v, str):
+                    headers[k] = v
+        api_key = os.environ.get("OPENSTOCK_API_KEY")
+        if api_key:
+            headers["X-API-Key"] = api_key
+        return headers
 
     async def get_data(
         self, endpoint: str, params: Dict[str, Any] = None
@@ -279,10 +299,13 @@ class OpenStockMarketDataSourceAdapter(IDataSource):
         """
         started = time.monotonic()
         try:
-            async with httpx.AsyncClient(
-                base_url=self._client_config.base_url.rstrip("/"),
-                timeout=HEALTH_READY_TIMEOUT_SECONDS,
-            ) as http_client:
+            client_kwargs: Dict[str, Any] = {
+                "base_url": self._client_config.base_url.rstrip("/"),
+                "timeout": HEALTH_READY_TIMEOUT_SECONDS,
+            }
+            if self._client_config.headers:
+                client_kwargs["headers"] = dict(self._client_config.headers)
+            async with httpx.AsyncClient(**client_kwargs) as http_client:
                 response = await http_client.get(HEALTH_LIVE_PATH)
             elapsed_ms = (time.monotonic() - started) * 1000.0
             if response.status_code < 500:

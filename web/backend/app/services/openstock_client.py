@@ -15,6 +15,7 @@ class OpenStockClientConfig:
     base_url: str
     timeout_seconds: float = 5.0
     supported_categories: Sequence[str] = DEFAULT_SUPPORTED_CATEGORIES
+    headers: Mapping[str, str] | None = None
 
 
 @dataclass(frozen=True)
@@ -72,11 +73,14 @@ class OpenStockClient:
     ) -> None:
         self._config = config
         self._supported_categories = frozenset(config.supported_categories)
-        self._client = httpx.AsyncClient(
-            base_url=config.base_url.rstrip("/"),
-            timeout=config.timeout_seconds,
-            transport=transport,
-        )
+        client_kwargs: dict[str, Any] = {
+            "base_url": config.base_url.rstrip("/"),
+            "timeout": config.timeout_seconds,
+            "transport": transport,
+        }
+        if config.headers:
+            client_kwargs["headers"] = dict(config.headers)
+        self._client = httpx.AsyncClient(**client_kwargs)
 
     async def fetch(
         self,
