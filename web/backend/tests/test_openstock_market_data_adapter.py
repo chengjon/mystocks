@@ -70,12 +70,18 @@ def test_init_with_explicit_config():
 
 @pytest.mark.asyncio
 async def test_get_quotes_success_normalizes_fields(adapter):
-    rows = [
-        {"Symbol": "000001", "Price": 12.34, "Volume": 1000},
-        {"symbol": "600519", "price": 1800.0},
-    ]
+    """B4.014-M1n: 多 symbol 循环调用(每次单 symbol),合并结果。
+    OpenStock 不支持 symbol=000001,600519 逗号分隔(provider 503)。"""
+    # 每次单 symbol 调用返 1 行
+    def _fetch_side_effect(category, *, params=None, request_id=None):
+        sym = (params or {}).get("symbol")
+        return _make_fetch_result(
+            [{"Symbol": sym, "Price": 12.34, "Volume": 1000, "pct_chg": 1.5}],
+            category="REALTIME_QUOTES",
+        )
+
     mock_client = type("StubClient", (), {})()
-    mock_client.fetch = AsyncMock(return_value=_make_fetch_result(rows, category="REALTIME_QUOTES"))
+    mock_client.fetch = AsyncMock(side_effect=_fetch_side_effect)
     mock_client.aclose = AsyncMock()
     adapter._client = mock_client
 
@@ -84,21 +90,29 @@ async def test_get_quotes_success_normalizes_fields(adapter):
     assert result["status"] == "success"
     assert result["endpoint"] == "quotes"
     assert result["source"] == "openstock"
-    # both "data" and "quotes" keys for back-compat
     assert isinstance(result["data"], list)
     assert result["data"] == result["quotes"]
-    # lowercase normalization
-    assert result["quotes"][0] == {"symbol": "000001", "price": 12.34, "volume": 1000}
-    assert result["quotes"][1] == {"symbol": "600519", "price": 1800.0}
-    # symbols joined for fetch call
-    mock_client.fetch.assert_awaited_once()
-    args, kwargs = mock_client.fetch.call_args
-    assert args[0] == "REALTIME_QUOTES"
-    assert kwargs["params"] == {"symbols": "000001,600519"}
+    # 2 个 symbol → 2 次调用 → 2 行结果
+    assert len(result["quotes"]) == 2
+    # B4.014-M1n 修复:pct_chg → change_percent 字段映射
+    assert "change_percent" in result["quotes"][0]
+    assert result["quotes"][0]["change_percent"] == 1.5
+    # symbol 去前缀 + lowercase 归一(此处无 sz/sh 前缀,直接 small symbol)
+    assert result["quotes"][0]["symbol"] in ("000001", "600519")
+    # 调用次数 == symbols 数量(每个单 symbol 一次)
+    assert mock_client.fetch.await_count == 2
+    # 每次调用都用单数 symbol
+    for call in mock_client.fetch.call_args_list:
+        args, kwargs = call
+        assert args[0] == "REALTIME_QUOTES"
+        # B4.014-M1n 修复:必须用 symbol 单数
+        assert "symbol" in kwargs["params"]
+        assert "symbols" not in kwargs["params"]
 
 
 @pytest.mark.asyncio
 async def test_get_quotes_accepts_scalar_symbol_string(adapter):
+    """单 symbol 字符串输入也应正常工作(内部统一成 list 处理)。"""
     mock_client = type("StubClient", (), {})()
     mock_client.fetch = AsyncMock(return_value=_make_fetch_result([], category="REALTIME_QUOTES"))
     mock_client.aclose = AsyncMock()
@@ -107,7 +121,8 @@ async def test_get_quotes_accepts_scalar_symbol_string(adapter):
     await adapter.get_data("quotes", {"symbols": "000001"})
 
     _, kwargs = mock_client.fetch.call_args
-    assert kwargs["params"] == {"symbols": "000001"}
+    # B4.014-M1n 修复:单数 symbol
+    assert kwargs["params"] == {"symbol": "000001"}
 
 
 @pytest.mark.asyncio
@@ -291,6 +306,96 @@ def test_transform_kline_row_preserves_unknown_keys_as_lowercase():
 def test_transform_quote_row_lowercases():
     out = OpenStockMarketDataSourceAdapter._transform_quote_row({"SYMBOL": "X", "Price": 1.0})
     assert out == {"symbol": "X", "price": 1.0}
+
+
+# ===========================================================================
+# B4.014-M1n: 生产烟测修复测试(发现 #2, #3, #5)
+# ====================================================================================
+
+
+def test_transform_quote_row_maps_pct_chg_to_change_percent():
+    """发现 #2 SHOWSTOPPER:OpenStock 返 pct_chg,前端期望 change_percent。"""
+    row = {
+        "symbol": "sz000001",
+        "name": "平安银行",
+        "price": 10.16,
+        "pct_chg": 1.0945273631840737,
+        "change": 0.11,
+        "volume": 90688900,
+    }
+    out = OpenStockMarketDataSourceAdapter._transform_quote_row(row)
+    assert "change_percent" in out
+    assert out["change_percent"] == 1.0945273631840737
+    # 原 pct_chg 保留(无害)
+    assert "pct_chg" in out
+
+
+def test_transform_quote_row_preserves_existing_change_percent():
+    """如果数据源已经给 change_percent,不覆盖。"""
+    row = {"symbol": "X", "change_percent": 2.5, "pct_chg": 1.0}
+    out = OpenStockMarketDataSourceAdapter._transform_quote_row(row)
+    assert out["change_percent"] == 2.5  # 不被 pct_chg 覆盖
+
+
+def test_transform_quote_row_strips_sz_sh_bj_prefix():
+    """发现 #5 LOW:OpenStock 返 sz000001/sh600519/bj430047,前端期望 000001/600519/430047。"""
+    for raw, expected in [
+        ("sz000001", "000001"),
+        ("sh600519", "600519"),
+        ("bj430047", "430047"),
+        ("SZ000001", "SZ000001"),  # 大写前缀不去(保守)
+        ("000001", "000001"),       # 无前缀原样
+        ("szabcdef", "szabcdef"),   # 后缀非数字不去
+        ("sz12345", "sz12345"),     # 长度 < 8 不去(sz+5 位)
+    ]:
+        out = OpenStockMarketDataSourceAdapter._transform_quote_row({"symbol": raw})
+        assert out["symbol"] == expected, f"raw={raw!r} got={out['symbol']!r}"
+
+
+def test_transform_kline_row_strips_symbol_prefix_and_truncates_iso8601():
+    """发现 #3 HIGH + #5 LOW:ISO8601 截断到 10 字符日期 + symbol 去前缀。"""
+    row = {
+        "symbol": "sz000001",
+        "time": "2026-06-30T15:00:00+08:00",
+        "open": 10.22,
+        "high": 10.22,
+        "low": 10.04,
+        "close": 10.05,
+        "volume": 111135200,
+        "amount": 1121201536.0,
+        "period": "day",
+    }
+    out = OpenStockMarketDataSourceAdapter._transform_kline_row(row)
+    # 发现 #3: ISO8601 截断到日期
+    assert out["datetime"] == "2026-06-30"
+    assert len(out["datetime"]) == 10
+    # 发现 #5: symbol 去前缀
+    assert out["symbol"] == "000001"
+    # 其他字段透传
+    assert out["open"] == 10.22
+    assert out["close"] == 10.05
+    assert out["period"] == "day"
+
+
+def test_transform_kline_row_date_field_also_truncated():
+    """date 字段(若存在)也截断到 10 字符。"""
+    row = {"date": "2026-06-30T00:00:00+08:00", "open": 1.0}
+    out = OpenStockMarketDataSourceAdapter._transform_kline_row(row)
+    assert out["datetime"] == "2026-06-30"
+
+
+def test_strip_exchange_prefix_safety():
+    """单独验证 _strip_exchange_prefix 不会误剥。"""
+    strip = OpenStockMarketDataSourceAdapter._strip_exchange_prefix
+    # 不剥的情况
+    assert strip("000001") == "000001"
+    assert strip("sh689009") == "689009"
+    # 不误剥:虽然以 "sh" 开头但后缀非全数字
+    assert strip("shabc123") == "shabc123"
+    # None / 非字符串原样返回
+    assert strip(None) is None
+    assert strip(123) == 123
+    assert strip("") == ""
 
 
 def test_coerce_rows_handles_various_shapes():

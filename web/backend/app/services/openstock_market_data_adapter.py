@@ -146,29 +146,42 @@ class OpenStockMarketDataSourceAdapter(IDataSource):
     async def _fetch_quotes(
         self, client: OpenStockClient, params: Mapping[str, Any]
     ) -> Dict[str, Any]:
+        # B4.014-M1n 修复:OpenStock REALTIME_QUOTES 用单数 symbol(字符串)。
+        # 多 symbol 不支持逗号分隔(provider 会把整串当 1 个非法代码 → 503),
+        # 必须循环调用每次单 symbol 后合并。
         symbols_value = params.get("symbols") or params.get("symbol")
         if isinstance(symbols_value, (list, tuple)):
-            symbols_str = ",".join(str(s) for s in symbols_value)
+            symbols_list = [str(s) for s in symbols_value if s]
+        elif symbols_value:
+            symbols_list = [str(symbols_value)]
         else:
-            symbols_str = str(symbols_value) if symbols_value else ""
-        fetch_params: Dict[str, Any] = {}
-        if symbols_str:
-            fetch_params["symbols"] = symbols_str
-        fetch_result = await client.fetch(
-            ENDPOINT_ROUTES["quotes"],
-            params=fetch_params or None,
-        )
-        rows = self._coerce_rows(fetch_result.data)
-        quotes = [self._transform_quote_row(row) for row in rows]
+            symbols_list = []
+
+        all_rows: list = []
+        fetch_category: Optional[str] = None
+        source: Optional[str] = None
+        last_request_id: Optional[str] = None
+        for sym in symbols_list:
+            fetch_result = await client.fetch(
+                ENDPOINT_ROUTES["quotes"],
+                params={"symbol": sym},
+            )
+            all_rows.extend(self._coerce_rows(fetch_result.data))
+            fetch_category = fetch_result.data_category or fetch_category
+            source = fetch_result.source or source
+            last_request_id = fetch_result.request_id or last_request_id
+
+        quotes = [self._transform_quote_row(row) for row in all_rows]
         return {
             "status": "success",
             "data": quotes,
             "quotes": quotes,
             "timestamp": datetime.utcnow().isoformat(),
-            "source": fetch_result.source or "openstock",
+            "source": source or "openstock",
             "endpoint": "quotes",
-            "data_category": fetch_result.data_category,
-            "parameters": {"symbols": symbols_str} if symbols_str else {},
+            "data_category": fetch_category,
+            "parameters": {"symbols": ",".join(symbols_list)} if symbols_list else {},
+            "request_id": last_request_id,
         }
 
     @staticmethod
@@ -194,7 +207,10 @@ class OpenStockMarketDataSourceAdapter(IDataSource):
         """将 OpenStock KLINES 行映射为前端 KLineRow 期望的 schema。
 
         前端 extractKlineRows 识别的字段:datetime/open/high/low/close/volume。
-        OpenStock KLINES 返回的字段名以 time 为时间戳(实测),需要映射到 datetime。
+        OpenStock KLINES 返回字段:`time`(ISO8601 全时间戳)、`symbol`(带 sz/sh 前缀)。
+        修复:
+        - time(ISO8601 "2026-06-30T15:00:00+08:00") → datetime 截断到日期 "2026-06-30"
+        - symbol "sz000001" → "000001"(去交易所前缀)
         """
         if not isinstance(row, Mapping):
             return {}
@@ -202,9 +218,13 @@ class OpenStockMarketDataSourceAdapter(IDataSource):
         for key, value in row.items():
             key_lower = str(key).lower()
             if key_lower == "time":
-                result["datetime"] = value
+                sval = str(value) if value is not None else ""
+                result["datetime"] = sval[:10] if sval else sval
             elif key_lower == "date":
-                result.setdefault("datetime", value)
+                sval = str(value) if value is not None else ""
+                result.setdefault("datetime", sval[:10] if sval else sval)
+            elif key_lower == "symbol":
+                result["symbol"] = OpenStockMarketDataSourceAdapter._strip_exchange_prefix(value)
             else:
                 result[key_lower] = value
         return result
@@ -213,13 +233,43 @@ class OpenStockMarketDataSourceAdapter(IDataSource):
     def _transform_quote_row(row: Mapping[str, Any]) -> Dict[str, Any]:
         """将 OpenStock REALTIME_QUOTES 行映射为前端 quotes 期望的 schema。
 
-        归一字段:symbol/price/volume/change/change_percent。
-        OpenStock 返回字段名通常已是英文小写或 code/name/price/volume,
-        这里只做大小写归一,不做强转。
+        前端消费者(build_quotes_response_payload / marketAdapter / Realtime.vue):
+        symbol, name, price, change, change_percent, volume, amount
+
+        OpenStock 真实字段:pct_chg, symbol(sz000001), bid1_price, pe_dynamic 等 20 字段。
+
+        修复:
+        - pct_chg → change_percent(前端期望)
+        - symbol "sz000001" → "000001"(去交易所前缀)
+        - 其他字段透传(无害,但保留以备未来消费者使用)
         """
         if not isinstance(row, Mapping):
             return {}
-        return {str(k).lower(): v for k, v in row.items()}
+        lowered: Dict[str, Any] = {str(k).lower(): v for k, v in row.items()}
+        if "pct_chg" in lowered and "change_percent" not in lowered:
+            lowered["change_percent"] = lowered["pct_chg"]
+        if "symbol" in lowered:
+            lowered["symbol"] = OpenStockMarketDataSourceAdapter._strip_exchange_prefix(
+                lowered["symbol"]
+            )
+        return lowered
+
+    @staticmethod
+    def _strip_exchange_prefix(symbol_value: Any) -> Any:
+        """去掉 sz/sh/bj 前缀,带校验。
+
+        用确定的 2 字符前缀剥离 + 剩余 6 位数字校验,避免 lstrip 误剥
+        (lstrip("sh") 会把 "sh600519" 当成连续字符集剥离,行为不可预测)。
+        """
+        if not isinstance(symbol_value, str) or not symbol_value:
+            return symbol_value
+        if (
+            len(symbol_value) >= 8
+            and symbol_value[:2] in ("sz", "sh", "bj")
+            and symbol_value[2:].isdigit()
+        ):
+            return symbol_value[2:]
+        return symbol_value
 
     async def health_check(self) -> HealthStatus:
         """调用 OpenStock /health/live 端点检查活性。
