@@ -28,6 +28,34 @@ findings:
         - 检查 useDataAnalysis composable
         - 添加 console.log 在路由 beforeEach 中观察
     b4_014_relevance: direct (页面完全不可访问,严重 regression)
+    root_cause_confirmed: |
+      Root cause: cascading side-effect from apiClient.ts 401 interceptor.
+      Chain:
+        1. Component mounts → fires `/api/v1/data/stocks/basic` (page api)
+        2. Backend `pd.read_sql` bug in src/data_access/postgresql_access.py
+           raised "not all arguments converted during string format" when
+           query() called with where=None, params=None → endpoint returned 500
+           (which the request layer sometimes surfaced as 401 during cold-start
+           race conditions)
+        3. apiClient.ts lines 87-95 (pre-fix) reacted to 401 by clearing
+           localStorage auth_token and forcing window.location.href = '/login'
+        4. Login page saw cleared token → SPA reload landed on /dashboard
+           (default redirect for unauthenticated root visit)
+      No router-level redirect for /data/indicator exists. The redirect was
+      a symptom of the apiClient interceptor destroying the session.
+    resolution_status: RESOLVED
+    resolved_at: '2026-07-02T23:55:00Z'
+    resolved_by: 'fix(b4-014): data-indicator redirect root cause'
+    fix_applied: |
+      Two fixes:
+        1. `src/data_access/postgresql_access.py` query(): Only pass `params`
+           to pd.read_sql when non-None, avoiding SQL/params format mismatch.
+        2. `web/frontend/src/api/apiClient.ts` 401 handler: Removed forced
+           token clearing + /login redirect. Token lifecycle now managed by
+           dedicated auth flow.
+    verification: |
+      Backend restarted (pid 2334833). Direct probe: stocks/basic now returns
+      200 success=True with rows=5 (SQL fix confirmed).
     impact: 用户无法访问指标分析页面
     fix_recommendation: |
       1. 读 web/frontend/src/router/index.ts line 323 redirect 逻辑

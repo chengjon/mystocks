@@ -310,7 +310,13 @@ class PostgreSQLDataAccess:
             if limit:
                 sql_query = sql.SQL("{} LIMIT {}").format(sql_query, sql.Literal(limit))
 
-            df = pd.read_sql(sql_query.as_string(conn), conn, params=params)
+            # pd.read_sql with params=None can raise "not all arguments converted
+            # during string format" on some drivers when the SQL has no
+            # placeholders. Only pass params when actually needed.
+            if params:
+                df = pd.read_sql(sql_query.as_string(conn), conn, params=params)
+            else:
+                df = pd.read_sql(sql_query.as_string(conn), conn)
             return df
 
         except Exception as e:
