@@ -61,14 +61,14 @@
 
 ## Phase 4 — Wave 2/3 归属附录落地(可与 Phase 1-3 并行)
 
-- [ ] **4.1** B4.014 Wave 2/3 双仓 issue 开立
-  - [ ] mystocks_spec 仓 issue:标 `cross-repo-dependency` + `temp-override-backlog`,记录 8 方法归属
-  - [ ] OpenStock 仓 issue:`MARKET_BIG_DEAL` category 注册需求(Wave 2/3 中需进 OpenStock 的部分)
-  - [ ] 两个 issue 正文互相链接
-  - [ ] **完成标志**:两个 issue URL 填入下方(提案合并后 48h 内完成)
-    - mystocks_spec issue URL: `<填入>`
-    - OpenStock issue URL: `<填入>`
-- [ ] **4.2** design.md 附录表格已落,本 phase 仅做 issue tracking,无代码改动
+- [x] **4.1** B4.014 Wave 2/3 双仓 issue 开立
+  - [x] mystocks_spec 仓 issue:标 `cross-repo-dependency` + `temp-override-backlog`,记录 8 方法归属
+  - [x] OpenStock 仓 issue:`MARKET_BIG_DEAL` category 注册需求(Wave 2/3 中需进 OpenStock 的部分)
+  - [x] 两个 issue 正文互相链接
+  - [x] **完成标志**:两个 issue URL 填入下方(提案合并后 48h 内完成)
+    - mystocks_spec issue URL: `https://github.com/chengjon/mystocks/issues/491`
+    - OpenStock issue URL: `http://192.168.123.104:3001/john/openstock/issues/11`
+- [x] **4.2** design.md 附录表格已落,本 phase 仅做 issue tracking,无代码改动
 
 ## Phase 5 — 文档与验证
 
