@@ -1,0 +1,44 @@
+page_key: data-indicator
+route: /data/indicator
+batch_id: market-batch-02
+audit_run_id: audit-20260702-01
+audited_at: '2026-07-02T22:34:26Z'
+browser_session: playwright chromium
+verification_surface: live-audit
+findings:
+  - id: data-indicator-001
+    severity: BLOCKING
+    dimension: functional
+    title: '/data/indicator 路由立即 redirect 到 /dashboard'
+    details: |
+      访问 http://localhost:3020/data/indicator 后页面 URL 变为 /dashboard,
+      h1 显示 "QUANTIX"(dashboard 标题),不是 "指标分析"。
+
+      多次重试,均 redirect 到 /dashboard。无 console error。
+
+      ArtDecoDataAnalysis.vue 内 grep 无 router.push/replace,排除组件内编程跳转。
+      可能根因:
+        1. router/index.ts:323 redirect 函数(未读上下文)
+        2. Auth guard 中 to.meta.requiresAuth 处理异常
+        3. 动态 permission check (但 meta 中无 permissions 字段)
+        4. useDataAnalysis composable 初始化失败触发回退
+
+      排查方向:
+        - 读 router/index.ts lines 315-350 (redirect 函数)
+        - 检查 useDataAnalysis composable
+        - 添加 console.log 在路由 beforeEach 中观察
+    b4_014_relevance: direct (页面完全不可访问,严重 regression)
+    impact: 用户无法访问指标分析页面
+    fix_recommendation: |
+      1. 读 web/frontend/src/router/index.ts line 323 redirect 逻辑
+      2. 读 web/frontend/src/composables/market/useDataAnalysis.ts
+      3. 确认是否有 dynamic route guard 或 component init 抛错
+page_state_summary:
+  initial_load: 立即 redirect 到 /dashboard
+  data_state: 无法到达页面,无数据可观测
+  error_state: 无 console error,静默 redirect
+  api: 无任何 API 请求触发(页面未渲染)
+notes:
+  - 此页是 data module 中最严重问题
+  - 不在 B4.014 直接改动范围,但 myweb-audit 必须记录
+  - 下次 session 需 trace redirect 根因

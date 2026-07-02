@@ -1,0 +1,107 @@
+audit_run_id: audit-20260702-01
+batch_id: market-batch-02
+module: data
+scope:
+  requested_by: user
+  pages:
+    - route: /data/industry
+      page_key: data-industry
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/data/Industry.vue
+      route_meta_api: /api/akshare_market/boards
+    - route: /data/concept
+      page_key: data-concept
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/data/Concepts.vue
+      route_meta_api: /api/v2/market/sector/fund-flow?sector_type=概念
+    - route: /data/fund-flow
+      page_key: data-fund-flow
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/data/FundFlow.vue
+      route_meta_api: /api/akshare/market/fund-flow
+    - route: /data/indicator
+      page_key: data-indicator
+      route_class: canonical-page
+      canonical_entry: web/frontend/src/views/data/Advanced.vue
+      route_meta_api: /api/v1/indicators/registry
+  compatibility_redirects:
+    - from: /data
+      to: /data/industry
+      reason: router-configured redirect (not audited as canonical page)
+batch_rationale: >
+  Data module (4 pages) — second batch of B4.014 myweb-audit. Focus areas:
+  (1) verify whether pages use factory (openstock_market) or legacy market_data_service_v2 chain;
+  (2) FundFlow already migrated to OpenStock in P1.1 (commit 18cfd6700) — verify field contract;
+  (3) Industry/Concept still use akshare endpoints — check if source field flows correctly;
+  (4) Indicator page uses /api/v1/indicators/registry — orthogonal to market data, baseline check.
+audit_roles:
+  - route-inventory
+  - functional-audit
+  - data-state-audit
+  - visual-artdeco-audit
+  - responsive-a11y-audit
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  browser_tool: playwright
+  execution_surface: live-audit
+  frontend_runtime_mode: reuse-existing
+  backend_pid_observed: 1888757
+  backend_uptime: 3h+
+  assumptions:
+    - PM2 mystocks-frontend + mystocks-backend online (verified)
+    - backend /health=200 (verified)
+    - frontend HTTP 200 (verified)
+    - OpenStock data source has OPENSTOCK_API_KEY configured in .env
+  fallback_log: []
+verification_plan:
+  verification_strategy: full
+  browser_project: chromium
+  breakpoints: [1920, 1440, 1280]
+  required_states: [default, loading, empty, error, disabled, extreme-data]
+  notes:
+    - FundFlow is highest-priority (P1.1 migration target — must verify source=openstock)
+    - Industry/Concept may use legacy akshare chain (acceptable if not in B4.014 scope)
+    - Indicator page is orthogonal baseline
+repair_approval:
+  status: not_requested
+  approved_findings: []
+  deferred_findings: []
+state_tracking:
+  completed_pages: []
+  pending_pages:
+    - data-industry
+    - data-concept
+    - data-fund-flow
+    - data-indicator
+  fixed_files: []
+  shared_impact:
+    candidates: []
+    confirmed: []
+  validation_status:
+    syntax: not-run
+    typecheck: not-run
+    pm2: not-run
+    e2e: not-run
+    gitnexus_staged_detect: not-run
+  staged_scope:
+    mode: not-started
+    files: []
+    verdict_origin: none
+    notes: []
+artifacts:
+  root: docs/reports/quality/myweb-audit/audit-20260702-01/
+  page_reports: []
+  raw_findings: null
+  merged_findings: null
+  repair_approval_package: null
+  batch_report: null
+  closeout: null
+resume:
+  last_completed_step: route-inventory
+  next_action: run-audit-roles
+  notes:
+    - batch-02 of B4.014 audit
+    - prior batch (market-batch-01) completed with 3 fixes shipped (commit af29d15d6)
+    - subsequent batches may include remaining ~23 routes
+status: in_progress

@@ -1,0 +1,77 @@
+page_key: data-fund-flow
+route: /data/fund-flow
+batch_id: market-batch-02
+audit_run_id: audit-20260702-01
+audited_at: '2026-07-02T22:31:39Z'
+browser_session: playwright chromium
+verification_surface: live-audit
+findings:
+  - id: data-fund-flow-001
+    severity: BLOCKING
+    dimension: functional
+    title: '/api/akshare/market/fund-flow/big-deal & /hsgt-summary 返回 401 Not authenticated'
+    details: |
+      页面 fetchFundFlowData 调用两个 akshare 端点,均返回 401 Unauthorized。
+      页面表格因此显示 0 行 + "暂无数据"占位。
+
+      浏览器测试结果(2026-07-02):
+        /api/akshare/market/fund-flow/hsgt-summary?start_date=2026-07-02&end_date=2026-07-02 → 401 {"code":6000,"message":"Not authenticated"}
+        /api/akshare/market/fund-flow/big-deal?period=1day&limit=10 → 401 同上
+
+      但 localStorage 中 auth_token 存在(eyJhbGc... token)。
+      手动带 Authorization: Bearer <token> 重新请求 → 200 OK 真实数据返回(艾为电子等大单数据)。
+
+      推测:页面 apiClient 请求未注入 Authorization header(可能 useArtDecoApi.exec 包装层吞掉了
+      apiClient interceptor,或 FundFlow.vue 的 exec 调用方式与 interceptor 不兼容)。
+
+      B4.014 关联:fund_flow mixin 已在 P1.1 迁移到 OpenStock,但路由 /akshare/market/fund-flow/big-deal
+      仍由 legacy akshare 适配器处理。这不是 B4.014 factory 问题,但属于 fund-flow domain 范围。
+    repro_steps:
+      - step: 登录 admin/admin123
+      - step: 访问 /data/fund-flow
+      - step: 观察 table 区显示 "暂无数据"
+      - step: F12 网络面板看 /big-deal & /hsgt-summary 都返 401
+    expected_behavior: 两个端点应返 200 + 真实大单数据 / 沪深港通汇总
+    actual_behavior: 401 Unauthorized,页面显示暂无数据
+    impact: 用户无法看到资金流向明细数据
+    b4_014_relevance: 边缘 (P1.1 domain,但 fund_flow.py 已迁移)
+    fix_recommendation: |
+      1. 检查 FundFlow.vue 中 exec() 包装层是否绕过了 apiClient.interceptors.request
+      2. 或确认 /akshare/market/fund-flow/* 端点的 auth 依赖是否与其他 endpoint 不同
+      3. 若是后端 middleware 拦截,核查路由白名单
+  - id: data-fund-flow-002
+    severity: HIGH
+    dimension: data-state
+    title: 响应体 success+data.data 双重嵌套,exec() 可能返回 null
+    details: |
+      手动带 auth 请求 /big-deal 响应:
+      {"success":true,"data":{"data":[{"成交时间":"...", ...}]}}
+      内层 data.data 才是真实 array。
+
+      若 FundFlow.vue 的 exec() 走 useArtDecoApi 期望 UnifiedResponse.data 是 array,
+      则 buildStockRanking(bigDeal) 拿到的可能是 undefined,导致 table 0 行。
+
+      即使 401 修复后,这个问题仍可能让页面显示空。
+    b4_014_relevance: direct (与 batch-01 LHB 同模式,需对齐 payload 提取)
+    fix_recommendation: 适配 data.data 双重嵌套形态(参考 LHB.vue fix af29d15d6)
+  - id: data-fund-flow-003
+    severity: MEDIUM
+    dimension: visual
+    title: 401 错误未在 UI 显示,用户误以为"暂无数据"
+    details: |
+      页面表格显示"暂无数据"无错误提示,无法区分"真无数据"vs"API 401"。
+      与 batch-01 market-lhb-002 同模式。
+    b4_014_relevance: 边缘
+    fix_recommendation: 增加 error state UI 区分 401/empty
+page_state_summary:
+  initial_load: 页面渲染正常,标题"资金流向工作台",artdeco chrome 完整
+  data_state: 表格 0 行,"暂无数据"占位
+  error_state: 无错误提示,401 被静默吞掉
+console_messages:
+  - level: error
+    message: 'Failed to load resource: the server responded with a status of 401'
+  - count: 4
+    level: warning
+notes:
+  - 此页 P1.1 已迁移,但路径仍走 /akshare/market/fund-flow/* 而非 /api/v1/market/fund-flow/*
+  - 需 trace fund_flow.py 实际 endpoint mapping
