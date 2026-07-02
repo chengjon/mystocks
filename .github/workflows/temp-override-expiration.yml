@@ -1,0 +1,100 @@
+name: TEMP_OVERRIDE Expiration Check
+
+# Phase 3.2 (B4.014 Layer 1 / ExtraSourceAdapter Contract)
+#
+# 检查 ExtraSource registry snapshot 中所有 TEMP_OVERRIDE adapter:
+#   - 过期 → 阻断合并 (exit 1)
+#   - 7 天内将过期 → stderr warn, 不阻断
+#
+# 工作流分两步:
+#   1. lifespan 启动 backend (生成 .extra-source-snapshot.json)
+#   2. 运行 scripts/dev/check_temp_override_expiration.py
+#
+# 当 EXTRA_SOURCE_ADAPTERS 未配置时, snapshot 为空 (无 adapter 注册),
+# check_snapshot 返回 0 — workflow 通过。
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'web/backend/app/services/extra_source/**'
+      - 'web/backend/app/main.py'
+      - 'web/backend/app/core/config.py'
+      - 'scripts/dev/check_temp_override_expiration.py'
+      - '.github/workflows/temp-override-expiration.yml'
+  pull_request:
+    branches: [main, develop]
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - 'web/backend/app/services/extra_source/**'
+      - 'web/backend/app/main.py'
+      - 'web/backend/app/core/config.py'
+      - 'scripts/dev/check_temp_override_expiration.py'
+      - '.github/workflows/temp-override-expiration.yml'
+
+env:
+  PYTHON_VERSION: '3.12'
+
+jobs:
+  temp-override-expiration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install backend deps (minimal)
+        working-directory: web/backend
+        env:
+          # Lifespan 启动需要的最小环境 (DEVELOPMENT_MODE 允许 Postgres 失败)
+          POSTGRESQL_HOST: localhost
+          POSTGRESQL_USER: ci
+          POSTGRESQL_PASSWORD: ci
+          JWT_SECRET_KEY: ci-placeholder-key-not-secret
+          BACKEND_PORT: '8020'
+          BACKEND_BACKUP_PORT: '8021'
+          DEVELOPMENT_MODE: 'true'
+          TESTING: 'true'
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt 2>/dev/null || pip install fastapi uvicorn pydantic pydantic-settings sqlalchemy psycopg2-binary redis
+
+      - name: Generate ExtraSource snapshot
+        working-directory: web/backend
+        env:
+          POSTGRESQL_HOST: localhost
+          POSTGRESQL_USER: ci
+          POSTGRESQL_PASSWORD: ci
+          JWT_SECRET_KEY: ci-placeholder-key-not-secret
+          BACKEND_PORT: '8020'
+          BACKEND_BACKUP_PORT: '8021'
+          DEVELOPMENT_MODE: 'true'
+          TESTING: 'true'
+          # EXTRA_SOURCE_ADAPTERS 默认空 — 不注册任何 adapter
+          # CI 只验证 snapshot 生成机制正常工作。
+          # 真实 adapter 配置由部署环境在 .env 注入。
+        run: |
+          # 启动后端 → lifespan 跑完 → 生成 .extra-source-snapshot.json → 退出
+          # 用 -c而非 uvicorn 长驻: 直接调用 lifespan dump snapshot
+          python -c "
+          import asyncio
+          import os
+          os.environ.setdefault('DEVELOPMENT_MODE', 'true')
+          from contextlib import asynccontextmanager
+          from app.services.extra_source import dump_registered_snapshot
+          # lifespan 内部依赖 DB, 但 dump_registered_snapshot 本身是纯函数
+          # 我们只调用 dump 部分, 不跑完整 lifespan
+          dump_registered_snapshot('.extra-source-snapshot.json')
+          print('snapshot dumped')
+          "
+
+      - name: Check TEMP_OVERRIDE expiration
+        run: |
+          python scripts/dev/check_temp_override_expiration.py \
+            --snapshot-path web/backend/.extra-source-snapshot.json
