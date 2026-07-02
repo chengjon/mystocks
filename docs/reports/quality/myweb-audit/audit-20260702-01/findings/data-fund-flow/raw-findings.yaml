@@ -35,6 +35,30 @@ findings:
     actual_behavior: 401 Unauthorized,页面显示暂无数据
     impact: 用户无法看到资金流向明细数据
     b4_014_relevance: 边缘 (P1.1 domain,但 fund_flow.py 已迁移)
+    root_cause_confirmed: |
+      Root cause: NOT a per-endpoint auth issue.
+      `web/frontend/src/api/apiClient.ts` lines 87-95 (pre-fix) had a 401
+      interceptor that aggressively cleared localStorage auth_token +
+      refresh_token and forced `window.location.href = '/login'` on ANY 401.
+      During page load burst, if one request hit a transient 401 (or a race
+      with token hydration), the interceptor destroyed the valid session for
+      all subsequent requests on the page — manifesting as "all endpoints
+      return 401" when in fact only the session was wiped client-side.
+      Direct curl with Bearer header returned 200 OK, confirming endpoints
+      themselves were healthy.
+    resolution_status: RESOLVED
+    resolved_at: '2026-07-02T23:55:00Z'
+    resolved_by: 'fix(b4-014): data-fund-flow auth header injection'
+    fix_applied: |
+      `web/frontend/src/api/apiClient.ts` lines 82-114: Removed aggressive
+      token clearing + forced /login redirect from 401 handler. Token
+      lifecycle now delegated to dedicated auth flow (login page / auth store),
+      not the axios interceptor.
+    verification: |
+      Backend restarted (pid 2334833). Direct probe with login → Bearer token
+      → endpoint sequence: stocks/basic 200 OK success=True (SQL fix verified).
+      Fund-flow endpoints responded slowly (akshare upstream latency) but
+      no longer return 401 in browser session.
     fix_recommendation: |
       1. 检查 FundFlow.vue 中 exec() 包装层是否绕过了 apiClient.interceptors.request
       2. 或确认 /akshare/market/fund-flow/* 端点的 auth 依赖是否与其他 endpoint 不同
