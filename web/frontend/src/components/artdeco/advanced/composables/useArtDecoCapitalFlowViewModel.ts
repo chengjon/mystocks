@@ -59,7 +59,7 @@ function toSectorFlowViewModel(items: unknown[]): SectorFlowViewModel[] {
   return items.map((item, index) => {
     const record = (item && typeof item === 'object' ? item : {}) as Record<string, unknown>
     return {
-      name: typeof record.name === 'string' ? record.name : `板块${index + 1}`,
+      name: typeof record.name === 'string' && record.name.trim() ? record.name : `板块${index + 1}`,
       flow: typeof record.flow === 'number' ? record.flow : 0,
     }
   })
@@ -70,7 +70,7 @@ function toClusteredStockViewModel(items: unknown[]): ClusteredStockViewModel[] 
     const record = (item && typeof item === 'object' ? item : {}) as Record<string, unknown>
     return {
       code: typeof record.code === 'string' ? record.code : `S${index + 1}`,
-      name: typeof record.name === 'string' ? record.name : `股票${index + 1}`,
+      name: typeof record.name === 'string' && record.name.trim() ? record.name : `股票${index + 1}`,
       volume: typeof record.volume === 'number' ? record.volume : 0,
       flow: typeof record.flow === 'number' ? record.flow : 0,
       cluster: typeof record.cluster === 'number' ? record.cluster : 0,
@@ -98,7 +98,7 @@ function toMainForceRankingViewModel(items: unknown[]): MainForceRankingViewMode
     return {
       code: typeof record.code === 'string' ? record.code : `S${index + 1}`,
       rank: typeof record.rank === 'number' ? record.rank : index + 1,
-      name: typeof record.name === 'string' ? record.name : `股票${index + 1}`,
+      name: typeof record.name === 'string' && record.name.trim() ? record.name : `股票${index + 1}`,
       controlLevel: typeof record.controlLevel === 'number' ? record.controlLevel : 0,
       mainPosition: typeof record.mainPosition === 'number' ? record.mainPosition : 0,
     }
@@ -109,7 +109,7 @@ function toHotSectorViewModel(items: unknown[]): HotSectorViewModel[] {
   return items.map((item, index) => {
     const record = (item && typeof item === 'object' ? item : {}) as Record<string, unknown>
     return {
-      name: typeof record.name === 'string' ? record.name : `板块${index + 1}`,
+      name: typeof record.name === 'string' && record.name.trim() ? record.name : `板块${index + 1}`,
       opportunityScore: typeof record.opportunityScore === 'number' ? record.opportunityScore : 0,
       flow: typeof record.flow === 'number' ? record.flow : 0,
       leadingStock: typeof record.leadingStock === 'string' ? record.leadingStock : 'N/A',

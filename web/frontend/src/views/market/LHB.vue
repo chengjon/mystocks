@@ -79,7 +79,6 @@
 
 <script setup lang="ts">
 import { computed, getCurrentInstance, onMounted, ref, watch } from 'vue'
-import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import { apiClient } from '@/api/apiClient'
 import { ArtDecoButton, ArtDecoCard, ArtDecoHeader, ArtDecoIcon, ArtDecoSelect, ArtDecoStatCard, ArtDecoTable } from '@/components/artdeco'
 import { extractDragonTigerRows, type DragonTigerRow } from './dragonTigerData'
@@ -102,7 +101,6 @@ const props = withDefaults(defineProps<Props>(), {
   systemConfig: undefined
 })
 const emit = defineEmits(['date-change', 'filter-change'])
-const { exec } = useArtDecoApi()
 const instance = getCurrentInstance()
 const internalRows = ref<DragonTigerRow[]>([])
 const currentDate = ref(props.lhbDate)
@@ -173,12 +171,21 @@ const columns = [
 ]
 
 const fetchDragonTigerRows = async () => {
-  const data = await exec(() => apiClient.get('/v2/market/lhb', { params: { limit: 100 } }), {
-    silent: true,
-  })
+  let data: unknown
+  try {
+    data = await apiClient.get('/v1/market/lhb', { params: { limit: 100 } })
+  } catch (err) {
+    console.error('[LHB] fetch failed', err)
+    internalRows.value = []
+    return
+  }
 
+  const payload: unknown =
+    Array.isArray(data) ? data :
+    (data && typeof data === 'object' && 'data' in (data as Record<string, unknown>)) ?
+      ((data as { data?: unknown }).data ?? []) : data
   internalRows.value = extractDragonTigerRows(
-    data && typeof data === 'object' ? (data as { data?: unknown[] }).data ?? data : data,
+    payload,
     currentFilter.value,
     currentDate.value,
   )
