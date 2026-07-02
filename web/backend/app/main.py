@@ -274,10 +274,51 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"⚠️ Failed to schedule dashboard market-overview prewarm: {e}")
 
+    # ExtraSource adapters 注册 (B4.014 Layer 1)
+    # lifespan 启动期动态 import + 实例化 + register_extra_source。
+    # 静态校验(与 OPENSTOCK_STATIC_CATEGORIES 重叠 / name 冲突)失败 → 启动 fail。
+    try:
+        from .services.extra_source import (
+            dump_registered_snapshot,
+            register_extra_source,
+        )
+
+        adapter_paths = settings.extra_source_adapters
+        if adapter_paths:
+            import importlib
+
+            for path in adapter_paths:
+                module_path, _, class_name = path.rpartition(".")
+                if not module_path or not class_name:
+                    raise ValueError(f"EXTRA_SOURCE_ADAPTERS 条目格式错误,期望 'module.path.ClassName', 实际 '{path}'")
+                module = importlib.import_module(module_path)
+                adapter_cls = getattr(module, class_name)
+                adapter_instance = adapter_cls()
+                register_extra_source(adapter_instance)
+                logger.info("✅ ExtraSource adapter registered: %s", path)
+        else:
+            logger.info("ℹ️ No EXTRA_SOURCE_ADAPTERS configured; skipping ExtraSource registration")
+
+        # Phase 3 CI 读此 snapshot 做 TEMP_OVERRIDE 过期阻断
+        dump_registered_snapshot(".extra-source-snapshot.json")
+        logger.info("✅ ExtraSource registry snapshot dumped to .extra-source-snapshot.json")
+    except Exception as e:
+        logger.error(f"❌ ExtraSource registration failed: {e}")
+        raise
+
     yield  # 应用运行期间
 
     # 关闭时执行
     logger.info("🛑 Shutting down MyStocks Web API")
+
+    # 清理 ExtraSource registry (测试隔离 + 防止跨启动残留)
+    try:
+        from .services.extra_source import clear_registered
+
+        clear_registered()
+        logger.info("✅ ExtraSource registry cleared")
+    except Exception as e:
+        logger.warning(f"⚠️ Failed to clear ExtraSource registry: {e}")
 
     # 关闭实时市值系统 (Phase 12.4)
     try:

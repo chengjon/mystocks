@@ -209,6 +209,7 @@ class Settings(BaseSettings):
             self.celery_broker_url = self.default_celery_broker_url
         if not self.celery_result_backend:
             self.celery_result_backend = self.default_celery_result_backend
+
     celery_task_track_started: bool = True
     celery_task_time_limit: int = 3600  # 任务超时时间（秒），默认1小时
     celery_enable_utc: bool = True
@@ -230,6 +231,21 @@ class Settings(BaseSettings):
     wencai_retry_count: int = 3
     wencai_default_pages: int = 1
     wencai_auto_refresh: bool = True
+
+    # ExtraSource adapters (B4.014 Layer 1 — consumer-side auxiliary data sources)
+    # 逗号分隔的 import paths, 例如:
+    #   EXTRA_SOURCE_ADAPTERS=app.services.extra_source_adapters.BigDealAdapter
+    # lifespan 启动期会逐个 import + 实例化 + register_extra_source。
+    # 留空则不注册任何 ExtraSource (OpenStock 已覆盖的 70 静态 category 不算在内)。
+    extra_source_adapters_str: str = Field(
+        default="",
+        validation_alias="EXTRA_SOURCE_ADAPTERS",
+    )
+
+    @property
+    def extra_source_adapters(self) -> List[str]:
+        """将逗号分隔的 adapter import paths 转为列表,仅保留非空项。"""
+        return [item.strip() for item in self.extra_source_adapters_str.split(",") if item.strip()]
 
     model_config = SettingsConfigDict(
         env_file=_ENV_FILE_PATH, env_file_encoding="utf-8", case_sensitive=False, extra="allow"
