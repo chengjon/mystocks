@@ -24,18 +24,24 @@
 
 ## Phase 2 — 路由层与启动集成
 
-- [ ] **2.1** 修改 `web/backend/app/services/data_source_factory/data_source_mode.py`
-  - [ ] `HybridDataSource` 注入 `extra_source_registry` 引用
-  - [ ] fallback 链扩展:Real(OpenStock) → ExtraSource(registry 内 category 命中)→ Mock(test) / UNSUPPORTED_CATEGORY(prod)
-  - [ ] adapter `fetch()` 抛异常 → 捕获并包装为 `DATA_GATEWAY_UNAVAILABLE`,带 `adapter` / `cause` 上下文;不重试,不切 OpenStock
+- [ ] **2.1** 新增 `web/backend/app/services/extra_source/router.py`
+  - [ ] 不动 `data_source_factory/data_source_mode.py`:`HybridDataSource` 是 endpoint-driven,与 category 路由抽象错位
+  - [ ] `ExtraSourceRouter.fetch(category, params)`:
+    * `category ∈ OPENSTOCK_STATIC_CATEGORIES` → 抛 `UnsupportedCategoryError`(编程错误)
+    * `category` 在 registry 中 → 调 `adapter.fetch(params)`
+    * 其他 → 抛 `UnsupportedCategoryError`(handler 映射为 `UNSUPPORTED_CATEGORY` 信封)
+  - [ ] adapter `fetch()` 抛异常 → 捕获并包装为 `ExtraSourceFetchError`,带 `adapter` / `cause` 上下文;不重试,不切 OpenStock(handler 映射为 `DATA_GATEWAY_UNAVAILABLE`)
 - [ ] **2.2** FastAPI lifespan 注入 ExtraSource 注册步骤
   - [ ] `web/backend/app/main.py` lifespan 启动阶段遍历配置中的 ExtraSource adapter 实例
   - [ ] 调用 `register_extra_source(adapter)`,校验失败则启动 fail
-  - [ ] 关闭阶段清理 `_registered` dict(测试隔离用)
+  - [ ] 关闭阶段调用 `clear_registered()`(测试隔离用)
+  - [ ] 启动注册完成后调用 `dump_registered_snapshot(".extra-source-snapshot.json")`(Phase 3 CI 读)
 - [ ] **2.3** 集成测试 `tests/integration/services/extra_source/test_lifespan_registration.py`
   - [ ] 启动时正常注册一个 stub ExtraSource
   - [ ] 启动时重叠 category 触发启动 fail
-  - [ ] 业务路由调用 ExtraSource 命中 category 时返回数据
+  - [ ] 启动后 `ExtraSourceRouter.fetch(category)` 命中 stub adapter 返回数据
+  - [ ] `ExtraSourceRouter.fetch(static_category)` 抛 `UnsupportedCategoryError`
+  - [ ] `ExtraSourceRouter.fetch(unknown_category)` 抛 `UnsupportedCategoryError`
 
 ## Phase 3 — TEMP_OVERRIDE 治理
 

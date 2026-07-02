@@ -138,42 +138,41 @@ And the routing layer does not inspect `data` contents or second-guess adapter d
 So that data completeness semantics belong to the adapter contract, not the routing layer
 ```
 
-### Requirement: HybridDataSource routing precedence
+### Requirement: ExtraSourceRouter routing precedence
 
-`HybridDataSource` at `web/backend/app/services/data_source_factory/data_source_mode.py` SHALL route data requests in the following order: (1) categories in `OPENSTOCK_STATIC_CATEGORIES` always go to `OpenStockClient`; (2) categories registered with an ExtraSource adapter go to that adapter; (3) categories that match neither fall back to Mock (test only) or return `UNSUPPORTED_CATEGORY` in production mode. The "static category always uses OpenStock" invariant is enforced structurally by Layer 1 registration rejection (see `Static category overlap rejection at registration`), so no runtime routing scenario for static categories is needed.
+`ExtraSourceRouter` at `web/backend/app/services/extra_source/router.py` SHALL provide category-driven routing with the following precedence: (1) categories in `OPENSTOCK_STATIC_CATEGORIES` are NEVER routed through ExtraSourceRouter — route handlers MUST call `OpenStockClient` directly for those; (2) categories registered with an ExtraSource adapter are dispatched to that adapter via `router.fetch(category, params)`; (3) categories that match neither raise `UnsupportedCategoryError` (the calling route handler maps this to the `UNSUPPORTED_CATEGORY` error envelope). `ExtraSourceRouter` is independent of `HybridDataSource` (which remains endpoint-driven and unchanged by this proposal).
 
 #### Scenario: ExtraSource category routes to adapter
 
 ```gherkin
 Given an ExtraSource adapter is registered with category `"SOME_BESPOKE_CATEGORY"` and `expires_on == None`
 And `"SOME_BESPOKE_CATEGORY"` is not in `OPENSTOCK_STATIC_CATEGORIES`
-When a route handler requests `"SOME_BESPOKE_CATEGORY"`
-Then the routing layer invokes `adapter.fetch(params)`
+When a route handler calls `ExtraSourceRouter.fetch("SOME_BESPOKE_CATEGORY", params)`
+Then the router locates the adapter via `find_by_category`
+And invokes `adapter.fetch(params)`
 And returns `ExtraSourceResult` to the handler
 And `OpenStockClient` is not contacted
 ```
 
-#### Scenario: Unknown category in test mode falls back to Mock
+#### Scenario: Unknown category raises UnsupportedCategoryError
 
 ```gherkin
-Given the application is running in test mode
-And a category `"UNKNOWN_X"` is requested
+Given a route handler calls `ExtraSourceRouter.fetch("UNKNOWN_X", params)`
 And `"UNKNOWN_X"` is not in `OPENSTOCK_STATIC_CATEGORIES`
 And no ExtraSource adapter is registered for `"UNKNOWN_X"`
-When the routing decision is made
-Then the routing layer falls back to `MockDataSource`
-So that gaps in coverage are explicit and visible during testing
+When the router processes the call
+Then `UnsupportedCategoryError` is raised with a message naming `"UNKNOWN_X"`
+And the route handler maps it to the `UNSUPPORTED_CATEGORY` error envelope
+And no upstream provider is contacted
+So that gaps in coverage fail loudly rather than silently degrading
 ```
 
-#### Scenario: Unknown category in production returns UNSUPPORTED_CATEGORY
+#### Scenario: Static category passed to ExtraSourceRouter raises
 
 ```gherkin
-Given the application is running in production mode
-And a category `"UNKNOWN_X"` is requested
-And `"UNKNOWN_X"` is not in `OPENSTOCK_STATIC_CATEGORIES`
-And no ExtraSource adapter is registered for `"UNKNOWN_X"`
-When the routing decision is made
-Then the routing layer returns the `UNSUPPORTED_CATEGORY` error envelope
-And no upstream provider is contacted
-So that gaps in coverage fail loudly rather than silently degrading to mock data
+Given a route handler mistakenly calls `ExtraSourceRouter.fetch("NORTHBOUND_FLOW", params)`
+And `"NORTHBOUND_FLOW"` is in `OPENSTOCK_STATIC_CATEGORIES`
+When the router processes the call
+Then `UnsupportedCategoryError` is raised with a message indicating the category belongs to OpenStock
+So that programmer errors are caught at the routing boundary rather than silently dispatching a shadow implementation
 ```

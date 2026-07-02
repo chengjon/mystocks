@@ -200,10 +200,30 @@ def register_extra_source(adapter: ExtraSourceAdapter) -> None:
 
 | 现有组件 | 与 ExtraSource 关系 |
 |---|---|
-| `OpenStockClient` (`web/backend/app/services/openstock_client.py`) | 同级,均注册到 routing layer |
-| `HybridDataSource` (`web/backend/app/services/data_source_factory/data_source_mode.py`) | 修改:fallback 链扩展为 OpenStock → ExtraSource(registry 内 category)→ Mock |
+| `OpenStockClient` (`web/backend/app/services/openstock_client.py`) | 同级,均被 route handler 显式调用(handler 决定调哪个) |
+| `ExtraSourceRouter` (`web/backend/app/services/extra_source/router.py`,本提案新增) | 接受 `category` + `params`,查 registry 命中则调 adapter,未命中返回 `UNSUPPORTED_CATEGORY`;adapter `fetch()` 异常包装为 `DATA_GATEWAY_UNAVAILABLE` 错误信封 |
+| `HybridDataSource` (`web/backend/app/services/data_source_factory/data_source_mode.py`) | **不动**。endpoint-driven 抽象层(`get_data(endpoint, params)`),内部 Real→Mock 二元 fallback,与 category 无关。语义错位:把 category-driven 路由塞进 endpoint-driven 层会污染其抽象 |
 | `src/data_sources/factory.py` (旧 factory, 514 行) | 不动,待 C2 提案处置 |
-| `FundFlowMixin` (`src/adapters/akshare/market_adapter/fund_flow.py`) | Wave 2/3 落地后,8 方法可改用 ExtraSourceAdapter 实现(独立 follow-up) |
+| `FundFlowMixin` (`src/adapters/akshare/market_adapter/fund_flow.py`) | Wave 2/3 落地后,8 方法可改用 ExtraSourceRouter 实现(独立 follow-up) |
+
+### 路由层设计选择(2026-07-02 实施期修订)
+
+初稿设想"`HybridDataSource` fallback 链扩展为 OpenStock → ExtraSource → Mock",实施期核查代码发现错位:
+
+- `HybridDataSource.get_data(endpoint, params)` 是 endpoint-driven,不知道 category 概念
+- `real_source` 是 generic HTTP wrapper,不感知 OpenStockClient vs ExtraSource 的差异
+- 在 HybridDataSource 内注入 `extra_source_registry` 需要所有调用点改签名,污染 endpoint-driven 抽象
+
+**正确路径**:ExtraSource 路由独立成 `ExtraSourceRouter`,与 `HybridDataSource` 并列存在。route handler 决定调用哪个:
+
+```text
+handler 收到请求
+├─ category ∈ OPENSTOCK_STATIC_CATEGORIES  → OpenStockClient.fetch(category, ...)
+├─ category ∈ ExtraSourceRouter.registered_categories() → router.fetch(category, params)
+└─ else → UNSUPPORTED_CATEGORY 错误信封
+```
+
+`ExtraSourceRouter` 不依赖 HybridDataSource,避免污染现有 endpoint-driven 抽象。
 
 ## 7. 不在本提案范围的后续工作
 

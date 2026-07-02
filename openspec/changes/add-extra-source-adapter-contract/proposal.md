@@ -17,7 +17,7 @@
    - 走消费者 extra source(本提案范围)
    - 还是临时过渡(`TEMP_OVERRIDE`)
 
-2. **`HybridDataSource` 的 fallback 语义只能 Real→Mock**(`data_source_mode.py:404-466`),无法表达"OpenStock 没有 → 用 extra source"。所有"OpenStock 未覆盖"的需求都只能绕过 factory 直接 `import akshare`,反向侵蚀 OpenStock 边界。
+2. **现有 routing 抽象不感知 category**。`HybridDataSource`(`data_source_mode.py:404-466`)是 endpoint-driven 的 Real→Mock 二元 fallback,既不知道 OpenStockClient 的 category 概念,也无法表达"OpenStock 没有 → 用 extra source"。所有"OpenStock 未覆盖"的需求都只能绕过 factory 直接 `import akshare`,反向侵蚀 OpenStock 边界。本提案不修改 `HybridDataSource`(那会污染其 endpoint-driven 抽象),而是新增并列的 `ExtraSourceRouter` 承载 category-driven 路由。
 
 3. **跨仓 provider-level fallback 不存在**。OpenStock 当前只有硬编码单点 fallback(eltdx→akshare for KLINES,见 `adapter_registry`),其余 70 类别均单 provider。消费者侧如果尝试给 OpenStock 已有 category 兜底,会重新引入 Round 2 已拒绝的"消费者侧容灾"反模式。
 
@@ -89,14 +89,15 @@ OpenStock 现状:硬编码单点 fallback(eltdx→akshare for KLINES),其余 70 
 - `web/backend/app/services/extra_source/__init__.py`
 - `web/backend/app/services/extra_source/contract.py`(接口定义)
 - `web/backend/app/services/extra_source/registry.py`(注册入口 + 静态校验)
+- `web/backend/app/services/extra_source/router.py`(ExtraSourceRouter,category-driven 路由)
 - `openspec/specs/.../extra-source-adapter/spec.md`(delta spec)
 
 **修改**:
-- `web/backend/app/services/data_source_factory/data_source_mode.py`(`HybridDataSource` 路由层感知 ExtraSource registry)
-- 启动 lifespan 注入 ExtraSource 注册步骤
+- `web/backend/app/main.py`(FastAPI lifespan 启动期注入 ExtraSource 注册 + dump snapshot)
 
 **不修改**:
 - OpenStock 仓任何代码(跨仓改动违反治理边界)
+- `web/backend/app/services/data_source_factory/data_source_mode.py`(`HybridDataSource` 是 endpoint-driven 抽象,与 category 路由错位;ExtraSourceRouter 与之并列存在,不污染其抽象)
 - B4.014 Wave 1 已完成的 FundFlowMixin 部分
 - 当前 `src/data_sources/factory.py`(旧 factory)—— 待 C2 提案独立处置
 
