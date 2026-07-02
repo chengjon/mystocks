@@ -194,7 +194,8 @@
             return {}
         }
 
-        const token = localStorage.getItem('access_token')
+        // auth flow stores under 'auth_token'; 'access_token' kept as fallback for legacy
+        const token = localStorage.getItem('auth_token') ?? localStorage.getItem('access_token')
         return token ? { Authorization: `Bearer ${token}` } : {}
     }
 

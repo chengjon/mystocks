@@ -29,33 +29,62 @@ findings:
         - 添加 console.log 在路由 beforeEach 中观察
     b4_014_relevance: direct (页面完全不可访问,严重 regression)
     root_cause_confirmed: |
-      Root cause: cascading side-effect from apiClient.ts 401 interceptor.
+      Root cause: localStorage key mismatch in indicator-page HTTP clients.
       Chain:
-        1. Component mounts → fires `/api/v1/data/stocks/basic` (page api)
-        2. Backend `pd.read_sql` bug in src/data_access/postgresql_access.py
-           raised "not all arguments converted during string format" when
-           query() called with where=None, params=None → endpoint returned 500
-           (which the request layer sometimes surfaced as 401 during cold-start
-           race conditions)
-        3. apiClient.ts lines 87-95 (pre-fix) reacted to 401 by clearing
-           localStorage auth_token and forcing window.location.href = '/login'
-        4. Login page saw cleared token → SPA reload landed on /dashboard
-           (default redirect for unauthenticated root visit)
-      No router-level redirect for /data/indicator exists. The redirect was
-      a symptom of the apiClient interceptor destroying the session.
+        1. Page mounts → ArtDecoDataAnalysis.vue → useDataAnalysis composable
+           fires two requests:
+           - loadStockUniverse(): raw axios.get(stocks/basic) with
+             buildAuthHeaders()
+           - loadIndicatorRegistry(): indicatorService.getRegistry()
+        2. BOTH helpers read the wrong localStorage key:
+           - useDataAnalysis.ts:25 `localStorage.getItem('access_token')`
+           - indicatorService.ts:220 `localStorage.getItem('access_token')`
+           But the auth store (stores/auth.ts:94) writes the token under
+           'auth_token'. So both helpers got `null` → empty Authorization
+           header.
+        3. Backend rejected the empty Bearer header with 401.
+        4. indicatorService.ts:245 401 interceptor fired
+           `window.location.href = '/login'` (full page reload).
+        5. Login page hydrated, auth store initializeAuth() saw valid
+           'auth_token' still in localStorage (the removeItem('access_token')
+           call in step 4 cleared the wrong key), returned isAuthenticated=true.
+        6. authGuard (guards.ts:62-63) redirected to HOME_ROUTE_NAME='dashboard'.
+      Symptom: visit /data/indicator → 3-4s later URL becomes /dashboard.
     resolution_status: RESOLVED
-    resolved_at: '2026-07-02T23:55:00Z'
-    resolved_by: 'fix(b4-014): data-indicator redirect root cause'
+    resolved_at: '2026-07-03T02:20:00Z'
+    resolved_by: 'fix(b4-014): indicator page localStorage key mismatch'
     fix_applied: |
-      Two fixes:
-        1. `src/data_access/postgresql_access.py` query(): Only pass `params`
-           to pd.read_sql when non-None, avoiding SQL/params format mismatch.
-        2. `web/frontend/src/api/apiClient.ts` 401 handler: Removed forced
-           token clearing + /login redirect. Token lifecycle now managed by
-           dedicated auth flow.
+      Three coordinated fixes:
+        1. `web/frontend/src/composables/market/useDataAnalysis.ts:25-26`
+           buildAuthHeaders: read 'auth_token' first, fall back to
+           'access_token' for legacy callers.
+        2. `web/frontend/src/services/indicatorService.ts:220-221` request
+           interceptor: same key precedence as above.
+        3. `web/frontend/src/services/indicatorService.ts:244-246` 401 handler:
+           clear 'auth_token' AND 'auth_user' (was clearing the non-existent
+           'access_token', leaving session orphaned).
+        4. `web/frontend/src/views/stocks/Screener.vue:197-198` same
+           buildAuthHeaders fix (twin code path).
+      P0 helper fix from prior commit was necessary but insufficient:
+        - `postgresql_access.py` query() params=None guard eliminated the
+          backend 500 fallback path.
+        - `apiClient.ts` 401 interceptor cleanup prevented the apiClient
+          instance from destroying sessions on transient 401s.
+        But the indicator page used raw axios + indicatorService (separate
+        axios instances), bypassing apiClient entirely.
     verification: |
-      Backend restarted (pid 2334833). Direct probe: stocks/basic now returns
-      200 success=True with rows=5 (SQL fix confirmed).
+      Browser smoke (2026-07-03):
+        - Login as admin/admin123 → token stored under 'auth_token'.
+        - Navigate to /data/indicator.
+        - Page title: '指标分析 - MyStocks'.
+        - Wait 8s: URL stays at /data/indicator.
+        - Snapshot shows full indicator library rendered:
+          趋势指标 7, 动量指标 7, 波动指标 3, 成交量指标 3, 形态指标 3
+          (23 total, matches /api/v1/indicators/registry count).
+      Backend probe:
+        - /api/v1/data/stocks/basic?limit=5 → 200 success=true rows=5
+        - /api/v1/data/stocks/basic?limit=200 → 200 success=true
+        - /api/v1/indicators/registry → 200 total_count=23
     impact: 用户无法访问指标分析页面
     fix_recommendation: |
       1. 读 web/frontend/src/router/index.ts line 323 redirect 逻辑

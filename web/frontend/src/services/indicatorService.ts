@@ -217,7 +217,8 @@ const createApiClient = (): AxiosInstance => {
   // 请求拦截器: 添加认证token
   client.interceptors.request.use(
     (config) => {
-      const token = localStorage.getItem('access_token')
+      // auth flow stores under 'auth_token'; 'access_token' kept as fallback for legacy
+      const token = localStorage.getItem('auth_token') ?? localStorage.getItem('access_token')
       if (token) {
         config.headers.Authorization = `Bearer ${token}`
       }
@@ -241,7 +242,8 @@ const createApiClient = (): AxiosInstance => {
 
         if (status === 401) {
           // 未授权,清除token并跳转登录
-          localStorage.removeItem('access_token')
+          localStorage.removeItem('auth_token')
+          localStorage.removeItem('auth_user')
           window.location.href = '/login'
         } else if (status === 422) {
           // 验证错误
