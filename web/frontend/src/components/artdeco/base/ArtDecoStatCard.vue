@@ -22,7 +22,7 @@
             v-if="change || showChange"
             class="artdeco-stat-change"
             :class="changeClass"
-            :aria-label="`变化: ${displayChange}`"
+            :aria-label="`${label} 变化: ${displayChange}`"
         >
             <span v-if="change > 0" class="artdeco-stat-arrow" aria-hidden="true">▲</span>
             <span v-else-if="change < 0" class="artdeco-stat-arrow" aria-hidden="true">▼</span>
