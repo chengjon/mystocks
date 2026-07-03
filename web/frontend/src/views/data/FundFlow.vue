@@ -103,6 +103,11 @@
         </div>
 
         <ArtDecoTable :columns="columns" :data="displayStockRanking" />
+
+        <div v-if="fetchErrorMessage" class="fund-error-banner" role="alert">
+          <ArtDecoIcon name="alert" />
+          <span>{{ fetchErrorMessage }}</span>
+        </div>
       </ArtDecoCard>
     </section>
   </div>
@@ -110,7 +115,6 @@
 
 <script setup lang="ts">
 import { computed, getCurrentInstance, onMounted, ref, watch } from 'vue'
-import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import { apiClient } from '@/api/apiClient'
 import { ArtDecoButton, ArtDecoCard, ArtDecoHeader, ArtDecoIcon, ArtDecoSelect, ArtDecoStatCard, ArtDecoTable } from '@/components/artdeco'
 import ArtDecoChart from '@/components/artdeco/charts/ArtDecoChart.vue'
@@ -157,11 +161,11 @@ const props = withDefaults(defineProps<Props>(), {
   systemConfig: undefined
 })
 const emit = defineEmits(['filter-change', 'ranking-change'])
-const { exec } = useArtDecoApi()
 const instance = getCurrentInstance()
 const internalFundData = ref<FundData>(defaultFundData())
 const internalStockRanking = ref<StockRankingRow[]>([])
 const internalTrendData = ref<TrendItem[]>([])
+const fetchErrorMessage = ref('')
 const currentTimeFilter = ref(props.activeTimeFilter)
 const currentRankingType = ref(props.rankingType)
 
@@ -277,20 +281,55 @@ function formatDate(value: Date): string {
   return value.toISOString().slice(0, 10)
 }
 
+interface UnifiedResponseLike {
+  success?: boolean
+  code?: number
+  message?: string
+  data?: unknown
+}
+
 async function fetchFundFlowData() {
   const end = new Date()
   const start = new Date()
   start.setDate(end.getDate() - 30)
 
-  const [summary, bigDeal] = await Promise.all([
-    exec(() => apiClient.get('/akshare/market/fund-flow/hsgt-summary', {
-      params: {
-        start_date: formatDate(start),
-        end_date: formatDate(end),
-      },
-    }), { silent: true }),
-    exec(() => apiClient.get('/akshare/market/fund-flow/big-deal'), { silent: true }),
-  ])
+  let summary: unknown = null
+  let bigDeal: unknown = null
+  const errors: Array<{ endpoint: string; status: number | string }> = []
+
+  const summaryResp = await apiClient.get('/akshare/market/fund-flow/hsgt-summary', {
+    params: {
+      start_date: formatDate(start),
+      end_date: formatDate(end),
+    },
+  }) as UnifiedResponseLike
+  if (summaryResp?.success === false) {
+    errors.push({ endpoint: 'hsgt-summary', status: summaryResp.code ?? 'unknown' })
+  } else {
+    summary = summaryResp
+  }
+
+  const bigDealResp = await apiClient.get('/akshare/market/fund-flow/big-deal') as UnifiedResponseLike
+  if (bigDealResp?.success === false) {
+    errors.push({ endpoint: 'big-deal', status: bigDealResp.code ?? 'unknown' })
+  } else {
+    bigDeal = bigDealResp
+  }
+
+  if (errors.length > 0) {
+    const hasUnauthorized = errors.some((e) => e.status === 401)
+    if (hasUnauthorized) {
+      fetchErrorMessage.value = '登录已过期,请重新登录后刷新'
+    } else if (errors.length === 2) {
+      fetchErrorMessage.value = '资金流向数据加载失败,请点击"刷新资金流"重试'
+    } else {
+      const failed = errors[0].endpoint
+      fetchErrorMessage.value = `${failed} 数据加载失败,展示可能不完整`
+    }
+    console.error('[FundFlow] partial fetch failures', errors)
+  } else {
+    fetchErrorMessage.value = ''
+  }
 
   internalFundData.value = buildFundOverview(summary, bigDeal)
   internalTrendData.value = buildFundTrend(summary)
@@ -429,6 +468,19 @@ onMounted(() => {
 
 .ranking-select {
   width: calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-20) + var(--artdeco-spacing-20) - var(--artdeco-spacing-4));
+}
+
+.fund-error-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--artdeco-spacing-2);
+  margin-top: var(--artdeco-spacing-4);
+  padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
+  border: 1px solid var(--artdeco-color-warning, #d97706);
+  border-radius: var(--artdeco-radius-md, 4px);
+  background: rgba(217, 119, 6, 0.08);
+  color: var(--artdeco-color-warning, #d97706);
+  font-size: var(--artdeco-font-size-sm, 14px);
 }
 
 @media (width <= 48rem) {
