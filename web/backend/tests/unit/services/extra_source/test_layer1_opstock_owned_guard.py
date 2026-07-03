@@ -46,7 +46,6 @@ from app.services.extra_source import (
     register_extra_source,
 )
 
-
 # Six categories owned by OpenStock that historically leaked through
 # multi_source_manager. They MUST be in the static inventory; if any
 # drift-removes them, this test fails and forces a human decision.
