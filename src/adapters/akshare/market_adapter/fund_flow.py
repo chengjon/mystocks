@@ -25,7 +25,9 @@ class FundFlowMixin:
             df = await _get_hsgt_summary()
 
             if df is None or df.empty:
-                self.logger.warning("[Akshare] 未能获取到沪深港通资金流向汇总，日期范围: %s 到 %s", start_date, end_date)
+                self.logger.warning(
+                    "[Akshare] 未能获取到沪深港通资金流向汇总，日期范围: %s 到 %s", start_date, end_date
+                )
                 return pd.DataFrame()
 
             self.logger.info("[Akshare] 成功获取沪深港通资金流向汇总，共 %s 行", len(df))
@@ -58,7 +60,9 @@ class FundFlowMixin:
             df = await _get_hsgt_detail()
 
             if df is None or df.empty:
-                self.logger.warning("[Akshare] 未能获取到沪深港通资金流向明细，日期范围: %s 到 %s", start_date, end_date)
+                self.logger.warning(
+                    "[Akshare] 未能获取到沪深港通资金流向明细，日期范围: %s 到 %s", start_date, end_date
+                )
                 return pd.DataFrame()
 
             self.logger.info("[Akshare] 成功获取沪深港通资金流向明细，共 %s 行", len(df))
@@ -167,7 +171,8 @@ class FundFlowMixin:
         """
         self.logger.warning(
             "[Akshare] stock_hsgt_north_acc_flow_in_em 在 akshare 1.18.60 已移除, "
-            "symbol=%s 的北向个股统计需切换 OpenStock NORTHBOUND_HOLDING", symbol
+            "symbol=%s 的北向个股统计需切换 OpenStock NORTHBOUND_HOLDING",
+            symbol,
         )
         return pd.DataFrame()
 
