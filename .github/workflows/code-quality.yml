@@ -26,6 +26,8 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
         fetch-depth: 0
 
     - name: Set up Python
@@ -418,6 +420,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -460,6 +465,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -517,6 +525,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -563,6 +574,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
 
     - name: Install security tools
       run: |
@@ -833,6 +847,8 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
         fetch-depth: 0
 
     - name: Set up Python

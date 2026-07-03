@@ -101,6 +101,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
         fetch-depth: 0
 
     - name: Run frontend optimization scope detection
@@ -175,6 +177,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -204,6 +209,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
         fetch-depth: 0
 
     - name: Set up Python
@@ -274,6 +281,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -467,6 +477,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
 
     - name: Run containerized runtime smoke
       run: bash scripts/run_containerized_runtime_smoke.sh
@@ -568,6 +581,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -771,6 +787,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
         fetch-depth: 0
 
     - name: Set up Node.js
@@ -901,6 +919,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
 
     - name: Set up Node.js
       uses: actions/setup-node@v4

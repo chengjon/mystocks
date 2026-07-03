@@ -27,6 +27,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
 
     - name: Check file-test framework readiness
       id: check
@@ -73,6 +76,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5

@@ -45,6 +45,8 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
         fetch-depth: 0  # 获取完整历史用于质量分析
 
     - name: Set up Python
@@ -172,6 +174,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -207,6 +212,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
 
     - name: Set up Node.js
       uses: actions/setup-node@v4
@@ -235,6 +243,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -266,6 +277,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
 
     - name: Validate test orchestration scripts
       run: |
@@ -301,6 +315,8 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
         fetch-depth: 0  # 获取完整历史用于趋势分析
 
     - name: Set up Python
@@ -546,6 +562,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
 
     - name: Download all artifacts
       uses: actions/download-artifact@v4

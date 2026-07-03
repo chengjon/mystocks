@@ -23,6 +23,8 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
         fetch-depth: 0
 
     - name: Run type-check scope detection
@@ -93,6 +95,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -213,6 +218,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -303,6 +311,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -376,6 +387,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -458,6 +472,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -559,6 +576,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -686,6 +706,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
@@ -712,6 +735,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4

@@ -49,6 +49,8 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
+          submodules: recursive
+          token: ${{ secrets.SUBMODULE_PAT }}
           fetch-depth: 0
 
       - name: Generate Frontend Cache Key
@@ -164,6 +166,9 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.SUBMODULE_PAT }}
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -231,6 +236,9 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.SUBMODULE_PAT }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -308,6 +316,9 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.SUBMODULE_PAT }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -415,6 +426,9 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.SUBMODULE_PAT }}
 
       - name: Download All Artifacts
         uses: actions/download-artifact@v4
@@ -552,6 +566,9 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.SUBMODULE_PAT }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -628,6 +645,9 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.SUBMODULE_PAT }}
 
       - name: Deploy to Staging Environment
         run: |
@@ -655,6 +675,9 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.SUBMODULE_PAT }}
 
       - name: Deploy to Production Environment
         run: |

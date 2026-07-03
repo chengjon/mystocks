@@ -18,6 +18,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -46,6 +49,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
         fetch-depth: 0
 
     - name: Scan for secrets
@@ -62,6 +67,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
         fetch-depth: 0
 
     - name: Detect Bandit scope
@@ -105,6 +112,9 @@ jobs:
     if: needs.security-scope-detect.outputs.bandit_required == 'true'
     steps:
     - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -136,6 +146,9 @@ jobs:
     if: github.event_name == 'pull_request'
     steps:
     - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
 
     - name: Build test container
       run: |
@@ -159,6 +172,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
 
     - name: Check license compliance
       run: |
@@ -184,6 +200,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
 
     - name: Download security reports
       uses: actions/download-artifact@v4

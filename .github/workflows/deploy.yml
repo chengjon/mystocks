@@ -47,6 +47,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
@@ -168,6 +171,8 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
+        submodules: recursive
+        token: ${{ secrets.SUBMODULE_PAT }}
         fetch-depth: 0
 
     - name: Verify production readiness

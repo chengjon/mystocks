@@ -35,6 +35,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.SUBMODULE_PAT }}
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -127,6 +130,9 @@ jobs:
     
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.SUBMODULE_PAT }}
 
       - name: Setup Python
         uses: actions/setup-python@v5
