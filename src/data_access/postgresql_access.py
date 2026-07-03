@@ -470,7 +470,9 @@ class PostgreSQLDataAccess:
         """
         try:
             # 根据分类获取表名
-            table_name = classification.value.lower() if hasattr(classification, 'value') else str(classification).lower()
+            table_name = (
+                classification.value.lower() if hasattr(classification, "value") else str(classification).lower()
+            )
 
             # 构建查询条件
             where_clauses = []
@@ -486,7 +488,7 @@ class PostgreSQLDataAccess:
             result = self.query(sql, tuple(params) if params else None)
 
             if result is not None and not result.empty:
-                return result.to_dict('records')
+                return result.to_dict("records")
             return []
         except Exception:
             logger.error("PostgreSQL按分类加载数据失败: %(e)s")
