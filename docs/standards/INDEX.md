@@ -44,6 +44,9 @@
 - [NEXT_STEPS_SUMMARY](NEXT_STEPS_SUMMARY.md)
   - *MyStocks 项目 - 下一步任务总结*
 
+- [OPENSTOCK_SYNC_STRATEGY](OPENSTOCK_SYNC_STRATEGY.md)
+  - *OpenStock 数据契约同步策略（submodule vs CI 跨仓拉取 vs 发布制）决策文档*
+
 - [PHASE0_CREDENTIAL_ROTATION_GUIDE](PHASE0_CREDENTIAL_ROTATION_GUIDE.md)
   - *PHASE0 凭据轮换指南（模板）*
 
