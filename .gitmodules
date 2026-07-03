@@ -1,0 +1,3 @@
+[submodule "deps/openstock"]
+	path = deps/openstock
+	url = git@github.com:chengjon/openstock.git
