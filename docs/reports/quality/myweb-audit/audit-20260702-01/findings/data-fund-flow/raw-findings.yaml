@@ -78,6 +78,20 @@ findings:
       即使 401 修复后,这个问题仍可能让页面显示空。
     b4_014_relevance: direct (与 batch-01 LHB 同模式,需对齐 payload 提取)
     fix_recommendation: 适配 data.data 双重嵌套形态(参考 LHB.vue fix af29d15d6)
+    resolution_status: RESOLVED
+    resolved_at: '2026-07-03T02:50:00Z'
+    resolved_by: 'fix(b4-014): fund-flow extractRows handles double-nested envelope'
+    fix_applied: |
+      `web/frontend/src/views/data/fundFlowPageData.ts:77-99` extractRows now
+      walks one level deeper: when payload.data is an object containing data:[]
+      (akshare double-nested envelope), returns the inner array. Verified with
+      6 in-place test cases covering bare array, single nest, double nest,
+      empty object, null, and real hsgt-summary shape.
+    verification: |
+      Backend probe (2026-07-03): login → /api/akshare/market/fund-flow/
+      hsgt-summary?start_date=2026-07-01&end_date=2026-07-02 → 200 with body
+      `{"success":true,"data":{"data":[{"交易日":"2026-07-02",...}]}}`.
+      extractRows now correctly returns the inner array.
   - id: data-fund-flow-003
     severity: MEDIUM
     dimension: visual

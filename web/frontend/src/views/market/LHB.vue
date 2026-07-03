@@ -72,6 +72,11 @@
         </div>
 
         <ArtDecoTable :columns="columns" :data="displayRows" />
+
+        <div v-if="fetchErrorMessage" class="lhb-error-banner" role="alert">
+          <ArtDecoIcon name="alert" />
+          <span>{{ fetchErrorMessage }}</span>
+        </div>
       </ArtDecoCard>
     </section>
   </div>
@@ -103,6 +108,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(['date-change', 'filter-change'])
 const instance = getCurrentInstance()
 const internalRows = ref<DragonTigerRow[]>([])
+const fetchErrorMessage = ref('')
 const currentDate = ref(props.lhbDate)
 const currentFilter = ref(props.activeFilter)
 
@@ -174,9 +180,14 @@ const fetchDragonTigerRows = async () => {
   let data: unknown
   try {
     data = await apiClient.get('/v1/market/lhb', { params: { limit: 100 } })
+    fetchErrorMessage.value = ''
   } catch (err) {
     console.error('[LHB] fetch failed', err)
     internalRows.value = []
+    const status = (err as { response?: { status?: number } })?.response?.status
+    fetchErrorMessage.value = status === 401
+      ? '登录已过期,请重新登录后刷新'
+      : `加载失败 (HTTP ${status ?? 'unknown'}),请点击"刷新榜单"重试`
     return
   }
 
@@ -301,6 +312,19 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: var(--artdeco-spacing-4);
+}
+
+.lhb-error-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--artdeco-spacing-2);
+  margin-top: var(--artdeco-spacing-4);
+  padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
+  border: 1px solid var(--artdeco-color-warning, #d97706);
+  border-radius: var(--artdeco-radius-md, 4px);
+  background: rgba(217, 119, 6, 0.08);
+  color: var(--artdeco-color-warning, #d97706);
+  font-size: var(--artdeco-font-size-sm, 14px);
 }
 
 .lhb-filters {
