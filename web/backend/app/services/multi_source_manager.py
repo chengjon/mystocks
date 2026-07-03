@@ -5,10 +5,23 @@ Multi-data Source Support
 多数据源管理器：
 - 优先级路由：根据优先级选择最佳数据源
 - 健康监控：监控各数据源健康状态
+
+.. deprecated::
+    本模块作为 OpenStock 收编 PoC 后的退役候补,保留 facade 兼容遗留
+    调用方。新代码禁止使用 ``MultiSourceManager`` —— 4 个业务方法
+    (``fetch_realtime_quote`` / ``fetch_fund_flow`` / ``fetch_dragon_tiger``
+    / ``fetch_announcements``) 已被删除,数据访问请改走:
+
+    * OpenStock-owned category → ``OpenStockClient.fetch(category, ...)``
+      (参见 ``web/backend/app/services/announcement_service.py`` 迁移示例)
+    * OpenStock 永久无覆盖 category → ``ExtraSourceRouter.fetch(category, ...)``
+      (参见 ``web/backend/app/services/extra_source/README.md``)
+
+    完整契约: ``openspec/changes/add-extra-source-adapter-contract/design.md``。
+    彻底退役跟踪: ``docs/guides/HANDOFF_C3_DIRECTION6_DONE.md``。
 """
 
 import logging
-from datetime import date
 from typing import Any, Dict, List, Optional
 
 from app.adapters.base import (
@@ -30,10 +43,21 @@ class MultiSourceManager:
 
     负责协调多个数据源，提供统一的数据访问接口
     支持优先级路由和自动故障转移
+
+    .. deprecated::
+        作为 OpenStock 收编 PoC 后的退役候补,保留 facade 仅作过渡期兼容。
+        新代码必须使用 ``OpenStockClient`` (OpenStock-owned category)
+        或 ``ExtraSourceRouter`` (永久无覆盖 category)。
     """
 
     def __init__(self):
         """初始化多数据源管理器"""
+        logger.warning(
+            "MultiSourceManager is deprecated (OpenStock 收编 PoC 后退役候补); "
+            "new code must use OpenStockClient (OpenStock-owned category) "
+            "or extra_source.ExtraSourceRouter (permanently-uncovered category). "
+            "See openspec/changes/add-extra-source-adapter-contract/design.md."
+        )
         self._adapters: Dict[DataSourceType, BaseDataSourceAdapter] = {}
 
         # 初始化数据源
