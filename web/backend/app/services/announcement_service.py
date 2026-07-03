@@ -9,23 +9,45 @@ Multi-data Source Support
 - 公告分析和评分
 """
 
+import asyncio
 import logging
-from datetime import date, datetime
-from typing import Any, Dict, List, Optional
+import os
+import threading
+from datetime import date, datetime, timedelta
+from typing import Any, Callable, Dict, List, Mapping, Optional
 
 import pandas as pd
 from sqlalchemy import and_, create_engine, desc
 from sqlalchemy.orm import Session, sessionmaker
 
-from app.adapters.base import DataSourceType
 from app.models.announcement import (
     Announcement,
     AnnouncementMonitorRecord,
     AnnouncementMonitorRule,
 )
-from app.services.multi_source_manager import get_multi_source_manager
+from app.services.openstock_client import (
+    OpenStockClient,
+    OpenStockClientConfig,
+    OpenStockFetchResult,
+)
 
 logger = logging.getLogger(__name__)
+
+DEFAULT_OPENSTOCK_BASE_URL = "http://localhost:8050"
+
+# OpenStock native field names → DB schema field names used by
+# _save_announcements_to_db. Keeps Layer 3 (DB write) unchanged when
+# the upstream provider changes (Cninfo via multi_source_manager →
+# OpenStock ANNOUNCEMENTS category).
+_ANNOUNCEMENT_FIELD_MAP: Dict[str, str] = {
+    "secCode": "stock_code",
+    "secName": "stock_name",
+    "announcementTitle": "title",
+    "announcementType": "type",
+    "announcementTime": "publish_time",
+    "adjunctUrl": "pdf_url",
+    "announcementId": "announcement_id",
+}
 
 
 class AnnouncementService:
@@ -64,8 +86,13 @@ class AnnouncementService:
         self.engine = create_engine(db_url)
         self.SessionLocal = sessionmaker(bind=self.engine)
 
-        # 获取多数据源管理器
-        self.multi_source_manager = get_multi_source_manager()
+        # OpenStockClient factory — Direction 6 PoC: ANNOUNCEMENTS is
+        # an OpenStock-owned category (see
+        # OPENSTOCK_STATIC_CATEGORIES), so it MUST be served via
+        # OpenStockClient rather than multi_source_manager.
+        self._openstock_client_factory: Callable[[], OpenStockClient] = (
+            self._build_openstock_client
+        )
 
         # 重要关键词字典（用于重要性评分）
         self.important_keywords = {
@@ -88,6 +115,126 @@ class AnnouncementService:
 
         logger.info("AnnouncementService initialized")
 
+    def _build_openstock_client(self) -> OpenStockClient:
+        base_url = (
+            os.getenv("OPENSTOCK_BASE_URL")
+            or os.getenv("OPENSTOCK_API_BASE_URL")
+            or DEFAULT_OPENSTOCK_BASE_URL
+        ).strip()
+        try:
+            timeout_seconds = float(os.getenv("OPENSTOCK_TIMEOUT_SECONDS", "5.0"))
+        except ValueError:
+            timeout_seconds = 5.0
+        return OpenStockClient(
+            OpenStockClientConfig(
+                base_url=base_url or DEFAULT_OPENSTOCK_BASE_URL,
+                timeout_seconds=timeout_seconds,
+            )
+        )
+
+    def _run_async(self, async_factory: Callable[[], Any]) -> Any:
+        """Bridge sync→async for OpenStockClient (async) callers.
+
+        Mirrors ``market_data_service_v2._run_async`` so the bridging
+        behavior is identical repo-wide. If no event loop is running
+        in the current thread, ``asyncio.run`` is used directly;
+        otherwise a daemon thread is spawned to avoid the
+        "asyncio.run() cannot be called from a running event loop"
+        error when this service is invoked from an ``async def`` route
+        handler.
+        """
+        try:
+            asyncio.get_running_loop()
+        except RuntimeError:
+            return asyncio.run(async_factory())
+
+        result: Any = None
+        error: BaseException | None = None
+
+        def run_in_thread() -> None:
+            nonlocal result, error
+            try:
+                result = asyncio.run(async_factory())
+            except BaseException as exc:
+                error = exc
+
+        thread = threading.Thread(target=run_in_thread, daemon=True)
+        thread.start()
+        thread.join()
+        if error is not None:
+            raise error
+        return result
+
+    def _fetch_announcements_sync(
+        self,
+        *,
+        symbol: Optional[str],
+        start_date: date,
+        end_date: date,
+        category: Optional[str],
+    ) -> OpenStockFetchResult:
+        """Fetch ANNOUNCEMENTS via OpenStockClient (Direction 6 PoC).
+
+        ANNOUNCEMENTS is in :data:`OPENSTOCK_STATIC_CATEGORIES`, so
+        this MUST NOT route through ExtraSourceRouter. The
+        ``_run_async`` bridge handles the OpenStockClient async API.
+        """
+        params: Dict[str, Any] = {
+            "start_date": start_date.isoformat(),
+            "end_date": end_date.isoformat(),
+        }
+        if symbol is not None:
+            params["symbol"] = symbol
+        if category is not None:
+            params["category"] = category
+
+        async def fetch_once() -> OpenStockFetchResult:
+            client = self._openstock_client_factory()
+            try:
+                return await client.fetch("ANNOUNCEMENTS", params=params)
+            finally:
+                await client.aclose()
+
+        return self._run_async(fetch_once)
+
+    @staticmethod
+    def _openstock_result_to_dataframe(result: OpenStockFetchResult) -> pd.DataFrame:
+        """Normalize OpenStock ANNOUNCEMENTS raw records into the
+        DataFrame schema that ``_save_announcements_to_db`` expects.
+
+        Field rename map mirrors the legacy Cninfo adapter so DB
+        schema stays unchanged across the migration.
+        """
+        records = result.data
+        if not isinstance(records, list) or not records:
+            return pd.DataFrame()
+
+        rows: List[Dict[str, Any]] = []
+        for record in records:
+            if not isinstance(record, Mapping):
+                continue
+            row: Dict[str, Any] = {}
+            for src, dst in _ANNOUNCEMENT_FIELD_MAP.items():
+                if src in record:
+                    row[dst] = record[src]
+            rows.append(row)
+
+        if not rows:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(rows)
+        if "publish_time" in df.columns:
+            df["publish_time"] = pd.to_datetime(
+                df["publish_time"], unit="ms", errors="coerce"
+            )
+            df["publish_date"] = df["publish_time"].dt.date
+        if "pdf_url" in df.columns:
+            df["pdf_url"] = df["pdf_url"].apply(
+                lambda x: f"http://static.cninfo.com.cn/{x}" if x else None
+            )
+        df["data_source"] = "cninfo"
+        return df
+
     def fetch_and_save_announcements(
         self,
         symbol: Optional[str] = None,
@@ -108,22 +255,21 @@ class AnnouncementService:
             Dict: 执行结果
         """
         try:
-            # 从多数据源获取公告
-            result = self.multi_source_manager.fetch_announcements(
+            # Direction 6 PoC: ANNOUNCEMENTS is OpenStock-owned (in
+            # OPENSTOCK_STATIC_CATEGORIES), so dispatch via
+            # OpenStockClient directly. Layer 1 guard ensures no
+            # ExtraSource adapter can shadow this category.
+            end_date_resolved = end_date or date.today()
+            start_date_resolved = start_date or (end_date_resolved - timedelta(days=7))
+
+            fetch_result = self._fetch_announcements_sync(
                 symbol=symbol,
-                start_date=start_date,
-                end_date=end_date,
+                start_date=start_date_resolved,
+                end_date=end_date_resolved,
                 category=category,
-                source=DataSourceType.CNINFO,
             )
 
-            if not result["success"]:
-                return {
-                    "success": False,
-                    "error": result.get("error", "Failed to fetch announcements"),
-                }
-
-            df = result["data"]
+            df = self._openstock_result_to_dataframe(fetch_result)
 
             if df.empty:
                 return {"success": True, "message": "No new announcements", "count": 0}
@@ -138,7 +284,7 @@ class AnnouncementService:
                 "saved_count": saved_count,
                 "updated_count": updated_count,
                 "total_fetched": len(df),
-                "source": result["source"],
+                "source": fetch_result.source or "openstock",
             }
 
         except Exception as e:
