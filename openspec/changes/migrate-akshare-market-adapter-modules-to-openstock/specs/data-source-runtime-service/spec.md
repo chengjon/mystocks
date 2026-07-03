@@ -4,9 +4,17 @@
 
 ### Requirement: Non-fund-flow Mixin acquisition via OpenStock
 
-The backend SHALL acquire all non-fund-flow market data through the `OpenStockClient` calling OpenStock's `/data/fetch` endpoint with the appropriate `data_category`. This requirement covers five Mixin files in `src/adapters/akshare/market_adapter/`: `stock_profile.py`, `market_overview.py`, `board_sector.py`, `stock_sentiment.py`, `forecast_analysis.py`. Direct `import akshare as ak` in these five files is FORBIDDEN once the corresponding Phase (P1–P5) completes.
+The backend SHALL acquire all non-fund-flow market data through the `OpenStockClient` calling OpenStock's `/data/fetch` endpoint with the appropriate `data_category`. This requirement covers five Mixin files in `src/adapters/akshare/market_adapter/`: `stock_profile.py`, `market_overview.py`, `board_sector.py`, `stock_sentiment.py`, `forecast_analysis.py`. Direct `import akshare as ak` in these five files is FORBIDDEN once the corresponding Phase (P1–P5) completes, **except for `stock_sector_detail` in P1** which retains `import akshare as ak` until upstream OpenStock adds industry-classification support (see "Industry classification — DEFERRED" scenario below).
 
 `FundFlowMixin` is governed by the sibling proposal `migrate-akshare-fundflow-mixin-to-openstock`.
+
+**P0-verified category mappings** (probe 2026-07-03, 13/13 green via real HTTP to `192.168.123.104:8040`):
+- `STOCK_PROFILE`, `STOCK_NEWS` (eltdx adapter)
+- `REALTIME_QUOTES` (replaces proposed-but-unimplemented `MARKET_OVERVIEW`)
+- `MARKET_SENTIMENT`, `HOT_RANK` (zzshare adapter, replaces proposed-but-unimplemented `MARKET_ACTIVITY`)
+- `SECTOR_QUOTES` with `sector_type=concept` (replaces proposed-but-unimplemented `SECTOR_LIST`)
+- `SECTOR_CONSTITUENTS`, `SECTOR_KLINES`, `SECTOR_FUND_FLOW` (all require `sector_type=concept`)
+- `ANNOUNCEMENTS` (requires `date`), `RESEARCH_REPORTS`, `FINANCIAL_STATEMENTS`, `FORECAST_DATA` (requires `code`, not `symbol`), `FUND_FLOW`
 
 #### Scenario: Stock profile acquisition
 
@@ -18,23 +26,34 @@ Then OpenStockClient.fetch is invoked with `data_category="STOCK_PROFILE"` and `
 And the returned DataFrame contains the akshare-era columns `股票代码`, `股票简称`, `行业`, `上市时间`, `总股本`, `流通股` populated from OpenStock normalized fields
 ```
 
-#### Scenario: Industry classification
+#### Scenario: Industry classification — DEFERRED
 
 ```gherkin
-Given the OpenStock middle-tier exposes category `INDUSTRY_LIST`
-When `adapter.get_stock_sector_detail()` is called
-Then OpenStockClient.fetch is invoked with `data_category="INDUSTRY_LIST"`
-And the returned DataFrame contains industry classification rows
+Given the OpenStock middle-tier does NOT yet implement an industry-classification category
+  (neither INDUSTRY_LIST nor STOCK_INDUSTRY appears in any upstream adapter.supported_categories)
+When `adapter.get_stock_sector_detail()` is called during P1
+Then the adapter SHALL fall back to the legacy akshare `stock_sector_detail` path
+And the Mixin retains `import akshare as ak` solely for this method
+And a follow-up proposal SHALL track upstream OpenStock support for industry classification
 ```
 
-#### Scenario: Market overview spot data
+#### Scenario: Market overview spot data — REALTIME_QUOTES
 
 ```gherkin
-Given the OpenStock middle-tier exposes category `MARKET_OVERVIEW` returning rows with fields
+Given the OpenStock middle-tier exposes category `REALTIME_QUOTES` (akshare adapter, replaces MARKET_OVERVIEW) returning rows with fields
   | code | name | latest_price | change_pct | volume | amount |
 When `adapter.get_stock_zh_a_spot_em()` is called
-Then OpenStockClient.fetch is invoked with `data_category="MARKET_OVERVIEW"`
+Then OpenStockClient.fetch is invoked with `data_category="REALTIME_QUOTES"`
 And the returned DataFrame columns include `代码`, `名称`, `最新价`, `涨跌幅`, `成交量`, `成交额`
+```
+
+#### Scenario: Market activity via zzshare adapter
+
+```gherkin
+Given the OpenStock middle-tier exposes categories `MARKET_SENTIMENT` and `HOT_RANK` (zzshare adapter) for market activity / limit-up statistics, replacing MARKET_ACTIVITY
+When `adapter.get_stock_market_activity_legu()` is called
+Then OpenStockClient.fetch is invoked with `data_category="MARKET_SENTIMENT"` or `"HOT_RANK"` plus `params={"trade_date": "<YYYYMMDD>"}`
+And the returned DataFrame columns cover limit-up/down counts and market temperature
 ```
 
 #### Scenario: Sector constituent with prefix reshape
@@ -45,7 +64,7 @@ Given the OpenStock middle-tier exposes category `SECTOR_CONSTITUENTS` returning
   | 600519 | 贵州茅台 | 12.5 |
   | 000858 | 五粮液 | 8.3 |
 When `adapter.get_stock_board_concept_cons_em(symbol="白酒")` is called
-Then OpenStockClient.fetch is invoked with `data_category="SECTOR_CONSTITUENTS"` and `params={"symbol": "白酒"}`
+Then OpenStockClient.fetch is invoked with `data_category="SECTOR_CONSTITUENTS"` and `params={"sector": "白酒", "sector_type": "concept"}`
 And the returned DataFrame's `代码` column contains `sh600519` and `sz000858` (prefixed per exchange)
 And no bare 6-digit code appears in the result
 ```
@@ -57,7 +76,7 @@ Given the OpenStock middle-tier exposes category `SECTOR_KLINES` returning ISO86
   | trade_date | open | close | high | low | volume |
   | 2026-06-01T00:00:00 | 1200.5 | 1210.3 | 1215.0 | 1198.0 | 1234567 |
 When `adapter.get_stock_board_concept_hist_em(symbol="白酒", period="daily", start_date="20260601", end_date="20260610")` is called
-Then OpenStockClient.fetch is invoked with `data_category="SECTOR_KLINES"` and `params` containing `period="day"`
+Then OpenStockClient.fetch is invoked with `data_category="SECTOR_KLINES"` and `params` containing `sector="白酒"`, `sector_type="concept"`, `period="daily"`, `start_date="20260601"`, `end_date="20260610"`
 And the returned DataFrame's `日期` column contains `"2026-06-01"` (10-char ISO truncation, not full ISO8601)
 ```
 

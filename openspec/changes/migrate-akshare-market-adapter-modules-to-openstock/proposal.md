@@ -26,8 +26,8 @@ Leaving these on akshare keeps the project exposed to akshare version drift (pro
 ### Per-Mixin deltas
 
 - **MODIFIED** `src/adapters/akshare/market_adapter/stock_profile.py` — replace `import akshare as ak` with `OpenStockClient` calls against `STOCK_PROFILE` category; add `_transform_*_row` mapping units.
-- **MODIFIED** `src/adapters/akshare/market_adapter/market_overview.py` — switch to `MARKET_OVERVIEW` / `MARKET_ACTIVITY` categories.
-- **MODIFIED** `src/adapters/akshare/market_adapter/board_sector.py` — switch to `SECTOR_KLINES` / `SECTOR_CONSTITUENTS` categories; sector constituent reshape (add `sh`/`sz` prefix) handled in adapter.
+- **MODIFIED** `src/adapters/akshare/market_adapter/market_overview.py` — switch to `REALTIME_QUOTES` (replaces `stock_zh_a_spot_em`) and `MARKET_SENTIMENT` / `HOT_RANK` (zzshare adapter, replaces `stock_market_activity_legu`). P0 verification proved `MARKET_OVERVIEW` / `MARKET_ACTIVITY` are not implemented upstream.
+- **MODIFIED** `src/adapters/akshare/market_adapter/board_sector.py` — switch to `SECTOR_QUOTES` (sector_type=concept for `stock_board_concept_name_em`), `SECTOR_CONSTITUENTS` (sector_type=concept), `SECTOR_KLINES` (sector_type=concept + start_date/end_date) categories; sector constituent reshape (add `sh`/`sz` prefix) handled in adapter. P0 verification proved `SECTOR_LIST` is not implemented upstream; the canonical replacement is `SECTOR_QUOTES` with `sector_type` parameter.
 - **MODIFIED** `src/adapters/akshare/market_adapter/stock_sentiment.py` — switch to `STOCK_NEWS` / `ANNOUNCEMENTS`.
 - **MODIFIED** `src/adapters/akshare/market_adapter/forecast_analysis.py` — switch to `RESEARCH_REPORTS` / `FORECAST_DATA` / `FINANCIAL_STATEMENTS`.
 - **MODIFIED** `src/adapters/akshare/market_adapter/adapter.py` — already accepts `OpenStockClient` per sibling proposal (Wave 1); this proposal reuses the injection.
@@ -40,22 +40,28 @@ Leaving these on akshare keeps the project exposed to akshare version drift (pro
 
 ## Mapping: Mixin → OpenStock category
 
-| Mixin method group | OpenStock category | Status |
-|---|---|---|
-| `stock_individual_info_em` | `STOCK_PROFILE` | ✅ Available |
-| `stock_sector_detail` (industry) | `INDUSTRY_LIST` | ✅ Available |
-| `stock_zh_a_spot_em` (market overview) | `MARKET_OVERVIEW` | ✅ Available |
-| `stock_market_activity_legu` | `MARKET_ACTIVITY` | ⏳ Verify in P0 gate |
-| `stock_board_concept_name_em` | `SECTOR_LIST` | ✅ Available |
-| `stock_board_concept_cons_em` | `SECTOR_CONSTITUENTS` | ✅ Available |
-| `stock_board_concept_hist_em` | `SECTOR_KLINES` | ✅ Available |
-| `stock_news_em` | `STOCK_NEWS` | ✅ Available |
-| `stock_notice_report` | `ANNOUNCEMENTS` | ✅ Available |
-| `stock_research_report_em` | `RESEARCH_REPORTS` | ✅ Available |
-| `stock_em_pleasure_summary` | `FINANCIAL_STATEMENTS` | ✅ Available |
-| forecast / performance预告 | `FORECAST_DATA` | ✅ Available |
+| Mixin method group | OpenStock category | Required params | Status |
+|---|---|---|---|
+| `stock_individual_info_em` | `STOCK_PROFILE` | `symbol` | ✅ P0 verified (eltdx adapter) |
+| `stock_zh_a_spot_em` (market overview) | `REALTIME_QUOTES` | — | ✅ P0 verified (50 rows) |
+| `stock_market_activity_legu` | `MARKET_SENTIMENT` / `HOT_RANK` | `trade_date` | ✅ P0 verified (zzshare adapter) |
+| `stock_board_concept_name_em` | `SECTOR_QUOTES` | `sector_type=concept` | ✅ P0 verified (via SECTOR_FUND_FLOW path) |
+| `stock_board_concept_cons_em` | `SECTOR_CONSTITUENTS` | `sector`, `sector_type=concept` | ✅ P0 verified |
+| `stock_board_concept_hist_em` | `SECTOR_KLINES` | `sector`, `sector_type`, `period`, `start_date`, `end_date` | ✅ P0 verified (8 rows) |
+| `stock_news_em` | `STOCK_NEWS` | `symbol` | ✅ P0 verified (100 rows, eltdx adapter) |
+| `stock_notice_report` | `ANNOUNCEMENTS` | `symbol`, `date` | ✅ P0 verified |
+| `stock_research_report_em` | `RESEARCH_REPORTS` | `symbol` | ✅ P0 verified (100 rows) |
+| `stock_em_pleasure_summary` | `FINANCIAL_STATEMENTS` | `symbol` | ✅ P0 verified |
+| forecast / performance预告 | `FORECAST_DATA` | `code` (NOT `symbol`) | ✅ P0 verified (12 rows) |
+| (sector fund flow) | `SECTOR_FUND_FLOW` | `sector_type=concept` | ✅ P0 verified |
 
-⏳ items verified in P0 gate (§1.3 of playbook). All others proven available by `src/adapters/akshare.py` category registration.
+**Categories NOT supported upstream** (proposal originally guessed these names — corrected):
+- ❌ `MARKET_OVERVIEW` → use `REALTIME_QUOTES`
+- ❌ `MARKET_ACTIVITY` → use `MARKET_SENTIMENT` / `HOT_RANK`
+- ❌ `SECTOR_LIST` → use `SECTOR_QUOTES` with `sector_type`
+- ❌ `INDUSTRY_LIST` (for `stock_sector_detail`) → **no upstream equivalent**; P1.2 deferred to follow-up proposal or implemented via akshare fallback
+
+P0 verification run: 13/13 categories returned non-empty real data via HTTP to `192.168.123.104:8040` on 2026-07-03 (probe script `/tmp/p0_openstock_probe_v5.py`). Anti-mock clause satisfied: real HTTP, no MagicMock stubs.
 
 ## Implementation Phasing
 
