@@ -18,7 +18,7 @@ import logging
 from typing import Any
 
 from .contract import ExtraSourceAdapter, ExtraSourceResult
-from .registry import OPENSTOCK_STATIC_CATEGORIES, find_by_category
+from .registry import find_by_category, get_openstock_static_categories
 
 logger = logging.getLogger(__name__)
 
@@ -80,7 +80,7 @@ class ExtraSourceRouter:
     """
 
     def fetch(self, category: str, params: dict[str, Any]) -> ExtraSourceResult:
-        if category in OPENSTOCK_STATIC_CATEGORIES:
+        if category in get_openstock_static_categories():
             raise UnsupportedCategoryError(
                 category=category,
                 reason=("belongs to OpenStock static inventory; route handlers " "must call OpenStockClient directly"),

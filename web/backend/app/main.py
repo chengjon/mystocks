@@ -280,8 +280,15 @@ async def lifespan(app: FastAPI):
     try:
         from .services.extra_source import (
             dump_registered_snapshot,
+            initialize_openstock_static_categories,
             register_extra_source,
         )
+
+        # Load OpenStock static categories from deps/openstock submodule.
+        # MUST run before any register_extra_source call so the Layer 1
+        # overlap check has the canonical inventory.
+        initialize_openstock_static_categories()
+        logger.info("✅ OpenStock static categories loaded from deps/openstock submodule")
 
         adapter_paths = settings.extra_source_adapters
         if adapter_paths:

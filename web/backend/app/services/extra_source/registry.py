@@ -4,13 +4,16 @@ Layer 1 of the three-layer contract. Registration happens at FastAPI
 lifespan startup and performs a synchronous, network-free check that
 no adapter declares a category owned by OpenStock's static inventory.
 
-``OPENSTOCK_STATIC_CATEGORIES`` is a frozen snapshot sourced from
-``/opt/claude/openstock/docs/DATA_CAPABILITY_SCOPE.md``. Drift detection:
+``OPENSTOCK_STATIC_CATEGORIES`` is loaded at startup from the
+``deps/openstock`` git submodule's
+``docs/DATA_CAPABILITY_SCOPE.md`` (single source of truth). The
+frozenset starts empty at import time and is populated by
+:func:`initialize_openstock_static_categories`, which the FastAPI
+lifespan invokes before any ``register_extra_source`` call.
 
-* Current: manual quarterly diff against ``DATA_CAPABILITY_SCOPE.md``
-  (owner: B4.014 follow-up).
-* Future: once OpenStock ships a ``/sources/categories`` static
-  endpoint, replace this frozenset with a startup-time dynamic load.
+Future: once OpenStock ships a ``/sources/categories`` static endpoint,
+the submodule parse can be swapped for an HTTP fetch without touching
+callers.
 """
 
 from __future__ import annotations
@@ -19,6 +22,11 @@ import json
 from pathlib import Path
 from typing import Any, Protocol, runtime_checkable
 
+from ._openstock_categories import (
+    OpenStockDataScopeFileMissingError,
+    OpenStockDataScopeParseError,
+    load_openstock_categories_from_submodule,
+)
 from .contract import (
     ExtraSourceAdapter,
     ExtraSourceCategoryConflictError,
@@ -27,82 +35,49 @@ from .contract import (
     ExtraSourceResult,
 )
 
-OPENSTOCK_STATIC_CATEGORIES: frozenset[str] = frozenset(
-    {
-        # 70 items, source: DATA_CAPABILITY_SCOPE.md 2026-07-02 snapshot.
-        # Re-verify via `grep -oE '`[A-Z][A-Z0-9_]+`' DATA_CAPABILITY_SCOPE.md | sort -u`.
-        "ADJUSTED_KLINES",
-        "ADJUST_FACTOR",
-        "ALL_STOCKS",
-        "ANNOUNCEMENTS",
-        "BLOCK_TRADE",
-        "CALL_AUCTION",
-        "CONSECUTIVE_LIMIT_UP",
-        "CONSENSUS_FORECAST",
-        "CONVERTIBLE_BONDS",
-        "CORPORATE_ACTIONS",
-        "DIVIDEND_DATA",
-        "DRAGON_TIGER",
-        "DRAGON_TIGER_STOCK_HISTORY",
-        "DRAGON_TIGER_TRADER",
-        "ETF_SPOT",
-        "F10_DATA",
-        "FINANCIAL_DATA",
-        "FINANCIAL_STATEMENTS",
-        "FORECAST_DATA",
-        "FUND_FLOW",
-        "FUND_NAV",
-        "HISTORICAL_KLINES",
-        "HK_KLINES",
-        "HK_QUOTES",
-        "HOT_RANK",
-        "INDEX_CONSTITUENTS",
-        "INDEX_KLINES",
-        "INDEX_QUOTES",
-        "INSTITUTION_HOLDING",
-        "KLINES",
-        "LIMITS",
-        "LIMIT_UP_HISTORY",
-        "LIMIT_UP_POOL",
-        "LIMIT_UP_REASON",
-        "MACRO_DATA",
-        "MARKET_DEPTH",
-        "MARKET_SENTIMENT",
-        "MINUTE_DATA",
-        "MOVEMENT_ALERTS",
-        "NORTHBOUND_FLOW",
-        "NORTHBOUND_HOLDING",
-        "REALTIME_QUOTES",
-        "REGULATORY_ACTIONS",
-        "RESEARCH_REPORTS",
-        "RESTRICTED_RELEASE",
-        "ROADSHOWS",
-        "SECTOR_CONSTITUENTS",
-        "SECTOR_FUND_FLOW",
-        "SECTOR_KLINES",
-        "SECTOR_QUOTES",
-        "SENTIMENT_DAILY_EFFECT",
-        "SENTIMENT_TREND",
-        "SHAREHOLDER_CHANGE",
-        "SHAREHOLDER_COUNT",
-        "STOCK_BASIC",
-        "STOCK_CODES",
-        "STOCK_INDUSTRY",
-        "STOCK_NEWS",
-        "STOCK_PROFILE",
-        "STOCK_RATING",
-        "TICK_DATA",
-        "TOPICS_CONCEPTS",
-        "TOPIC_DETAIL",
-        "TOPIC_HEAT",
-        "TRADE_DATES",
-        "UPDOWN_DISTRIBUTION",
-        "US_KLINES",
-        "US_QUOTES",
-        "VALUATION",
-        "WORKDAYS",
-    }
-)
+# OpenStock static category inventory. Populated by
+# :func:`initialize_openstock_static_categories` at lifespan startup.
+# Stored inside a one-element dict so that ``from registry import
+# OPENSTOCK_STATIC_CATEGORIES`` exposes a stable reference whose
+# underlying frozenset can be swapped by reassigning ``_state["set"]``
+# — reassigning a bare module-level ``frozenset`` global would leave
+# earlier importers pinned to the empty initial frozenset.
+_state: dict[str, frozenset[str]] = {"set": frozenset()}
+
+
+def initialize_openstock_static_categories(repo_root: Path | None = None) -> frozenset[str]:
+    """Populate the OpenStock static category inventory from the submodule.
+
+    Idempotent: safe to call multiple times across lifespan reloads.
+    The lifespan MUST call this before any ``register_extra_source``
+    invocation so the Layer 1 overlap check sees the canonical inventory.
+
+    Args:
+        repo_root: Optional explicit repository root. When ``None``,
+            the loader auto-discovers via ``deps/openstock`` location.
+
+    Returns:
+        The loaded frozenset (same reference stored under
+        ``_state["set"]``).
+
+    Raises:
+        OpenStockDataScopeFileMissingError: submodule not checked out.
+        OpenStockDataScopeParseError: document format drifted.
+    """
+    loaded = load_openstock_categories_from_submodule(repo_root)
+    _state["set"] = loaded
+    return loaded
+
+
+def get_openstock_static_categories() -> frozenset[str]:
+    """Read accessor for the loaded static category inventory.
+
+    Always returns the current contents of ``_state["set"]`` — use
+    this in code paths that need the post-initialize view (router,
+    tests, snapshots) without tripping the ``from … import`` binding
+    pitfall.
+    """
+    return _state["set"]
 
 
 _registered: dict[str, ExtraSourceAdapter] = {}
@@ -120,7 +95,7 @@ def register_extra_source(adapter: ExtraSourceAdapter) -> None:
     enforcement for TEMP_OVERRIDE adapters.
     """
     meta = adapter.get_meta()
-    if meta.category in OPENSTOCK_STATIC_CATEGORIES:
+    if meta.category in _state["set"]:
         raise ExtraSourceCategoryConflictError(
             f"ExtraSource '{meta.name}' declares category '{meta.category}' "
             f"which overlaps with OpenStock static inventory"
@@ -184,7 +159,10 @@ def dump_registered_snapshot(path: str | Path) -> None:
 
 
 __all__ = [
-    "OPENSTOCK_STATIC_CATEGORIES",
+    "initialize_openstock_static_categories",
+    "get_openstock_static_categories",
+    "OpenStockDataScopeFileMissingError",
+    "OpenStockDataScopeParseError",
     "ExtraSourceAdapter",
     "ExtraSourceMeta",
     "ExtraSourceResult",
@@ -195,9 +173,24 @@ __all__ = [
     "get_registered",
     "find_by_category",
     "dump_registered_snapshot",
+    # NOTE: ``OPENSTOCK_STATIC_CATEGORIES`` is intentionally absent — it
+    # resolves via PEP 562 ``__getattr__`` to the current contents of
+    # ``_state["set"]``. Listing it here would trip ruff F822.
 ]
 
 
 # Re-export Protocol/annotations for runtime_checkable consumers without
 # creating a circular import.
 _ = (Protocol, runtime_checkable)
+
+
+# PEP 562 module-level __getattr__: make ``from registry import
+# OPENSTOCK_STATIC_CATEGORIES`` resolve to the *current* contents of
+# ``_state["set"]`` rather than pinning to whatever frozenset reference
+# existed at import time. This lets :func:`initialize_openstock_static_categories`
+# swap the inventory at lifespan startup without breaking earlier
+# importers (router.py, tests, sibling package __init__.py).
+def __getattr__(name: str) -> Any:
+    if name == "OPENSTOCK_STATIC_CATEGORIES":
+        return _state["set"]
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

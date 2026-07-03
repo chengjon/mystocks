@@ -29,6 +29,25 @@ os.environ.setdefault("DEVELOPMENT_MODE", "true")
 os.environ.setdefault("MOCK_AUTH_ENABLED", "true")
 
 
+# D4: 在 collection 前从 deps/openstock submodule 加载 OpenStock 静态 category。
+# lifespan 在 TestClient fixture 中由 FastAPI 触发,但纯单测(不启动 app)
+# 不会跑 lifespan → 必须在 conftest 主动 initialize,否则 Layer 1 重叠检查
+# 会因为 OPENSTOCK_STATIC_CATEGORIES 为空而误判通过。
+def _initialize_openstock_categories_for_tests() -> None:
+    try:
+        from app.services.extra_source import initialize_openstock_static_categories
+
+        initialize_openstock_static_categories()
+    except Exception as exc:  # pragma: no cover - 显式失败,避免静默
+        raise RuntimeError(
+            f"conftest: 无法从 deps/openstock 加载 OpenStock 静态 category 清单。"
+            f"确认 submodule 已 init (git submodule update --init --recursive)。原因: {exc}"
+        ) from exc
+
+
+_initialize_openstock_categories_for_tests()
+
+
 @pytest.fixture(scope="session")
 def test_env():
     """会话级环境配置"""
