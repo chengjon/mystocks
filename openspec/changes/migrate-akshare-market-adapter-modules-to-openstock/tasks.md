@@ -31,6 +31,40 @@
   - Constructor injection pattern (AkshareMarketAdapter accepting `openstock_client` parameter) is **not yet visible** in current worktree — `src/adapters/akshare/market_adapter/adapter.py` still has parameterless `__init__`
   - **P1 start is BLOCKED** until sibling Wave 0/Wave 1 merges to main and is cherry-picked/merged into this worktree
 
+## P1 — BLOCKED on sibling Wave 1 merge
+
+**Hard dependency**: P1 start requires commit `614290989` ("D1 Wave 0 lift Phase1.1 OpenStock bypass into FundFlowMixin", PR #488) to be merged into `main` AND cherry-picked/merged into this worktree's branch `feat/b4-014-openstock-routes`.
+
+That commit lands the constructor injection pattern this proposal depends on:
+- `src/adapters/akshare/market_adapter/_openstock.py` (+45 LOC) — OpenStockClient factory
+- `src/adapters/akshare/market_adapter/adapter.py` (+10/-2) — `__init__(openstock_client=None)` parameter
+- `src/adapters/akshare/market_adapter/fund_flow.py` (+131/-59) — Wave 0 method switches
+- `tests/adapters/test_fund_flow_mixin.py` (+171 LOC) — sibling Wave 1 tests
+- `web/backend/app/api/akshare_market/fund_flow.py` (-110 LOC cleanup) — endpoint-layer bypass removed
+
+### Merge procedure (deferred — not executed in this worktree)
+
+1. **Sibling PR #488 merges to `main`** (track on GitHub; sibling branch `feat/b4-014-fundflow-mixin-openspec-proposal` is at `5adccd645`, ahead of main)
+2. **This worktree pulls main + rebase**:
+   ```
+   git fetch origin main
+   git rebase origin/main
+   ```
+3. **Verify Wave 1 visible**:
+   ```
+   test -f src/adapters/akshare/market_adapter/_openstock.py
+   grep -n "openstock_client" src/adapters/akshare/market_adapter/adapter.py
+   pytest tests/adapters/test_fund_flow_mixin.py --no-cov -n 0
+   ```
+   All three must pass before P1.1 starts.
+4. **Resolve conflicts**: `fund_flow.py` Mixin and endpoint have the highest conflict potential; `adapter.py` is a smaller surface; `_openstock.py` is net-new (no conflict expected).
+5. **Re-run P0.1 probe** to confirm OpenStock instance at `192.168.123.104:8040` is still healthy after merge.
+
+### Why not cherry-pick into this worktree now
+
+- This worktree's scope is `migrate-akshare-market-adapter-modules-to-openstock` (5 non-fund-flow Mixins); cherry-picking sibling Wave 1 here would mix two proposals' deltas in one PR, violating the playbook §2.1 "one Phase = one independent PR" rule.
+- Sibling PR #488 must complete its own review/CI cycle on its own branch.
+
 ## P1 — stock_profile.py (157 LOC, low risk)
 
 - [ ] P1.1 Map `stock_individual_info_em` → `OpenStockClient.fetch_data(category=STOCK_PROFILE, ...)`, build `_transform_stock_profile_row` mapping unit
