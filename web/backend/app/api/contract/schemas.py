@@ -3,6 +3,7 @@ API契约管理 Pydantic模型
 用于契约版本管理、差异检测和同步
 """
 # end-of-file
+# B4.014: PR trigger test for Detect Breaking Changes job
 
 from datetime import datetime
 from typing import Any, Dict, List, Optional
