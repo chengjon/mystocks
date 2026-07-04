@@ -191,7 +191,7 @@ class PostgreSQLDataAccess:
             return int(rows_inserted)
         except Exception as e:
             conn.rollback()
-            print(f"❌ 批量插入失败: {e}")
+            logger.error("批量插入失败: %s", e)
             raise
         finally:
             self._return_connection(conn)
@@ -229,7 +229,7 @@ class PostgreSQLDataAccess:
             return int(rows_affected)
         except Exception as e:
             conn.rollback()
-            print(f"❌ Upsert失败: {e}")
+            logger.error("Upsert失败: %s", e)
             raise
         finally:
             self._return_connection(conn)
@@ -320,7 +320,7 @@ class PostgreSQLDataAccess:
             return df
 
         except Exception as e:
-            print(f"❌ 查询失败: {e}")
+            logger.error("查询失败: %s", e)
             raise
         finally:
             self._return_connection(conn)
@@ -369,7 +369,7 @@ class PostgreSQLDataAccess:
         except Exception as e:
             if should_close:
                 conn.rollback()
-            print(f"❌ SQL执行失败: {e}")
+            logger.error("SQL执行失败: %s", e)
             raise
         finally:
             if should_close:
@@ -393,7 +393,7 @@ class PostgreSQLDataAccess:
             return int(rows_deleted)
         except Exception as e:
             conn.rollback()
-            print(f"❌ 删除失败: {e}")
+            logger.error("删除失败: %s", e)
             raise
         finally:
             self._return_connection(conn)
@@ -411,7 +411,7 @@ class PostgreSQLDataAccess:
             cursor.close()
             return {"row_count": row[0] if row else 0, "total_size": row[1] if row else "0 bytes"}
         except Exception as e:
-            print(f"❌ 获取表统计失败: {e}")
+            logger.error("获取表统计失败: %s", e)
             return {"row_count": 0, "total_size": "0 bytes"}
         finally:
             self._return_connection(conn)
@@ -426,7 +426,7 @@ class PostgreSQLDataAccess:
                 row_count = self.insert_dataframe(table_name, data)
             return row_count > 0
         except Exception as e:
-            print(f"❌ 保存数据失败: {e}")
+            logger.error("保存数据失败: %s", e)
             return False
 
     def load_data(self, table_name: str, **filters) -> Optional[pd.DataFrame]:
@@ -440,7 +440,7 @@ class PostgreSQLDataAccess:
             else:
                 return self.query(table_name, limit=filters.get("limit"))
         except Exception as e:
-            print(f"❌ 加载数据失败: {e}")
+            logger.error("加载数据失败: %s", e)
             return None
 
     def execute_update(self, sql_str: str, params: Optional[Tuple] = None) -> bool:
