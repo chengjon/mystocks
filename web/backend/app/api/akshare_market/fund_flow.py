@@ -168,36 +168,18 @@ async def get_north_fund_stock(
     current_user: User = Depends(get_current_user),
 ):
     """
-    获取北向资金个股统计 (akshare.stock_hsgt_north_acc_flow_in_em)
+    获取北向资金个股统计.
 
-    返回指定股票的北向资金持股情况
+    P0 fix (B4.014, 2026-06-29): 底层 akshare.stock_hsgt_north_acc_flow_in_em 在
+    akshare 1.18.60 已被移除, 该 endpoint 暂返回 501. 待 Phase 1.1 第二批切换
+    OpenStock NORTHBOUND_HOLDING 类别后恢复.
+    TODO owner=chengjon issue=B4.014-task11 ttl=2026-09-30 reason="akshare 1.18.60 移除了 stock_hsgt_north_acc_flow_in_em,endpoint 暂返回 501,等待 OpenStock NORTHBOUND_HOLDING 类别落地" remediation="B4.014 task #11 proposal (openspec/changes/migrate-akshare-market-adapter-modules-to-openstock) 落地后切换"
     """
-    try:
-        df = await akshare_market_adapter.get_stock_hsgt_north_acc_flow_in_em(symbol)
-
-        if df.empty:
-            return create_error_response(
-                ErrorCodes.DATA_NOT_FOUND,
-                f"No north fund stock data found for symbol {symbol}"
-            )
-
-        result = {
-            "symbol": symbol,
-            "data": df.to_dict('records'),
-            "count": len(df),
-            "columns": list(df.columns),
-            "fund_direction": "north",
-            "source": "akshare",
-            "provider": "em"
-        }
-
-        return create_success_response(result)
-
-    except Exception as e:
-        return create_error_response(
-            ErrorCodes.INTERNAL_ERROR,
-            f"Failed to get north fund stock data for {symbol}: {str(e)}"
-        )
+    return create_error_response(
+        ErrorCodes.INTERNAL_SERVER_ERROR,
+        f"north-stock/{symbol} 暂不可用: akshare.stock_hsgt_north_acc_flow_in_em "
+        f"在 akshare 1.18.60 已移除, 待 OpenStock NORTHBOUND_HOLDING 切换恢复"
+    )
 
 
 @router.get("/fund-flow/south-stock/{symbol}", summary="获取南向资金个股统计")

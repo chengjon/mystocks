@@ -25,22 +25,18 @@ class FundFlowMixin:
             df = await _get_hsgt_summary()
 
             if df is None or df.empty:
-                self.logger.warning("[Akshare] 未能获取到沪深港通资金流向汇总，日期范围: %s 到 %s", start_date, end_date)
+                self.logger.warning(
+                    "[Akshare] 未能获取到沪深港通资金流向汇总，日期范围: %s 到 %s", start_date, end_date
+                )
                 return pd.DataFrame()
 
             self.logger.info("[Akshare] 成功获取沪深港通资金流向汇总，共 %s 行", len(df))
 
-            df = df.rename(
-                columns={
-                    "日期": "date",
-                    "北向资金": "north_money",
-                    "南向资金": "south_money",
-                    "当日额度": "daily_quota",
-                    "当日余额": "daily_balance",
-                    "当日使用额度": "daily_used_quota",
-                }
-            )
-
+            # P0 fix (B4.014, 2026-06-29): 上方 rename 基于陈年 akshare 字段
+            # (北向资金/南向资金/当日额度/当日余额/当日使用额度), 在 akshare 1.18.60
+            # 已完全不存在; 原始接口实际返回 13 列中文宽表, 含前端期望的
+            # 板块/资金方向/成交净买额/指数涨跌幅/交易日. 直接透传原始字段.
+            # 真相源: web/frontend/src/views/data/fundFlowPageData.ts (前端 mock 契约).
             df["start_date"] = start_date
             df["end_date"] = end_date
             df["query_timestamp"] = pd.Timestamp.now()
@@ -64,7 +60,9 @@ class FundFlowMixin:
             df = await _get_hsgt_detail()
 
             if df is None or df.empty:
-                self.logger.warning("[Akshare] 未能获取到沪深港通资金流向明细，日期范围: %s 到 %s", start_date, end_date)
+                self.logger.warning(
+                    "[Akshare] 未能获取到沪深港通资金流向明细，日期范围: %s 到 %s", start_date, end_date
+                )
                 return pd.DataFrame()
 
             self.logger.info("[Akshare] 成功获取沪深港通资金流向明细，共 %s 行", len(df))
@@ -164,41 +162,19 @@ class FundFlowMixin:
 
     async def get_stock_hsgt_north_acc_flow_in_em(self, symbol: str) -> pd.DataFrame:
         """
-        获取北向资金个股统计 (akshare.stock_hsgt_north_acc_flow_in_em)
+        获取北向资金个股统计.
+
+        P0 fix (B4.014, 2026-06-29): akshare.stock_hsgt_north_acc_flow_in_em 在
+        akshare 1.18.60 已被移除 (AttributeError). 待 OpenStock NORTHBOUND_HOLDING
+        类别切换时由 Phase 1.1 第二批接管 (见 DOMAIN_MIGRATION_PLAYBOOK.md §三).
+        当前返回空 DataFrame, 对应 endpoint 返回 501.
         """
-        try:
-            self.logger.info("[Akshare] 开始获取北向资金个股统计，股票: %s", symbol)
-
-            @self._retry_api_call
-            async def _get_north_acc():
-                return ak.stock_hsgt_north_acc_flow_in_em(symbol=symbol)
-
-            df = await _get_north_acc()
-
-            if df is None or df.empty:
-                self.logger.warning("[Akshare] 未能获取到北向资金个股统计，股票: %s", symbol)
-                return pd.DataFrame()
-
-            self.logger.info("[Akshare] 成功获取北向资金个股统计，共 %s 行", len(df))
-
-            df = df.rename(
-                columns={
-                    "股票代码": "symbol",
-                    "日期": "date",
-                    "持股数量": "hold_amount",
-                    "持股市值": "hold_market_value",
-                    "持股变化数量": "hold_change_amount",
-                    "持股变化市值": "hold_change_value",
-                }
-            )
-
-            df["fund_direction"] = "north"
-            df["query_timestamp"] = pd.Timestamp.now()
-            return df
-
-        except Exception as e:
-            self.logger.error("[Akshare] 获取北向资金个股统计失败，股票 %s: %s", symbol, e, exc_info=True)
-            return pd.DataFrame()
+        self.logger.warning(
+            "[Akshare] stock_hsgt_north_acc_flow_in_em 在 akshare 1.18.60 已移除, "
+            "symbol=%s 的北向个股统计需切换 OpenStock NORTHBOUND_HOLDING",
+            symbol,
+        )
+        return pd.DataFrame()
 
     async def get_stock_hsgt_south_acc_flow_in_em(self, symbol: str) -> pd.DataFrame:
         """
@@ -297,16 +273,13 @@ class FundFlowMixin:
 
             self.logger.info("[Akshare] 成功获取资金流向大单统计，共 %s 行", len(df))
 
-            df = df.rename(
-                columns={
-                    "股票代码": "symbol",
-                    "股票名称": "name",
-                    "大单成交金额": "big_deal_amount",
-                    "大单买入金额": "big_deal_buy_amount",
-                    "大单卖出金额": "big_deal_sell_amount",
-                    "大单净流入": "big_deal_net_inflow",
-                }
-            )
+            # P0 fix (B4.014, 2026-06-29): 上方 rename 基于陈年 akshare 字段
+            # (股票名称/大单成交金额/大单买入金额/...), 在 akshare 1.18.60 已不存在;
+            # 原始接口返回 9 列含前端 buildStockRanking 期望的
+            # 股票简称/成交价格/成交额/大单性质/涨跌幅. 仅做最小 rename
+            # (股票代码→symbol) 对齐前端期望, 其余字段保持中文.
+            # 真相源: web/frontend/src/views/data/fundFlowPageData.ts buildStockRanking.
+            df = df.rename(columns={"股票代码": "symbol"})
 
             df["query_timestamp"] = pd.Timestamp.now()
             return df

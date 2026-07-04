@@ -12,7 +12,8 @@ import logging
 from datetime import datetime
 from typing import Optional
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Path, Query, Header
+from fastapi import APIRouter, BackgroundTasks, Body, Depends, HTTPException, Path, Query, Header
+from sqlalchemy import inspect, text
 from sqlalchemy.orm import Session
 
 from app.api.strategy_management.backtest_status_contract import (
@@ -62,12 +63,121 @@ def get_data_source():
 
 def get_strategy_repository(db: Session = Depends(get_db)) -> StrategyRepository:
     """获取策略仓库实例"""
+    ensure_strategy_runtime_schema_ready(db)
     return StrategyRepository(db)
 
 
 def get_backtest_repository(db: Session = Depends(get_db)) -> BacktestRepository:
     """获取回测仓库实例"""
+    ensure_strategy_runtime_schema_ready(db)
     return BacktestRepository(db)
+
+
+def ensure_strategy_runtime_schema_ready(db: Session) -> dict[str, list[str]]:
+    """Ensure strategy runtime tables can satisfy current read paths.
+
+    This is additive only: create missing ORM tables with checkfirst and add
+    missing columns. It never drops, renames, or rewrites existing tables.
+    """
+    from app.repositories.backtest_repository import BacktestEquityCurveModel, BacktestResultModel, BacktestTradeModel
+    from app.repositories.strategy_repository import UserStrategyModel
+
+    bind = db.get_bind()
+    inspector = inspect(bind)
+    created_tables: list[str] = []
+    added_columns: list[str] = []
+
+    def _create_table_additive(model) -> None:
+        table = model.__table__
+        if (
+            table.name in {"backtest_equity_curves", "backtest_trades"}
+            and not _backtest_results_backtest_id_is_unique(inspector)
+        ):
+            _create_backtest_detail_table_without_fk(db, table.name)
+        else:
+            table.create(bind=bind, checkfirst=True)
+        created_tables.append(table.name)
+
+    for model in (UserStrategyModel, BacktestResultModel, BacktestEquityCurveModel, BacktestTradeModel):
+        table = model.__table__
+        if not inspector.has_table(table.name):
+            _create_table_additive(model)
+            continue
+
+        existing_columns = {column["name"] for column in inspector.get_columns(table.name)}
+        for column in table.columns:
+            if column.name in existing_columns:
+                continue
+            column_type = column.type.compile(dialect=bind.dialect)
+            default = ""
+            if column.default is not None and column.default.is_scalar:
+                default = f" DEFAULT {column.default.arg!r}"
+            db.execute(text(f"ALTER TABLE {table.name} ADD COLUMN IF NOT EXISTS {column.name} {column_type}{default}"))
+            added_columns.append(f"{table.name}.{column.name}")
+
+    if created_tables or added_columns:
+        db.commit()
+
+    return {"created_tables": created_tables, "added_columns": added_columns}
+
+
+def _backtest_results_backtest_id_is_unique(inspector) -> bool:
+    pk = inspector.get_pk_constraint("backtest_results") or {}
+    if "backtest_id" in set(pk.get("constrained_columns") or []):
+        return True
+
+    for constraint in inspector.get_unique_constraints("backtest_results") or []:
+        if "backtest_id" in set(constraint.get("column_names") or []):
+            return True
+
+    return False
+
+
+def _create_backtest_detail_table_without_fk(db: Session, table_name: str) -> None:
+    if table_name == "backtest_equity_curves":
+        db.execute(
+            text(
+                """
+                CREATE TABLE IF NOT EXISTS backtest_equity_curves (
+                    id SERIAL PRIMARY KEY,
+                    backtest_id INTEGER NOT NULL,
+                    trade_date DATE NOT NULL,
+                    equity NUMERIC(15, 2) NOT NULL,
+                    drawdown NUMERIC(5, 2) NOT NULL,
+                    benchmark_equity NUMERIC(15, 2),
+                    CONSTRAINT uq_backtest_trade_date UNIQUE (backtest_id, trade_date)
+                )
+                """
+            )
+        )
+        db.execute(text("CREATE INDEX IF NOT EXISTS idx_equity_curves_backtest_id ON backtest_equity_curves (backtest_id)"))
+        db.execute(text("CREATE INDEX IF NOT EXISTS idx_equity_curves_trade_date ON backtest_equity_curves (trade_date)"))
+        return
+
+    if table_name == "backtest_trades":
+        db.execute(
+            text(
+                """
+                CREATE TABLE IF NOT EXISTS backtest_trades (
+                    id SERIAL PRIMARY KEY,
+                    backtest_id INTEGER NOT NULL,
+                    trade_date DATE NOT NULL,
+                    symbol VARCHAR NOT NULL,
+                    direction VARCHAR NOT NULL,
+                    amount INTEGER,
+                    price NUMERIC,
+                    commission NUMERIC,
+                    stamp_tax NUMERIC,
+                    total_cost NUMERIC,
+                    created_at TIMESTAMP WITH TIME ZONE
+                )
+                """
+            )
+        )
+        db.execute(text("CREATE INDEX IF NOT EXISTS idx_backtest_trades_backtest_id ON backtest_trades (backtest_id)"))
+        return
+
+    raise ValueError(f"Unsupported backtest detail table: {table_name}")
 
 
 def _require_write_auth(authorization: Optional[str]) -> None:
@@ -495,10 +605,12 @@ async def health_check(db: Session = Depends(get_db), data_source=Depends(get_da
     """健康检查端点"""
     try:
         # 检查数据库连接
-        db.execute("SELECT 1")
+        db.execute(text("SELECT 1"))
 
         # 检查数据源
         health = data_source.health_check()
+
+        ensure_strategy_runtime_schema_ready(db)
 
         # 统计数据库中的策略和回测数量
         StrategyRepository(db)

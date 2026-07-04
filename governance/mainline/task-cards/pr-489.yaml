@@ -1,0 +1,109 @@
+version: "v0.2"
+
+task:
+  id: "pr-489"
+  title: "B4.014 里程碑：主线可运行修复 + OpenSpec 提案"
+  owner: "main"
+  created_at: "2026-06-30"
+
+mainline:
+  id: "B4.014"
+  objective: "修复主线启动/健康/回测/字段漂移 P0 阻塞，落地 OpenSpec 变更提案"
+  milestone_id: "B4.014-M1"
+  slice_id: "B4.014-M1-M0"
+
+classification:
+  task_type: "fix"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-akshare-fundflow-mixin-to-openstock"
+  approval_status: "pending"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "core"
+    - "api"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "B4.014 multiline fix PR scope"
+
+scope:
+  allowed_paths:
+    - "config/pm2.config.js"
+    - "openspec/changes/migrate-akshare-fundflow-mixin-to-openstock/**"
+    - "src/adapters/akshare/market_adapter/fund_flow.py"
+    - "src/data_sources/factory.py"
+    - "tests/api/test_fund_flow_openstock.py"
+    - "web/backend/app/api/akshare_market/fund_flow.py"
+    - "web/backend/app/api/strategy.py"
+    - "web/backend/app/api/strategy_mgmt.py"
+    - "web/backend/app/api/technical_analysis.py"
+    - "web/backend/app/backtest/backtest_engine.py"
+    - "web/backend/app/repositories/backtest_repository.py"
+    - "web/backend/app/tasks/backtest_tasks.py"
+    - "web/backend/config/tasks.yaml"
+    - "web/backend/config/tdx_settings.conf"
+    - "web/backend/start_server.py"
+    - "web/backend/tests/test_strategy_provider_injection.py"
+    - "web/backend/tests/test_technical_analysis_provider_injection.py"
+    - "web/frontend/src/api/mockApiClient.ts"
+    - "docs/reports/quality/**"
+    - "governance/compliance/**"
+    - "governance/function-tree/catalog.yaml"
+    - "governance/mainline/task-cards/g2-332.yaml"
+    - "governance/mainline/task-cards/g2-334.yaml"
+    - "governance/mainline/task-cards/g2-335.yaml"
+    - "governance/mainline/task-cards/g2-336.yaml"
+    - "governance/mainline/task-cards/g2-337.yaml"
+    - "governance/mainline/task-cards/pr-489.yaml"
+    - "scripts/compliance/unified_response_contract_guard.py"
+    - "tests/unit/scripts/test_unified_response_contract_guard.py"
+    - ".github/workflows/security-testing.yml"
+  forbidden_paths: []
+
+non_goals:
+  - "不接入 OpenStock 消费者（M1k/M1n/M1m 跳过，需独立 PR）"
+  - "不做 FundFlowMixin 归位（Wave 0 跳过，需独立 PR）"
+  - "不含审计/handoff/worklog 过程产物"
+
+acceptance:
+  checks:
+    - id: "ci-code-quality"
+      command: "CI: Code Quality Pipeline"
+      required: true
+    - id: "ci-mainline-governance"
+      command: "CI: Mainline Governance Gate"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "strategy_mgmt.py import 合并了 main DI 重构的 HTTPException + B4.014 的 inspect/text，需验证兼容性"
+    - "跳过 M1k/M1n/M1m/Wave0 导致 OpenStock 消费者未接入"
+  rollback_plan: "git revert <merge-commit-sha>"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "修复后端启动/数据源/Strategy/回测/字段漂移 5 类 P0 阻塞，落地 OpenSpec 变更提案"
+    modified_scope: "后端 & 数据源 & 前端 mock 17 文件"
+    dependency_changes: "Lock→RLock, SQLAlchemy text() 兼容, backtest 合约修复"
+    legacy_logic_impact: "strategy_mgmt.py import 修复需验证与 main DI 重构的兼容性"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert merge commit"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-06-30T00:00:00Z"
+    approval_note: "auto-generated for PR #489"
+    secondary_approved: false

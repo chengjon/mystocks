@@ -17,7 +17,7 @@
 
 import os
 from functools import wraps
-from threading import Lock
+from threading import RLock
 from typing import Dict, Optional, Type
 
 from src.interfaces.business_data_source import IBusinessDataSource
@@ -84,7 +84,7 @@ def singleton(cls):
     使用线程锁保证线程安全。
     """
     instances = {}
-    lock = Lock()
+    lock = RLock()
 
     @wraps(cls)
     def get_instance(*args, **kwargs):
@@ -139,7 +139,7 @@ class DataSourceFactory:
         self._business_instances: Dict[str, IBusinessDataSource] = {}
 
         # 线程锁
-        self._lock = Lock()
+        self._lock = RLock()
 
         # 自动注册内置数据源
         self._register_builtin_sources()
