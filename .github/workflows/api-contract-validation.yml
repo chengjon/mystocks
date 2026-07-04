@@ -54,6 +54,12 @@ jobs:
           token: ${{ secrets.SUBMODULE_PAT }}
           fetch-depth: 0
 
+      - name: Setup Tailscale
+        uses: tailscale/tailscale@v3
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTH_KEY }}
+          args: --accept-routes --hostname=mystocks-ci-${{ github.run_id }}
+
       - name: Detect contract scope changes
         id: scope
         run: |
@@ -116,12 +122,17 @@ jobs:
         if: steps.scope.outputs.changed == 'true'
         run: |
           echo "PYTHONPATH=$PWD:$PWD/web/backend" >> "$GITHUB_ENV"
-          echo "POSTGRESQL_HOST=localhost" >> "$GITHUB_ENV"
-          echo "POSTGRESQL_PORT=5432" >> "$GITHUB_ENV"
-          echo "POSTGRESQL_USER=testuser" >> "$GITHUB_ENV"
-          echo "POSTGRESQL_PASSWORD=testpassword" >> "$GITHUB_ENV"
-          echo "POSTGRESQL_DATABASE=testdb" >> "$GITHUB_ENV"
-          echo "JWT_SECRET_KEY=test_secret_key_for_ci_only" >> "$GITHUB_ENV"
+          echo "TDENGINE_HOST=100.74.218.112" >> "$GITHUB_ENV"
+          echo "TDENGINE_PORT=6041" >> "$GITHUB_ENV"
+          echo "TDENGINE_USER=${{ secrets.CI_TDENGINE_USER }}" >> "$GITHUB_ENV"
+          echo "TDENGINE_PASSWORD=${{ secrets.CI_TDENGINE_PASSWORD }}" >> "$GITHUB_ENV"
+          echo "TDENGINE_DATABASE=${{ secrets.CI_TDENGINE_DATABASE }}" >> "$GITHUB_ENV"
+          echo "POSTGRESQL_HOST=100.74.218.112" >> "$GITHUB_ENV"
+          echo "POSTGRESQL_PORT=5438" >> "$GITHUB_ENV"
+          echo "POSTGRESQL_USER=${{ secrets.CI_POSTGRESQL_USER }}" >> "$GITHUB_ENV"
+          echo "POSTGRESQL_PASSWORD=${{ secrets.CI_POSTGRESQL_PASSWORD }}" >> "$GITHUB_ENV"
+          echo "POSTGRESQL_DATABASE=${{ secrets.CI_POSTGRESQL_DATABASE }}" >> "$GITHUB_ENV"
+          echo "JWT_SECRET_KEY=${{ secrets.CI_JWT_SECRET_KEY }}" >> "$GITHUB_ENV"
           echo "BACKEND_PORT=8020" >> "$GITHUB_ENV"
           echo "BACKEND_BACKUP_PORT=8021" >> "$GITHUB_ENV"
           echo "TESTING=true" >> "$GITHUB_ENV"
@@ -323,10 +334,17 @@ jobs:
       - name: Configure backend import environment
         run: |
           echo "PYTHONPATH=$PWD/web/backend" >> "$GITHUB_ENV"
-          echo "POSTGRESQL_HOST=localhost" >> "$GITHUB_ENV"
-          echo "POSTGRESQL_USER=testuser" >> "$GITHUB_ENV"
-          echo "POSTGRESQL_PASSWORD=testpassword" >> "$GITHUB_ENV"
-          echo "JWT_SECRET_KEY=test_secret_key_for_ci_only" >> "$GITHUB_ENV"
+          echo "TDENGINE_HOST=100.74.218.112" >> "$GITHUB_ENV"
+          echo "TDENGINE_PORT=6041" >> "$GITHUB_ENV"
+          echo "TDENGINE_USER=${{ secrets.CI_TDENGINE_USER }}" >> "$GITHUB_ENV"
+          echo "TDENGINE_PASSWORD=${{ secrets.CI_TDENGINE_PASSWORD }}" >> "$GITHUB_ENV"
+          echo "TDENGINE_DATABASE=${{ secrets.CI_TDENGINE_DATABASE }}" >> "$GITHUB_ENV"
+          echo "POSTGRESQL_HOST=100.74.218.112" >> "$GITHUB_ENV"
+          echo "POSTGRESQL_PORT=5438" >> "$GITHUB_ENV"
+          echo "POSTGRESQL_USER=${{ secrets.CI_POSTGRESQL_USER }}" >> "$GITHUB_ENV"
+          echo "POSTGRESQL_PASSWORD=${{ secrets.CI_POSTGRESQL_PASSWORD }}" >> "$GITHUB_ENV"
+          echo "POSTGRESQL_DATABASE=${{ secrets.CI_POSTGRESQL_DATABASE }}" >> "$GITHUB_ENV"
+          echo "JWT_SECRET_KEY=${{ secrets.CI_JWT_SECRET_KEY }}" >> "$GITHUB_ENV"
           echo "BACKEND_PORT=8020" >> "$GITHUB_ENV"
           echo "BACKEND_BACKUP_PORT=8021" >> "$GITHUB_ENV"
 
