@@ -88,17 +88,21 @@ class OpenStockMarketDataSourceAdapter(IDataSource):
 
     @staticmethod
     def _build_headers(custom_headers: Mapping[str, Any]) -> Dict[str, str]:
-        """合并 config.custom_headers 与 OPENSTOCK_API_KEY env(env 优先)。
+        """合并 config.custom_headers 与 OPENSTOCK_SECURITY_API_KEY env(env 优先)。
 
-        优先级: env OPENSTOCK_API_KEY > config.custom_headers。
+        优先级: env OPENSTOCK_SECURITY_API_KEY > config.custom_headers。
         返回空 dict 表示无 header。
+
+        Env name 与 OpenStock 上游 config.py 的 _get_config_value 推导逻辑对齐
+        (OPENSTOCK_ + key_path.upper().replace('.', '_') → OPENSTOCK_SECURITY_API_KEY),
+        确保 OpenStock 服务端 APIKeyMiddleware 真正启用鉴权。
         """
         headers: Dict[str, str] = {}
         if isinstance(custom_headers, Mapping):
             for k, v in custom_headers.items():
                 if isinstance(k, str) and isinstance(v, str):
                     headers[k] = v
-        api_key = os.environ.get("OPENSTOCK_API_KEY")
+        api_key = os.environ.get("OPENSTOCK_SECURITY_API_KEY")
         if api_key:
             headers["X-API-Key"] = api_key
         return headers

@@ -120,7 +120,7 @@ risk_and_rollback:
   risks:
     - "Adapter field-shape drift between OpenStock normalized fields and frontend Chinese wide-table expectations; mitigated by _transform_quote_row / _transform_kline_row mapping units with unit tests."
     - "DataSourceFactory primary/backup switch could regress existing akshare chain if factory wiring drifts; mitigated by akshare fallback retained as secondary provider."
-    - "Real OpenStock integration tests depend on 192.168.123.104:8040 reachability plus OPENSTOCK_API_KEY env; tests are marked @pytest.mark.integration and skipped in offline CI."
+    - "Real OpenStock integration tests depend on 192.168.123.104:8040 reachability plus OPENSTOCK_SECURITY_API_KEY env; tests are marked @pytest.mark.integration and skipped in offline CI."
     - "Source implementation PR; human review required before merge."
   rollback_plan: "Revert PR #490; this restores the prior akshare-direct /quotes and /kline route handlers and removes the OpenStockMarketDataSourceAdapter registration from DataSourceFactory."
 

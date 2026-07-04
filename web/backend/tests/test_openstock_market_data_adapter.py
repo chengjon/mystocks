@@ -69,8 +69,8 @@ def test_init_with_explicit_config():
 
 
 def test_init_injects_api_key_from_env(monkeypatch):
-    """B4.014-M1o: OPENSTOCK_API_KEY env 自动注入到 client headers。"""
-    monkeypatch.setenv("OPENSTOCK_API_KEY", "sk-test-12345")
+    """B4.014-M1o: OPENSTOCK_SECURITY_API_KEY env 自动注入到 client headers。"""
+    monkeypatch.setenv("OPENSTOCK_SECURITY_API_KEY", "sk-test-12345")
     a = OpenStockMarketDataSourceAdapter({"base_url": "http://h:1"})
     headers = a._client_config.headers
     assert headers is not None
@@ -79,7 +79,7 @@ def test_init_injects_api_key_from_env(monkeypatch):
 
 def test_init_merges_custom_headers_from_config(monkeypatch):
     """config.custom_headers 与 env API key 合并(env 优先级高)。"""
-    monkeypatch.setenv("OPENSTOCK_API_KEY", "sk-env-key")
+    monkeypatch.setenv("OPENSTOCK_SECURITY_API_KEY", "sk-env-key")
     custom = {"User-Agent": "test/1.0", "Accept": "application/json"}
     a = OpenStockMarketDataSourceAdapter({"base_url": "http://h:1", "custom_headers": custom})
     headers = a._client_config.headers
@@ -90,8 +90,8 @@ def test_init_merges_custom_headers_from_config(monkeypatch):
 
 
 def test_init_no_api_key_when_env_missing(monkeypatch):
-    """env OPENSTOCK_API_KEY 未设时,headers 为 None(向后兼容)。"""
-    monkeypatch.delenv("OPENSTOCK_API_KEY", raising=False)
+    """env OPENSTOCK_SECURITY_API_KEY 未设时,headers 为 None(向后兼容)。"""
+    monkeypatch.delenv("OPENSTOCK_SECURITY_API_KEY", raising=False)
     a = OpenStockMarketDataSourceAdapter({"base_url": "http://h:1"})
     # 无 custom_headers 也无 env key → None
     assert a._client_config.headers is None

@@ -51,7 +51,7 @@ And the returned DataFrame columns include `持股日期`, `持股数量`, `持�
 
 ### Requirement: AkshareMarketAdapter constructor accepts OpenStockClient
 
-The `AkshareMarketAdapter` constructor SHALL accept an optional `openstock_client: OpenStockClient | None` keyword parameter. When omitted, the adapter SHALL construct a default client from environment variables (`OPENSTOCK_BASE_URL`, `OPENSTOCK_API_KEY`, `OPENSTOCK_TIMEOUT_SECONDS`). The client is stored on the instance and reused across all Mixin method invocations.
+The `AkshareMarketAdapter` constructor SHALL accept an optional `openstock_client: OpenStockClient | None` keyword parameter. When omitted, the adapter SHALL construct a default client from environment variables (`OPENSTOCK_BASE_URL`, `OPENSTOCK_SECURITY_API_KEY`, `OPENSTOCK_TIMEOUT_SECONDS`). The env name `OPENSTOCK_SECURITY_API_KEY` aligns with OpenStock upstream `config.py` `_get_config_value` derivation (`OPENSTOCK_` + `key_path.upper().replace('.', '_')`). The client is stored on the instance and reused across all Mixin method invocations.
 
 #### Scenario: Default client construction
 

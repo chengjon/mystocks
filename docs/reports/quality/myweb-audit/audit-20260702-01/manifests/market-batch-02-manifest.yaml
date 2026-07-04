@@ -52,7 +52,7 @@ environment:
     - PM2 mystocks-frontend + mystocks-backend online (verified)
     - backend /health=200 (verified)
     - frontend HTTP 200 (verified)
-    - OpenStock data source has OPENSTOCK_API_KEY configured in .env
+    - OpenStock data source has OPENSTOCK_SECURITY_API_KEY configured in .env
   fallback_log: []
 verification_plan:
   verification_strategy: full
