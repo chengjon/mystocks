@@ -11,7 +11,7 @@
 
 ## 0. 一句话总结
 
-打通 GitHub Actions runner → Tailscale 隧道 → NAS TDengine/TimescaleDB → OpenAPI 契约验证全链路,过程中暴露并修复了仓库系统性的 module-level `router = APIRouter(...)` 定义缺失 bug(至今修复 2/6,余 4 个待修)。
+打通 GitHub Actions runner → Tailscale 隧道 → NAS TDengine/TimescaleDB → OpenAPI 契约验证全链路,过程中暴露并修复了 2 个真正缺 `router = APIRouter(...)` 定义的 module-level bug(signal_history_response、data_quality)。初版 handoff 误判的"剩余 4 个"实际通过 `from ._xxx_responses import router` 间接导入,无需修复。
 
 ---
 
@@ -82,11 +82,11 @@ Generate TypeScript Types → ✓ success (run #28695148377)
 
 ### P0 — 阻塞 PR #492 合并
 
-#### P0-1 修剩余 4 个 router-undefined bug(任务 #8)
+#### P0-1 router-undefined bug 状态(已澄清,无需进一步修复)
 
-**已知模式**:HEAD 中文件用 `@router.get(...)` 但缺 `router = APIRouter(...)`,被本地 working tree 长期掩盖,CI 全新 checkout 暴露 NameError。
+**v2.0 修正(2026-07-05)**: 初版 handoff 的"剩余 4 个 broken 文件"判断**有误**。
 
-**剩余 4 个文件**(HEAD + working 都未修):
+经实际 importlib 验证,以下 4 个文件**实际能正常导入,router 属性存在**:
 
 ```
 web/backend/app/api/monitoring_watchlists.py
@@ -95,33 +95,11 @@ web/backend/app/api/strategy_management/_strategy_crud_router.py
 web/backend/app/api/strategy_management/_model_backtest_router.py
 ```
 
-**接手操作步骤**:
+**真实模式**: 这 4 个文件通过 `from ._xxx_responses import router` **间接导入** router(router 定义在 `_xxx_responses.py` helper 文件中,如 `_monitoring_watchlists_responses.py:61`)。这与之前修复的 `signal_history_response.py` / `data_quality.py` **不同**——后两个文件确实在 HEAD 中缺定义、且 working tree 也是真 broken。
 
-```bash
-# 1. 查最新 CI run,看下一个 broken 文件是哪个
-gh run list -R chengjon/mystocks --limit 2 \
-  --branch feat/b4-014-fundflow-mixin-openspec-proposal
+**结论**: 已修的 2 个文件(signal_history_response、data_quality)是真 bug,已正确修复。声称的"剩余 4 个"是误判,无需修复。**P0-1 关闭**。
 
-# 2. 看失败日志
-gh run view <run-id> -R chengjon/mystocks --log-failed \
-  | grep -B1 -A5 "NameError"
-
-# 3. 在该文件中找到 router = APIRouter(...) 应该插入的位置
-#    (参考同包子文件已有的 router 定义模式,如 signal_history_response.py:36)
-#    加入定义,例如:
-#    router = APIRouter(tags=["<module-name>"], responses=<MODULE>_ERROR_RESPONSES)
-
-# 4. 一次 commit 一个文件,push,重复 4 次
-git add <file> && git commit -m "fix(api): add missing router definition in <module>" && git push
-```
-
-**修复模式参考**(已修 2 个文件,稳定):
-
-```python
-# 在所有 @router.get(...) 之前、所有 import 之后,加:
-router = APIRouter(tags=["<module-name>"])
-# 或带 responses 参数(参考同包子文件)
-```
+**经验教训**: 用 `grep -c "^router = APIRouter"` 判断 broken 时,正则 `^from` 不匹配缩进的 `from` import,导致漏看间接导入模式。未来类似判断必须用 `importlib.import_module(mod); hasattr(m, 'router')` 实测。
 
 #### P0-2 验证 `Detect Breaking Changes` job
 
