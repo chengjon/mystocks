@@ -59,7 +59,9 @@ jobs:
         uses: tailscale/github-action@v4
         with:
           authkey: ${{ secrets.TAILSCALE_AUTH_KEY }}
-          hostname: mystocks-ci-${{ github.run_id }}
+          hostname: mystocks-ci
+          # hostname 固定 → 所有 CI run 复用同一台 tailscale machine（tailnet 内只占 1 个名额）
+          # 之前用 ${{ github.run_id }} 导致每次 run 都注册新 machine，是膨胀根因
 
       - name: Detect contract scope changes
         id: scope
