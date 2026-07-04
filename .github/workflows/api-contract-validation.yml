@@ -59,7 +59,7 @@ jobs:
         uses: tailscale/github-action@v4
         with:
           authkey: ${{ secrets.TAILSCALE_AUTH_KEY }}
-          args: --hostname=mystocks-ci-${{ github.run_id }}
+          hostname: mystocks-ci-${{ github.run_id }}
 
       - name: Detect contract scope changes
         id: scope
