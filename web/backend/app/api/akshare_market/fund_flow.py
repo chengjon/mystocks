@@ -173,7 +173,7 @@ async def get_north_fund_stock(
     P0 fix (B4.014, 2026-06-29): 底层 akshare.stock_hsgt_north_acc_flow_in_em 在
     akshare 1.18.60 已被移除, 该 endpoint 暂返回 501. 待 Phase 1.1 第二批切换
     OpenStock NORTHBOUND_HOLDING 类别后恢复.
-    TODO(B4.014-Phase1.1-batch2): 切换 OpenStock NORTHBOUND_HOLDING.
+    TODO owner=chengjon issue=B4.014-task11 ttl=2026-09-30 reason="akshare 1.18.60 移除了 stock_hsgt_north_acc_flow_in_em,endpoint 暂返回 501,等待 OpenStock NORTHBOUND_HOLDING 类别落地" remediation="B4.014 task #11 proposal (openspec/changes/migrate-akshare-market-adapter-modules-to-openstock) 落地后切换"
     """
     return create_error_response(
         ErrorCodes.INTERNAL_SERVER_ERROR,
