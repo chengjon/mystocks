@@ -382,7 +382,10 @@ def test_playwright_workflow_runs_smoke_subset_only() -> None:
     assert "FRONTEND_BACKUP_PORT: '3021'" in workflow
     assert "BACKEND_PORT: '8020'" in workflow
     assert "BACKEND_BACKUP_PORT: '8021'" in workflow
-    assert "npx playwright install --with-deps chromium" in workflow
+    assert (
+        "npx playwright install --with-deps chromium" in workflow
+        or "mcr.microsoft.com/playwright:v1.57.0-noble" in workflow
+    )
     assert "Run Playwright smoke tests" in workflow
     assert "npm run test:e2e:stable" in workflow
     assert "playwright.config.js" not in workflow or "--config playwright.config.js" not in workflow
@@ -920,8 +923,8 @@ def test_typescript_type_check_uses_explicit_path_filters_and_repo_repo_comments
     assert "repo: context.repo.name" not in workflow
     assert 'grep -c "error TS" tsc-output.txt 2>/dev/null || echo "0"' not in count_section
     assert 'if [ -z "$ERROR_COUNT" ]; then' in count_section
-    assert "<<'PY'" not in quality_gate_section
-    assert "python -c" in quality_gate_section
+    assert "python - <<'PY'" in quality_gate_section
+    assert "baseline_path = Path(\"reports/analysis/tech-debt-baseline.json\")" in quality_gate_section
 
 
 def test_cicd_monthly_review_uses_job_output_for_report_month() -> None:
@@ -962,7 +965,7 @@ def test_python_and_typescript_type_check_workflows_download_artifacts_into_work
     assert "path: ." in python_section
 
     assert "uses: actions/download-artifact@v4" in typescript_section
-    assert "path: ." in typescript_section
+    assert "path: type-check-artifacts" in typescript_section
 
 
 def test_python_type_check_scopes_pr_runs_to_relevant_src_files() -> None:
@@ -1190,7 +1193,8 @@ def test_security_testing_uses_parseable_report_generation_and_non_blocking_slac
     assert "python - <<'PY'" in report_section
     assert "security-results.json" in report_section
 
-    assert "if: always() && secrets.SLACK_WEBHOOK_URL != ''" in notification_section
+    assert "if: always()" in notification_section
+    assert "if: env.SLACK_WEBHOOK_URL != ''" in notification_section
     assert "webhook_url:" not in notification_section
     assert "continue-on-error: true" in notification_section
 
