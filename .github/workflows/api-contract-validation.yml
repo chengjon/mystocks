@@ -1,6 +1,7 @@
 name: API Contract Validation & Type Generation
 
 on:
+  workflow_dispatch:
   push:
     paths:
       - 'web/backend/app/api/contract/**'
