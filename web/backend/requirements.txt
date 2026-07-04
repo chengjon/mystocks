@@ -63,3 +63,6 @@ pytest-playwright>=0.4.0
 # requests - already present above
 # psycopg2-binary - already present above
 # Email support is already available via smtplib (Python standard library)
+
+# Structured logging
+loguru>=0.7.0
