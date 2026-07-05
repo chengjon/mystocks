@@ -56,6 +56,7 @@ scope:
     - "web/frontend/src/services/indicatorService.ts"
     - "web/frontend/src/views/data/FundFlow.vue"
     - "web/frontend/src/views/data/fundFlowPageData.ts"
+    - "web/frontend/src/views/data/styles/FundFlow.scss"
     - "web/frontend/src/views/market/LHB.vue"
     - "web/frontend/src/views/market/marketRealtimeData.ts"
     - "web/frontend/src/views/stocks/Screener.vue"
@@ -77,7 +78,9 @@ scope:
     - ".github/workflows/security-testing.yml"
     - "scripts/compliance/unified_response_contract_guard.py"
     - "tests/unit/scripts/test_unified_response_contract_guard.py"
+    - "tests/unit/scripts/test_ci_workflow_runtime_setup.py"
     - ".continue-here.md"
+    - ".gitleaksignore"
   forbidden_paths:
     - "web/frontend/src/App.vue"
     - "web/frontend/src/router/index.ts"
