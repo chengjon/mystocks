@@ -81,6 +81,7 @@ scope:
     - "tests/unit/scripts/test_ci_workflow_runtime_setup.py"
     - ".continue-here.md"
     - ".gitleaksignore"
+    - "CLAUDE.md"
   forbidden_paths:
     - "web/frontend/src/App.vue"
     - "web/frontend/src/router/index.ts"
