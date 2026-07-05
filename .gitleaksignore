@@ -1,0 +1,15 @@
+# Gitleaks ignore list — see https://github.com/gitleaks/gitleaks#verification
+# Format: <commitSHA>:<filePath>:<ruleID>:<startLine>
+#
+# This file is the standard mechanism for ignoring specific historical findings
+# when the secret has already been rotated and the commit cannot be reasonably
+# rewritten (e.g. PR history already public).
+#
+# Entries below track findings whose leaked secrets have been rotated and
+# deactivated at the source. They are NOT active credentials.
+
+# Commit 462dcf5c2 — OPENSTOCK_API_KEY leaked in playbook example.
+# Key sk-ICdVlZ72X59SAIm2TfX3ZzM9qLan5bk5 already rotated at OpenStock upstream
+# (192.168.123.104:8040); old key revoked. Tracked as B4.014 OPENSTOCK_API_KEY
+# rename to OPENSTOCK_SECURITY_API_KEY in commit 7b0493377.
+462dcf5c2108ae06334f936542f150fd7292ccd1:docs/guides/AKSHARE_MARKET_ADAPTER_MIGRATION_PLAYBOOK.md:generic-api-key:77
