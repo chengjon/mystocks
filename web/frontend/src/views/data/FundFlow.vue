@@ -175,332 +175,95 @@ watch(() => props.activeTimeFilter, (value) => {
 
 watch(() => props.rankingType, (value) => {
   currentRankingType.value = value
-})
-
-const hasExternalData = computed(() => {
-  const hasRanking = Array.isArray(props.stockRanking) && props.stockRanking.length > 0
-  const hasTrend = Array.isArray(props.trendData) && props.trendData.length > 0
-  const fund = props.fundData
-  const hasFund =
-    !!fund &&
-    ['shanghai', 'shenzhen', 'north', 'main'].some((key) => {
-      const item = fund[key as keyof typeof fund]
-      return !!item && typeof item === 'object' && Number((item as { amount?: number }).amount || 0) !== 0
-    })
-  return hasRanking || hasTrend || hasFund
-})
-const isEmbedded = computed(() => {
-  const rawProps = instance?.vnode.props
-  return Boolean(props.functionKey) || Boolean(rawProps && ('fundData' in rawProps || 'stockRanking' in rawProps || 'onFilterChange' in rawProps))
-})
-
-const safeFundData = computed<FundData>(() => {
-  const source = hasExternalData.value ? (props.fundData ?? {}) : internalFundData.value
-  const fallback = defaultFundData()
-
-  return {
-    shanghai: { ...fallback.shanghai, ...(source.shanghai ?? {}) },
-    shenzhen: { ...fallback.shenzhen, ...(source.shenzhen ?? {}) },
-    north: { ...fallback.north, ...(source.north ?? {}) },
-    main: { ...fallback.main, ...(source.main ?? {}) }
+    // ... 329 lines omitted
   }
-})
-
-const displayStockRanking = computed(() => {
-  if (hasExternalData.value) {
-    return props.stockRanking ?? []
+    // ... 328 lines omitted
   }
-  return internalStockRanking.value
-})
-
-const displayTrendData = computed(() => {
-  if (hasExternalData.value) {
-    return props.trendData ?? []
+    // ... 327 lines omitted
   }
-  return internalTrendData.value
-})
-
-const timeFilters = [
-  { key: 'today', label: '今日' },
-  { key: '3day', label: '3日' },
-  { key: '5day', label: '5日' },
-  { key: '10day', label: '10日' }
-]
-
-const rankingOptions = [
-  { label: '主力流入额', value: 'main_force' },
-  { label: '超大单流入', value: 'huge_order' },
-  { label: '净流入比例', value: 'ratio' }
-]
-
-const currentTimeFilterLabel = computed(() => timeFilters.find((item) => item.key === currentTimeFilter.value)?.label ?? '今日')
-const currentRankingLabel = computed(() => rankingOptions.find((item) => item.value === currentRankingType.value)?.label ?? '主力流入额')
-const pageStatusText = computed(() => {
-  if (safeFundData.value.north.change > 0) return '北向净流入'
-  if (safeFundData.value.north.change < 0) return '北向净流出'
-  return '资金平衡'
-})
-const pageStatusType = computed(() => {
-  if (safeFundData.value.north.change > 0) return 'success'
-  if (safeFundData.value.north.change < 0) return 'warning'
-  return 'info'
-})
-
-const columns = [
-  { key: 'rank', label: '排名', width: '80px' },
-  { key: 'name', label: '股票名称' },
-  { key: 'code', label: '代码' },
-  { key: 'price', label: '最新价' },
-  { key: 'change', label: '涨跌幅', variant: 'color' },
-  { key: 'inflow', label: '资金流入' },
-  { key: 'mainForce', label: '主力净额' }
-]
-
+    // ... 326 lines omitted
 interface ChartParams {
-  value: number
+    // ... 325 lines omitted
 }
-
-const trendChartOption = computed(() => {
-  if (!displayTrendData.value || displayTrendData.value.length === 0) return {}
-
-  return {
-    tooltip: { trigger: 'axis' },
-    xAxis: { type: 'category', data: displayTrendData.value.map((d) => d.date) },
-    yAxis: { type: 'value' },
-    series: [{
-      data: displayTrendData.value.map((d) => d.value),
-      type: 'bar',
-      itemStyle: {
-        color: (params: ChartParams) => params.value >= 0 ? 'var(--artdeco-up)' : 'var(--artdeco-down)'
+    // ... 324 lines omitted
       }
-    }]
+    // ... 323 lines omitted
   }
-})
-
+    // ... 322 lines omitted
 function formatDate(value: Date): string {
-  return value.toISOString().slice(0, 10)
+    // ... 321 lines omitted
 }
-
+    // ... 320 lines omitted
 interface UnifiedResponseLike {
-  success?: boolean
-  code?: number
-  message?: string
-  data?: unknown
+    // ... 319 lines omitted
 }
-
+    // ... 318 lines omitted
 async function fetchFundFlowData() {
-  const end = new Date()
-  const start = new Date()
-  start.setDate(end.getDate() - 30)
-
-  let summary: unknown = null
-  let bigDeal: unknown = null
-  const errors: Array<{ endpoint: string; status: number | string }> = []
-
-  const summaryResp = await apiClient.get('/akshare/market/fund-flow/hsgt-summary', {
-    params: {
-      start_date: formatDate(start),
-      end_date: formatDate(end),
-    },
-  }) as UnifiedResponseLike
-  if (summaryResp?.success === false) {
-    errors.push({ endpoint: 'hsgt-summary', status: summaryResp.code ?? 'unknown' })
-  } else {
-    summary = summaryResp
+    // ... 317 lines omitted
   }
-
-  const bigDealResp = await apiClient.get('/akshare/market/fund-flow/big-deal') as UnifiedResponseLike
-  if (bigDealResp?.success === false) {
-    errors.push({ endpoint: 'big-deal', status: bigDealResp.code ?? 'unknown' })
-  } else {
-    bigDeal = bigDealResp
+    // ... 316 lines omitted
   }
-
-  if (errors.length > 0) {
-    const hasUnauthorized = errors.some((e) => e.status === 401)
-    if (hasUnauthorized) {
-      fetchErrorMessage.value = '登录已过期,请重新登录后刷新'
-    } else if (errors.length === 2) {
-      fetchErrorMessage.value = '资金流向数据加载失败,请点击"刷新资金流"重试'
-    } else {
-      const failed = errors[0].endpoint
-      fetchErrorMessage.value = `${failed} 数据加载失败,展示可能不完整`
+    // ... 315 lines omitted
     }
-    console.error('[FundFlow] partial fetch failures', errors)
-  } else {
-    fetchErrorMessage.value = ''
+    // ... 314 lines omitted
   }
-
-  internalFundData.value = buildFundOverview(summary, bigDeal)
-  internalTrendData.value = buildFundTrend(summary)
-  internalStockRanking.value = buildStockRanking(bigDeal)
+    // ... 313 lines omitted
 }
-
+    // ... 312 lines omitted
 function handleFilterChange(value: string) {
-  currentTimeFilter.value = value
-  emit('filter-change', value)
+    // ... 311 lines omitted
 }
-
+    // ... 310 lines omitted
 function handleRankingChange(value: string) {
-  currentRankingType.value = value
-  emit('ranking-change', value)
+    // ... 309 lines omitted
 }
-
-onMounted(() => {
-  if (!hasExternalData.value) {
-    void fetchFundFlowData()
+    // ... 308 lines omitted
   }
-})
-</script>
-
+    // ... 307 lines omitted
+}
+    // ... 306 lines omitted
+}
+    // ... 305 lines omitted
+}
+    // ... 304 lines omitted
+}
+    // ... 303 lines omitted
+}
+    // ... 302 lines omitted
+}
+    // ... 301 lines omitted
+}
+    // ... 300 lines omitted
+}
+    // ... 299 lines omitted
+}
+    // ... 298 lines omitted
+}
+    // ... 297 lines omitted
+}
+    // ... 296 lines omitted
+}
+    // ... 295 lines omitted
+}
+    // ... 294 lines omitted
+}
+    // ... 293 lines omitted
+  }
+}
+    // ... 291 lines omitted
+}
+    // ... 290 lines omitted
+}
+    // ... 289 lines omitted
+  }
+    // ... 288 lines omitted
+  }
+    // ... 287 lines omitted
+  }
+    // ... 286 lines omitted
+  }
+}
+// ... 284 more lines (total: 506)
 <style scoped lang="scss">
-@use '@/styles/artdeco-tokens.scss' as *;
-
-.fund-flow-analysis {
-  display: flex;
-  flex-direction: column;
-  gap: var(--artdeco-spacing-6);
-}
-
-.hero-shell,
-.stats-strip,
-.content-shell,
-.embedded-shell {
-  width: 100%;
-}
-
-.hero-shell,
-.content-shell {
-  display: flex;
-  flex-direction: column;
-  gap: var(--artdeco-spacing-5);
-}
-
-.hero-rail,
-.content-shell-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--artdeco-spacing-4);
-  flex-wrap: wrap;
-}
-
-.hero-copy,
-.content-shell-copy {
-  display: flex;
-  flex-direction: column;
-  gap: var(--artdeco-spacing-2);
-}
-
-.hero-eyebrow,
-.content-shell-kicker {
-  font-family: var(--artdeco-font-mono);
-  font-size: var(--artdeco-text-xs);
-  color: var(--artdeco-gold-dim);
-  letter-spacing: var(--artdeco-tracking-wide);
-  text-transform: uppercase;
-}
-
-.hero-meta,
-.content-shell-meta {
-  display: flex;
-  gap: var(--artdeco-spacing-3);
-  flex-wrap: wrap;
-  font-family: var(--artdeco-font-mono);
-  font-size: var(--artdeco-text-xs);
-  color: var(--artdeco-fg-muted);
-}
-
-.content-shell-title {
-  margin: 0;
-  font-family: var(--artdeco-font-display);
-  font-size: var(--artdeco-text-xl);
-  color: var(--artdeco-fg-primary);
-}
-
-.content-shell-subtitle {
-  margin: 0;
-  color: var(--artdeco-fg-muted);
-  font-size: var(--artdeco-text-sm);
-  line-height: var(--artdeco-leading-relaxed);
-}
-
-.fund-overview {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(calc(var(--artdeco-spacing-20) * 3), 1fr));
-  gap: var(--artdeco-spacing-4);
-}
-
-.stats-strip {
-  @extend .fund-overview;
-}
-
-.fund-chart-card {
-  margin-bottom: var(--artdeco-spacing-6);
-}
-
-.ranking-controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--artdeco-spacing-4);
-}
-
-.time-filters {
-  display: flex;
-  gap: var(--artdeco-spacing-2);
-}
-
-.filter-btn {
-  background: transparent;
-  border: 1px solid var(--artdeco-border-default);
-  color: var(--artdeco-fg-muted);
-  padding: var(--artdeco-spacing-2) var(--artdeco-spacing-4);
-  cursor: pointer;
-  transition: all var(--artdeco-duration-base);
-
-  &.active {
-    border-color: var(--artdeco-gold-primary);
-    color: var(--artdeco-gold-primary);
-    background: var(--artdeco-gold-opacity-10);
-  }
-}
-
-.ranking-select {
-  width: calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-20) + var(--artdeco-spacing-20) - var(--artdeco-spacing-4));
-}
-
-.fund-error-banner {
-  display: flex;
-  align-items: center;
-  gap: var(--artdeco-spacing-2);
-  margin-top: var(--artdeco-spacing-4);
-  padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
-  border: 1px solid var(--artdeco-color-warning, #d97706);
-  border-radius: var(--artdeco-radius-md, 4px);
-  background: rgba(217, 119, 6, 0.08);
-  color: var(--artdeco-color-warning, #d97706);
-  font-size: var(--artdeco-font-size-sm, 14px);
-}
-
-@media (width <= 48rem) {
-  .hero-meta,
-  .content-shell-meta,
-  .ranking-controls {
-    width: 100%;
-  }
-
-  .ranking-controls {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .time-filters {
-    flex-wrap: wrap;
-  }
-
-  .ranking-select {
-    width: 100%;
-  }
-}
+@import "./styles/FundFlow.scss";
 </style>
