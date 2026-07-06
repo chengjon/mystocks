@@ -1,0 +1,81 @@
+version: "v0.2"
+
+task:
+  id: "pr-494"
+  title: "CI baseline failures registry — api-discovery-test + stable-suite PostgreSQL role root"
+  owner: "main"
+  created_at: "2026-07-06"
+
+mainline:
+  id: "L1-b4-015-ci-baseline-failures-registry"
+  objective: "register known CI baseline failures (api-discovery-test + stable-suite PostgreSQL service container role root) so subsequent PR merges can identify them as non-self-inflicted"
+  milestone_id: "L2-b4-015-quality-baseline-tracking"
+  slice_id: "L3-baseline-failures-md"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+scope:
+  allowed_paths:
+    - "docs/reports/quality/baseline_failures.md"
+    - "governance/mainline/task-cards/pr-494.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "scripts/**"
+    - "tests/**"
+    - ".github/workflows/**"
+    - "openspec/**"
+
+non_goals:
+  - "No CI workflow yaml change (deferred to dedicated infrastructure fix)"
+  - "No OpenSpec proposal or governance capability addition"
+  - "No new governance flow, task card template, or bug report template beyond the existing registry file"
+
+acceptance:
+  checks:
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "yaml-lint"
+      command: "python -c \"import yaml; yaml.safe_load(open('docs/reports/quality/baseline_failures.md')) if False else None\""
+      required: false
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-494.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr494-mainline-gate.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If baseline_failures.md format diverges from team expectation, future contributors may mis-record baseline failures"
+    - "If markdown lint rejects the file, CI doc-lint job may fail (non-blocking)"
+  rollback_plan: "git revert <merge-commit-sha> if baseline_failures.md is found to misstate root cause or conflict with future baseline failure tracking"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "register the two known CI baseline failures (api-discovery-test, stable-suite) so future PR merges can recognize them as pre-existing and non-blocking"
+    modified_scope: "docs/reports/quality/baseline_failures.md (new file) + governance/mainline/task-cards/pr-494.yaml (this task card)"
+    dependency_changes: "none"
+    legacy_logic_impact: "no runtime, API, or CI workflow change; only a markdown registry and its governance task card are added"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the merge if the registry misstates any root cause or the file location conflicts with future doc indexers"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-07-06T00:00:00Z"
+    approval_note: "documentation-only registry plus its governance task card; no runtime, contract, or CI workflow change"
+    secondary_approved: false
