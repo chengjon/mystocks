@@ -75,15 +75,16 @@
 
 ### 1.3 多数据源集成 {#domain-01-node-03}
 
-| 数据源 | 状态 | 优先级 | 说明 |
-|--------|------|--------|------|
-| TDX (通达信) | ✅ | 1 | 主数据源 |
-| AKShare | ✅ | 2 | 综合数据源 |
-| EFinance | ✅ | 3 | 东方财富 |
-| BaoStock | ✅ | 4 | 历史数据 |
-| SinaFinance | ✅ | 5 | 股票评级 |
-| Tushare | ⚠️ | 6 | 需Token配置 |
-| Byapi | ⚠️ | 7 | 403问题待修 |
+| 数据源 | 状态 | 优先级 | 入口 | 说明 |
+|--------|------|--------|------|------|
+| TDX (通达信) | ✅ | 1 | `src/adapters/tdx/` | 主数据源 |
+| AKShare | ✅ | 2 | `src/adapters/akshare/` | 综合数据源，DataSourceFactory fallback |
+| EFinance | ✅ | 3 | `src/adapters/efinance_adapter/` | 东方财富 |
+| BaoStock | ✅ | 4 | `src/adapters/baostock/` | 历史数据 |
+| SinaFinance | ✅ | 5 | `src/adapters/sina/` | 股票评级 |
+| Tushare | ⚠️ | 6 | `src/adapters/tushare/` | 需Token配置 |
+| Byapi | ⚠️ | 7 | `src/adapters/byapi/` | 403问题待修 |
+| OpenStock | ✅ | 8 | `web/backend/app/services/openstock_client.py`<br>`web/backend/app/services/openstock_market_data_adapter.py`<br>`web/backend/app/services/data_source_factory/` | 外部 HTTP 数据源；B4.014 起接入 `/quotes`、`/kline` 路由，经 `DataSourceFactory` 主路 + AKShare fallback |
 
 ### 1.4 K线数据服务 {#domain-01-node-04}
 

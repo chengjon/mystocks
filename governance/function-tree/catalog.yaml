@@ -68,6 +68,9 @@ domains:
         coverage_paths:
           - "src/adapters/**"
           - "config/data_sources*"
+          - "web/backend/app/services/openstock_client.py"
+          - "web/backend/app/services/openstock_market_data_adapter.py"
+          - "web/backend/app/services/data_source_factory/**"
         entrypoints:
           governance:
             - "docs/FUNCTION_TREE.md"
@@ -76,10 +79,17 @@ domains:
             - "web/backend/app/api/market/**"
           core:
             - "src/adapters/**"
+            - "web/backend/app/services/openstock_client.py"
+            - "web/backend/app/services/openstock_market_data_adapter.py"
+            - "web/backend/app/services/data_source_factory/**"
           tests:
             - "tests/unit/adapters/**"
+            - "web/backend/tests/test_openstock_market_data_adapter.py"
+            - "web/backend/tests/test_openstock_market_routes_integration.py"
+            - "web/backend/tests/test_openstock_real_integration.py"
           operations:
             - "docs/operations/OPS_MANUAL.md"
+            - "docs/guides/AKSHARE_MARKET_ADAPTER_MIGRATION_PLAYBOOK.md"
       - id: "domain-01-node-04"
         label: "1.4 K线数据服务"
         coverage_paths:
