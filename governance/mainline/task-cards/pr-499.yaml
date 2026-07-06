@@ -1,0 +1,77 @@
+version: "v0.2"
+
+task:
+  id: "pr-499"
+  title: "Archive baseline_failures.md entries after PR #498 fix landed"
+  owner: "main"
+  created_at: "2026-07-07"
+
+mainline:
+  id: "L1-b4-018-ci-baseline-failures-archive"
+  objective: "move the two baseline_failures.md active entries to history section with strikethrough + PR #498 reference, now that the dependency pin fix has landed and both CI workflows pass"
+  milestone_id: "L2-b4-015-quality-baseline-tracking"
+  slice_id: "L3-baseline-failures-archive"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+scope:
+  allowed_paths:
+    - "docs/reports/quality/baseline_failures.md"
+    - "governance/mainline/task-cards/pr-499.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "scripts/**"
+    - "tests/**"
+    - ".github/workflows/**"
+    - "requirements.txt"
+    - "openspec/**"
+
+non_goals:
+  - "No code change — only documentation archive update"
+  - "No new governance process or OpenSpec proposal"
+
+acceptance:
+  checks:
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-499.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr499-mainline-gate.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "none — pure documentation update"
+  rollback_plan: "git revert <merge-commit-sha> if historical accuracy of strikethrough attribution is challenged"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "archive the two baseline_failures.md active entries — PR #498's dependency pin fix has landed, both CI workflows (api-discovery-test, stable-suite) verified passing on PR #498's CI run"
+    modified_scope: "docs/reports/quality/baseline_failures.md (move entries #1/#2 from active section to history section with strikethrough + PR #498 reference + new errata note) + governance/mainline/task-cards/pr-499.yaml (this task card)"
+    dependency_changes: "none"
+    legacy_logic_impact: "no runtime, API, or CI workflow change; only documentation reorganization"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the merge if any factual misattribution is found"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-07-07T00:00:00Z"
+    approval_note: "documentation-only archive update; closes the baseline failures tracking loop opened by PR #494"
+    secondary_approved: false
