@@ -1,0 +1,77 @@
+version: "v0.2"
+
+task:
+  id: "pr-495"
+  title: "Correct baseline_failures.md root cause from PostgreSQL-role-root to numpy/scipy version drift"
+  owner: "main"
+  created_at: "2026-07-07"
+
+mainline:
+  id: "L1-b4-016-ci-baseline-failures-registry-correction"
+  objective: "correct the two baseline_failures.md entries: real root cause is numpy/scipy version drift, not PostgreSQL service container role root"
+  milestone_id: "L2-b4-015-quality-baseline-tracking"
+  slice_id: "L3-baseline-failures-md-correction"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+scope:
+  allowed_paths:
+    - "docs/reports/quality/baseline_failures.md"
+    - "governance/mainline/task-cards/pr-495.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "scripts/**"
+    - "tests/**"
+    - ".github/workflows/**"
+    - "openspec/**"
+
+non_goals:
+  - "No requirements.txt change (deferred to dedicated fix PR)"
+  - "No workflow yaml change"
+  - "No code change to backend numpy.long usage"
+
+acceptance:
+  checks:
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-495.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr495-mainline-gate.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If future contributors read the corrected root cause but encounter a different failure signature, they may mis-categorize new failures as the same baseline"
+  rollback_plan: "git revert <merge-commit-sha> if the corrected entries are found to misstate any signature or block legitimate triage"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "correct the wrong root cause recorded in baseline_failures.md (PR #494) — actual signatures point to numpy/scipy version drift, not PostgreSQL role root"
+    modified_scope: "docs/reports/quality/baseline_failures.md (rewrite both active entries) + governance/mainline/task-cards/pr-495.yaml (this task card)"
+    dependency_changes: "none"
+    legacy_logic_impact: "no runtime, API, or CI workflow change; only the documentation registry and its governance task card are corrected"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the merge if the corrected root cause turns out to misrepresent the actual CI failure signatures"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-07-07T00:00:00Z"
+    approval_note: "documentation-only correction plus its governance task card; no runtime, contract, or CI workflow change"
+    secondary_approved: false
