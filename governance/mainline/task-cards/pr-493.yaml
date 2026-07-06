@@ -1,0 +1,82 @@
+version: "v0.2"
+
+task:
+  id: "pr-493"
+  title: "FUNCTION_TREE domain-01-node-03 OpenStock entry sync"
+  owner: "main"
+  created_at: "2026-07-06"
+
+mainline:
+  id: "L1-b4-014-openstock-function-tree-entry-sync"
+  objective: "synchronize FUNCTION_TREE.md and function-tree catalog domain-01-node-03 with the OpenStock market data adapter paths merged in PR #490"
+  milestone_id: "L2-b4-014-function-tree-catalog-sync"
+  slice_id: "L3-domain-01-node-03-openstock-entry"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+scope:
+  allowed_paths:
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "governance/mainline/task-cards/pr-493.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "scripts/**"
+    - "tests/**"
+    - ".github/workflows/**"
+    - "openspec/**"
+
+non_goals:
+  - "No runtime, API, or adapter code change"
+  - "No OpenSpec proposal or governance capability addition"
+  - "No reordering of existing FUNCTION_TREE rows beyond the OpenStock entry sync"
+
+acceptance:
+  checks:
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "yaml-lint"
+      command: "python -c \"import yaml; yaml.safe_load(open('governance/function-tree/catalog.yaml'))\""
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-493.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr493-mainline-gate.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If FUNCTION_TREE.md table layout drifts from existing row parity, downstream doc indexers may need re-run"
+    - "If catalog.yaml indentation is malformed, YAML parse will fail acceptance"
+  rollback_plan: "git revert <merge-commit-sha> if FUNCTION_TREE.md or catalog.yaml is found to misstate OpenStock coverage paths or break YAML parsing after merge"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "bring FUNCTION_TREE.md section 1.3 and governance/function-tree/catalog.yaml domain-01-node-03 in line with the OpenStock market data paths merged in PR #490"
+    modified_scope: "docs/FUNCTION_TREE.md section 1.3 (OpenStock row + entry column parity on existing rows) and governance/function-tree/catalog.yaml domain-01-node-03 coverage_paths / entrypoints.core / entrypoints.tests / entrypoints.operations"
+    dependency_changes: "none"
+    legacy_logic_impact: "no runtime or API change; only documentation and governance catalog entries are synchronized"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the merge if FUNCTION_TREE.md or catalog.yaml misstates any OpenStock coverage path or breaks existing row parity"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-07-06T00:00:00Z"
+    approval_note: "documentation/governance-catalog-only patch to align FUNCTION_TREE and domain-01-node-03 with the OpenStock adapter paths merged in PR #490; no runtime or contract change"
+    secondary_approved: false
