@@ -1,0 +1,78 @@
+version: "v0.2"
+
+task:
+  id: "pr-497"
+  title: "Second correction: point baseline_failures.md to repo-root requirements.txt + RAPIDS chain (sklearn 1.9.0 + numpy 2.x)"
+  owner: "main"
+  created_at: "2026-07-07"
+
+mainline:
+  id: "L1-b4-016-ci-baseline-failures-registry-correction-2"
+  objective: "correct baseline_failures.md a second time: actual culprit is the repo-root requirements.txt (numpy>=1.24.0 no upper bound + cudf-cu12/cuml-cu12 RAPIDS chain that pulls sklearn 1.9.0 + numpy 2.4.6), not web/backend/requirements.txt and not backend code using numpy.long"
+  milestone_id: "L2-b4-015-quality-baseline-tracking"
+  slice_id: "L3-baseline-failures-md-correction-2"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+scope:
+  allowed_paths:
+    - "docs/reports/quality/baseline_failures.md"
+    - "governance/mainline/task-cards/pr-497.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "scripts/**"
+    - "tests/**"
+    - ".github/workflows/**"
+    - "requirements.txt"
+    - "openspec/**"
+
+non_goals:
+  - "No requirements.txt change (deferred to dedicated fix PR; issue #496 tracks the actual remediation)"
+  - "No workflow yaml change"
+  - "No code change to backend or RAPIDS chain"
+
+acceptance:
+  checks:
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-497.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr497-mainline-gate.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If future contributors read the corrected root cause but encounter a different failure signature, they may mis-categorize new failures as the same baseline"
+  rollback_plan: "git revert <merge-commit-sha> if the corrected entries are found to misstate any signature or block legitimate triage"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "correct baseline_failures.md a second time (PR #495 was still wrong — pointed to web/backend/requirements.txt which is already pinned numpy==1.26.4, and claimed backend uses numpy.long which grep shows 0 occurrences); actual culprit is repo-root requirements.txt with numpy>=1.24.0 no upper bound + RAPIDS chain (cudf-cu12/cuml-cu12) that transitively pulls sklearn 1.9.0 + numpy 2.4.6, where sklearn 1.9.0 calls numpy.long in _ranking.py"
+    modified_scope: "docs/reports/quality/baseline_failures.md (rewrite entry #1 root cause + entry #2 root cause, add second errata note) + governance/mainline/task-cards/pr-497.yaml (this task card)"
+    dependency_changes: "none"
+    legacy_logic_impact: "no runtime, API, or CI workflow change; only the documentation registry and its governance task card are corrected"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the merge if the corrected root cause turns out to misrepresent the actual CI failure signatures"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-07-07T00:00:00Z"
+    approval_note: "documentation-only correction plus its governance task card; no runtime, contract, or CI workflow change"
+    secondary_approved: false
