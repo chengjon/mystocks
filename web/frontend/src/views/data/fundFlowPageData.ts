@@ -81,7 +81,18 @@ function extractRows<T>(payload: unknown): T[] {
 
   if (payload && typeof payload === 'object') {
     const candidate = payload as { data?: unknown }
-    if (Array.isArray(candidate.data)) {
+    // Handle double-nested envelope: {success, data: {data: [...]}}
+    // emitted by some akshare endpoints. Walk one level deeper before
+    // giving up so buildStockRanking/buildFundOverview see real rows.
+    if (candidate.data && typeof candidate.data === 'object') {
+      const inner = candidate.data as { data?: unknown }
+      if (Array.isArray(inner.data)) {
+        return inner.data as T[]
+      }
+      if (Array.isArray(candidate.data)) {
+        return candidate.data as T[]
+      }
+    } else if (Array.isArray(candidate.data)) {
       return candidate.data as T[]
     }
   }

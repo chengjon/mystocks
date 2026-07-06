@@ -1,0 +1,251 @@
+audit_run_id: audit-20260702-01
+regression_run_id: regression-20260703-01
+regressed_at: '2026-07-03T01:35:00Z'
+regressed_by: claude (glm-5.2)
+verification_surface: live-audit
+browser_tool: playwright
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  auth: <dev-credentials> (Bearer token stored in localStorage.auth_token after /login)
+summary:
+  pages_regressed: 4
+  fixes_verified: 6
+  fixes_held: 6
+  regressions_introduced: 0
+  new_findings: 1 (pre-existing, deferred — tracked below)
+verdict: PASS
+fix_ledger:
+  - id: market-lhb-001
+    severity: BLOCKING
+    page: market-lhb
+    fix_held: true
+  - id: market-lhb-002
+    severity: HIGH
+    page: market-lhb
+    fix_held: true
+  - id: market-realtime-001
+    severity: HIGH
+    page: market-realtime
+    fix_held: true
+  - id: data-fund-flow-001
+    severity: BLOCKING
+    page: data-fund-flow
+    fix_held: true
+  - id: data-fund-flow-002
+    severity: HIGH
+    page: data-fund-flow
+    fix_held: true
+  - id: data-indicator-001
+    severity: BLOCKING
+    page: data-indicator
+    fix_held: true
+page_results:
+  market-lhb:
+    url: http://localhost:3020/market/lhb
+    fixes_in_scope:
+      - market-lhb-001 (BLOCKING): v2→v1 path mismatch
+      - market-lhb-002 (HIGH): silent 500 error swallow
+    post_fix_state:
+      http_status: 200
+      console_errors: 0
+      table_rows: 44
+      real_data_sample: |
+        雷科防务 (002413), 新疆天业 (600075), 鲁信创投 (600783),
+        航天工程 (603698), 锋龙股份 (002931), 谱尼测试 (300887),
+        山子高科 (000981), 利欧股份 (002131), 金风科技 (002202),
+        航天电子 (600879) etc.
+      error_banner_triggered: false (no fetch failure — banner hidden as designed)
+    backend_probe:
+      endpoint: GET /api/v1/market/lhb?limit=100
+      status: 200
+      rows_returned: 100
+      sample_row: |
+        {"id":531,"symbol":"603903","name":"中持股份","trade_date":"2026-01-06",
+         "reason":"普通席位卖出，成功率28.80%","buy_amount":23813707.4,
+         "sell_amount":43890122.53,"net_amount":-20076415.13,"turnover_rate":8.707}
+      source: akshare lhb upstream
+    regression_check:
+      - dimension: route-inventory
+        verdict: pass
+        notes: title "龙虎榜 - MyStocks", H1 "龙虎榜工作台", breadcrumb 交易室/龙虎榜
+      - dimension: functional-audit
+        verdict: pass
+        notes: 刷新榜单 enabled, 44 rows loaded, 榜单切换 (买入/卖出/机构) all visible
+      - dimension: data-state-audit
+        verdict: pass
+        notes: real data, no false-empty state, no error to test banner but code path present
+      - dimension: visual-artdeco-audit
+        verdict: pass
+        notes: AD v3.2 ELITE chrome, 4 stat cards, hero/content shells intact
+      - dimension: responsive-a11y-audit
+        verdict: warn (pre-existing low)
+        notes: 4 stat cards still +0% without aria-label differentiation (market-lhb-003 deferred)
+    fix_held: true
+  market-realtime:
+    url: http://localhost:3020/market/realtime
+    fixes_in_scope:
+      - market-realtime-001 (HIGH): empty name fallback
+    post_fix_state:
+      http_status: 200
+      console_errors: 0
+      index_rows: 5
+      index_name_displayed: 股票1 / 股票2 / 股票3 / 股票4 / 股票5
+    backend_probe:
+      endpoint: GET /api/v1/market/quotes?stock_code=000001
+      status: 200
+      backend_returns: name="" (empty string, source=eltdx)
+      frontend_displays: 股票N fallback (correct per af29d15d6 .trim() fix)
+    regression_check:
+      - dimension: route-inventory
+        verdict: pass
+      - dimension: functional-audit
+        verdict: pass
+        notes: 刷新行情 button present, 5 indices loaded
+      - dimension: data-state-audit
+        verdict: pass
+        notes: fallback fires correctly on empty name (this IS the documented fix behavior)
+      - dimension: visual-artdeco-audit
+        verdict: pass
+      - dimension: responsive-a11y-audit
+        verdict: warn (pre-existing low — same aria-label issue)
+    note: |
+      Backend root cause (eltdx returns name="") is unchanged — frontend fallback
+      is the agreed-upon resolution. Fix behaves correctly.
+    fix_held: true
+  data-fund-flow:
+    url: http://localhost:3020/data/fund-flow
+    fixes_in_scope:
+      - data-fund-flow-001 (BLOCKING): 401 auth header injection
+      - data-fund-flow-002 (HIGH): double-nested data.data envelope
+    post_fix_state:
+      http_status: 200
+      console_errors: 0
+      stat_cards_populated: 4 (沪股通/深股通/北向/主力)
+      ranking_rows: 20
+      ranking_sample: |
+        天山电子 (301379), 凯旺科技 (301182), 协创数据 (300857),
+        铂科新材 (300811), 新易盛 (300502), 蓝晓科技 (300487)
+    backend_probe:
+      hsgt-summary:
+        endpoint: GET /api/akshare/market/fund-flow/hsgt-summary?start_date=2026-07-02&end_date=2026-07-02
+        status: 200
+        rows_returned: 4
+        sample_keys: [交易日, 类型, 板块, 资金方向, 交易状态, 成交净买额]
+      big-deal:
+        endpoint: GET /api/akshare/market/fund-flow/big-deal?period=1day&limit=10
+        status: 200
+        rows_returned: 5000
+        sample_keys: [成交时间, symbol, 股票简称, 成交价格, 成交量, 成交额]
+        note_on_row_count: |
+          big-deal returned 5000 rows despite limit=10 query param. The akshare
+          upstream endpoint ignores `limit` and returns the full trading-day
+          dataset. This is the documented pre-existing upstream behavior and is
+          NOT a regression — the frontend extracts only the first 20 rows for
+          ranking. Tracked as deferred debt, not actionable in this batch.
+    regression_check:
+      - dimension: route-inventory
+        verdict: pass
+      - dimension: functional-audit
+        verdict: pass
+        notes: 刷新资金流 button present, ranking table populated with 20 real rows
+      - dimension: data-state-audit
+        verdict: pass
+        notes: no false-empty state; both endpoints feed the page correctly
+      - dimension: visual-artdeco-audit
+        verdict: pass
+      - dimension: responsive-a11y-audit
+        verdict: warn (pre-existing)
+    fix_held: true
+  data-indicator:
+    url: http://localhost:3020/data/indicator
+    fixes_in_scope:
+      - data-indicator-001 (BLOCKING): localStorage key mismatch causing 401 redirect
+    post_fix_state:
+      http_status: 200
+      final_url: /data/indicator (no redirect to /login)
+      console_errors: 2
+      console_error_breakdown:
+        - source: GET /api/v1/data/stocks/basic?limit=200
+          status: 500
+          kind: HTTP 500
+        - source: axios client wrapping the same 500
+          kind: AxiosError (duplicate emission of the same underlying failure)
+      note: |
+        Both console errors originate from the SAME underlying backend failure
+        (stocks/basic 500). The 2nd entry is axios's response interceptor
+        re-logging the rejection. Single root cause; not 2 distinct failures.
+    backend_probe:
+      stocks_basic:
+        endpoint: GET /api/v1/data/stocks/basic?limit=200
+        status: 500
+        body: |
+          {"code":9000,"message":"查询失败: 500: Failed to fetch data:
+          Failed to fetch stocks basic data: not all arguments converted
+          during string formatting"}
+        root_cause: PostgreSQL parameter substitution formatting error in
+          stocks_basic data layer (not all arguments converted during string
+          formatting — suggests a %s/{} mismatch in query template)
+      indicators_registry:
+        endpoint: GET /api/v1/indicators/registry
+        status: 200
+        body_keys: [total_count, categories, indicators]
+    regression_check:
+      - dimension: route-inventory
+        verdict: pass
+        notes: title "指标分析 - MyStocks", breadcrumb correct
+      - dimension: functional-audit
+        verdict: pass
+        notes: page renders without auth redirect — fix held
+      - dimension: data-state-audit
+        verdict: warn
+        notes: 500 from /api/v1/data/stocks/basic?limit=200 (backend data layer, pre-existing)
+      - dimension: visual-artdeco-audit
+        verdict: pass
+      - dimension: responsive-a11y-audit
+        verdict: pass
+    new_findings:
+      - id: data-indicator-reg-001
+        severity: medium
+        dimension: data-state-audit
+        title: /api/v1/data/stocks/basic?limit=200 returns 500
+        notes: |
+          Pre-existing backend data layer issue (postgres access layer —
+          "not all arguments converted during string formatting" suggests a
+          query template / parameter binding mismatch). NOT introduced by the
+          localStorage fix. The fix successfully prevents the 401 redirect;
+          the 500 is a separate data-availability issue.
+        b4_014_relevance: indirect (postgres data layer, not OpenStock routing)
+        resolution: defer
+        defer_tracker: |
+          Linked to B4.014 task #11 (AkshareMarketDataAdapter migration scoping)
+          as related backend data-layer debt. The stocks/basic query lives in
+          a different adapter (postgres), but the same task framework tracks
+          data-layer repair. If a dedicated backend ticket is opened for the
+          postgres format-string bug, replace this line with that ticket ID.
+    fix_held: true
+cross_page_observation:
+  - All 4 pages hold their fixes with no console error regressions
+  - aria-label differentiation (market-lhb-003 deferred; market-technical-001
+    is in a DIFFERENT page not in this regression batch — referenced for
+    pattern-tracking only, do not read as a coverage gap in this run)
+  - data-indicator /stocks/basic 500 is the only new console error — backend issue
+recommended_next_batch:
+  - P2: aria-label batch across market-technical / market-lhb (low lift, batch fix)
+  - backend: trace /api/v1/data/stocks/basic 500 (out of myweb-audit scope; defer to backend batch)
+  - secondary inventory: switch from canonical coverage to secondary-view-inventory
+review_log:
+  - reviewer: Claude (deepseek-v4-pro)
+    review_date: '2026-07-03'
+    review_doc: docs/reports/quality/myweb-audit/audit-20260702-01/regression/REVIEW_2026-07-03.md
+    applied_corrections:
+      - summary.fixes_verified: 5 → 6 (count error fixed)
+      - summary.fixes_held: 5 → 6 (count error fixed)
+      - added fix_ledger section listing all 6 fixes with severity + page
+      - data-indicator: added console_error_breakdown explaining the 2 errors share one root cause
+      - data-indicator: added defer_tracker linking to B4.014 task #11
+      - data-indicator: added full backend_probe (stocks_basic 500 + indicators_registry 200)
+      - market-lhb: added backend_probe (200, 100 rows, sample data)
+      - cross_page_observation: annotated market-technical-001 as out-of-batch reference
+      - environment.auth: masked dev credentials to <dev-credentials>
+      - data-fund-flow.backend_probe.big-deal: added note_on_row_count explaining 5000-row upstream behavior

@@ -1,0 +1,151 @@
+version: "v0.2"
+
+task:
+  id: "pr-490"
+  title: "OpenStock /quotes + /kline factory migration + production smoke + myweb-audit baseline"
+  owner: "claude"
+  created_at: "2026-07-04"
+
+mainline:
+  id: "L1-b4-014-openstock-routes-factory-migration"
+  objective: "migrate /quotes and /kline routes onto OpenStockMarketDataSourceAdapter via DataSourceFactory with akshare fallback, plus production smoke fixes and myweb-audit market module baseline"
+  milestone_id: "L2-b4-014-externalize-data-source-provider"
+  slice_id: "L3-b4-014-factory-migration-and-smoke"
+
+classification:
+  task_type: "feature"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "externalize-data-source-provider-to-openstock"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "domain-01"
+  node_id: "domain-01-node-01"
+  affected_entrypoints:
+    - "api"
+    - "frontend"
+    - "tests"
+  update_status: "required"
+  secondary_domains:
+    - "domain-02"
+    - "domain-03"
+    - "domain-08"
+  exemption_reason: "B4.014 routes /quotes and /kline through DataSourceFactory onto the new OpenStockMarketDataSourceAdapter without adding, removing, or renaming route entrypoints; route paths, response envelopes (UnifiedResponse), and validation are preserved."
+
+scope:
+  allowed_paths:
+    - "web/backend/app/services/openstock_client.py"
+    - "web/backend/app/services/openstock_market_data_adapter.py"
+    - "web/backend/app/services/data_source_factory/data_source_factory.py"
+    - "web/backend/app/api/market/market_data_request.py"
+    - "web/backend/app/api/technical_analysis.py"
+    - "web/backend/app/api/strategy.py"
+    - "web/backend/tests/test_openstock_market_data_adapter.py"
+    - "web/backend/tests/test_openstock_market_routes_integration.py"
+    - "web/backend/tests/test_openstock_real_integration.py"
+    - "web/backend/tests/test_strategy_provider_injection.py"
+    - "web/backend/tests/test_technical_analysis_provider_injection.py"
+    - "web/frontend/src/api/apiClient.ts"
+    - "web/frontend/src/components/artdeco/advanced/composables/useArtDecoCapitalFlowViewModel.ts"
+    - "web/frontend/src/components/artdeco/base/ArtDecoStatCard.vue"
+    - "web/frontend/src/composables/market/useDataAnalysis.ts"
+    - "web/frontend/src/services/indicatorService.ts"
+    - "web/frontend/src/views/data/FundFlow.vue"
+    - "web/frontend/src/views/data/fundFlowPageData.ts"
+    - "web/frontend/src/views/data/styles/FundFlow.scss"
+    - "web/frontend/src/views/market/LHB.vue"
+    - "web/frontend/src/views/market/marketRealtimeData.ts"
+    - "web/frontend/src/views/stocks/Screener.vue"
+    - "config/data_sources.json"
+    - "src/data_access/postgresql_access.py"
+    - "docs/architecture/**"
+    - "docs/guides/AKSHARE_MARKET_ADAPTER_MIGRATION_PLAYBOOK.md"
+    - "docs/reports/**"
+    - "openspec/changes/migrate-akshare-fundflow-mixin-to-openstock/**"
+    - "openspec/changes/migrate-akshare-market-adapter-modules-to-openstock/**"
+    - "governance/compliance/**"
+    - "governance/function-tree/catalog.yaml"
+    - "governance/mainline/task-cards/pr-490.yaml"
+    - "governance/mainline/task-cards/g2-332.yaml"
+    - "governance/mainline/task-cards/g2-334.yaml"
+    - "governance/mainline/task-cards/g2-335.yaml"
+    - "governance/mainline/task-cards/g2-336.yaml"
+    - "governance/mainline/task-cards/g2-337.yaml"
+    - ".github/workflows/security-testing.yml"
+    - "scripts/compliance/unified_response_contract_guard.py"
+    - "tests/unit/scripts/test_unified_response_contract_guard.py"
+    - "tests/unit/scripts/test_ci_workflow_runtime_setup.py"
+    - ".continue-here.md"
+    - ".gitleaksignore"
+    - "CLAUDE.md"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+    - "web/frontend/src/router/index.ts"
+    - "openspec/specs/**"
+    - ".github/workflows/mainline-governance.yml"
+    - "governance/mainline/schemas/**"
+    - "governance/mainline/scripts/**"
+
+non_goals:
+  - "no OpenStock upstream changes (MyStocks-side only)"
+  - "no frontend component redesign (only data-shape fixes from adapter output)"
+  - "no database schema changes"
+  - "no dependency manifest bumps"
+  - "no AkshareMarketDataAdapter migration (tracked as task #11 / separate proposal)"
+  - "no worktree-local files (ecosystem.config.cjs, PM2 scripts, reports/coverage/coverage.json, auto-imports.d.ts) included in this PR"
+  - "no automatic merge of this source implementation PR (human review required)"
+
+acceptance:
+  checks:
+    - id: "adapter-unit-tests"
+      command: "pytest --no-cov web/backend/tests/test_openstock_market_data_adapter.py"
+      required: true
+    - id: "real-integration"
+      command: "pytest --no-cov -m integration web/backend/tests/test_openstock_real_integration.py"
+      required: true
+    - id: "route-integration"
+      command: "pytest --no-cov web/backend/tests/test_openstock_market_routes_integration.py"
+      required: true
+    - id: "regression"
+      command: "pytest --no-cov web/backend/tests/test_openstock_market_data_adapter.py web/backend/tests/test_openstock_market_routes_integration.py web/backend/tests/test_market_api.py"
+      required: true
+    - id: "openspec-validate-parent"
+      command: "openspec validate externalize-data-source-provider-to-openstock --strict"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-490.yaml --base-sha 3b649352afc1823399ec01fa77e141380c28b1a1 --head-sha HEAD --report /tmp/pr490-mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Adapter field-shape drift between OpenStock normalized fields and frontend Chinese wide-table expectations; mitigated by _transform_quote_row / _transform_kline_row mapping units with unit tests."
+    - "DataSourceFactory primary/backup switch could regress existing akshare chain if factory wiring drifts; mitigated by akshare fallback retained as secondary provider."
+    - "Real OpenStock integration tests depend on 192.168.123.104:8040 reachability plus OPENSTOCK_SECURITY_API_KEY env; tests are marked @pytest.mark.integration and skipped in offline CI."
+    - "Source implementation PR; human review required before merge."
+  rollback_plan: "Revert PR #490; this restores the prior akshare-direct /quotes and /kline route handlers and removes the OpenStockMarketDataSourceAdapter registration from DataSourceFactory."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Migrate /quotes and /kline onto OpenStockMarketDataSourceAdapter via DataSourceFactory, with API-key header injection, real-environment smoke fixes, and myweb-audit market module baseline."
+    modified_scope: "web/backend services + market API + 8 test files; web/frontend data-shape fixes in 8 vue/ts files; config/data_sources.json; openspec proposals + playbook; audit reports and worklogs."
+    dependency_changes: "No package dependency changes."
+    legacy_logic_impact: "Route paths, response envelopes (UnifiedResponse), and validation preserved; akshare retained as DataSourceFactory fallback."
+    rollback_ready: "Revert PR #490."
+    risk_and_rollback_point: "Source implementation PR; human review required before merge."
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "claude"
+    approved_at: "2026-07-04T00:00:00Z"
+    approval_note: "phase_a_pr_hard_gate; openspec proposal approved; awaiting human review on PR"
+    secondary_approved: false

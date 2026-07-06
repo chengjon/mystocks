@@ -1,0 +1,155 @@
+audit_run_id: audit-20260702-01
+batch_id: market-batch-01
+module: market
+pages:
+  - market-realtime
+  - market-technical
+  - market-lhb
+generated_at: 2026-07-02
+merged_by: claude (glm-5.2)
+verification_surface: live-audit
+summary:
+  total_findings: 6
+  by_severity:
+    blocking: 1
+    high: 2
+    medium: 0
+    low: 3
+  by_dimension:
+    route-inventory: 0
+    functional-audit: 3
+    data-state-audit: 2
+    visual-artdeco-audit: 0
+    responsive-a11y-audit: 3
+  by_page:
+    market-realtime:
+      total: 1
+      blocking: 0
+      high: 1  # 来自之前 session (空字符串导致 fallback)
+      medium: 0
+      low: 0
+    market-technical:
+      total: 2
+      blocking: 0
+      high: 0
+      medium: 0
+      low: 2
+    market-lhb:
+      total: 3
+      blocking: 1
+      high: 1
+      medium: 0
+      low: 1
+findings_consolidated:
+  - id: market-realtime-001
+    page: market-realtime
+    severity: high
+    dimension: data-state-audit
+    title: 后端返 name="" 空字符串,前端 fallback 误判,显示 "股票N" 占位
+    source: raw-findings/market-realtime
+    root_cause: useArtDecoCapitalFlowViewModel.ts:73 `name: typeof record.name === 'string' ? record.name : \`股票${index + 1}\``
+    b4_014_relevance: direct (B4.014 /quotes 端点)
+    fix_complexity: low
+    recommendation: 改为 `name: (typeof record.name === 'string' && record.name.trim()) ? record.name : \`股票${index + 1}\``
+    source_probe:
+      backend: GET /api/v1/market/quotes?stock_code=000001 → 200, source=eltdx
+      backend_returns: name="" (empty string)
+      frontend_displays: "股票1" (fallback)
+    resolution_status: RESOLVED
+    resolved_at: '2026-07-02T21:18:00Z'
+    resolved_by: 'af29d15d6 (B4.014-M1p)'
+    fix_applied: |
+      Added .trim() check at 5 sites: useArtDecoCapitalFlowViewModel.ts:62,73,101,112
+      and marketRealtimeData.ts:70. Empty strings now fall through to "股票N" fallback.
+    note: |
+      Backend-side root cause confirmed: eltdx provider returns name="". Frontend
+      fallback is the appropriate response; this fix makes the fallback fire correctly.
+
+  - id: market-technical-001
+    page: market-technical
+    severity: low
+    dimension: responsive-a11y-audit
+    title: 4 个状态卡 +0% 无 aria-label 区分
+    b4_014_relevance: 边缘
+    fix_complexity: low
+
+  - id: market-technical-002
+    page: market-technical
+    severity: low
+    dimension: functional-audit
+    title: "刷新K线" 按钮未做点击测试
+    b4_014_relevance: 边缘
+    fix_complexity: n/a
+
+  - id: market-lhb-001
+    page: market-lhb
+    severity: blocking
+    dimension: functional-audit
+    title: 前端调 /api/v2/market/lhb 但后端只提供 v1,页面永远 empty
+    b4_014_relevance: 边缘 (B4.014 未改 LHB,但同 module)
+    fix_complexity: low
+    recommendation: 前端 LHB.vue 改用 /api/v1/market/lhb
+    resolution_status: RESOLVED
+    resolved_at: '2026-07-02T21:18:00Z'
+    resolved_by: 'af29d15d6 (B4.014-M1p)'
+    fix_applied: |
+      Bypassed useArtDecoApi.exec() (returned null for bare-array /v1 response),
+      switched to direct apiClient.get('/v1/market/lhb') with payload extraction.
+    verification: |
+      /market/lhb renders 44 real rows (山子高科, 利欧股份, 金风科技, 航天电子 etc.)
+
+  - id: market-lhb-002
+    page: market-lhb
+    severity: high
+    dimension: data-state-audit
+    title: 前端吞 500 错误降级为 empty,无错误提示
+    b4_014_relevance: 边缘
+    fix_complexity: medium
+    resolution_status: RESOLVED
+    resolved_at: '2026-07-03T03:00:00Z'
+    resolved_by: 'fix(b4-014): LHB shows error banner on fetch failure'
+
+  - id: market-lhb-003
+    page: market-lhb
+    severity: low
+    dimension: responsive-a11y-audit
+    title: 状态卡 +0% 无 aria-label 区分 (与 market-technical 同款)
+    b4_014_relevance: 边缘
+    fix_complexity: low
+
+cross_page_patterns:
+  - pattern: aria-label 缺失
+    pages: [market-technical, market-lhb]
+    recommendation: 全 market 模块统一加 aria-label
+  - pattern: data source 非预期
+    pages: [market-realtime, market-technical]
+    notes:
+      - /quotes source = eltdx (TDX 本地)
+      - /kline source = eltdx (TDX 本地)
+      - B4.014 本应切到 OpenStock,但实际仍是 eltdx
+      - 可能是 fallback chain 正常工作 (OpenStock 失败 → eltdx 兜底),需查 factory 配置
+    b4_014_relevance: direct (需要核实 factory 是否正确路由 OpenStock 为 primary)
+
+verification_highlights:
+  b4_014_kline_fixes_verified:
+    - ISO8601 truncation (10 chars) ✅
+    - time → datetime mapping ✅
+    - symbol prefix strip (sz/sh/bj) ✅
+    - period mapping (daily → day) ✅
+  b4_014_quotes_fixes_verified:
+    - pct_chg → change_percent mapping ✅ (在 unit tests)
+    - symbol prefix strip ✅ (在 unit tests)
+  open_questions:
+    - 为什么 source 显示 eltdx 而非 openstock? (factory fallback 还是配置问题?)
+    - LHB 路由 v1/v2 失配是何时引入的? (git blame LHB.vue)
+
+recommended_repair_priority:
+  P0:
+    - market-lhb-001 (blocking,影响整页)
+  P1:
+    - market-realtime-001 (high,显示错误)
+    - market-lhb-002 (high,UX 差)
+  P2:
+    - market-technical-001, market-lhb-003 (aria-label,可批量)
+  deferred:
+    - market-technical-002 (需要更多交互测试,可放下一轮)

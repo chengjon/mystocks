@@ -16,7 +16,7 @@
 import logging
 import os
 from datetime import date, datetime
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Depends, Query, HTTPException
 from pydantic import ValidationError
@@ -26,7 +26,7 @@ from app.api.market.market_request_models import ETFQueryParams, FundFlowRequest
 from app.core.cache_utils import cache_response  # 导入缓存工具
 from app.core.circuit_breaker_manager import get_circuit_breaker  # 导入熔断器
 from app.core.exceptions import BusinessException, NotFoundException, ValidationException
-from app.core.responses import create_error_response, create_success_response
+from app.core.responses import UnifiedPaginatedResponse, UnifiedResponse, create_error_response, create_success_response
 from app.quotes_payload import build_quotes_response_payload
 from app.schemas.market_schemas import (
     ChipRaceResponse,
@@ -41,7 +41,7 @@ router.include_router(market_heatmap_router)
 logger = logging.getLogger(__name__)
 
 
-@router.get("/fund-flow", summary="查询资金流向")
+@router.get("/fund-flow", response_model=UnifiedResponse[Dict[str, Any]], summary="查询资金流向")
 @cache_response("fund_flow", ttl=300)  # 🚀 添加5分钟缓存
 async def get_fund_flow(
     symbol: str = Query(..., description="股票代码", min_length=1, max_length=20),
@@ -164,7 +164,7 @@ async def get_fund_flow(
         )
 
 
-@router.post("/fund-flow/refresh", summary="刷新资金流向")
+@router.post("/fund-flow/refresh", response_model=UnifiedResponse[Dict[str, Any]], summary="刷新资金流向")
 async def refresh_fund_flow(
     symbol: str = Query(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$"),
     timeframe: str = Query(default="1", description="时间维度", pattern=r"^[13510]$"),
@@ -196,7 +196,7 @@ async def refresh_fund_flow(
         )
 
 
-@router.get("/etf/list", summary="查询ETF列表")
+@router.get("/etf/list", response_model=UnifiedResponse[Dict[str, Any]], summary="查询ETF列表")
 @cache_response("etf_spot", ttl=60)  # 🚀 添加1分钟缓存（ETF行情更新较快）
 async def get_etf_list(
     symbol: Optional[str] = Query(None, description="ETF代码", min_length=1, max_length=10, pattern=r"^[A-Z0-9]+$"),
@@ -233,7 +233,7 @@ async def get_etf_list(
         )
 
 
-@router.post("/etf/refresh", response_model=MessageResponse, summary="刷新ETF数据")
+@router.post("/etf/refresh", response_model=UnifiedResponse[MessageResponse], summary="刷新ETF数据")
 async def refresh_etf_data(
     service: MarketDataService = Depends(get_market_data_service),
 ):
@@ -251,7 +251,7 @@ async def refresh_etf_data(
     return MessageResponse(**result)
 
 
-@router.get("/chip-race", response_model=List[ChipRaceResponse], summary="查询竞价抢筹")
+@router.get("/chip-race", response_model=UnifiedPaginatedResponse[ChipRaceResponse], summary="查询竞价抢筹")
 @cache_response("chip_race", ttl=300)  # 🚀 添加5分钟缓存
 async def get_chip_race(
     race_type: str = Query(default="open", description="抢筹类型: open/end"),
@@ -277,7 +277,7 @@ async def get_chip_race(
         raise BusinessException(detail=str(e), status_code=500, error_code="MARKET_SERVICE_ERROR")
 
 
-@router.post("/chip-race/refresh", response_model=MessageResponse, summary="刷新抢筹数据")
+@router.post("/chip-race/refresh", response_model=UnifiedResponse[MessageResponse], summary="刷新抢筹数据")
 async def refresh_chip_race(
     race_type: str = Query(default="open", description="抢筹类型"),
     trade_date: Optional[str] = Query(None, description="交易日期 YYYY-MM-DD"),
@@ -299,7 +299,7 @@ async def refresh_chip_race(
     return MessageResponse(**result)
 
 
-@router.get("/lhb", response_model=List[LongHuBangResponse], summary="查询龙虎榜")
+@router.get("/lhb", response_model=UnifiedPaginatedResponse[LongHuBangResponse], summary="查询龙虎榜")
 @cache_response("lhb", ttl=86400)  # 🚀 添加24小时缓存（龙虎榜每日发布）
 async def get_lhb_detail(
     symbol: Optional[str] = Query(None, description="股票代码"),
@@ -327,7 +327,7 @@ async def get_lhb_detail(
         raise BusinessException(detail=str(e), status_code=500, error_code="MARKET_SERVICE_ERROR")
 
 
-@router.post("/lhb/refresh", response_model=MessageResponse, summary="刷新龙虎榜")
+@router.post("/lhb/refresh", response_model=UnifiedResponse[MessageResponse], summary="刷新龙虎榜")
 async def refresh_lhb_detail(
     trade_date: str = Query(..., description="交易日期 YYYY-MM-DD"),
     service: MarketDataService = Depends(get_market_data_service),
@@ -347,7 +347,7 @@ async def refresh_lhb_detail(
     return MessageResponse(**result)
 
 
-@router.get("/quotes", summary="查询实时行情")
+@router.get("/quotes", response_model=UnifiedResponse[Dict[str, Any]], summary="查询实时行情")
 @cache_response("real_time_quotes", ttl=10)  # 🚀 添加10秒缓存（平衡实时性）
 async def get_market_quotes(
     symbols: Optional[str] = Query(None, description="股票代码列表，逗号分隔，如: 000001,600519"),
@@ -374,8 +374,10 @@ async def get_market_quotes(
 
         symbol_list = [s.strip() for s in symbols.split(",")]
 
-        # 调用数据源工厂获取quotes数据
-        result = await factory.get_data("market", "quotes", {"symbols": symbol_list})
+        # 调用数据源工厂获取quotes数据（OpenStock primary + mock fallback）
+        result = await factory.get_data_with_fallback(
+            "openstock_market", "quotes", {"symbols": symbol_list}
+        )
 
         return create_success_response(
             data=build_quotes_response_payload(result, symbol_list),
@@ -388,7 +390,7 @@ async def get_market_quotes(
         )
 
 
-@router.get("/stocks", summary="查询股票列表")
+@router.get("/stocks", response_model=UnifiedResponse[Dict[str, Any]], summary="查询股票列表")
 async def get_stock_list(
     limit: int = Query(100, ge=1, le=1000, description="返回记录数限制"),
     search: Optional[str] = Query(None, description="股票代码或名称搜索关键词"),
@@ -488,7 +490,7 @@ async def get_stock_list(
         raise BusinessException(detail=f"查询股票列表失败: {str(e)}", status_code=500, error_code="DATABASE_ERROR")
 
 
-@router.get("/kline", summary="查询K线数据")
+@router.get("/kline", response_model=UnifiedResponse[Dict[str, Any]], summary="查询K线数据")
 async def get_kline_data(
     stock_code: str = Query(..., description="股票代码（6位数字或带交易所后缀）"),
     period: str = Query(
@@ -548,6 +550,61 @@ async def get_kline_data(
             )
 
         service = get_stock_search_service()
+
+        # 优先走 OpenStock factory（M1k-4），失败时二级 fallback 回 akshare
+        from app.services.data_source_factory import get_data_source_factory
+
+        factory = await get_data_source_factory()
+
+        # count 计算：若指定 start_date，按天数差推算；否则默认 60 个交易日
+        # （OpenStock API 当前不支持日期范围查询，task #11 会推动 OpenStock API 改造）
+        count = 60
+        if start_date:
+            try:
+                start_dt = dt_convert.strptime(start_date, "%Y-%m-%d")
+                end_dt = dt_convert.strptime(end_date, "%Y-%m-%d") if end_date else datetime.now()
+                # daily=日历日差；weekly/monthly 按 5/21 个日历日一根粗略折算
+                day_delta = (end_dt - start_dt).days
+                if period == "weekly":
+                    count = max(2, day_delta // 7)
+                elif period == "monthly":
+                    count = max(2, day_delta // 30)
+                else:
+                    count = max(2, day_delta)
+            except ValueError:
+                pass  # 日期格式已在上游校验，此处兜底
+
+        try:
+            openstock_result = await factory.get_data_with_fallback(
+                "openstock_market",
+                "klines",
+                {"symbol": stock_code, "period": period, "count": count},
+            )
+            # 区分 None（真失败）与 []（合法空响应，如停牌股票）
+            candles = openstock_result.get("candles")
+            if candles is None:
+                candles = openstock_result.get("data")
+            if candles is None:
+                raise RuntimeError("OpenStock returned None candles")
+
+            # 字段映射后已为前端 extractKlineRows 期望的 schema（datetime/open/high/low/close/volume）
+            result = {
+                "success": True,
+                "data": candles,
+                "count": len(candles),
+                "symbol": stock_code,
+                "period": period,
+                "source": openstock_result.get("source", "openstock"),
+                "timestamp": datetime.now().isoformat(),
+            }
+            circuit_breaker.record_success()
+            return {**result, "timestamp": datetime.now().isoformat()}
+        except Exception as openstock_exc:
+            logger.warning(
+                f"⚠️ OpenStock factory klines failed, fallback to akshare: {openstock_exc}"
+            )
+
+        # 二级 fallback：akshare（原 service 直连）
         try:
             # FIX: 直接传递字符串参数给service层
             result = service.get_a_stock_kline(

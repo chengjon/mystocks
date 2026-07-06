@@ -1,0 +1,45 @@
+page_key: data-industry
+route: /data/industry
+batch_id: market-batch-02
+audit_run_id: audit-20260702-01
+audited_at: '2026-07-02T22:29:18Z'
+browser_session: playwright chromium
+verification_surface: live-audit
+findings:
+  - id: data-industry-001
+    severity: MEDIUM
+    dimension: functional
+    title: 冷启动首次访问触发 "Backend Unavailable" 误报
+    details: |
+      首次访问 /data/industry 时显示 "Backend Unavailable - 后端暂未就绪: signal is aborted without reason"
+      全屏占位。F12 网络面板显示所有请求 ERR_ABORTED。
+
+      但直接 curl /api/health/ready 返回 200 OK {success:true, status:ready}。
+
+      刷新页面后,数据正常加载(证券 +2.92%, 小金属 +3.25% 等真实板块数据 10 行)。
+
+      根因:useBackendReadiness.ts 的 5s timeout 在 PM2 冷启动场景下不足,
+      但实际后端已就绪。可能是首次 SPA 加载时 readiness probe 与 backend warmup race。
+    b4_014_relevance: 边缘 (与 OpenStock 无关,但 B4.014 验证场景会受影响)
+    fix_recommendation: 增加 readiness timeout 到 10s 或加重试逻辑
+  - id: data-industry-002
+    severity: LOW
+    dimension: data-state
+    title: 数据来源标识为 "DATA: REAL" 但实为 akshare 非 OpenStock
+    details: |
+      页面 hero 显示 "DATA: REAL",但 /v2/market/sector/fund-flow 端点走 akshare 适配器
+      (行业板块未在 B4.014 factory 范围)。标识对用户有误导嫌疑。
+
+      数据正确性无问题:10 行真实板块(证券/小金属/能源金属/有色金属等),主力净额/涨跌幅合理。
+    b4_014_relevance: direct (页面归属 data module,B4.014 未覆盖,但应在 closeout 注明)
+    fix_recommendation: |
+      若 B4.014 后续 batch 计划迁移 industry/concept 到 factory,此标识可保留
+      若不迁移,改为 "DATA: AKSHARE" 或 "DATA: LEGACY" 更准确
+page_state_summary:
+  initial_load: 首次冷启动误报 Backend Unavailable,刷新后正常
+  data_state: 10 行真实板块数据,主力净额 + 涨跌幅合理
+  visual: artdeco 卡片+表格+迷你 trend bar 完整
+  api: GET /v2/market/sector/fund-flow?sector_type=行业 → 200 OK
+notes:
+  - 此页走 legacy akshare 链,不在 B4.014 factory 范围
+  - 数据真实性已验证(非 mock)

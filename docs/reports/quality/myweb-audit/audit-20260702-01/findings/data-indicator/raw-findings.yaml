@@ -1,0 +1,101 @@
+page_key: data-indicator
+route: /data/indicator
+batch_id: market-batch-02
+audit_run_id: audit-20260702-01
+audited_at: '2026-07-02T22:34:26Z'
+browser_session: playwright chromium
+verification_surface: live-audit
+findings:
+  - id: data-indicator-001
+    severity: BLOCKING
+    dimension: functional
+    title: '/data/indicator 路由立即 redirect 到 /dashboard'
+    details: |
+      访问 http://localhost:3020/data/indicator 后页面 URL 变为 /dashboard,
+      h1 显示 "QUANTIX"(dashboard 标题),不是 "指标分析"。
+
+      多次重试,均 redirect 到 /dashboard。无 console error。
+
+      ArtDecoDataAnalysis.vue 内 grep 无 router.push/replace,排除组件内编程跳转。
+      可能根因:
+        1. router/index.ts:323 redirect 函数(未读上下文)
+        2. Auth guard 中 to.meta.requiresAuth 处理异常
+        3. 动态 permission check (但 meta 中无 permissions 字段)
+        4. useDataAnalysis composable 初始化失败触发回退
+
+      排查方向:
+        - 读 router/index.ts lines 315-350 (redirect 函数)
+        - 检查 useDataAnalysis composable
+        - 添加 console.log 在路由 beforeEach 中观察
+    b4_014_relevance: direct (页面完全不可访问,严重 regression)
+    root_cause_confirmed: |
+      Root cause: localStorage key mismatch in indicator-page HTTP clients.
+      Chain:
+        1. Page mounts → ArtDecoDataAnalysis.vue → useDataAnalysis composable
+           fires two requests:
+           - loadStockUniverse(): raw axios.get(stocks/basic) with
+             buildAuthHeaders()
+           - loadIndicatorRegistry(): indicatorService.getRegistry()
+        2. BOTH helpers read the wrong localStorage key:
+           - useDataAnalysis.ts:25 `localStorage.getItem('access_token')`
+           - indicatorService.ts:220 `localStorage.getItem('access_token')`
+           But the auth store (stores/auth.ts:94) writes the token under
+           'auth_token'. So both helpers got `null` → empty Authorization
+           header.
+        3. Backend rejected the empty Bearer header with 401.
+        4. indicatorService.ts:245 401 interceptor fired
+           `window.location.href = '/login'` (full page reload).
+        5. Login page hydrated, auth store initializeAuth() saw valid
+           'auth_token' still in localStorage (the removeItem('access_token')
+           call in step 4 cleared the wrong key), returned isAuthenticated=true.
+        6. authGuard (guards.ts:62-63) redirected to HOME_ROUTE_NAME='dashboard'.
+      Symptom: visit /data/indicator → 3-4s later URL becomes /dashboard.
+    resolution_status: RESOLVED
+    resolved_at: '2026-07-03T02:20:00Z'
+    resolved_by: 'fix(b4-014): indicator page localStorage key mismatch'
+    fix_applied: |
+      Three coordinated fixes:
+        1. `web/frontend/src/composables/market/useDataAnalysis.ts:25-26`
+           buildAuthHeaders: read 'auth_token' first, fall back to
+           'access_token' for legacy callers.
+        2. `web/frontend/src/services/indicatorService.ts:220-221` request
+           interceptor: same key precedence as above.
+        3. `web/frontend/src/services/indicatorService.ts:244-246` 401 handler:
+           clear 'auth_token' AND 'auth_user' (was clearing the non-existent
+           'access_token', leaving session orphaned).
+        4. `web/frontend/src/views/stocks/Screener.vue:197-198` same
+           buildAuthHeaders fix (twin code path).
+      P0 helper fix from prior commit was necessary but insufficient:
+        - `postgresql_access.py` query() params=None guard eliminated the
+          backend 500 fallback path.
+        - `apiClient.ts` 401 interceptor cleanup prevented the apiClient
+          instance from destroying sessions on transient 401s.
+        But the indicator page used raw axios + indicatorService (separate
+        axios instances), bypassing apiClient entirely.
+    verification: |
+      Browser smoke (2026-07-03):
+        - Login as admin/admin123 → token stored under 'auth_token'.
+        - Navigate to /data/indicator.
+        - Page title: '指标分析 - MyStocks'.
+        - Wait 8s: URL stays at /data/indicator.
+        - Snapshot shows full indicator library rendered:
+          趋势指标 7, 动量指标 7, 波动指标 3, 成交量指标 3, 形态指标 3
+          (23 total, matches /api/v1/indicators/registry count).
+      Backend probe:
+        - /api/v1/data/stocks/basic?limit=5 → 200 success=true rows=5
+        - /api/v1/data/stocks/basic?limit=200 → 200 success=true
+        - /api/v1/indicators/registry → 200 total_count=23
+    impact: 用户无法访问指标分析页面
+    fix_recommendation: |
+      1. 读 web/frontend/src/router/index.ts line 323 redirect 逻辑
+      2. 读 web/frontend/src/composables/market/useDataAnalysis.ts
+      3. 确认是否有 dynamic route guard 或 component init 抛错
+page_state_summary:
+  initial_load: 立即 redirect 到 /dashboard
+  data_state: 无法到达页面,无数据可观测
+  error_state: 无 console error,静默 redirect
+  api: 无任何 API 请求触发(页面未渲染)
+notes:
+  - 此页是 data module 中最严重问题
+  - 不在 B4.014 直接改动范围,但 myweb-audit 必须记录
+  - 下次 session 需 trace redirect 根因

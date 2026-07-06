@@ -83,25 +83,20 @@ instance.interceptors.response.use(
     // Extract tracing headers even on error if available
     const requestId = error.response?.headers?.['x-request-id'] || '';
 
-    // Handle JWT token expiration
+    // Handle 401 — return unified error without side effects.
+    // Token clearing and login redirect are handled by the auth store / login
+    // flow, NOT here. Aggressive clearing here destroys valid sessions when
+    // the 401 came from a transient backend issue (e.g. SQL bug returning 500
+    // that the request layer mistook as auth failure, or cold-start race).
     if (error.response?.status === 401) {
-      // Clear expired token
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('refresh_token');
-
-      // Redirect to login if not already there
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login';
-      }
-
       const unifiedError: UnifiedResponse<null> = {
         success: false,
         code: 401,
-        message: '登录已过期，请重新登录',
+        message: error.response?.data?.message || '未授权或登录已过期',
         data: null,
         timestamp: new Date().toISOString(),
         request_id: requestId,
-        errors: null,
+        errors: error.response?.data || null,
       };
 
       return Promise.resolve({

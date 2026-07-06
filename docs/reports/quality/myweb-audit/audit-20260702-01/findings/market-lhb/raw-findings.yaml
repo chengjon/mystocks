@@ -1,0 +1,165 @@
+page_key: market-lhb
+route: /market/lhb
+canonical_entry: web/frontend/src/views/market/LHB.vue
+audit_run_id: audit-20260702-01
+batch_id: market-batch-01
+collected_at: 2026-07-02
+verification_surface: live-audit
+browser_tool: playwright
+environment:
+  frontend_url: http://localhost:3020
+  backend_url: http://localhost:8020
+  backend_pid_observed: 531393
+dimensions:
+  route-inventory:
+    verdict: pass
+    notes:
+      - HTTP 200 SPA OK
+      - title "龙虎榜 - MyStocks" 正确
+      - H1 "龙虎榜工作台" 正确
+      - 面包屑 交易室 / 龙虎榜
+      - meta.api 声明为 /api/v1/market/lhb (router/index.ts),但实际前端 fetch /api/v2/market/lhb
+    discrepancy:
+      - router meta.api 与实际请求路径不一致 (v1 vs v2)
+  functional-audit:
+    verdict: fail
+    blocking_findings:
+      - id: market-lhb-001
+        severity: blocking
+        title: 前端调 /api/v2/market/lhb 但后端只有 v1 → 页面空数据
+        description: |
+          前端 LHB.vue 通过 /api/v2/market/lhb?limit=100 拉取数据,后端 500(实际 v2 路由存在但内部错误);
+          后端 /api/v1/market/lhb?limit=100 200 OK 返真实数据(603903 中持股份等)。
+          前端面板显示"暂无数据"/"暂无上榜",所有状态卡 +0%(因为前端没拿到数据)。
+          这是 B4.014 之前就存在的失配 (B4.014 未改动 LHB.vue / lhb route),
+          但属于本次 batch 的 baseline 失效。
+        evidence:
+          - frontend_request: GET /api/v2/market/lhb?limit=100
+          - frontend_status: 500 Internal Server Error
+          - backend_v1: GET /api/v1/market/lhb?limit=100 → 200 OK with real data
+          - response_data_sample: |
+              [{"id":531,"symbol":"603903","name":"中持股份","trade_date":"2026-01-06",
+                "reason":"普通席位卖出，成功率28.80%","buy_amount":23813707.4,
+                "sell_amount":43890122.53,"net_amount":-20076415.13,
+                "turnover_rate":8.707,"institution_buy":null,"institution_sell":null}]
+        recommendation: 改前端 LHB.vue 调 /api/v1/market/lhb (与 router meta.api 一致),或后端补 v2 路由
+        fix_complexity: low
+    interactions:
+      - name: "刷新榜单" 按钮
+        expected: 重新 fetch
+        actual: 按钮 enabled,但因路由错位,刷新仍 500 → 仍空
+        status: fail
+      - name: 榜单切换 (买入榜/卖出榜/机构榜)
+        expected: 切换榜单类型重新 fetch
+        actual: 3 个按钮存在,未点击测试
+        status: not-tested
+      - name: 日期筛选 combobox
+        expected: 切换日期
+        actual: 存在,未测试
+        status: not-tested
+  data-state-audit:
+    verdict: fail
+    notes:
+      - 页面始终处于 empty state (暂无数据/暂无上榜/榜单条目 0.00/最高换手 --)
+      - 没有错误兜底提示,用户不知道是 API 500 还是真无数据
+      - 不符合 myweb-audit data-state-audit 要求 (empty/error/disabled 应可区分)
+    backend_probe:
+      v1:
+        endpoint: GET /api/v1/market/lhb?limit=100
+        status: 200
+        returns: real data array (real stocks 603903 中持股份 etc)
+        source: unknown (need to check)
+      v2:
+        endpoint: GET /api/v2/market/lhb?limit=100
+        status: 500
+        body: {"success":false,"code":500,"message":"Internal Server Error","request_id":"c051a04e-0499-4ac8-8614-074306f9db1d"}
+    frontend_backend_consistency:
+      verdict: fail
+      reason: 前端期望 v2,后端只提供 v1 (v2 500)
+    loading_empty_error_states:
+      loading: 未观察 (页面初始即 500 完成态)
+      empty: ✅ 触发但显示的是 "假 empty" (实际后端有数据)
+      error: ❌ 未显示错误提示 (前端吞了 500,降级为 empty)
+      disabled: 未观察
+  visual-artdeco-audit:
+    verdict: pass
+    notes:
+      - ArtDeco v3.2 ELITE 标识存在
+      - 4 个状态卡 (榜单条目/当前日期/当前榜单/最高换手) 与 market-realtime/technical 同款 frame
+      - 上榜记录与筛选面板区块 + 龙虎榜数据表区块布局正常
+      - empty 状态显示 "暂无数据" 居中,符合 artdeco 规范
+    screenshots:
+      - market-lhb-1920-empty.png
+  responsive-a11y-audit:
+    verdict: warn
+    notes:
+      - H1 + H3 层级正确
+      - 表格无数据时显示 "暂无数据" 段落,a11y 友好
+      - 榜单切换按钮 (买入榜/卖出榜/机构榜) 有文本标签
+      - combobox 可聚焦
+    warnings:
+      - 4 个状态卡均 "+0%" 同 market-technical 问题 (变化指标无 aria-label 区分)
+      - 空表区域未使用 role="status" 或 aria-live,SR 用户不会感知加载完成
+findings:
+  - id: market-lhb-001
+    severity: blocking
+    dimension: functional-audit
+    title: 前端调 /api/v2/market/lhb 但后端只提供 v1,页面永远 empty
+    description: |
+      前端 LHB.vue 请求 /api/v2/market/lhb?limit=100,后端 500;
+      后端 /api/v1/market/lhb?limit=100 200 OK 返真实数据 (603903 中持股份等)。
+      router meta.api 声明的是 v1,但前端代码用 v2,失配。
+      B4.014 未改动 LHB.vue,但这是 baseline 失效,影响 market 模块整体观感。
+    recommendation:
+      primary: 前端 LHB.vue 改用 /api/v1/market/lhb (与 router meta.api 一致)
+      alternative: 后端补 v2 路由或修 v2 500
+    fix_complexity: low
+    b4_014_relevance: 边缘 (B4.014 未改 LHB,但同属 market module)
+    resolution_status: RESOLVED
+    resolved_at: '2026-07-02T21:18:00Z'
+    resolved_by: 'af29d15d6 (B4.014-M1p: myweb-audit market-batch-01 frontend fixes)'
+    fix_applied: |
+      LHB.vue bypassed useArtDecoApi.exec() (which expected UnifiedResponse.success
+      envelope and returned null for bare-array /v1 response), switched to direct
+      apiClient.get('/v1/market/lhb') with payload extraction.
+    verification: |
+      Browser smoke (2026-07-02): /market/lhb renders 44 real rows
+      (山子高科 000981, 利欧股份 002131, 金风科技 002202, 航天电子 600879, etc.)
+  - id: market-lhb-002
+    severity: high
+    dimension: data-state-audit
+    title: 前端吞 500 错误降级为 empty,无任何错误提示
+    description: |
+      后端返 500 时,前端不显示错误状态,直接渲染 empty (暂无数据)。
+      用户无法区分 "真的没数据" vs "API 挂了"。
+    recommendation: 加 try/catch + error 状态 UI,显示 "加载失败,请重试"
+    fix_complexity: medium
+    resolution_status: RESOLVED
+    resolved_at: '2026-07-03T03:00:00Z'
+    resolved_by: 'fix(b4-014): LHB shows error banner on fetch failure'
+    fix_applied: |
+      LHB.vue: Added `fetchErrorMessage` ref. Catch branch now extracts HTTP
+      status and surfaces a user-visible error banner (401 vs generic). Added
+      `<div class="lhb-error-banner" role="alert">` below ArtDecoTable with
+      ArtDecoIcon + scoped styles. Banner clears on successful refetch.
+  - id: market-lhb-003
+    severity: low
+    dimension: responsive-a11y-audit
+    title: 状态卡 +0% 无 aria-label 区分 (与 market-technical 同款问题)
+    description: 4 个状态卡都显示 "变化: +0%",SR 读出 "+0%" 四次,无法区分
+    recommendation: 加 aria-label
+    fix_complexity: low
+summary:
+  total_findings: 3
+  by_severity:
+    blocking: 1
+    high: 1
+    medium: 0
+    low: 1
+  by_dimension:
+    route-inventory: 0
+    functional-audit: 1
+    data-state-audit: 1
+    visual-artdeco-audit: 0
+    responsive-a11y-audit: 1
+  b4_014_relevance: 边缘 (B4.014 未改 LHB,但同属 market module,作为 baseline 失效登记)

@@ -1,0 +1,38 @@
+page_key: data-concept
+route: /data/concept
+batch_id: market-batch-02
+audit_run_id: audit-20260702-01
+audited_at: '2026-07-02T22:30:50Z'
+browser_session: playwright chromium
+verification_surface: live-audit
+findings:
+  - id: data-concept-001
+    severity: HIGH
+    dimension: data-state
+    title: 概念板块"龙头股"列显示 N/A
+    details: |
+      表格首行:"互联金融 +1.75% +59.0亿 N/A"
+      20 行全部 leader=N/A。ConceptRow 类型推断的 leader 字段在数据中实际为空。
+
+      后端响应 sector_fund-flow 数据中没有 leading_stock 字段(或字段名不匹配)。
+    b4_014_relevance: direct (响应字段映射问题)
+    fix_recommendation: |
+      1. 检查后端 /v2/market/sector/fund-flow 响应是否包含 leading_stock
+      2. 检查 web/frontend/src/views/data/marketConceptData.ts extractConceptRows 字段映射
+  - id: data-concept-002
+    severity: LOW
+    dimension: visual
+    title: StatCard 显示 "20.00" 而非整数 "20"
+    details: |
+      ArtDecoStatCard value prop 收到 number 20,但渲染成 "20.00"。
+      与同页 "概念总数" label 不匹配(应为整数)。
+    b4_014_relevance: 边缘
+    fix_recommendation: StatCard 对整数 label 应 format 整数显示
+page_state_summary:
+  initial_load: 正常,20 行真实概念板块数据(互联金融 +1.75%, +59.0亿 等)
+  data_state: 真实数据,leader=N/A 是缺陷
+  visual: artdeco 表格 + 迷你 trend bar 完整
+  api: GET /v2/market/sector/fund-flow?sector_type=概念 → 200 OK
+notes:
+  - 此页走 legacy akshare 链,不在 B4.014 factory 范围
+  - 概念板块数据真实性已验证

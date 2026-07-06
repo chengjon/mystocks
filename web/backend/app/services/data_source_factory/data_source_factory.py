@@ -129,6 +129,13 @@ class DataSourceFactory:
         if source_type == "watchlist":
             return WatchlistDataSourceAdapter(config.__dict__)
 
+        if source_type == "openstock_market":
+            from app.services.openstock_market_data_adapter import (
+                OpenStockMarketDataSourceAdapter,
+            )
+
+            return OpenStockMarketDataSourceAdapter(config.__dict__)
+
         # 通用数据源模式
         if config.mode == DataSourceMode.MOCK:
             return MockDataSource(config)

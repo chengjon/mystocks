@@ -103,6 +103,11 @@
         </div>
 
         <ArtDecoTable :columns="columns" :data="displayStockRanking" />
+
+        <div v-if="fetchErrorMessage" class="fund-error-banner" role="alert">
+          <ArtDecoIcon name="alert" />
+          <span>{{ fetchErrorMessage }}</span>
+        </div>
       </ArtDecoCard>
     </section>
   </div>
@@ -110,7 +115,6 @@
 
 <script setup lang="ts">
 import { computed, getCurrentInstance, onMounted, ref, watch } from 'vue'
-import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import { apiClient } from '@/api/apiClient'
 import { ArtDecoButton, ArtDecoCard, ArtDecoHeader, ArtDecoIcon, ArtDecoSelect, ArtDecoStatCard, ArtDecoTable } from '@/components/artdeco'
 import ArtDecoChart from '@/components/artdeco/charts/ArtDecoChart.vue'
@@ -157,11 +161,11 @@ const props = withDefaults(defineProps<Props>(), {
   systemConfig: undefined
 })
 const emit = defineEmits(['filter-change', 'ranking-change'])
-const { exec } = useArtDecoApi()
 const instance = getCurrentInstance()
 const internalFundData = ref<FundData>(defaultFundData())
 const internalStockRanking = ref<StockRankingRow[]>([])
 const internalTrendData = ref<TrendItem[]>([])
+const fetchErrorMessage = ref('')
 const currentTimeFilter = ref(props.activeTimeFilter)
 const currentRankingType = ref(props.rankingType)
 
@@ -277,20 +281,55 @@ function formatDate(value: Date): string {
   return value.toISOString().slice(0, 10)
 }
 
+interface UnifiedResponseLike {
+  success?: boolean
+  code?: number
+  message?: string
+  data?: unknown
+}
+
 async function fetchFundFlowData() {
   const end = new Date()
   const start = new Date()
   start.setDate(end.getDate() - 30)
 
-  const [summary, bigDeal] = await Promise.all([
-    exec(() => apiClient.get('/akshare/market/fund-flow/hsgt-summary', {
-      params: {
-        start_date: formatDate(start),
-        end_date: formatDate(end),
-      },
-    }), { silent: true }),
-    exec(() => apiClient.get('/akshare/market/fund-flow/big-deal'), { silent: true }),
-  ])
+  let summary: unknown = null
+  let bigDeal: unknown = null
+  const errors: Array<{ endpoint: string; status: number | string }> = []
+
+  const summaryResp = await apiClient.get('/akshare/market/fund-flow/hsgt-summary', {
+    params: {
+      start_date: formatDate(start),
+      end_date: formatDate(end),
+    },
+  }) as UnifiedResponseLike
+  if (summaryResp?.success === false) {
+    errors.push({ endpoint: 'hsgt-summary', status: summaryResp.code ?? 'unknown' })
+  } else {
+    summary = summaryResp
+  }
+
+  const bigDealResp = await apiClient.get('/akshare/market/fund-flow/big-deal') as UnifiedResponseLike
+  if (bigDealResp?.success === false) {
+    errors.push({ endpoint: 'big-deal', status: bigDealResp.code ?? 'unknown' })
+  } else {
+    bigDeal = bigDealResp
+  }
+
+  if (errors.length > 0) {
+    const hasUnauthorized = errors.some((e) => e.status === 401)
+    if (hasUnauthorized) {
+      fetchErrorMessage.value = '登录已过期,请重新登录后刷新'
+    } else if (errors.length === 2) {
+      fetchErrorMessage.value = '资金流向数据加载失败,请点击"刷新资金流"重试'
+    } else {
+      const failed = errors[0].endpoint
+      fetchErrorMessage.value = `${failed} 数据加载失败,展示可能不完整`
+    }
+    console.error('[FundFlow] partial fetch failures', errors)
+  } else {
+    fetchErrorMessage.value = ''
+  }
 
   internalFundData.value = buildFundOverview(summary, bigDeal)
   internalTrendData.value = buildFundTrend(summary)
@@ -314,141 +353,7 @@ onMounted(() => {
 })
 </script>
 
+
 <style scoped lang="scss">
-@use '@/styles/artdeco-tokens.scss' as *;
-
-.fund-flow-analysis {
-  display: flex;
-  flex-direction: column;
-  gap: var(--artdeco-spacing-6);
-}
-
-.hero-shell,
-.stats-strip,
-.content-shell,
-.embedded-shell {
-  width: 100%;
-}
-
-.hero-shell,
-.content-shell {
-  display: flex;
-  flex-direction: column;
-  gap: var(--artdeco-spacing-5);
-}
-
-.hero-rail,
-.content-shell-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--artdeco-spacing-4);
-  flex-wrap: wrap;
-}
-
-.hero-copy,
-.content-shell-copy {
-  display: flex;
-  flex-direction: column;
-  gap: var(--artdeco-spacing-2);
-}
-
-.hero-eyebrow,
-.content-shell-kicker {
-  font-family: var(--artdeco-font-mono);
-  font-size: var(--artdeco-text-xs);
-  color: var(--artdeco-gold-dim);
-  letter-spacing: var(--artdeco-tracking-wide);
-  text-transform: uppercase;
-}
-
-.hero-meta,
-.content-shell-meta {
-  display: flex;
-  gap: var(--artdeco-spacing-3);
-  flex-wrap: wrap;
-  font-family: var(--artdeco-font-mono);
-  font-size: var(--artdeco-text-xs);
-  color: var(--artdeco-fg-muted);
-}
-
-.content-shell-title {
-  margin: 0;
-  font-family: var(--artdeco-font-display);
-  font-size: var(--artdeco-text-xl);
-  color: var(--artdeco-fg-primary);
-}
-
-.content-shell-subtitle {
-  margin: 0;
-  color: var(--artdeco-fg-muted);
-  font-size: var(--artdeco-text-sm);
-  line-height: var(--artdeco-leading-relaxed);
-}
-
-.fund-overview {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(calc(var(--artdeco-spacing-20) * 3), 1fr));
-  gap: var(--artdeco-spacing-4);
-}
-
-.stats-strip {
-  @extend .fund-overview;
-}
-
-.fund-chart-card {
-  margin-bottom: var(--artdeco-spacing-6);
-}
-
-.ranking-controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--artdeco-spacing-4);
-}
-
-.time-filters {
-  display: flex;
-  gap: var(--artdeco-spacing-2);
-}
-
-.filter-btn {
-  background: transparent;
-  border: 1px solid var(--artdeco-border-default);
-  color: var(--artdeco-fg-muted);
-  padding: var(--artdeco-spacing-2) var(--artdeco-spacing-4);
-  cursor: pointer;
-  transition: all var(--artdeco-duration-base);
-
-  &.active {
-    border-color: var(--artdeco-gold-primary);
-    color: var(--artdeco-gold-primary);
-    background: var(--artdeco-gold-opacity-10);
-  }
-}
-
-.ranking-select {
-  width: calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-20) + var(--artdeco-spacing-20) - var(--artdeco-spacing-4));
-}
-
-@media (width <= 48rem) {
-  .hero-meta,
-  .content-shell-meta,
-  .ranking-controls {
-    width: 100%;
-  }
-
-  .ranking-controls {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .time-filters {
-    flex-wrap: wrap;
-  }
-
-  .ranking-select {
-    width: 100%;
-  }
-}
+@import "./styles/FundFlow.scss";
 </style>

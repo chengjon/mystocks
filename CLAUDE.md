@@ -334,6 +334,7 @@ python -c "from unified_manager import MyStocksUnifiedManager; MyStocksUnifiedMa
     - `.multi-cli-tasks/guides/CONFLICT_PREVENTION.md` (冲突预防)
 - **2026Q1 物理布局与治理指引**:
   - **Zero-Root-Config**: 禁止在根目录新增工具配置，所有配置必须入库 `config/` 对应子目录。
+    - **例外: `.gitleaksignore`**: gitleaks CLI（含 `gitleaks-action@v2`）硬编码 `.gitleaksignore` 必须位于仓库根目录，不支持自定义路径。该文件为本规则的**合法根目录例外**，仅用于记录已轮换/已失效密钥的历史 finding 抑制（见 commit `462dcf5c2` 处理记录）。新增条目必须附 `# commitSHA — 描述` 注释说明背景。
   - **Logic Gravity**: 业务逻辑下沉 `src/`，根目录 `.py` 文件仅作为 Re-export 外壳。
   - **API Standardization**: 所有新 API 必须通过 `web/backend/app/api/VERSION_MAPPING.py` 注册，严禁在 `main.py` 中硬编码路由前缀。
 
