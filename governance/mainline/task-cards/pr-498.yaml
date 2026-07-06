@@ -1,0 +1,88 @@
+version: "v0.2"
+
+task:
+  id: "pr-498"
+  title: "Fix CI baseline failures: pin numpy<2 + scipy<1.13 + scikit-learn<1.7 in repo-root requirements.txt"
+  owner: "main"
+  created_at: "2026-07-07"
+
+mainline:
+  id: "L1-b4-017-ci-baseline-failures-actual-fix"
+  objective: "fix the two CI baseline failures (api-discovery-test, stable-suite) at the dependency level — pin numpy<2 + scipy<1.13 + scikit-learn<1.7 in repo-root requirements.txt so RAPIDS chain (cudf-cu12/cuml-cu12) no longer transitively pulls sklearn 1.9.0 + numpy 2.x"
+  milestone_id: "L2-b4-015-quality-baseline-tracking"
+  slice_id: "L3-baseline-failures-md-correction-2"
+
+classification:
+  task_type: "fix"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+scope:
+  allowed_paths:
+    - "requirements.txt"
+    - "governance/mainline/task-cards/pr-498.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "scripts/**"
+    - "tests/**"
+    - ".github/workflows/**"
+    - "openspec/**"
+
+non_goals:
+  - "No workflow yaml change — CI workflows already correct (POSTGRES_USER=postgres etc.); the issue is purely dependency resolution"
+  - "No code change to backend or RAPIDS-using modules — all RAPIDS call sites already have try/except guards (verified by grep)"
+  - "No removal of RAPIDS chain — cudf-cu12/cuml-cu12 stay in requirements.txt; only their transitive sklearn/scipy/numpy resolution is constrained"
+
+acceptance:
+  checks:
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "pip-dry-run"
+      command: "pip install --dry-run --quiet -r requirements.txt"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-498.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr498-mainline-gate.json"
+      required: true
+    - id: "ci-api-discovery-test"
+      command: "gh run watch <run-id> --exit-status (workflow 'API Automation & Discovery Tests' on this PR)"
+      required: true
+    - id: "ci-stable-suite"
+      command: "gh run watch <run-id> --exit-status (workflow 'E2E Tests / stable-suite' on this PR)"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Pinning scikit-learn<1.7 may surprise contributors who expected newer sklearn (e.g. HGBT improvements in 1.7+) — but RAPIDS chain itself only requires sklearn>=1.4, so 1.6.x is the safe upper bound"
+    - "Pinning scipy<1.13 may block contributors from using scipy 1.13+ APIs — scipy 1.12 is the last numpy 1.x-compatible release; this is necessary"
+    - "If a future RAPIDS release (>=25.12) hard-requires numpy>=2, this pin will conflict and need re-evaluation — track at issue #496"
+  rollback_plan: "git revert <merge-commit-sha>; baseline_failures.md entries should NOT be re-activated (they remain accurate root cause; only the fix is reverted)"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "fix the two CI baseline failures tracked in baseline_failures.md and issue #496 — by pinning numpy<2, scipy<1.13, scikit-learn<1.7 in repo-root requirements.txt so the RAPIDS chain's transitive sklearn pull stops at sklearn 1.6.x (which doesn't call numpy.long) and numpy stops at 1.26.x (which still has numpy.long alias)"
+    modified_scope: "requirements.txt (3 pins added with rationale comments) + governance/mainline/task-cards/pr-498.yaml (this task card)"
+    dependency_changes: "numpy>=1.24.0 → numpy>=1.24,<2; ADD scipy>=1.10,<1.13; ADD scikit-learn>=1.4,<1.7 — verified via pip install --dry-run: resolves to numpy=1.26.4, scipy=1.12.0, scikit-learn=1.6.1, all aligned with web/backend/requirements.txt's existing numpy==1.26.4 pin"
+    legacy_logic_impact: "no runtime, API, or workflow change; the resolver simply no longer upgrades sklearn to 1.9.0 / numpy to 2.4.6. Backend import path becomes stable. RAPIDS chain itself remains installable (cuml-cu12 25.10 metadata: numpy<3.0a0,>=1.23 — fully compatible with our pin)."
+    rollback_ready: "yes — single-file revert"
+    risk_and_rollback_point: "revert the merge if a contributor specifically needs sklearn>=1.7 features; the proper resolution there is to upgrade to a RAPIDS release that hard-requires numpy>=2 and then drop this pin entirely"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-07-07T00:00:00Z"
+    approval_note: "dependency pin fix for CI baseline failures; verified via pip dry-run; closes issue #496"
+    secondary_approved: false

@@ -1,6 +1,17 @@
 # 核心依赖
 pandas>=2.0.0
-numpy>=1.24.0
+# numpy pin: <2 required because RAPIDS chain (cuml-cu12==25.10)
+# transitively imports sklearn, whose 1.7+ releases still call numpy.long
+# (removed in numpy 1.24+, completely gone in 2.x). Aligns with
+# web/backend/requirements.txt's numpy==1.26.4 pin.
+numpy>=1.24,<2
+# scipy pin: <1.13 ensures the scipy/numpy 1.x API contract holds
+# (scipy 1.13+ requires numpy>=2). Prevents the pip warning that
+# previously broke stable-suite backend startup.
+scipy>=1.10,<1.13
+# scikit-learn pin: <1.7 hard-blocks the 1.9.0 release that crashes
+# on numpy 2.x at import time inside metrics/_ranking.py.
+scikit-learn>=1.4,<1.7
 pyyaml>=6.0
 pydantic>=2.0.0
 pandera>=0.17.0
