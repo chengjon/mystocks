@@ -11,8 +11,8 @@
 
 ### 2.1 domain-01 市场数据(优先 — 解决 Byapi/Tushare 两个 ⚠️)
 
-- [ ] 2.1.1 `src/adapters/akshare/market_data.py` 内部改为 `client.fetch("REALTIME_QUOTES", ...)`
-- [ ] 2.1.2 `src/adapters/akshare/stock_info.py` → `ALL_STOCKS` / `STOCK_BASIC`
+- [x] 2.1.1 `src/adapters/akshare/market_data.py` 内部改为 `client.fetch(...)` (STOCK_INDUSTRY + TOPICS_CONCEPTS)
+- [x] 2.1.2 `src/adapters/akshare/stock_info.py` → `ALL_STOCKS` / `SECTOR_QUOTES` (待 OpenStock 修复 SECTOR_QUOTES 上游)
 - [x] 2.1.3 `src/adapters/baostock/baostock_adapter.py` → `HISTORICAL_KLINES` / `STOCK_INDUSTRY` / `TRADE_DATES`
 - [x] 2.1.4 `src/adapters/byapi_adapter.py` 改为 OpenStock `REALTIME_QUOTES`(eltdx 后端),保留类名
 - [x] 2.1.5 `src/adapters/tushare_adapter.py` 改为 OpenStock `STOCK_BASIC` + `FINANCIAL_STATEMENTS`,保留类名

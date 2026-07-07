@@ -1,0 +1,113 @@
+version: "v0.2"
+
+task:
+  id: "pr-78"
+  title: "Phase 2.1b akshare market_data + stock_info → OpenStock facade"
+  owner: "main"
+  created_at: "2026-07-07"
+
+mainline:
+  id: "L1-openstock-gateway-phase2-domain01"
+  objective: "将 domain-01 的 src/adapters/akshare/market_data.py (free functions) 与 stock_info.py (async StockInfoAdapter) 改写为 OpenStock 网关 facade,保留函数/类名与方法签名,删除 akshare SDK 直接调用。9 个集成 smoke test 全部对真实 OpenStock 网关跑通。"
+  milestone_id: "L2-openstock-migration"
+  slice_id: "L3-phase2-domain01-adapters"
+
+classification:
+  task_type: "feature"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-data-sources-to-openstock"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "domain-01"
+  node_id: "domain-01-node-03"
+  affected_entrypoints:
+    - "core"
+    - "tests"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Adapter 外观层迁移,完全落在 domain-01-node-03 的 src/adapters/** coverage 内,无跨域改动。"
+
+scope:
+  allowed_paths:
+    - "src/adapters/akshare/market_data.py"
+    - "src/adapters/akshare/stock_info.py"
+    - "tests/integration/test_openstock_akshare_smoke.py"
+    - "openspec/changes/migrate-data-sources-to-openstock/tasks.md"
+    - "governance/mainline/task-cards/pr-78.yaml"
+  forbidden_paths:
+    - "src/services/openstock/**"
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/adapters/akshare/market_adapter/**"
+    - "src/adapters/akshare/base.py"
+    - "src/adapters/akshare/__init__.py"
+    - "src/adapters/akshare/modules/**"
+    - "src/adapters/akshare_modules/**"
+    - "src/adapters/tdx/**"
+    - "src/adapters/tushare_adapter.py"
+    - "src/adapters/baostock_adapter.py"
+    - "src/adapters/byapi_adapter.py"
+
+non_goals:
+  - "不迁移 src/adapters/akshare/market_adapter/{market_overview,board_sector,fund_flow,forecast_analysis,stock_sentiment,stock_profile}.py — Phase 2.2-2.5"
+  - "不动 web/backend 入口层 — Phase 3"
+  - "不删除 requirements.txt 中的 akshare/baostock/tushare/efinance 依赖 — Phase 6"
+  - "不实现 SECTOR_QUOTES 上游 akshare provider 修复 — 等 OpenStock 项目补齐"
+  - "不实现 SSE_DAILY category — OpenStock 暂未覆盖,docs/reports/openstock-coverage-gaps.md 已登记"
+
+acceptance:
+  checks:
+    - id: "openspec-validate-strict"
+      command: "openspec validate migrate-data-sources-to-openstock --strict"
+      required: true
+    - id: "phase1-client-tests"
+      command: "pytest tests/unit/services/openstock/test_client.py -x -q --no-cov"
+      required: true
+    - id: "phase21a-smoke-tests"
+      command: "OPENSTOCK_BASE_URL=http://192.168.123.104:8040 OPENSTOCK_API_KEY=$OPENSTOCK_API_KEY pytest -m integration tests/integration/test_openstock_adapter_smoke.py -v --no-cov"
+      required: true
+    - id: "phase21b-smoke-tests"
+      command: "OPENSTOCK_BASE_URL=http://192.168.123.104:8040 OPENSTOCK_API_KEY=$OPENSTOCK_API_KEY pytest -m integration tests/integration/test_openstock_akshare_smoke.py -v --no-cov"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-78.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha 97ac92f79 --head-sha HEAD --report /tmp/pr78-mainline-gate.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "STOCK_INDUSTRY 返回全部 A 股(500 行),需要客户端按 symbol 过滤。Mitigation: _normalize_symbol_to_baostock 归一化后用 list comprehension 过滤,9 个 smoke test 通过。"
+    - "TOPICS_CONCEPTS 后端 eltdx 只接受纯数字代码 (600000),不接受 sh.600000。Mitigation: _normalize_symbol_to_bare 去前缀,smoke test 通过。"
+    - "SECTOR_QUOTES(concept/industry) 上游 akshare provider RemoteDisconnected。Mitigation: facade 捕获 OpenStockError 返回空 DataFrame + warning,不影响消费端调用,等上游修复后无感切换。"
+    - "SSE_DAILY OpenStock 暂未覆盖。Mitigation: get_sse_daily 返回空 DataFrame + warning,docs/reports/openstock-coverage-gaps.md 已登记。"
+    - "ALL_STOCKS 返回字段不含 list_date/area/industry。Mitigation: 在 get_stock_info 中补默认空字符串列,保留向后兼容 DataFrame schema。"
+  rollback_plan: "git revert <merge-commit-sha>。market_data.py 与 stock_info.py 改动互相独立,revert 不影响 Phase 1、Phase 2.1a 或后续 Phase 2.2-2.5 PR。"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "完成 Phase 2.1b:把 src/adapters/akshare/market_data.py + stock_info.py 改写为 OpenStock 网关 facade,删除 import akshare 直接调用,消除 SDK 依赖。"
+    modified_scope: "重写 src/adapters/akshare/{market_data,stock_info}.py;新增 tests/integration/test_openstock_akshare_smoke.py (9 tests);勾选 openspec tasks.md 2.1.1 / 2.1.2。"
+    dependency_changes: "无新增依赖。本 PR 删除了对 akshare SDK 的直接调用,但 requirements.txt 保留 akshare(Phase 6 统一清理)。"
+    legacy_logic_impact: "market_data.py 的 get_concept_classify / get_stock_industry_concept 函数签名保留;stock_info.py 的 StockInfoAdapter 类与 4 个 async 方法签名保留。消费端 (scripts/maintenance/data_sync/sync_concept_classify.py、sync_stock_industry_concept.py 通过 data_source factory) 接口签名不变。"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert 本 commit;SECTOR_QUOTES / SSE_DAILY 是已登记的上游盲区,revert 后会重新触发 akshare SDK 调用 — 但消费端走 data_source factory 抽象层,facade revert 不影响调用契约。"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "user"
+    approved_at: "2026-07-07T00:00:00+08:00"
+    approval_note: "User directive: '请继续' (Phase 2.1a PR #502 opened 后)。Phase 2.1b 按 migrate-data-sources-to-openstock proposal 任务 2.1.1/2.1.2 推进,9 个集成 smoke test 全部对真实 OpenStock 网关跑通。"
+    secondary_approved: false
