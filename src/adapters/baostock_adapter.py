@@ -1,325 +1,219 @@
 """
-# 功能：BaoStock数据源适配器，提供历史行情和财务数据
-# 作者：JohnC (ninjas@sina.com) & Claude
-# 创建日期：2025-10-16
-# 版本：2.1.0
-# 依赖：详见requirements.txt或文件导入部分
-# 注意事项：
-#   本文件是MyStocks v2.1核心组件，遵循5-tier数据分类架构
-# 版权：MyStocks Project © 2025
+BaoStock 数据源适配器 — OpenStock 网关外观层.
+
+This is a facade. Internal data fetching is delegated to the OpenStock gateway.
+Class name and public method signatures retained for backward compatibility.
+
+迁移前: import baostock as bs; bs.login(); bs.query_history_k_data_plus(...) — 受
+        baostock SDK 网络稳定性限制,登录态管理复杂,长期挂在 FUNCTION_TREE.md。
+迁移后: 通过 OpenStockClient.fetch() 调用 OpenStock 的 HISTORICAL_KLINES /
+        INDEX_KLINES / STOCK_BASIC / INDEX_CONSTITUENTS / TRADE_DATES /
+        FINANCIAL_STATEMENTS / REALTIME_QUOTES / STOCK_NEWS 等 category。
+        OpenStock 后端用 baostock/eltdx 自动 failover,无需 SDK login/logout。
+
+详见: openspec/changes/migrate-data-sources-to-openstock/proposal.md (决策 1: Adapter 外观层)
+      docs/reports/openstock-coverage-gaps.md
 """
 
-import datetime
-import os
-import sys
-from typing import Dict, List
+from __future__ import annotations
+
+import logging
+from typing import Any, Dict, List, Union
 
 import pandas as pd
 
-# 将当前目录的父目录的父目录添加到模块搜索路径中
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+from src.interfaces.refactored_interfaces import IDataSource
+from src.services.openstock import (
+    DataCategory,
+    OpenStockClient,
+    OpenStockError,
+)
 
-# 临时简化导入以支持测试
-try:
-    from src.interfaces.refactored_interfaces import IDataSource
-except ImportError:
-    # 如果无法导入，创建一个简单的基类
-    class IDataSource:
-        def get_stock_daily(self, symbol, start_date, end_date):
-            raise NotImplementedError
-
-        def get_stock_basic(self, date=None):
-            raise NotImplementedError
-
-
-try:
-    from src.utils.column_mapper import ColumnMapper
-except ImportError:
-    # 如果无法导入，创建一个简单的映射器
-    class ColumnMapper:
-        @staticmethod
-        def map_columns(df, source_format, target_format):
-            return df
-
-
-try:
-    from src.utils.date_utils import normalize_date
-except ImportError:
-    # 如果无法导入，创建一个简单的日期格式化器
-    def normalize_date(date_str):
-        return str(date_str)
-
-
-try:
-    from src.utils.symbol_utils import (
-        format_index_code_for_source,
-        format_stock_code_for_source,
-    )
-except ImportError:
-    # 如果无法导入，创建简单的格式化器
-    def format_stock_code_for_source(code, source):
-        return code
-
-    def format_index_code_for_source(code, source):
-        return code
+logger = logging.getLogger(__name__)
 
 
 class BaostockDataSource(IDataSource):
-    """Baostock数据源实现"""
+    """BaoStock 数据源实现 — OpenStock 网关外观.
 
-    def __init__(self):
-        # 延迟导入baostock
+    保留原 BaostockDataSource 类名与方法签名。内部实现切换为 OpenStockClient 调用,
+    不再 import baostock SDK,不再需要 bs.login()/bs.logout() 配对。
+    """
+
+    def __init__(self) -> None:
+        # OpenStock 网关已封装 baostock/eltdx/akshare 多 provider failover,
+        # 本类只需读取 OPENSTOCK_BASE_URL + OPENSTOCK_API_KEY。
         try:
-            import baostock as bs
-
-            self.bs = bs
-            # Baostock需要登录
-            self.lg = bs.login()
-            if self.lg.error_code != "0":
-                print(f"Baostock登录失败: {self.lg.error_msg}")
-                raise ImportError(f"Baostock登录失败: {self.lg.error_msg}")
-            else:
-                print("Baostock登录成功")
-                self.available = True
-        except ImportError as e:
-            print(f"警告: 无法导入baostock: {e}")
-            print("请安装baostock: pip install baostock")
-            self.bs = None
+            self._client = OpenStockClient()
+            self.available = True
+            logger.info("BaostockDataSource 已切换到 OpenStock 网关")
+        except OpenStockError as exc:
+            logger.error("BaostockDataSource 初始化失败: %s", exc)
+            self._client = None  # type: ignore[assignment]
             self.available = False
-            raise ImportError(f"Baostock不可用: {e}")
-
-    def __del__(self) -> None:
-        # 退出时自动登出
-        if hasattr(self, "bs"):
-            self.bs.logout()
 
     def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
-        """获取股票日线数据-Baostock实现"""
+        """获取股票日线数据 — 通过 OpenStock HISTORICAL_KLINES."""
+        if not self.available:
+            return pd.DataFrame()
         try:
-            # 使用专门的格式化函数处理股票代码
-            symbol = format_stock_code_for_source(symbol, "baostock")
-            print(f"Baostock尝试获取股票数据: {symbol}")
-            # 获取A股股票日线数据
-            rs = self.bs.query_history_k_data_plus(
-                symbol,
-                "date,code,open,high,low,close,volume,amount,turn,pctChg",
-                start_date=start_date,
-                end_date=end_date,
-                frequency="d",
-                adjustflag="3",
+            response = self._client.fetch(
+                DataCategory.HISTORICAL_KLINES,
+                {
+                    "symbol": self._format_symbol(symbol),
+                    "start_date": start_date,
+                    "end_date": end_date,
+                    "period": "daily",
+                },
             )
-
-            if rs.error_code != "0":
-                print(f"Baostock查询错误: {rs.error_msg}")
-                return pd.DataFrame()
-
-            # 转换为DataFrame
-            data_list = []
-            while (rs.error_code == "0") & rs.next():
-                data_list.append(rs.get_row_data())
-
-            df = pd.DataFrame(data_list, columns=rs.fields)
-
-            # 转换数据类型
-            numeric_columns = [
-                "open",
-                "high",
-                "low",
-                "close",
-                "volume",
-                "amount",
-                "turn",
-                "pctChg",
-            ]
-            for col in numeric_columns:
-                if col in df.columns:
-                    df[col] = pd.to_numeric(df[col], errors="coerce")
-
-            # 使用统一列名映射器标准化列名
-            df = ColumnMapper.to_english(df)
-
-            return df
-        except Exception as e:
-            print(f"Baostock获取股票日线数据失败: {e}")
+            return self._to_dataframe(response)
+        except OpenStockError as exc:
+            logger.error("BaostockDataSource.get_stock_daily 失败: %s", exc)
             return pd.DataFrame()
 
     def get_index_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
-        """获取指数日线数据-Baostock实现"""
+        """获取指数日线数据 — 通过 OpenStock INDEX_KLINES."""
+        if not self.available:
+            return pd.DataFrame()
         try:
-            # 使用专门的格式化函数处理指数代码
-            symbol = format_index_code_for_source(symbol, "baostock")
-            print(f"Baostock尝试获取指数数据: {symbol}")
-
-            # 获取指数日线数据
-            rs = self.bs.query_history_k_data_plus(
-                symbol,
-                "date,code,open,high,low,close,volume,amount,pctChg",
-                start_date=start_date,
-                end_date=end_date,
-                frequency="d",
+            response = self._client.fetch(
+                DataCategory.INDEX_KLINES,
+                {
+                    "symbol": self._format_index(symbol),
+                    "start_date": start_date,
+                    "end_date": end_date,
+                    "period": "daily",
+                },
             )
-
-            if rs.error_code != "0":
-                print(f"Baostock查询错误: {rs.error_msg}")
-                return pd.DataFrame()
-
-            # 转换为DataFrame
-            data_list = []
-            while (rs.error_code == "0") & rs.next():
-                data_list.append(rs.get_row_data())
-
-            df = pd.DataFrame(data_list, columns=rs.fields)
-
-            # 转换数据类型
-            numeric_columns = [
-                "open",
-                "high",
-                "low",
-                "close",
-                "volume",
-                "amount",
-                "pctChg",
-            ]
-            for col in numeric_columns:
-                df[col] = pd.to_numeric(df[col], errors="coerce")
-
-            # 统一列名
-            df = df.rename(
-                columns={
-                    "date": "date",
-                    "code": "symbol",
-                    "open": "open",
-                    "high": "high",
-                    "low": "low",
-                    "close": "close",
-                    "volume": "volume",
-                    "amount": "amount",
-                    "pctChg": "pct_chg",
-                }
-            )
-
-            return df
-        except Exception as e:
-            print(f"Baostock获取指数日线数据失败: {e}")
+            return self._to_dataframe(response)
+        except OpenStockError as exc:
+            logger.error("BaostockDataSource.get_index_daily 失败: %s", exc)
             return pd.DataFrame()
 
-    def get_stock_basic(self, symbol: str) -> Dict:
-        """获取股票基本信息-Baostock实现"""
+    def get_stock_basic(self, symbol: str) -> Dict[str, Any]:
+        """获取股票基本信息 — 通过 OpenStock STOCK_BASIC."""
+        if not self.available:
+            return {}
         try:
-            # 使用专门的格式化函数处理股票代码
-            symbol = format_stock_code_for_source(symbol, "baostock")
-
-            # 获取股票基本信息
-            rs = self.bs.query_stock_basic(code=symbol)
-            if rs.error_code != "0":
-                print(f"Baostock查询错误: {rs.error_msg}")
+            response = self._client.fetch(
+                DataCategory.STOCK_BASIC,
+                {"symbol": self._format_symbol(symbol)},
+            )
+            rows = response.get("data") or []
+            if not rows:
                 return {}
-
-            # 转换为字典
-            data_list = []
-            while (rs.error_code == "0") & rs.next():
-                data_list.append(rs.get_row_data())
-
-            if not data_list:
-                return {}
-
-            # 将数据转换为字典
-            fields = rs.fields
-            values = data_list[0]
-            info_dict = dict(zip(fields, values))
-
-            return info_dict
-        except Exception as e:
-            print(f"Baostock获取股票基本信息失败: {e}")
+            return dict(rows[0])
+        except OpenStockError as exc:
+            logger.error("BaostockDataSource.get_stock_basic 失败: %s", exc)
             return {}
 
     def get_index_components(self, symbol: str) -> List[str]:
-        """获取指数成分股-Baostock实现"""
+        """获取指数成分股 — 通过 OpenStock INDEX_CONSTITUENTS."""
+        if not self.available:
+            return []
         try:
-            # 获取指数成分股
-            # pylint: disable=no-member
-            rs = self.bs.query_index_weight(code=symbol, start_date=normalize_date(datetime.datetime.now()))
-            if rs.error_code != "0":
-                print(f"Baostock查询错误: {rs.error_msg}")
-                return []
-
-            # 转换为列表
-            data_list = []
-            while (rs.error_code == "0") & rs.next():
-                data_list.append(rs.get_row_data())
-
-            # 提取股票代码
-            codes = [item[1] for item in data_list] if data_list else []
-
-            return codes
-        except Exception as e:
-            print(f"Baostock获取指数成分股失败: {e}")
+            response = self._client.fetch(
+                DataCategory.INDEX_CONSTITUENTS,
+                {"index_code": self._format_index(symbol)},
+            )
+            rows = response.get("data") or []
+            return [str(row.get("symbol") or row.get("code") or "") for row in rows if row]
+        except OpenStockError as exc:
+            logger.error("BaostockDataSource.get_index_components 失败: %s", exc)
             return []
 
-    def get_real_time_data(self, symbol: str):
-        """获取实时数据-Baostock实现"""
+    def get_real_time_data(self, symbol: str) -> Union[Dict[str, Any], str]:
+        """获取实时数据 — 通过 OpenStock REALTIME_QUOTES."""
+        if not self.available:
+            return {"error": "OpenStock client not available"}
         try:
-            # 使用stock_zh_a_spot接口获取股票实时数据
-            rs = self.bs.query_all_stock(day=normalize_date(datetime.datetime.now()))
-            if rs.error_code != "0":
-                print(f"Baostock查询错误: {rs.error_msg}")
-                return {}
+            response = self._client.fetch(
+                DataCategory.REALTIME_QUOTES,
+                {"symbol": symbol},
+            )
+            rows = response.get("data") or []
+            if not rows:
+                return {"error": "no realtime data"}
+            return dict(rows[0])
+        except OpenStockError as exc:
+            return {"error": str(exc)}
 
-            # 转换为DataFrame
-            data_list = []
-            while (rs.error_code == "0") & rs.next():
-                data_list.append(rs.get_row_data())
-
-            df = pd.DataFrame(data_list, columns=rs.fields)
-
-            # 筛选指定股票
-            filtered_df = df[df["code"] == symbol]
-            if filtered_df.empty:
-                print(f"未能找到股票 {symbol} 的实时数据")
-                return {}
-
-            # 转换为字典
-            return filtered_df.iloc[0].to_dict()
-        except Exception as e:
-            print(f"Baostock获取实时数据失败: {e}")
-            return {}
-
-    def get_market_calendar(self, start_date: str, end_date: str):
-        """获取交易日历-Baostock实现"""
-        try:
-            # Baostock没有直接提供交易日历接口，返回空DataFrame
-            print("Baostock暂不支持交易日历查询")
+    def get_market_calendar(self, start_date: str, end_date: str) -> Union[pd.DataFrame, str]:
+        """获取交易日历 — 通过 OpenStock TRADE_DATES."""
+        if not self.available:
             return pd.DataFrame()
-        except Exception as e:
-            print(f"Baostock获取交易日历失败: {e}")
+        try:
+            response = self._client.fetch(
+                DataCategory.TRADE_DATES,
+                {
+                    "start_date": start_date,
+                    "end_date": end_date,
+                },
+            )
+            return self._to_dataframe(response)
+        except OpenStockError as exc:
+            logger.error("BaostockDataSource.get_market_calendar 失败: %s", exc)
             return pd.DataFrame()
 
-    def get_financial_data(self, symbol: str, period: str = "annual"):
-        """获取财务数据-Baostock实现"""
+    def get_financial_data(self, symbol: str, period: str = "annual") -> Union[pd.DataFrame, str]:
+        """获取财务数据 — 通过 OpenStock FINANCIAL_STATEMENTS."""
+        if not self.available:
+            return pd.DataFrame()
         try:
-            # 使用query_stock_basic获取基本信息（作为财务数据的替代）
-            rs = self.bs.query_stock_basic(code=symbol)
-            if rs.error_code != "0":
-                print(f"Baostock查询错误: {rs.error_msg}")
-                return pd.DataFrame()
-
-            # 转换为DataFrame
-            data_list = []
-            while (rs.error_code == "0") & rs.next():
-                data_list.append(rs.get_row_data())
-
-            df = pd.DataFrame(data_list, columns=rs.fields)
-            return df
-        except Exception as e:
-            print(f"Baostock获取财务数据失败: {e}")
+            response = self._client.fetch(
+                DataCategory.FINANCIAL_STATEMENTS,
+                {
+                    "symbol": self._format_symbol(symbol),
+                    "statement_type": "profit",
+                    "report_type": "express" if period != "annual" else "",
+                },
+            )
+            return self._to_dataframe(response)
+        except OpenStockError as exc:
+            logger.error("BaostockDataSource.get_financial_data 失败: %s", exc)
             return pd.DataFrame()
 
-    def get_news_data(self, symbol: str = None, limit: int = 10):
-        """获取新闻数据-Baostock实现"""
-        try:
-            # Baostock没有直接提供新闻数据接口，返回空列表
-            print("Baostock暂不支持新闻数据查询")
+    def get_news_data(self, symbol: str = None, limit: int = 10) -> Union[List[Dict[str, Any]], str]:
+        """获取新闻数据 — 通过 OpenStock STOCK_NEWS."""
+        if not self.available:
             return []
-        except Exception as e:
-            print(f"Baostock获取新闻数据失败: {e}")
+        try:
+            params: Dict[str, Any] = {"limit": limit}
+            if symbol:
+                params["symbol"] = symbol
+            response = self._client.fetch(DataCategory.STOCK_NEWS, params)
+            return list(response.get("data") or [])
+        except OpenStockError as exc:
+            logger.error("BaostockDataSource.get_news_data 失败: %s", exc)
             return []
+
+    @staticmethod
+    def _format_symbol(symbol: str) -> str:
+        """格式化股票代码 — baostock 风格 sh.600000 / sz.000001.
+
+        OpenStock 接受 sz000001 / sh600000 / 000001 等多种格式,本方法保留原 baostock
+        约定,OpenStock 后端兼容。
+        """
+        symbol = symbol.replace(".", "").replace("sh", "").replace("sz", "")
+        if symbol.startswith("6"):
+            return f"sh.{symbol}"
+        if symbol.startswith("0") or symbol.startswith("3"):
+            return f"sz.{symbol}"
+        return symbol
+
+    @staticmethod
+    def _format_index(symbol: str) -> str:
+        """格式化指数代码 — baostock 风格 sh.000001 / sz.399001."""
+        symbol = symbol.replace(".", "").replace("sh", "").replace("sz", "")
+        if symbol.startswith("000"):
+            return f"sh.{symbol}"
+        if symbol.startswith("399"):
+            return f"sz.{symbol}"
+        return symbol
+
+    @staticmethod
+    def _to_dataframe(response: Dict[str, Any]) -> pd.DataFrame:
+        """OpenStock 响应统一转 DataFrame."""
+        rows = response.get("data") or []
+        if not rows:
+            return pd.DataFrame()
+        return pd.DataFrame(rows)

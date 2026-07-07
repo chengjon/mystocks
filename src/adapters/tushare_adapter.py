@@ -1,214 +1,219 @@
 """
-Tushare 数据源适配器
-实现了统一数据接口，提供 Tushare 数据访问
+Tushare 数据源适配器 — OpenStock 网关外观层.
 
-使用前需要：
-1. 安装 tushare: pip install tushare
-2. 申请 Tushare Token
-3. 设置环境变量: TUSHARE_TOKEN=your_token
+This is a facade. Internal data fetching is delegated to the OpenStock gateway.
+Class name and public method signatures retained for backward compatibility.
+
+迁移前: 直接 import tushare 并通过 ts.pro_api(token) 调用 — 受 TUSHARE_TOKEN 配置
+        限制,长期挂在 FUNCTION_TREE.md 的 ⚠️ 列表。
+迁移后: 通过 OpenStockClient.fetch() 调用 OpenStock 的 STOCK_BASIC /
+        FINANCIAL_STATEMENTS / HISTORICAL_KLINES / TRADE_DATES / INDEX_CONSTITUENTS
+        等 category。OpenStock 后端用 baostock/eltdx 自动 failover,不再依赖 token。
+
+详见: openspec/changes/migrate-data-sources-to-openstock/proposal.md (决策 1: Adapter 外观层)
+      docs/reports/openstock-coverage-gaps.md
 """
 
+from __future__ import annotations
+
+import logging
 import os
-import sys
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 import pandas as pd
 
-# 将当前目录的父目录添加到模块搜索路径中
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from src.interfaces.refactored_interfaces import IDataSource
+from src.services.openstock import (
+    DataCategory,
+    OpenStockClient,
+    OpenStockError,
+)
 
-from src.interfaces.refactored_interfaces import IDataSource  # noqa: E402
+logger = logging.getLogger(__name__)
 
 
 class TushareDataSource(IDataSource):
-    """Tushare数据源实现"""
+    """Tushare 数据源实现 — OpenStock 网关外观.
 
-    def __init__(self):
-        # 延迟导入tushare
+    保留原 TushareDataSource 类名与方法签名。内部实现切换为 OpenStockClient 调用,
+    不再 import tushare SDK,不再需要 TUSHARE_TOKEN 环境变量。
+    """
+
+    def __init__(self) -> None:
+        # OpenStock 网关已封装 baostock/eltdx/akshare 多 provider failover,
+        # 本类只需读取 OPENSTOCK_BASE_URL + OPENSTOCK_API_KEY。
         try:
-            import tushare as ts
-
-            token = os.getenv("TUSHARE_TOKEN")
-            if not token:
-                raise ImportError("请设置环境变量 TUSHARE_TOKEN")
-            # 直接把 token 传给 pro_api，避免 set_token 落盘到只读文件系统。
-            self.ts = ts.pro_api(token)
-            print("Tushare数据源初始化完成")
+            self._client = OpenStockClient()
             self.available = True
-        except ImportError as e:
-            print(f"警告: 无法导入tushare: {e}")
-            print("请安装tushare: pip install tushare")
-            self.ts = None
+            logger.info("TushareDataSource 已切换到 OpenStock 网关")
+        except OpenStockError as exc:
+            logger.error("TushareDataSource 初始化失败: %s", exc)
+            self._client = None  # type: ignore[assignment]
             self.available = False
-            raise ImportError(f"Tushare不可用: {e}")
 
     def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
-        """获取股票日线数据-Tushare实现"""
+        """获取股票日线数据 — 通过 OpenStock HISTORICAL_KLINES."""
         if not self.available:
             return pd.DataFrame()
-
         try:
-            # 使用专门的格式化函数处理股票代码
-            # Tushare使用 000001.SZ 格式
-            ts_symbol = self._format_symbol_for_tushare(symbol)
-
-            df = self.ts.daily(
-                ts_code=ts_symbol,
-                start_date=start_date.replace("-", ""),
-                end_date=end_date.replace("-", ""),
+            response = self._client.fetch(
+                DataCategory.HISTORICAL_KLINES,
+                {
+                    "symbol": self._format_symbol_for_tushare(symbol),
+                    "start_date": start_date,
+                    "end_date": end_date,
+                    "period": "daily",
+                },
             )
-
-            if df is None or df.empty:
-                return pd.DataFrame()
-
-            # 统一列名
-            df = df.rename(
-                columns={
-                    "trade_date": "date",
-                    "ts_code": "symbol",
-                    "open": "open",
-                    "high": "high",
-                    "low": "low",
-                    "close": "close",
-                    "vol": "volume",
-                    "amount": "amount",
-                }
-            )
-
-            return df
-        except Exception as e:
-            print(f"Tushare获取股票日线数据失败: {e}")
+            return self._to_dataframe(response)
+        except OpenStockError as exc:
+            logger.error("TushareDataSource.get_stock_daily 失败: %s", exc)
             return pd.DataFrame()
 
     def get_index_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
-        """获取指数日线数据-Tushare实现"""
+        """获取指数日线数据 — 通过 OpenStock INDEX_KLINES."""
         if not self.available:
             return pd.DataFrame()
-
         try:
-            # Tushare指数代码处理
-            ts_symbol = self._format_index_for_tushare(symbol)
-
-            df = self.ts.index_daily(
-                ts_code=ts_symbol,
-                start_date=start_date.replace("-", ""),
-                end_date=end_date.replace("-", ""),
+            response = self._client.fetch(
+                DataCategory.INDEX_KLINES,
+                {
+                    "symbol": self._format_index_for_tushare(symbol),
+                    "start_date": start_date,
+                    "end_date": end_date,
+                    "period": "daily",
+                },
             )
-
-            if df is None or df.empty:
-                return pd.DataFrame()
-
-            # 统一列名
-            df = df.rename(
-                columns={
-                    "trade_date": "date",
-                    "ts_code": "symbol",
-                    "open": "open",
-                    "high": "high",
-                    "low": "low",
-                    "close": "close",
-                    "vol": "volume",
-                    "amount": "amount",
-                }
-            )
-
-            return df
-        except Exception as e:
-            print(f"Tushare获取指数日线数据失败: {e}")
+            return self._to_dataframe(response)
+        except OpenStockError as exc:
+            logger.error("TushareDataSource.get_index_daily 失败: %s", exc)
             return pd.DataFrame()
 
-    def get_stock_basic(self, symbol: str) -> Dict:
-        """获取股票基本信息-Tushare实现"""
+    def get_stock_basic(self, symbol: str) -> Dict[str, Any]:
+        """获取股票基本信息 — 通过 OpenStock STOCK_BASIC."""
         if not self.available:
             return {}
-
         try:
-            ts_symbol = self._format_symbol_for_tushare(symbol)
-            df = self.ts.stock_basic(ts_code=ts_symbol)
-
-            if df is None or df.empty:
+            response = self._client.fetch(
+                DataCategory.STOCK_BASIC,
+                {"symbol": self._format_symbol_for_tushare(symbol)},
+            )
+            rows = response.get("data") or []
+            if not rows:
                 return {}
-
-            # 转换为字典
-            return dict(df.iloc[0].to_dict())
-        except Exception as e:
-            print(f"Tushare获取股票基本信息失败: {e}")
+            return dict(rows[0])
+        except OpenStockError as exc:
+            logger.error("TushareDataSource.get_stock_basic 失败: %s", exc)
             return {}
 
     def get_index_components(self, symbol: str) -> List[str]:
-        """获取指数成分股-Tushare实现"""
+        """获取指数成分股 — 通过 OpenStock INDEX_CONSTITUENTS."""
         if not self.available:
             return []
-
         try:
-            ts_symbol = self._format_index_for_tushare(symbol)
-            df = self.ts.index_weight(index_code=ts_symbol)
-
-            if df is None or df.empty:
-                return []
-
-            return list(df["con_code"].tolist())
-        except Exception as e:
-            print(f"Tushare获取指数成分股失败: {e}")
+            response = self._client.fetch(
+                DataCategory.INDEX_CONSTITUENTS,
+                {"index_code": self._format_index_for_tushare(symbol)},
+            )
+            rows = response.get("data") or []
+            return [str(row.get("symbol") or row.get("code") or "") for row in rows if row]
+        except OpenStockError as exc:
+            logger.error("TushareDataSource.get_index_components 失败: %s", exc)
             return []
 
-    def get_real_time_data(self, symbol: str) -> Union[Dict, str]:
-        """获取实时数据-Tushare实现"""
-        # Tushare主要提供历史数据，实时数据功能有限
-        return {"error": "Tushare主要提供历史数据，请使用其他数据源获取实时数据"}
+    def get_real_time_data(self, symbol: str) -> Union[Dict[str, Any], str]:
+        """获取实时数据 — 通过 OpenStock REALTIME_QUOTES."""
+        if not self.available:
+            return {"error": "OpenStock client not available"}
+        try:
+            response = self._client.fetch(
+                DataCategory.REALTIME_QUOTES,
+                {"symbol": symbol},
+            )
+            rows = response.get("data") or []
+            if not rows:
+                return {"error": "no realtime data"}
+            return dict(rows[0])
+        except OpenStockError as exc:
+            return {"error": str(exc)}
 
     def get_market_calendar(self, start_date: str, end_date: str) -> Union[pd.DataFrame, str]:
-        """获取交易日历-Tushare实现"""
+        """获取交易日历 — 通过 OpenStock TRADE_DATES."""
         if not self.available:
             return pd.DataFrame()
-
         try:
-            df = self.ts.trade_cal(
-                start_date=start_date.replace("-", ""),
-                end_date=end_date.replace("-", ""),
+            response = self._client.fetch(
+                DataCategory.TRADE_DATES,
+                {
+                    "start_date": start_date,
+                    "end_date": end_date,
+                },
             )
-            return df
-        except Exception as e:
-            print(f"Tushare获取交易日历失败: {e}")
+            return self._to_dataframe(response)
+        except OpenStockError as exc:
+            logger.error("TushareDataSource.get_market_calendar 失败: %s", exc)
             return pd.DataFrame()
 
     def get_financial_data(self, symbol: str, period: str = "annual") -> Union[pd.DataFrame, str]:
-        """获取财务数据-Tushare实现"""
+        """获取财务数据 — 通过 OpenStock FINANCIAL_STATEMENTS."""
         if not self.available:
             return pd.DataFrame()
-
         try:
-            ts_symbol = self._format_symbol_for_tushare(symbol)
-            if period == "annual":
-                df = self.ts.income(ts_code=ts_symbol, period="A")
-            else:
-                df = self.ts.income(ts_code=ts_symbol, period="Q")
-            return df
-        except Exception as e:
-            print(f"Tushare获取财务数据失败: {e}")
+            statement_type = "profit"  # Tushare 默认 income statement
+            response = self._client.fetch(
+                DataCategory.FINANCIAL_STATEMENTS,
+                {
+                    "symbol": self._format_symbol_for_tushare(symbol),
+                    "statement_type": statement_type,
+                    "report_type": "express" if period != "annual" else "",
+                },
+            )
+            return self._to_dataframe(response)
+        except OpenStockError as exc:
+            logger.error("TushareDataSource.get_financial_data 失败: %s", exc)
             return pd.DataFrame()
 
-    def get_news_data(self, symbol: Optional[str] = None, limit: int = 10) -> Union[List[Dict], str]:
-        """获取新闻数据-Tushare实现"""
-        # Tushare的新闻数据功能有限
-        return "Tushare新闻数据功能有限，请使用其他数据源"
+    def get_news_data(self, symbol: Optional[str] = None, limit: int = 10) -> Union[List[Dict[str, Any]], str]:
+        """获取新闻数据 — 通过 OpenStock STOCK_NEWS."""
+        if not self.available:
+            return []
+        try:
+            params: Dict[str, Any] = {"limit": limit}
+            if symbol:
+                params["symbol"] = symbol
+            response = self._client.fetch(DataCategory.STOCK_NEWS, params)
+            return list(response.get("data") or [])
+        except OpenStockError as exc:
+            logger.error("TushareDataSource.get_news_data 失败: %s", exc)
+            return []
 
     def _format_symbol_for_tushare(self, symbol: str) -> str:
-        """格式化股票代码为Tushare格式"""
-        # 简化处理，实际应该使用symbol_utils的逻辑
-        symbol = symbol.replace(".", "").replace("sh", "").replace("sz", "")
+        """格式化股票代码 — 保留原签名.
+
+        OpenStock 后端 (baostock/eltdx) 接受 sh.600000 / sz.000001 / 600000 等格式,
+        但不接受 <CODE>.SH/.SZ (Tushare 风格)。本方法把任何输入归一化为 baostock
+        风格 sh.<6位> 或 sz.<6位>,与原 baostock_adapter 行为一致。
+        """
+        symbol = symbol.replace(".", "").replace("sh", "").replace("sz", "").lower()
         if symbol.startswith("6"):
-            return f"{symbol}.SH"
-        elif symbol.startswith("0") or symbol.startswith("3"):
-            return f"{symbol}.SZ"
+            return f"sh.{symbol}"
+        if symbol.startswith(("0", "3")):
+            return f"sz.{symbol}"
         return symbol
 
     def _format_index_for_tushare(self, symbol: str) -> str:
-        """格式化指数代码为Tushare格式"""
-        # 简化处理
-        symbol = symbol.replace(".", "").replace("sh", "").replace("sz", "")
+        """格式化指数代码 — 保留原签名."""
+        symbol = symbol.replace(".", "").replace("sh", "").replace("sz", "").lower()
         if symbol.startswith("000"):
-            return f"{symbol}.SH"
-        elif symbol.startswith("399"):
-            return f"{symbol}.SZ"
+            return f"sh.{symbol}"
+        if symbol.startswith("399"):
+            return f"sz.{symbol}"
         return symbol
+
+    @staticmethod
+    def _to_dataframe(response: Dict[str, Any]) -> pd.DataFrame:
+        """OpenStock 响应统一转 DataFrame — 消费端按原 Tushare DataFrame 契约."""
+        rows = response.get("data") or []
+        if not rows:
+            return pd.DataFrame()
+        return pd.DataFrame(rows)

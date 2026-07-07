@@ -1,0 +1,245 @@
+"""TushareDataSource facade 单元测试 — Phase 2.1a.
+
+Tests assert facade behavior: each public method maps to the correct
+OpenStock DataCategory and converts the response correctly. SDK-binding
+assertions (TUSHARE_TOKEN, ts.pro_api) are removed — facade delegates to
+OpenStockClient which reads OPENSTOCK_BASE_URL/OPENSTOCK_API_KEY.
+
+See: openspec/changes/migrate-data-sources-to-openstock/proposal.md (决策 1)
+"""
+
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+from unittest.mock import MagicMock, patch
+
+import pytest
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
+
+from src.adapters.tushare_adapter import TushareDataSource
+from src.services.openstock import DataCategory, OpenStockError
+
+
+@pytest.fixture
+def facade_with_mock_client():
+    """TushareDataSource with mocked OpenStockClient — no real gateway call."""
+    with patch("src.adapters.tushare_adapter.OpenStockClient") as MockClient:
+        client = MagicMock()
+        MockClient.return_value = client
+        adapter = TushareDataSource()
+        return adapter, client
+
+
+class TestTushareDataSourceBasic:
+    """Phase 2.1a facade behavior tests."""
+
+    def test_module_imports(self):
+        from src.adapters.tushare_adapter import TushareDataSource as Cls
+
+        assert Cls.__name__ == "TushareDataSource"
+
+    def test_class_inherits_idatasource(self):
+        from src.interfaces.refactored_interfaces import IDataSource
+
+        assert issubclass(TushareDataSource, IDataSource)
+
+    def test_initialization_available_when_client_ok(self, facade_with_mock_client):
+        adapter, _ = facade_with_mock_client
+        assert adapter.available is True
+
+    def test_initialization_unavailable_when_client_raises(self):
+        with patch(
+            "src.adapters.tushare_adapter.OpenStockClient",
+            side_effect=OpenStockError("init failed"),
+        ):
+            adapter = TushareDataSource()
+            assert adapter.available is False
+            assert adapter._client is None
+
+    def test_delayed_import_pattern_not_required(self):
+        """facade no longer lazy-imports tushare SDK; verify no tushare import."""
+        import src.adapters.tushare_adapter as mod
+
+        source = Path(mod.__file__).read_text(encoding="utf-8")
+        # facade must NOT import tushare SDK
+        assert "import tushare" not in source
+        # facade must import OpenStock
+        assert "OpenStockClient" in source
+
+    def test_attribute_structure(self):
+        """Public methods preserved for backward compatibility."""
+        for attr in (
+            "get_stock_daily",
+            "get_index_daily",
+            "get_stock_basic",
+            "get_index_components",
+            "get_real_time_data",
+            "get_market_calendar",
+            "get_financial_data",
+            "get_news_data",
+        ):
+            assert hasattr(TushareDataSource, attr), f"missing {attr}"
+
+
+class TestTushareCategoryMapping:
+    """Each method maps to the correct OpenStock DataCategory."""
+
+    def test_get_stock_daily_maps_to_historical_klines(self, facade_with_mock_client):
+        adapter, client = facade_with_mock_client
+        client.fetch.return_value = {"data": [{"date": "2026-01-01", "close": "10.0"}]}
+
+        df = adapter.get_stock_daily("600000", "2026-01-01", "2026-01-10")
+
+        args, _ = client.fetch.call_args.args
+        assert args[0] == DataCategory.HISTORICAL_KLINES
+        assert args[1]["symbol"] == "600000.SH"
+        assert args[1]["start_date"] == "20260101"
+        assert args[1]["end_date"] == "20260110"
+        assert args[1]["period"] == "daily"
+        assert not df.empty
+
+    def test_get_index_daily_maps_to_index_klines(self, facade_with_mock_client):
+        adapter, client = facade_with_mock_client
+        client.fetch.return_value = {"data": [{"date": "2026-01-01"}]}
+
+        df = adapter.get_index_daily("000300", "2026-01-01", "2026-01-10")
+
+        args, _ = client.fetch.call_args.args
+        assert args[0] == DataCategory.INDEX_KLINES
+        assert args[1]["symbol"] == "000300.SH"
+        assert not df.empty
+
+    def test_get_stock_basic_maps_to_stock_basic(self, facade_with_mock_client):
+        adapter, client = facade_with_mock_client
+        client.fetch.return_value = {"data": [{"symbol": "600000.SH", "name": "浦发银行"}]}
+
+        info = adapter.get_stock_basic("600000")
+
+        args, _ = client.fetch.call_args.args
+        assert args[0] == DataCategory.STOCK_BASIC
+        assert info["name"] == "浦发银行"
+
+    def test_get_stock_basic_empty_returns_empty_dict(self, facade_with_mock_client):
+        adapter, client = facade_with_mock_client
+        client.fetch.return_value = {"data": []}
+        assert adapter.get_stock_basic("600000") == {}
+
+    def test_get_index_components_maps_to_index_constituents(self, facade_with_mock_client):
+        adapter, client = facade_with_mock_client
+        client.fetch.return_value = {"data": [{"symbol": "600000.SH"}, {"symbol": "000001.SZ"}]}
+
+        codes = adapter.get_index_components("000300")
+
+        args, _ = client.fetch.call_args.args
+        assert args[0] == DataCategory.INDEX_CONSTITUENTS
+        assert "600000.SH" in codes
+        assert "000001.SZ" in codes
+
+    def test_get_real_time_data_maps_to_realtime_quotes(self, facade_with_mock_client):
+        adapter, client = facade_with_mock_client
+        client.fetch.return_value = {"data": [{"price": "10.0"}]}
+
+        result = adapter.get_real_time_data("600000")
+
+        args, _ = client.fetch.call_args.args
+        assert args[0] == DataCategory.REALTIME_QUOTES
+        assert result["price"] == "10.0"
+
+    def test_get_real_time_data_error_envelope(self, facade_with_mock_client):
+        adapter, client = facade_with_mock_client
+        client.fetch.side_effect = OpenStockError("rate limit")
+        result = adapter.get_real_time_data("600000")
+        assert "error" in result
+
+    def test_get_market_calendar_maps_to_trade_dates(self, facade_with_mock_client):
+        adapter, client = facade_with_mock_client
+        client.fetch.return_value = {"data": [{"date": "20260101", "is_open": "1"}]}
+
+        df = adapter.get_market_calendar("2026-01-01", "2026-01-10")
+
+        args, _ = client.fetch.call_args.args
+        assert args[0] == DataCategory.TRADE_DATES
+        assert args[1]["start_date"] == "20260101"
+        assert not df.empty
+
+    def test_get_financial_data_maps_to_financial_statements(self, facade_with_mock_client):
+        adapter, client = facade_with_mock_client
+        client.fetch.return_value = {"data": [{"report_date": "2025-12-31"}]}
+
+        df = adapter.get_financial_data("600000", period="quarterly")
+
+        args, _ = client.fetch.call_args.args
+        assert args[0] == DataCategory.FINANCIAL_STATEMENTS
+        assert args[1]["statement_type"] == "profit"
+        assert args[1]["report_type"] == "express"
+        assert not df.empty
+
+    def test_get_news_data_maps_to_stock_news(self, facade_with_mock_client):
+        adapter, client = facade_with_mock_client
+        client.fetch.return_value = {"data": [{"title": "news1"}]}
+
+        news = adapter.get_news_data(symbol="600000", limit=5)
+
+        args, _ = client.fetch.call_args.args
+        assert args[0] == DataCategory.STOCK_NEWS
+        assert args[1]["symbol"] == "600000"
+        assert args[1]["limit"] == 5
+        assert len(news) == 1
+
+    def test_get_news_data_without_symbol(self, facade_with_mock_client):
+        adapter, client = facade_with_mock_client
+        client.fetch.return_value = {"data": []}
+        adapter.get_news_data()
+        args, _ = client.fetch.call_args.args
+        assert "symbol" not in args[1]
+
+
+class TestTushareUnavailableFallback:
+    """When OpenStockClient fails to init, all methods return empty/error."""
+
+    def test_get_stock_daily_returns_empty_when_unavailable(self):
+        with patch(
+            "src.adapters.tushare_adapter.OpenStockClient",
+            side_effect=OpenStockError("init failed"),
+        ):
+            adapter = TushareDataSource()
+            df = adapter.get_stock_daily("600000", "2026-01-01", "2026-01-10")
+            assert df.empty
+
+    def test_get_stock_daily_returns_empty_on_openstock_error(self, facade_with_mock_client):
+        adapter, client = facade_with_mock_client
+        client.fetch.side_effect = OpenStockError("gateway down")
+        assert adapter.get_stock_daily("600000", "2026-01-01", "2026-01-10").empty
+
+
+class TestTushareSymbolFormatting:
+    """_format_symbol_for_tushare / _format_index_for_tushare preserved verbatim."""
+
+    def test_format_symbol_sh_prefix(self):
+        adapter = TushareDataSource.__new__(TushareDataSource)
+        assert adapter._format_symbol_for_tushare("600000") == "600000.SH"
+        assert adapter._format_symbol_for_tushare("sh600000") == "600000.SH"
+
+    def test_format_symbol_sz_prefix(self):
+        adapter = TushareDataSource.__new__(TushareDataSource)
+        assert adapter._format_symbol_for_tushare("000001") == "000001.SZ"
+        assert adapter._format_symbol_for_tushare("300377") == "300377.SZ"
+
+    def test_format_index(self):
+        adapter = TushareDataSource.__new__(TushareDataSource)
+        assert adapter._format_index_for_tushare("000300") == "000300.SH"
+        assert adapter._format_index_for_tushare("399001") == "399001.SZ"
+
+
+class TestTushareToDataframeHelper:
+
+    def test_to_dataframe_handles_empty(self):
+        assert TushareDataSource._to_dataframe({"data": []}).empty
+        assert TushareDataSource._to_dataframe({}).empty
+
+    def test_to_dataframe_converts_rows(self):
+        df = TushareDataSource._to_dataframe({"data": [{"a": 1}, {"a": 2}]})
+        assert len(df) == 2
+        assert list(df["a"]) == [1, 2]

@@ -1,0 +1,108 @@
+version: "v0.2"
+
+task:
+  id: "pr-77"
+  title: "Phase 2.1a domain-01 Adapter facades (tushare/baostock/byapi) → OpenStock"
+  owner: "main"
+  created_at: "2026-07-07"
+
+mainline:
+  id: "L1-openstock-gateway-phase2-domain01"
+  objective: "将 domain-01 三个 ⚠️ 标记 Adapter (tushare/baostock/byapi) 改写为 OpenStock 网关 facade,保留类名与方法签名,删除 SDK 直接调用。24 个集成 smoke test 全部对真实 OpenStock 网关跑通。"
+  milestone_id: "L2-openstock-migration"
+  slice_id: "L3-phase2-domain01-adapters"
+
+classification:
+  task_type: "feature"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-data-sources-to-openstock"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "domain-01"
+  node_id: "domain-01-node-03"
+  affected_entrypoints:
+    - "core"
+    - "tests"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Adapter 外观层迁移,完全落在 domain-01-node-03 的 src/adapters/** coverage 内,无跨域改动。"
+
+scope:
+  allowed_paths:
+    - "src/adapters/tushare_adapter.py"
+    - "src/adapters/baostock_adapter.py"
+    - "src/adapters/byapi_adapter.py"
+    - "tests/integration/test_openstock_adapter_smoke.py"
+    - "tests/adapters/archive/test_byapi_adapter_sdk.bak"
+    - "tests/adapters/archive/test_baostock_adapter_sdk.bak"
+    - "tests/unit/adapters/archive/test_byapi_adapter_basic_sdk.bak"
+    - "tests/unit/adapters/archive/test_byapi_runtime_config_sdk.bak"
+    - "tests/unit/adapters/archive/test_tushare_adapter_basic_sdk.bak"
+    - "openspec/changes/migrate-data-sources-to-openstock/tasks.md"
+    - "governance/mainline/task-cards/pr-77.yaml"
+  forbidden_paths:
+    - "src/services/openstock/**"
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/adapters/akshare/**"
+    - "src/adapters/tdx/**"
+    - "src/adapters/efinance_adapter/**"
+
+non_goals:
+  - "不迁移 src/adapters/akshare/{market_data,stock_info}.py — 推迟到 Phase 2.1b"
+  - "不修改 src/adapters/baostock/baostock_adapter.py(嵌套版本,无生产消费者)"
+  - "不动 web/backend 入口层 — Phase 3"
+  - "不删除 requirements.txt 中的 akshare/baostock/tushare/efinance 依赖 — Phase 6"
+
+acceptance:
+  checks:
+    - id: "openspec-validate-strict"
+      command: "openspec validate migrate-data-sources-to-openstock --strict"
+      required: true
+    - id: "phase1-client-tests"
+      command: "pytest tests/unit/services/openstock/test_client.py -x -q --no-cov"
+      required: true
+    - id: "facade-smoke-tests"
+      command: "OPENSTOCK_BASE_URL=http://192.168.123.104:8040 OPENSTOCK_API_KEY=$OPENSTOCK_API_KEY pytest -m integration tests/integration/test_openstock_adapter_smoke.py -v --no-cov"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-77.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr77-mainline-gate.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "facade 把日期格式从 8 位 (20260601) 改为带横线 (2026-06-01):OpenStock 后端 baostock provider 要求带横线格式,8 位会触发 503。Mitigation: 已用真实网关跑通 24 个 smoke test。"
+    - "facade 把 symbol 格式从 <CODE>.SH/.SZ 改为 baostock 风格 sh.<CODE>/sz.<CODE>:OpenStock 不接受 Tushare 风格。Mitigation: _format_symbol_for_tushare 与 _standardize_symbol 已重写,smoke test 通过。"
+    - "ByapiAdapter.get_limit_down_stocks OpenStock 暂未提供独立 LIMIT_DOWN_POOL category,返回空 + warning。Mitigation: 记录在 docs/reports/openstock-coverage-gaps.md,待 OpenStock 补齐后切换。"
+    - "ByapiAdapter.get_technical_indicator OpenStock 暂未覆盖,返回空 + warning。Mitigation: 同上。"
+  rollback_plan: "git revert <merge-commit-sha>。三个 Adapter 文件互相独立,revert 不影响 Phase 1 client 或后续 Phase 2.1b/2.2 PR。"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "完成 Phase 2.1a:把 domain-01 三个 ⚠️ 标记 Adapter (tushare/baostock/byapi) 改写为 OpenStock 网关 facade,消除 SDK token/login/licence 依赖。"
+    modified_scope: "重写 src/adapters/{tushare_adapter,baostock_adapter,byapi_adapter}.py;新增 tests/integration/test_openstock_adapter_smoke.py (24 tests);归档 5 个旧 SDK-binding 测试到 tests/{,unit/}adapters/archive/*.bak;勾选 openspec tasks.md 2.1.3-2.1.5。"
+    dependency_changes: "无新增依赖。Phase 1 引入的 httpx 已足够;本 PR 删除了对 tushare/baostock/requests 的直接调用,但 requirements.txt 保留(Phase 6 统一清理)。"
+    legacy_logic_impact: "BaostockDataSource 不再 bs.login()/bs.logout();TushareDataSource 不再读 TUSHARE_TOKEN;ByapiAdapter 不再读 BYAPI_KEY/LICENCE。消费端 (src/database/service/adapter_queries.py、web/backend/app/tasks/data_sync.py) 接口签名不变。"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert 本 commit;OpenStock 配置可保留在 .env(Phase 1 PR 已加),facade 自动 fallback 到原 SDK 不可能 — revert 后必须重新走 SDK 路径或恢复到 Phase 1 client only 状态。"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "user"
+    approved_at: "2026-07-07T00:00:00+08:00"
+    approval_note: "User directive: '本项目只作openstock的消费,请继续' + 后续 '请继续'。Phase 2.1a 按 migrate-data-sources-to-openstock proposal 推进,集成 smoke test 全部对真实 OpenStock 网关跑通。"
+    secondary_approved: false
