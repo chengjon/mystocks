@@ -25,9 +25,9 @@
 
 ### 2.3 domain-03/04 基本面与财务
 
-- [ ] 2.3.1 `src/adapters/akshare/financial_data.py` → `FINANCIAL_DATA` + `FINANCIAL_STATEMENTS`
+- [x] 2.3.1 `src/adapters/akshare/financial_data.py` → `FINANCIAL_DATA` + `STOCK_NEWS`
 - [ ] 2.3.2 `src/adapters/efinance_adapter/**` → `FINANCIAL_STATEMENTS` + `FORECAST_DATA` + `CONVERTIBLE_BONDS`(债券保留待 OpenStock 补)
-- [ ] 2.3.3 `src/adapters/akshare/market_adapter/forecast_analysis.py` → `FORECAST_DATA`
+- [x] 2.3.3 `src/adapters/akshare/market_adapter/forecast_analysis.py` → `FORECAST_DATA`
 
 ### 2.4 domain-06 板块/资金流/龙虎榜
 

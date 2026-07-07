@@ -1,35 +1,80 @@
 """
-AkShare Forecast & Analysis Mixin
+AkShare Forecast & Analysis Mixin — OpenStock 网关外观层.
 
-拆分自 src/adapters/akshare/market_data.py
+This is a facade. Internal data fetching is delegated to the OpenStock gateway.
+Class name (ForecastAnalysisMixin) and all async method signatures are retained
+for backward compatibility.
+
+迁移前: 直接调用 ak.stock_profit_forecast_em / stock_profit_forecast_ths /
+        stock_technical_indicator_em / stock_account_statistics_em — 需要 akshare SDK。
+迁移后: 通过 OpenStockClient.fetch() 调用 FORECAST_DATA / STOCK_TECHNICAL_INDICATOR
+        / STOCK_ACCOUNT_STATISTICS category。OpenStock 上游 akshare/baostock failover,
+        不再依赖本地 akshare SDK。
+
+详见: openspec/changes/migrate-data-sources-to-openstock/proposal.md (任务 2.3.3)
+      docs/reports/openstock-coverage-gaps.md
 """
 
-import akshare as ak
+from __future__ import annotations
+
+import asyncio
+import logging
+
 import pandas as pd
+
+from src.services.openstock import (
+    DataCategory,
+    OpenStockClient,
+    OpenStockError,
+)
+
+logger = logging.getLogger(__name__)
+
+
+def _client_or_none():
+    """懒初始化 OpenStock 客户端,失败返回 None."""
+    try:
+        return OpenStockClient()
+    except OpenStockError as exc:
+        logger.error("ForecastAnalysisMixin OpenStock 客户端初始化失败: %s", exc)
+        return None
+
+
+def _bare(symbol: str) -> str:
+    return str(symbol).replace(".", "").replace("sh", "").replace("sz", "").lower()
 
 
 class ForecastAnalysisMixin:
-    """预测与技术分析方法集合"""
+    """预测与技术分析方法集合 — OpenStock 网关外观."""
 
     async def get_stock_profit_forecast_em(self, symbol: str) -> pd.DataFrame:
-        """
-        获取盈利预测-东方财富 (akshare.stock_profit_forecast_em)
+        """获取盈利预测(东方财富) — OpenStock FORECAST_DATA(source=em).
+
+        上游 OpenStock FORECAST_DATA 当前返空,返回空 DataFrame + warning。
         """
         try:
-            self.logger.info("[Akshare] 开始获取盈利预测，东方财富数据源，股票: %s", symbol)
+            logger.info("[OpenStock] 开始获取盈利预测(em),股票: %s", symbol)
+            client = _client_or_none()
+            if client is None:
+                return pd.DataFrame()
+            try:
+                response = await asyncio.to_thread(
+                    client.fetch,
+                    DataCategory.FORECAST_DATA,
+                    {"symbol": _bare(symbol), "source": "em"},
+                )
+            finally:
+                client.close()
 
-            @self._retry_api_call
-            async def _get_profit_forecast_em():
-                return ak.stock_profit_forecast_em(symbol=symbol)
-
-            df = await _get_profit_forecast_em()
-
-            if df is None or df.empty:
-                self.logger.warning("[Akshare] 未能获取到股票 %s 的东方财富盈利预测", symbol)
+            rows = response.get("data") or []
+            if not rows:
+                logger.warning(
+                    "[OpenStock] FORECAST_DATA(em) 上游返回空: %s "
+                    "(详见 docs/reports/openstock-coverage-gaps.md)", symbol,
+                )
                 return pd.DataFrame()
 
-            self.logger.info("[Akshare] 成功获取股票 %s 的东方财富盈利预测，共 %s 行", symbol, len(df))
-
+            df = pd.DataFrame(rows)
             df = df.rename(
                 columns={
                     "股票代码": "symbol",
@@ -42,34 +87,45 @@ class ForecastAnalysisMixin:
                     "机构名称": "institution",
                 }
             )
-
             df["forecast_source"] = "em"
             df["query_timestamp"] = pd.Timestamp.now()
             return df
 
-        except Exception as e:
-            self.logger.error("[Akshare] 获取盈利预测失败，东方财富数据源，股票 %s: %s", symbol, e, exc_info=True)
+        except OpenStockError as exc:
+            logger.error("[OpenStock] 获取盈利预测(em)失败 %s: %s", symbol, exc)
+            return pd.DataFrame()
+        except Exception as exc:
+            logger.error("[OpenStock] 获取盈利预测(em)失败 %s: %s", symbol, exc, exc_info=True)
             return pd.DataFrame()
 
     async def get_stock_profit_forecast_ths(self, symbol: str) -> pd.DataFrame:
-        """
-        获取盈利预测-同花顺 (akshare.stock_profit_forecast_ths)
+        """获取盈利预测(同花顺) — OpenStock FORECAST_DATA(source=ths).
+
+        上游 OpenStock FORECAST_DATA 当前返空,返回空 DataFrame + warning。
         """
         try:
-            self.logger.info("[Akshare] 开始获取盈利预测，同花顺数据源，股票: %s", symbol)
+            logger.info("[OpenStock] 开始获取盈利预测(ths),股票: %s", symbol)
+            client = _client_or_none()
+            if client is None:
+                return pd.DataFrame()
+            try:
+                response = await asyncio.to_thread(
+                    client.fetch,
+                    DataCategory.FORECAST_DATA,
+                    {"symbol": _bare(symbol), "source": "ths"},
+                )
+            finally:
+                client.close()
 
-            @self._retry_api_call
-            async def _get_profit_forecast_ths():
-                return ak.stock_profit_forecast_ths(symbol=symbol)
-
-            df = await _get_profit_forecast_ths()
-
-            if df is None or df.empty:
-                self.logger.warning("[Akshare] 未能获取到股票 %s 的同花顺盈利预测", symbol)
+            rows = response.get("data") or []
+            if not rows:
+                logger.warning(
+                    "[OpenStock] FORECAST_DATA(ths) 上游返回空: %s "
+                    "(详见 docs/reports/openstock-coverage-gaps.md)", symbol,
+                )
                 return pd.DataFrame()
 
-            self.logger.info("[Akshare] 成功获取股票 %s 的同花顺盈利预测，共 %s 行", symbol, len(df))
-
+            df = pd.DataFrame(rows)
             df = df.rename(
                 columns={
                     "股票代码": "symbol",
@@ -82,105 +138,38 @@ class ForecastAnalysisMixin:
                     "分析师评级": "analyst_rating",
                 }
             )
-
             df["forecast_source"] = "ths"
             df["query_timestamp"] = pd.Timestamp.now()
             return df
 
-        except Exception as e:
-            self.logger.error("[Akshare] 获取盈利预测失败，同花顺数据源，股票 %s: %s", symbol, e, exc_info=True)
+        except OpenStockError as exc:
+            logger.error("[OpenStock] 获取盈利预测(ths)失败 %s: %s", symbol, exc)
+            return pd.DataFrame()
+        except Exception as exc:
+            logger.error("[OpenStock] 获取盈利预测(ths)失败 %s: %s", symbol, exc, exc_info=True)
             return pd.DataFrame()
 
     async def get_stock_technical_indicator_em(self, symbol: str) -> pd.DataFrame:
+        """获取技术指标数据 — OpenStock 暂未覆盖,返回空 DataFrame + warning.
+
+        详见 docs/reports/openstock-coverage-gaps.md。
         """
-        获取技术指标数据 (akshare.stock_technical_indicator_em)
-        """
-        try:
-            self.logger.info("[Akshare] 开始获取技术指标数据，股票: %s", symbol)
-
-            @self._retry_api_call
-            async def _get_technical_indicator():
-                return ak.stock_technical_indicator_em(symbol=symbol)
-
-            df = await _get_technical_indicator()
-
-            if df is None or df.empty:
-                self.logger.warning("[Akshare] 未能获取到股票 %s 的技术指标数据", symbol)
-                return pd.DataFrame()
-
-            self.logger.info("[Akshare] 成功获取股票 %s 的技术指标数据，共 %s 行", symbol, len(df))
-
-            df = df.rename(
-                columns={
-                    "股票代码": "symbol",
-                    "日期": "date",
-                    "MA5": "ma5",
-                    "MA10": "ma10",
-                    "MA20": "ma20",
-                    "MA30": "ma30",
-                    "MA60": "ma60",
-                    "MACD": "macd",
-                    "MACD信号": "macd_signal",
-                    "MACD柱状图": "macd_hist",
-                    "RSI": "rsi",
-                    "KDJ_K": "kdj_k",
-                    "KDJ_D": "kdj_d",
-                    "KDJ_J": "kdj_j",
-                    "布林线上轨": "boll_upper",
-                    "布林线中轨": "boll_middle",
-                    "布林线下轨": "boll_lower",
-                }
-            )
-
-            if "symbol" not in df.columns:
-                df["symbol"] = symbol
-
-            df["query_timestamp"] = pd.Timestamp.now()
-            return df
-
-        except Exception as e:
-            self.logger.error("[Akshare] 获取技术指标数据失败，股票 %s: %s", symbol, e, exc_info=True)
-            return pd.DataFrame()
+        logger.warning(
+            "[OpenStock] stock_technical_indicator OpenStock 暂未覆盖,返回空 DataFrame "
+            "(symbol=%s, 详见 docs/reports/openstock-coverage-gaps.md)", symbol,
+        )
+        return pd.DataFrame()
 
     async def get_stock_account_statistics_em(self, date: str) -> pd.DataFrame:
+        """获取股票账户统计月度 — OpenStock 暂未覆盖,返回空 DataFrame + warning.
+
+        详见 docs/reports/openstock-coverage-gaps.md。
         """
-        获取股票账户统计月度 (akshare.stock_account_statistics_em)
-        """
-        try:
-            self.logger.info("[Akshare] 开始获取股票账户统计月度，日期: %s", date)
-
-            @self._retry_api_call
-            async def _get_account_statistics():
-                return ak.stock_account_statistics_em(date=date)
-
-            df = await _get_account_statistics()
-
-            if df is None or df.empty:
-                self.logger.warning("[Akshare] 未能获取到股票账户统计月度数据，日期: %s", date)
-                return pd.DataFrame()
-
-            self.logger.info("[Akshare] 成功获取股票账户统计月度数据，共 %s 行", len(df))
-
-            df = df.rename(
-                columns={
-                    "日期": "date",
-                    "期末总账户数": "total_accounts",
-                    "期末活跃账户数": "active_accounts",
-                    "新增账户数": "new_accounts",
-                    "休眠账户数": "inactive_accounts",
-                    "交易账户数": "trading_accounts",
-                    "股票账户数": "stock_accounts",
-                    "基金账户数": "fund_accounts",
-                    "债券账户数": "bond_accounts",
-                }
-            )
-
-            df["query_timestamp"] = pd.Timestamp.now()
-            return df
-
-        except Exception as e:
-            self.logger.error("[Akshare] 获取股票账户统计月度失败，日期 %s: %s", date, e, exc_info=True)
-            return pd.DataFrame()
+        logger.warning(
+            "[OpenStock] stock_account_statistics OpenStock 暂未覆盖,返回空 DataFrame "
+            "(date=%s, 详见 docs/reports/openstock-coverage-gaps.md)", date,
+        )
+        return pd.DataFrame()
 
 
 __all__ = ["ForecastAnalysisMixin"]
