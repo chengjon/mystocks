@@ -1,10 +1,22 @@
 """
-# 功能：TDX实时数据服务
-# 作者：MyStocks Project
-# 创建日期：2025-12-20
-# 版本：1.0.0
-# 说明：专门处理TDX实时行情数据的服务
+TDX 实时数据服务 — OpenStock 网关外观层.
+
+This is a facade. Internal data fetching is delegated to the OpenStock gateway.
+Class name (RealtimeService), constructor signature, and all public method
+signatures are retained for backward compatibility.
+
+迁移前: 通过 BaseTdxAdapter._get_tdx_connection() 拿到 tdx_api,调用
+        tdx_api.get_security_quotes / get_security_list / get_block_info —
+        依赖原生 TDX 协议(socket + pytdx),需要本机可访问 TDX 服务器。
+迁移后: 通过 OpenStockClient.fetch() 调用 OpenStock 的 REALTIME_QUOTES /
+        MARKET_DEPTH / STOCK_INDUSTRY / TOPICS_CONCEPTS / SECTOR_QUOTES category。
+        OpenStock 后端用 eltdx/baostock failover,不再依赖本地 TDX 协议栈。
+
+详见: openspec/changes/migrate-data-sources-to-openstock/proposal.md (任务 2.2.2)
+      docs/reports/openstock-coverage-gaps.md
 """
+
+from __future__ import annotations
 
 from datetime import datetime
 from typing import Dict, List, Optional
@@ -13,404 +25,345 @@ import pandas as pd
 from loguru import logger
 
 from .base_tdx_adapter import BaseTdxAdapter
+from src.services.openstock import (
+    DataCategory,
+    OpenStockClient,
+    OpenStockError,
+)
+
+
+def _normalize_symbol_to_baostock(symbol: str) -> str:
+    """归一化到 baostock 风格 sh.600000 / sz.000001."""
+    s = str(symbol).replace(".", "").replace("sh", "").replace("sz", "").lower()
+    if s.startswith("6"):
+        return f"sh.{s}"
+    if s.startswith(("0", "3")):
+        return f"sz.{s}"
+    return symbol
+
+
+def _normalize_symbol_to_bare(symbol: str) -> str:
+    """归一化到纯数字(eltdx 后端要求)."""
+    return str(symbol).replace(".", "").replace("sh", "").replace("sz", "").lower()
 
 
 class RealtimeService(BaseTdxAdapter):
-    """
-    TDX实时数据服务
+    """TDX 实时数据服务 — OpenStock 网关外观.
 
-    专门处理实时行情、板块分类等实时数据
+    保留类名、构造签名、所有公开方法签名。内部实现切换为 OpenStockClient,
+    不再走 pytdx 原生协议。
     """
 
     def __init__(self):
         super().__init__()
-        logger.info("TDX实时数据服务初始化完成")
+        try:
+            self._client = OpenStockClient()
+            self._available = True
+        except OpenStockError as exc:
+            logger.error("RealtimeService OpenStock 初始化失败: %s", exc)
+            self._client = None  # type: ignore[assignment]
+            self._available = False
+        logger.info("RealtimeService(OpenStock facade)初始化完成")
+
+    # ---- 内部辅助 ----------------------------------------------------
+
+    def _normalize_symbol(self, symbol: str) -> str:
+        """保留 BaseTdxAdapter 兼容签名,实际归一化到 baostock 风格."""
+        return _normalize_symbol_to_baostock(symbol)
+
+    def _get_market_code(self, symbol: str) -> int:
+        """保留 BaseTdxAdapter 兼容签名,OpenStock 不需要 market_code."""
+        std = _normalize_symbol_to_baostock(symbol)
+        return 1 if std.startswith("sh.") else 0
+
+    def _get_tdx_connection(self):  # type: ignore[no-untyped-def]
+        """保留 BaseTdxAdapter 兼容签名,facade 模式下不再使用 TDX 连接."""
+        return None
+
+    # ---- 实时行情 ----------------------------------------------------
 
     def get_real_time_data(self, symbol: str) -> Optional[Dict]:
-        """获取实时行情数据
-
-        Args:
-            symbol: 股票代码
-
-        Returns:
-            Dict: 实时行情数据
-        """
+        """获取实时行情数据 — OpenStock REALTIME_QUOTES(客户端过滤)."""
         try:
             if not symbol:
                 raise ValueError("股票代码不能为空")
-
-            # 标准化股票代码
-            symbol = self._normalize_symbol(symbol)
-
-            # 获取TDX连接
-            tdx_api = self._get_tdx_connection()
-
-            # 获取市场代码
-            market_code = self._get_market_code(symbol)
-
-            # 获取实时行情
-            logger.info("获取实时行情数据: %s", symbol)
-            data = tdx_api.get_security_quotes([symbol], [market_code])
-
-            if not data or len(data) == 0:
-                logger.warning("未找到股票 %s 的实时数据", symbol)
+            if not self._available:
                 return None
 
-            # 提取第一个数据
-            quote_data = data[0]
+            std_symbol = _normalize_symbol_to_baostock(symbol)
+            response = self._client.fetch(
+                DataCategory.REALTIME_QUOTES,
+                {"symbols": std_symbol},
+            )
+            rows = response.get("data") or []
+            # REALTIME_QUOTES 返回前 N 条,需要客户端按 symbol 过滤
+            row = next(
+                (r for r in rows if r.get("symbol") == std_symbol.replace(".", "") or r.get("symbol") == std_symbol),
+                None,
+            )
+            if not row:
+                logger.warning("OpenStock REALTIME_QUOTES 未找到股票 %s", std_symbol)
+                return None
 
-            # 构建标准化的实时行情格式
-            result = {
+            return {
                 "symbol": symbol,
-                "name": quote_data.get("name", ""),
-                "price": quote_data.get("price", 0),
-                "open": quote_data.get("open", 0),
-                "high": quote_data.get("high", 0),
-                "low": quote_data.get("low", 0),
-                "pre_close": quote_data.get("pre_close", 0),
-                "change": quote_data.get("change", 0),
-                "change_pct": quote_data.get("change_pct", 0),
-                "volume": quote_data.get("volume", 0),
-                "amount": quote_data.get("amount", 0),
-                "turnover": quote_data.get("turnover", 0),
-                "pe": quote_data.get("pe", 0),
-                "pb": quote_data.get("pb", 0),
-                "market": "上交所" if market_code == 1 else "深交所",
+                "name": row.get("name", ""),
+                "price": float(row.get("price") or 0),
+                "open": float(row.get("open") or 0),
+                "high": float(row.get("high") or 0),
+                "low": float(row.get("low") or 0),
+                "pre_close": float(row.get("prev_close") or 0),
+                "change": float(row.get("change") or 0),
+                "change_pct": float(row.get("pct_chg") or 0),
+                "volume": float(row.get("volume") or 0),
+                "amount": float(row.get("amount") or 0),
+                "turnover": float(row.get("turnover_rate") or 0),
+                "pe": float(row.get("pe_dynamic") or 0),
+                "pb": float(row.get("pb") or 0),
+                "market": "上交所" if std_symbol.startswith("sh.") else "深交所",
                 "timestamp": datetime.now().isoformat(),
-                "source": "tdx",
+                "source": "openstock",
             }
-
-            return result
-
-        except Exception as e:
-            logger.error("获取实时行情数据失败: %s", e)
+        except OpenStockError as exc:
+            logger.error("OpenStock 获取实时行情失败 %s: %s", symbol, exc)
+            return None
+        except Exception as exc:
+            logger.error("获取实时行情数据失败: %s", exc)
             return None
 
     def get_stock_basic(self, symbol: str) -> Dict:
-        """获取股票基本信息
-
-        Args:
-            symbol: 股票代码
-
-        Returns:
-            Dict: 股票基本信息
-        """
+        """获取股票基本信息 — OpenStock ALL_STOCKS(客户端过滤)."""
         try:
             if not symbol:
                 raise ValueError("股票代码不能为空")
-
-            # 标准化股票代码
-            symbol = self._normalize_symbol(symbol)
-
-            # 获取TDX连接
-            tdx_api = self._get_tdx_connection()
-
-            # 获取市场代码
-            market_code = self._get_market_code(symbol)
-
-            # 获取股票基本信息
-            logger.info("获取股票基本信息: %s", symbol)
-            data = tdx_api.get_security_list(market_code, 1)
-
-            if not data:
-                logger.warning("未找到股票 %s 的基本信息", symbol)
+            if not self._available:
                 return {}
 
-            # 查找匹配的股票
-            stock_info = None
-            for stock in data:
-                if stock.get("code") == symbol:
-                    stock_info = stock
-                    break
-
-            if not stock_info:
+            std_symbol = _normalize_symbol_to_baostock(symbol)
+            response = self._client.fetch(DataCategory.ALL_STOCKS, {})
+            rows = response.get("data") or []
+            row = next(
+                (r for r in rows if r.get("code") == std_symbol or r.get("symbol") == std_symbol),
+                None,
+            )
+            if not row:
                 return {}
 
-            # 构建股票基本信息
-            result = {
-                "symbol": stock_info.get("code", ""),
-                "name": stock_info.get("name", ""),
-                "market": stock_info.get("market", ""),
-                "industry": stock_info.get("industry", ""),
-                "area": stock_info.get("area", ""),
-                "pe": stock_info.get("pe", 0),
-                "outstanding": stock_info.get("total_shares", 0),
-                "total_shares": stock_info.get("total_shares", 0),
-                "float_shares": stock_info.get("float_shares", 0),
-                "asset_per_share": stock_info.get("asset_per_share", 0),
-                "bv_per_share": stock_info.get("bv_per_share", 0),
-                "pb": stock.get("pb", 0),
-                "time_to_market": stock_info.get("time_to_market", ""),
-                "listing_date": stock_info.get("listing_date", ""),
-                "is_st": stock_info.get("is_st", False),
+            return {
+                "symbol": symbol,
+                "name": row.get("code_name") or row.get("name") or "",
+                "market": "上交所" if std_symbol.startswith("sh.") else "深交所",
+                "industry": "",
+                "area": "",
+                "pe": 0,
+                "outstanding": 0,
+                "total_shares": 0,
+                "float_shares": 0,
+                "asset_per_share": 0,
+                "bv_per_share": 0,
+                "pb": 0,
+                "time_to_market": "",
+                "listing_date": str(row.get("list_date") or ""),
+                "is_st": False,
                 "timestamp": datetime.now().isoformat(),
-                "source": "tdx",
+                "source": "openstock",
             }
-
-            return result
-
-        except Exception as e:
-            logger.error("获取股票基本信息失败: %s", e)
+        except OpenStockError as exc:
+            logger.error("OpenStock 获取股票基本信息失败 %s: %s", symbol, exc)
+            return {}
+        except Exception as exc:
+            logger.error("获取股票基本信息失败: %s", exc)
             return {}
 
     def get_industry_classify(self) -> pd.DataFrame:
-        """获取行业分类数据
+        """获取行业分类数据 — OpenStock SECTOR_QUOTES(industry).
 
-        Returns:
-            pd.DataFrame: 行业分类数据
+        上游 akshare provider 当前不稳定,返回空 DataFrame + warning。
         """
+        if not self._available:
+            return pd.DataFrame()
         try:
-            # 获取TDX连接
-            tdx_api = self._get_tdx_connection()
-
-            # 获取行业分类 (使用 get_block_info)
-            logger.info("获取行业分类数据")
-            data = tdx_api.get_block_info("blocknew.dat", 0, 1000)
-
-            if not data:
+            response = self._client.fetch(
+                DataCategory.SECTOR_QUOTES,
+                {"sector_type": "industry"},
+            )
+            rows = response.get("data") or []
+            if not rows:
+                logger.warning("[OpenStock] SECTOR_QUOTES(industry) 上游返回空")
                 return pd.DataFrame()
-
-            # 转换为DataFrame
-            df = pd.DataFrame(data)
-
-            logger.info("成功获取行业分类数据: %s 条记录", len(df))
-            return df
-
-        except Exception as e:
-            logger.error("获取行业分类数据失败: %s", e)
+            return pd.DataFrame(rows)
+        except OpenStockError as exc:
+            logger.warning(
+                "[OpenStock] SECTOR_QUOTES(industry) 上游不可用: %s "
+                "(详见 docs/reports/openstock-coverage-gaps.md)", exc,
+            )
+            return pd.DataFrame()
+        except Exception as exc:
+            logger.error("获取行业分类数据失败: %s", exc)
             return pd.DataFrame()
 
     def get_concept_classify(self) -> pd.DataFrame:
-        """获取概念分类数据
+        """获取概念分类数据 — OpenStock SECTOR_QUOTES(concept).
 
-        Returns:
-            pd.DataFrame: 概念分类数据
+        上游 akshare provider 当前不稳定,返回空 DataFrame + warning。
         """
+        if not self._available:
+            return pd.DataFrame()
         try:
-            # 获取TDX连接
-            tdx_api = self._get_tdx_connection()
-
-            # 获取概念分类 (使用 get_block_info)
-            logger.info("获取概念分类数据")
-            data = tdx_api.get_block_info("blockgn.dat", 0, 1000)
-
-            if not data:
+            response = self._client.fetch(
+                DataCategory.SECTOR_QUOTES,
+                {"sector_type": "concept"},
+            )
+            rows = response.get("data") or []
+            if not rows:
+                logger.warning("[OpenStock] SECTOR_QUOTES(concept) 上游返回空")
                 return pd.DataFrame()
-
-            # 转换为DataFrame
-            df = pd.DataFrame(data)
-
-            logger.info("成功获取概念分类数据: %s 条记录", len(df))
-            return df
-
-        except Exception as e:
-            logger.error("获取概念分类数据失败: %s", e)
+            return pd.DataFrame(rows)
+        except OpenStockError as exc:
+            logger.warning(
+                "[OpenStock] SECTOR_QUOTES(concept) 上游不可用: %s "
+                "(详见 docs/reports/openstock-coverage-gaps.md)", exc,
+            )
+            return pd.DataFrame()
+        except Exception as exc:
+            logger.error("获取概念分类数据失败: %s", exc)
             return pd.DataFrame()
 
     def get_stock_industry_concept(self, symbol: str) -> Dict:
-        """获取股票的行业和概念信息
-
-        Args:
-            symbol: 股票代码
-
-        Returns:
-            Dict: 股票的行业和概念信息
-        """
+        """获取股票的行业和概念信息 — OpenStock STOCK_INDUSTRY + TOPICS_CONCEPTS."""
         try:
             if not symbol:
                 raise ValueError("股票代码不能为空")
+            if not self._available:
+                return {
+                    "symbol": symbol,
+                    "industry": {},
+                    "concepts": {},
+                    "timestamp": datetime.now().isoformat(),
+                }
 
-            result = {
+            std_symbol = _normalize_symbol_to_baostock(symbol)
+            bare_symbol = _normalize_symbol_to_bare(symbol)
+
+            industry_resp = self._client.fetch(DataCategory.STOCK_INDUSTRY, {})
+            industry_match = next(
+                (r for r in (industry_resp.get("data") or [])
+                 if r.get("symbol") == std_symbol or r.get("code") == std_symbol),
+                None,
+            )
+            industry_name = ""
+            if industry_match:
+                industry_name = str(industry_match.get("industry") or "").strip()
+
+            topics_resp = self._client.fetch(
+                DataCategory.TOPICS_CONCEPTS,
+                {"symbol": bare_symbol},
+            )
+            topic_names = [
+                str(r.get("topic_name") or "").strip()
+                for r in (topics_resp.get("data") or [])
+                if r.get("topic_name")
+            ]
+
+            return {
+                "symbol": symbol,
+                "industry": {"name": industry_name, "code": ""},
+                "concepts": {"name": ", ".join(topic_names)},
+                "timestamp": datetime.now().isoformat(),
+            }
+        except OpenStockError as exc:
+            logger.error("OpenStock 获取行业概念失败 %s: %s", symbol, exc)
+            return {
                 "symbol": symbol,
                 "industry": {},
                 "concepts": {},
                 "timestamp": datetime.now().isoformat(),
             }
-
-            # 获取股票基本信息，从中提取行业信息
-            stock_basic = self.get_stock_basic(symbol)
-            if stock_basic and "industry" in stock_basic:
-                result["industry"] = {
-                    "name": stock_basic["industry"],
-                    "code": stock_basic.get("industry_code", ""),
-                }
-
-            # 这里可以根据需要进一步扩展
-
-            return result
-
-        except Exception as e:
-            logger.error("获取股票行业概念信息失败: %s", e)
+        except Exception as exc:
+            logger.error("获取股票行业概念信息失败: %s", exc)
             return {
                 "symbol": symbol,
-                "error": str(e),
+                "error": str(exc),
                 "timestamp": datetime.now().isoformat(),
             }
 
     def get_batch_real_time_data(self, symbols: List[str]) -> List[Dict]:
-        """批量获取实时行情数据
-
-        Args:
-            symbols: 股票代码列表
-
-        Returns:
-            List[Dict]: 实时行情数据列表
-        """
+        """批量获取实时行情数据 — OpenStock REALTIME_QUOTES(客户端过滤)."""
         try:
-            if not symbols:
+            if not symbols or not self._available:
                 return []
 
-            # 限制批量查询数量
-            symbols = symbols[:50]  # 最多一次查询50只股票
+            # OpenStock REALTIME_QUOTES 当前忽略 symbols filter,返回前 N 条
+            # 我们拉一次,然后按需过滤
+            response = self._client.fetch(
+                DataCategory.REALTIME_QUOTES,
+                {"symbols": ",".join(_normalize_symbol_to_baostock(s) for s in symbols[:50])},
+            )
+            rows = response.get("data") or []
 
-            # 标准化股票代码
-            normalized_symbols = [self._normalize_symbol(sym) for sym in symbols]
-
-            # 获取市场代码
-            market_codes = []
-            for sym in normalized_symbols:
-                market_codes.append(self._get_market_code(sym))
-
-            # 获取TDX连接
-            tdx_api = self._get_tdx_connection()
-
-            # 批量获取实时行情
-            logger.info("批量获取实时行情数据: %s 只股票", len(symbols))
-            data = tdx_api.get_security_quotes(normalized_symbols, market_codes)
-
-            results = []
-            if data:
-                for i, quote_data in enumerate(data):
-                    if i < len(symbols):
-                        symbol = symbols[i]
-                        market = "上交所" if i < len(market_codes) else "深交所"
-
-                        result = {
-                            "symbol": symbol,
-                            "name": quote_data.get("name", ""),
-                            "price": quote_data.get("price", 0),
-                            "open": quote_data.get("open", 0),
-                            "high": quote_data.get("high", 0),
-                            "low": quote_data.get("low", 0),
-                            "pre_close": quote_data.get("pre_close", 0),
-                            "change": quote_data.get("change", 0),
-                            "change_pct": quote_data.get("change_pct", 0),
-                            "volume": quote_data.get("volume", 0),
-                            "amount": quote_data.get("amount", 0),
-                            "market": market,
-                            "timestamp": datetime.now().isoformat(),
-                            "source": "tdx",
-                        }
-                        results.append(result)
-
-            logger.info("成功获取批量实时行情数据: %s 条记录", len(results))
+            results: list[Dict] = []
+            for sym in symbols:
+                std = _normalize_symbol_to_baostock(sym)
+                bare = std.replace(".", "")
+                row = next(
+                    (r for r in rows if r.get("symbol") == std or r.get("symbol") == bare),
+                    None,
+                )
+                if not row:
+                    continue
+                results.append({
+                    "symbol": sym,
+                    "name": row.get("name", ""),
+                    "price": float(row.get("price") or 0),
+                    "open": float(row.get("open") or 0),
+                    "high": float(row.get("high") or 0),
+                    "low": float(row.get("low") or 0),
+                    "pre_close": float(row.get("prev_close") or 0),
+                    "change": float(row.get("change") or 0),
+                    "change_pct": float(row.get("pct_chg") or 0),
+                    "volume": float(row.get("volume") or 0),
+                    "amount": float(row.get("amount") or 0),
+                    "market": "上交所" if std.startswith("sh.") else "深交所",
+                    "timestamp": datetime.now().isoformat(),
+                    "source": "openstock",
+                })
+            logger.info("OpenStock 批量实时行情: 请求 %d 命中 %d", len(symbols), len(results))
             return results
-
-        except Exception as e:
-            logger.error("批量获取实时行情数据失败: %s", e)
+        except OpenStockError as exc:
+            logger.error("OpenStock 批量实时行情失败: %s", exc)
+            return []
+        except Exception as exc:
+            logger.error("批量获取实时行情数据失败: %s", exc)
             return []
 
-    # ==================== IDataSource接口实现（补全） ====================
+    # ==================== IDataSource接口补全(保留 no-op 占位) ====================
 
     def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
-        """
-        获取股票日线数据
-
-        Args:
-            symbol: 股票代码
-            start_date: 开始日期
-            end_date: 结束日期
-
-        Returns:
-            pd.DataFrame: 日线数据
-
-        Note:
-            RealtimeService专注于实时数据，不支持历史K线
-        """
-        logger.warning("RealtimeService不支持获取历史日线数据: %s", symbol)
+        """RealtimeService 专注实时数据,不支持历史 K 线."""
+        logger.warning("RealtimeService 不支持获取历史日线数据: %s", symbol)
         return pd.DataFrame()
 
     def get_index_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
-        """
-        获取指数日线数据
-
-        Args:
-            symbol: 指数代码
-            start_date: 开始日期
-            end_date: 结束日期
-
-        Returns:
-            pd.DataFrame: 日线数据
-
-        Note:
-            RealtimeService专注于实时数据，不支持历史K线
-        """
-        logger.warning("RealtimeService不支持获取历史指数数据: %s", symbol)
+        """RealtimeService 专注实时数据,不支持历史指数."""
+        logger.warning("RealtimeService 不支持获取历史指数数据: %s", symbol)
         return pd.DataFrame()
 
     def get_index_components(self, symbol: str) -> list:
-        """
-        获取指数成分股
-
-        Args:
-            symbol: 指数代码
-
-        Returns:
-            list: 指数成分股代码列表
-
-        Note:
-            RealtimeService专注于实时数据，暂不支持指数成分股
-        """
-        logger.warning("RealtimeService不支持获取指数成分股: %s", symbol)
+        """RealtimeService 专注实时数据,不支持指数成分股."""
+        logger.warning("RealtimeService 不支持获取指数成分股: %s", symbol)
         return []
 
     def get_market_calendar(self, start_date: str, end_date: str) -> pd.DataFrame:
-        """
-        获取交易日历
-
-        Args:
-            start_date: 开始日期
-            end_date: 结束日期
-
-        Returns:
-            pd.DataFrame: 交易日历数据
-
-        Note:
-            RealtimeService专注于实时数据，不支持交易日历
-        """
-        logger.warning("RealtimeService不支持获取交易日历")
+        """RealtimeService 专注实时数据,不支持交易日历."""
+        logger.warning("RealtimeService 不支持获取交易日历")
         return pd.DataFrame()
 
     def get_financial_data(self, symbol: str, period: str = "annual") -> pd.DataFrame:
-        """
-        获取财务数据
-
-        Args:
-            symbol: 股票代码
-            period: 报告期间
-
-        Returns:
-            pd.DataFrame: 财务数据
-
-        Note:
-            RealtimeService专注于实时数据，不支持财务数据
-        """
-        logger.warning("RealtimeService不支持获取财务数据: %s", symbol)
+        """RealtimeService 专注实时数据,不支持财务数据."""
+        logger.warning("RealtimeService 不支持获取财务数据: %s", symbol)
         return pd.DataFrame()
 
     def get_news_data(self, symbol: Optional[str] = None, limit: int = 10) -> list:
-        """
-        获取新闻数据
-
-        Args:
-            symbol: 股票代码
-            limit: 返回数量限制
-
-        Returns:
-            list: 新闻数据列表
-
-        Note:
-            RealtimeService专注于实时行情，不支持新闻数据
-        """
-        logger.warning("RealtimeService不支持获取新闻数据")
+        """RealtimeService 专注实时行情,不支持新闻数据."""
+        logger.warning("RealtimeService 不支持获取新闻数据")
         return []

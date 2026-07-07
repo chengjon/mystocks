@@ -1,10 +1,20 @@
 """
-# 功能：TDX K线数据服务
-# 作者：MyStocks Project
-# 创建日期：2025-12-20
-# 版本：1.0.0
-# 说明：专门处理TDX K线数据的获取和处理
+TDX K线数据服务 — OpenStock 网关外观层.
+
+This is a facade. Internal data fetching is delegated to the OpenStock gateway.
+Class name (KlineDataService), constructor signature, and all public method
+signatures are retained for backward compatibility.
+
+迁移前: 通过 BaseTdxAdapter._get_tdx_connection() 拿到 tdx_api,调用
+        tdx_api.get_k_data / get_history_minute_time_data — 依赖原生 TDX 协议。
+迁移后: 通过 OpenStockClient.fetch() 调用 KLINES / ADJUSTED_KLINES / INDEX_QUOTES。
+        OpenStock 后端用 eltdx/baostock failover,不再依赖本地 TDX 协议栈。
+
+详见: openspec/changes/migrate-data-sources-to-openstock/proposal.md (任务 2.2.3)
+      docs/reports/openstock-coverage-gaps.md
 """
+
+from __future__ import annotations
 
 from datetime import datetime, timedelta
 from typing import Dict, Optional
@@ -13,109 +23,141 @@ import pandas as pd
 from loguru import logger
 
 from .base_tdx_adapter import BaseTdxAdapter
+from src.services.openstock import (
+    DataCategory,
+    OpenStockClient,
+    OpenStockError,
+)
+
+
+def _normalize_symbol_to_bare(symbol: str) -> str:
+    """归一化到纯数字(eltdx 后端要求)."""
+    return str(symbol).replace(".", "").replace("sh", "").replace("sz", "").lower()
+
+
+def _normalize_symbol_to_baostock(symbol: str) -> str:
+    """归一化到 baostock 风格 sh.600000 / sz.000001."""
+    s = _normalize_symbol_to_bare(symbol)
+    if s.startswith("6"):
+        return f"sh.{s}"
+    if s.startswith(("0", "3")):
+        return f"sz.{s}"
+    return symbol
+
+
+# OpenStock period 映射
+_PERIOD_OSTOCK = {"d1": "day", "w1": "week", "m1": "month"}
+_PERIOD_NAME = {"d1": "日线", "w1": "周线", "m1": "月线"}
 
 
 class KlineDataService(BaseTdxAdapter):
-    """
-    TDX K线数据服务
+    """TDX K线数据服务 — OpenStock 网关外观.
 
-    专门处理股票和指数的K线数据获取
+    保留类名、构造签名、所有公开方法签名。内部实现切换为 OpenStockClient,
+    不再走 pytdx 原生协议。
     """
 
     def __init__(self):
         super().__init__()
-        logger.info("TDX K线数据服务初始化完成")
+        try:
+            self._client = OpenStockClient()
+            self._available = True
+        except OpenStockError as exc:
+            logger.error("KlineDataService OpenStock 初始化失败: %s", exc)
+            self._client = None  # type: ignore[assignment]
+            self._available = False
+        logger.info("KlineDataService(OpenStock facade)初始化完成")
+
+    # ---- 内部辅助 ----------------------------------------------------
+
+    def _normalize_symbol(self, symbol: str) -> str:
+        """保留 BaseTdxAdapter 兼容签名,实际归一化到 baostock 风格."""
+        return _normalize_symbol_to_baostock(symbol)
+
+    def _get_market_code(self, symbol: str) -> int:
+        """保留 BaseTdxAdapter 兼容签名,OpenStock 不需要 market_code."""
+        std = _normalize_symbol_to_baostock(symbol)
+        return 1 if std.startswith("sh.") else 0
+
+    def _get_tdx_connection(self):  # type: ignore[no-untyped-def]
+        """保留 BaseTdxAdapter 兼容签名,facade 模式下不再使用 TDX 连接."""
+        return None
+
+    def _validate_kline_data(self, df: pd.DataFrame) -> pd.DataFrame:
+        """保留兼容签名,facade 模式下直接返回输入."""
+        return df
+
+    def _standardize_dataframe(self, df: pd.DataFrame) -> pd.DataFrame:
+        """保留兼容签名,facade 模式下直接返回输入."""
+        return df
+
+    # ---- K线数据 ----------------------------------------------------
 
     def get_stock_daily(
         self,
         symbol: str,
         start_date: Optional[str] = None,
         end_date: Optional[str] = None,
-        adjust: str = "qfq",  # 前复权：qfq(前复权), hfq(后复权), none(不复权)
+        adjust: str = "qfq",
     ) -> pd.DataFrame:
-        """获取股票日线数据
-
-        Args:
-            symbol: 股票代码
-            start_date: 开始日期，格式 YYYY-MM-DD
-            end_date: 结束日期，格式 YYYY-MM-DD
-            adjust: 复权类型
-
-        Returns:
-            pd.DataFrame: 日线数据
-        """
+        """获取股票日线数据 — OpenStock KLINES / ADJUSTED_KLINES."""
         try:
             if not symbol:
                 raise ValueError("股票代码不能为空")
+            if not self._available:
+                return pd.DataFrame()
 
-            # 标准化股票代码
-            symbol = self._normalize_symbol(symbol)
+            bare = _normalize_symbol_to_bare(symbol)
+            std = _normalize_symbol_to_baostock(symbol)
 
-            # 设置默认日期范围
             if end_date is None:
                 end_date = datetime.now().strftime("%Y-%m-%d")
             if start_date is None:
                 start_date = (datetime.now() - timedelta(days=365)).strftime("%Y-%m-%d")
 
-            # 获取TDX连接
-            tdx_api = self._get_tdx_connection()
-
-            # 获取市场代码
-            market_code = self._get_market_code(symbol)
-
-            # 获取日线数据
-            logger.info("获取股票日线数据: %s %s ~ %s", symbol, start_date, end_date)
-            data = tdx_api.get_k_data(
-                code=symbol,
-                start_date=start_date,
-                end_date=end_date,
+            logger.info("OpenStock 获取股票日线: %s %s~%s adjust=%s", bare, start_date, end_date, adjust)
+            category = (
+                DataCategory.ADJUSTED_KLINES if adjust in ("qfq", "hfq")
+                else DataCategory.KLINES
             )
+            params = {
+                "symbol": bare,
+                "period": "day",
+                "start_date": start_date.replace("-", ""),
+                "end_date": end_date.replace("-", ""),
+            }
+            if category is DataCategory.ADJUSTED_KLINES:
+                params["adjust"] = adjust
 
-            if not data:
+            response = self._client.fetch(category, params)
+            rows = response.get("data") or []
+            if not rows:
                 return pd.DataFrame()
 
-            # 转换为DataFrame
-            df = pd.DataFrame(
-                data,
-                columns=[
-                    "datetime",
-                    "open",
-                    "high",
-                    "low",
-                    "close",
-                    "volume",
-                    "amount",
-                    "turnover",
-                    "change",
-                    "change_pct",
-                    "ma5",
-                    "ma10",
-                    "ma20",
-                    "ma60",
-                    "v_ma5",
-                    "v_ma10",
-                    "v_ma20",
-                    "v_ma60",
-                ],
-            )
+            df = pd.DataFrame(rows)
+            # OpenStock 返回字段: symbol, time, open, high, low, close, volume, amount, period
+            # 兼容 date/time 两种命名
+            column_map = {
+                "time": "datetime",
+                "date": "datetime",
+            }
+            df = df.rename(columns={k: v for k, v in column_map.items() if k in df.columns})
+            if "datetime" in df.columns:
+                df["datetime"] = pd.to_datetime(df["datetime"]).dt.strftime("%Y-%m-%d")
 
-            # 验证数据
-            df = self._validate_kline_data(df)
-
-            # 标准化格式
-            df = self._standardize_dataframe(df)
-
-            # 添加额外列
-            df["symbol"] = symbol
-            df["market"] = "上交所" if market_code == 1 else "深交所"
+            df["symbol"] = std
+            df["market"] = "上交所" if std.startswith("sh.") else "深交所"
             df["adjust"] = adjust
 
-            logger.info("成功获取股票日线数据: %s, 共 %s 条记录", symbol, len(df))
+            logger.info("OpenStock 股票日线 %s: %d 条", std, len(df))
             return df
 
-        except Exception as e:
-            logger.error("获取股票日线数据失败: %s", e)
-            raise
+        except OpenStockError as exc:
+            logger.error("OpenStock 获取股票日线失败 %s: %s", symbol, exc)
+            return pd.DataFrame()
+        except Exception as exc:
+            logger.error("获取股票日线数据失败: %s", exc)
+            return pd.DataFrame()
 
     def get_index_daily(
         self,
@@ -123,159 +165,99 @@ class KlineDataService(BaseTdxAdapter):
         start_date: Optional[str] = None,
         end_date: Optional[str] = None,
     ) -> pd.DataFrame:
-        """获取指数日线数据
-
-        Args:
-            index_code: 指数代码
-            start_date: 开始日期，格式 YYYY-MM-DD
-            end_date: 结束日期，格式 YYYY-MM-DD
-
-        Returns:
-            pd.DataFrame: 指数日线数据
-        """
+        """获取指数日线数据 — OpenStock INDEX_QUOTES."""
         try:
             if not index_code:
                 raise ValueError("指数代码不能为空")
+            if not self._available:
+                return pd.DataFrame()
 
-            # 标准化指数代码
-            index_code = self._normalize_symbol(index_code)
+            std = _normalize_symbol_to_baostock(index_code)
 
-            # 设置默认日期范围
             if end_date is None:
                 end_date = datetime.now().strftime("%Y-%m-%d")
             if start_date is None:
                 start_date = (datetime.now() - timedelta(days=365)).strftime("%Y-%m-%d")
 
-            # 获取TDX连接
-            tdx_api = self._get_tdx_connection()
-
-            # 获取指数日线数据
-            logger.info("获取指数日线数据: %s %s ~ %s", index_code, start_date, end_date)
-            data = tdx_api.get_k_data(
-                code=index_code,
-                start_date=start_date,
-                end_date=end_date,
+            logger.info("OpenStock 获取指数日线: %s %s~%s", std, start_date, end_date)
+            response = self._client.fetch(
+                DataCategory.INDEX_QUOTES,
+                {
+                    "symbol": std,
+                    "period": "day",
+                    "start_date": start_date.replace("-", ""),
+                    "end_date": end_date.replace("-", ""),
+                },
             )
-
-            if not data:
+            rows = response.get("data") or []
+            if not rows:
                 return pd.DataFrame()
 
-            # 转换为DataFrame
-            df = pd.DataFrame(
-                data,
-                columns=[
-                    "datetime",
-                    "open",
-                    "high",
-                    "low",
-                    "close",
-                    "volume",
-                    "amount",
-                    "turnover",
-                ],
-            )
+            df = pd.DataFrame(rows)
+            column_map = {
+                "time": "datetime",
+                "date": "datetime",
+            }
+            df = df.rename(columns={k: v for k, v in column_map.items() if k in df.columns})
+            if "datetime" in df.columns:
+                df["datetime"] = pd.to_datetime(df["datetime"]).dt.strftime("%Y-%m-%d")
 
-            # 验证数据
-            df = self._validate_kline_data(df)
-
-            # 标准化格式
-            df = self._standardize_dataframe(df)
-
-            # 添加额外列
-            df["symbol"] = index_code
+            df["symbol"] = std
             df["security_type"] = "index"
 
-            logger.info("成功获取指数日线数据: %s, 共 %s 条记录", index_code, len(df))
+            logger.info("OpenStock 指数日线 %s: %d 条", std, len(df))
             return df
 
-        except Exception as e:
-            logger.error("获取指数日线数据失败: %s", e)
-            raise
+        except OpenStockError as exc:
+            logger.error("OpenStock 获取指数日线失败 %s: %s", index_code, exc)
+            return pd.DataFrame()
+        except Exception as exc:
+            logger.error("获取指数日线数据失败: %s", exc)
+            return pd.DataFrame()
 
     def get_stock_kline(
         self,
         symbol: str,
-        period: str = "d1",  # 周期：1d, 1w, 1m
+        period: str = "d1",
         start_date: Optional[str] = None,
         end_date: Optional[str] = None,
         adjust: str = "qfq",
     ) -> Dict:
-        """获取股票K线数据（多种周期）
-
-        Args:
-            symbol: 股票代码
-            period: 周期类型
-            start_date: 开始日期
-            end_date: 结束日期
-            adjust: 复权类型
-
-        Returns:
-            Dict: K线数据
-        """
+        """获取股票K线数据(多种周期)— OpenStock KLINES / ADJUSTED_KLINES + 客户端重采样."""
         try:
-            # 周期映射
-            period_mapping = {"d1": (9, "日线"), "w1": (5, "周线"), "m1": (6, "月线")}
-
-            if period not in period_mapping:
+            if period not in _PERIOD_OSTOCK:
                 raise ValueError(f"不支持的周期类型: {period}")
 
-            frequency, period_name = period_mapping[period]
+            os_period = _PERIOD_OSTOCK[period]
+            period_name = _PERIOD_NAME[period]
 
-            # 调用相应的日线或周线/月线获取方法
             if period == "d1":
                 df = self.get_stock_daily(symbol, start_date, end_date, adjust)
             else:
-                # 对于周线和月线，可以通过调整日期范围来获取
-                end_date = datetime.now() if not end_date else datetime.strptime(end_date, "%Y-%m-%d")
-
-                if period == "w1":  # 周线
-                    start_date = (
-                        (end_date - timedelta(weeks=265))
-                        if not start_date
-                        else datetime.strptime(start_date, "%Y-%m-%d")
-                    )
-                elif period == "m1":  # 月线
-                    start_date = (
-                        (end_date - timedelta(days=365))
-                        if not start_date
-                        else datetime.strptime(start_date, "%Y-%m-%d")
-                    )
-
-                df = self.get_stock_daily(
-                    symbol,
-                    start_date.strftime("%Y-%m-%d"),
-                    end_date.strftime("%Y-%m-%d"),
-                    adjust,
-                )
-
-                # 重新采样到周线或月线
+                # 周/月线: 拉日线后客户端重采样
+                df = self.get_stock_daily(symbol, start_date, end_date, adjust)
                 df = self._resample_kline_data(df, period)
 
-            result = {
+            return {
                 "symbol": symbol,
                 "period": period,
                 "period_name": period_name,
                 "data": df.to_dict("records") if not df.empty else [],
                 "count": len(df) if not df.empty else 0,
                 "start_date": (
-                    df["datetime"].min().strftime("%Y-%m-%d")
-                    if not df.empty and "datetime" in df.columns
-                    else start_date
+                    df["datetime"].min() if not df.empty and "datetime" in df.columns else start_date
                 ),
                 "end_date": (
-                    df["datetime"].max().strftime("%Y-%m-%d") if not df.empty and "datetime" in df.columns else end_date
+                    df["datetime"].max() if not df.empty and "datetime" in df.columns else end_date
                 ),
                 "timestamp": datetime.now().isoformat(),
             }
-
-            return result
-
-        except Exception as e:
-            logger.error("获取股票K线数据失败: %s", e)
+        except Exception as exc:
+            logger.error("获取股票K线数据失败: %s", exc)
             return {
                 "symbol": symbol,
                 "period": period,
-                "error": str(e),
+                "error": str(exc),
                 "success": False,
             }
 
@@ -286,96 +268,53 @@ class KlineDataService(BaseTdxAdapter):
         start_date: Optional[str] = None,
         end_date: Optional[str] = None,
     ) -> Dict:
-        """获取指数K线数据（多种周期）
-
-        Args:
-            index_code: 指数代码
-            period: 周期类型
-            start_date: 开始日期
-            end_date: 结束日期
-
-        Returns:
-            Dict: 指数K线数据
-        """
+        """获取指数K线数据(多种周期)— OpenStock INDEX_QUOTES + 客户端重采样."""
         try:
-            # 周期映射
-            period_mapping = {"d1": (9, "日线"), "w1": (5, "周线"), "m1": (6, "月线")}
-
-            if period not in period_mapping:
+            if period not in _PERIOD_OSTOCK:
                 raise ValueError(f"不支持的周期类型: {period}")
 
-            frequency, period_name = period_mapping[period]
+            period_name = _PERIOD_NAME[period]
 
-            # 调用相应的日线或周线/月线获取方法
             if period == "d1":
                 df = self.get_index_daily(index_code, start_date, end_date)
             else:
-                # 对于周线和月线，可以通过调整日期范围来获取
-                end_date = datetime.now() if not end_date else datetime.strptime(end_date, "%Y-%m-%d")
-
-                if period == "w1":  # 周线
-                    start_date = (
-                        (end_date - timedelta(weeks=265))
-                        if not start_date
-                        else datetime.strptime(start_date, "%Y-%m-%d")
-                    )
-                elif period == "m1":  # 月线
-                    start_date = (
-                        (end_date - timedelta(days=365))
-                        if not start_date
-                        else datetime.strptime(start_date, "%Y-%m-%d")
-                    )
-
-                df = self.get_index_daily(
-                    index_code,
-                    start_date.strftime("%Y-%m-%d"),
-                    end_date.strftime("%Y-%m-%d"),
-                )
-
-                # 重新采样到周线或月线
+                df = self.get_index_daily(index_code, start_date, end_date)
                 df = self._resample_kline_data(df, period)
 
-            result = {
+            return {
                 "index_code": index_code,
                 "period": period,
                 "period_name": period_name,
                 "data": df.to_dict("records") if not df.empty else [],
                 "count": len(df) if not df.empty else 0,
                 "start_date": (
-                    df["datetime"].min().strftime("%Y-%m-%d")
-                    if not df.empty and "datetime" in df.columns
-                    else start_date
+                    df["datetime"].min() if not df.empty and "datetime" in df.columns else start_date
                 ),
                 "end_date": (
-                    df["datetime"].max().strftime("%Y-%m-%d") if not df.empty and "datetime" in df.columns else end_date
+                    df["datetime"].max() if not df.empty and "datetime" in df.columns else end_date
                 ),
                 "timestamp": datetime.now().isoformat(),
             }
-
-            return result
-
-        except Exception as e:
-            logger.error("获取指数K线数据失败: %s", e)
+        except Exception as exc:
+            logger.error("获取指数K线数据失败: %s", exc)
             return {
                 "index_code": index_code,
                 "period": period,
-                "error": str(e),
+                "error": str(exc),
                 "success": False,
             }
 
     def _resample_kline_data(self, df: pd.DataFrame, period: str) -> pd.DataFrame:
-        """重新采样K线数据到指定周期"""
+        """重新采样K线数据到指定周期."""
         try:
             if df.empty or "datetime" not in df.columns:
                 return df
 
-            # 设置日期为索引
             df = df.copy()
             df["datetime"] = pd.to_datetime(df["datetime"])
             df.set_index("datetime", inplace=True)
 
-            # 根据周期重新采样
-            if period == "w1":  # 周线
+            if period == "w1":
                 resampled = df.resample("W").agg(
                     {
                         "open": "first",
@@ -385,7 +324,7 @@ class KlineDataService(BaseTdxAdapter):
                         "volume": "sum",
                     }
                 )
-            elif period == "m1":  # 月线
+            elif period == "m1":
                 resampled = df.resample("M").agg(
                     {
                         "open": "first",
@@ -396,196 +335,56 @@ class KlineDataService(BaseTdxAdapter):
                     }
                 )
             else:
-                return df  # 其他周期直接返回
+                return df.reset_index() if "datetime" not in df.columns else df
 
-            # 重置索引
-            resampled = resampled.reset_index()
+            return resampled.reset_index()
 
-            return resampled
-
-        except Exception as e:
-            logger.error("重新采样K线数据失败: %s", e)
+        except Exception as exc:
+            logger.error("重新采样K线数据失败: %s", exc)
             return pd.DataFrame()
 
     def get_minute_kline(
         self, symbol: str, period: str = "1min", count: int = 240, adjust: str = "qfq"
     ) -> pd.DataFrame:
-        """获取分钟K线数据
+        """获取分钟K线数据 — OpenStock 暂未覆盖,返回空 DataFrame + warning.
 
-        Args:
-            symbol: 股票代码
-            period: 分钟周期
-            count: 获取数量
-            adjust: 复权类型
-
-        Returns:
-            pd.DataFrame: 分钟K线数据
+        详见 docs/reports/openstock-coverage-gaps.md。
         """
-        try:
-            if not symbol:
-                raise ValueError("股票代码不能为 empty")
+        logger.warning(
+            "OpenStock 分钟线 OpenStock 暂未覆盖,返回空 DataFrame "
+            "(symbol=%s, period=%s, 详见 docs/reports/openstock-coverage-gaps.md)",
+            symbol, period,
+        )
+        return pd.DataFrame()
 
-            # 标准化股票代码
-            symbol = self._normalize_symbol(symbol)
-
-            # 获取TDX连接
-            tdx_api = self._get_tdx_connection()
-
-            # 获取市场代码
-            market_code = self._get_market_code(symbol)
-
-            # 分钟线周期映射
-            period_mapping = {"1min": 8, "5min": 0, "15min": 1, "30min": 2, "60min": 4}
-
-            if period not in period_mapping:
-                raise ValueError(f"不支持的分钟周期: {period}")
-
-            period_mapping[period]
-
-            # 获取分钟线数据 (使用 get_history_minute_time_data)
-            # 注意: TDX API 不支持按数量获取，这里获取最新日期的分钟数据
-            logger.info("获取股票分钟K线数据: %s %s", symbol, period)
-            data = tdx_api.get_history_minute_time_data(
-                market=market_code,
-                code=symbol,
-                date=datetime.now().strftime("%Y-%m-%d"),
-            )
-
-            if not data:
-                return pd.DataFrame()
-
-            # 转换为DataFrame
-            df = pd.DataFrame(
-                data,
-                columns=[
-                    "datetime",
-                    "open",
-                    "high",
-                    "low",
-                    "close",
-                    "volume",
-                    "amount",
-                    "change",
-                    "change_pct",
-                ],
-            )
-
-            # 验证数据
-            df = self._validate_kline_data(df)
-
-            # 标准化格式
-            df = self._standardize_dataframe(df)
-
-            # 添加额外列
-            df["symbol"] = symbol
-            df["market"] = "上交所" if market_code == 1 else "深交所"
-            df["period"] = period
-            df["adjust"] = adjust
-
-            logger.info("成功获取股票分钟K线数据: %s, 共 %s 条记录", symbol, len(df))
-            return df
-
-        except Exception as e:
-            logger.error("获取股票分钟K线数据失败: %s", e)
-            raise
-
-    # ==================== IDataSource接口实现（补全） ====================
+    # ==================== IDataSource接口补全(保留 no-op 占位) ====================
 
     def get_stock_basic(self, symbol: str) -> Dict:
-        """
-        获取股票基本信息
-
-        Args:
-            symbol: 股票代码
-
-        Returns:
-            Dict: 股票基本信息
-
-        Note:
-            KlineDataService专注于K线数据，不支持股票基本信息
-        """
-        logger.warning("KlineDataService不支持获取股票基本信息: %s", symbol)
+        """KlineDataService 专注 K 线数据,不支持股票基本信息."""
+        logger.warning("KlineDataService 不支持获取股票基本信息: %s", symbol)
         return {}
 
     def get_index_components(self, symbol: str) -> list:
-        """
-        获取指数成分股
-
-        Args:
-            symbol: 指数代码
-
-        Returns:
-            list: 指数成分股代码列表
-
-        Note:
-            KlineDataService专注于K线数据，不支持指数成分股
-        """
-        logger.warning("KlineDataService不支持获取指数成分股: %s", symbol)
+        """KlineDataService 专注 K 线数据,不支持指数成分股."""
+        logger.warning("KlineDataService 不支持获取指数成分股: %s", symbol)
         return []
 
     def get_real_time_data(self, symbol: str) -> Optional[Dict]:
-        """
-        获取实时数据
-
-        Args:
-            symbol: 股票代码
-
-        Returns:
-            Optional[Dict]: 实时数据
-
-        Note:
-            KlineDataService专注于历史K线数据，不支持实时数据
-        """
-        logger.warning("KlineDataService不支持获取实时数据: %s", symbol)
+        """KlineDataService 专注历史 K 线,不支持实时数据."""
+        logger.warning("KlineDataService 不支持获取实时数据: %s", symbol)
         return None
 
     def get_market_calendar(self, start_date: str, end_date: str) -> pd.DataFrame:
-        """
-        获取交易日历
-
-        Args:
-            start_date: 开始日期
-            end_date: 结束日期
-
-        Returns:
-            pd.DataFrame: 交易日历数据
-
-        Note:
-            KlineDataService专注于K线数据，不支持交易日历
-        """
-        logger.warning("KlineDataService不支持获取交易日历")
+        """KlineDataService 专注 K 线数据,不支持交易日历."""
+        logger.warning("KlineDataService 不支持获取交易日历")
         return pd.DataFrame()
 
     def get_financial_data(self, symbol: str, period: str = "annual") -> pd.DataFrame:
-        """
-        获取财务数据
-
-        Args:
-            symbol: 股票代码
-            period: 报告期间
-
-        Returns:
-            pd.DataFrame: 财务数据
-
-        Note:
-            KlineDataService专注于K线数据，不支持财务数据
-        """
-        logger.warning("KlineDataService不支持获取财务数据: %s", symbol)
+        """KlineDataService 专注 K 线数据,不支持财务数据."""
+        logger.warning("KlineDataService 不支持获取财务数据: %s", symbol)
         return pd.DataFrame()
 
     def get_news_data(self, symbol: Optional[str] = None, limit: int = 10) -> list:
-        """
-        获取新闻数据
-
-        Args:
-            symbol: 股票代码
-            limit: 返回数量限制
-
-        Returns:
-            list: 新闻数据列表
-
-        Note:
-            KlineDataService专注于K线数据，不支持新闻数据
-        """
-        logger.warning("KlineDataService不支持获取新闻数据")
+        """KlineDataService 专注 K 线数据,不支持新闻数据."""
+        logger.warning("KlineDataService 不支持获取新闻数据")
         return []

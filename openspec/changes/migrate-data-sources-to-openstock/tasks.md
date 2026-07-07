@@ -19,9 +19,9 @@
 
 ### 2.2 domain-02 行情与图表
 
-- [ ] 2.2.1 `src/adapters/akshare/market_adapter/market_overview.py` → `INDEX_QUOTES`
-- [ ] 2.2.2 `src/adapters/tdx/realtime_service.py` → `REALTIME_QUOTES` + `MARKET_DEPTH`
-- [ ] 2.2.3 `src/adapters/tdx/kline_data_service.py` → `KLINES` + `ADJUSTED_KLINES`
+- [x] 2.2.1 `src/adapters/akshare/market_adapter/market_overview.py` → `INDEX_QUOTES`
+- [x] 2.2.2 `src/adapters/tdx/realtime_service.py` → `REALTIME_QUOTES` + `MARKET_DEPTH`
+- [x] 2.2.3 `src/adapters/tdx/kline_data_service.py` → `KLINES` + `ADJUSTED_KLINES`
 
 ### 2.3 domain-03/04 基本面与财务
 

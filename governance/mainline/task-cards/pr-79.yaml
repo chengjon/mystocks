@@ -1,0 +1,110 @@
+version: "v0.2"
+
+task:
+  id: "pr-79"
+  title: "Phase 2.2 domain-02 Adapter facades (tdx realtime/kline + akshare market_overview) → OpenStock"
+  owner: "main"
+  created_at: "2026-07-07"
+
+mainline:
+  id: "L1-openstock-gateway-phase2-domain02"
+  objective: "将 domain-02 三个 Adapter (tdx/realtime_service, tdx/kline_data_service, akshare/market_adapter/market_overview) 改写为 OpenStock 网关 facade,保留类名/方法签名。17 个集成 smoke test 全部对真实 OpenStock 网关跑通。"
+  milestone_id: "L2-openstock-migration"
+  slice_id: "L3-phase2-domain02-adapters"
+
+classification:
+  task_type: "feature"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-data-sources-to-openstock"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "domain-02"
+  node_id: "domain-02-node-03"
+  affected_entrypoints:
+    - "core"
+    - "tests"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Adapter 外观层迁移,完全落在 domain-02 的 src/adapters/{tdx,akshare/market_adapter}/** coverage 内,无跨域改动。"
+
+scope:
+  allowed_paths:
+    - "src/adapters/tdx/realtime_service.py"
+    - "src/adapters/tdx/kline_data_service.py"
+    - "src/adapters/akshare/market_adapter/market_overview.py"
+    - "tests/integration/test_openstock_phase2_2_smoke.py"
+    - "openspec/changes/migrate-data-sources-to-openstock/tasks.md"
+    - "governance/mainline/task-cards/pr-79.yaml"
+  forbidden_paths:
+    - "src/services/openstock/**"
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/adapters/tushare_adapter.py"
+    - "src/adapters/baostock_adapter.py"
+    - "src/adapters/byapi_adapter.py"
+    - "src/adapters/akshare/market_data.py"
+    - "src/adapters/akshare/stock_info.py"
+    - "src/adapters/efinance_adapter/**"
+
+non_goals:
+  - "不迁移 web/backend 入口层 — Phase 3"
+  - "不修改 src/adapters/tdx/base_tdx_adapter.py(基类,保留兼容签名桩)"
+  - "不删除 requirements.txt 中的 akshare/pytdx/tdx 依赖 — Phase 6"
+  - "不为 OpenStock 上游盲区(SSE/SZSE 详细汇总、分钟线、INDEX_QUOTES akshare RemoteDisconnected)写 mock — 已登记在 docs/reports/openstock-coverage-gaps.md,待上游修复后无感切换"
+
+acceptance:
+  checks:
+    - id: "openspec-validate-strict"
+      command: "openspec validate migrate-data-sources-to-openstock --strict"
+      required: true
+    - id: "phase1-client-tests"
+      command: "pytest tests/unit/services/openstock/test_client.py -x -q --no-cov"
+      required: true
+    - id: "phase2-2-smoke-tests"
+      command: "OPENSTOCK_BASE_URL=http://192.168.123.104:8040 OPENSTOCK_API_KEY=$OPENSTOCK_API_KEY pytest -m integration tests/integration/test_openstock_phase2_2_smoke.py -v --no-cov"
+      required: true
+    - id: "phase2-1a-regression"
+      command: "OPENSTOCK_BASE_URL=http://192.168.123.104:8040 OPENSTOCK_API_KEY=$OPENSTOCK_API_KEY pytest -m integration tests/integration/test_openstock_adapter_smoke.py --no-cov"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-79.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr79-mainline-gate.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "REALTIME_QUOTES 上游忽略 symbols 参数,只返回前 50 条:对未出现在前 50 的股票(如 600000)client-filter 漏命中,facade 返回 None/[]。Mitigation: 已记录 docs/reports/openstock-coverage-gaps.md,smoke test 用前 50 内代码 688806 覆盖。"
+    - "INDEX_QUOTES / SECTOR_QUOTES 上游 akshare provider RemoteDisconnected:SSE/SZSE 市场总貌 + 行业/概念分类返回空 DataFrame + warning。Mitigation: facade 捕获 OpenStockError 不抛异常,上游修复后无感切换。"
+    - "KLINES / ADJUSTED_KLINES / MARKET_DEPTH 后端 eltdx 拒绝 sh.<code> 风格代码,需要纯数字 600000。Mitigation: _normalize_symbol_to_bare 工具函数 + smoke test 验证。"
+    - "KlineDataService.get_minute_kline OpenStock 暂未覆盖分钟线:返回空 DataFrame + warning。Mitigation: 同上,coverage-gaps.md 已记录。"
+    - "MarketOverviewMixin 三个 SZSE 详情方法(area/sector/daily_deal)OpenStock 暂未覆盖:返回空 DataFrame + warning。Mitigation: 同上。"
+  rollback_plan: "git revert <merge-commit-sha>。三个 Adapter 文件互相独立,revert 不影响 Phase 1 client 或 Phase 2.1a/2.1b PR。"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "完成 Phase 2.2:把 domain-02 三个 Adapter (tdx/realtime_service, tdx/kline_data_service, akshare/market_adapter/market_overview) 改写为 OpenStock 网关 facade,消除 pytdx/akshare SDK 直接调用。"
+    modified_scope: "重写 src/adapters/tdx/{realtime_service,kline_data_service}.py 与 src/adapters/akshare/market_adapter/market_overview.py;新增 tests/integration/test_openstock_phase2_2_smoke.py (17 tests);勾选 openspec tasks.md 2.2.1-2.2.3。"
+    dependency_changes: "无新增依赖。Phase 1 引入的 httpx 已足够;本 PR 删除了对 pytdx/akshare 的直接调用,但 requirements.txt 保留(Phase 6 统一清理)。"
+    legacy_logic_impact: "RealtimeService / KlineDataService 不再走 BaseTdxAdapter._get_tdx_connection();MarketOverviewMixin 不再 import akshare。消费端(akshare MarketAdapter 多继承、tdx Adapter 注册)接口签名不变。"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert 本 commit;OpenStock 配置可保留在 .env(Phase 1 PR 已加),facade 不能 fallback 到原 SDK — revert 后必须恢复 TDX 连接或保持 Phase 2.1a/2.1b 状态。"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "user"
+    approved_at: "2026-07-07T00:00:00+08:00"
+    approval_note: "User directive: '请继续' (Phase 2.1b 后)。Phase 2.2 按 migrate-data-sources-to-openstock proposal 推进,集成 smoke test 全部对真实 OpenStock 网关跑通。"
+    secondary_approved: false
