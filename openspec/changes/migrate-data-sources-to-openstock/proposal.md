@@ -1,4 +1,4 @@
-# Change: 将所有外部市场数据源统一收敛到 OpenStock 网关
+# Change: 将所有外部市场数据源统一收敛到 OpenStock 网关(直接消费模式)
 
 ## Why
 
@@ -13,18 +13,20 @@ OpenStock 已部署在 NAS Docker (192.168.123.104:8040,镜像 `openstock:nas`),
 
 ## What Changes
 
-### 阶段 1 — 网关接入层
+### 阶段 1 — 网关接入层(已实现,本 PR 一并交付)
 
 - **新增** `src/services/openstock/client.py`:单一 HTTP 客户端,从 `.env` 读取 `OPENSTOCK_BASE_URL` + `OPENSTOCK_API_KEY`,封装 `POST /data/fetch` / `/data/batch` / `/data/bars` / `/data/snapshot` / `POST /routing/best` / `GET /sources`,统一错误 envelope 解码与超时重试。
-- **新增** `src/services/openstock/category_mapping.py`:把现有 Adapter 方法签名映射到 OpenStock `data_category` 常量。
+- **新增** `src/services/openstock/category_mapping.py`:`DataCategory` 枚举(69 个 category 常量),供消费端直接引用。
 - **新增** `.env.example` 条目:`OPENSTOCK_BASE_URL=http://192.168.123.104:8040`, `OPENSTOCK_API_KEY=<密钥>`。
 - **更新** `web/backend/app/core/config.py`:加入 OpenStock 配置字段与 Pydantic 校验。
 
-### 阶段 2 — Adapter 外观层改造(无下游影响)
+### 阶段 2 — 消费端直接调用迁移(替代旧 facade 方向)
 
-- **保留** 现有 Adapter 类名(`AkshareAdapter`, `BaostockAdapter`, `EfinanceAdapter`, `TushareAdapter`, `ByapiAdapter`, `TdxAdapter` 等)作为外观层,内部实现改为调用 OpenStock client,以避免下游 70+ 处调用的级联修改。
-- **逐域迁移**: domain-01 市场数据 → 02 行情 → 03 策略输入 → 04 基本面 → 06 板块/资金流 → 10 公告,每域一个 PR + 端到端验证。
-- **删除** Adapter 内部对 `akshare`/`baostock`/`tushare`/`efinance` SDK 的直接 import。
+**核心模式**:消费端不再通过 `src/adapters/**` 间接调用,而是直接 `from src.services.openstock import OpenStockClient, DataCategory` 后 `client.fetch(DataCategory.X, params)`。Adapter 类**不再保留**为外观层 — 消费端切完后,整个 `src/adapters/**` 目录删除。
+
+- **逐域迁移消费端 import**:按 web/backend、scripts、src/trading、src/database、src/storage 等消费位置分批,每批一个 PR。每批把该位置下所有 `from src.adapters.*` 与 `import akshare/baostock/tushare/efinance` 替换为 `OpenStockClient.fetch(...)`。
+- **删除被替换的 Adapter 文件**:每批消费端切完且测试通过后,该批涉及的 `src/adapters/<domain>/**` 文件直接删除(不保留 facade、不保留类名)。盲区例外(见阶段 4)保留。
+- **字段对齐在消费端做**:OpenStock `fields_typed` 与旧 Adapter 字段名差异,由消费端在调用点做 `df.rename(columns={...})` 或在 `OpenStockClient` 上层加薄薄的字段映射 helper(不重新引入 Adapter 类)。
 
 ### 阶段 3 — 注册表与脚本清理
 
@@ -43,23 +45,29 @@ OpenStock 已部署在 NAS Docker (192.168.123.104:8040,镜像 `openstock:nas`),
 
 ### 阶段 5 — 验证与归档
 
-- 单元测试:OpenStock client 的 mock 测试 + 每 Adapter 外观层的契约测试。
-- 集成测试:对 NAS 上 OpenStock 实例做端到端 smoke test。
-- 删除 `requirements.txt` 中 `akshare>=1.11.0` / `baostock>=0.8.9` / `tushare>=1.3.0` / `efinance>=0.5.0` 四个依赖。
+- 单元测试:OpenStock client 的 mock 测试(`tests/unit/services/openstock/test_client.py`,已实现)。
+- 集成测试:每批消费端迁移 PR 附带 `tests/integration/test_openstock_phase<N>_*.py`,使用 `@pytest.mark.integration` + `OPENSTOCK_API_KEY` 环境变量门控,对 NAS 实例做端到端 smoke test。
+- 删除 `requirements.txt` 中 `akshare>=1.11.0` / `baostock>=0.8.9` / `tushare>=1.3.0` / `efinance>=0.5.0` 四个依赖(全部消费端切完后)。
+- 删除 `src/adapters/**` 目录(全部消费端切完且盲区保留项独立后)。
 - `FUNCTION_TREE.md` 01-市场数据的 `Byapi ⚠️` 与 `Tushare ⚠️` 两条移到归档说明。
 
 ## Impact
 
 - **Affected specs**: `data-sources`, `market-data`(若存在);新增 capability `openstock-gateway`。
 - **Affected code**:
-  - 新增:`src/services/openstock/{client,category_mapping}.py`, `docs/reports/openstock-coverage-gaps.md`
-  - 改造(~30 文件):`src/adapters/{akshare,baostock,efinance_adapter,byapi_adapter,tdx,tushare_adapter}/**`, `src/interfaces/adapters/**` 对应实现
-  - 改造(5 文件):`web/backend/app/services/adapters_split/{akshare,baostock,tushare,efinance}_adapter.py` + `data_adapter_new.py`
+  - 新增:`src/services/openstock/{__init__,client,category_mapping}.py`, `docs/reports/openstock-coverage-gaps.md`, `tests/unit/services/openstock/test_client.py`(阶段 1,已实现)
+  - 改造(~106 处消费端):`web/backend/app/**`, `scripts/**`, `src/trading/**`, `src/database/**`, `src/storage/**` 等所有 `from src.adapters.*` 调用点
+  - 删除:`src/adapters/{akshare,baostock,efinance_adapter,byapi_adapter,tdx,tushare_adapter}/**`, `src/interfaces/adapters/**` 对应实现(阶段 5 完成)
+  - 删除:`web/backend/app/services/adapters_split/{akshare,baostock,tushare,efinance}_adapter.py` + `data_adapter_new.py`
   - 重写:`config/data_sources_registry.yaml`
-  - 清理:`requirements.txt`, `requirements.txt` (root)
-- **依赖关系**:`expand-akshare-data-sources` proposal 已于 2026-07-07 archive(方向被本 proposal 取代)。`optimize-data-source-v2` 建议缩减范围至"数据质量验证 + 监控"两块(OpenStock 已提供缓存/熔断)。
-- **BREAKING**:无对外 API 变化。Adapter 类签名保持稳定。仅内部数据获取路径改变。
-- **回滚策略**:保留旧 Adapter 实现于 `archive/legacy-dot-archive/openstock-migration-backup/`,回滚时恢复并切换 factory 路由。
+  - 清理:`requirements.txt`(root), `requirements.txt`(web/backend)
+- **依赖关系**:
+  - `expand-akshare-data-sources` proposal 已于 2026-07-07 archive(方向被本 proposal 取代)。
+  - `migrate-akshare-fundflow-mixin-to-openstock` proposal 已于 2026-07-07 archive(facade / Mixin-内部消费方向,被本直接消费方向取代)。
+  - `migrate-akshare-market-adapter-modules-to-openstock` proposal 已于 2026-07-07 archive(同上)。
+  - `optimize-data-source-v2` 建议缩减范围至"数据质量验证 + 监控"两块(OpenStock 已提供缓存/熔断)。
+- **BREAKING**:**内部** BREAKING — `src/adapters/**` 全部公开类(`AkshareAdapter`, `BaostockAdapter` 等)被删除,所有消费端 import 路径改变。**对外 API** 无变化(HTTP 路由签名稳定)。迁移分批进行,每批独立可回滚。
+- **回滚策略**:每批消费端迁移 PR 独立可回滚;旧 Adapter 实现保留在 git 历史(`git revert` 即可恢复),不另存 `archive/legacy-dot-archive/` 副本。
 
 ## Open Questions
 
