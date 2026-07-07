@@ -181,6 +181,69 @@ def discover_document_targets(deleted_paths: list[str], deleted_directories: lis
     return sorted(uncovered_documents)
 
 
+OPENSPEC_CHANGES_PREFIX = "openspec/changes/"
+OPENSPEC_ARCHIVE_PREFIX = "openspec/changes/archive/"
+
+
+def detect_openspec_archive_moves(
+    root_dir: Path, deleted_directories: list[str]
+) -> tuple[list[str], list[dict[str, Any]]]:
+    """Identify directories that were moved by ``openspec archive`` rather than deleted.
+
+    Standard archive moves follow the pattern:
+        openspec/changes/<change-id>/  ->  openspec/changes/archive/<date>-<change-id>/
+
+    Returns a tuple ``(exempt_directories, move_records)`` where ``exempt_directories``
+    is the subset of ``deleted_directories`` that should be skipped by the gate, and
+    ``move_records`` carries structured details for telemetry / audit logging.
+    """
+    if not deleted_directories:
+        return [], []
+
+    candidates: dict[str, str] = {}
+    for directory in deleted_directories:
+        normalized = directory.rstrip("/")
+        if not normalized.startswith(OPENSPEC_CHANGES_PREFIX):
+            continue
+        if normalized.startswith(OPENSPEC_ARCHIVE_PREFIX):
+            continue
+        change_id = normalized[len(OPENSPEC_CHANGES_PREFIX):]
+        if "/" in change_id or not change_id:
+            continue
+        candidates[normalized] = change_id
+    if not candidates:
+        return [], []
+
+    archive_root = root_dir / OPENSPEC_ARCHIVE_PREFIX.rstrip("/")
+    if not archive_root.is_dir():
+        return [], []
+
+    existing_archive_dirs = {entry.name: entry for entry in archive_root.iterdir() if entry.is_dir()}
+    exempt: list[str] = []
+    records: list[dict[str, Any]] = []
+    for directory, change_id in candidates.items():
+        match = next(
+            (
+                name
+                for name in existing_archive_dirs
+                if name == change_id or name.endswith(f"-{change_id}")
+            ),
+            None,
+        )
+        if match is None:
+            continue
+        exempt.append(directory)
+        records.append(
+            {
+                "kind": "openspec_archive_move",
+                "source_directory": directory,
+                "archive_directory": f"{OPENSPEC_ARCHIVE_PREFIX}{match}",
+                "change_id": change_id,
+            }
+        )
+    return exempt, records
+
+
 def parse_iso_date(raw_value: Any) -> date | None:
     if not isinstance(raw_value, str) or not raw_value.strip():
         return None
@@ -506,6 +569,14 @@ def build_report(
     deleted_directories = discover_deleted_directories(deleted_paths, tracked_files) if deleted_paths else []
     document_targets = discover_document_targets(deleted_paths, deleted_directories) if deleted_paths else []
 
+    archive_exempt_directories, archive_move_records = detect_openspec_archive_moves(root_path, deleted_directories)
+    archive_exempt_set = set(archive_exempt_directories)
+    if archive_exempt_set:
+        deleted_directories = [d for d in deleted_directories if d not in archive_exempt_set]
+        document_targets = [
+            d for d in document_targets if not any(path_is_inside_directory(d, exempt) for exempt in archive_exempt_set)
+        ]
+
     results: list[dict[str, Any]] = []
     errors: list[dict[str, Any]] = []
 
@@ -520,6 +591,18 @@ def build_report(
         results.append(result)
         if not result["passed"]:
             errors.append(result)
+
+    for exempt_directory in archive_exempt_directories:
+        results.append(
+            {
+                "path": exempt_directory,
+                "kind": "directory",
+                "passed": True,
+                "mode": "openspec_archive_move",
+                "message": "Directory moved by `openspec archive` tooling; treated as lifecycle move, not deletion",
+                "registry_path": "",
+            }
+        )
 
     for document_path in document_targets:
         result = evaluate_target(
@@ -555,6 +638,7 @@ def build_report(
         "deleted_paths": deleted_paths,
         "directory_targets": deleted_directories,
         "document_targets": document_targets,
+        "openspec_archive_moves": archive_move_records,
         "results": results,
         "errors": errors,
         "summary": {
@@ -563,6 +647,7 @@ def build_report(
             "deleted_paths": len(deleted_paths),
             "deleted_directories": len(deleted_directories),
             "deleted_documents": len(document_targets),
+            "openspec_archive_moves": len(archive_move_records),
         },
         "policy": {
             "evidence_registry_path": EVIDENCE_REGISTRY_PATH,
