@@ -1,0 +1,117 @@
+version: "v0.2"
+
+task:
+  id: "pr-76"
+  title: "Phase 1 OpenStock client + Settings + category mapping"
+  owner: "main"
+  created_at: "2026-07-07"
+
+mainline:
+  id: "L1-openstock-gateway-phase1-client"
+  objective: "交付 OpenStock 数据网关接入层:OpenStockClient HTTP 客户端、category_mapping 常量表、Pydantic Settings 字段,以及 20 个单元测试。本 PR 不触动现有 Adapter,Phase 2 起按域分批迁移。"
+  milestone_id: "L2-openstock-migration"
+  slice_id: "L3-phase1-client-access-layer"
+
+classification:
+  task_type: "feature"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-data-sources-to-openstock"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "core"
+    - "tests"
+    - "governance"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Phase 1 引入 OpenStock 数据治理网关接入层(src/services/openstock/、Settings 字段、httpx 依赖)。该网关为系统级基础设施,不属于任何业务域,治理归属 meta-governance。Adapter 迁移在 Phase 2 起按业务域推进。"
+
+scope:
+  allowed_paths:
+    - "src/services/openstock/__init__.py"
+    - "src/services/openstock/client.py"
+    - "src/services/openstock/category_mapping.py"
+    - "tests/unit/services/openstock/test_client.py"
+    - "web/backend/app/core/config.py"
+    - ".env.example"
+    - "requirements.txt"
+    - "governance/mainline/task-cards/pr-76.yaml"
+    - "openspec/changes/migrate-data-sources-to-openstock/tasks.md"
+    - "openspec/changes/migrate-data-sources-to-openstock/proposal.md"
+    - "openspec/changes/migrate-data-sources-to-openstock/design.md"
+    - "openspec/changes/migrate-data-sources-to-openstock/specs/data-sources/spec.md"
+    - "docs/reports/openstock-coverage-gaps.md"
+    - "governance/function-tree/catalog.yaml"
+  forbidden_paths:
+    - "src/adapters/**"
+    - "web/backend/app/services/**"
+    - "web/frontend/**"
+    - "config/data_sources_registry.yaml"
+    - "scripts/**"
+
+non_goals:
+  - "不修改任何现有 Adapter 类(Phase 2 起按域迁移)。"
+  - "不重写 config/data_sources_registry.yaml(Phase 4)。"
+  - "不删除 requirements.txt 中的 akshare/baostock/tushare/efinance 依赖(Phase 6 清理)。"
+  - "不做字段 reshape — 消费端按 OpenStock fields_typed 自适应。"
+
+acceptance:
+  checks:
+    - id: "openspec-validate-strict"
+      command: "openspec validate migrate-data-sources-to-openstock --strict"
+      required: true
+    - id: "openstock-client-tests"
+      command: "pytest tests/unit/services/openstock/test_client.py -x -q --no-cov"
+      required: true
+    - id: "settings-load-with-env"
+      command: "OPENSTOCK_BASE_URL=http://192.168.123.104:8040 OPENSTOCK_API_KEY=test POSTGRESQL_HOST=h POSTGRESQL_USER=u POSTGRESQL_PASSWORD=p JWT_SECRET_KEY=k BACKEND_PORT=8020 BACKEND_BACKUP_PORT=8021 python3 -c 'import sys; sys.path.insert(0, \"web/backend\"); from app.core.config import settings; assert settings.openstock_base_url; assert settings.openstock_api_key'"
+      required: true
+    - id: "settings-reject-without-env"
+      command: "POSTGRESQL_HOST=h POSTGRESQL_USER=u POSTGRESQL_PASSWORD=p JWT_SECRET_KEY=k BACKEND_PORT=8020 BACKEND_BACKUP_PORT=8021 python3 -c 'import sys; sys.path.insert(0, \"web/backend\"); from app.core.config import settings' 2>&1 | grep -q OPENSTOCK_BASE_URL"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-76.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr76-mainline-gate.json"
+      required: true
+    - id: "gitnexus-staged-detect-changes"
+      command: "gitnexus_detect_changes(scope=staged)"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "OpenStockClient 在缺少 OPENSTOCK_BASE_URL/OPENSTOCK_API_KEY 时立即报错 — 本地开发者必须先更新 .env。Mitigation: .env.example 已加占位符,启动错误信息明确指向缺失字段。"
+    - "DataCategory 枚举共 69 个,如果 OpenStock 服务侧新增/重命名 category,本仓库需要同步更新。Mitigation: 字符串硬编码不会被强制 — fetch() 接受裸字符串作为 category,只是失去 IDE 补全。"
+    - "validate_required_settings 现在要求 OpenStock env — 如果 CI 环境未注入,会导致测试环境后端启动失败。Mitigation: CI 已注入其它必填项,本 PR 在同一清单中加两条。"
+  rollback_plan: "git revert <merge-commit-sha>。客户端、配置、测试互相独立,revert 不影响 Phase 2 已迁移的 Adapter(Phase 2 PR 完成前 Adapter 不会引用本 client)。"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "交付 OpenStock 网关接入层(Phase 1),为后续 Adapter 按域迁移提供统一 client 与 category 常量。"
+    modified_scope: "新增 src/services/openstock/{__init__,client,category_mapping}.py + tests/unit/services/openstock/test_client.py;在 web/backend/app/core/config.py 加 2 个 Pydantic 字段;在 .env.example 加 OpenStock 配置块;在 requirements.txt 加 httpx>=0.27.0;在 openspec proposal tasks.md 勾选 Phase 1;新增本任务卡。"
+    dependency_changes: "新增 httpx>=0.27.0(根 requirements.txt)。web/backend/requirements.txt 已有 httpx==0.27.0,无变化。"
+    legacy_logic_impact: "无现有 Adapter 改动。validate_required_settings 现在reject缺失 OpenStock env — 本地开发者需更新 .env,但这是 Phase 1 设计意图。"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert 本 commit;OpenStock 配置从 .env 移除即可恢复原启动行为。"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "user"
+    approved_at: "2026-07-07T00:00:00+08:00"
+    approval_note: "User directive: '本项目只作openstock的消费,请继续' — Phase 1 接入层按 migrate-data-sources-to-openstock proposal 推进,无 OpenSpec 设计偏离。"
+    secondary_approved: false

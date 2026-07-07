@@ -1,11 +1,11 @@
 ## 1. 接入层与配置
 
-- [ ] 1.1 新建 `src/services/openstock/__init__.py`, `client.py`, `category_mapping.py`
-- [ ] 1.2 实现 `OpenStockClient`:`fetch(category, params)`, `batch(requests)`, `bars(...)`, `snapshot(symbol)`, `routing_best(category)`, `sources()` 六个方法,统一 `X-API-Key` header
-- [ ] 1.3 实现错误 envelope 解析(`code`/`message`/`request_id`),按 `provider_unavailable` 触发重试,其余 4xx/5xx 抛 `OpenStockError`
-- [ ] 1.4 `.env.example` 加入 `OPENSTOCK_BASE_URL` 与 `OPENSTOCK_API_KEY`
-- [ ] 1.5 `web/backend/app/core/config.py` 加入 `openstock_base_url` / `openstock_api_key` 字段,Pydantic 校验非空
-- [ ] 1.6 `requirements.txt` 加入 `httpx>=0.27.0`(若尚未有);**不引入** akshare/baostock/tushare/efinance 任何 SDK
+- [x] 1.1 新建 `src/services/openstock/__init__.py`, `client.py`, `category_mapping.py`
+- [x] 1.2 实现 `OpenStockClient`:`fetch(category, params)`, `batch(requests)`, `bars(...)`, `snapshot(symbol)`, `routing_best(category)`, `sources()` 六个方法,统一 `X-API-Key` header
+- [x] 1.3 实现错误 envelope 解析(`code`/`message`/`request_id`),按 `provider_unavailable` 触发重试,其余 4xx/5xx 抛 `OpenStockError`
+- [x] 1.4 `.env.example` 加入 `OPENSTOCK_BASE_URL` 与 `OPENSTOCK_API_KEY`
+- [x] 1.5 `web/backend/app/core/config.py` 加入 `openstock_base_url` / `openstock_api_key` 字段,Pydantic 校验非空
+- [x] 1.6 `requirements.txt` 加入 `httpx>=0.27.0`(若尚未有);**不引入** akshare/baostock/tushare/efinance 任何 SDK
 
 ## 2. Adapter 外观层迁移(按域分批)
 
