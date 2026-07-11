@@ -138,7 +138,7 @@ function getJWTToken(): string | null {
 
 const getCSRFToken = createCSRFTokenResolver(async () => {
   try {
-    const response = await axios.get('/api/csrf-token', {
+    const response = await axios.get('/csrf-token', {
       withCredentials: true,
     });
 

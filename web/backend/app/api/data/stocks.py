@@ -239,23 +239,51 @@ async def search_stocks(
 
 @router.get("/stocks/{symbol}/detail")
 async def get_stock_detail(symbol: str, current_user: User = Depends(get_current_user)) -> Dict[str, Any]:
-    """获取股票详细信息"""
+    """获取股票详细信息 — OpenStock 真实数据"""
     try:
         cache_key = f"stock:detail:{symbol}"
         cached_data = db_service.get_cache_data(cache_key)
-        if cached_data: return cached_data
+        if cached_data:
+            return cached_data
 
-        # Simplified for refactoring, usually queries DB
-        import random
-        random.seed(hash(symbol))
-        market = "SH" if symbol.startswith("6") else "SZ"
-        stock_detail = {
-            "symbol": symbol, "name": f"股票{symbol[-3:]}", "market": market,
-            "industry": "银行", "price": round(random.uniform(5, 100), 2),
-            "change_pct": round(random.uniform(-10, 10), 2),
-        }
-        result = {"success": True, "data": stock_detail, "timestamp": datetime.now().isoformat()}
-        db_service.set_cache_data(cache_key, result, ttl=1800)
-        return result
+        # 复用 /market/quotes 的 OpenStock 真实数据管道
+        from app.services.data_source_factory import get_data_source_factory
+        factory = await get_data_source_factory()
+        result = await factory.get_data_with_fallback(
+            "openstock_market", "quotes", {"symbols": [symbol]}
+        )
+
+        quote = None
+        if result.get("status") == "success" and result.get("data"):
+            data = result["data"]
+            if isinstance(data, list) and data:
+                quote = data[0]
+            elif isinstance(data, dict):
+                quote = data
+
+        if quote:
+            stock_detail = {
+                "symbol": symbol,
+                "name": quote.get("name") or str(symbol),
+                "market": "SH" if symbol.startswith("6") else "SZ",
+                "price": float(quote.get("last_price", quote.get("price", 0)) or 0),
+                "change_pct": float(quote.get("change_percent", quote.get("change_pct", 0)) or 0),
+                "volume": int(quote.get("volume", 0) or 0),
+                "high": float(quote.get("high", 0) or 0),
+                "low": float(quote.get("low", 0) or 0),
+                "open": float(quote.get("open", 0) or 0),
+                "prev_close": float(quote.get("prev_close", quote.get("pre_close", 0)) or 0),
+            }
+        else:
+            stock_detail = {
+                "symbol": symbol,
+                "name": str(symbol),
+                "market": "SH" if symbol.startswith("6") else "SZ",
+                "price": 0, "change_pct": 0,
+            }
+
+        result_out = {"success": True, "data": stock_detail, "timestamp": datetime.now().isoformat()}
+        db_service.set_cache_data(cache_key, result_out, ttl=300)
+        return result_out
     except Exception as e:
         return {"success": False, "msg": str(e)}

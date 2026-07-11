@@ -228,7 +228,7 @@ const testConnection = async (database: DatabaseInfo): Promise<void> => {
   database.message = ''
 
   try {
-    const response = await apiClient.post('/api/system/test-connection', {
+    const response = await apiClient.post('/system/test-connection', {
       db_type: database.id,
       host: database.host,
       port: parseInt(database.port)
@@ -288,7 +288,7 @@ const fetchLogs = async (): Promise<void> => {
     if (selectedLevel.value) params.level = selectedLevel.value
     if (selectedCategory.value) params.category = selectedCategory.value
 
-    const response = await apiClient.get('/api/system/logs', { params })
+    const response = await apiClient.get('/system/logs', { params })
     const envelope = response as ApiResponseEnvelope<unknown>
     const data = envelope.data ?? response
 
@@ -332,7 +332,7 @@ const generateMockLogs = (): LogEntry[] => {
 
 const fetchLogSummary = async (): Promise<void> => {
   try {
-    const response = await apiClient.get('/api/system/logs/summary')
+    const response = await apiClient.get('/system/logs/summary')
     const envelope = response as ApiResponseEnvelope<unknown>
     const data = toLogSummaryPayload(envelope.data ?? response)
 

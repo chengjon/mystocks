@@ -131,11 +131,16 @@ export const dashboardService = {
       start_date: targetDate,
       end_date: targetDate
     }
-    const [summaryResponse, bigDealResponse] = await Promise.all([
+    const [summaryResponse, bigDealResponse] = await Promise.allSettled([
       apiClient.get('/akshare/market/fund-flow/hsgt-summary', { params }),
-      apiClient.get('/akshare/market/fund-flow/big-deal')
+      apiClient.get('/akshare/market/fund-flow/big-deal', { timeout: 5000 })
     ])
-    return { data: normalizeDashboardFundFlow(summaryResponse, bigDealResponse) }
+    return {
+      data: normalizeDashboardFundFlow(
+        summaryResponse.status === 'fulfilled' ? summaryResponse.value : {},
+        bigDealResponse.status === 'fulfilled' ? bigDealResponse.value : {}
+      )
+    }
   },
 
   /**
@@ -223,7 +228,7 @@ export const dashboardService = {
     sort = 'change_percent',
     limit = 20
   ): Promise<{ data: MarketOverviewData[] }> {
-    const response = await apiClient.get<UnifiedResponse<MarketOverviewData[]>>('/api/market/v2/etf/list', {
+    const response = await apiClient.get<UnifiedResponse<MarketOverviewData[]>>('/v2/market/etf/list', {
       params: { sort, limit }
     })
     return { data: response.data ?? [] }
@@ -242,7 +247,7 @@ export const dashboardService = {
     symbols: string[],
     indicators: string[]
   ): Promise<{ data: Record<string, TechnicalIndicatorData[]> }> {
-    const response = await apiClient.get<UnifiedResponse<Record<string, TechnicalIndicatorData[]>>>('/api/indicators/calculate/batch', {
+    const response = await apiClient.post<UnifiedResponse<Record<string, TechnicalIndicatorData[]>>>('/v1/indicators/calculate/batch', {
       params: {
         symbols: symbols.join(','),
         indicators: indicators.join(',')

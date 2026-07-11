@@ -266,7 +266,7 @@ export class WencaiQueryEngine {
         maxResults: number
     ): Promise<{ success: boolean; data?: QueryResultData }> {
         try {
-            const response = await apiClient.post('/api/wencai/query', {
+            const response = await apiClient.post('/wencai/query', {
                 pattern,
                 filters,
                 limit: maxResults

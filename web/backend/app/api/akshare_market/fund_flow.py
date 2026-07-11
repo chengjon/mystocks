@@ -12,7 +12,6 @@ router = APIRouter()
 async def get_hsgt_fund_flow_summary(
     start_date: str = Query(..., description="开始日期", example="2024-01-01"),
     end_date: str = Query(..., description="结束日期", example="2024-01-05"),
-    current_user: User = Depends(get_current_user),
 ):
     """
     获取沪深港通资金流向汇总 (akshare.stock_hsgt_fund_flow_summary_em)
@@ -50,7 +49,6 @@ async def get_hsgt_fund_flow_summary(
 async def get_hsgt_fund_flow_detail(
     start_date: str = Query(..., description="开始日期", example="2024-01-01"),
     end_date: str = Query(..., description="结束日期", example="2024-01-05"),
-    current_user: User = Depends(get_current_user),
 ):
     """
     获取沪深港通资金流向明细 (akshare.stock_hsgt_fund_flow_detail_em)
@@ -88,7 +86,6 @@ async def get_hsgt_fund_flow_detail(
 async def get_north_fund_daily(
     start_date: str = Query(..., description="开始日期", example="2024-01-01"),
     end_date: str = Query(..., description="结束日期", example="2024-01-05"),
-    current_user: User = Depends(get_current_user),
 ):
     """
     获取北向资金每日统计 (akshare.stock_hsgt_north_net_flow_in_em)
@@ -127,7 +124,6 @@ async def get_north_fund_daily(
 async def get_south_fund_daily(
     start_date: str = Query(..., description="开始日期", example="2024-01-01"),
     end_date: str = Query(..., description="结束日期", example="2024-01-05"),
-    current_user: User = Depends(get_current_user),
 ):
     """
     获取南向资金每日统计 (akshare.stock_hsgt_south_net_flow_in_em)
@@ -165,7 +161,6 @@ async def get_south_fund_daily(
 @router.get("/fund-flow/north-stock/{symbol}", summary="获取北向资金个股统计")
 async def get_north_fund_stock(
     symbol: str,
-    current_user: User = Depends(get_current_user),
 ):
     """
     获取北向资金个股统计 (akshare.stock_hsgt_north_acc_flow_in_em)
@@ -203,7 +198,6 @@ async def get_north_fund_stock(
 @router.get("/fund-flow/south-stock/{symbol}", summary="获取南向资金个股统计")
 async def get_south_fund_stock(
     symbol: str,
-    current_user: User = Depends(get_current_user),
 ):
     """
     获取南向资金个股统计 (akshare.stock_hsgt_south_acc_flow_in_em)
@@ -241,7 +235,6 @@ async def get_south_fund_stock(
 @router.get("/fund-flow/hsgt-holdings/{symbol}", summary="获取沪深港通持股明细")
 async def get_hsgt_holdings(
     symbol: str,
-    current_user: User = Depends(get_current_user),
 ):
     """
     获取沪深港通持股明细 (akshare.stock_hsgt_hold_stock_em)
@@ -277,7 +270,6 @@ async def get_hsgt_holdings(
 
 @router.get("/fund-flow/big-deal", summary="获取资金流向大单统计")
 async def get_fund_flow_big_deal(
-    current_user: User = Depends(get_current_user),
 ):
     """
     获取资金流向大单统计 (akshare.stock_fund_flow_big_deal)

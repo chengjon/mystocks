@@ -18,7 +18,7 @@ export const indicatorApi = {
     indicators: string[],
     params?: Record<string, unknown>
   ): Promise<OverlayIndicatorResponse> {
-    const response = await apiClient.post('/api/indicators/overlay', {
+    const response = await apiClient.post('/indicators/overlay', {
       symbol,
       interval,
       indicators,
@@ -33,7 +33,7 @@ export const indicatorApi = {
     indicators: string[],
     params?: Record<string, unknown>
   ): Promise<OscillatorIndicatorResponse> {
-    const response = await apiClient.post('/api/indicators/oscillator', {
+    const response = await apiClient.post('/indicators/oscillator', {
       symbol,
       interval,
       indicators,

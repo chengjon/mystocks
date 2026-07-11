@@ -38,28 +38,28 @@ export const astockApi = {
     date: string,
     prev_close: number
   ): Promise<StopLimitResponse> {
-    const response = await apiClient.get('/api/astock/stop-limit', {
+    const response = await apiClient.get('/astock/stop-limit', {
       params: { symbol, date, prev_close }
     });
     return response.data;
   },
 
   async checkT1Sellable(buy_date: string, symbol?: string): Promise<T1SellableResponse> {
-    const response = await apiClient.get('/api/astock/t1-sellable', {
+    const response = await apiClient.get('/astock/t1-sellable', {
       params: { buy_date, symbol }
     });
     return response.data;
   },
 
   async getAdjustmentFactors(symbol: string): Promise<AdjustmentResponse> {
-    const response = await apiClient.get('/api/astock/adjustment', {
+    const response = await apiClient.get('/astock/adjustment', {
       params: { symbol }
     });
     return response.data;
   },
 
   async getAStockInfo(symbol: string): Promise<AStockInfoResponse> {
-    const response = await apiClient.get('/api/astock/info', {
+    const response = await apiClient.get('/astock/info', {
       params: { symbol }
     });
     return response.data;
@@ -77,7 +77,7 @@ export const astockApi = {
     limit_down_price: number;
     messages: string[];
   }> {
-    const response = await apiClient.post('/api/astock/validate', {
+    const response = await apiClient.post('/astock/validate', {
       symbol,
       buy_date,
       buy_price,

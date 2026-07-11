@@ -234,8 +234,44 @@ class RealBusinessDataSource:
             return indices
 
         except Exception as error:
-            logger.warning("获取三大指数真实报价失败: %s", error)
-            return []
+            logger.warning("获取三大指数TDX报价失败: %s", error)
+
+        # Fallback: 直接用 OpenStock HTTP API 获取指数数据
+        try:
+            import os
+            openstock_url = os.getenv("OPENSTOCK_BASE_URL", "http://192.168.123.104:8040")
+            openstock_key = os.getenv("OPENSTOCK_SECURITY_API_KEY", "")
+            resp = httpx.post(
+                f"{openstock_url}/data/fetch",
+                json={"data_category": "quotes", "params": {"symbols": list(index_labels.keys())}},
+                headers={"X-API-Key": openstock_key},
+                timeout=10,
+            )
+            if resp.status_code == 200:
+                result = resp.json()
+                rows = result.get("data", result.get("rows", []))
+                if isinstance(rows, list) and rows:
+                    indices = []
+                    for q in rows:
+                        code = str(q.get("code", q.get("symbol", ""))).replace("sh", "").replace("sz", "")
+                        indices.append({
+                            "symbol": code,
+                            "name": index_labels.get(code, q.get("name", "")),
+                            "current_price": float(q.get("last_price", q.get("price", 0)) or 0),
+                            "change_percent": float(q.get("change_pct", q.get("change_percent", 0)) or 0),
+                            "volume": int(q.get("volume", 0) or 0),
+                            "turnover": float(q.get("amount", 0) or 0),
+                            "update_time": datetime.now().isoformat(),
+                        })
+                    if indices:
+                        _MAJOR_INDEX_QUOTES_CACHE = indices
+                        _MAJOR_INDEX_QUOTES_CACHE_AT = now
+                        logger.info("三大指数从OpenStock获取成功: %d 条", len(indices))
+                        return indices
+        except Exception as e:
+            logger.warning("OpenStock获取指数失败: %s", e)
+
+        return []
 
     def _get_realtime_market_snapshot(self, market_service) -> Optional[Dict]:
         """获取真实市场快照统计与榜单"""

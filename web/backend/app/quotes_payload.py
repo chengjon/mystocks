@@ -41,6 +41,17 @@ def build_quotes_response_payload(result: dict[str, Any], symbols: list[str]) ->
     if not rows:
         rows = _build_fallback_quotes(symbols)
 
+    # 字段别名映射：确保前端不同组件都能找到价格/涨跌幅字段
+    for row in rows:
+        price = row.get("last_price") or row.get("price") or row.get("current_price") or row.get("latest_price") or 0
+        change_pct = row.get("change_pct") or row.get("change_percent") or row.get("change") or 0
+        row["last_price"] = price
+        row["current_price"] = price
+        row["latest_price"] = price
+        row["price"] = price
+        row["change_pct"] = change_pct
+        row["change_percent"] = change_pct
+
     return {
         "quotes": rows,
         "total": len(rows),

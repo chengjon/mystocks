@@ -172,9 +172,12 @@ export function useArtDecoDashboard() {
 
         try {
             const response = await dashboardService.getMarketOverview(20)
+            console.log('[DEBUG] getMarketOverview response:', JSON.stringify(response))
             const marketList = Array.isArray(response?.data)
                 ? response.data
                 : (Array.isArray(response) ? response : [])
+
+            console.log('[DEBUG] marketList:', JSON.stringify(marketList))
 
             const formatIndex = (item: Record<string, unknown>): { index: string; change: string } => ({
                 index: toNumber(item?.latest_price ?? item?.price).toFixed(2),
@@ -182,6 +185,7 @@ export function useArtDecoDashboard() {
             })
 
             if (marketList.length > 0) {
+                console.log('[DEBUG] first item formatIndex:', JSON.stringify(formatIndex(marketList[0])))
                 marketData.value.shanghai = formatIndex(marketList[0])
             }
             if (marketList.length > 1) {

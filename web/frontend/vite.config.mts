@@ -28,6 +28,7 @@ export default defineConfig(({ mode }) => {
   const backendUrl = `http://localhost:${backendPort}`
 
   return {
+    appType: 'spa',
     define: {
       'import.meta.env.VITE_USE_MOCK_DATA': JSON.stringify(env.VITE_USE_MOCK_DATA === 'true'),
       'import.meta.env.VITE_API_BASE_URL': JSON.stringify(env.VITE_API_BASE_URL || '/api')
@@ -77,6 +78,12 @@ export default defineConfig(({ mode }) => {
       host: '0.0.0.0',
       port: devPort,
       strictPort: true,
+      hmr: false,
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+      },
       proxy: {
         '/api': {
           target: backendUrl,

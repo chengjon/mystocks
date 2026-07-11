@@ -299,7 +299,7 @@ async def refresh_chip_race(
     return MessageResponse(**result)
 
 
-@router.get("/lhb", response_model=UnifiedPaginatedResponse[LongHuBangResponse], summary="查询龙虎榜")
+@router.get("/lhb", response_model=List[LongHuBangResponse], summary="查询龙虎榜")
 @cache_response("lhb", ttl=86400)  # 🚀 添加24小时缓存（龙虎榜每日发布）
 async def get_lhb_detail(
     symbol: Optional[str] = Query(None, description="股票代码"),
@@ -490,16 +490,27 @@ async def get_stock_list(
         raise BusinessException(detail=f"查询股票列表失败: {str(e)}", status_code=500, error_code="DATABASE_ERROR")
 
 
-@router.get("/kline", response_model=UnifiedResponse[Dict[str, Any]], summary="查询K线数据")
+@router.get("/kline", response_model=UnifiedResponse[List[Dict[str, Any]]], summary="查询K线数据")
 async def get_kline_data(
-    stock_code: str = Query(..., description="股票代码（6位数字或带交易所后缀）"),
+    stock_code: str = Query(default="", description="股票代码（6位数字或带交易所后缀）"),
+    symbol: Optional[str] = Query(None, description="股票代码别名（前端兼容）"),
     period: str = Query(
         default="daily", description="时间周期: daily/weekly/monthly", pattern=r"^(daily|weekly|monthly)$"
     ),
+    interval: Optional[str] = Query(None, description="周期别名（前端兼容: 1d/daily, 1w/weekly, 1m/monthly）"),
     adjust: str = Query(default="qfq", description="复权类型: qfq/hfq/空字符串", pattern=r"^(qfq|hfq|)$"),
     start_date: Optional[str] = Query(None, description="开始日期 YYYY-MM-DD"),
     end_date: Optional[str] = Query(None, description="结束日期 YYYY-MM-DD"),
 ):
+    # 前端兼容：symbol → stock_code, interval → period
+    if symbol and not stock_code:
+        stock_code = symbol
+    if interval and interval != period:
+        interval_map = {"1d": "daily", "1w": "weekly", "1m": "monthly",
+                         "day": "daily", "week": "weekly", "month": "monthly"}
+        period = interval_map.get(interval, interval)
+    if not stock_code:
+        raise ValidationException(detail="缺少股票代码参数", field="stock_code")
     """
     获取股票K线（蜡烛图）历史数据
 
@@ -598,7 +609,11 @@ async def get_kline_data(
                 "timestamp": datetime.now().isoformat(),
             }
             circuit_breaker.record_success()
-            return {**result, "timestamp": datetime.now().isoformat()}
+            return UnifiedResponse[List[Dict[str, Any]]](
+                success=True,
+                data=candles,
+                message=f"获取K线数据成功，共{len(candles)}条记录",
+            )
         except Exception as openstock_exc:
             logger.warning(
                 f"⚠️ OpenStock factory klines failed, fallback to akshare: {openstock_exc}"
@@ -629,14 +644,20 @@ async def get_kline_data(
         if result.get("count", 0) < 10:
             raise ValidationException(detail="该股票历史数据不足10个交易日，无法生成K线图", field="date_range")
 
-        return {"success": True, **result, "timestamp": datetime.now().isoformat()}
+        akshare_candles = result.get("data", [])
+        return UnifiedResponse[List[Dict[str, Any]]](
+            success=True,
+            data=akshare_candles,
+            message=f"获取K线数据成功，共{len(akshare_candles)}条记录",
+        )
 
     except ValidationError as ve:
-        # P0改进: 标准化验证错误响应
+        # 标准化验证错误响应：raise ValidationException 由全局 handler 统一产出 UnifiedResponse
         error_details = [
             {"field": err["loc"][0] if err["loc"] else "unknown", "message": err["msg"]} for err in ve.errors()
         ]
-        return create_error_response(error_code="VALIDATION_ERROR", message="输入参数验证失败", details=error_details)
+        detail_msg = "输入参数验证失败: " + "; ".join(f"{e['field']}={e['message']}" for e in error_details)
+        raise ValidationException(detail=detail_msg, field=error_details[0]["field"] if error_details else None)
     except ValueError as e:
         # Invalid stock code format or parameters
         raise BusinessException(detail=str(e), status_code=400, error_code="MARKET_OPERATION_FAILED")

@@ -21,7 +21,7 @@ interface BackendReadinessResult {
   requestId: string
 }
 
-const READINESS_TIMEOUT_MS = 5000
+const READINESS_TIMEOUT_MS = 30000
 
 export function resolveReadinessEndpoint(apiBaseUrl = String(import.meta.env.VITE_API_BASE_URL || '/api')): string {
   const normalizedBase = apiBaseUrl.trim().replace(/\/+$/, '') || '/api'

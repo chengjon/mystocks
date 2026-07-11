@@ -41,6 +41,15 @@
       </div>
     </div>
 
+    <el-alert
+      v-if="loadErrorMessage"
+      :title="loadErrorMessage"
+      type="error"
+      :closable="false"
+      show-icon
+      class="stock-detail-error-banner"
+    />
+
     <div class="content-grid">
       <div class="main-content">
          <el-card :hoverable="false">
@@ -215,7 +224,7 @@ import { ref, onMounted, nextTick, type Ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { dataApi } from '@/api'
 import _echarts from '@/utils/echarts'
-import { ElMessage, ElCard, ElButton, ElInput } from 'element-plus'
+import { ElMessage, ElCard, ElButton, ElInput, ElAlert } from 'element-plus'
 import ProKLineChart from '@/components/market/ProKLineChart.vue'
 
 interface StockDetail {
@@ -288,6 +297,7 @@ const chartOptions: Array<{ label: string; value: ChartType }> = [
 ]
 const timeRange: Ref<TimeRange> = ref('3m')
 const summaryPeriod: Ref<TimeRange> = ref('1m')
+const loadErrorMessage: Ref<string> = ref('')
 
 const stockDetail: Ref<StockDetail> = ref({
   symbol: '',
@@ -461,27 +471,16 @@ const loadStockDetail = async (): Promise<void> => {
         throw new Error('INVALID API RESPONSE')
       }
     } catch (apiError) {
-      console.warn('API failed, using mock data:', apiError)
-      stockDetail.value = {
-        symbol: symbol,
-        name: symbol.startsWith('6') ? `SPDB` : `PAB`,
-        price: (Math.random() * 10 + 10).toFixed(2),
-        change: (Math.random() * 10 - 5).toFixed(2),
-        change_pct: (Math.random() * 10 - 5).toFixed(2),
-        industry: 'BANKING',
-        concepts: ['AI', '5G CONCEPT'],
-        list_date: '2000-01-01',
-        market: symbol.startsWith('6') ? 'SH' : 'SZ',
-        area: 'SHANGHAI'
-      }
-
-      technicalIndicators.value = {
-        ma5: (parseFloat(stockDetail.value.price as string) + Math.random() * 2 - 1).toFixed(2),
-        ma10: (parseFloat(stockDetail.value.price as string) + Math.random() * 3 - 1.5).toFixed(2),
-        ma20: (parseFloat(stockDetail.value.price as string) + Math.random() * 4 - 2).toFixed(2),
-        rsi: (Math.random() * 100).toFixed(2),
-        macd: (Math.random() * 4 - 2).toFixed(2)
-      }
+      console.error('Failed to load stock detail from API:', apiError)
+      const err = apiError as { response?: { status?: number; data?: { msg?: string; message?: string } }; message?: string }
+      const status = err?.response?.status
+      const apiMsg = err?.response?.data?.msg || err?.response?.data?.message || err?.message || '未知错误'
+      loadErrorMessage.value = status === 401
+        ? '登录已过期，请重新登录后刷新'
+        : status
+          ? `加载股票详情失败 (HTTP ${status})：${apiMsg}`
+          : `加载股票详情失败：${apiMsg}`
+      ElMessage.error(loadErrorMessage.value)
     }
   } catch (error) {
     console.error('Failed to load stock information:', error)

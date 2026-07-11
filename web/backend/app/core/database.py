@@ -246,7 +246,7 @@ class DatabaseService:
                 if search:
                     where_clause = "symbol LIKE %s OR name LIKE %s"
                     search_pattern = f"%{search}%"
-                    params = [search_pattern, search_pattern]
+                    params = (search_pattern, search_pattern)
                 df = postgresql_access.query("symbols_info", limit=limit, where=where_clause, params=params)
             else:
                 # 直接查询 PostgreSQL

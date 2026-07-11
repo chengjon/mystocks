@@ -60,6 +60,26 @@ const routes: RouteRecordRaw[] = [
         ]
       },
 
+      // 1b. Stocks (股票列表)
+      {
+        path: 'stock',
+        name: 'stock-list',
+        component: () => import('@/views/Stock.vue'),
+        meta: { title: '股票列表', requiresAuth: true, api: '/api/v1/data/stocks/basic' }
+      },
+      {
+        path: 'analysis',
+        name: 'analysis',
+        component: () => import('@/views/Analysis.vue'),
+        meta: { title: '数据分析', icon: 'DataAnalysis' }
+      },
+      {
+        path: 'analysis/industry-concept',
+        name: 'industry-concept-analysis',
+        component: () => import('@/views/IndustryConceptAnalysis.vue'),
+        meta: { title: '行业概念分析', icon: 'Box' }
+      },
+
       // 2. Data Analysis (数据分析)
       {
         path: 'data',
@@ -290,6 +310,10 @@ const routes: RouteRecordRaw[] = [
       },
 
       // Detail Pages (Details Groups - 同标准、同规则)
+      {
+        path: 'stock-detail/:symbol',
+        redirect: (to) => ({ path: `/detail/graphics/${to.params.symbol}` })
+      },
       {
         path: 'detail',
         meta: { title: '详情页', isDetail: true },

@@ -3,7 +3,11 @@ interface RealtimeQuoteItem {
   name?: unknown
   price?: unknown
   current_price?: unknown
+  last_price?: unknown
+  latest_price?: unknown
   change_percent?: unknown
+  change_pct?: unknown
+  change?: unknown
   amount?: unknown
   volume?: unknown
 }
@@ -64,11 +68,11 @@ function extractQuoteItems(payload: unknown): RealtimeQuoteItem[] {
 export function extractRealtimeMarketOverview(payload: unknown): RealtimeMarketOverview {
   const quoteItems = extractQuoteItems(payload)
   const indices = quoteItems.map((item, index) => {
-    const changePercent = parseNumber(item.change_percent)
+    const changePercent = parseNumber(item.change_pct ?? item.change_percent ?? item.change)
     return {
       symbol: typeof item.symbol === "string" ? item.symbol : `UNKNOWN-${index + 1}`,
       name: typeof item.name === "string" && item.name.trim() ? item.name : `股票${index + 1}`,
-      current_price: parseNumber(item.current_price ?? item.price),
+      current_price: parseNumber(item.last_price ?? item.current_price ?? item.latest_price ?? item.price),
       change_percent: changePercent,
       amount: parseNumber(item.amount),
       volume: parseNumber(item.volume),

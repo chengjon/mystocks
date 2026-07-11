@@ -223,8 +223,8 @@ function normalizePositions(payload: unknown): PositionRow[] {
 const fetchData = async () => {
   try {
     const [wlRes, portRes] = await Promise.all([
-      apiClient.get('/api/portfolio/v2/watchlist'),
-      apiClient.get('/api/portfolio/v2/summary')
+      apiClient.get('/portfolio/v2/watchlist'),
+      apiClient.get('/portfolio/v2/summary')
     ])
 
     if (wlRes.data?.success) {

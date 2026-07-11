@@ -298,7 +298,7 @@ function normalizeWatchlistStock(raw: unknown, index: number): WatchlistStockRec
 
 export const watchlistService = {
   async listWatchlists(): Promise<ServiceResponse<WatchlistRecord[]>> {
-    const rawResponse = await request.get('/api/v1/monitoring/watchlists')
+    const rawResponse = await request.get('/v1/monitoring/watchlists')
     const body = extractMonitoringRouteResponse<unknown>(rawResponse)
     const data = extractCollectionRows(rawResponse, ['watchlists', 'items', 'data'])
 
@@ -327,7 +327,7 @@ export const watchlistService = {
     const symbols = [...new Set(stocks.map(stock => stock.stock_code).filter(Boolean))]
     const [rawAlertsResponse, rawQuotesResponse] = await Promise.all([
       request.get(`/api/v1/monitoring/analysis/portfolio/${watchlistId}/alerts`),
-      request.get('/api/v1/market/quotes', {
+      request.get('/v1/market/quotes', {
         params: {
           symbols: symbols.join(','),
         },
@@ -348,7 +348,7 @@ export const watchlistService = {
   },
 
   async createWatchlist(payload: CreateWatchlistPayload): Promise<ServiceResponse<WatchlistRecord>> {
-    const rawResponse = await request.post('/api/v1/monitoring/watchlists', payload)
+    const rawResponse = await request.post('/v1/monitoring/watchlists', payload)
     const body = extractMonitoringRouteResponse<unknown>(rawResponse)
     const created = extractMonitoringRouteData<unknown>(rawResponse)
 

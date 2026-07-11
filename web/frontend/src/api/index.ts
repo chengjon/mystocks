@@ -77,7 +77,7 @@ export const strategyApi = {
 
 // --- Technical API (v1 compatible) ---
 export const technicalApi = {
-  getIndicators: (symbol: string): Promise<UnifiedResponse<unknown>> => apiClient.get(`/v1/technical/indicators/${symbol}`),
+  getIndicators: (symbol: string): Promise<UnifiedResponse<unknown>> => apiClient.get(`/v1/technical/${symbol}/indicators`),
   getAnalysis: (symbol: string): Promise<UnifiedResponse<unknown>> => apiClient.get(`/v1/technical/analysis/${symbol}`),
   getBatchIndicators: (symbols: string[], params: { indicators: string[] }): Promise<UnifiedResponse<unknown>> =>
     apiClient.post('/v1/technical/batch', { symbols, ...params }),

@@ -34,8 +34,8 @@ const quoteRows = computed(() => {
   if (!overview.value?.indices) return []
   return overview.value.indices.map((item, idx) => ({
     name: item.name,
-    price: Number(item.current_price ?? 0).toFixed(2),
-    change: `${(item.change_percent ?? 0) >= 0 ? '+' : ''}${Number(item.change_percent ?? 0).toFixed(2)}%`,
+    price: Number(item.last_price ?? item.current_price ?? item.latest_price ?? 0).toFixed(2),
+    change: `${(item.change_pct ?? item.change_percent ?? 0) >= 0 ? '+' : ''}${Number(item.change_pct ?? item.change_percent ?? 0).toFixed(2)}%`,
     volume: Number((Number(item.amount ?? 0) / 100000000).toFixed(1)),
     turnover: `${(1.6 + idx * 0.4).toFixed(2)}%`
   }))

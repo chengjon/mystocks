@@ -32,72 +32,72 @@ export interface AnalysisResponse {
 
 // 基本面分析
 export const getFundamentalAnalysis = async (params: AnalysisRequest): Promise<AnalysisResponse> => {
-    return await http.get('/api/v1/advanced-analysis/fundamental', { params })
+    return await http.get('/v1/advanced-analysis/fundamental', { params })
 }
 
 // 技术面分析
 export const getTechnicalAnalysis = async (params: AnalysisRequest): Promise<AnalysisResponse> => {
-    return await http.get('/api/v1/advanced-analysis/technical', { params })
+    return await http.get('/v1/advanced-analysis/technical', { params })
 }
 
 // 交易信号分析
 export const getTradingSignalsAnalysis = async (params: AnalysisRequest): Promise<AnalysisResponse> => {
-    return await http.get('/api/v1/advanced-analysis/trading-signals', { params })
+    return await http.get('/v1/advanced-analysis/trading-signals', { params })
 }
 
 // 时序分析
 export const getTimeSeriesAnalysis = async (params: AnalysisRequest): Promise<AnalysisResponse> => {
-    return await http.get('/api/v1/advanced-analysis/time-series', { params })
+    return await http.get('/v1/advanced-analysis/time-series', { params })
 }
 
 // 市场全景分析
 export const getMarketPanoramaAnalysis = async (params: AnalysisRequest): Promise<AnalysisResponse> => {
-    return await http.get('/api/v1/advanced-analysis/market-panorama', { params })
+    return await http.get('/v1/advanced-analysis/market-panorama', { params })
 }
 
 // 资金流向分析
 export const getCapitalFlowAnalysis = async (params: AnalysisRequest): Promise<AnalysisResponse> => {
-    return await http.get('/api/v1/advanced-analysis/capital-flow', { params })
+    return await http.get('/v1/advanced-analysis/capital-flow', { params })
 }
 
 // 筹码分布分析
 export const getChipDistributionAnalysis = async (params: AnalysisRequest): Promise<AnalysisResponse> => {
-    return await http.get('/api/v1/advanced-analysis/chip-distribution', { params })
+    return await http.get('/v1/advanced-analysis/chip-distribution', { params })
 }
 
 // 异常追踪分析
 export const getAnomalyTrackingAnalysis = async (params: AnalysisRequest): Promise<AnalysisResponse> => {
-    return await http.get('/api/v1/advanced-analysis/anomaly-tracking', { params })
+    return await http.get('/v1/advanced-analysis/anomaly-tracking', { params })
 }
 
 // 财务估值分析
 export const getFinancialValuationAnalysis = async (params: AnalysisRequest): Promise<AnalysisResponse> => {
-    return await http.get('/api/v1/advanced-analysis/financial-valuation', { params })
+    return await http.get('/v1/advanced-analysis/financial-valuation', { params })
 }
 
 // 情绪分析
 export const getSentimentAnalysis = async (params: AnalysisRequest): Promise<AnalysisResponse> => {
-    return await http.get('/api/v1/advanced-analysis/sentiment', { params })
+    return await http.get('/v1/advanced-analysis/sentiment', { params })
 }
 
 // 决策模型分析
 export const getDecisionModelsAnalysis = async (params: AnalysisRequest): Promise<AnalysisResponse> => {
-    return await http.get('/api/v1/advanced-analysis/decision-models', { params })
+    return await http.get('/v1/advanced-analysis/decision-models', { params })
 }
 
 // 多维度雷达分析
 export const getMultidimensionalRadarAnalysis = async (params: AnalysisRequest): Promise<AnalysisResponse> => {
-    return await http.get('/api/v1/advanced-analysis/multidimensional-radar', { params })
+    return await http.get('/v1/advanced-analysis/multidimensional-radar', { params })
 }
 
 // 批量分析
 export const getBatchAnalysis = async (data: BatchAnalysisRequest): Promise<AnalysisResponse> => {
-    return await http.post('/api/v1/advanced-analysis/batch', data)
+    return await http.post('/v1/advanced-analysis/batch', data)
 }
 
 // 健康检查
 export const getAnalysisHealth = async (): Promise<AnalysisResponse> => {
-    return await http.get('/api/v1/advanced-analysis/health')
+    return await http.get('/v1/advanced-analysis/health')
 }
 
 // 统一的高级分析API对象

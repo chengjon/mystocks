@@ -15,8 +15,8 @@ interface StockData {
 
 // Watchlist API wrapper
 const watchlistApi = {
-  getWatchlist: () => apiClient.get('/api/watchlist'),
-  addToWatchlist: (data: { symbol: string; display_name?: string }) => apiClient.post('/api/watchlist', data),
+  getWatchlist: () => apiClient.get('/watchlist'),
+  addToWatchlist: (data: { symbol: string; display_name?: string }) => apiClient.post('/watchlist', data),
   removeFromWatchlist: (symbol: string) => apiClient.delete(`/api/watchlist/${symbol}`)
 }
 

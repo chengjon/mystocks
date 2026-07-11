@@ -251,7 +251,7 @@ const refreshData = async () => {
             const payload = res?.data ?? res
             auctionData.value = Array.isArray(payload) ? payload : []
         } else if (activeTab.value === 'data-quality') {
-            const res = await apiClient.get('/api/monitoring/v2/data-quality')
+            const res = await apiClient.get('/monitoring/v2/data-quality')
             if (res.data?.success) {
                 qualityData.value = res.data.data.metrics
                 dataSources.value = res.data.data.sources

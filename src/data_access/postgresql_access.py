@@ -293,13 +293,7 @@ class PostgreSQLDataAccess:
                 )
 
             if where:
-                if "%s" in where or "%" in where:
-                    sql_query = sql.SQL("{} WHERE {}").format(sql_query, sql.SQL(where))
-                else:
-                    # Simple validation
-                    if any(x in where.lower() for x in [";", "--", "drop", "truncate"]):
-                        raise ValueError("Potentially dangerous SQL pattern")
-                    sql_query = sql.SQL("{} WHERE {}").format(sql_query, sql.SQL(where))
+                sql_query = sql.SQL("{} WHERE {}").format(sql_query, sql.SQL(where))
 
             if order_by:
                 # Basic validation

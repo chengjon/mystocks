@@ -69,8 +69,8 @@ export function normalizeDashboardMarketOverview(payload: unknown): MarketOvervi
       row.display_name ??
       `指数-${index + 1}`
     ),
-    latest_price: toNumber(row.latest_price ?? row.price),
-    change_percent: toNumber(row.change_percent ?? row.change),
+    latest_price: toNumber(row.last_price ?? row.latest_price ?? row.price),
+    change_percent: toNumber(row.change_pct ?? row.change_percent ?? row.change),
     volume: toNumber(row.volume ?? row.amount),
   }))
 }
