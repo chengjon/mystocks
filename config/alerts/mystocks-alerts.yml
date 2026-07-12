@@ -357,3 +357,54 @@ groups:
           summary: "Service degradation detected"
           description: "{{ $value | humanize }} components are unhealthy"
           dashboard: "http://localhost:3000/d/mystocks-monitoring"
+
+  - name: mystocks-signal-alerts
+    interval: 30s
+    rules:
+      # Signal Accuracy Alerts
+      - alert: SignalAccuracyLow
+        expr: mystocks_signal_accuracy_percentage < 50
+        for: 1h
+        labels:
+          severity: warning
+          category: trading_signals
+        annotations:
+          summary: "信号准确率过低"
+          description: "策略 {{ $labels.strategy_id }} {{ $labels.signal_type }} 信号准确率低于 50%，当前值: {{ $value }}%"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"
+
+      # Signal Latency Alerts
+      - alert: SignalLatencyHigh
+        expr: histogram_quantile(0.95, rate(mystocks_signal_latency_seconds_sum[5m])) > 0.5
+        for: 10m
+        labels:
+          severity: warning
+          category: trading_signals
+        annotations:
+          summary: "信号生成延迟过高"
+          description: "策略 {{ $labels.strategy_id }} P95 信号生成延迟超过 500ms，当前值: {{ $value | humanizeDuration }}"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"
+
+      # Strategy Health Alerts
+      - alert: StrategyUnhealthy
+        expr: mystocks_strategy_health_status == 0
+        for: 5m
+        labels:
+          severity: critical
+          category: trading_signals
+        annotations:
+          summary: "策略健康状态异常"
+          description: "策略 {{ $labels.strategy_id }} 健康状态为 degraded/unhealthy，请立即检查"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"
+
+      # Signal Push Failure Rate Alerts
+      - alert: SignalPushFailureRate
+        expr: rate(mystocks_signal_push_total{status="failed"}[5m]) / rate(mystocks_signal_push_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          category: trading_signals
+        annotations:
+          summary: "信号推送失败率过高"
+          description: "渠道 {{ $labels.channel }} 推送失败率超过 10%，当前值: {{ $value | humanizePercentage }}"
+          dashboard: "http://localhost:3000/d/mystocks-monitoring"

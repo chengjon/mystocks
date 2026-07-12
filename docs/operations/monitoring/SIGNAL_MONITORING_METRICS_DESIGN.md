@@ -1,14 +1,22 @@
 # 交易信号监控指标系统设计方案
 
-> **版本**: v2.0 (更新)
-> **日期**: 2026-01-08
-> **状态**: 🔄 部分实施中
+> **版本**: v3.0 (当前代码对齐)
+> **日期**: 2026-07-12（审计更新）
+> **状态**: ✅ 绝大部分已完成（约85%，待补充信号告警规则）
 > **参考架构**: 指标计算系统V2.1, 数据源管理V2.0
 > **相关文档**: [信号监控体系梳理报告](../../reports/SIGNAL_MONITORING_SYSTEM_INVENTORY_20260108.md)
 
 ---
 
 ## 📝 更新日志
+
+### v3.0 (2026-07-12)
+- ✅ 与当前代码库现实对齐
+- ✅ 修正 15+ 项过时 ❌/✅ 标记为实际状态
+- ✅ 新增 `signal_recorder.py` / `signal_result_tracker.py` / `signal_push_integration.py` 描述
+- ✅ 更新行数：`signal_decorator.py` 545→295
+- ✅ 标注剩余待办：4 条信号告警规则
+- ✅ 更新总体完成度：~30% → ~85%
 
 ### v2.0 (2026-01-08)
 - ✅ 更新当前实施状态
@@ -36,12 +44,22 @@
 - ✅ **API端点**: 监控清单管理API (7个端点)
 - ✅ **指标计算系统**: 4个已实现指标 (SMA, EMA, MACD, RSI)
 
-#### 待实现功能（❌TODO）
-- ❌ 信号执行结果数据库表（`signal_execution_results`, `signal_statistics_hourly`）
-- ❌ 信号统计API端点（`/api/signals/statistics` 等）
-- ❌ Grafana信号监控Dashboard（6个规划面板）
-- ❌ Prometheus告警规则配置
-- ❌ 信号服务集成（集成装饰器到实际服务）
+#### 当前代码库实际状态（2026-07-12 审计）
+> ⚠️ 以下于 2026-01-08~2026-03 期间已实现，文档 v2.0 未及时更新。
+
+- ✅ **数据库表**：`scripts/migrations/002_signal_monitoring_tables.sql`（4 张表：signal_records, signal_execution_results, signal_push_logs, strategy_health）+ `003_signal_statistics_hourly.sql`
+- ✅ **信号记录服务**：`src/monitoring/signal_recorder.py`（406 行）
+- ✅ **信号结果追踪**：`src/monitoring/signal_result_tracker.py`（443 行）
+- ✅ **信号统计API端点**：`/api/signals/statistics`、`/api/signals/active`、`/api/strategies/{id}/health/detailed` — 在 `web/backend/app/api/signal_monitoring/` 中
+- ✅ **Grafana信号监控Dashboard**：`data/grafana/provisioning/dashboards/trading-signals-dashboard.json`（9 面板）+ `config/grafana-dashboards/dashboards/signal-monitoring.json`（10 面板）
+- ✅ **信号推送集成**：`src/monitoring/signal_push_integration.py`（249 行）— 含 `@monitor_signal_push` 装饰器
+- ✅ **服务集成**：`SignalGenerationService` 已使用 `signal_metrics`/`signal_recorder`；策略通知管理器已使用 `MonitoredStrategyExecutor`
+- ✅ **聚合任务**：`src/monitoring/signal_aggregation_task.py`（624 行）— 含 `SignalMetricsAggregator`、`MetricsScheduler`、`SignalStatisticsAggregator`
+- ✅ **聚合启动脚本**：`scripts/runtime/run_signal_aggregation.py`
+- ✅ **单元/集成/E2E测试**：4 个测试文件覆盖
+
+#### 剩余待实现（❌）
+- ❌ Prometheus信号专用告警规则（4 条：SignalAccuracyLow / SignalLatencyHigh / StrategyUnhealthy / SignalPushFailureRate）
 
 ### 1.2 核心指标（9个）- 已定义
 
@@ -105,38 +123,47 @@
 ... (共7个端点)
 ```
 
-### 2.2 待实现功能（❌TODO）
+### 2.2 当前实际状态（全量更新 v3.0）
 
-#### 数据库表
+> 以下标注反映 2026-07-12 代码审计结果。
+
+#### 数据库表 ✅ 已完成
 ```sql
-❌ signal_execution_results -- 信号执行结果表
-❌ signal_statistics_hourly -- 信号统计汇总表
+-- ✅ scripts/migrations/002_signal_monitoring_tables.sql
+-- 包含: signal_records, signal_execution_results, signal_push_logs, strategy_health
+
+-- ✅ scripts/migrations/003_signal_statistics_hourly.sql
+-- 包含: signal_statistics_hourly（含小时级统计指标）
 ```
 
-#### API端点
+#### API端点 ✅ 已完成
 ```
-❌ GET /api/signals/statistics -- 信号统计
-❌ GET /api/signals/active -- 活跃信号
-❌ GET /api/strategies/{id}/health -- 策略健康
-```
-
-#### Grafana
-```
-❌ grafana/dashboards/trading-signals-dashboard.json -- 信号监控Dashboard
-   - 信号生成趋势面板
-   - 信号准确率面板
-   - 延迟分布面板
-   - 活跃信号面板
-   - 策略健康状态面板
-   - 推送统计面板
+✅ GET /api/signals/statistics -- web/backend/app/api/signal_monitoring/get_signal_statistics.py
+✅ GET /api/signals/active -- web/backend/app/api/signal_monitoring/get_signal_statistics.py
+✅ GET /api/strategies/{id}/health/detailed -- web/backend/app/api/signal_monitoring/get_signal_statistics.py
 ```
 
-#### 告警规则
-```yaml
-❌ alerts/signal_generation.yaml
+#### Grafana ✅ 已完成
+```
+✅ data/grafana/provisioning/dashboards/trading-signals-dashboard.json (9 panels)
+   - 信号准确度 | 信号成功率 | 活跃信号数量
+   - 策略健康状态 | 信号盈利比率 | 信号生成速率
+   - 信号生成延迟分布 | 信号统计概览
+
+✅ config/grafana-dashboards/dashboards/signal-monitoring.json (10 panels, 749行)
+   - 信号生成速率 | 信号准确率 | 信号生成延迟分布
+   - 信号成功率 | 策略健康状态 | 活跃信号数量
+   - 1天盈利比率 | 推送总数 | 推送延迟 | 信号类型分布
+```
+
+#### 告警规则 🔄 部分完成
+```
+✅ config/alerts/mystocks-alerts.yml — 通用API/数据库/系统告警已配置
+❌ 信号专用告警规则（4 条待补充）:
    - SignalAccuracyLow
    - SignalLatencyHigh
    - StrategyUnhealthy
+   - SignalPushFailureRate
 ```
 
 ---
@@ -432,11 +459,11 @@ def monitor_signal_push(channel: str) -> Callable:
 
 ---
 
-## 5️⃣ 数据存储设计（待实现）
+## 5️⃣ 数据存储设计（✅ 已实现）
 
 ### 5.1 信号执行结果表
 
-**状态**: ❌ 待创建
+**状态**: ✅ 已实现（`scripts/migrations/002_signal_monitoring_tables.sql`）
 
 ```sql
 -- 位置: scripts/migrations/001_signal_tables.sql
@@ -475,7 +502,7 @@ CREATE INDEX idx_signal_results_closed ON signal_execution_results(closed_at);
 
 ### 5.2 信号统计汇总表
 
-**状态**: ❌ 待创建
+**状态**: ✅ 已实现（`scripts/migrations/003_signal_statistics_hourly.sql`）
 
 ```sql
 -- 位置: scripts/migrations/001_signal_tables.sql
@@ -512,11 +539,11 @@ CREATE INDEX idx_stats_hourly_timestamp ON signal_statistics_hourly(hour_timesta
 
 ---
 
-## 6️⃣ API设计（待实现）
+## 6️⃣ API设计（✅ 已实现）
 
 ### 6.1 信号统计API
 
-**状态**: ❌ 待实现
+**状态**: ✅ 已实现（`web/backend/app/api/signal_monitoring/get_signal_statistics.py`）
 
 ```yaml
 # 文件: web/backend/app/api/signal_statistics.py
@@ -564,7 +591,7 @@ GET /api/signals/active
 
 ### 6.2 策略健康API
 
-**状态**: ❌ 待实现
+**状态**: ✅ 已实现（同上文件，`/strategies/{id}/health/detailed`）
 
 ```yaml
 # 文件: web/backend/app/api/strategy_health.py
@@ -587,137 +614,100 @@ GET /api/strategies/{strategy_id}/health
 
 ---
 
-## 7️⃣ Grafana仪表板（待实现）
+## 7️⃣ Grafana仪表板（✅ 已实现）
 
 ### 7.1 Dashboard配置
 
-**状态**: ❌ 待创建
+**状态**: ✅ 已实现
 
-**文件**: `grafana/dashboards/trading-signals-dashboard.json`
+**文件**:
+- `data/grafana/provisioning/dashboards/trading-signals-dashboard.json`（9 面板）
+- `config/grafana-dashboards/dashboards/signal-monitoring.json`（10 面板，749 行）
+- `config/grafana_trading_signals_dashboard.json`（备选版本）
 
-### 7.2 面板规划
+### 7.2 已实现面板
 
-| 面板 | 类型 | 数据源 | 状态 | 说明 |
-|------|------|--------|------|------|
-| 信号生成趋势 | Time series | Prometheus | ❌ | 按策略/类型分组 |
-| 信号准确率 | Gauge | Prometheus | ❌ | 实时准确率 |
-| 延迟分布 | Histogram | Prometheus | ❌ | P50/P95/P99 |
-| 活跃信号 | Table | PostgreSQL | ❌ | 当前待执行信号 |
-| 策略健康状态 | Status grid | Prometheus | ❌ | 各策略健康状态 |
-| 推送统计 | Bar gauge | Prometheus | ❌ | 各渠道推送情况 |
+| 面板 | 类型 | 文件 | 状态 |
+|------|------|------|------|
+| 交易信号准确度 | Gauge | trading-signals-dashboard | ✅ |
+| 信号成功率 | Gauge | trading-signals-dashboard | ✅ |
+| 活跃信号数量 | Table | trading-signals-dashboard | ✅ |
+| 策略健康状态 | Status grid | trading-signals-dashboard | ✅ |
+| 信号盈利比率 | Gauge | trading-signals-dashboard | ✅ |
+| 信号生成速率 | Time series | trading-signals-dashboard + signal-monitoring | ✅ |
+| 信号生成延迟分布 | Histogram | trading-signals-dashboard + signal-monitoring | ✅ |
+| 信号统计概览 | Table | trading-signals-dashboard | ✅ |
+| 信号准确率 | Gauge | signal-monitoring | ✅ |
+| 推送通知总数 | Bar gauge | signal-monitoring | ✅ |
+| 推送延迟 | Histogram | signal-monitoring | ✅ |
+| 信号类型分布 | Pie | signal-monitoring | ✅ |
 
 ---
 
-## 8️⃣ 实施路线图（更新）
+## 8️⃣ 实施路线图（更新至 v3.0）
 
-### Phase 0: 基础设施 ✅ (已完成)
+### ✅ Phase 0: 基础设施（已完成）
 - ✅ 创建 `src/monitoring/signal_metrics.py` - 9个指标定义完成
-- ✅ 创建 `src/monitoring/signal_decorator.py` - 装饰器实现完成
+- ✅ 创建 `src/monitoring/signal_decorator.py`（295行）- 装饰器实现完成
 - ✅ 集成到 `__init__.py` 导出
 - ✅ 监控数据库基础设施完成
 - ✅ 前端监控页面完成 (6个Vue组件)
 
-### Phase 1: 数据层 🔄 (进行中 - 优先级P0)
-- [ ] **创建数据库迁移脚本**
-  - [ ] `scripts/migrations/001_signal_tables.sql`
-  - [ ] `signal_execution_results` 表
-  - [ ] `signal_statistics_hourly` 表
-- [ ] **执行数据库迁移**
-  - [ ] 在监控数据库中创建表
-  - [ ] 验证表结构
-  - [ ] 测试插入和查询
+### ✅ Phase 1: 数据层（已完成）
+- ✅ `scripts/migrations/002_signal_monitoring_tables.sql`（4 张表）
+- ✅ `scripts/migrations/003_signal_statistics_hourly.sql`
+- ✅ `src/monitoring/signal_recorder.py`（406行）- 新增模块
+- ✅ `src/monitoring/signal_result_tracker.py`（443行）- 新增模块
 
-**预计工作量**: 0.5天
+### ✅ Phase 2: 服务集成（已完成）
+- ✅ `SignalGenerationService` 使用 `signal_metrics` + `signal_recorder`
+- ✅ `@monitor_signal_push` 在 `signal_push_integration.py` 中实现（249行）
+- ✅ `MonitoredNotificationManager` 包装通知管理器
+- ✅ 信号结果跟踪：`signal_result_tracker.py` 追踪生命周期
 
-### Phase 2: 服务集成 📋 (待开始 - 优先级P0)
-- [ ] **集成信号监控装饰器**
-  - [ ] 在 `SignalGenerationService` 中使用 `MonitoredStrategyExecutor`
-  - [ ] 在 `SignalPushService` 中使用 `@monitor_signal_push`
-  - [ ] 验证指标记录是否正确
-- [ ] **实现信号结果跟踪**
-  - [ ] 记录信号执行结果到 `signal_execution_results`
-  - [ ] 更新信号状态（pending → executed/cancelled/expired）
-  - [ ] 记录盈亏结果
+### ✅ Phase 3: 统计聚合（已完成）
+- ✅ `SignalMetricsAggregator` — 小时级/日级/按需聚合
+- ✅ `MetricsScheduler` — 定时调度器
+- ✅ `SignalStatisticsAggregator` — 额外统计聚合器
+- ✅ `scripts/runtime/run_signal_aggregation.py` — 聚合启动脚本
 
-**预计工作量**: 1.5天
+### ✅ Phase 4: API层（已完成）
+- ✅ `GET /api/signals/statistics`
+- ✅ `GET /api/signals/active`
+- ✅ `GET /api/strategies/{id}/health/detailed`
+- ✅ `web/backend/app/api/signal_monitoring/` 完整模块（3 文件）
 
-### Phase 3: 统计聚合 📋 (待开始 - 优先级P1)
-- [ ] **实现定时聚合任务**
-  - [ ] 每小时统计信号生成数量
-  - [ ] 计算准确率、成功率、盈利比率
-  - [ ] 计算延迟统计（avg/p95/max）
-  - [ ] 写入 `signal_statistics_hourly` 表
-- [ ] **实现 `SignalAggregationTask`**
-  - [ ] 定时任务调度
-  - [ ] 批量计算逻辑
-  - [ ] 异常处理和重试
+### ✅ Phase 5: Grafana Dashboard（已完成）
+- ✅ `data/grafana/provisioning/dashboards/trading-signals-dashboard.json`（9 面板）
+- ✅ `config/grafana-dashboards/dashboards/signal-monitoring.json`（10 面板）
+- ✅ `config/grafana_trading_signals_dashboard.json`（备选）
 
-**预计工作量**: 1天
+### 🔄 Phase 6: 告警配置（部分完成）
+- ✅ 通用告警：API响应时间/错误率/数据库/系统 → `config/alerts/mystocks-alerts.yml`
+- ✅ Alertmanager路由：`config/alertmanager.yml`
+- ❌ **信号专用告警规则**（4 条待补充）:
+  - `SignalAccuracyLow`
+  - `SignalLatencyHigh`
+  - `StrategyUnhealthy`
+  - `SignalPushFailureRate`
 
-### Phase 4: API层 📋 (待开始 - 优先级P0)
-- [ ] **实现信号统计API**
-  - [ ] `GET /api/signals/statistics`
-  - [ ] `GET /api/signals/active`
-  - [ ] 查询 `signal_execution_results` 和 `signal_statistics_hourly`
-- [ ] **实现策略健康API**
-  - [ ] `GET /api/strategies/{id}/health`
-  - [ ] 综合指标计算
-  - [ ] 健康状态判断逻辑
-
-**预计工作量**: 1天
-
-### Phase 5: Grafana Dashboard 📋 (待开始 - 优先级P1)
-- [ ] **创建Dashboard配置**
-  - [ ] `grafana/dashboards/trading-signals-dashboard.json`
-  - [ ] 6个面板配置
-- [ ] **配置数据源**
-  - [ ] Prometheus数据源
-  - [ ] PostgreSQL数据源（监控数据库）
-- [ ] **验证可视化**
-  - [ ] 检查数据连接
-  - [ ] 验证面板显示
-  - [ ] 调整查询和布局
-
-**预计工作量**: 0.5天
-
-### Phase 6: 告警配置 📋 (待开始 - 优先级P2)
-- [ ] **创建Prometheus告警规则**
-  - [ ] `alerts/signal_generation.yaml`
-  - [ ] SignalAccuracyLow 规则
-  - [ ] SignalLatencyHigh 规则
-  - [ ] StrategyUnhealthy 规则
-- [ ] **配置告警通知**
-  - [ ] 邮件通知
-  - [ ] Webhook通知
-  - [ ] 测试告警触发
-
-**预计工作量**: 0.5天
-
-### Phase 7: 测试与验证 📋 (待开始 - 优先级P0)
-- [ ] **单元测试**
-  - [ ] 测试指标记录功能
-  - [ ] 测试装饰器功能
-  - [ ] 测试API端点
-- [ ] **集成测试**
-  - [ ] 端到端信号流程测试
-  - [ ] 数据持久化测试
-  - [ ] Grafana面板验证
-- [ ] **性能测试**
-  - [ ] 高并发指标记录
-  - [ ] 大数据量统计计算
-  - [ ] 响应时间验证
-
-**预计工作量**: 1天
+### ✅ Phase 7: 测试与验证（已完成）
+- ✅ `tests/unit/test_monitoring/test_signal_monitoring.py` — 单元测试
+- ✅ `tests/api/file_tests/test_signal_monitoring_api.py` — API测试
+- ✅ `tests/unit/test_signal_monitoring_integration.py` — 集成测试
+- ✅ `tests/e2e/monitoring-dashboard.spec.ts` — E2E测试
+- ✅ `tests/monitoring/test_monitoring_alerts.py` — 告警测试
 
 ---
 
-## 9️⃣ 监控告警规则（待配置）
+## 9️⃣ 监控告警规则（部分已配置）
 
 ### 9.1 告警配置
 
-**状态**: ❌ 待创建
+**状态**: 🔄 部分完成 — 通用告警已就绪，信号专用告警待补
 
-**文件**: `alerts/signal_generation.yaml`
+**现有文件**: `config/alerts/mystocks-alerts.yml`（通用 API/数据库/系统告警）
+**待创建文件**: 4 条信号专用规则（见下方）
 
 ```yaml
 groups:
@@ -790,16 +780,25 @@ groups:
 │  │       前端监控页面 (6个Vue组件)                   │       │
 │  └─────────────────────────────────────────────────┘       │
 │                                                              │
-│  ❌ 待实现模块                                               │
+│  ✅ 已实现模块（v3.0 新增）                                     │
 │  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐  │
 │  │signal_tables │    │Signal Stats  │    │   Grafana    │  │
-│  │  (2个表)     │    │    API       │    │  Dashboard   │  │
+│  │  (4张表)     │    │    API (3)   │    │  Dashboards  │  │
+│  └──────────────┘    └──────────────┘    └──────────────┘  │
+│       │                    │                    │             │
+│       ▼                    ▼                    ▼             │
+│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐  │
+│  │Signal Aggr.  │    │  Signal      │    │   Service    │  │
+│  │   Task       │    │  Recorder /  │    │ Integration  │  │
+│  │  (已完成)    │    │  Tracker     │    │  (已完成)    │  │
 │  └──────────────┘    └──────────────┘    └──────────────┘  │
 │                                                              │
-│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐  │
-│  │Signal Aggr.  │    │ Alert Rules  │    │   Service    │  │
-│  │   Task       │    │  (YAML配置)   │    │ Integration  │  │
-│  └──────────────┘    └──────────────┘    └──────────────┘  │
+│  ❌ 剩余待实现                                                │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │            Alert Rules (信号专用规则, 4条)             │   │
+│  │            SignalAccuracyLow / LatencyHigh /         │   │
+│  │            StrategyUnhealthy / PushFailureRate       │   │
+│  └──────────────────────────────────────────────────────┘   │
 │                                                              │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -828,37 +827,27 @@ groups:
 
 ---
 
-## 1️⃣3️⃣ 下一步行动（优先级排序）
+## 1️⃣3️⃣ 下一步行动（v3.0 更新）
 
-### P0 - 核心功能（必须完成）
-1. **创建数据库表** (0.5天)
-   ```bash
-   # 执行迁移脚本
-   python scripts/migrations/001_signal_tables.sql
-   ```
+### ✅ 已完成（全部已实现）
+| 任务 | 状态 | 代码位置 |
+|------|------|----------|
+| 创建数据库表 | ✅ | `scripts/migrations/002_*` + `003_*` |
+| 集成装饰器到服务 | ✅ | `signal_push_integration.py` + `monitored_notification_manager.py` |
+| 实现信号统计API | ✅ | `web/backend/app/api/signal_monitoring/get_signal_statistics.py` |
+| 实现策略健康API | ✅ | 同上，`/strategies/{id}/health/detailed` |
+| 统计聚合任务 | ✅ | `signal_aggregation_task.py` (624行) |
+| Grafana Dashboard | ✅ | 3 份 Dashboard 配置（19 面板） |
+| 测试 | ✅ | 4 个测试文件 |
+| 信号记录服务 | ✅ | `signal_recorder.py` (406行) |
+| 信号结果追踪 | ✅ | `signal_result_tracker.py` (443行) |
 
-2. **集成装饰器到服务** (1天)
-   - 修改 `SignalGenerationService` 使用 `MonitoredStrategyExecutor`
-   - 修改 `SignalPushService` 使用 `@monitor_signal_push`
-
-3. **实现API端点** (1天)
-   - `/api/signals/statistics`
-   - `/api/signals/active`
-   - `/api/strategies/{id}/health`
-
-### P1 - 增强功能（推荐完成）
-4. **实现统计聚合任务** (1天)
-   - 定时计算小时级统计
-   - 更新 `signal_statistics_hourly` 表
-
-5. **创建Grafana Dashboard** (0.5天)
-   - 6个面板配置
-   - 数据源配置
-
-### P2 - 优化功能（可选）
-6. **配置Prometheus告警规则** (0.5天)
-   - 3个告警规则
-   - 通知渠道配置
+### ❌ 剩余待办
+**唯一剩余**: 配置信号专用 Prometheus 告警规则（4 条，预估 0.5 天）
+- `SignalAccuracyLow`
+- `SignalLatencyHigh`
+- `StrategyUnhealthy`
+- `SignalPushFailureRate`
 
 ---
 
@@ -873,27 +862,35 @@ groups:
 
 ## 🎯 总结
 
-### 当前状态（v2.0）
+### 当前状态（v3.0 — 2026-07-12 代码审计）
 - ✅ **基础设施完成**: 9个Prometheus指标已定义并可用
-- ✅ **监控代码完成**: 装饰器和指标收集器已实现（776行代码）
+- ✅ **监控代码完成**: 装饰器和指标收集器已实现
 - ✅ **前端页面完成**: 6个Vue监控页面
 - ✅ **监控数据库**: 基础设施已就绪
-- ❌ **数据持久化**: 待创建数据库表
-- ❌ **API层**: 待实现3个统计端点
-- ❌ **可视化**: 待创建Grafana Dashboard
-- ❌ **告警**: 待配置Prometheus告警规则
+- ✅ **数据持久化**: `signal_records`、`signal_execution_results`、`signal_push_logs`、`strategy_health` + `signal_statistics_hourly`
+- ✅ **API层**: `/signals/statistics`、`/signals/active`、`/strategies/{id}/health/detailed` 全部就绪
+- ✅ **可视化**: 2 份 Grafana Dashboard（19 面板）已部署
+- 🔄 **告警**: 通用告警就绪，信号专用告警待补充（4 条规则）
 
-### 实施进度
-- ✅ **Phase 0 (已完成)**: 基础设施
-- 🔄 **Phase 1-7 (进行中)**: 数据层 → 服务集成 → 统计聚合 → API层 → Grafana → 告警 → 测试
+### 实施进度（85% 已完成）
+| Phase | 状态 | 说明 |
+|-------|------|------|
+| ✅ Phase 0 — 基础设施 | 完成 | 9 指标 + 装饰器 + 前端 |
+| ✅ Phase 1 — 数据层 | 完成 | 4 张表 + recorder/tracker |
+| ✅ Phase 2 — 服务集成 | 完成 | push 集成 + 策略服务集成 |
+| ✅ Phase 3 — 统计聚合 | 完成 | 小时级/日级聚合 + 调度 |
+| ✅ Phase 4 — API 层 | 完成 | 3 个端点 |
+| ✅ Phase 5 — Grafana | 完成 | 19 面板 |
+| 🔄 Phase 6 — 告警规则 | 部分完成 | 通用已就绪，4 信号规则待补 |
+| ✅ Phase 7 — 测试 | 完成 | 4 个测试文件 |
 
-### 预计总工作量
-- **剩余工作量**: 约5.5天
-- **推荐优先级**: P0功能优先（2.5天），P1功能次之（1.5天），P2功能最后（0.5天）
+### 剩余工作量
+- **唯一待办**: 4 条 Prometheus 信号告警规则（约 0.5 天）
+- 「数据持久化」「API层」「可视化」「服务集成」等原定待办均已在 2026-01 ~ 2026-03 期间落地完成
 
 ---
 
-**文档版本**: v2.0 (更新)
-**最后更新**: 2026-01-08
-**状态**: 🔄 部分实施中（基础设施已完成，数据层和API层待实现）
+**文档版本**: v3.0 (当前代码对齐)
+**最后更新**: 2026-07-12（全量审计更新）
+**状态**: ✅ 绝大部分已完成（约85%，仅信号告警规则待补充）
 **维护者**: MyStocks开发团队
