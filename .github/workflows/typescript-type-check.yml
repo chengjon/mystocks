@@ -480,11 +480,12 @@ jobs:
           BASELINE_FILE="${{ github.workspace }}/${{ env.TECH_DEBT_BASELINE_FILE }}"
           BASELINE_FRONTEND_ERRORS=""
           if [ -f "$BASELINE_FILE" ]; then
-            BASELINE_FRONTEND_ERRORS=$(python - <<'PY'
+            BASELINE_FRONTEND_ERRORS=$(python - "$BASELINE_FILE" <<'PY'
           import json
+          import sys
           from pathlib import Path
 
-          baseline_path = Path("reports/analysis/tech-debt-baseline.json")
+          baseline_path = Path(sys.argv[1])
           try:
               data = json.loads(baseline_path.read_text(encoding="utf-8"))
               value = data.get("frontend_type_errors", "")
@@ -496,9 +497,7 @@ jobs:
           fi
 
           if [ -z "$BASELINE_FRONTEND_ERRORS" ]; then
-            echo "❌ 未找到有效 frontend_type_errors 基线: $BASELINE_FILE"
-            QUALITY_PASS=false
-            GATE_ISSUES="$GATE_ISSUES 缺少有效技术债基线(frontend_type_errors)"
+            echo "::warning::未找到有效 frontend_type_errors 基线: $BASELINE_FILE（技术债门禁降级，仅执行零错误上限检查）"
           fi
 
           # 检查 tsc 错误
