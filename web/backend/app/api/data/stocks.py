@@ -181,10 +181,12 @@ async def get_stocks_industries(current_user: User = Depends(get_current_user)) 
     try:
         cache_key = "stocks:industries:list"
         cached_data = db_service.get_cache_data(cache_key)
-        if cached_data: return cached_data
+        if cached_data:
+            return cached_data
 
         df = db_service.query_stocks_basic(limit=10000)
-        if df.empty: return {"success": True, "data": [], "total": 0}
+        if df.empty:
+            return {"success": True, "data": [], "total": 0}
 
         industries = sorted(df["industry"].dropna().unique().tolist())
         industry_list = [{"industry_name": ind, "industry_code": f"IND_{i+1:03d}"} for i, ind in enumerate(industries)]
@@ -200,10 +202,12 @@ async def get_stocks_concepts(current_user: User = Depends(get_current_user)) ->
     try:
         cache_key = "stocks:concepts:list"
         cached_data = db_service.get_cache_data(cache_key)
-        if cached_data: return cached_data
+        if cached_data:
+            return cached_data
 
         df = db_service.query_concepts(limit=10000)
-        if df.empty: return {"success": True, "data": [], "total": 0}
+        if df.empty:
+            return {"success": True, "data": [], "total": 0}
 
         concept_list = [{"concept_name": row["name"], "concept_code": row["code"]} for _, row in df.iterrows()]
         result = {"success": True, "data": concept_list, "total": len(concept_list), "timestamp": datetime.now().isoformat()}

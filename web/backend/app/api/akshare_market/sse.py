@@ -13,7 +13,8 @@ router = APIRouter()
 async def get_sse_market_overview(current_user: User = Depends(get_current_user)):
     try:
         df = await akshare_market_adapter.get_market_overview_sse()
-        if df.empty: return create_error_response(ErrorCodes.DATA_NOT_FOUND, "No SSE overview data found")
+        if df.empty:
+            return create_error_response(ErrorCodes.DATA_NOT_FOUND, "No SSE overview data found")
         result = {
             "data": df.to_dict('records'), "count": len(df), "columns": list(df.columns),
             "timestamp": datetime.now().isoformat(), "source": "akshare", "exchange": "SSE"
@@ -29,7 +30,8 @@ async def get_sse_daily_deal(
 ):
     try:
         df = await akshare_market_adapter.get_market_sse_daily_deal(date)
-        if df.empty: return create_error_response(ErrorCodes.DATA_NOT_FOUND, f"No SSE daily deal found for {date}")
+        if df.empty:
+            return create_error_response(ErrorCodes.DATA_NOT_FOUND, f"No SSE daily deal found for {date}")
         result = {
             "data": df.to_dict('records'), "count": len(df), "date": date,
             "timestamp": datetime.now().isoformat(), "source": "akshare", "exchange": "SSE"
