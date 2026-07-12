@@ -1,0 +1,173 @@
+# Tech Debt Baseline — weekly collection + non-increasing ratchet
+#
+# Runs the collector (scripts/dev/quality_gate/collect_tech_debt_baseline.py)
+# on a weekly schedule, then commits the freshly-collected baseline ONLY when
+# every NO_NEW_DEBT_METRIC is <= the currently-committed baseline. If any metric
+# would increase, the committed baseline is left untouched (warning emitted).
+#
+# This is the "基线不增" (baseline never increases) hard gate from the
+# Technical Debt Governance Charter v1 (§5.2): updates may only decrease or
+# stay flat. Comparing against the committed baseline (not regenerating per-PR)
+# keeps the ratchet non-circular. See docs/standards/technical-debt-governance-charter-v1.md.
+name: Tech Debt Baseline (ratchet)
+
+on:
+  schedule:
+    - cron: '0 2 * * 5'  # Weekly Friday 02:00 UTC (Beijing 10:00)
+  workflow_dispatch:
+
+# Commit + PR on a schedule requires write access.
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  PYTHON_VERSION: '3.12'
+  NODE_VERSION: '20'
+  COMMITTED_BASELINE: 'reports/analysis/tech-debt-baseline.json'
+  PROPOSED_BASELINE: 'reports/analysis/tech-debt-proposed.json'
+  UPDATE_BRANCH: 'tech-debt-baseline-update'
+
+jobs:
+  collect-and-ratchet:
+    name: Collect baseline + ratchet guard
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    outputs:
+      action: ${{ steps.ratchet.outputs.action }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: web/frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: |
+          cd web/frontend
+          npm ci
+
+      - name: Collect proposed baseline
+        run: >-
+          python scripts/dev/quality_gate/collect_tech_debt_baseline.py
+          --output ${{ env.PROPOSED_BASELINE }}
+          --type-check-timeout 600
+
+      - name: Ratchet guard (commit only if non-increasing)
+        id: ratchet
+        run: |
+          COMMITTED="${{ env.COMMITTED_BASELINE }}"
+          PROPOSED="${{ env.PROPOSED_BASELINE }}"
+
+          if [ ! -f "$COMMITTED" ]; then
+            # Day-one seed: no committed baseline exists yet. The proposed
+            # baseline becomes the initial frozen baseline.
+            echo "No committed baseline found — seeding initial baseline."
+            cp "$PROPOSED" "$COMMITTED"
+            echo "action=seed" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "Committed baseline: $COMMITTED"
+          echo "Proposed baseline: $PROPOSED"
+
+          if python scripts/dev/quality_gate/tech_debt_governance_gate.py \
+              baseline-review \
+              --previous "$COMMITTED" \
+              --proposed "$PROPOSED"; then
+            echo "Baseline review PASSED (non-increasing). Updating committed baseline."
+            cp "$PROPOSED" "$COMMITTED"
+            echo "action=update" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::Baseline review FAILED: proposed baseline is NOT non-increasing vs committed. Committed baseline left unchanged."
+            echo "action=skip" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload proposed baseline artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tech-debt-baseline-proposed
+          path: ${{ env.PROPOSED_BASELINE }}
+          retention-days: 30
+
+      - name: Commit + open PR
+        if: steps.ratchet.outputs.action == 'seed' || steps.ratchet.outputs.action == 'update'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git checkout -B "${{ env.UPDATE_BRANCH }}"
+          git add "${{ env.COMMITTED_BASELINE }}"
+
+          if git diff --cached --quiet; then
+            echo "No baseline change to commit."
+            exit 0
+          fi
+
+          if [ "${{ steps.ratchet.outputs.action }}" = "seed" ]; then
+            title="chore(governance): seed initial tech-debt baseline"
+            flag="[seed]"
+          else
+            title="chore(governance): ratchet down tech-debt baseline (non-increasing)"
+            flag="[ratchet]"
+          fi
+
+          git commit -m "$title" -m "Automated by ${{ github.workflow }} (run ${{ github.run_id }})" -m "$flag Committed baseline updated only because the non-increasing ratchet passed. See docs/standards/technical-debt-governance-charter-v1.md §5.2."
+          git push --force-with-lease origin HEAD:"${{ env.UPDATE_BRANCH }}"
+          echo "✅ Baseline committed and pushed to ${{ env.UPDATE_BRANCH }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create or reuse pull request
+        if: steps.ratchet.outputs.action == 'seed' || steps.ratchet.outputs.action == 'update'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const head = process.env.UPDATE_BRANCH;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const action = '${{ steps.ratchet.outputs.action }}';
+            const title = action === 'seed'
+              ? 'chore(governance): seed initial tech-debt baseline'
+              : 'chore(governance): ratchet down tech-debt baseline (non-increasing)';
+            const body = [
+              '## Tech Debt Baseline Update',
+              '',
+              `**Type:** ${action === 'seed' ? 'initial seed' : 'ratchet-down (non-increasing)'}`,
+              `**Workflow:** ${{ github.workflow }}`,
+              `**Run:** ${{ github.run_id }}`,
+              '',
+              'This commit updates `reports/analysis/tech-debt-baseline.json` only because the proposed baseline passed the non-increasing ratchet (`baseline-review`).',
+              '',
+              'Per the Technical Debt Governance Charter v1 §5.2, the committed baseline may only decrease or stay flat. Review the changed metrics, then merge.'
+            ].join('\n');
+
+            const existing = await github.rest.pulls.list({
+              owner, repo, state: 'open', head: `${owner}:${head}`, base: 'main'
+            });
+            if (existing.data.length > 0) {
+              const pr = existing.data[0];
+              core.info(`Reusing open PR #${pr.number}: ${pr.html_url}`);
+              core.setOutput('pr_number', String(pr.number));
+              return;
+            }
+            const created = await github.rest.pulls.create({
+              owner, repo, title, body, head, base: 'main'
+            });
+            core.setOutput('pr_number', String(created.data.number));
+            core.info(`PR created: ${created.data.html_url}`);
+        env:
+          UPDATE_BRANCH: ${{ env.UPDATE_BRANCH }}
