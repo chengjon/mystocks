@@ -524,7 +524,7 @@
 | 功能点 | 状态 | 说明 |
 |--------|------|------|
 | INDEX_root.md 0/269 相对链接 | ⚠️ | `docs/reports/cleanup/index-artifacts/INDEX_root.md` 统一基础路径错配，选择性修复 9 条 reports/ 会不一致，故意留债 |
-| Category C CI 路径漂移 | ⚠️ | `reports/analysis/tech-debt-baseline.json` 实际在 `docs/archive/reports/analysis-gates/...`，3 个 CI 脚本读取路径失效（typescript-type-check.yml, tech_debt_governance_gate.py, collect_tech_debt_baseline.py） |
+| Category C CI 路径漂移 | ⚠️ | `reports/analysis/tech-debt-baseline.json` 实际在 `docs/archive/reports/analysis-gates/root-analysis-reports/tech-debt-baseline.json`，3 个 CI 脚本读取路径失效：`.github/workflows/typescript-type-check.yml:487`、`scripts/dev/quality_gate/tech_debt_governance_gate.py:17`、`scripts/dev/quality_gate/collect_tech_debt_baseline.py:195`。⚠️ 此为运行时路径漂移，非单纯死链；修复需同步写入端与读取端，待专项协调 |
 
 ---
 
