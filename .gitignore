@@ -324,3 +324,7 @@ test_timing.csv
 # Archive: CI artifacts (coverage HTML, analysis gate runs) — keep gitignored
 docs/archive/reports/coverage/
 docs/archive/reports/analysis-gates/
+
+# CI/CD generated reports
+reports/
+.shared/
