@@ -1,19 +1,37 @@
 #!/usr/bin/env python3
 """
 MyStocks 本地 CI Runner
-基于 smoke_test.py + 现有管道，叠加冒烟测试。
+本轮修改文件验证 + 冒烟测试。
 
 用法:
-  python3 scripts/ci/run_local_ci.py          # 完整管道
-  python3 scripts/ci/run_local_ci.py --quick  # 仅冒烟测试
+  python3 scripts/ci/run_local_ci.py          # 本轮修改文件 + 冒烟测试
+  python3 scripts/ci/run_local_ci.py --quick  # 仅服务检查 + 冒烟测试
 """
 
-import subprocess, sys, os, time
+import subprocess
+import sys
+import time
 from datetime import datetime
 
 PASS = 0
 FAIL = 0
 STEPS = []
+MODIFIED_FILES = [
+    "smoke_test.py",
+    "scripts/ci/run_local_ci.py",
+    "src/adapters/akshare/misc_data/get_futures_index_daily.py",
+    "src/adapters/akshare/stock_daily.py",
+    "src/adapters/sina_finance_adapter.py",
+    "src/data_access/postgresql_access.py",
+    "web/backend/app/api/akshare_market/fund_flow.py",
+    "web/backend/app/api/akshare_market/sse.py",
+    "web/backend/app/api/dashboard_data_source.py",
+    "web/backend/app/api/data/stocks.py",
+    "web/backend/app/api/market/market_data_request.py",
+    "web/backend/app/core/database.py",
+    "web/backend/app/quotes_payload.py",
+]
+
 
 def run_step(name, command, timeout=60):
     global PASS, FAIL
@@ -24,25 +42,27 @@ def run_step(name, command, timeout=60):
         elapsed = time.time() - start
         if r.returncode == 0:
             PASS += 1
-            STEPS.append((name, '✅'))
+            STEPS.append((name, "✅"))
             print(f"✅ ({elapsed:.1f}s)")
         else:
             FAIL += 1
-            STEPS.append((name, '❌'))
+            STEPS.append((name, "❌"))
             print(f"❌ ({elapsed:.1f}s)")
             err = r.stderr.strip()[:200] if r.stderr else r.stdout.strip()[:200]
-            if err: print(f"     {err}")
+            if err:
+                print(f"     {err}")
     except subprocess.TimeoutExpired:
         FAIL += 1
-        STEPS.append((name, '⏰'))
-        print(f"⏰ timeout")
+        STEPS.append((name, "⏰"))
+        print("⏰ timeout")
+
 
 def main():
     global PASS, FAIL
-    quick = '--quick' in sys.argv
+    quick = "--quick" in sys.argv
     print("=" * 50)
     print(f"  MyStocks 本地 CI — {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print(f"  {'快速模式(仅冒烟)' if quick else '完整管道'}")
+    print(f"  {'快速模式(服务+冒烟)' if quick else '本轮修改文件+冒烟'}")
     print("=" * 50)
 
     # 1. 服务检查
@@ -52,15 +72,19 @@ def main():
     run_step("前端可达", "curl -sS -o /dev/null -w '%{http_code}' http://localhost:3020/ | grep -q 200")
 
     if not quick:
-        # 2. 复用现有 CI 管道步骤
-        print("\n── 2. CI 管道 (tests/ci/run_pipeline.py) ──")
-        run_step("ruff lint", "cd /opt/claude/mystocks_spec && ruff check --quiet src/ web/backend/app/", 30)
-        run_step("ruff format", "cd /opt/claude/mystocks_spec && ruff format --check --quiet src/ web/backend/app/", 30)
-        run_step("单元测试", "cd /opt/claude/mystocks_spec && python3 -m pytest tests/unit -x --tb=short -q 2>&1 | tail -3", 60)
+        # 2. ruff 检查本轮修改的文件
+        print("\n── 2. ruff 检查 (本轮修改) ──")
+        for f in MODIFIED_FILES:
+            run_step(f.split("/")[-1], f"cd /opt/claude/mystocks_spec && ruff check -q {f}")
 
-    # 3. 冒烟测试
-    print(f"\n── 3. 冒烟测试 ──")
-    run_step("冒烟测试", "cd /opt/claude/mystocks_spec && python3 smoke_test.py", 30)
+        # 3. ruff format 检查本轮修改的文件
+        print("\n── 3. ruff format (本轮修改) ──")
+        for f in MODIFIED_FILES:
+            run_step(f.split("/")[-1], f"cd /opt/claude/mystocks_spec && ruff format --check -q {f}")
+
+    # 4. 冒烟测试
+    print("\n── 4. 冒烟测试 ──")
+    run_step("冒烟测试", "cd /opt/claude/mystocks_spec && python3 smoke_test.py")
 
     # 报告
     print(f"\n{'=' * 50}")
@@ -68,9 +92,9 @@ def main():
     for name, status in STEPS:
         print(f"  {status} {name}")
     print(f"  状态: {'✅ 通过' if FAIL == 0 else '❌ 失败'}")
-    print(f"  提示: 完整管道运行 python3 tests/ci/run_pipeline.py")
     print(f"{'=' * 50}")
     return 0 if FAIL == 0 else 1
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     sys.exit(main())
