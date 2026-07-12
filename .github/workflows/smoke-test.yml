@@ -1,0 +1,90 @@
+name: Smoke Test
+
+on:
+  push:
+    branches: [main, develop]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - '.gitignore'
+  pull_request:
+    branches: [main, develop]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - '.gitignore'
+  workflow_dispatch:
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: mystocks
+          POSTGRES_PASSWORD: mystocks
+          POSTGRES_DB: mystocks
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install httpx pytest
+
+      - name: Start backend
+        env:
+          DATABASE_URL: postgresql://mystocks:mystocks@localhost:5432/mystocks
+          REDIS_URL: redis://localhost:6379/0
+          SECRET_KEY: test-secret-key
+        run: |
+          cd web/backend
+          nohup uvicorn app.main:app --host 0.0.0.0 --port 8020 --log-level warning > /tmp/backend.log 2>&1 &
+          sleep 5
+          curl -s -o /dev/null -w '%{http_code}' http://localhost:8020/health
+
+      - name: Start frontend
+        run: |
+          cd web/frontend
+          npm ci
+          nohup npx vite --port 3020 --host 0.0.0.0 > /tmp/frontend.log 2>&1 &
+          sleep 8
+          curl -s -o /dev/null -w '%{http_code}' http://localhost:3020/
+
+      - name: Run smoke test
+        run: python3 smoke_test.py
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-test-logs
+          path: |
+            /tmp/backend.log
+            /tmp/frontend.log
