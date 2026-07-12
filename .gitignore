@@ -333,3 +333,7 @@ test_timing.csv
 # Local tool runtime state
 .playwright-mcp/
 .omc/
+
+# Archive: CI artifacts (coverage HTML, analysis gate runs) — keep gitignored
+docs/archive/reports/coverage/
+docs/archive/reports/analysis-gates/
