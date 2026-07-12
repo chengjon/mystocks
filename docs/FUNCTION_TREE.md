@@ -524,7 +524,7 @@
 | 功能点 | 状态 | 说明 |
 |--------|------|------|
 | INDEX_root.md 0/269 相对链接 | ⚠️ | `docs/reports/cleanup/index-artifacts/INDEX_root.md` 统一基础路径错配，选择性修复 9 条 reports/ 会不一致，故意留债 |
-| tech-debt 基线未接入 CI 自动生成 | ⚠️ | 写入端 `scripts/dev/quality_gate/collect_tech_debt_baseline.py:208-210` 与读取端 `.github/workflows/typescript-type-check.yml:487`、`scripts/dev/quality_gate/tech_debt_governance_gate.py:17` **路径一致**（均为 repo-root `reports/analysis/tech-debt-baseline.json`），不存在漂移；真正问题是该路径被 `.gitignore:269` 忽略，且写入端**未被任何 workflow 调用**（仅 docs/governance 规范引用）。读取端在文件缺失时 graceful-degrade（不硬失败）。⚠️ 诊断已从"路径漂移"更正为"基线生成未接入 CI + 路径被 gitignore"；属技术债规范落地缺口，非链接断链 |
+| tech-debt 基线接入 CI 自动生成 | ✅ | 写入端 `scripts/dev/quality_gate/collect_tech_debt_baseline.py` 由新 workflow `.github/workflows/tech-debt-baseline.yml` 每周五触发（`schedule` + `workflow_dispatch`，**不**走 push/PR 避免循环棘轮）；读取端 `.github/workflows/typescript-type-check.yml` 在基线缺失时降级为 `::warning::`（不再硬失败）。基线仅在 non-increasing 时提交（复用 `tech_debt_governance_gate.py baseline-review`，对应技术债治理章程 v1 §5.2 "基线不增"硬门禁）。`.gitignore` 路径 `reports/analysis/tech-debt-baseline.json` 已解除排除，可正常入版 |
 
 ---
 
