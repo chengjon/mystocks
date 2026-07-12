@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-文档一致性验证脚本
+"""文档一致性验证脚本
 验证所有关键文档与代码实现的一致性
 
 验证项:
@@ -53,7 +51,7 @@ def print_warning(msg: str):
 def read_file_safely(filepath: str) -> str:
     """安全读取文件内容"""
     try:
-        with open(filepath, "r", encoding="utf-8") as f:
+        with open(filepath, encoding="utf-8") as f:
             return f.read()
     except FileNotFoundError:
         print_fail(f"文件不存在: {filepath}")
@@ -64,7 +62,8 @@ def read_file_safely(filepath: str) -> str:
 
 
 def check_data_classification_count(
-    content: str, filename: str
+    content: str,
+    filename: str,
 ) -> Tuple[bool, List[str]]:
     """检查数据分类数量声明"""
     issues = []
@@ -152,7 +151,9 @@ def check_database_types(content: str, filename: str) -> Tuple[bool, List[str]]:
         if re.search(pattern, content, re.IGNORECASE):
             # 排除说明已移除的情况
             if not re.search(
-                r"(已移除|removed|废弃|deprecated).*" + pattern, content, re.IGNORECASE
+                r"(已移除|removed|废弃|deprecated).*" + pattern,
+                content,
+                re.IGNORECASE,
             ):
                 if not re.search(
                     pattern + r".*(已移除|removed|废弃|deprecated)",
@@ -363,13 +364,9 @@ def main():
     print_section("详细验证结果")
 
     for result in results:
-        status = (
-            f"{Colors.GREEN}✅ PASS{Colors.ENDC}"
-            if result["passed"]
-            else f"{Colors.RED}❌ FAIL{Colors.ENDC}"
-        )
+        status = f"{Colors.GREEN}✅ PASS{Colors.ENDC}" if result["passed"] else f"{Colors.RED}❌ FAIL{Colors.ENDC}"
         print(
-            f"{result['filename']:50s} {status}  ({result['passed_checks']}/{result['total_checks']})"
+            f"{result['filename']:50s} {status}  ({result['passed_checks']}/{result['total_checks']})",
         )
 
         if not result["passed"]:
@@ -400,7 +397,7 @@ def main():
             if len(result["issues"]) > 2:
                 issues_str += "..."
             f.write(
-                f"| {result['filename']} | {status} | {result['passed_checks']} | {result['total_checks']} | {issues_str} |\n"
+                f"| {result['filename']} | {status} | {result['passed_checks']} | {result['total_checks']} | {issues_str} |\n",
             )
 
         f.write("\n## 验证标准\n\n")

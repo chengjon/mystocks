@@ -1,18 +1,16 @@
 #!/usr/bin/env python3
-"""
-HTML to Vue Conversion Utility
+"""HTML to Vue Conversion Utility
 用于将HTML页面转换为Vue组件的工具
 
 Author: MyStocks Team
 Date: 2026-01-16
 """
 
-import os
-import re
 import json
-from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+import re
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Dict, List, Optional
 
 
 @dataclass
@@ -71,7 +69,7 @@ class HTMLToVueConverter:
 
     def analyze_html_file(self, file_path: Path) -> HTMLAnalysis:
         """分析HTML文件结构"""
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             content = f.read()
 
         # 提取标题
@@ -174,10 +172,9 @@ class HTMLToVueConverter:
         # 检查是否包含图表
         if "chart" in section_html.lower():
             return f'<ArtDecoCard title="数据可视化" class="{section_id}">\n        <div class="chart-placeholder">\n          <!-- Chart content will be rendered here -->\n        </div>\n      </ArtDecoCard>'
-        elif "table" in section_html.lower():
+        if "table" in section_html.lower():
             return f'<ArtDecoCard title="数据表格" class="{section_id}">\n        <ArtDecoTable :data="tableData" />\n      </ArtDecoCard>'
-        else:
-            return f'<ArtDecoCard title="内容区块 {index + 1}" class="{section_id}">\n        <!-- Converted content -->\n      </ArtDecoCard>'
+        return f'<ArtDecoCard title="内容区块 {index + 1}" class="{section_id}">\n        <!-- Converted content -->\n      </ArtDecoCard>'
 
     def _generate_vue_script(self, analysis: HTMLAnalysis) -> str:
         """生成Vue脚本"""
@@ -253,7 +250,7 @@ class HTMLToVueConverter:
                 "  }",
                 "}",
                 "</style>",
-            ]
+            ],
         )
 
         return "\n".join(style_parts)

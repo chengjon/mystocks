@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-自动拆分 Python 大文件
+"""自动拆分 Python 大文件
 
 基于 AST 分析自动将超标 Python 文件拆分为子模块包。
 分组策略：
@@ -13,9 +12,8 @@ import argparse
 import ast
 import os
 import re
-import sys
 from pathlib import Path
-from typing import List, Tuple
+from typing import List
 
 
 MIN_GROUP_LINES = 100
@@ -28,8 +26,7 @@ def get_import_end(source: str) -> int:
     for node in ast.iter_child_nodes(tree):
         if isinstance(node, (ast.Import, ast.ImportFrom, ast.Assign, ast.Expr)):
             end = getattr(node, "end_lineno", node.lineno)
-            if end > last_import_line:
-                last_import_line = end
+            last_import_line = max(last_import_line, end)
         elif isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
             break
     return last_import_line
@@ -54,7 +51,7 @@ def get_top_nodes(source: str) -> List[dict]:
                     "end": end,
                     "size": end - node.lineno + 1,
                     "is_dataclass": is_dataclass,
-                }
+                },
             )
     return nodes
 
@@ -106,7 +103,7 @@ def _split_single_class_strategy(all_nodes: List[dict], big_class: dict, thresho
                 "nodes": small_before,
                 "size": sum(n["size"] for n in small_before),
                 "label": "helpers",
-            }
+            },
         )
 
     # The big class itself — split into method groups
@@ -116,7 +113,7 @@ def _split_single_class_strategy(all_nodes: List[dict], big_class: dict, thresho
             "size": big_class["size"],
             "label": big_class["name"],
             "needs_method_split": True,
-        }
+        },
     )
 
     if small_after:
@@ -125,7 +122,7 @@ def _split_single_class_strategy(all_nodes: List[dict], big_class: dict, thresho
                 "nodes": small_after,
                 "size": sum(n["size"] for n in small_after),
                 "label": "utils",
-            }
+            },
         )
 
     return groups
@@ -177,7 +174,7 @@ def plan_split(filepath: str, threshold: int = 800, dry_run: bool = True) -> dic
                 "nodes": node_names,
                 "lines": g["size"],
                 "needs_method_split": g.get("needs_method_split", False),
-            }
+            },
         )
 
     result = {
@@ -228,9 +225,7 @@ def execute_split(filepath: str, lines: list, import_end: int, groups: list, pkg
         created_files.append(fname)
 
         for node in g["nodes"]:
-            if node["kind"] == "ClassDef":
-                exports.append((fname, node["name"]))
-            elif node["kind"] in ("FunctionDef", "AsyncFunctionDef"):
+            if node["kind"] == "ClassDef" or node["kind"] in ("FunctionDef", "AsyncFunctionDef"):
                 exports.append((fname, node["name"]))
 
     # __init__.py

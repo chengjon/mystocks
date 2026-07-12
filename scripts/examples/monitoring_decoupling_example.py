@@ -1,5 +1,4 @@
-"""
-监控逻辑解耦重构示例 - 从耦合式监控迁移到装饰器模式
+"""监控逻辑解耦重构示例 - 从耦合式监控迁移到装饰器模式
 展示如何将现有的耦合监控代码重构为使用装饰器的解耦模式
 
 本文件展示了：
@@ -12,24 +11,27 @@
 日期: 2025-11-14
 """
 
-import pandas as pd
-import time
-import sys
-import os
-from typing import Dict
 import functools
+import os
+import sys
+import time
+from typing import Dict
+
+import pandas as pd
+
 
 # 添加src目录到路径
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # 导入解耦监控模块
 from src.monitoring.decoupled_monitoring import (
+    get_event_bus,
+    get_monitoring_config,
+    monitor_data_quality,
     monitor_operation,
     monitor_performance,
-    monitor_data_quality,
-    get_monitoring_config,
-    get_event_bus,
 )
+
 
 # 导入原有监控模块 (用于对比)
 # from src.monitoring.monitoring_database import MonitoringDatabase, PerformanceMonitor
@@ -52,10 +54,12 @@ class OldDataAccessLayer:
         self.performance_data = []
 
     def get_stock_daily(
-        self, symbol: str, start_date: str, end_date: str
+        self,
+        symbol: str,
+        start_date: str,
+        end_date: str,
     ) -> pd.DataFrame:
         """获取股票日线数据 - 耦合版本"""
-
         # 问题1: 监控逻辑散布在业务代码中
         operation_id = f"get_stock_daily_{int(time.time() * 1000)}"
         start_time = time.time()
@@ -63,7 +67,9 @@ class OldDataAccessLayer:
         # 问题2: 条件性的监控逻辑
         if self.monitoring_db:
             self.monitoring_db.log_operation_start(
-                operation_id, "get_stock_daily", symbol
+                operation_id,
+                "get_stock_daily",
+                symbol,
             )
 
         print(f"[监控] 开始获取股票数据: {symbol}")
@@ -83,7 +89,7 @@ class OldDataAccessLayer:
                     "low": [9.8, 10.2, 10.5],
                     "close": [10.2, 10.8, 11.0],
                     "volume": [100000, 120000, 110000],
-                }
+                },
             )
 
             duration = time.time() - start_time
@@ -91,12 +97,17 @@ class OldDataAccessLayer:
             # 问题3: 重复的监控代码
             if self.monitoring_db:
                 self.monitoring_db.log_operation_result(
-                    operation_id, True, len(data), duration
+                    operation_id,
+                    True,
+                    len(data),
+                    duration,
                 )
 
             if self.performance_monitor:
                 self.performance_monitor.record_operation(
-                    "get_stock_daily", duration, True
+                    "get_stock_daily",
+                    duration,
+                    True,
                 )
 
             print(f"[监控] 操作完成，耗时: {duration:.3f}s，数据量: {len(data)}")
@@ -109,7 +120,11 @@ class OldDataAccessLayer:
             # 问题4: 异常处理中的监控代码重复
             if self.monitoring_db:
                 self.monitoring_db.log_operation_result(
-                    operation_id, False, 0, duration, str(e)
+                    operation_id,
+                    False,
+                    0,
+                    duration,
+                    str(e),
                 )
 
             print(f"[监控] 操作失败: {e}")
@@ -117,14 +132,15 @@ class OldDataAccessLayer:
 
     def save_data(self, data: pd.DataFrame, table_name: str) -> bool:
         """保存数据 - 耦合版本"""
-
         # 又是重复的监控逻辑...
         operation_id = f"save_data_{int(time.time() * 1000)}"
         start_time = time.time()
 
         if self.monitoring_db:
             self.monitoring_db.log_operation_start(
-                operation_id, "save_data", table_name
+                operation_id,
+                "save_data",
+                table_name,
             )
 
         print(f"[监控] 开始保存数据到表: {table_name}")
@@ -139,7 +155,10 @@ class OldDataAccessLayer:
             # 又是重复的监控代码...
             if self.monitoring_db:
                 self.monitoring_db.log_operation_result(
-                    operation_id, True, len(data), duration
+                    operation_id,
+                    True,
+                    len(data),
+                    duration,
                 )
 
             if self.performance_monitor:
@@ -153,7 +172,11 @@ class OldDataAccessLayer:
 
             if self.monitoring_db:
                 self.monitoring_db.log_operation_result(
-                    operation_id, False, 0, duration, str(e)
+                    operation_id,
+                    False,
+                    0,
+                    duration,
+                    str(e),
                 )
 
             print(f"[监控] 保存失败: {e}")
@@ -178,7 +201,10 @@ class RefactoredDataAccessLayer:
     @monitor_data_quality("stock_daily")
     @monitor_performance(threshold=0.05)
     def get_stock_daily(
-        self, symbol: str, start_date: str, end_date: str
+        self,
+        symbol: str,
+        start_date: str,
+        end_date: str,
     ) -> pd.DataFrame:
         """获取股票日线数据 - 解耦版本
 
@@ -187,7 +213,6 @@ class RefactoredDataAccessLayer:
         - 性能监控 (超过0.05秒会被标记为慢操作)
         - 数据质量监控 (检查空值、重复数据等)
         """
-
         # 纯粹的业务逻辑，无监控代码混杂
         print(f"[业务] 正在获取 {symbol} 从 {start_date} 到 {end_date} 的数据")
         time.sleep(0.1)  # 模拟数据获取
@@ -202,7 +227,7 @@ class RefactoredDataAccessLayer:
                 "low": [9.8, 10.2, 10.5],
                 "close": [10.2, 10.8, 11.0],
                 "volume": [100000, 120000, 110000],
-            }
+            },
         )
 
         return data
@@ -218,7 +243,6 @@ class RefactoredDataAccessLayer:
         - 数据质量监控
         - 性能监控
         """
-
         # 纯粹的业务逻辑
         print(f"[业务] 正在保存 {len(data)} 条记录到 {table_name}")
         time.sleep(0.05)  # 模拟保存操作
@@ -243,7 +267,10 @@ class BackwardCompatibleAdapter:
         self.performance_monitor = None
 
     def get_stock_daily(
-        self, symbol: str, start_date: str, end_date: str
+        self,
+        symbol: str,
+        start_date: str,
+        end_date: str,
     ) -> pd.DataFrame:
         """向后兼容的API"""
         # 委托给重构后的实现
@@ -295,10 +322,12 @@ class MonitoringManager:
         return {
             "monitoring_enabled": self.config.is_enabled(),
             "performance_monitoring": self.config.config.get(
-                "enable_performance_monitoring", True
+                "enable_performance_monitoring",
+                True,
             ),
             "data_quality_monitoring": self.config.config.get(
-                "enable_data_quality_monitoring", True
+                "enable_data_quality_monitoring",
+                True,
             ),
         }
 
@@ -348,9 +377,7 @@ class AdvancedMonitoringDecorator:
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
                 # 生成缓存键
-                cache_key = (
-                    f"{func.__name__}_{hash(str(args) + str(sorted(kwargs.items())))}"
-                )
+                cache_key = f"{func.__name__}_{hash(str(args) + str(sorted(kwargs.items())))}"
                 current_time = time.time()
 
                 # 检查缓存
@@ -474,7 +501,7 @@ def performance_comparison():
 
     # 准备测试数据
     test_data = pd.DataFrame(
-        {"date": ["2024-01-01"] * 100, "symbol": ["000001"] * 100, "value": range(100)}
+        {"date": ["2024-01-01"] * 100, "symbol": ["000001"] * 100, "value": range(100)},
     )
 
     # 测试旧版本 (模拟)
@@ -504,7 +531,7 @@ def performance_comparison():
 
     print("\n📈 性能对比:")
     print(
-        f"  • 初始化性能: 新版本比旧版本快 {((old_duration - new_duration) / old_duration * 100):.1f}%"
+        f"  • 初始化性能: 新版本比旧版本快 {((old_duration - new_duration) / old_duration * 100):.1f}%",
     )
     print(f"  • 装饰器开销: 约 {operation_duration * 1000:.2f}ms")
 

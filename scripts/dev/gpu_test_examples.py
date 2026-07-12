@@ -20,12 +20,10 @@ def backtest_strategies_gpu(stock_data, strategies):
 
         # GPU计算性能指标
         sharpe = (strategy_returns.mean() / strategy_returns.std()) * np.sqrt(252)
-        max_drawdown = (
-            strategy_returns.cumsum().cummax() - strategy_returns.cumsum()
-        ).max()
+        max_drawdown = (strategy_returns.cumsum().cummax() - strategy_returns.cumsum()).max()
 
         results.append(
-            {"strategy": strategy.name, "sharpe": sharpe, "max_drawdown": max_drawdown}
+            {"strategy": strategy.name, "sharpe": sharpe, "max_drawdown": max_drawdown},
         )
 
     return results
@@ -52,9 +50,7 @@ def multi_factor_model_gpu(factors_data):
 
     # 因子标准化 (GPU)
     for factor in ["pe", "pb", "roe", "momentum"]:
-        df_gpu[f"{factor}_normalized"] = (
-            df_gpu[factor] - df_gpu[factor].mean()
-        ) / df_gpu[factor].std()
+        df_gpu[f"{factor}_normalized"] = (df_gpu[factor] - df_gpu[factor].mean()) / df_gpu[factor].std()
 
     # 因子权重计算 (GPU矩阵运算)
     weights = cp.array([0.25, 0.25, 0.3, 0.2])  # 因子权重

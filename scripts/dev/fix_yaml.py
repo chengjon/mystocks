@@ -1,13 +1,9 @@
 #!/usr/bin/env python3
-"""
-Fix YAML indentation issues in data_sources_registry.yaml
-"""
-
-import re
+"""Fix YAML indentation issues in data_sources_registry.yaml"""
 
 
 def fix_yaml_indentation():
-    with open("config/data_sources_registry.yaml", "r", encoding="utf-8") as f:
+    with open("config/data_sources_registry.yaml", encoding="utf-8") as f:
         lines = f.readlines()
 
     fixed_lines = []

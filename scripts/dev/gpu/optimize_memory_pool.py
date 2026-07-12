@@ -1,22 +1,21 @@
 #!/usr/bin/env python3
-"""
-优化MemoryPool内存管理
+"""优化MemoryPool内存管理
 Phase 6.3.3 - 优化MemoryPool内存管理
 
 完善内存池实现，提高分配和释放性能
 """
 
 import os
-from pathlib import Path
-from typing import Dict, Any
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict
 
 
 class MemoryPoolOptimizer:
     """MemoryPool优化器"""
 
     def __init__(self):
-        self.project_root = Path(".")
+        self.project_root = Path()
         self.memory_pool_path = "src/gpu/core/hardware_abstraction/memory_pool.py"
         self.optimizations_applied = []
 
@@ -424,9 +423,7 @@ def get_memory_pool() -> MemoryPool:
             "total_optimizations": len(self.optimizations_applied),
             "success_rate": len(self.optimizations_applied) / 5.0,  # 总共5个优化步骤
             "summary": {
-                "status": "completed"
-                if len(self.optimizations_applied) >= 1
-                else "partial",
+                "status": "completed" if len(self.optimizations_applied) >= 1 else "partial",
                 "key_improvements": [
                     "Created comprehensive memory pool implementation",
                     "Added efficient block allocation and deallocation",
@@ -453,7 +450,7 @@ def get_memory_pool() -> MemoryPool:
         summary = report["summary"]
         print(f"📈 优化状态: {summary['status']}")
         print(
-            f"✅ 应用优化: {report['total_optimizations']}/5 ({report['success_rate'] * 100:.1f}%)"
+            f"✅ 应用优化: {report['total_optimizations']}/5 ({report['success_rate'] * 100:.1f}%)",
         )
         print(f"🕒 优化时间: {report['optimization_timestamp']}")
 

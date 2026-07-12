@@ -1,24 +1,25 @@
-"""
-数据库优化和维护脚本
+"""数据库优化和维护脚本
 Database Optimization and Maintenance Script
 
 提供数据库性能优化、索引维护、查询优化、数据清理等功能。
 Provides database performance optimization, index maintenance, query optimization, data cleanup, etc.
 """
 
+import argparse
 import asyncio
 import logging
-import sys
 import os
+import sys
 from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional
-import argparse
+from typing import Any, Dict
+
 
 # Setup project path
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, project_root)
 
 from src.core.database import DatabaseManager
+
 
 logger = logging.getLogger(__name__)
 
@@ -81,7 +82,7 @@ class DatabaseOptimizer:
                                 "table": table_name,
                                 "issue": ".2%",
                                 "solution": "运行VACUUM或VACUUM FULL",
-                            }
+                            },
                         )
 
             # 分析索引使用情况
@@ -123,7 +124,7 @@ class DatabaseOptimizer:
                                 "table": table_name,
                                 "issue": "索引未被使用",
                                 "solution": "考虑删除未使用的索引",
-                            }
+                            },
                         )
 
         except Exception as e:
@@ -180,14 +181,14 @@ class DatabaseOptimizer:
 
                             await conn.execute(create_index_query)
                             result["created_indexes"].append(
-                                {"table": table, "column": column, "index_name": f"idx_{table}_{column}"}
+                                {"table": table, "column": column, "index_name": f"idx_{table}_{column}"},
                             )
 
                             logger.info(f"✅ 创建索引: {table}.{column}")
 
                         except Exception as e:
                             result["errors"].append(
-                                {"operation": "create_index", "table": table, "column": column, "error": str(e)}
+                                {"operation": "create_index", "table": table, "column": column, "error": str(e)},
                             )
 
         except Exception as e:
@@ -268,7 +269,7 @@ class DatabaseOptimizer:
                             "total_time_ms": query["total_time"],
                             "mean_time_ms": query["mean_time"],
                             "rows_affected": query["rows"],
-                        }
+                        },
                     )
 
                     result["recommendations"].append(
@@ -277,7 +278,7 @@ class DatabaseOptimizer:
                             "query": query["query"][:100] + "...",
                             "issue": ".2f",
                             "solution": "考虑添加索引或优化查询结构",
-                        }
+                        },
                     )
 
             # 分析频繁查询
@@ -303,7 +304,7 @@ class DatabaseOptimizer:
                             "calls": query["calls"],
                             "total_time_ms": query["total_time"],
                             "mean_time_ms": query["mean_time"],
-                        }
+                        },
                     )
 
         except Exception as e:
@@ -465,7 +466,7 @@ async def main():
             print(f"表数量: {len(report['database_stats'].get('tables', {}))}")
             print(f"索引数量: {len(report['database_stats'].get('indexes', {}))}")
 
-            print(f"\n优化结果:")
+            print("\n优化结果:")
             opt_results = report.get("optimization_results", {})
             for operation, result in opt_results.items():
                 if isinstance(result, dict):

@@ -1,5 +1,4 @@
-"""
-测试策略投资组合优化器
+"""测试策略投资组合优化器
 Test Strategy Portfolio Optimizer
 
 验证投资组合优化算法和风险管理功能。
@@ -8,22 +7,23 @@ Validates portfolio optimization algorithms and risk management features.
 
 import asyncio
 import logging
-import sys
 import os
+import sys
 from datetime import datetime
-from typing import Dict, Any
+
 import pandas as pd
+
 
 # Setup project path
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, project_root)
 
 from src.portfolio.strategy_portfolio_optimizer import (
-    StrategyPortfolioOptimizer,
-    StrategyInfo,
     PortfolioConstraints,
-    PortfolioAllocation,
+    StrategyInfo,
+    StrategyPortfolioOptimizer,
 )
+
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -304,9 +304,8 @@ async def run_all_tests():
     if passed == total:
         logger.info("🎉 所有测试通过! 策略投资组合优化器已准备就绪。")
         return True
-    else:
-        logger.warning("⚠️ 某些测试失败。请检查实现。")
-        return False
+    logger.warning("⚠️ 某些测试失败。请检查实现。")
+    return False
 
 
 if __name__ == "__main__":

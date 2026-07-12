@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""
-简化版 TDengine 验证脚本
+"""简化版 TDengine 验证脚本
 绕过导入问题，直接测试TDengine连接和基本功能
 """
 
 import os
-import sys
 import subprocess
+import sys
 from datetime import datetime
 from pathlib import Path
+
 
 # 加载 .env 文件
 project_root = Path(__file__).parent.parent.parent
@@ -16,7 +16,7 @@ env_file = project_root / ".env"
 
 if env_file.exists():
     # 手动加载 .env 文件 (不依赖 python-dotenv)
-    with open(env_file, "r", encoding="utf-8") as f:
+    with open(env_file, encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if line and not line.startswith("#"):
@@ -25,9 +25,9 @@ if env_file.exists():
                     key = key.strip()
                     value = value.strip()
                     # 移除引号
-                    if value.startswith('"') and value.endswith('"'):
-                        value = value[1:-1]
-                    elif value.startswith("'") and value.endswith("'"):
+                    if (value.startswith('"') and value.endswith('"')) or (
+                        value.startswith("'") and value.endswith("'")
+                    ):
                         value = value[1:-1]
                     os.environ[key] = value
 
@@ -81,12 +81,13 @@ def check_docker_status():
         if "Up" in result.stdout:
             print_check("✅", "TDengine容器正在运行", result.stdout.strip())
             return True
-        else:
-            print_check("❌", "TDengine容器未运行")
-            print_check(
-                "⚠️", "启动命令", "docker-compose -f docker-compose.tdengine.yml up -d"
-            )
-            return False
+        print_check("❌", "TDengine容器未运行")
+        print_check(
+            "⚠️",
+            "启动命令",
+            "docker-compose -f docker-compose.tdengine.yml up -d",
+        )
+        return False
     except Exception as e:
         print_check("❌", "无法检查容器状态", str(e))
         return False
@@ -229,8 +230,9 @@ def test_write_read_operations():
     print_header("4. 测试数据写入和读取")
 
     try:
-        from taos import connect
         from datetime import datetime, timedelta
+
+        from taos import connect
 
         conn = connect(
             host=TDENGINE_HOST,
@@ -266,7 +268,7 @@ def test_write_read_operations():
         # 查询数据
         try:
             cursor.execute(
-                "SELECT * FROM stock_tick WHERE symbol='000001' ORDER BY ts DESC LIMIT 5"
+                "SELECT * FROM stock_tick WHERE symbol='000001' ORDER BY ts DESC LIMIT 5",
             )
             results = cursor.fetchall()
             print_check("✅", "数据查询成功", f"查询到 {len(results)} 条记录")
@@ -313,10 +315,10 @@ def print_summary(results):
         print("\n  🎉 所有检查通过! TDengine 已准备好使用。")
         print("\n  下一步:")
         print(
-            "  1. 检查数据库日志: docker-compose -f docker-compose.tdengine.yml logs tdengine"
+            "  1. 检查数据库日志: docker-compose -f docker-compose.tdengine.yml logs tdengine",
         )
         print(
-            "  2. 启动后端服务: cd web/backend && python -m uvicorn app.main:app --reload"
+            "  2. 启动后端服务: cd web/backend && python -m uvicorn app.main:app --reload",
         )
         print("  3. 运行集成测试: pytest scripts/tests/test_tdengine_integration.py -v")
     else:

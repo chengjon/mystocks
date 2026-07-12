@@ -1,15 +1,16 @@
-"""
-创建数据库缺失的索引
+"""创建数据库缺失的索引
 用于解决技术债务中的数据库性能优化需求
 """
 
 import os
 import sys
-import structlog
-import psycopg2
-from psycopg2 import sql
-from typing import Dict, List
 from pathlib import Path
+from typing import Dict, List
+
+import psycopg2
+import structlog
+from psycopg2 import sql
+
 
 # 添加项目路径
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -47,11 +48,11 @@ class DatabaseIndexManager:
     """数据库索引管理器"""
 
     def __init__(self, db_config: DatabaseConfig):
-        """
-        初始化索引管理器
+        """初始化索引管理器
 
         Args:
             db_config: 数据库配置
+
         """
         self.db_config = db_config
         self.connection = None
@@ -67,7 +68,7 @@ class DatabaseIndexManager:
         except Exception as e:
             logger.error("数据库连接失败", error=str(e))
             raise DatabaseConnectionError(
-                message=f"Failed to connect to database: {str(e)}",
+                message=f"Failed to connect to database: {e!s}",
                 code="DB_CONNECTION_FAILED",
                 severity="CRITICAL",
                 original_exception=e,
@@ -87,8 +88,7 @@ class DatabaseIndexManager:
         index_type: str = "btree",
         unique: bool = False,
     ) -> bool:
-        """
-        创建数据库索引
+        """创建数据库索引
 
         Args:
             table_name: 表名
@@ -99,6 +99,7 @@ class DatabaseIndexManager:
 
         Returns:
             bool: 是否创建成功
+
         """
         try:
             with self.connection.cursor() as cursor:
@@ -116,7 +117,7 @@ class DatabaseIndexManager:
                 # 创建索引
                 unique_constraint = "UNIQUE" if unique else ""
                 columns_sql = sql.SQL(", ").join(
-                    [sql.Identifier(col) for col in columns]
+                    [sql.Identifier(col) for col in columns],
                 )
 
                 create_query = sql.SQL("""
@@ -131,7 +132,10 @@ class DatabaseIndexManager:
                 )
 
                 logger.info(
-                    "正在创建索引", table=table_name, index=index_name, columns=columns
+                    "正在创建索引",
+                    table=table_name,
+                    index=index_name,
+                    columns=columns,
                 )
 
                 cursor.execute(create_query)
@@ -141,25 +145,27 @@ class DatabaseIndexManager:
                 if cursor.fetchone():
                     logger.info("索引创建成功", table=table_name, index=index_name)
                     return True
-                else:
-                    logger.error("索引创建失败", table=table_name, index=index_name)
-                    return False
+                logger.error("索引创建失败", table=table_name, index=index_name)
+                return False
 
         except Exception as e:
             logger.error(
-                "创建索引时出错", table=table_name, index=index_name, error=str(e)
+                "创建索引时出错",
+                table=table_name,
+                index=index_name,
+                error=str(e),
             )
             return False
 
     def get_index_info(self, table_name: str) -> List[Dict]:
-        """
-        获取表的索引信息
+        """获取表的索引信息
 
         Args:
             table_name: 表名
 
         Returns:
             List[Dict]: 索引信息列表
+
         """
         try:
             with self.connection.cursor() as cursor:
@@ -315,7 +321,7 @@ def create_missing_indexes():
     except Exception as e:
         logger.error("创建索引过程中发生错误", error=str(e))
         raise DatabaseOperationError(
-            message=f"Failed to create indexes: {str(e)}",
+            message=f"Failed to create indexes: {e!s}",
             code="INDEX_CREATION_FAILED",
             severity="HIGH",
             original_exception=e,
@@ -350,5 +356,5 @@ if __name__ == "__main__":
         print("✅ 所有缺失的索引创建完成")
 
     except Exception as e:
-        print(f"❌ 创建索引失败: {str(e)}")
+        print(f"❌ 创建索引失败: {e!s}")
         sys.exit(1)

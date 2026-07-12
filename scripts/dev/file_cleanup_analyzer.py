@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-文件清理分析脚本
+"""文件清理分析脚本
 用于分析未纳入版本控制的文件、长期未访问文件和备份文件
 """
 
@@ -57,7 +56,7 @@ def get_backup_files():
                 check=True,
             )
             backup_files.extend(
-                [f.strip() for f in result.stdout.split("\n") if f.strip()]
+                [f.strip() for f in result.stdout.split("\n") if f.strip()],
             )
         except subprocess.CalledProcessError:
             pass

@@ -1,28 +1,30 @@
 #!/usr/bin/env python3
-"""
-增强代码质量预测器
+"""增强代码质量预测器
 集成机器学习和深度学习技术的高级代码质量分析系统
 """
 
 import ast
-import json
+import logging
 import sys
-import numpy as np
+from collections import Counter
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List
-from dataclasses import dataclass, asdict
-from collections import Counter
-import logging
+
+import numpy as np
+
 
 # 设置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
+
 
 @dataclass
 class CodeMetrics:
@@ -111,36 +113,28 @@ class EnhancedCodeAnalyzer:
         logger.info(f"🔍 执行高级分析: {file_path}")
 
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 source_code = f.read()
 
             tree = ast.parse(source_code)
 
             # 基础结构分析
-            classes = [
-                node for node in ast.walk(tree) if isinstance(node, ast.ClassDef)
-            ]
-            functions = [
-                node
-                for node in ast.walk(tree)
-                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
-            ]
+            classes = [node for node in ast.walk(tree) if isinstance(node, ast.ClassDef)]
+            functions = [node for node in ast.walk(tree) if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))]
 
             # 计算指标
             metrics = AdvancedMetrics(
                 file_path=file_path,
                 class_count=len(classes),
                 function_count=len(functions),
-                avg_class_size=np.mean([len(node.body) for node in classes])
-                if classes
-                else 0,
+                avg_class_size=np.mean([len(node.body) for node in classes]) if classes else 0,
                 avg_function_size=np.mean(
-                    [self._count_function_lines(node) for node in functions]
+                    [self._count_function_lines(node) for node in functions],
                 )
                 if functions
                 else 0,
                 max_function_size=max(
-                    [self._count_function_lines(node) for node in functions]
+                    [self._count_function_lines(node) for node in functions],
                 )
                 if functions
                 else 0,
@@ -157,13 +151,13 @@ class EnhancedCodeAnalyzer:
                 exception_handling_score=self._calculate_exception_handling_score(tree),
                 error_recovery_mechanisms=self._count_error_recovery(tree),
                 documentation_coverage=self._calculate_documentation_coverage(
-                    source_code
+                    source_code,
                 ),
                 api_documentation_ratio=self._calculate_api_documentation_ratio(tree),
             )
 
             logger.info(
-                f"✅ 高级分析完成: {metrics.class_count}个类, {metrics.function_count}个函数"
+                f"✅ 高级分析完成: {metrics.class_count}个类, {metrics.function_count}个函数",
             )
             return metrics
 
@@ -171,11 +165,7 @@ class EnhancedCodeAnalyzer:
             logger.error(f"❌ 高级分析失败: {e}")
             return AdvancedMetrics(
                 file_path=file_path,
-                **{
-                    k: 0
-                    for k in AdvancedMetrics.__dataclass_fields__
-                    if k != "file_path"
-                },
+                **{k: 0 for k in AdvancedMetrics.__dataclass_fields__ if k != "file_path"},
             )
 
     def _count_function_lines(self, node: ast.AST) -> int:
@@ -202,11 +192,7 @@ class EnhancedCodeAnalyzer:
         total_lcm = 0
 
         for cls in classes:
-            methods = [
-                node
-                for node in cls.body
-                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
-            ]
+            methods = [node for node in cls.body if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))]
             if len(methods) <= 1:
                 continue
 
@@ -215,14 +201,13 @@ class EnhancedCodeAnalyzer:
             for method in methods:
                 for node in ast.walk(method):
                     if isinstance(node, ast.Attribute) and isinstance(
-                        node.ctx, ast.Load
+                        node.ctx,
+                        ast.Load,
                     ):
                         attributes.add(node.attr)
 
             # 内聚度 = 共享属性数量 / (方法数 * 平均属性数)
-            cohesion = len(attributes) / (
-                len(methods) * max(1, len(attributes) / len(methods))
-            )
+            cohesion = len(attributes) / (len(methods) * max(1, len(attributes) / len(methods)))
             total_lcm += 1 - cohesion
 
         return total_lcm / len(classes) if classes else 0
@@ -235,11 +220,7 @@ class EnhancedCodeAnalyzer:
     def _calculate_ec(self, tree: ast.AST) -> int:
         """计算传出耦合度 (Efferent Coupling)"""
         return len(
-            [
-                node
-                for node in ast.walk(tree)
-                if isinstance(node, (ast.Import, ast.ImportFrom))
-            ]
+            [node for node in ast.walk(tree) if isinstance(node, (ast.Import, ast.ImportFrom))],
         )
 
     def _calculate_dit(self, classes: List[ast.ClassDef]) -> float:
@@ -271,11 +252,7 @@ class EnhancedCodeAnalyzer:
 
         for cls in classes:
             method_count = len(
-                [
-                    n
-                    for n in cls.body
-                    if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))
-                ]
+                [n for n in cls.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))],
             )
 
             # 计算方法调用
@@ -335,23 +312,16 @@ class EnhancedCodeAnalyzer:
                     # 检查私有构造函数
                     if node.name == "__init__":
                         for decorator in node.decorator_list:
-                            if (
-                                isinstance(decorator, ast.Name)
-                                and decorator.id == "private"
-                            ):
+                            if isinstance(decorator, ast.Name) and decorator.id == "private":
                                 has_private_constructor = True
 
                 # 检查类变量
                 elif isinstance(node, ast.AnnAssign) or isinstance(node, ast.Assign):
-                    for target in (
-                        node.targets if hasattr(node, "targets") else [node.target]
-                    ):
+                    for target in node.targets if hasattr(node, "targets") else [node.target]:
                         if isinstance(target, ast.Name) and target.id.startswith("_"):
                             has_instance_variable = True
 
-            if has_get_instance_method or (
-                has_private_constructor and has_instance_variable
-            ):
+            if has_get_instance_method or (has_private_constructor and has_instance_variable):
                 singleton_classes.append(cls.name)
 
         return singleton_classes
@@ -387,10 +357,7 @@ class EnhancedCodeAnalyzer:
                 if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                     method_name = node.name.lower()
                     # 观察者方法
-                    if any(
-                        method in method_name
-                        for method in ["notify", "update", "subscribe", "unsubscribe"]
-                    ):
+                    if any(method in method_name for method in ["notify", "update", "subscribe", "unsubscribe"]):
                         has_observer_methods = True
                     # 主题方法
                     elif any(
@@ -439,8 +406,7 @@ class EnhancedCodeAnalyzer:
                 total_imports += 1
                 # 简化：假设abc、interfaces等为抽象导入
                 if node.module and any(
-                    abstract in node.module.lower()
-                    for abstract in ["abc", "interface", "protocol"]
+                    abstract in node.module.lower() for abstract in ["abc", "interface", "protocol"]
                 ):
                     abstract_imports += 1
             elif isinstance(node, ast.Import):
@@ -474,11 +440,7 @@ class EnhancedCodeAnalyzer:
                     functions_with_error_handling += 1
 
         # 异常处理评分 = 有异常处理的函数比例 + try块密度
-        function_score = (
-            functions_with_error_handling / total_functions
-            if total_functions > 0
-            else 0
-        )
+        function_score = functions_with_error_handling / total_functions if total_functions > 0 else 0
         try_score = min(try_blocks / total_functions, 1.0) if total_functions > 0 else 0
 
         return (function_score + try_score) / 2
@@ -498,9 +460,7 @@ class EnhancedCodeAnalyzer:
     def _calculate_documentation_coverage(self, source_code: str) -> float:
         """计算文档覆盖率"""
         lines = source_code.split("\n")
-        code_lines = [
-            line for line in lines if line.strip() and not line.strip().startswith("#")
-        ]
+        code_lines = [line for line in lines if line.strip() and not line.strip().startswith("#")]
         doc_lines = [line for line in lines if line.strip().startswith("#")]
 
         if len(code_lines) == 0:
@@ -553,7 +513,9 @@ class FeatureExtractor:
         ]
 
     def extract_features(
-        self, metrics: CodeMetrics, advanced_metrics: AdvancedMetrics
+        self,
+        metrics: CodeMetrics,
+        advanced_metrics: AdvancedMetrics,
     ) -> np.ndarray:
         """提取特征向量"""
         features = [
@@ -593,8 +555,7 @@ class CodePatternRecognizer:
         # 长方法
         if metrics.max_function_size > self.anti_patterns["long_method"]["threshold"]:
             detected["long_method"] = (
-                metrics.max_function_size
-                - self.anti_patterns["long_method"]["threshold"]
+                metrics.max_function_size - self.anti_patterns["long_method"]["threshold"]
             ) / self.anti_patterns["long_method"]["threshold"]
 
         # 大类
@@ -698,13 +659,14 @@ class QualityPredictor:
     def _create_ml_model(self):
         """创建机器学习模型（简化版）"""
         # 在实际实现中，这里会加载预训练的模型
-        return None
+        return
 
     def predict_quality(self, features: np.ndarray) -> QualityPrediction:
         """预测代码质量"""
         # 简化的预测逻辑
         overall_score = max(
-            0, min(100, 100 - features[1] * 2 - features[2] * 1.5)
+            0,
+            min(100, 100 - features[1] * 2 - features[2] * 1.5),
         )  # 基于复杂度的简化评分
 
         if overall_score >= 80:
@@ -751,5 +713,3 @@ class QualityPredictor:
             recommendations.append("📚 文档覆盖率不足，建议添加更多注释和文档")
 
         return recommendations
-
-

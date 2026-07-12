@@ -4,7 +4,6 @@
 import argparse
 import os
 import re
-import sys
 
 
 def parse_vue_file(path):
@@ -34,7 +33,7 @@ def parse_vue_file(path):
                     "start": current_start,
                     "end": i,
                     "content": lines[current_start + 1 : i],
-                }
+                },
             )
             current_type = None
 
@@ -72,9 +71,7 @@ def extract_script_to_composable(path, dry_run=False):
 
     for line in script_lines:
         stripped = line.strip()
-        if stripped.startswith("import ") or stripped.startswith("from "):
-            imports.append(line)
-        elif re.match(r"^(type|interface)\s", stripped):
+        if stripped.startswith("import ") or stripped.startswith("from ") or re.match(r"^(type|interface)\s", stripped):
             imports.append(line)
         else:
             body.append(line)
@@ -137,7 +134,7 @@ def extract_script_to_composable(path, dry_run=False):
     new_lines.append(
         f"<script setup{' ' + script_section['attrs'] if script_section['attrs'] != 'setup' else ' setup'}>\n"
         if "lang" in script_section["attrs"]
-        else "<script setup>\n"
+        else "<script setup>\n",
     )
     # Preserve lang="ts" if present
     if "lang" in script_section["attrs"]:
@@ -213,7 +210,7 @@ def main():
             marker = "✅" if result["new_vue"] <= 500 else "⚠️"
             print(
                 f"  {prefix}{marker} {name}: {result['original']} -> {result['new_vue']} lines "
-                f"(extracted {result['script_extracted']} lines to composable)"
+                f"(extracted {result['script_extracted']} lines to composable)",
             )
             extracted += 1
             if result["new_vue"] <= 500:

@@ -5,7 +5,6 @@
 """
 
 import ast
-import sys
 from pathlib import Path
 
 
@@ -15,8 +14,7 @@ def get_import_end(source: str) -> int:
     for node in ast.iter_child_nodes(tree):
         if isinstance(node, (ast.Import, ast.ImportFrom, ast.Assign, ast.Expr)):
             end = getattr(node, "end_lineno", node.lineno)
-            if end > last_import_line:
-                last_import_line = end
+            last_import_line = max(last_import_line, end)
         elif isinstance(node, ast.ClassDef):
             break
     return last_import_line
@@ -77,7 +75,7 @@ def split_single_class_file(filepath: str, threshold: int = 800, dry_run: bool =
                     "start": node.lineno,
                     "end": end,
                     "size": end - node.lineno + 1,
-                }
+                },
             )
 
     if len(methods) < 4:
@@ -162,9 +160,9 @@ def split_single_class_file(filepath: str, threshold: int = 800, dry_run: bool =
     init_lines.append(f"\n\nclass {cls_name}(\n")
     for mixin_name in mixin_names:
         init_lines.append(f"    {mixin_name},\n")
-    init_lines.append(f"):\n")
+    init_lines.append("):\n")
     init_lines.append(f'    """{cls_name} - 组合所有方法集"""\n')
-    init_lines.append(f"    pass\n\n\n")
+    init_lines.append("    pass\n\n\n")
     init_lines.append(f'__all__ = ["{cls_name}"]\n')
 
     with open(pkg_dir / "__init__.py", "w") as f:

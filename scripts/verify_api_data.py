@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-"""
-Analyze API responses for industries, concepts, and stocks data
-"""
+"""Analyze API responses for industries, concepts, and stocks data"""
 
 import json
 import os
@@ -116,7 +114,7 @@ def main():
         "summary": {
             "total_endpoints_tested": 3,
             "successful_endpoints": sum(
-                [industries_analysis["success"], concepts_analysis["success"], stocks_analysis["success"]]
+                [industries_analysis["success"], concepts_analysis["success"], stocks_analysis["success"]],
             ),
             "data_availability": {
                 "industries": f"{industries_analysis['total_count']} records",

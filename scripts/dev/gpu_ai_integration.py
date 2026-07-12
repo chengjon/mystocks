@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-MyStocks GPU加速AI系统集成脚本
+"""MyStocks GPU加速AI系统集成脚本
 第5阶段：集成GPU加速AI计算
 """
 
-import sys
 import json
-import time
 import logging
+import subprocess
+import sys
+import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any
-import subprocess
+from typing import Any, Dict, List
+
 
 # 添加GPU系统路径
 sys.path.append("/opt/claude/mystocks_spec/src/gpu/api_system")
@@ -20,7 +19,8 @@ sys.path.append("/opt/claude/mystocks_spec")
 
 # 设置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -68,7 +68,7 @@ class GPUAIIntegrationManager:
             return result
 
         except Exception as e:
-            error_msg = f"GPU环境初始化失败: {str(e)}"
+            error_msg = f"GPU环境初始化失败: {e!s}"
             logger.error(error_msg)
             result["status"] = "failed"
             result["error"] = error_msg
@@ -111,7 +111,7 @@ class GPUAIIntegrationManager:
             return result
 
         except Exception as e:
-            error_msg = f"GPU API服务启动失败: {str(e)}"
+            error_msg = f"GPU API服务启动失败: {e!s}"
             logger.error(error_msg)
             result["status"] = "failed"
             result["error"] = error_msg
@@ -145,22 +145,19 @@ class GPUAIIntegrationManager:
 
             # 计算总体性能提升
             avg_speedup = sum(
-                [
-                    result["integrations"][name]["acceleration_ratio"]
-                    for name in result["integrations"]
-                ]
+                [result["integrations"][name]["acceleration_ratio"] for name in result["integrations"]],
             ) / len(result["integrations"])
 
             result["performance_gains"]["average_speedup"] = avg_speedup
             result["performance_gains"]["total_strategies"] = len(
-                gpu_enhanced_strategies
+                gpu_enhanced_strategies,
             )
 
             logger.info(f"✅ AI策略GPU集成完成，平均加速比: {avg_speedup:.2f}x")
             return result
 
         except Exception as e:
-            error_msg = f"AI策略GPU集成失败: {str(e)}"
+            error_msg = f"AI策略GPU集成失败: {e!s}"
             logger.error(error_msg)
             result["status"] = "failed"
             result["error"] = error_msg
@@ -199,7 +196,7 @@ class GPUAIIntegrationManager:
             return result
 
         except Exception as e:
-            error_msg = f"GPU监控设置失败: {str(e)}"
+            error_msg = f"GPU监控设置失败: {e!s}"
             logger.error(error_msg)
             result["status"] = "failed"
             result["error"] = error_msg
@@ -232,7 +229,7 @@ class GPUAIIntegrationManager:
             return result
 
         except Exception as e:
-            error_msg = f"GPU缓存系统优化失败: {str(e)}"
+            error_msg = f"GPU缓存系统优化失败: {e!s}"
             logger.error(error_msg)
             result["status"] = "failed"
             result["error"] = error_msg
@@ -264,13 +261,13 @@ class GPUAIIntegrationManager:
 
             # 整体性能评估
             overall_performance = self._assess_overall_performance(
-                result["test_results"]
+                result["test_results"],
             )
             result["performance_summary"] = overall_performance
 
             # 生成优化建议
             recommendations = self._generate_optimization_recommendations(
-                result["test_results"]
+                result["test_results"],
             )
             result["recommendations"] = recommendations
 
@@ -278,7 +275,7 @@ class GPUAIIntegrationManager:
             return result
 
         except Exception as e:
-            error_msg = f"综合集成测试失败: {str(e)}"
+            error_msg = f"综合集成测试失败: {e!s}"
             logger.error(error_msg)
             result["status"] = "failed"
             result["error"] = error_msg
@@ -387,6 +384,7 @@ class GPUAIIntegrationManager:
     def _benchmark_strategy_with_gpu(self, strategy: str) -> Dict[str, float]:
         """使用GPU基准测试策略性能"""
         import time
+
         import numpy as np
 
         # 模拟计算密集型任务
@@ -506,7 +504,8 @@ class GPUAIIntegrationManager:
         }
 
     def _assess_overall_performance(
-        self, test_results: Dict[str, Any]
+        self,
+        test_results: Dict[str, Any],
     ) -> Dict[str, Any]:
         """评估整体性能"""
         return {
@@ -517,7 +516,8 @@ class GPUAIIntegrationManager:
         }
 
     def _generate_optimization_recommendations(
-        self, test_results: Dict[str, Any]
+        self,
+        test_results: Dict[str, Any],
     ) -> List[str]:
         """生成优化建议"""
         recommendations = [
@@ -555,7 +555,7 @@ def main():
     print(f"结果: {integration_result['status']}")
     if integration_result["status"] == "success":
         print(
-            f"平均加速比: {integration_result['performance_gains']['average_speedup']:.2f}x"
+            f"平均加速比: {integration_result['performance_gains']['average_speedup']:.2f}x",
         )
 
     # 4. 设置GPU监控
@@ -594,14 +594,13 @@ def main():
                     monitoring_result["status"] == "success",
                     cache_result["status"] == "success",
                     test_result["status"] == "success",
-                ]
+                ],
             ),
             "gpu_acceleration_ratio": integration_result.get(
-                "performance_gains", {}
+                "performance_gains",
+                {},
             ).get("average_speedup", 0),
-            "overall_status": "completed"
-            if test_result["status"] == "success"
-            else "partial",
+            "overall_status": "completed" if test_result["status"] == "success" else "partial",
         },
     }
 
@@ -618,7 +617,7 @@ def main():
     print(f"  • 总步骤: {integration_report['summary']['total_steps']}")
     print(f"  • 成功步骤: {integration_report['summary']['successful_steps']}")
     print(
-        f"  • GPU加速比: {integration_report['summary']['gpu_acceleration_ratio']:.2f}x"
+        f"  • GPU加速比: {integration_report['summary']['gpu_acceleration_ratio']:.2f}x",
     )
     print(f"  • 整体状态: {integration_report['summary']['overall_status']}")
 

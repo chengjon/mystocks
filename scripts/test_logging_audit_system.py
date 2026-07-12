@@ -1,5 +1,4 @@
-"""
-测试日志和审计系统
+"""测试日志和审计系统
 Test Logging and Audit System
 
 验证结构化日志记录、审计追踪、安全监控等功能的正确性。
@@ -8,25 +7,26 @@ Validates structured logging, audit trails, security monitoring functions.
 
 import asyncio
 import logging
-import sys
 import os
+import sys
 import tempfile
 from datetime import datetime
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock
+
 
 # Setup project path
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, project_root)
 
 from src.infrastructure.logging.audit_system import (
-    StructuredLogger,
-    AuditManager,
-    SecurityMonitor,
-    LogConfig,
     AuditEvent,
-    get_structured_logger,
+    AuditManager,
+    LogConfig,
+    SecurityMonitor,
+    StructuredLogger,
     get_audit_manager,
     get_security_monitor,
+    get_structured_logger,
 )
 
 
@@ -66,7 +66,7 @@ class MockDatabaseConnection:
                     "error_message": None,
                     "additional_data": '{"login_method": "password"}',
                     "created_at": datetime.now(),
-                }
+                },
             ]
         return []
 
@@ -103,12 +103,20 @@ async def test_structured_logger():
 
         # 测试HTTP请求日志
         logger_instance.log_request(
-            method="GET", path="/api/stocks/AAPL", status_code=200, duration=150.5, user_id="test-user-123"
+            method="GET",
+            path="/api/stocks/AAPL",
+            status_code=200,
+            duration=150.5,
+            user_id="test-user-123",
         )
 
         # 测试数据库操作日志
         logger_instance.log_database_operation(
-            operation="SELECT", table="stocks", record_count=100, duration=45.2, user_id="test-user-123"
+            operation="SELECT",
+            table="stocks",
+            record_count=100,
+            duration=45.2,
+            user_id="test-user-123",
         )
 
         # 测试安全事件日志
@@ -129,7 +137,7 @@ async def test_structured_logger():
         # 验证日志文件已创建并包含内容
         assert os.path.exists(temp_log_file), "日志文件未创建"
 
-        with open(temp_log_file, "r") as f:
+        with open(temp_log_file) as f:
             log_content = f.read()
             assert len(log_content) > 0, "日志文件为空"
 
@@ -271,7 +279,7 @@ async def test_context_variables():
     """测试上下文变量"""
     logger.info("🧪 测试上下文变量...")
 
-    from src.infrastructure.logging.audit_system import request_id_var, user_id_var, session_id_var
+    from src.infrastructure.logging.audit_system import request_id_var, session_id_var, user_id_var
 
     # 设置上下文变量
     request_token = request_id_var.set("test-request-123")
@@ -363,9 +371,8 @@ async def run_all_tests():
         logger.info("🎉 所有测试通过! 日志和审计系统已准备就绪。")
         logger.info("系统提供结构化日志记录、审计追踪、安全监控等企业级功能。")
         return True
-    else:
-        logger.warning("⚠️ 某些测试失败。请检查实现。")
-        return False
+    logger.warning("⚠️ 某些测试失败。请检查实现。")
+    return False
 
 
 if __name__ == "__main__":

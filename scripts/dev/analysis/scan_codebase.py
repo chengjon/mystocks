@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-代码库扫描器 - 扫描整个 MyStocks 项目
+"""代码库扫描器 - 扫描整个 MyStocks 项目
 
 扫描所有 Python 文件并提取结构化元数据。
 
@@ -11,20 +10,21 @@
     python scripts/analysis/scan_codebase.py
 """
 
-import sys
-from pathlib import Path
-from datetime import datetime
 import json
+import sys
+from datetime import datetime
+from pathlib import Path
+
 
 # 添加项目根目录到路径
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(PROJECT_ROOT))
 sys.path.insert(0, str(Path(__file__).parent))
 
-from manual_paths import get_manual_metadata_dir, get_manual_root
-from models import ModuleInventory, ManualMetadata, CategoryEnum
-from utils.ast_parser import ASTParser
 from classifier import ModuleClassifier
+from manual_paths import get_manual_metadata_dir, get_manual_root
+from models import CategoryEnum, ManualMetadata, ModuleInventory
+from utils.ast_parser import ASTParser
 
 
 MANUAL_ROOT = get_manual_root(PROJECT_ROOT)
@@ -32,8 +32,7 @@ MANUAL_METADATA_DIR = get_manual_metadata_dir(PROJECT_ROOT)
 
 
 def scan_project(project_root: str, exclude_patterns: list = None) -> ModuleInventory:
-    """
-    扫描整个项目
+    """扫描整个项目
 
     Args:
         project_root: 项目根目录
@@ -41,6 +40,7 @@ def scan_project(project_root: str, exclude_patterns: list = None) -> ModuleInve
 
     Returns:
         ModuleInventory 对象
+
     """
     if exclude_patterns is None:
         exclude_patterns = [
@@ -103,10 +103,7 @@ def scan_project(project_root: str, exclude_patterns: list = None) -> ModuleInve
             metadata.category_stats[category.value] = {
                 "modules": len(cat_modules),
                 "classes": sum(len(m.classes) for m in cat_modules),
-                "functions": sum(
-                    len(m.functions) + sum(len(c.methods) for c in m.classes)
-                    for m in cat_modules
-                ),
+                "functions": sum(len(m.functions) + sum(len(c.methods) for c in m.classes) for m in cat_modules),
                 "lines": sum(m.lines_of_code for m in cat_modules),
             }
 
@@ -128,12 +125,12 @@ def scan_project(project_root: str, exclude_patterns: list = None) -> ModuleInve
 
 
 def save_inventory(inventory: ModuleInventory, output_path: str):
-    """
-    保存清单到 JSON 文件
+    """保存清单到 JSON 文件
 
     Args:
         inventory: 模块清单
         output_path: 输出文件路径
+
     """
     output_file = Path(output_path)
     output_file.parent.mkdir(parents=True, exist_ok=True)
@@ -163,9 +160,7 @@ def save_inventory(inventory: ModuleInventory, output_path: str):
             "lines_of_code": module.lines_of_code,
             "blank_lines": module.blank_lines,
             "comment_lines": module.comment_lines,
-            "last_modified": (
-                module.last_modified.isoformat() if module.last_modified else None
-            ),
+            "last_modified": (module.last_modified.isoformat() if module.last_modified else None),
             "imports": module.imports,
             "classes": [],
             "functions": [],
@@ -269,8 +264,7 @@ def print_summary(inventory: ModuleInventory):
         if cat_key in metadata.category_stats:
             stats = metadata.category_stats[cat_key]
             print(
-                f"  {cat_name:10} : {stats['modules']:3} 模块, "
-                f"{stats['functions']:4} 函数, {stats['lines']:6,} 行"
+                f"  {cat_name:10} : {stats['modules']:3} 模块, {stats['functions']:4} 函数, {stats['lines']:6,} 行",
             )
 
     print("\n" + "=" * 60)

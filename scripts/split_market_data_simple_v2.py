@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
-"""
-简单拆分脚本 - 将 market_data.py 拆分为模块
-"""
+"""简单拆分脚本 - 将 market_data.py 拆分为模块"""
 
-import sys
 from pathlib import Path
+
 
 SOURCE_FILE = Path("src/adapters/akshare/market_data.py")
 OUTPUT_DIR = Path("src/adapters/akshare_modules")
@@ -16,7 +14,7 @@ print(f"输出目录: {OUTPUT_DIR}")
 print("=" * 80)
 
 # 读取源文件
-with open(SOURCE_FILE, "r", encoding="utf-8") as f:
+with open(SOURCE_FILE, encoding="utf-8") as f:
     lines = f.readlines()
 
 total_lines = len(lines)
@@ -45,7 +43,7 @@ for split in splits:
 
 print()
 print("=" * 80)
-print(f"✅ 简化拆分完成!")
+print("✅ 简化拆分完成!")
 print(f"   创建文件数: {len(splits)}")
 print(f"   总行数: {total_lines:,}")
 print()

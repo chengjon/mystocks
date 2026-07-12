@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-"""
-测试市场数据V2 API端点
+"""测试市场数据V2 API端点
 测试东方财富直接API的各项功能
 """
 
-import requests
 import json
 import os
 from datetime import datetime
+
+import requests
+
 
 BACKEND_PORT = os.getenv("BACKEND_PORT", "").strip()
 if not BACKEND_PORT:

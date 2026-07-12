@@ -1,5 +1,4 @@
-"""
-Test Real-time Trading Integration
+"""Test Real-time Trading Integration
 测试实时交易集成
 
 Validates the integration between ML strategies, real-time data, and live trading engine.
@@ -8,15 +7,17 @@ Validates the integration between ML strategies, real-time data, and live tradin
 
 import asyncio
 import logging
-import sys
 import os
+import sys
+
 
 # Setup project path
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, project_root)
 
-from src.trading.realtime_strategy_executor import create_realtime_executor, RealtimeStrategyExecutor
 from src.trading.live_trading_engine import LiveTradingConfig
+from src.trading.realtime_strategy_executor import RealtimeStrategyExecutor, create_realtime_executor
+
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -167,9 +168,8 @@ async def run_all_tests():
     if passed == total:
         logger.info("🎉 All tests passed! Real-time trading integration is ready.")
         return True
-    else:
-        logger.warning("⚠️ Some tests failed. Please review the implementation.")
-        return False
+    logger.warning("⚠️ Some tests failed. Please review the implementation.")
+    return False
 
 
 if __name__ == "__main__":

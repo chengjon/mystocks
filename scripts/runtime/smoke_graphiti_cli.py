@@ -5,6 +5,7 @@ import json
 import sys
 from pathlib import Path
 
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -70,7 +71,7 @@ def run_smoke(
             str(max_wait_seconds),
             "--output",
             "json",
-        ]
+        ],
     )
     search_payload = _run_coordctl_json(
         [
@@ -84,7 +85,7 @@ def run_smoke(
             group_id,
             "--output",
             "json",
-        ]
+        ],
     )
 
     return {

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Generate TypeScript types from Pydantic models
+"""Generate TypeScript types from Pydantic models
 
 This script extracts Pydantic model definitions from the backend
 and generates corresponding TypeScript interfaces for the frontend.
@@ -12,21 +11,26 @@ Usage:
     python scripts/generate_frontend_types.py --domain=trading  # Generate specific domain
 """
 
-import re
 import ast
-from pathlib import Path
-from typing import Dict, List, Set, Optional, Any
+import re
 from collections import defaultdict
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
 import yaml
+
 
 try:
     from ._generate_frontend_types_cli import (
         build_argument_parser,
-        generate_index_file as _generate_index_file,
         run_generation,
     )
+    from ._generate_frontend_types_cli import (
+        generate_index_file as _generate_index_file,
+    )
 except ImportError:
-    from _generate_frontend_types_cli import build_argument_parser, generate_index_file as _generate_index_file, run_generation
+    from _generate_frontend_types_cli import build_argument_parser, run_generation
+    from _generate_frontend_types_cli import generate_index_file as _generate_index_file
 
 # Project paths
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -52,7 +56,7 @@ DIR_TO_DOMAIN = {
     "v1/analysis": "analysis",
     "schemas": "common",
     "schema": "common",
-    "models": "common", # Explicitly map models directory to common
+    "models": "common",  # Explicitly map models directory to common
 }
 
 
@@ -192,13 +196,7 @@ class TypeConverter:
             elif ch == "}":
                 depth_curly = max(depth_curly - 1, 0)
 
-            if (
-                ch == delimiter
-                and depth_round == 0
-                and depth_square == 0
-                and depth_angle == 0
-                and depth_curly == 0
-            ):
+            if ch == delimiter and depth_round == 0 and depth_square == 0 and depth_angle == 0 and depth_curly == 0:
                 part = "".join(current).strip()
                 if part:
                     parts.append(part)
@@ -210,7 +208,7 @@ class TypeConverter:
         tail = "".join(current).strip()
         if tail:
             parts.append(tail)
-        return parts if parts else [value]
+        return parts or [value]
 
     @classmethod
     def _fix_python_type_names(cls, type_str: str) -> str:
@@ -244,7 +242,7 @@ class TypeGenerationConfig:
     def _load_config(self) -> Dict[str, Any]:
         """Load configuration from YAML file"""
         try:
-            with open(self.config_path, "r", encoding="utf-8") as f:
+            with open(self.config_path, encoding="utf-8") as f:
                 return yaml.safe_load(f) or {}
         except FileNotFoundError:
             print(f"⚠️  Config file not found: {self.config_path}, using defaults")
@@ -301,7 +299,7 @@ class PydanticModelExtractor:
     def extract_from_file(self, file_path: Path) -> None:
         """Extract models from a Python file"""
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             tree = ast.parse(content)
@@ -325,7 +323,7 @@ class PydanticModelExtractor:
         """Add new model or merge with existing one, detecting conflicts"""
         new_info["source_file"] = str(file_path.relative_to(PROJECT_ROOT))
         new_info["source_domain"] = domain
-        
+
         if name in self.models:
             existing_info = self.models[name]
             existing_domain = existing_info.get("source_domain", "common")
@@ -336,16 +334,16 @@ class PydanticModelExtractor:
                 # Remove from common's domain_models if it was there
                 if name in self.domain_models["common"]:
                     del self.domain_models["common"][name]
-                self.models[name] = new_info # Update model with the new info (which contains the specific domain)
+                self.models[name] = new_info  # Update model with the new info (which contains the specific domain)
                 self.domain_models[domain][name] = new_info
                 self.warnings.append(
-                    f"Reassigned model '{name}' from 'common' to '{domain}' due to more specific definition in {file_path}"
+                    f"Reassigned model '{name}' from 'common' to '{domain}' due to more specific definition in {file_path}",
                 )
-                return # Successfully reassigned, no further merging/conflict checks needed for this instance
-            elif domain == "common" and existing_domain != "common":
+                return  # Successfully reassigned, no further merging/conflict checks needed for this instance
+            if domain == "common" and existing_domain != "common":
                 # If current is common but existing is specific, keep the existing one
                 self.warnings.append(
-                    f"Ignoring 'common' definition for model '{name}' in {file_path}, keeping definition from '{existing_domain}'"
+                    f"Ignoring 'common' definition for model '{name}' in {file_path}, keeping definition from '{existing_domain}'",
                 )
                 return
 
@@ -360,20 +358,22 @@ class PydanticModelExtractor:
                 }
                 self.type_conflicts[name].append(conflict_info)
                 self.warnings.append(
-                    f"Type conflict for '{name}': existing {existing_info.get('type')} vs new {new_info.get('type')} in {file_path}"
+                    f"Type conflict for '{name}': existing {existing_info.get('type')} vs new {new_info.get('type')} in {file_path}",
                 )
 
             # Merge interface fields if both are interfaces
             elif existing_info.get("type") == "interface" and new_info.get("type") == "interface":
                 merged_fields = self._merge_interface_fields(
-                    existing_info.get("fields", {}), new_info.get("fields", {}), name
+                    existing_info.get("fields", {}),
+                    new_info.get("fields", {}),
+                    name,
                 )
                 existing_info["fields"] = merged_fields
                 self.domain_models[domain][name] = existing_info
             else:
                 # For non-interface types, keep the first definition and warn
                 self.warnings.append(
-                    f"Duplicate {new_info.get('type')} definition for '{name}' in {file_path}, keeping first definition"
+                    f"Duplicate {new_info.get('type')} definition for '{name}' in {file_path}, keeping first definition",
                 )
         else:
             # First occurrence
@@ -405,16 +405,16 @@ class PydanticModelExtractor:
                         }
                         if resolved_type != existing_type:
                             self.fixed_conflicts.append(
-                                f"Auto-fixed type conflict for {interface_name}.{field_name}: '{existing_type}' vs '{new_type}' -> '{resolved_type}'"
+                                f"Auto-fixed type conflict for {interface_name}.{field_name}: '{existing_type}' vs '{new_type}' -> '{resolved_type}'",
                             )
                         else:
                             self.warnings.append(
-                                f"Resolved type conflict for {interface_name}.{field_name}: '{existing_type}' vs '{new_type}' -> '{resolved_type}'"
+                                f"Resolved type conflict for {interface_name}.{field_name}: '{existing_type}' vs '{new_type}' -> '{resolved_type}'",
                             )
                     else:
                         # Keep existing type and warn
                         self.warnings.append(
-                            f"Unresolved type conflict for {interface_name}.{field_name}: '{existing_type}' vs '{new_type}', keeping '{existing_type}'"
+                            f"Unresolved type conflict for {interface_name}.{field_name}: '{existing_type}' vs '{new_type}', keeping '{existing_type}'",
                         )
             else:
                 # New field
@@ -440,9 +440,9 @@ class PydanticModelExtractor:
                     # Prefer nullable versions
                     if "null" in type1 and "null" not in type2:
                         return type1
-                    elif "null" in type2 and "null" not in type1:
+                    if "null" in type2 and "null" not in type1:
                         return type2
-                    elif "null" in type1 and "null" in type2:
+                    if "null" in type1 and "null" in type2:
                         return type1  # Both nullable, keep first
                 elif action == "prefer_string":
                     if "string" in [type1, type2]:
@@ -462,7 +462,7 @@ class PydanticModelExtractor:
                 # Prefer nullable versions
                 if "null" in type1 and "null" not in type2:
                     return type1
-                elif "null" in type2 and "null" not in type1:
+                if "null" in type2 and "null" not in type1:
                     return type2
             elif priority == "latest":
                 return type2  # Prefer second (later) definition
@@ -612,20 +612,22 @@ class TypeScriptGenerator:
         ]
 
         if domain == "common":
-            output.extend([
-                "// Standard Unified Response Wrapper",
-                "export interface UnifiedResponse<T = unknown> {",
-                "  success: boolean;",
-                "  code: number;",
-                "  message: string;",
-                "  data: T;",
-                "  timestamp: string;",
-                "  request_id: string;",
-                "  process_time?: string;",
-                "  errors?: unknown;",
-                "}",
-                "",
-            ])
+            output.extend(
+                [
+                    "// Standard Unified Response Wrapper",
+                    "export interface UnifiedResponse<T = unknown> {",
+                    "  success: boolean;",
+                    "  code: number;",
+                    "  message: string;",
+                    "  data: T;",
+                    "  timestamp: string;",
+                    "  request_id: string;",
+                    "  process_time?: string;",
+                    "  errors?: unknown;",
+                    "}",
+                    "",
+                ]
+            )
 
         for name, info in sorted(models.items()):
             output.extend(self._render_model(name, info))

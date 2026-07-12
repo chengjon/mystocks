@@ -1,19 +1,18 @@
 #!/usr/bin/env python3
-"""
-MyStocks项目安全扫描器
+"""MyStocks项目安全扫描器
 集成多种安全扫描工具，提供全面的安全检测报告
 """
 
-import os
-import sys
+import datetime
 import json
 import logging
+import os
 import subprocess
-import datetime
-from pathlib import Path
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, asdict
+import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from dataclasses import asdict, dataclass
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -62,10 +61,7 @@ class SecurityScanner:
 
     def setup_logging(self):
         """设置日志配置"""
-        log_file = (
-            self.results_dir
-            / f"security_scan_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
-        )
+        log_file = self.results_dir / f"security_scan_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
         logging.basicConfig(
             level=logging.INFO,
             format="%(asctime)s - %(levelname)s - %(message)s",
@@ -107,7 +103,7 @@ class SecurityScanner:
                             file_path=issue.get("filename", ""),
                             line_number=issue.get("line_number"),
                             recommendation=issue.get("more_info", ""),
-                        )
+                        ),
                     )
 
                 self.logger.info(f"✅ Bandit扫描完成，发现 {len(issues)} 个安全问题")
@@ -134,11 +130,7 @@ class SecurityScanner:
                 data = json.loads(result.stdout)
 
                 for vuln in data:
-                    severity = (
-                        "HIGH"
-                        if vuln.get("vulnerability_severity") == "high"
-                        else "MEDIUM"
-                    )
+                    severity = "HIGH" if vuln.get("vulnerability_severity") == "high" else "MEDIUM"
 
                     issues.append(
                         SecurityIssue(
@@ -149,7 +141,7 @@ class SecurityScanner:
                             file_path=f"package:{vuln.get('package_name', '')}",
                             recommendation=vuln.get("recommendation", ""),
                             cve_id=vuln.get("cve"),
-                        )
+                        ),
                     )
 
             self.logger.info(f"✅ Safety扫描完成，发现 {len(issues)} 个依赖漏洞")
@@ -184,7 +176,7 @@ class SecurityScanner:
                             description=vuln.get("description", ""),
                             file_path=f"package:{vuln.get('name', '')}",
                             cve_id=vuln.get("id"),
-                        )
+                        ),
                     )
 
             self.logger.info(f"✅ pip-audit扫描完成，发现 {len(issues)} 个包安全漏洞")
@@ -220,10 +212,7 @@ class SecurityScanner:
 
         issues = []
         for file_path in sensitive_files:
-            if not any(
-                skip in str(file_path)
-                for skip in ["node_modules", "__pycache__", ".git"]
-            ):
+            if not any(skip in str(file_path) for skip in ["node_modules", "__pycache__", ".git"]):
                 issues.append(
                     SecurityIssue(
                         tool="file_check",
@@ -232,7 +221,7 @@ class SecurityScanner:
                         description=f"发现敏感文件: {file_path.name}",
                         file_path=str(file_path),
                         recommendation="敏感文件不应提交到版本控制系统",
-                    )
+                    ),
                 )
 
         self.logger.info(f"✅ 敏感文件检查完成，发现 {len(issues)} 个敏感文件")
@@ -249,7 +238,7 @@ class SecurityScanner:
         if api_dir.exists():
             for py_file in api_dir.rglob("*.py"):
                 try:
-                    with open(py_file, "r", encoding="utf-8") as f:
+                    with open(py_file, encoding="utf-8") as f:
                         content = f.read()
 
                     # 检查是否使用了Pydantic模型
@@ -262,7 +251,7 @@ class SecurityScanner:
                                 description=f"API文件缺少输入验证模型: {py_file.name}",
                                 file_path=str(py_file),
                                 recommendation="建议使用Pydantic模型进行输入验证",
-                            )
+                            ),
                         )
 
                 except Exception as e:
@@ -329,7 +318,7 @@ class SecurityScanner:
             summary={
                 "scan_status": "completed",
                 "tools_successfully_run": len(
-                    [t for t in completed_tools if "_failed" not in t]
+                    [t for t in completed_tools if "_failed" not in t],
                 ),
                 "total_tools": 5,
                 "average_severity": "HIGH"
@@ -345,7 +334,7 @@ class SecurityScanner:
 
         self.logger.info(f"🎯 安全扫描完成，总计发现 {len(all_issues)} 个安全问题")
         self.logger.info(
-            f"   - 严重: {result.critical_issues}, 高: {result.high_issues}, 中: {result.medium_issues}, 低: {result.low_issues}"
+            f"   - 严重: {result.critical_issues}, 高: {result.high_issues}, 中: {result.medium_issues}, 低: {result.low_issues}",
         )
 
         return result

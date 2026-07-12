@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-创建新表脚本
+"""创建新表脚本
 
 根据cmd8.md的要求创建新表：
 1. TDengine: minute_kline表（适配 TICK_DATA 高频时序数据特性）
@@ -13,14 +12,15 @@ import os
 import sys
 from datetime import datetime
 
+
 # 添加项目根目录到Python路径
 project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
 )
 sys.path.insert(0, project_root)
 
-from src.data_access.tdengine_access import TDengineDataAccess
 from src.data_access.postgresql_access import PostgreSQLDataAccess
+from src.data_access.tdengine_access import TDengineDataAccess
 
 
 def create_tdengine_tables():
@@ -90,7 +90,9 @@ def create_postgresql_tables():
         }
 
         pg_access.create_table(
-            "industry_classifications", industry_schema, "industry_code"
+            "industry_classifications",
+            industry_schema,
+            "industry_code",
         )
         print("✅ PostgreSQL industry_classifications表创建成功")
 
@@ -113,7 +115,9 @@ def create_postgresql_tables():
         }
 
         pg_access.create_table(
-            "concept_classifications", concept_schema, "concept_code"
+            "concept_classifications",
+            concept_schema,
+            "concept_code",
         )
         print("✅ PostgreSQL concept_classifications表创建成功")
 
@@ -138,16 +142,16 @@ def create_postgresql_tables():
 
             # 为stock_industry_concept_relations表创建索引
             cursor.execute(
-                "CREATE INDEX IF NOT EXISTS idx_stock_industry_concept_symbol ON stock_industry_concept_relations (symbol)"
+                "CREATE INDEX IF NOT EXISTS idx_stock_industry_concept_symbol ON stock_industry_concept_relations (symbol)",
             )
             cursor.execute(
-                "CREATE INDEX IF NOT EXISTS idx_stock_industry_concept_type ON stock_industry_concept_relations (category_type)"
+                "CREATE INDEX IF NOT EXISTS idx_stock_industry_concept_type ON stock_industry_concept_relations (category_type)",
             )
             cursor.execute(
-                "CREATE INDEX IF NOT EXISTS idx_stock_industry_concept_name ON stock_industry_concept_relations (category_name)"
+                "CREATE INDEX IF NOT EXISTS idx_stock_industry_concept_name ON stock_industry_concept_relations (category_name)",
             )
             cursor.execute(
-                "CREATE INDEX IF NOT EXISTS idx_stock_industry_concept_symbol_type ON stock_industry_concept_relations (symbol, category_type)"
+                "CREATE INDEX IF NOT EXISTS idx_stock_industry_concept_symbol_type ON stock_industry_concept_relations (symbol, category_type)",
             )
 
             conn.commit()

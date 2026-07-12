@@ -1,31 +1,30 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-数据库评估脚本
+"""数据库评估脚本
 评估所有数据库的实际使用情况
 
 用途: Week 2 Day 1 - 数据库使用情况评估
 输出: database_assessment_YYYYMMDD_HHMMSS.json
 """
 
-import sys
-import os
-from datetime import datetime
-from typing import Dict, Any
 import json
+import os
+import sys
+from datetime import datetime
+from typing import Any, Dict
+
 
 # 添加项目根目录到路径
 project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
 )
 sys.path.insert(0, project_root)
 
 try:
     from src.data_access import (
-        TDengineDataAccess,
-        PostgreSQLDataAccess,
         MySQLDataAccess,
+        PostgreSQLDataAccess,
         RedisDataAccess,
+        TDengineDataAccess,
     )
 except ImportError as e:
     print(f"警告: 无法导入数据访问模块: {e}")
@@ -92,7 +91,7 @@ class DatabaseAssessor:
                         try:
                             # 获取行数
                             count_result = td.execute(
-                                f"SELECT COUNT(*) FROM `{table_name}`"
+                                f"SELECT COUNT(*) FROM `{table_name}`",
                             )
                             row_count = count_result[0][0] if count_result else 0
 
@@ -110,7 +109,7 @@ class DatabaseAssessor:
                             results["total_size_mb"] += estimated_size_mb
 
                             print(
-                                f"    {table_name}: {row_count:,} 行, ~{estimated_size_mb:.2f} MB"
+                                f"    {table_name}: {row_count:,} 行, ~{estimated_size_mb:.2f} MB",
                             )
                         except Exception as e:
                             print(f"    {table_name}: 评估失败 - {e}")
@@ -173,7 +172,7 @@ class DatabaseAssessor:
                         "name": name,
                         "size_mb": round(size_mb, 2),
                         "rows": row_count,
-                    }
+                    },
                 )
 
                 results["total_size_mb"] += size_mb
@@ -242,7 +241,7 @@ class DatabaseAssessor:
                             "name": name,
                             "rows": row_count,
                             "size_mb": round(total_size, 2),
-                        }
+                        },
                     )
 
                     results["total_size_mb"] += total_size

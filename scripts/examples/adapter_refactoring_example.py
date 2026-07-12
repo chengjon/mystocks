@@ -1,5 +1,4 @@
-"""
-适配器重构示例 - 从旧接口迁移到新接口
+"""适配器重构示例 - 从旧接口迁移到新接口
 展示如何将现有的Akshare适配器重构为使用新的接口设计
 
 本文件展示了：
@@ -12,24 +11,27 @@
 日期: 2025-11-14
 """
 
-import pandas as pd
-from typing import Dict, Optional, Union
-import sys
-import os
 import datetime
+import os
+import sys
+from typing import Dict, Optional, Union
+
+import pandas as pd
+
 
 # 添加src目录到路径
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # 导入新接口
 from src.interfaces.refactored_interfaces import (
-    IPriceDataSource,
-    IIndexDataSource,
-    IBasicInfoSource,
     DataResponse,
-    validate_symbol,
+    IBasicInfoSource,
+    IIndexDataSource,
+    IPriceDataSource,
     validate_date,
+    validate_symbol,
 )
+
 
 # 导入旧的适配器 (用于对比)
 # from src.adapters.akshare_adapter import AkshareDataSource as OldAkshareDataSource
@@ -51,6 +53,7 @@ class RefactoredAkshareDataSource(IPriceDataSource, IIndexDataSource, IBasicInfo
         Args:
             api_timeout: API请求超时时间(秒)
             max_retries: 最大重试次数
+
         """
         super().__init__(name="Akshare")
         self.api_timeout = api_timeout
@@ -63,7 +66,7 @@ class RefactoredAkshareDataSource(IPriceDataSource, IIndexDataSource, IBasicInfo
             self.ak = ak
             self.available = True
             print(
-                f"✅ Akshare适配器初始化成功 (超时: {api_timeout}s, 重试: {max_retries}次)"
+                f"✅ Akshare适配器初始化成功 (超时: {api_timeout}s, 重试: {max_retries}次)",
             )
         except ImportError as e:
             print(f"❌ Akshare不可用: {e}")
@@ -75,10 +78,12 @@ class RefactoredAkshareDataSource(IPriceDataSource, IIndexDataSource, IBasicInfo
     # =============================================================================
 
     def get_stock_daily(
-        self, symbol: str, start_date: str, end_date: str
+        self,
+        symbol: str,
+        start_date: str,
+        end_date: str,
     ) -> DataResponse:
         """获取股票日线数据 - 重构版本"""
-
         # 1. 输入验证
         if not self.available:
             return DataResponse.create_error(error_msg="Akshare不可用，请安装akshare库")
@@ -122,14 +127,14 @@ class RefactoredAkshareDataSource(IPriceDataSource, IIndexDataSource, IBasicInfo
             return DataResponse.create_success(data=standardized_df, metadata=metadata)
 
         except Exception as e:
-            error_msg = f"获取股票日线数据失败: {str(e)}"
+            error_msg = f"获取股票日线数据失败: {e!s}"
             return DataResponse.create_error(
-                error_msg=error_msg, metadata={"symbol": symbol}
+                error_msg=error_msg,
+                metadata={"symbol": symbol},
             )
 
     def get_real_time_data(self, symbol: str) -> DataResponse:
         """获取实时数据 - 重构版本"""
-
         if not self.available:
             return DataResponse.create_error(error_msg="Akshare不可用，请安装akshare库")
 
@@ -163,9 +168,10 @@ class RefactoredAkshareDataSource(IPriceDataSource, IIndexDataSource, IBasicInfo
             return DataResponse.create_success(data=real_time_data, metadata=metadata)
 
         except Exception as e:
-            error_msg = f"获取实时数据失败: {str(e)}"
+            error_msg = f"获取实时数据失败: {e!s}"
             return DataResponse.create_error(
-                error_msg=error_msg, metadata={"symbol": symbol}
+                error_msg=error_msg,
+                metadata={"symbol": symbol},
             )
 
     # =============================================================================
@@ -173,10 +179,12 @@ class RefactoredAkshareDataSource(IPriceDataSource, IIndexDataSource, IBasicInfo
     # =============================================================================
 
     def get_index_daily(
-        self, symbol: str, start_date: str, end_date: str
+        self,
+        symbol: str,
+        start_date: str,
+        end_date: str,
     ) -> DataResponse:
         """获取指数日线数据 - 重构版本"""
-
         if not self.available:
             return DataResponse.create_error(error_msg="Akshare不可用，请安装akshare库")
 
@@ -196,9 +204,7 @@ class RefactoredAkshareDataSource(IPriceDataSource, IIndexDataSource, IBasicInfo
                 df = self.ak.stock_zh_index_daily(symbol=index_code)
                 if df is not None and not df.empty:
                     df["date"] = pd.to_datetime(df["date"])
-                    mask = (df["date"] >= pd.to_datetime(start_date)) & (
-                        df["date"] <= pd.to_datetime(end_date)
-                    )
+                    mask = (df["date"] >= pd.to_datetime(start_date)) & (df["date"] <= pd.to_datetime(end_date))
                     df = df[mask]
             except Exception:
                 pass
@@ -209,9 +215,7 @@ class RefactoredAkshareDataSource(IPriceDataSource, IIndexDataSource, IBasicInfo
                     df = self.ak.stock_zh_index_daily_em(symbol=index_code)
                     if df is not None and not df.empty:
                         df["date"] = pd.to_datetime(df["date"])
-                        mask = (df["date"] >= pd.to_datetime(start_date)) & (
-                            df["date"] <= pd.to_datetime(end_date)
-                        )
+                        mask = (df["date"] >= pd.to_datetime(start_date)) & (df["date"] <= pd.to_datetime(end_date))
                         df = df[mask]
                 except Exception:
                     pass
@@ -234,14 +238,14 @@ class RefactoredAkshareDataSource(IPriceDataSource, IIndexDataSource, IBasicInfo
             return DataResponse.create_success(data=standardized_df, metadata=metadata)
 
         except Exception as e:
-            error_msg = f"获取指数日线数据失败: {str(e)}"
+            error_msg = f"获取指数日线数据失败: {e!s}"
             return DataResponse.create_error(
-                error_msg=error_msg, metadata={"symbol": symbol}
+                error_msg=error_msg,
+                metadata={"symbol": symbol},
             )
 
     def get_index_components(self, symbol: str) -> DataResponse:
         """获取指数成分股 - 重构版本"""
-
         if not self.available:
             return DataResponse.create_error(error_msg="Akshare不可用，请安装akshare库")
 
@@ -261,7 +265,7 @@ class RefactoredAkshareDataSource(IPriceDataSource, IIndexDataSource, IBasicInfo
                 components = df["成分券代码"].tolist()
             else:
                 return DataResponse.create_error(
-                    error_msg=f"无法识别的成分股列名: {df.columns.tolist()}"
+                    error_msg=f"无法识别的成分股列名: {df.columns.tolist()}",
                 )
 
             metadata = {
@@ -273,9 +277,10 @@ class RefactoredAkshareDataSource(IPriceDataSource, IIndexDataSource, IBasicInfo
             return DataResponse.create_success(data=components, metadata=metadata)
 
         except Exception as e:
-            error_msg = f"获取指数成分股失败: {str(e)}"
+            error_msg = f"获取指数成分股失败: {e!s}"
             return DataResponse.create_error(
-                error_msg=error_msg, metadata={"symbol": symbol}
+                error_msg=error_msg,
+                metadata={"symbol": symbol},
             )
 
     # =============================================================================
@@ -284,7 +289,6 @@ class RefactoredAkshareDataSource(IPriceDataSource, IIndexDataSource, IBasicInfo
 
     def get_stock_basic(self, symbol: str) -> DataResponse:
         """获取股票基本信息 - 重构版本"""
-
         if not self.available:
             return DataResponse.create_error(error_msg="Akshare不可用，请安装akshare库")
 
@@ -312,20 +316,20 @@ class RefactoredAkshareDataSource(IPriceDataSource, IIndexDataSource, IBasicInfo
             return DataResponse.create_success(data=info_dict, metadata=metadata)
 
         except Exception as e:
-            error_msg = f"获取股票基本信息失败: {str(e)}"
+            error_msg = f"获取股票基本信息失败: {e!s}"
             return DataResponse.create_error(
-                error_msg=error_msg, metadata={"symbol": symbol}
+                error_msg=error_msg,
+                metadata={"symbol": symbol},
             )
 
     def get_market_calendar(self, start_date: str, end_date: str) -> DataResponse:
         """获取交易日历 - 重构版本"""
-
         if not self.available:
             return DataResponse.create_error(error_msg="Akshare不可用，请安装akshare库")
 
         if not validate_date(start_date) or not validate_date(end_date):
             return DataResponse.create_error(
-                error_msg="无效的日期格式，请使用YYYY-MM-DD格式"
+                error_msg="无效的日期格式，请使用YYYY-MM-DD格式",
             )
 
         try:
@@ -352,7 +356,7 @@ class RefactoredAkshareDataSource(IPriceDataSource, IIndexDataSource, IBasicInfo
             return DataResponse.create_success(data=filtered_df, metadata=metadata)
 
         except Exception as e:
-            error_msg = f"获取交易日历失败: {str(e)}"
+            error_msg = f"获取交易日历失败: {e!s}"
             return DataResponse.create_error(error_msg=error_msg)
 
     # =============================================================================
@@ -361,7 +365,6 @@ class RefactoredAkshareDataSource(IPriceDataSource, IIndexDataSource, IBasicInfo
 
     def get_financial_data(self, symbol: str, period: str = "annual") -> DataResponse:
         """获取财务数据 - 重构版本"""
-
         if not self.available:
             return DataResponse.create_error(error_msg="Akshare不可用，请安装akshare库")
 
@@ -370,7 +373,7 @@ class RefactoredAkshareDataSource(IPriceDataSource, IIndexDataSource, IBasicInfo
 
         if period not in ["annual", "quarterly"]:
             return DataResponse.create_error(
-                error_msg="period必须是'annual'或'quarterly'"
+                error_msg="period必须是'annual'或'quarterly'",
             )
 
         try:
@@ -390,16 +393,18 @@ class RefactoredAkshareDataSource(IPriceDataSource, IIndexDataSource, IBasicInfo
             return DataResponse.create_success(data=df, metadata=metadata)
 
         except Exception as e:
-            error_msg = f"获取财务数据失败: {str(e)}"
+            error_msg = f"获取财务数据失败: {e!s}"
             return DataResponse.create_error(
-                error_msg=error_msg, metadata={"symbol": symbol}
+                error_msg=error_msg,
+                metadata={"symbol": symbol},
             )
 
     def get_news_data(
-        self, symbol: Optional[str] = None, limit: int = 10
+        self,
+        symbol: Optional[str] = None,
+        limit: int = 10,
     ) -> DataResponse:
         """获取新闻数据 - 重构版本"""
-
         if not self.available:
             return DataResponse.create_error(error_msg="Akshare不可用，请安装akshare库")
 
@@ -428,9 +433,10 @@ class RefactoredAkshareDataSource(IPriceDataSource, IIndexDataSource, IBasicInfo
             return DataResponse.create_success(data=news_list, metadata=metadata)
 
         except Exception as e:
-            error_msg = f"获取新闻数据失败: {str(e)}"
+            error_msg = f"获取新闻数据失败: {e!s}"
             return DataResponse.create_error(
-                error_msg=error_msg, metadata={"symbol": symbol}
+                error_msg=error_msg,
+                metadata={"symbol": symbol},
             )
 
     # =============================================================================
@@ -438,7 +444,10 @@ class RefactoredAkshareDataSource(IPriceDataSource, IIndexDataSource, IBasicInfo
     # =============================================================================
 
     def _validate_stock_inputs(
-        self, symbol: str, start_date: str, end_date: str
+        self,
+        symbol: str,
+        start_date: str,
+        end_date: str,
     ) -> Optional[str]:
         """验证股票数据输入参数"""
         if not validate_symbol(symbol):
@@ -515,23 +524,24 @@ class BackwardCompatibleAkshareAdapter:
         self._adapter = RefactoredAkshareDataSource()
 
     def get_stock_daily(
-        self, symbol: str, start_date: str, end_date: str
+        self,
+        symbol: str,
+        start_date: str,
+        end_date: str,
     ) -> pd.DataFrame:
         """旧API兼容方法"""
         response = self._adapter.get_stock_daily(symbol, start_date, end_date)
         if response.success:
             return response.data
-        else:
-            # 返回空DataFrame，与旧API行为一致
-            return pd.DataFrame()
+        # 返回空DataFrame，与旧API行为一致
+        return pd.DataFrame()
 
     def get_real_time_data(self, symbol: str) -> Union[Dict, str]:
         """旧API兼容方法"""
         response = self._adapter.get_real_time_data(symbol)
         if response.success:
             return response.data
-        else:
-            return {"error": response.error}
+        return {"error": response.error}
 
 
 # =============================================================================

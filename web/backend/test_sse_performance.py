@@ -1,13 +1,13 @@
-"""
-SSE Performance Optimization Test Script
+"""SSE Performance Optimization Test Script
 
 测试SSE性能优化功能的简单脚本
 """
 
 import asyncio
-import time
 import logging
+import time
 from datetime import datetime
+
 
 # 配置日志
 logging.basicConfig(level=logging.INFO)
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 # 模拟导入
 try:
-    from app.core.sse_manager import get_sse_manager, get_sse_broadcaster, SSEEvent
+    from app.core.sse_manager import SSEEvent, get_sse_broadcaster, get_sse_manager
     from app.core.sse_performance_optimizer import get_performance_optimizer
 except ImportError as e:
     logger.error("无法导入SSE模块: %s", e)
@@ -111,11 +111,11 @@ async def test_performance_stats():
 
         # 获取连接指标
         metrics = manager.get_connection_metrics()
-        logger.info("✅ 连接指标获取成功: %s 个连接", metrics['total_connections'])
+        logger.info("✅ 连接指标获取成功: %s 个连接", metrics["total_connections"])
 
         # 获取系统健康状态
         health = manager.get_system_health()
-        logger.info("✅ 系统健康状态: %s", health['status'])
+        logger.info("✅ 系统健康状态: %s", health["status"])
 
         # 清理连接
         for client_id in client_ids:
@@ -180,11 +180,11 @@ async def test_error_handling():
 
         # 测试无效频道
         health = manager.get_channel_health("invalid_channel")
-        logger.info("✅ 无效频道处理: %s", health['status'])
+        logger.info("✅ 无效频道处理: %s", health["status"])
 
         # 测试无效客户端
         metrics = manager.get_connection_metrics("invalid_client")
-        logger.info("✅ 无效客户端处理: %s 个连接", metrics['total_connections'])
+        logger.info("✅ 无效客户端处理: %s 个连接", metrics["total_connections"])
 
         # 测试性能统计错误处理
         # 这里我们直接调用方法，因为它应该有错误处理

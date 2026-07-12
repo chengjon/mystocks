@@ -1,12 +1,13 @@
-"""
-监控系统 API 测试脚本
+"""监控系统 API 测试脚本
 Real-time Monitoring System Test
 """
 
-import requests
 import json
 import os
 from datetime import date
+
+import requests
+
 
 # API base URL
 BACKEND_PORT = os.getenv("BACKEND_PORT", "").strip()
@@ -69,9 +70,8 @@ def test_create_alert_rule():
         print(f"创建成功! 规则ID: {data['id']}")
         print(json.dumps(data, indent=2, ensure_ascii=False))
         return data["id"]
-    else:
-        print(f"创建失败: {response.text}")
-        return None
+    print(f"创建失败: {response.text}")
+    return None
 
 
 def test_update_alert_rule(rule_id):
@@ -136,7 +136,7 @@ def test_get_realtime_list():
         print(f"获取到 {len(data)} 条记录")
         for record in data[:3]:
             print(
-                f"  - {record['stock_name']} ({record['symbol']}): " f"{record['price']} ({record['change_percent']}%)"
+                f"  - {record['stock_name']} ({record['symbol']}): {record['price']} ({record['change_percent']}%)",
             )
 
 

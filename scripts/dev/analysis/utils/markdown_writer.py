@@ -1,5 +1,4 @@
-"""
-Markdown 文档生成器 - 生成手册文档
+"""Markdown 文档生成器 - 生成手册文档
 
 生成格式良好的 Markdown 文档，包括：
 - 模块分类文档
@@ -12,23 +11,23 @@ Markdown 文档生成器 - 生成手册文档
 日期: 2025-10-19
 """
 
-from typing import List
-from pathlib import Path
-
 import sys
+from pathlib import Path
+from typing import List
+
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from models import (
-    ModuleMetadata,
     CategoryEnum,
-    DuplicationCase,
-    OptimizationOpportunity,
-    MergeRecommendation,
-    DataFlow,
-    DuplicationIndex,
-    OptimizationRoadmap,
     ConsolidationGuide,
+    DataFlow,
+    DuplicationCase,
+    DuplicationIndex,
+    MergeRecommendation,
+    ModuleMetadata,
+    OptimizationOpportunity,
+    OptimizationRoadmap,
 )
 
 
@@ -39,11 +38,11 @@ class MarkdownWriter:
     """Markdown 文档生成器"""
 
     def __init__(self, output_dir: str):
-        """
-        初始化文档生成器
+        """初始化文档生成器
 
         Args:
             output_dir: 输出目录路径
+
         """
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -55,8 +54,7 @@ class MarkdownWriter:
         category_name_cn: str,
         category_description: str,
     ) -> str:
-        """
-        生成功能类别文档
+        """生成功能类别文档
 
         Args:
             category: 类别枚举
@@ -66,6 +64,7 @@ class MarkdownWriter:
 
         Returns:
             文档文件路径
+
         """
         category_files = {
             CategoryEnum.CORE: "01-core-functions.md",
@@ -87,9 +86,7 @@ class MarkdownWriter:
 
         # 统计
         total_classes = sum(len(m.classes) for m in modules)
-        total_functions = sum(
-            len(m.functions) + sum(len(c.methods) for c in m.classes) for m in modules
-        )
+        total_functions = sum(len(m.functions) + sum(len(c.methods) for c in m.classes) for m in modules)
         total_lines = sum(m.lines_of_code for m in modules)
 
         lines.append(f"**类数**: {total_classes}")
@@ -122,7 +119,7 @@ class MarkdownWriter:
 
                     if cls.base_classes:
                         lines.append(
-                            f"**继承**: {', '.join(f'`{b}`' for b in cls.base_classes)}\n"
+                            f"**继承**: {', '.join(f'`{b}`' for b in cls.base_classes)}\n",
                         )
 
                     # 方法列表
@@ -133,7 +130,7 @@ class MarkdownWriter:
                             return_type = method.return_type or "None"
                             lines.append(
                                 f"- `{method.name}({params})` → `{return_type}` "
-                                f"[{module.file_path}:{method.line_number}]"
+                                f"[{module.file_path}:{method.line_number}]",
                             )
 
                             if method.docstring:
@@ -156,7 +153,7 @@ class MarkdownWriter:
 
                     if func.decorators:
                         lines.append(
-                            f"**装饰器**: {', '.join(f'`@{d}`' for d in func.decorators)}\n"
+                            f"**装饰器**: {', '.join(f'`@{d}`' for d in func.decorators)}\n",
                         )
 
             lines.append("---\n")
@@ -168,14 +165,14 @@ class MarkdownWriter:
         return str(filepath)
 
     def generate_duplication_analysis(self, duplication_index: DuplicationIndex) -> str:
-        """
-        生成重复分析文档
+        """生成重复分析文档
 
         Args:
             duplication_index: 重复索引
 
         Returns:
             文档文件路径
+
         """
         filepath = self.output_dir / "06-duplication-analysis.md"
         lines = []
@@ -188,13 +185,13 @@ class MarkdownWriter:
         lines.append("| 严重性 | 案例数 | 描述 |")
         lines.append("|--------|--------|------|")
         lines.append(
-            f"| CRITICAL | {len(duplication_index.critical)} | 几乎完全相同，需立即处理 |"
+            f"| CRITICAL | {len(duplication_index.critical)} | 几乎完全相同，需立即处理 |",
         )
         lines.append(
-            f"| HIGH | {len(duplication_index.high)} | 高度相似，建议优先处理 |"
+            f"| HIGH | {len(duplication_index.high)} | 高度相似，建议优先处理 |",
         )
         lines.append(
-            f"| MEDIUM | {len(duplication_index.medium)} | 显著相似，建议考虑合并 |"
+            f"| MEDIUM | {len(duplication_index.medium)} | 显著相似，建议考虑合并 |",
         )
         lines.append(f"| LOW | {len(duplication_index.low)} | 部分相似，可选优化 |\n")
 
@@ -232,14 +229,14 @@ class MarkdownWriter:
         return str(filepath)
 
     def generate_optimization_roadmap(self, roadmap: OptimizationRoadmap) -> str:
-        """
-        生成优化路线图文档
+        """生成优化路线图文档
 
         Args:
             roadmap: 优化路线图
 
         Returns:
             文档文件路径
+
         """
         filepath = self.output_dir / "07-optimization-roadmap.md"
         lines = []
@@ -280,14 +277,14 @@ class MarkdownWriter:
         return str(filepath)
 
     def generate_consolidation_guide(self, guide: ConsolidationGuide) -> str:
-        """
-        生成合并指南文档
+        """生成合并指南文档
 
         Args:
             guide: 合并指南
 
         Returns:
             文档文件路径
+
         """
         filepath = self.output_dir / "08-consolidation-guide.md"
         lines = []
@@ -307,9 +304,7 @@ class MarkdownWriter:
         for risk_level in ["low", "medium", "high"]:
             recs = guide.get_by_risk_level(risk_level)
             if recs:
-                risk_name = {"low": "低风险", "medium": "中风险", "high": "高风险"}[
-                    risk_level
-                ]
+                risk_name = {"low": "低风险", "medium": "中风险", "high": "高风险"}[risk_level]
                 lines.append(f"## {risk_name}合并\n")
                 for rec in recs:
                     lines.extend(self._format_merge_recommendation(rec))
@@ -321,14 +316,14 @@ class MarkdownWriter:
         return str(filepath)
 
     def generate_data_flow_maps(self, data_flows: List[DataFlow]) -> str:
-        """
-        生成数据流图文档
+        """生成数据流图文档
 
         Args:
             data_flows: 数据流列表
 
         Returns:
             文档文件路径
+
         """
         filepath = self.output_dir / "09-data-flow-maps.md"
         lines = []
@@ -417,15 +412,14 @@ class MarkdownWriter:
                 if param.type_annotation:
                     if param.default_value:
                         param_strs.append(
-                            f"{param.name}: {param.type_annotation} = {param.default_value}"
+                            f"{param.name}: {param.type_annotation} = {param.default_value}",
                         )
                     else:
                         param_strs.append(f"{param.name}: {param.type_annotation}")
+                elif param.default_value:
+                    param_strs.append(f"{param.name}={param.default_value}")
                 else:
-                    if param.default_value:
-                        param_strs.append(f"{param.name}={param.default_value}")
-                    else:
-                        param_strs.append(param.name)
+                    param_strs.append(param.name)
 
         return ", ".join(param_strs)
 

@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-多源数据获取脚本
+"""多源数据获取脚本
 使用 efinance, baostock, easyquotation 获取股票板块和全市场行情数据
 
 数据源:
@@ -12,14 +10,14 @@
 文档参考: /opt/mydoc/mymd/Astock_data_source.md
 """
 
-import pandas as pd
-from datetime import datetime
 import time
+from datetime import datetime
+
+import pandas as pd
 
 
 def fetch_stock_belong_board_efinance(stock_code: str = "300377"):
-    """
-    使用 efinance 获取股票所属板块
+    """使用 efinance 获取股票所属板块
 
     对应文档: Line 62-74
     接口: efinance.stock.get_belong_board(stock_code)
@@ -34,6 +32,7 @@ def fetch_stock_belong_board_efinance(stock_code: str = "300377"):
         - 板块代码
         - 板块名称
         - 板块涨幅
+
     """
     print("=" * 80)
     print(f"📊 [efinance] 获取股票 {stock_code} 所属板块...")
@@ -49,9 +48,8 @@ def fetch_stock_belong_board_efinance(stock_code: str = "300377"):
             print("\n   前3条数据:")
             print(df.head(3).to_string())
             return df
-        else:
-            print("⚠️  未找到板块信息")
-            return pd.DataFrame()
+        print("⚠️  未找到板块信息")
+        return pd.DataFrame()
 
     except ImportError:
         print("❌ efinance 未安装，请运行: pip install efinance")
@@ -62,8 +60,7 @@ def fetch_stock_belong_board_efinance(stock_code: str = "300377"):
 
 
 def fetch_stock_industry_baostock(stock_code: str = "300377"):
-    """
-    使用 baostock 查询股票行业
+    """使用 baostock 查询股票行业
 
     对应文档: Line 75-82
     接口: bao.query_stock_industry(stock_code)
@@ -78,6 +75,7 @@ def fetch_stock_industry_baostock(stock_code: str = "300377"):
         - code_name: 股票名称
         - industry: 行业
         - industryClassification: 行业分类
+
     """
     print("=" * 80)
     print(f"📊 [baostock] 查询股票 {stock_code} 的行业信息...")
@@ -87,7 +85,7 @@ def fetch_stock_industry_baostock(stock_code: str = "300377"):
 
         # 登陆系统
         lg = bs.login()
-        if lg.error_code != '0':
+        if lg.error_code != "0":
             print(f"❌ 登录失败: {lg.error_msg}")
             return pd.DataFrame()
 
@@ -96,7 +94,7 @@ def fetch_stock_industry_baostock(stock_code: str = "300377"):
 
         # 打印结果
         data_list = []
-        while (rs.error_code == '0') & rs.next():
+        while (rs.error_code == "0") & rs.next():
             data_list.append(rs.get_row_data())
 
         bs.logout()
@@ -108,9 +106,8 @@ def fetch_stock_industry_baostock(stock_code: str = "300377"):
             print("\n   数据:")
             print(df.to_string())
             return df
-        else:
-            print("⚠️  未找到行业信息")
-            return pd.DataFrame()
+        print("⚠️  未找到行业信息")
+        return pd.DataFrame()
 
     except ImportError:
         print("❌ baostock 未安装，请运行: pip install baostock")
@@ -121,8 +118,7 @@ def fetch_stock_industry_baostock(stock_code: str = "300377"):
 
 
 def fetch_market_realtime_efinance(market: str = "沪深A股"):
-    """
-    使用 efinance 获取全市场实时行情
+    """使用 efinance 获取全市场实时行情
 
     对应文档: Line 458-466
     接口: ef.stock.get_realtime_quotes(fs)
@@ -145,6 +141,7 @@ def fetch_market_realtime_efinance(market: str = "沪深A股"):
         - 涨跌额、换手率、量比、动态市盈率、成交量、成交额
         - 昨日收盘、总市值、流通市值、行情ID、市场类型
         - 更新时间、最新交易日
+
     """
     print("=" * 80)
     print(f"📊 [efinance] 获取 {market} 全市场实时行情...")
@@ -161,9 +158,8 @@ def fetch_market_realtime_efinance(market: str = "沪深A股"):
             print("\n   前5条数据:")
             print(df.head(5).to_string())
             return df
-        else:
-            print("⚠️  未获取到行情数据")
-            return pd.DataFrame()
+        print("⚠️  未获取到行情数据")
+        return pd.DataFrame()
 
     except ImportError:
         print("❌ efinance 未安装，请运行: pip install efinance")
@@ -174,8 +170,7 @@ def fetch_market_realtime_efinance(market: str = "沪深A股"):
 
 
 def fetch_market_snapshot_easyquotation(source: str = "tencent", prefix: bool = True):
-    """
-    使用 EasyQuotation 获取全市场快照
+    """使用 EasyQuotation 获取全市场快照
 
     对应文档: Line 479-502
     接口: quotation.market_snapshot(prefix=True)
@@ -191,6 +186,7 @@ def fetch_market_snapshot_easyquotation(source: str = "tencent", prefix: bool = 
         - name: 股票名称
         - code: 股票代码
         - 各项实时行情数据
+
     """
     print("=" * 80)
     print(f"📊 [easyquotation] 获取全市场快照 (数据源: {source})...")
@@ -205,7 +201,7 @@ def fetch_market_snapshot_easyquotation(source: str = "tencent", prefix: bool = 
         market_data = quotation.market_snapshot(prefix=prefix)
 
         # 转换为 DataFrame
-        df = pd.DataFrame.from_dict(market_data, orient='index')
+        df = pd.DataFrame.from_dict(market_data, orient="index")
 
         if not df.empty:
             print(f"✅ 成功获取 {len(df)} 只股票的快照数据")
@@ -213,9 +209,8 @@ def fetch_market_snapshot_easyquotation(source: str = "tencent", prefix: bool = 
             print("\n   前5条数据:")
             print(df.head(5).to_string())
             return df
-        else:
-            print("⚠️  未获取到快照数据")
-            return pd.DataFrame()
+        print("⚠️  未获取到快照数据")
+        return pd.DataFrame()
 
     except ImportError:
         print("❌ easyquotation 未安装，请运行: pip install easyquotation")
@@ -226,14 +221,14 @@ def fetch_market_snapshot_easyquotation(source: str = "tencent", prefix: bool = 
 
 
 def fetch_all_stock_codes_easyquotation():
-    """
-    使用 EasyQuotation 获取所有 A 股股票代码
+    """使用 EasyQuotation 获取所有 A 股股票代码
 
     对应文档: Line 914-932
     接口: eq.update_stock_codes()
 
     Returns:
         list: 股票代码列表
+
     """
     print("=" * 80)
     print("📊 [easyquotation] 获取所有 A 股股票代码...")
@@ -249,14 +244,13 @@ def fetch_all_stock_codes_easyquotation():
             print(f"   示例代码 (前10个): {codes[:10]}")
 
             # 转换为 DataFrame
-            df_codes = pd.DataFrame({'code': codes})
+            df_codes = pd.DataFrame({"code": codes})
             print("\n   数据预览:")
             print(df_codes.head(10).to_string())
 
             return codes
-        else:
-            print("⚠️  未获取到股票代码")
-            return []
+        print("⚠️  未获取到股票代码")
+        return []
 
     except ImportError:
         print("❌ easyquotation 未安装，请运行: pip install easyquotation")
@@ -267,8 +261,7 @@ def fetch_all_stock_codes_easyquotation():
 
 
 def fetch_all_stock_codes_mairui(api_key: str = None):
-    """
-    使用麦蕊数据接口获取所有 A 股股票代码
+    """使用麦蕊数据接口获取所有 A 股股票代码
 
     对应文档: Line 935-949
     接口: https://api.mairui.club/hslt/list/{api_key}
@@ -278,6 +271,7 @@ def fetch_all_stock_codes_mairui(api_key: str = None):
 
     Returns:
         pd.DataFrame: 股票列表数据
+
     """
     print("=" * 80)
     print("📊 [麦蕊数据] 获取所有 A 股股票代码...")
@@ -304,9 +298,8 @@ def fetch_all_stock_codes_mairui(api_key: str = None):
             print(df.head(5).to_string())
 
             return df
-        else:
-            print(f"❌ 请求失败，状态码: {response.status_code}")
-            return pd.DataFrame()
+        print(f"❌ 请求失败，状态码: {response.status_code}")
+        return pd.DataFrame()
 
     except ImportError:
         print("❌ requests 未安装，请运行: pip install requests")
@@ -317,11 +310,11 @@ def fetch_all_stock_codes_mairui(api_key: str = None):
 
 
 def compare_market_data(stock_code: str = "000001"):
-    """
-    对比不同数据源的股票行情数据
+    """对比不同数据源的股票行情数据
 
     Args:
         stock_code: 股票代码
+
     """
     print("\n" + "=" * 80)
     print(f"🔍 对比不同数据源的股票 {stock_code} 行情数据")
@@ -332,11 +325,12 @@ def compare_market_data(stock_code: str = "000001"):
     # 1. efinance 实时行情
     try:
         import efinance as ef
+
         df_ef = ef.stock.get_realtime_quotes()
         if not df_ef.empty:
-            stock_data = df_ef[df_ef['股票代码'] == stock_code]
+            stock_data = df_ef[df_ef["股票代码"] == stock_code]
             if not stock_data.empty:
-                results['efinance'] = stock_data.iloc[0]
+                results["efinance"] = stock_data.iloc[0]
                 print("\n✅ [efinance] 获取成功")
                 print(f"   股票名称: {stock_data.iloc[0]['股票名称']}")
                 print(f"   最新价: {stock_data.iloc[0]['最新价']}")
@@ -347,13 +341,14 @@ def compare_market_data(stock_code: str = "000001"):
     # 2. easyquotation 快照
     try:
         import easyquotation as eq
-        quotation = eq.use('tencent')
+
+        quotation = eq.use("tencent")
         market_data = quotation.market_snapshot(prefix=True)
 
         # 查找指定股票
-        code_sh = f"sh{stock_code}" if stock_code.startswith('6') else f"sz{stock_code}"
+        code_sh = f"sh{stock_code}" if stock_code.startswith("6") else f"sz{stock_code}"
         if code_sh in market_data:
-            results['easyquotation'] = market_data[code_sh]
+            results["easyquotation"] = market_data[code_sh]
             print("\n✅ [easyquotation] 获取成功")
             print(f"   股票名称: {market_data[code_sh].get('name', 'N/A')}")
             print(f"   最新价: {market_data[code_sh].get('now', 'N/A')}")
@@ -368,13 +363,14 @@ def save_to_csv(df: pd.DataFrame, filename: str):
     """保存数据到 CSV"""
     if not df.empty:
         filepath = f"/tmp/{filename}"
-        df.to_csv(filepath, index=False, encoding='utf-8-sig')
+        df.to_csv(filepath, index=False, encoding="utf-8-sig")
         print(f"💾 数据已保存到: {filepath}")
 
 
 # ============================================================================
 # 主函数
 # ============================================================================
+
 
 def main():
     """主函数 - 演示所有接口"""
@@ -440,7 +436,7 @@ def main():
     stock_codes_list = fetch_all_stock_codes_easyquotation()
     if stock_codes_list:
         # 保存股票代码列表
-        df_codes = pd.DataFrame({'code': stock_codes_list})
+        df_codes = pd.DataFrame({"code": stock_codes_list})
         save_to_csv(df_codes, f"stock_codes_all_easyquotation_{timestamp}.csv")
     time.sleep(1)
 

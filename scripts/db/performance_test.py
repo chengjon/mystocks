@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""
-分时线同步性能测试脚本
+"""分时线同步性能测试脚本
 
 比较串行和并行同步的性能差异
 """
 
-import sys
 import os
+import sys
 import time
+
 
 # 添加项目根目录到Python路径
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../"))
@@ -35,7 +35,9 @@ def test_sync_performance():
 
         try:
             stats = sync_minute_kline_data(
-                periods=periods, stock_limit=stock_limit, max_workers=max_workers
+                periods=periods,
+                stock_limit=stock_limit,
+                max_workers=max_workers,
             )
 
             end_time = time.time()
@@ -53,7 +55,7 @@ def test_sync_performance():
             end_time = time.time()
             duration = end_time - start_time
             results.append(
-                {"max_workers": max_workers, "duration": duration, "error": str(e)}
+                {"max_workers": max_workers, "duration": duration, "error": str(e)},
             )
 
     # 输出性能对比报告
@@ -67,7 +69,7 @@ def test_sync_performance():
         else:
             print(
                 f"并行度 {result['max_workers']}: {result['duration']:.2f} 秒 "
-                f"({result['stats']['successful_stocks']}/{result['stats']['total_stocks']} 股票成功)"
+                f"({result['stats']['successful_stocks']}/{result['stats']['total_stocks']} 股票成功)",
             )
 
     # 计算性能提升
@@ -76,7 +78,7 @@ def test_sync_performance():
         parallel_duration = results[-1]["duration"]
         speedup = serial_duration / parallel_duration if parallel_duration > 0 else 0
         print(
-            f"\n性能提升: {speedup:.2f}x (从 {serial_duration:.2f}s 到 {parallel_duration:.2f}s)"
+            f"\n性能提升: {speedup:.2f}x (从 {serial_duration:.2f}s 到 {parallel_duration:.2f}s)",
         )
 
 

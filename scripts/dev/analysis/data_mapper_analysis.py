@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""
-数据映射器问题分析脚本
+"""数据映射器问题分析脚本
 分析 postgresql_relational.py 中的数据映射技术债务
 """
 
+import re
 import sys
 from pathlib import Path
-import re
+
 
 # 添加项目根路径
 project_root = Path.cwd()
@@ -23,7 +23,7 @@ def analyze_data_mapping_issues():
         print(f"❌ 文件不存在: {file_path}")
         return False
 
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(file_path, encoding="utf-8") as f:
         content = f.read()
 
     lines = content.split("\n")
@@ -77,9 +77,7 @@ def analyze_data_mapping_issues():
         end_line = method_starts[i + 1] if i + 1 < len(method_starts) else len(lines)
         method_lines = lines[start_line:end_line]
 
-        has_mapping = any(
-            "result.append" in line or "row[" in line for line in method_lines
-        )
+        has_mapping = any("result.append" in line or "row[" in line for line in method_lines)
         if has_mapping:
             mapping_methods.append(method_names[i])
 
@@ -121,7 +119,7 @@ def analyze_data_inconsistency():
     }
 
     file_path = project_root / "src/data_sources/real/postgresql_relational.py"
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(file_path, encoding="utf-8") as f:
         content = f.read()
 
     inconsistencies = {}
@@ -246,9 +244,7 @@ def main():
             print(f"   {issue}: {count} 处")
 
     # 计算重构优先级
-    mapping_ratio = (
-        analysis_result["mapping_methods"] / analysis_result["total_methods"]
-    )
+    mapping_ratio = analysis_result["mapping_methods"] / analysis_result["total_methods"]
     print("\n📈 重构优先级指标:")
     print(f"   数据映射方法占比: {mapping_ratio:.1%}")
 

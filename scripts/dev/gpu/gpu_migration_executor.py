@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
-"""
-Phase 6.2.4 GPU迁移执行器
+"""Phase 6.2.4 GPU迁移执行器
 执行GPU债务文件的迁移，将直接GPU调用替换为HAL和内核接口
 """
 
 import os
 import re
-from pathlib import Path
-from typing import List, Dict, Any, Tuple
-from datetime import datetime
 from dataclasses import dataclass, field
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Tuple
 
 
 @dataclass
@@ -29,7 +28,7 @@ class GPUMigrationExecutor:
     """GPU迁移执行器"""
 
     def __init__(self, project_root: str = None):
-        self.project_root = Path(project_root) if project_root else Path(".")
+        self.project_root = Path(project_root) if project_root else Path()
         self.migration_results: List[MigrationResult] = []
         self.backup_dir = self.project_root / "gpu_migration_backups"
 
@@ -54,11 +53,11 @@ class GPUMigrationExecutor:
 
             if result.success:
                 print(
-                    f"   ✅ {os.path.basename(file_path)}: {len(result.changes_made)}处修改"
+                    f"   ✅ {os.path.basename(file_path)}: {len(result.changes_made)}处修改",
                 )
             else:
                 print(
-                    f"   ❌ {os.path.basename(file_path)}: {', '.join(result.errors)}"
+                    f"   ❌ {os.path.basename(file_path)}: {', '.join(result.errors)}",
                 )
 
         self.migration_results = results
@@ -102,7 +101,7 @@ class GPUMigrationExecutor:
 
         try:
             # 读取原文件
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 original_content = f.read()
 
             # 创建备份
@@ -110,7 +109,8 @@ class GPUMigrationExecutor:
 
             # 执行迁移转换
             migrated_content, changes, errors = self._perform_migration(
-                file_path, original_content
+                file_path,
+                original_content,
             )
 
             # 写入迁移后的文件
@@ -134,7 +134,7 @@ class GPUMigrationExecutor:
                 file_path=file_path,
                 original_lines=0,
                 modified_lines=0,
-                errors=[f"Migration failed: {str(e)}"],
+                errors=[f"Migration failed: {e!s}"],
             )
 
     def _create_backup(self, file_path: str, content: str) -> str:
@@ -152,7 +152,9 @@ class GPUMigrationExecutor:
         return str(backup_path)
 
     def _perform_migration(
-        self, file_path: str, content: str
+        self,
+        file_path: str,
+        content: str,
     ) -> Tuple[str, List[str], List[str]]:
         """执行迁移转换"""
         migrated_content = content
@@ -176,18 +178,21 @@ class GPUMigrationExecutor:
         for rule_func in migration_rules:
             try:
                 new_content, rule_changes, rule_errors = rule_func(
-                    file_path, migrated_content
+                    file_path,
+                    migrated_content,
                 )
                 migrated_content = new_content
                 changes.extend(rule_changes)
                 errors.extend(rule_errors)
             except Exception as e:
-                errors.append(f"Rule {rule_func.__name__} failed: {str(e)}")
+                errors.append(f"Rule {rule_func.__name__} failed: {e!s}")
 
         return migrated_content, changes, errors
 
     def _migrate_imports(
-        self, file_path: str, content: str
+        self,
+        file_path: str,
+        content: str,
     ) -> Tuple[str, List[str], List[str]]:
         """迁移导入语句"""
         migrated_content = content
@@ -245,7 +250,9 @@ class GPUMigrationExecutor:
         return migrated_content, changes, errors
 
     def _migrate_gpu_allocation(
-        self, file_path: str, content: str
+        self,
+        file_path: str,
+        content: str,
     ) -> Tuple[str, List[str], List[str]]:
         """迁移GPU分配"""
         migrated_content = content
@@ -284,7 +291,9 @@ class GPUMigrationExecutor:
         return migrated_content, changes, errors
 
     def _migrate_matrix_operations(
-        self, file_path: str, content: str
+        self,
+        file_path: str,
+        content: str,
     ) -> Tuple[str, List[str], List[str]]:
         """迁移矩阵运算"""
         migrated_content = content
@@ -323,7 +332,9 @@ class GPUMigrationExecutor:
         return migrated_content, changes, errors
 
     def _migrate_memory_management(
-        self, file_path: str, content: str
+        self,
+        file_path: str,
+        content: str,
     ) -> Tuple[str, List[str], List[str]]:
         """迁移内存管理"""
         migrated_content = content
@@ -362,7 +373,9 @@ class GPUMigrationExecutor:
         return migrated_content, changes, errors
 
     def _migrate_device_management(
-        self, file_path: str, content: str
+        self,
+        file_path: str,
+        content: str,
     ) -> Tuple[str, List[str], List[str]]:
         """迁移设备管理"""
         migrated_content = content
@@ -401,7 +414,8 @@ class GPUMigrationExecutor:
         return migrated_content, changes, errors
 
     def _generate_migration_report(
-        self, results: List[MigrationResult]
+        self,
+        results: List[MigrationResult],
     ) -> Dict[str, Any]:
         """生成迁移报告"""
         total_files = len(results)
@@ -420,20 +434,14 @@ class GPUMigrationExecutor:
                 "total_files": total_files,
                 "successful_files": successful_files,
                 "failed_files": failed_files,
-                "success_rate": (successful_files / total_files * 100)
-                if total_files > 0
-                else 0,
+                "success_rate": (successful_files / total_files * 100) if total_files > 0 else 0,
                 "total_changes": total_changes,
                 "total_errors": total_errors,
             },
             "statistics": {
                 "total_original_lines": total_original_lines,
                 "total_modified_lines": total_modified_lines,
-                "line_change_rate": (
-                    (total_modified_lines - total_original_lines)
-                    / total_original_lines
-                    * 100
-                )
+                "line_change_rate": ((total_modified_lines - total_original_lines) / total_original_lines * 100)
                 if total_original_lines > 0
                 else 0,
             },
@@ -479,7 +487,7 @@ class GPUMigrationExecutor:
             status = "✅" if file_info["success"] else "❌"
             print(f"   {status} {file_info['name']}")
             print(
-                f"      修改: {file_info['changes_count']} | 错误: {file_info['errors_count']}"
+                f"      修改: {file_info['changes_count']} | 错误: {file_info['errors_count']}",
             )
 
         print("\n" + "=" * 60)

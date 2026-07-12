@@ -1,5 +1,4 @@
-"""
-数据迁移工具模块
+"""数据迁移工具模块
 提供通用的数据迁移函数，用于架构优化过程中的数据迁移任务
 
 主要功能:
@@ -10,17 +9,18 @@
 """
 
 import os
-from typing import List, Dict, Any, Optional
 from datetime import datetime
-import psycopg2
+from typing import Any, Dict, List, Optional
+
 import pandas as pd
-from config.logging_config import logger, log_performance
+import psycopg2
+
+from config.logging_config import log_performance, logger
 
 
 class MigrationError(Exception):
     """迁移错误异常"""
 
-    pass
 
 
 class MigrationUtils:
@@ -44,11 +44,11 @@ class MigrationUtils:
         logger.info("MigrationUtils 初始化完成")
 
     def connect_postgresql(self) -> psycopg2.extensions.connection:
-        """
-        连接 PostgreSQL 数据库
+        """连接 PostgreSQL 数据库
 
         Returns:
             数据库连接对象
+
         """
         try:
             conn = psycopg2.connect(**self.pg_config)
@@ -67,8 +67,7 @@ class MigrationUtils:
         batch_size: int = 1000,
         transform_func: Optional[callable] = None,
     ) -> Dict[str, Any]:
-        """
-        迁移单个表的数据
+        """迁移单个表的数据
 
         Args:
             source_table: 源表名
@@ -79,6 +78,7 @@ class MigrationUtils:
 
         Returns:
             迁移结果字典
+
         """
         logger.info(f"开始迁移表: {source_table} → {target_table}")
 
@@ -171,8 +171,7 @@ class MigrationUtils:
         check_row_count: bool = True,
         check_checksum: bool = False,
     ) -> Dict[str, Any]:
-        """
-        验证迁移结果
+        """验证迁移结果
 
         Args:
             source_table: 源表名
@@ -183,6 +182,7 @@ class MigrationUtils:
 
         Returns:
             验证结果字典
+
         """
         logger.info(f"开始验证迁移: {source_table} → {target_table}")
 
@@ -193,7 +193,7 @@ class MigrationUtils:
             # 1. 检查行数
             if check_row_count:
                 source_count = pd.read_sql(
-                    f"SELECT COUNT(*) as count FROM {source_table}", source_conn
+                    f"SELECT COUNT(*) as count FROM {source_table}", source_conn,
                 ).iloc[0]["count"]
 
                 cursor.execute(f"SELECT COUNT(*) FROM {target_table}")
@@ -237,8 +237,7 @@ class MigrationUtils:
             }
 
     def create_backup(self, table_name: str, backup_suffix: str = "backup") -> bool:
-        """
-        创建表备份
+        """创建表备份
 
         Args:
             table_name: 表名
@@ -246,6 +245,7 @@ class MigrationUtils:
 
         Returns:
             是否成功
+
         """
         try:
             conn = self.connect_postgresql()
@@ -253,7 +253,7 @@ class MigrationUtils:
 
             backup_table = f"{table_name}_{backup_suffix}"
             cursor.execute(
-                f"CREATE TABLE IF NOT EXISTS {backup_table} AS SELECT * FROM {table_name}"
+                f"CREATE TABLE IF NOT EXISTS {backup_table} AS SELECT * FROM {table_name}",
             )
 
             conn.commit()
@@ -268,8 +268,7 @@ class MigrationUtils:
             return False
 
     def rollback_migration(self, backup_table: str, target_table: str) -> bool:
-        """
-        回滚迁移 (从备份恢复)
+        """回滚迁移 (从备份恢复)
 
         Args:
             backup_table: 备份表名
@@ -277,6 +276,7 @@ class MigrationUtils:
 
         Returns:
             是否成功
+
         """
         try:
             conn = self.connect_postgresql()
@@ -307,8 +307,7 @@ class MigrationUtils:
         batch_size: int = 1000,
         validate: bool = True,
     ) -> List[Dict[str, Any]]:
-        """
-        迁移多个表
+        """迁移多个表
 
         Args:
             table_mapping: 表映射字典 {源表名: 目标表名}
@@ -318,6 +317,7 @@ class MigrationUtils:
 
         Returns:
             迁移结果列表
+
         """
         results = []
 
@@ -326,14 +326,14 @@ class MigrationUtils:
 
             # 1. 迁移数据
             result = self.migrate_table(
-                source_table, target_table, source_conn, batch_size
+                source_table, target_table, source_conn, batch_size,
             )
             results.append(result)
 
             # 2. 验证迁移结果
             if validate and result["status"] == "success":
                 validation_result = self.validate_migration(
-                    source_table, target_table, source_conn
+                    source_table, target_table, source_conn,
                 )
 
                 if validation_result["status"] != "success":
@@ -345,10 +345,9 @@ class MigrationUtils:
         return results
 
     def generate_migration_report(
-        self, results: List[Dict[str, Any]], output_file: Optional[str] = None
+        self, results: List[Dict[str, Any]], output_file: Optional[str] = None,
     ) -> str:
-        """
-        生成迁移报告
+        """生成迁移报告
 
         Args:
             results: 迁移结果列表
@@ -356,6 +355,7 @@ class MigrationUtils:
 
         Returns:
             报告内容
+
         """
         report_lines = []
         report_lines.append("=" * 60)
@@ -383,7 +383,7 @@ class MigrationUtils:
             status_icon = "✅" if result["status"] == "success" else "❌"
             report_lines.append(
                 f"{status_icon} {result['source_table']} → {result['target_table']}: "
-                f"{result.get('rows_migrated', 0)} 行"
+                f"{result.get('rows_migrated', 0)} 行",
             )
 
             if result["status"] == "failed":
@@ -405,10 +405,9 @@ class MigrationUtils:
 
 # 便捷函数
 def quick_migrate(
-    source_conn: Any, table_mapping: Dict[str, str], validate: bool = True
+    source_conn: Any, table_mapping: Dict[str, str], validate: bool = True,
 ) -> List[Dict[str, Any]]:
-    """
-    快速迁移函数
+    """快速迁移函数
 
     Args:
         source_conn: 源数据库连接
@@ -417,10 +416,11 @@ def quick_migrate(
 
     Returns:
         迁移结果列表
+
     """
     utils = MigrationUtils()
     results = utils.migrate_multiple_tables(
-        source_conn, table_mapping, validate=validate
+        source_conn, table_mapping, validate=validate,
     )
 
     # 生成报告

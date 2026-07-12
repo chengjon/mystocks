@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-"""
-模块依赖关系分析脚本
+"""模块依赖关系分析脚本
 使用AST分析源代码，生成依赖图和测试顺序推荐
 """
 
 import ast
 import os
 import sys
-from pathlib import Path
 from collections import defaultdict, deque
-from typing import Dict, List, Set, Tuple
+from pathlib import Path
+from typing import Dict, List, Set
+
 
 # 计算项目根目录
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -24,6 +24,7 @@ class ModuleDependencyAnalyzer:
 
         Args:
             source_dirs: 要分析的源代码目录列表
+
         """
         self.source_dirs = [Path(d) for d in source_dirs]
         self.dependencies: Dict[str, Set[str]] = defaultdict(set)
@@ -67,6 +68,7 @@ class ModuleDependencyAnalyzer:
 
         Returns:
             模块名称（如 src.core.config）
+
         """
         relative = file_path.relative_to(base_dir.parent)
         parts = list(relative.parts[:-1]) + [relative.stem]
@@ -85,21 +87,22 @@ class ModuleDependencyAnalyzer:
 
         Returns:
             导入的模块名称集合
+
         """
         imports = set()
 
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 tree = ast.parse(f.read(), filename=str(file_path))
 
             for node in ast.walk(tree):
                 if isinstance(node, ast.Import):
                     for alias in node.names:
-                        imports.add(alias.name.split('.')[0])
+                        imports.add(alias.name.split(".")[0])
 
                 elif isinstance(node, ast.ImportFrom):
                     if node.module:
-                        imports.add(node.module.split('.')[0])
+                        imports.add(node.module.split(".")[0])
 
         except Exception as e:
             print(f"⚠️  解析错误 {file_path}: {e}")
@@ -111,9 +114,10 @@ class ModuleDependencyAnalyzer:
 
         Returns:
             排序后的模块列表
+
         """
         # 计算入度
-        in_degree = {module: 0 for module in self.modules}
+        in_degree = dict.fromkeys(self.modules, 0)
         for module in self.modules:
             for dep in self.dependencies.get(module, []):
                 if dep in self.modules:
@@ -141,6 +145,7 @@ class ModuleDependencyAnalyzer:
 
         Returns:
             分层的模块列表
+
         """
         layers = []
         remaining = set(self.modules)
@@ -167,6 +172,7 @@ class ModuleDependencyAnalyzer:
 
         Returns:
             分类字典
+
         """
         categories = {
             "core": [],
@@ -176,7 +182,7 @@ class ModuleDependencyAnalyzer:
             "services": [],
             "monitoring": [],
             "storage": [],
-            "other": []
+            "other": [],
         }
 
         for module in sorted(self.modules):
@@ -204,6 +210,7 @@ class ModuleDependencyAnalyzer:
 
         Args:
             output_path: 输出文件路径
+
         """
         print("\n📝 正在生成测试顺序推荐报告...")
 
@@ -234,7 +241,7 @@ class ModuleDependencyAnalyzer:
             "services": "业务服务",
             "monitoring": "监控系统",
             "storage": "存储层",
-            "other": "其他模块"
+            "other": "其他模块",
         }
 
         for cat, desc in category_descriptions.items():
@@ -253,7 +260,7 @@ class ModuleDependencyAnalyzer:
             report.append("✅ **未检测到循环依赖** - 项目架构良好！")
         else:
             missing = set(self.modules) - set(sorted_modules)
-            report.append(f"⚠️ **检测到可能的循环依赖**")
+            report.append("⚠️ **检测到可能的循环依赖**")
             report.append("")
             report.append(f"未能排序的模块 ({len(missing)}个):")
             for m in sorted(missing):
@@ -350,14 +357,15 @@ class ModuleDependencyAnalyzer:
         report.append("")
 
         # 写入文件
-        with open(output_path, 'w', encoding='utf-8') as f:
-            f.write('\n'.join(report))
+        with open(output_path, "w", encoding="utf-8") as f:
+            f.write("\n".join(report))
 
         print(f"✅ 报告已保存到: {output_path}")
 
     def _get_timestamp(self) -> str:
         """获取当前时间戳"""
         from datetime import datetime
+
         return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
@@ -368,10 +376,12 @@ def main():
     print("=" * 60)
 
     # 分析src/和web/backend/app/目录
-    analyzer = ModuleDependencyAnalyzer([
-        os.path.join(project_root, "src"),
-        os.path.join(project_root, "web/backend/app")
-    ])
+    analyzer = ModuleDependencyAnalyzer(
+        [
+            os.path.join(project_root, "src"),
+            os.path.join(project_root, "web/backend/app"),
+        ]
+    )
 
     # 执行分析
     analyzer.analyze()
@@ -389,5 +399,5 @@ def main():
     print()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

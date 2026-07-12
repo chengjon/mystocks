@@ -1,9 +1,8 @@
-"""
-创建最小化配置测试
-"""
+"""创建最小化配置测试"""
 
 # 创建一个最小化的配置类，不包含任何列表字段
 import os
+
 from pydantic_settings import BaseSettings
 
 

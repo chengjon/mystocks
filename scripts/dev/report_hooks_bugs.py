@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""
-上报 Hooks 配置修复问题到 BUGer 系统
-"""
+"""上报 Hooks 配置修复问题到 BUGer 系统"""
 
 import os
+
 import requests
 from dotenv import load_dotenv
+
 
 # 加载环境变量
 load_dotenv()
@@ -22,7 +22,7 @@ def report_bug_to_bugger(bug_data):
     url = f"{BUGER_API_URL}/bugs"
     headers = {
         "Content-Type": "application/json",
-        "X-API-Key": BUGER_API_KEY
+        "X-API-Key": BUGER_API_KEY,
     }
 
     # 构建符合 BUGer API 要求的 payload
@@ -39,8 +39,8 @@ def report_bug_to_bugger(bug_data):
             "component": bug_data["context"].get("component", "unknown"),
             "module": bug_data["context"].get("module", ""),
             "file": bug_data["context"].get("file", ""),
-            "status": "OPEN"
-        }
+            "status": "OPEN",
+        },
     }
 
     # 添加 tags（如果存在）
@@ -54,14 +54,13 @@ def report_bug_to_bugger(bug_data):
         return result
     except Exception as e:
         print(f"❌ 上报失败: {e}")
-        if hasattr(e, 'response') and e.response is not None:
+        if hasattr(e, "response") and e.response is not None:
             print(f"   响应内容: {e.response.text}")
         return None
 
 
 def main():
     """上报所有 hooks 配置问题"""
-
     print("=" * 80)
     print("📋 上报 Hooks 配置问题到 BUGer 系统")
     print("=" * 80)
@@ -125,9 +124,9 @@ repos:
     hooks:
       - id: ruff
         args: [--select, F401,F841, --fix]  # ✅ 选择性修复
-            """
+            """,
         },
-        "tags": ["pre-commit", "ruff", "black", "configuration", "performance"]
+        "tags": ["pre-commit", "ruff", "black", "configuration", "performance"],
     }
 
     # 问题 2: 安全 Hooks 配置违规
@@ -187,9 +186,9 @@ repos:
 - id: sql-injection-check
   files: src/.*\.py$      # ✅ 只检查 Python 文件
   # pass_filenames 默认为 true
-            """
+            """,
         },
-        "tags": ["pre-commit", "security", "configuration", "git-hooks"]
+        "tags": ["pre-commit", "security", "configuration", "git-hooks"],
     }
 
     # 问题 3: 代码质量问题
@@ -249,11 +248,11 @@ if importlib.util.find_spec("efinance"):
                 "manual_review_required": 23,
                 "error_types": {
                     "F401": 100,  # 未使用的导入
-                    "F841": 25    # 未使用的变量
-                }
-            }
+                    "F841": 25,  # 未使用的变量
+                },
+            },
         },
-        "tags": ["code-quality", "ruff", "linting", "f401", "f841"]
+        "tags": ["code-quality", "ruff", "linting", "f401", "f841"],
     }
 
     # 上报问题
@@ -267,7 +266,7 @@ if importlib.util.find_spec("efinance"):
         print()
 
         result = report_bug_to_bugger(bug)
-        if result and result.get('success'):
+        if result and result.get("success"):
             print(f"✅ 上报成功: Bug ID = {result.get('data', {}).get('bugId', 'unknown')}")
             results.append(result)
         else:

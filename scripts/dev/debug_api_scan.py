@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-调试API扫描过程
+"""调试API扫描过程
 Debug API Scanning Process
 """
 
@@ -33,7 +32,7 @@ def debug_api_scan():
         print(f"\n📄 分析文件: {file_path}")
 
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             # 解析AST
@@ -72,13 +71,12 @@ def debug_api_scan():
                                 if isinstance(decorator.func.value, ast.Name):
                                     value_name = decorator.func.value.id
                                     print(
-                                        f"  🔧 函数 {func_name}: @{value_name}.{attr_name}()"
+                                        f"  🔧 函数 {func_name}: @{value_name}.{attr_name}()",
                                     )
 
                                     # 检查是否是路由函数
                                     if (
-                                        attr_name
-                                        in ["get", "post", "put", "delete", "patch"]
+                                        attr_name in ["get", "post", "put", "delete", "patch"]
                                         and value_name == "router"
                                     ):
                                         router_functions += 1
@@ -98,7 +96,7 @@ def debug_api_scan():
                         print(f"  📝 函数 {func_name}: 无装饰器")
 
             print(
-                f"  📊 总结: {functions_found} 个函数, {router_functions} 个API路由函数"
+                f"  📊 总结: {functions_found} 个函数, {router_functions} 个API路由函数",
             )
 
         except Exception as e:

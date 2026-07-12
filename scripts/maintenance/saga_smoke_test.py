@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Saga smoke test utility.
+"""Saga smoke test utility.
 
 Runs success/failure Saga flows and cleans up transaction_log records.
 """
@@ -14,6 +12,7 @@ import time
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, Optional
+
 
 if __name__ == "__main__" and __package__ is None:
     repo_root = Path(__file__).resolve().parents[2]
@@ -39,7 +38,7 @@ def _make_kline_data(symbol: str, frequency: str) -> pd.DataFrame:
             "amount": [10200.0],
             "symbol": [symbol],
             "frequency": [frequency],
-        }
+        },
     )
 
 

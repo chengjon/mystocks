@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""
-启动 MyStocks Web 后端服务的脚本
+"""启动 MyStocks Web 后端服务的脚本
 自动设置 Python 路径并启动服务
 """
 
 import os
 import subprocess
 import sys
+
 
 # 设置项目根目录的Python路径
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

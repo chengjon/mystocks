@@ -1,24 +1,26 @@
 #!/usr/bin/env python3
-"""
-Algorithm Tables Creation Script
+"""Algorithm Tables Creation Script
 
 创建算法模型相关的数据表结构 (Phase 1.4)
 包括: algorithm_models, training_history, prediction_history 表
 """
 
-import sys
 import os
+import sys
 from pathlib import Path
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 import logging
+
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
 
-from web.backend.app.core.config import settings, get_postgresql_connection_string
+from web.backend.app.core.config import get_postgresql_connection_string, settings
+
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -26,9 +28,7 @@ logger = logging.getLogger(__name__)
 
 
 def create_algorithm_tables():
-    """
-    创建算法相关的数据库表
-    """
+    """创建算法相关的数据库表"""
     try:
         # 获取数据库连接字符串
         connection_string = get_postgresql_connection_string()
@@ -144,13 +144,12 @@ def create_algorithm_tables():
                         # 对于TimescaleDB相关的语句，如果不支持则跳过
                         if "create_hypertable" in statement.lower():
                             logger.warning(
-                                f"TimescaleDB hypertable creation failed (expected if TimescaleDB not installed): {e}"
+                                f"TimescaleDB hypertable creation failed (expected if TimescaleDB not installed): {e}",
                             )
                             connection.rollback()
                             continue
-                        else:
-                            logger.error(f"Failed to execute statement {i}: {e}")
-                            raise
+                        logger.error(f"Failed to execute statement {i}: {e}")
+                        raise
 
             logger.info("Algorithm tables created successfully!")
 
@@ -163,9 +162,7 @@ def create_algorithm_tables():
 
 
 def verify_tables(connection):
-    """
-    验证表是否创建成功
-    """
+    """验证表是否创建成功"""
     try:
         logger.info("Verifying table creation...")
 
@@ -219,9 +216,7 @@ def verify_tables(connection):
 
 
 def create_sample_data():
-    """
-    创建示例数据（可选）
-    """
+    """创建示例数据（可选）"""
     try:
         connection_string = get_postgresql_connection_string()
         engine = create_engine(connection_string, echo=settings.debug)
@@ -248,9 +243,7 @@ def create_sample_data():
 
 
 def main():
-    """
-    主函数
-    """
+    """主函数"""
     try:
         logger.info("Starting algorithm tables creation (Phase 1.4)...")
         logger.info(f"Database: {settings.postgresql_database}")

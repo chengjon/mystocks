@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AI算法增强器
+"""AI算法增强器
 专注于智能测试生成和代码质量提升
 
 核心功能:
@@ -14,25 +13,23 @@ AI算法增强器
 日期: 2025-12-22
 """
 
-import ast
-import re
-import sys
-import time
-from pathlib import Path
-from typing import Dict, List, Any
-from dataclasses import dataclass
 import logging
+import sys
+from dataclasses import dataclass
+from pathlib import Path
+from typing import List
+
 
 # 设置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
-
 
 
 @dataclass
@@ -57,4 +54,3 @@ class SmartTestCase:
     coverage_targets: List[str]
     test_type: str
     priority_score: float
-

@@ -1,5 +1,4 @@
-"""
-DDD 全链路集成演示脚本 (Phase 11)
+"""DDD 全链路集成演示脚本 (Phase 11)
 验证: API -> Application -> Domain -> Event Bus -> Cross Context Portfolio Update
 
 功能：
@@ -14,10 +13,10 @@ python scripts/ddd_full_chain_demo.py
 ```
 """
 
-import sys
-import os
 import logging
+import sys
 from pathlib import Path
+
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -26,8 +25,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 
 def run_demo():
-    """
-    全链路集成演示
+    """全链路集成演示
 
     流程：
     1. 初始化数据库和会话
@@ -41,11 +39,11 @@ def run_demo():
     from sqlalchemy import create_engine, text
     from sqlalchemy.orm import sessionmaker
 
-    from src.storage.database.database_manager import Base
     from src.application.bootstrap import DIContainer
     from src.application.dto.trading_dto import CreateOrderRequest
     from src.domain.portfolio.model.portfolio import Portfolio
     from src.domain.trading.value_objects import OrderId
+    from src.storage.database.database_manager import Base
 
     print("\n" + "=" * 70)
     print("MyStocks DDD 全链路集成演示")
@@ -110,13 +108,13 @@ def run_demo():
 
         order_obj = container.order_repository.get_by_id(OrderId(order_id))
         print(f"  订单 ID: {order_id}")
-        print(f"  成交数量: 100")
-        print(f"  成交价格: 1800.00")
+        print("  成交数量: 100")
+        print("  成交价格: 1800.00")
 
         container.order_service.handle_execution_report(order_id=order_id, filled_qty=100, price=1800.0)
 
         order_obj = container.order_repository.get_by_id(OrderId(order_id))
-        print(f"  检查 Order 对象的事件缓冲区...")
+        print("  检查 Order 对象的事件缓冲区...")
         print(f"    - has _domain_events: {hasattr(order_obj, '_domain_events')}")
         if hasattr(order_obj, "_domain_events"):
             print(f"    - _domain_events 长度: {len(order_obj._domain_events)}")
@@ -130,7 +128,7 @@ def run_demo():
 
         for event in events:
             print(f"    - {event.event_name()}")
-            print(f"      发布到事件总线...")
+            print("      发布到事件总线...")
             container.event_bus.publish(event)
 
         logger.info("步骤 3 完成: 成交回报处理成功")
@@ -147,7 +145,7 @@ def run_demo():
 
         if "600519" in updated_p.positions:
             pos = updated_p.positions["600519"]
-            print(f"  标的 600519:")
+            print("  标的 600519:")
             print(f"    - 持仓数量: {pos.quantity}")
             print(f"    - 平均成本: {pos.average_cost:.2f}")
             print(f"  交易流水数量: {len(updated_p.transactions)}")

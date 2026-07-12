@@ -1,5 +1,4 @@
-"""
-数据模型定义 - MyStocks Function Classification Manual
+"""数据模型定义 - MyStocks Function Classification Manual
 
 定义所有代码分析和手册生成使用的数据结构。
 
@@ -8,9 +7,9 @@
 """
 
 from dataclasses import dataclass, field
-from typing import List, Dict, Optional
-from enum import Enum
 from datetime import datetime
+from enum import Enum
+from typing import Dict, List, Optional
 
 
 class CategoryEnum(Enum):
@@ -285,11 +284,11 @@ class DuplicationIndex:
         """按严重性获取重复案例"""
         if severity == SeverityEnum.CRITICAL:
             return self.critical
-        elif severity == SeverityEnum.HIGH:
+        if severity == SeverityEnum.HIGH:
             return self.high
-        elif severity == SeverityEnum.MEDIUM:
+        if severity == SeverityEnum.MEDIUM:
             return self.medium
-        elif severity == SeverityEnum.LOW:
+        if severity == SeverityEnum.LOW:
             return self.low
         return []
 
@@ -325,10 +324,7 @@ class OptimizationRoadmap:
         quick_wins = []
         for opp in self.opportunities:
             if opp.priority in [PriorityEnum.P0, PriorityEnum.P1]:
-                if any(
-                    keyword in opp.effort_estimate.lower()
-                    for keyword in ["hour", "小时", "1 day", "1天"]
-                ):
+                if any(keyword in opp.effort_estimate.lower() for keyword in ["hour", "小时", "1 day", "1天"]):
                     quick_wins.append(opp)
         return quick_wins
 
@@ -359,12 +355,11 @@ def severity_from_similarity(token_sim: float, ast_sim: float) -> SeverityEnum:
     """根据相似度计算严重性级别"""
     if token_sim >= 0.95 and ast_sim >= 0.90:
         return SeverityEnum.CRITICAL
-    elif token_sim >= 0.80 and ast_sim >= 0.70:
+    if token_sim >= 0.80 and ast_sim >= 0.70:
         return SeverityEnum.HIGH
-    elif token_sim >= 0.60 and ast_sim >= 0.50:
+    if token_sim >= 0.60 and ast_sim >= 0.50:
         return SeverityEnum.MEDIUM
-    else:
-        return SeverityEnum.LOW
+    return SeverityEnum.LOW
 
 
 def categorize_module_by_path(file_path: str) -> CategoryEnum:
@@ -372,46 +367,30 @@ def categorize_module_by_path(file_path: str) -> CategoryEnum:
     path_lower = file_path.lower()
 
     # 核心功能特征
-    if any(
-        keyword in path_lower
-        for keyword in ["unified_manager", "core.py", "data_access", "main.py"]
-    ):
+    if any(keyword in path_lower for keyword in ["unified_manager", "core.py", "data_access", "main.py"]):
         return CategoryEnum.CORE
 
     # 辅助功能特征
-    if any(
-        keyword in path_lower
-        for keyword in ["adapter", "factory", "strategy", "backtest"]
-    ):
+    if any(keyword in path_lower for keyword in ["adapter", "factory", "strategy", "backtest"]):
         return CategoryEnum.AUXILIARY
 
     # 基础设施特征
-    if any(
-        keyword in path_lower
-        for keyword in ["db_manager", "database", "config", "model"]
-    ):
+    if any(keyword in path_lower for keyword in ["db_manager", "database", "config", "model"]):
         return CategoryEnum.INFRASTRUCTURE
 
     # 监控功能特征
-    if any(
-        keyword in path_lower
-        for keyword in ["monitoring", "alert", "performance_monitor", "data_quality"]
-    ):
+    if any(keyword in path_lower for keyword in ["monitoring", "alert", "performance_monitor", "data_quality"]):
         return CategoryEnum.MONITORING
 
     # 工具功能特征
-    if any(
-        keyword in path_lower
-        for keyword in ["util", "helper", "decorator", "validation"]
-    ):
+    if any(keyword in path_lower for keyword in ["util", "helper", "decorator", "validation"]):
         return CategoryEnum.UTILITY
 
     return CategoryEnum.UNKNOWN
 
 
 def estimate_complexity(function_ast) -> int:
-    """
-    估算函数圈复杂度
+    """估算函数圈复杂度
 
     简化版本：计算决策点数量（if, for, while, try, except, and, or）
     """

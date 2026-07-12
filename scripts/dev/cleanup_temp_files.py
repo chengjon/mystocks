@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Canonical cleanup planner for repository hygiene.
+"""Canonical cleanup planner for repository hygiene.
 
 Default mode is dry-run. Destructive behavior requires ``--execute``.
 """
@@ -13,6 +12,7 @@ import shutil
 import sys
 from datetime import datetime
 from pathlib import Path
+
 
 TEMP_DIRECTORIES = ("temp", "tmp", "test_temp", "opencodetmp")
 BACKUP_PATTERNS = ("*.bak", "*.backup", "*.orig", "*~")
@@ -58,7 +58,7 @@ def build_cleanup_plan(root_dir: str | Path, *, backup_stamp: str) -> dict[str, 
                     "path": candidate.relative_to(project_root).as_posix(),
                     "target": None,
                     "reason": "temporary_directory",
-                }
+                },
             )
 
     for cache_dir in sorted(project_root.rglob("__pycache__")):
@@ -72,7 +72,7 @@ def build_cleanup_plan(root_dir: str | Path, *, backup_stamp: str) -> dict[str, 
                 "path": cache_dir.relative_to(project_root).as_posix(),
                 "target": None,
                 "reason": "python_cache",
-            }
+            },
         )
 
     coverage_dir = project_root / "htmlcov"
@@ -83,7 +83,7 @@ def build_cleanup_plan(root_dir: str | Path, *, backup_stamp: str) -> dict[str, 
                 "path": coverage_dir.relative_to(project_root).as_posix(),
                 "target": None,
                 "reason": "coverage_html",
-            }
+            },
         )
 
     root_backups_dir = project_root / ROOT_BACKUPS_DIR
@@ -95,7 +95,7 @@ def build_cleanup_plan(root_dir: str | Path, *, backup_stamp: str) -> dict[str, 
                 "path": root_backups_dir.relative_to(project_root).as_posix(),
                 "target": target.relative_to(project_root).as_posix(),
                 "reason": "legacy_root_backups",
-            }
+            },
         )
 
     for backup_file in iter_backup_files(project_root):
@@ -106,7 +106,7 @@ def build_cleanup_plan(root_dir: str | Path, *, backup_stamp: str) -> dict[str, 
                 "path": backup_file.relative_to(project_root).as_posix(),
                 "target": target.relative_to(project_root).as_posix(),
                 "reason": "backup_artifact",
-            }
+            },
         )
 
     actions.sort(key=lambda item: (str(item["type"]), str(item["path"])))

@@ -1,5 +1,4 @@
-"""
-Mock数据文件: IndicatorLibrary
+"""Mock数据文件: IndicatorLibrary
 提供接口:
 1. get_indicator_list() -> List[Dict] - 获取指标列表
 2. get_indicator_detail() -> Dict - 获取指标详情
@@ -15,10 +14,11 @@ Mock数据文件: IndicatorLibrary
 生成时间: 2025-11-15
 """
 
-from typing import List, Dict, Optional
-import pandas as pd
 import datetime
 import random
+from typing import Dict, List, Optional
+
+import pandas as pd
 
 
 def get_indicator_list(params: Optional[Dict] = None) -> List[Dict]:
@@ -38,6 +38,7 @@ def get_indicator_list(params: Optional[Dict] = None) -> List[Dict]:
                    - description: 指标描述
                    - formula: 计算公式
                    - created_at: 创建时间
+
     """
     # 默认参数
     params = params or {}
@@ -231,7 +232,7 @@ def get_indicator_list(params: Optional[Dict] = None) -> List[Dict]:
                 "formula": indicator["formula"],
                 "created_at": created_date.strftime("%Y-%m-%d %H:%M:%S"),
                 "total": total_indicators,  # 用于分页的总数量
-            }
+            },
         )
 
     return result
@@ -253,6 +254,7 @@ def get_indicator_detail(indicator_id: str) -> Dict:
              - parameters: 参数列表
              - usage: 使用说明
              - interpretation: 指标解读
+
     """
     # 指标详细信息
     indicator_details = {
@@ -349,6 +351,7 @@ def get_indicator_data(indicator_id: str, symbol: str, days: int = 30) -> pd.Dat
 
     Returns:
         pd.DataFrame: 指标数据表格，列名对应前端表格字段
+
     """
     # 股票基础价格
     base_prices = {
@@ -432,7 +435,7 @@ def get_indicator_data(indicator_id: str, symbol: str, days: int = 30) -> pd.Dat
         {
             "date": dates,
             column_name: indicator_values,
-        }
+        },
     )
 
 
@@ -445,6 +448,7 @@ def generate_realistic_price(base_price: float = 100.0, volatility: float = 0.02
 
     Returns:
         float: 生成的价格（保留2位小数）
+
     """
     change_rate = random.uniform(-volatility, volatility)
     price = base_price * (1 + change_rate)
@@ -456,6 +460,7 @@ def generate_realistic_volume() -> int:
 
     Returns:
         int: 成交量（股）
+
     """
     return random.randint(1000000, 100000000)
 

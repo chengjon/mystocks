@@ -1,14 +1,15 @@
-"""
-Phase 3: Multi-source Integration Test Script
+"""Phase 3: Multi-source Integration Test Script
 Multi-data Source Support
 
 测试多数据源管理和公告监控系统
 """
 
-import requests
 import json
 import os
 from datetime import date, timedelta
+
+import requests
+
 
 # API base URL
 BACKEND_PORT = os.getenv("BACKEND_PORT", "").strip()
@@ -35,7 +36,7 @@ def print_json(data, max_items=5):
                     {**data, "data": data["data"][:max_items]},
                     indent=2,
                     ensure_ascii=False,
-                )
+                ),
             )
             if len(data["data"]) > max_items:
                 print(f"  ... and {len(data['data']) - max_items} more items")

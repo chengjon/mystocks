@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
-"""
-日志系统统一化脚本
+"""日志系统统一化脚本
 
 将项目中的print()语句替换为logging调用
 建立统一的日志标准和配置
 """
 
+import argparse
 import re
 import sys
 from pathlib import Path
 from typing import Dict, List, Optional
-import argparse
 
 
 class LoggingUnifier:
@@ -46,11 +45,9 @@ class LoggingUnifier:
 
         # 遍历所有Python文件
         for py_file in self.src_dir.rglob("*.py"):
-            if py_file.is_file() and not any(
-                skip in str(py_file) for skip in ["__pycache__", ".pytest_cache"]
-            ):
+            if py_file.is_file() and not any(skip in str(py_file) for skip in ["__pycache__", ".pytest_cache"]):
                 try:
-                    with open(py_file, "r", encoding="utf-8") as f:
+                    with open(py_file, encoding="utf-8") as f:
                         content = f.read()
 
                     file_prints = 0
@@ -66,7 +63,10 @@ class LoggingUnifier:
 
                                 # 分析问题
                                 self._analyze_print_statement(
-                                    line, i, py_file, file_issues
+                                    line,
+                                    i,
+                                    py_file,
+                                    file_issues,
                                 )
 
                     if file_prints > 0:
@@ -75,9 +75,7 @@ class LoggingUnifier:
 
                         # 按目录统计
                         parent_dir = py_file.parent.name
-                        analysis["by_directory"][parent_dir] = (
-                            analysis["by_directory"].get(parent_dir, 0) + file_prints
-                        )
+                        analysis["by_directory"][parent_dir] = analysis["by_directory"].get(parent_dir, 0) + file_prints
 
                         if file_issues:
                             analysis["problematic_cases"].extend(file_issues)
@@ -88,21 +86,19 @@ class LoggingUnifier:
         return analysis
 
     def _analyze_print_statement(
-        self, line: str, line_num: int, file_path: Path, issues: List[str]
+        self,
+        line: str,
+        line_num: int,
+        file_path: Path,
+        issues: List[str],
     ):
         """分析单个print语句的问题"""
         # 检查调试相关print
-        if any(
-            debug_word in line.lower()
-            for debug_word in ["debug", "测试", "test", "暂时", "temp"]
-        ):
+        if any(debug_word in line.lower() for debug_word in ["debug", "测试", "test", "暂时", "temp"]):
             issues.append(f"{file_path}:{line_num} - 调试print语句")
 
         # 检查敏感信息
-        if any(
-            sensitive_word in line.lower()
-            for sensitive_word in ["password", "secret", "key", "token"]
-        ):
+        if any(sensitive_word in line.lower() for sensitive_word in ["password", "secret", "key", "token"]):
             issues.append(f"{file_path}:{line_num} - 可能包含敏感信息的print")
 
         # 检查重复的print模式
@@ -130,11 +126,13 @@ if not logger.handlers:
 """
 
     def replace_print_with_logging(
-        self, file_path: Path, dry_run: bool = False
+        self,
+        file_path: Path,
+        dry_run: bool = False,
     ) -> bool:
         """将print语句替换为logging调用"""
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             original_content = content
@@ -195,7 +193,7 @@ if not logger.handlers:
             self.stats["files_processed"] += 1
             if modified:
                 self.stats["print_statements_replaced"] += original_content.count(
-                    "print("
+                    "print(",
                 )
                 self.stats["files_with_logging"] += 1
 
@@ -404,9 +402,7 @@ def log_debug(message: str, logger_name: Optional[str] = None):
             print("📁 处理所有Python文件...")
 
             for py_file in self.src_dir.rglob("*.py"):
-                if py_file.is_file() and not any(
-                    skip in str(py_file) for skip in ["__pycache__", ".pytest_cache"]
-                ):
+                if py_file.is_file() and not any(skip in str(py_file) for skip in ["__pycache__", ".pytest_cache"]):
                     try:
                         self.replace_print_with_logging(py_file, dry_run)
                     except Exception as e:
@@ -437,10 +433,15 @@ def main():
     """主函数"""
     parser = argparse.ArgumentParser(description="MyStocks 日志系统统一化工具")
     parser.add_argument(
-        "--project-root", default=".", help="项目根目录路径 (默认: 当前目录)"
+        "--project-root",
+        default=".",
+        help="项目根目录路径 (默认: 当前目录)",
     )
     parser.add_argument(
-        "--dry-run", "-n", action="store_true", help="模拟运行，不修改文件"
+        "--dry-run",
+        "-n",
+        action="store_true",
+        help="模拟运行，不修改文件",
     )
     parser.add_argument("--file", "-f", help="只处理指定文件")
     parser.add_argument("--analyze", "-a", action="store_true", help="只分析，不修改")
@@ -459,7 +460,9 @@ def main():
 
             print("\n📁 按目录分布:")
             for dir_name, count in sorted(
-                analysis["by_directory"].items(), key=lambda x: x[1], reverse=True
+                analysis["by_directory"].items(),
+                key=lambda x: x[1],
+                reverse=True,
             ):
                 print(f"  {dir_name}: {count}")
 

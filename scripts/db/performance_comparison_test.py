@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""
-分时线同步性能测试脚本
+"""分时线同步性能测试脚本
 
 比较串行和并行同步的性能差异
 """
 
-import sys
+import logging
 import os
+import sys
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
-import threading
-import logging
+
 
 # 添加项目根目录到Python路径
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../"))
@@ -73,7 +73,11 @@ def sync_stocks_serial(symbols, periods, trade_date):
     for symbol in symbols:
         try:
             result = sync_single_stock_serial(
-                symbol, periods, trade_date, data_source, manager
+                symbol,
+                periods,
+                trade_date,
+                data_source,
+                manager,
             )
             results.append(result)
             total_records += result["records"]
@@ -98,9 +102,7 @@ def sync_stocks_parallel(symbols, periods, trade_date, max_workers=5):
     manager = None
 
     # 创建每只股票的处理参数
-    stock_args = [
-        (symbol, periods, trade_date, data_source, manager) for symbol in symbols
-    ]
+    stock_args = [(symbol, periods, trade_date, data_source, manager) for symbol in symbols]
 
     total_records = 0
     successful_stocks = 0
@@ -109,10 +111,7 @@ def sync_stocks_parallel(symbols, periods, trade_date, max_workers=5):
     # 使用线程池进行并行处理
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         # 提交所有任务
-        future_to_stock = {
-            executor.submit(sync_single_stock_parallel, args): args[0]
-            for args in stock_args
-        }
+        future_to_stock = {executor.submit(sync_single_stock_parallel, args): args[0] for args in stock_args}
 
         # 处理完成的任务
         for future in as_completed(future_to_stock):
@@ -154,7 +153,7 @@ def test_performance_comparison():
     serial_duration = time.time() - start_time
     print(f"串行处理耗时: {serial_duration:.2f} 秒")
     print(
-        f"处理股票数: {serial_stats['successful_stocks']}/{serial_stats['total_stocks']}"
+        f"处理股票数: {serial_stats['successful_stocks']}/{serial_stats['total_stocks']}",
     )
     print(f"总记录数: {serial_stats['total_records']}")
 
@@ -171,12 +170,12 @@ def test_performance_comparison():
 
         parallel_duration = time.time() - start_time
         parallel_results.append(
-            {"workers": workers, "duration": parallel_duration, "stats": parallel_stats}
+            {"workers": workers, "duration": parallel_duration, "stats": parallel_stats},
         )
 
         print(f"并行处理耗时: {parallel_duration:.2f} 秒")
         print(
-            f"处理股票数: {parallel_stats['successful_stocks']}/{parallel_stats['total_stocks']}"
+            f"处理股票数: {parallel_stats['successful_stocks']}/{parallel_stats['total_stocks']}",
         )
         print(f"总记录数: {parallel_stats['total_records']}")
 
@@ -194,8 +193,7 @@ def test_performance_comparison():
         efficiency = speedup / workers if workers > 0 else 0
 
         print(
-            f"并行处理 ({workers} workers): {duration:.2f} 秒 "
-            f"(加速比: {speedup:.2f}x, 效率: {efficiency:.2%})"
+            f"并行处理 ({workers} workers): {duration:.2f} 秒 (加速比: {speedup:.2f}x, 效率: {efficiency:.2%})",
         )
 
     # 最佳性能
@@ -205,8 +203,7 @@ def test_performance_comparison():
     best_speedup = serial_duration / best_duration if best_duration > 0 else 0
 
     print(
-        f"\n最佳性能: {best_workers} workers, {best_duration:.2f} 秒 "
-        f"(加速比: {best_speedup:.2f}x)"
+        f"\n最佳性能: {best_workers} workers, {best_duration:.2f} 秒 (加速比: {best_speedup:.2f}x)",
     )
 
 

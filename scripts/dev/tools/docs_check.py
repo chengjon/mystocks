@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-文档规范检查工具
+"""文档规范检查工具
 
 功能：
 1. 检查文档命名规范
@@ -14,14 +13,13 @@
     python scripts/tools/docs_check.py --fix  # 自动修复部分问题
 """
 
-import os
-import sys
-import re
 import argparse
 import hashlib
-from pathlib import Path
-from typing import List, Dict, Set, Tuple
+import re
+import sys
 from collections import defaultdict
+from pathlib import Path
+from typing import Dict, List, Tuple
 
 
 class DocsChecker:
@@ -34,7 +32,7 @@ class DocsChecker:
             "empty_dirs": [],
             "duplicates": [],
             "deep_nesting": [],
-            "missing_index": []
+            "missing_index": [],
         }
 
     def check_all(self) -> Dict:
@@ -61,38 +59,40 @@ class DocsChecker:
             issues = []
 
             # 检查中文字符
-            if re.search(r'[\u4e00-\u9fa5]', filename):
+            if re.search(r"[\u4e00-\u9fa5]", filename):
                 issues.append("包含中文字符")
 
             # 检查空格
-            if ' ' in filename:
+            if " " in filename:
                 issues.append("包含空格")
 
             # 检查特殊字符
-            if re.search(r'[^a-zA-Z0-9._-]', filename):
+            if re.search(r"[^a-zA-Z0-9._-]", filename):
                 issues.append("包含特殊字符")
 
             # 检查大写字母（推荐kebab-case）
-            if re.search(r'[A-Z]', filename):
+            if re.search(r"[A-Z]", filename):
                 issues.append("包含大写字母（推荐使用kebab-case）")
 
             # 检查目录名
             for part in rel_path.parts[:-1]:
-                if re.search(r'[\u4e00-\u9fa5]', part):
+                if re.search(r"[\u4e00-\u9fa5]", part):
                     issues.append(f"目录名包含中文: {part}")
 
-                if re.search(r'[A-Z]', part):
+                if re.search(r"[A-Z]", part):
                     issues.append(f"目录名包含大写字母: {part}")
 
                 # 检查数字前缀（不推荐）
-                if re.match(r'^\d+[-_.]', part):
+                if re.match(r"^\d+[-_.]", part):
                     issues.append(f"目录名有数字前缀: {part}")
 
             if issues:
-                self.issues["naming"].append({
-                    "file": str(rel_path),
-                    "issues": issues
-                })
+                self.issues["naming"].append(
+                    {
+                        "file": str(rel_path),
+                        "issues": issues,
+                    }
+                )
 
         print(f"  ✅ 发现 {len(self.issues['naming'])} 个命名问题")
 
@@ -116,20 +116,22 @@ class DocsChecker:
         # 计算所有文件的哈希值
         for md_file in self.root_path.rglob("*.md"):
             try:
-                with open(md_file, 'rb') as f:
+                with open(md_file, "rb") as f:
                     file_hash = hashlib.md5(f.read()).hexdigest()
                 rel_path = md_file.relative_to(self.root_path)
                 file_hashes[file_hash].append(str(rel_path))
-            except Exception as e:
+            except Exception:
                 print(f"  ⚠️  无法读取文件: {md_file}")
 
         # 找出重复的文件
         for file_hash, files in file_hashes.items():
             if len(files) > 1:
-                self.issues["duplicates"].append({
-                    "hash": file_hash,
-                    "files": files
-                })
+                self.issues["duplicates"].append(
+                    {
+                        "hash": file_hash,
+                        "files": files,
+                    }
+                )
 
         print(f"  ✅ 发现 {len(self.issues['duplicates'])} 组重复文档")
 
@@ -143,10 +145,12 @@ class DocsChecker:
             depth = len(rel_path.parts) - 1  # 减1是因为包含文件名
 
             if depth > max_depth:
-                self.issues["deep_nesting"].append({
-                    "file": str(rel_path),
-                    "depth": depth
-                })
+                self.issues["deep_nesting"].append(
+                    {
+                        "file": str(rel_path),
+                        "depth": depth,
+                    }
+                )
 
         print(f"  ✅ 发现 {len(self.issues['deep_nesting'])} 个深层嵌套文件（>{max_depth}层）")
 
@@ -165,10 +169,12 @@ class DocsChecker:
                 contents = list(dir_path.iterdir())
                 if len(contents) > 5 and not (has_index or has_readme):
                     rel_path = dir_path.relative_to(self.root_path)
-                    self.issues["missing_index"].append({
-                        "dir": str(rel_path),
-                        "item_count": len(contents)
-                    })
+                    self.issues["missing_index"].append(
+                        {
+                            "dir": str(rel_path),
+                            "item_count": len(contents),
+                        }
+                    )
 
         print(f"  ✅ 发现 {len(self.issues['missing_index'])} 个目录缺失索引")
 
@@ -179,11 +185,11 @@ class DocsChecker:
         print("=" * 80)
 
         total_issues = (
-            len(self.issues["naming"]) +
-            len(self.issues["empty_dirs"]) +
-            len(self.issues["duplicates"]) +
-            len(self.issues["deep_nesting"]) +
-            len(self.issues["missing_index"])
+            len(self.issues["naming"])
+            + len(self.issues["empty_dirs"])
+            + len(self.issues["duplicates"])
+            + len(self.issues["deep_nesting"])
+            + len(self.issues["missing_index"])
         )
 
         if total_issues == 0:
@@ -245,7 +251,7 @@ class DocsChecker:
 
     def save_report(self, output_path: str):
         """保存检查报告"""
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             f.write("# 文档规范检查报告\n\n")
             f.write(f"**检查时间**: {Path(output_path).stem}\n\n")
 
@@ -267,14 +273,12 @@ class DocsChecker:
                 if category == "naming":
                     for item in items:
                         f.write(f"- ❌ `{item['file']}`\n")
-                        for issue in item["issues"]:
-                            f.write(f"  - {issue}\n")
+                        f.writelines(f"  - {issue}\n" for issue in item["issues"])
 
                 elif category == "duplicates":
                     for item in items:
                         f.write(f"- 📋 {len(item['files'])} 个文件内容相同:\n")
-                        for file in item["files"]:
-                            f.write(f"  - `{file}`\n")
+                        f.writelines(f"  - `{file}`\n" for file in item["files"])
 
                 else:
                     for item in items:
@@ -323,16 +327,16 @@ class DocsChecker:
         name = filename.lower()
 
         # 替换空格和下划线为连字符
-        name = re.sub(r'[\s_]+', '-', name)
+        name = re.sub(r"[\s_]+", "-", name)
 
         # 移除特殊字符（保留字母、数字、连字符、点）
-        name = re.sub(r'[^a-z0-9.-]', '', name)
+        name = re.sub(r"[^a-z0-9.-]", "", name)
 
         # 移除多个连续连字符
-        name = re.sub(r'-+', '-', name)
+        name = re.sub(r"-+", "-", name)
 
         # 移除开头和结尾的连字符
-        name = name.strip('-')
+        name = name.strip("-")
 
         return name
 
@@ -342,10 +346,8 @@ def main():
     parser = argparse.ArgumentParser(description="文档规范检查工具")
     parser.add_argument("--path", default="docs/", help="文档目录路径（默认: docs/）")
     parser.add_argument("--output", help="输出报告文件路径")
-    parser.add_argument("--fix-empty-dirs", action="store_true",
-                       help="自动删除空目录")
-    parser.add_argument("--suggest-renames", action="store_true",
-                       help="建议文件重命名")
+    parser.add_argument("--fix-empty-dirs", action="store_true", help="自动删除空目录")
+    parser.add_argument("--suggest-renames", action="store_true", help="建议文件重命名")
 
     args = parser.parse_args()
 

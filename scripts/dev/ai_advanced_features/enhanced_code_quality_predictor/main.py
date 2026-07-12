@@ -1,28 +1,30 @@
 #!/usr/bin/env python3
-"""
-增强代码质量预测器
+"""增强代码质量预测器
 集成机器学习和深度学习技术的高级代码质量分析系统
 """
 
 import ast
 import json
-import sys
-import numpy as np
-from pathlib import Path
-from typing import Dict, List
-from dataclasses import dataclass, asdict
-from collections import Counter
 import logging
+import sys
+from collections import Counter
+from dataclasses import asdict
+from pathlib import Path
+
+import numpy as np
+
 
 # 设置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
+
 
 def main():
     """主入口函数"""
@@ -59,15 +61,15 @@ def main():
             advanced_metrics = analyzer.analyze_file_advanced(file_path)
 
             # 计算基础指标
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 source_code = f.read()
 
             # 简化的基础指标计算
             lines_of_code = len(
-                [line for line in source_code.split("\n") if line.strip()]
+                [line for line in source_code.split("\n") if line.strip()],
             )
             cyclomatic_complexity = analyzer.deep_analyzer.complexity_analysis(
-                ast.parse(source_code)
+                ast.parse(source_code),
             )["cognitive_complexity"]
 
             code_metrics = CodeMetrics(
@@ -88,7 +90,8 @@ def main():
 
             # 特征提取
             features = feature_extractor.extract_features(
-                code_metrics, advanced_metrics
+                code_metrics,
+                advanced_metrics,
             )
 
             # 质量预测
@@ -100,11 +103,11 @@ def main():
                     "metrics": asdict(advanced_metrics),
                     "prediction": asdict(prediction),
                     "features": features.tolist(),
-                }
+                },
             )
 
             print(
-                f"✅ 分析完成: {prediction.overall_score:.1f}分 ({prediction.risk_level})"
+                f"✅ 分析完成: {prediction.overall_score:.1f}分 ({prediction.risk_level})",
             )
 
         except Exception as e:
@@ -126,5 +129,3 @@ def main():
 
         print(f"   平均质量分: {avg_score:.1f}")
         print(f"   风险分布: {dict(risk_distribution)}")
-
-

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-自动化修复测试文件导入路径
+"""自动化修复测试文件导入路径
 
 修复旧的导入路径为新的 src/ 结构:
 - from unified_manager import → from src.core.unified_manager import
@@ -17,44 +16,40 @@ import re
 from pathlib import Path
 from typing import List, Tuple
 
+
 # 导入路径映射规则
 IMPORT_REPLACEMENTS = [
     # 核心模块
-    (r'\bfrom unified_manager import', 'from src.core.unified_manager import'),
-    (r'\bfrom core import', 'from src.core import'),
-    (r'\bfrom core\.(\w+) import', r'from src.core.\1 import'),
-
+    (r"\bfrom unified_manager import", "from src.core.unified_manager import"),
+    (r"\bfrom core import", "from src.core import"),
+    (r"\bfrom core\.(\w+) import", r"from src.core.\1 import"),
     # 数据库管理
-    (r'\bfrom db_manager import', 'from src.db_manager import'),
-    (r'\bfrom db_manager\.(\w+) import', r'from src.db_manager.\1 import'),
-
+    (r"\bfrom db_manager import", "from src.db_manager import"),
+    (r"\bfrom db_manager\.(\w+) import", r"from src.db_manager.\1 import"),
     # 适配器
-    (r'\bfrom adapters import', 'from src.adapters import'),
-    (r'\bfrom adapters\.(\w+) import', r'from src.adapters.\1 import'),
-
+    (r"\bfrom adapters import", "from src.adapters import"),
+    (r"\bfrom adapters\.(\w+) import", r"from src.adapters.\1 import"),
     # 接口
-    (r'\bfrom interfaces import', 'from src.interfaces import'),
-    (r'\bfrom interfaces\.(\w+) import', r'from src.interfaces.\1 import'),
-
+    (r"\bfrom interfaces import", "from src.interfaces import"),
+    (r"\bfrom interfaces\.(\w+) import", r"from src.interfaces.\1 import"),
     # 存储层
-    (r'\bfrom storage import', 'from src.storage import'),
-    (r'\bfrom storage\.(\w+) import', r'from src.storage.\1 import'),
-
+    (r"\bfrom storage import", "from src.storage import"),
+    (r"\bfrom storage\.(\w+) import", r"from src.storage.\1 import"),
     # 监控
-    (r'\bfrom monitoring import', 'from src.monitoring import'),
-    (r'\bfrom monitoring\.(\w+) import', r'from src.monitoring.\1 import'),
+    (r"\bfrom monitoring import", "from src.monitoring import"),
+    (r"\bfrom monitoring\.(\w+) import", r"from src.monitoring.\1 import"),
 ]
 
 
 def find_test_files(root_dir: Path) -> List[Path]:
-    """
-    查找所有测试文件
+    """查找所有测试文件
 
     Args:
         root_dir: 项目根目录
 
     Returns:
         测试文件路径列表
+
     """
     test_files = []
 
@@ -71,8 +66,7 @@ def find_test_files(root_dir: Path) -> List[Path]:
 
 
 def fix_imports_in_file(file_path: Path, dry_run: bool = False) -> Tuple[int, int]:
-    """
-    修复单个文件的导入路径
+    """修复单个文件的导入路径
 
     Args:
         file_path: 文件路径
@@ -80,10 +74,11 @@ def fix_imports_in_file(file_path: Path, dry_run: bool = False) -> Tuple[int, in
 
     Returns:
         (替换数量, 错误数量)
+
     """
     try:
         # 读取文件内容
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
         original_content = content
 
         replacements_count = 0
@@ -97,7 +92,7 @@ def fix_imports_in_file(file_path: Path, dry_run: bool = False) -> Tuple[int, in
 
         # 如果有修改且不是演练模式，写回文件
         if replacements_count > 0 and not dry_run:
-            file_path.write_text(content, encoding='utf-8')
+            file_path.write_text(content, encoding="utf-8")
 
         return replacements_count, 0
 
@@ -109,9 +104,9 @@ def main():
     """主函数"""
     import argparse
 
-    parser = argparse.ArgumentParser(description='修复测试文件导入路径')
-    parser.add_argument('--dry-run', action='store_true', help='演练模式，不实际修改文件')
-    parser.add_argument('--verbose', '-v', action='store_true', help='显示详细信息')
+    parser = argparse.ArgumentParser(description="修复测试文件导入路径")
+    parser.add_argument("--dry-run", action="store_true", help="演练模式，不实际修改文件")
+    parser.add_argument("--verbose", "-v", action="store_true", help="显示详细信息")
     args = parser.parse_args()
 
     # 获取项目根目录

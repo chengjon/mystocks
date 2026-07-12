@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-端到端数据一致性验证脚本
+"""端到端数据一致性验证脚本
 验证API返回的数据质量和一致性
 """
 
@@ -12,9 +11,11 @@ from typing import Any, Dict
 
 import requests
 
+
 # 配置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -103,16 +104,12 @@ def test_stocks_basic_api() -> Dict[str, Any]:
             if data["data"]:
                 first_record = data["data"][0]
                 required_stock_fields = ["symbol", "name", "industry", "market"]
-                missing_fields = [
-                    f for f in required_stock_fields if f not in first_record
-                ]
+                missing_fields = [f for f in required_stock_fields if f not in first_record]
 
                 print_test_result(
                     "记录字段完整性",
                     len(missing_fields) == 0,
-                    f"缺少字段: {missing_fields}"
-                    if missing_fields
-                    else "所有股票字段完整",
+                    f"缺少字段: {missing_fields}" if missing_fields else "所有股票字段完整",
                 )
 
                 # 验证数据质量评分
@@ -175,13 +172,16 @@ def test_stocks_search_api() -> Dict[str, Any]:
                 matched = 0
                 for result in data["data"]:
                     if keyword in result.get("name", "") or keyword in result.get(
-                        "symbol", ""
+                        "symbol",
+                        "",
                     ):
                         matched += 1
 
                 match_rate = matched / len(data["data"]) if data["data"] else 0
                 print_test_result(
-                    "搜索结果相关性", match_rate >= 0.8, f"匹配率: {match_rate:.1%}"
+                    "搜索结果相关性",
+                    match_rate >= 0.8,
+                    f"匹配率: {match_rate:.1%}",
                 )
 
                 return data
@@ -231,7 +231,7 @@ def test_data_consistency(stocks_basic: Dict, stocks_search: Dict) -> None:
                 for field in ["name", "industry", "market"]:
                     if basic.get(field) != search.get(field):
                         inconsistencies.append(
-                            f"{symbol}.{field}: {basic.get(field)} vs {search.get(field)}"
+                            f"{symbol}.{field}: {basic.get(field)} vs {search.get(field)}",
                         )
 
             print_test_result(
@@ -345,7 +345,9 @@ def test_monitoring_api() -> None:
     try:
         logger.info("请求健康检查...")
         resp = requests.get(
-            f"{API_BASE_URL}/api/monitoring/health", headers=HEADERS, timeout=10
+            f"{API_BASE_URL}/api/monitoring/health",
+            headers=HEADERS,
+            timeout=10,
         )
 
         if resp.status_code == 200:
@@ -357,7 +359,9 @@ def test_monitoring_api() -> None:
 
         logger.info("请求监控仪表板...")
         resp = requests.get(
-            f"{API_BASE_URL}/api/monitoring/dashboard", headers=HEADERS, timeout=10
+            f"{API_BASE_URL}/api/monitoring/dashboard",
+            headers=HEADERS,
+            timeout=10,
         )
 
         if resp.status_code == 200:
@@ -399,9 +403,8 @@ def main():
     if FAILED_TESTS == 0:
         print("✓ 所有测试通过！")
         return 0
-    else:
-        print("✗ 有测试失败，请查看上面的详细信息")
-        return 1
+    print("✗ 有测试失败，请查看上面的详细信息")
+    return 1
 
 
 if __name__ == "__main__":

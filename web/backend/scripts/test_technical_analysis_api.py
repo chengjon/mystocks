@@ -1,11 +1,12 @@
-"""
-技术分析系统 API 测试脚本
+"""技术分析系统 API 测试脚本
 Enhanced Technical Analysis Test
 """
 
-import requests
 import json
 import os
+
+import requests
+
 
 # API base URL
 BACKEND_PORT = os.getenv("BACKEND_PORT", "").strip()
@@ -158,7 +159,7 @@ def test_get_trading_signals():
         print(
             f"信号数量: 买入={data['signal_count']['buy']}, "
             f"卖出={data['signal_count']['sell']}, "
-            f"总计={data['signal_count']['total']}"
+            f"总计={data['signal_count']['total']}",
         )
 
         if data["signals"]:
@@ -196,7 +197,7 @@ def test_get_history():
                 f"高={ohlcv['high']:.2f}, "
                 f"低={ohlcv['low']:.2f}, "
                 f"收={ohlcv['close']:.2f}, "
-                f"量={ohlcv['volume']:,}"
+                f"量={ohlcv['volume']:,}",
             )
 
 

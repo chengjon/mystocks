@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-"""
-Web API健康检查脚本
+"""Web API健康检查脚本
 
 验证10个关键页面的数据接口可用性
 """
 
-import sys
 import os
+import sys
+from typing import Dict, Optional, Tuple
+
 import requests
-from typing import Dict, Tuple, Optional
+
 
 BASE_URL = os.getenv("BACKEND_URL", f"http://localhost:{os.getenv('BACKEND_PORT', '8020')}")
 TIMEOUT = 5  # 秒
@@ -128,18 +129,19 @@ def get_auth_token() -> Optional[str]:
         if resp.status_code == 200:
             return resp.json().get("access_token")
     except Exception as e:
-        print(f"   警告: 无法获取Token - {str(e)}")
+        print(f"   警告: 无法获取Token - {e!s}")
     return None
 
 
 def test_api_endpoint(
-    endpoint: Dict, token: Optional[str]
+    endpoint: Dict,
+    token: Optional[str],
 ) -> Tuple[bool, str, Optional[int]]:
-    """
-    测试单个API端点
+    """测试单个API端点
 
     Returns:
         (成功, 错误消息, 状态码)
+
     """
     url = f"{BASE_URL}{endpoint['url']}"
     headers = {}
@@ -155,7 +157,10 @@ def test_api_endpoint(
         elif endpoint["method"] == "POST":
             headers["Content-Type"] = "application/json"
             resp = requests.post(
-                url, json=endpoint["data"], headers=headers, timeout=TIMEOUT
+                url,
+                json=endpoint["data"],
+                headers=headers,
+                timeout=TIMEOUT,
             )
         else:
             return False, f"不支持的方法: {endpoint['method']}", None
@@ -163,23 +168,22 @@ def test_api_endpoint(
         # 判断成功
         if resp.status_code == 200:
             return True, "成功", resp.status_code
-        elif resp.status_code == 401:
+        if resp.status_code == 401:
             return False, "认证失败 (Token无效或过期)", resp.status_code
-        elif resp.status_code == 404:
+        if resp.status_code == 404:
             return False, "端点不存在", resp.status_code
-        elif resp.status_code == 500:
+        if resp.status_code == 500:
             return False, "服务器内部错误", resp.status_code
-        elif resp.status_code == 503:
+        if resp.status_code == 503:
             return False, "服务不可用 (可能数据库连接失败)", resp.status_code
-        else:
-            return False, f"HTTP {resp.status_code}", resp.status_code
+        return False, f"HTTP {resp.status_code}", resp.status_code
 
     except requests.exceptions.ConnectionError:
         return False, "连接被拒绝 (Backend未启动?)", None
     except requests.exceptions.Timeout:
         return False, f"请求超时 (>{TIMEOUT}s)", None
     except Exception as e:
-        return False, f"异常: {str(e)}", None
+        return False, f"异常: {e!s}", None
 
 
 def main():
@@ -235,7 +239,7 @@ def main():
         status_str = f"({status_code})" if status_code else ""
 
         print(
-            f"{i:2d}. {icon} [{priority}] {endpoint['name']:15s} {status_str:10s} {message}"
+            f"{i:2d}. {icon} [{priority}] {endpoint['name']:15s} {status_str:10s} {message}",
         )
         print(f"    页面: {endpoint['page']}")
         print(f"    URL: {endpoint['method']} {endpoint['url']}")
@@ -249,7 +253,7 @@ def main():
                     "page": endpoint["page"],
                     "url": endpoint["url"],
                     "error": message,
-                }
+                },
             )
 
         print()
@@ -270,11 +274,9 @@ def main():
         r = results[priority]
         if r["total"] > 0:
             priority_rate = r["passed"] / r["total"] * 100
-            icon = (
-                "✅" if r["passed"] == r["total"] else "⚠️" if r["passed"] > 0 else "❌"
-            )
+            icon = "✅" if r["passed"] == r["total"] else "⚠️" if r["passed"] > 0 else "❌"
             print(
-                f"{icon} {priority}: {r['passed']}/{r['total']} 通过 ({priority_rate:.0f}%)"
+                f"{icon} {priority}: {r['passed']}/{r['total']} 通过 ({priority_rate:.0f}%)",
             )
 
     # Step 5: 失败项详情

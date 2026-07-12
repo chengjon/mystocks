@@ -1,15 +1,11 @@
 """量化策略验证器子模块"""
 
 import ast
-import json
 import logging
 import os
 import re
-import subprocess
-import sys
-import time
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict
+
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +25,9 @@ class PracticesChecksMixin:
                         file_path = os.path.join(root, file)
                         try:
                             with open(
-                                file_path, "r", encoding="utf-8", errors="ignore"
+                                file_path,
+                                encoding="utf-8",
+                                errors="ignore",
                             ) as f:
                                 content = f.read()
 
@@ -50,7 +48,7 @@ class PracticesChecksMixin:
                                             "line": i,
                                             "suggestion": "使用环境变量或配置文件存储敏感信息",
                                             "priority": "critical",
-                                        }
+                                        },
                                     )
                                     score -= 20
 
@@ -65,7 +63,7 @@ class PracticesChecksMixin:
                                             "line": i,
                                             "suggestion": "使用参数化查询或ORM",
                                             "priority": "high",
-                                        }
+                                        },
                                     )
                                     score -= 15
 
@@ -94,13 +92,17 @@ class PracticesChecksMixin:
                         file_path = os.path.join(root, file)
                         try:
                             with open(
-                                file_path, "r", encoding="utf-8", errors="ignore"
+                                file_path,
+                                encoding="utf-8",
+                                errors="ignore",
                             ) as f:
                                 content = f.read()
 
                             # 检查全局变量滥用
                             global_vars = re.findall(
-                                r"^\s*global\s+\w+", content, re.MULTILINE
+                                r"^\s*global\s+\w+",
+                                content,
+                                re.MULTILINE,
                             )
                             if len(global_vars) > 5:
                                 issues.append(
@@ -111,7 +113,7 @@ class PracticesChecksMixin:
                                         "file": file_path,
                                         "suggestion": "减少全局变量使用，考虑依赖注入",
                                         "priority": "medium",
-                                    }
+                                    },
                                 )
                                 score -= 10
 
@@ -125,7 +127,7 @@ class PracticesChecksMixin:
                                         "file": file_path,
                                         "suggestion": "考虑使用生成器或分批处理",
                                         "priority": "low",
-                                    }
+                                    },
                                 )
                                 score -= 5
 
@@ -155,7 +157,9 @@ class PracticesChecksMixin:
                         file_path = os.path.join(root, file)
                         try:
                             with open(
-                                file_path, "r", encoding="utf-8", errors="ignore"
+                                file_path,
+                                encoding="utf-8",
+                                errors="ignore",
                             ) as f:
                                 content = f.read()
 
@@ -171,18 +175,14 @@ class PracticesChecksMixin:
                                         "file": file_path,
                                         "suggestion": "考虑将文件拆分为多个模块",
                                         "priority": "medium",
-                                    }
+                                    },
                                 )
                                 score -= 10
 
                             # 检查类数量
                             tree = ast.parse(content)
                             class_count = len(
-                                [
-                                    node
-                                    for node in ast.walk(tree)
-                                    if isinstance(node, ast.ClassDef)
-                                ]
+                                [node for node in ast.walk(tree) if isinstance(node, ast.ClassDef)],
                             )
 
                             if class_count > 10:
@@ -194,7 +194,7 @@ class PracticesChecksMixin:
                                         "file": file_path,
                                         "suggestion": "考虑将类分散到不同文件",
                                         "priority": "low",
-                                    }
+                                    },
                                 )
                                 score -= 5
 
@@ -223,7 +223,7 @@ class PracticesChecksMixin:
                     "priority": "critical",
                     "impact": "high",
                     "score_improvement": 20,
-                }
+                },
             )
 
         if any("SQL注入" in i["type"] for i in issues):
@@ -234,7 +234,7 @@ class PracticesChecksMixin:
                     "priority": "high",
                     "impact": "high",
                     "score_improvement": 15,
-                }
+                },
             )
 
         return suggestions
@@ -251,7 +251,7 @@ class PracticesChecksMixin:
                     "priority": "medium",
                     "impact": "medium",
                     "score_improvement": 10,
-                }
+                },
             )
 
         return suggestions
@@ -268,7 +268,7 @@ class PracticesChecksMixin:
                     "priority": "medium",
                     "impact": "high",
                     "score_improvement": 15,
-                }
+                },
             )
 
         return suggestions
@@ -288,7 +288,9 @@ class PracticesChecksMixin:
                         file_path = os.path.join(root, file)
                         try:
                             with open(
-                                file_path, "r", encoding="utf-8", errors="ignore"
+                                file_path,
+                                encoding="utf-8",
+                                errors="ignore",
                             ) as f:
                                 content = f.read()
 
@@ -300,9 +302,7 @@ class PracticesChecksMixin:
                                         if node.returns or node.args.args:
                                             # 检查是否有类型注解
                                             has_return_hint = node.returns is not None
-                                            has_arg_hints = any(
-                                                arg.annotation for arg in node.args.args
-                                            )
+                                            has_arg_hints = any(arg.annotation for arg in node.args.args)
 
                                             if has_return_hint or has_arg_hints:
                                                 functions_with_hints += 1
@@ -313,19 +313,13 @@ class PracticesChecksMixin:
                 if total_functions >= 20:  # 限制分析数量
                     break
 
-            hint_ratio = (
-                (functions_with_hints / total_functions * 100)
-                if total_functions > 0
-                else 0
-            )
+            hint_ratio = (functions_with_hints / total_functions * 100) if total_functions > 0 else 0
             has_good_hints = hint_ratio >= 50
 
             return {
                 "passed": has_good_hints,
                 "ratio": hint_ratio,
-                "suggestions": ["增加类型提示以提高代码可维护性"]
-                if not has_good_hints
-                else [],
+                "suggestions": ["增加类型提示以提高代码可维护性"] if not has_good_hints else [],
             }
 
         except Exception as e:
@@ -346,7 +340,9 @@ class PracticesChecksMixin:
                         file_path = os.path.join(root, file)
                         try:
                             with open(
-                                file_path, "r", encoding="utf-8", errors="ignore"
+                                file_path,
+                                encoding="utf-8",
+                                errors="ignore",
                             ) as f:
                                 content = f.read()
 
@@ -357,10 +353,7 @@ class PracticesChecksMixin:
                                         total_functions += 1
 
                                         # 检查函数是否包含try语句
-                                        has_try = any(
-                                            isinstance(n, ast.Try)
-                                            for n in ast.walk(node)
-                                        )
+                                        has_try = any(isinstance(n, ast.Try) for n in ast.walk(node))
                                         if has_try:
                                             functions_with_try += 1
 
@@ -370,19 +363,13 @@ class PracticesChecksMixin:
                 if total_functions >= 20:
                     break
 
-            error_handling_ratio = (
-                (functions_with_try / total_functions * 100)
-                if total_functions > 0
-                else 0
-            )
+            error_handling_ratio = (functions_with_try / total_functions * 100) if total_functions > 0 else 0
             has_good_error_handling = error_handling_ratio >= 30
 
             return {
                 "passed": has_good_error_handling,
                 "ratio": error_handling_ratio,
-                "suggestions": ["增加适当的错误处理和异常捕获"]
-                if not has_good_error_handling
-                else [],
+                "suggestions": ["增加适当的错误处理和异常捕获"] if not has_good_error_handling else [],
             }
 
         except Exception as e:
@@ -407,14 +394,13 @@ class PracticesChecksMixin:
 
                         try:
                             with open(
-                                file_path, "r", encoding="utf-8", errors="ignore"
+                                file_path,
+                                encoding="utf-8",
+                                errors="ignore",
                             ) as f:
                                 content = f.read()
 
-                                has_logging = any(
-                                    re.search(pattern, content)
-                                    for pattern in logging_patterns
-                                )
+                                has_logging = any(re.search(pattern, content) for pattern in logging_patterns)
                                 if has_logging:
                                     files_with_logging += 1
 
@@ -424,17 +410,13 @@ class PracticesChecksMixin:
                 if total_files >= 20:
                     break
 
-            logging_ratio = (
-                (files_with_logging / total_files * 100) if total_files > 0 else 0
-            )
+            logging_ratio = (files_with_logging / total_files * 100) if total_files > 0 else 0
             has_good_logging = logging_ratio >= 40
 
             return {
                 "passed": has_good_logging,
                 "ratio": logging_ratio,
-                "suggestions": ["增加适当的日志记录以便调试和监控"]
-                if not has_good_logging
-                else [],
+                "suggestions": ["增加适当的日志记录以便调试和监控"] if not has_good_logging else [],
             }
 
         except Exception as e:
@@ -455,7 +437,9 @@ class PracticesChecksMixin:
                         file_path = os.path.join(root, file)
                         try:
                             with open(
-                                file_path, "r", encoding="utf-8", errors="ignore"
+                                file_path,
+                                encoding="utf-8",
+                                errors="ignore",
                             ) as f:
                                 content = f.read()
 
@@ -473,19 +457,13 @@ class PracticesChecksMixin:
                 if total_functions >= 20:
                     break
 
-            doc_ratio = (
-                (functions_with_docs / total_functions * 100)
-                if total_functions > 0
-                else 0
-            )
+            doc_ratio = (functions_with_docs / total_functions * 100) if total_functions > 0 else 0
             has_good_docs = doc_ratio >= 40
 
             return {
                 "passed": has_good_docs,
                 "ratio": doc_ratio,
-                "suggestions": ["增加函数文档字符串以提高代码可读性"]
-                if not has_good_docs
-                else [],
+                "suggestions": ["增加函数文档字符串以提高代码可读性"] if not has_good_docs else [],
             }
 
         except Exception as e:
@@ -517,4 +495,3 @@ class PracticesChecksMixin:
 
         except Exception as e:
             return {"passed": False, "error": str(e), "suggestions": []}
-

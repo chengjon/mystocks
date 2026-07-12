@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-任务分配辅助工具
+"""任务分配辅助工具
 
 协助main CLI进行任务分配，提供：
 - CLI任务状态查看
@@ -19,10 +18,10 @@ Usage:
     python scripts/dev/task_assigner.py --suggest
 """
 
-import sys
 import argparse
-from pathlib import Path
+import sys
 from datetime import datetime
+from pathlib import Path
 from typing import Dict, List
 
 
@@ -37,7 +36,7 @@ class TaskAssigner:
         """发现所有CLI目录"""
         clis = []
         for item in self.clis_dir.iterdir():
-            if item.is_dir() and not item.name.startswith('_') and item.name != 'SHARED':
+            if item.is_dir() and not item.name.startswith("_") and item.name != "SHARED":
                 if (item / "TASK.md").exists():
                     clis.append(item.name)
         return sorted(clis)
@@ -56,12 +55,12 @@ class TaskAssigner:
                 "in_progress": 0,
                 "pending": 0,
                 "current_task": None,
-                "state": "Unknown"
+                "state": "Unknown",
             }
 
         # 读取任务文件
-        task_content = task_file.read_text(encoding='utf-8')
-        lines = task_content.split('\n')
+        task_content = task_file.read_text(encoding="utf-8")
+        lines = task_content.split("\n")
 
         total = 0
         completed = 0
@@ -70,29 +69,29 @@ class TaskAssigner:
         current_task = None
 
         for line in lines:
-            if line.startswith('- [x]') or line.startswith('- [✅]'):
+            if line.startswith("- [x]") or line.startswith("- [✅]"):
                 total += 1
                 completed += 1
-            elif line.startswith('- [>]') or line.startswith('- [🔄]'):
+            elif line.startswith("- [>]") or line.startswith("- [🔄]"):
                 total += 1
                 in_progress += 1
                 # 提取当前任务
-                if 'task-' in line:
-                    task_id = line.split('task-')[1].split()[0]
+                if "task-" in line:
+                    task_id = line.split("task-")[1].split()[0]
                     current_task = f"task-{task_id}"
-            elif line.startswith('- [ ]'):
+            elif line.startswith("- [ ]"):
                 total += 1
                 pending += 1
 
         # 读取状态文件
         state = "Unknown"
         if status_file.exists():
-            status_content = status_file.read_text(encoding='utf-8')
-            if '🟢 Active' in status_content or 'Active' in status_content:
+            status_content = status_file.read_text(encoding="utf-8")
+            if "🟢 Active" in status_content or "Active" in status_content:
                 state = "Active"
-            elif '🟡 Idle' in status_content or 'Idle' in status_content:
+            elif "🟡 Idle" in status_content or "Idle" in status_content:
                 state = "Idle"
-            elif '🔴 Blocked' in status_content or 'Blocked' in status_content:
+            elif "🔴 Blocked" in status_content or "Blocked" in status_content:
                 state = "Blocked"
 
         return {
@@ -103,7 +102,7 @@ class TaskAssigner:
             "in_progress": in_progress,
             "pending": pending,
             "current_task": current_task,
-            "state": state
+            "state": state,
         }
 
     def suggest_task_assignment(self) -> List[Dict]:
@@ -115,37 +114,46 @@ class TaskAssigner:
 
             # 规则1: 如果CLI处于Idle状态且没有待处理任务，建议分配新任务
             if status["state"] == "Idle" and status["pending"] == 0:
-                suggestions.append({
-                    "cli": cli,
-                    "action": "assign",
-                    "reason": f"{cli} CLI处于空闲状态，无待处理任务",
-                    "priority": "High"
-                })
+                suggestions.append(
+                    {
+                        "cli": cli,
+                        "action": "assign",
+                        "reason": f"{cli} CLI处于空闲状态，无待处理任务",
+                        "priority": "High",
+                    }
+                )
 
             # 规则2: 如果CLI完成率>80%且还有待处理任务，建议继续分配
             elif status["total_tasks"] > 0 and status["completed"] / status["total_tasks"] > 0.8:
-                suggestions.append({
-                    "cli": cli,
-                    "action": "continue",
-                    "reason": f"{cli} CLI完成率{status['completed']/status['total_tasks']*100:.0f}%，可以继续分配",
-                    "priority": "Medium"
-                })
+                suggestions.append(
+                    {
+                        "cli": cli,
+                        "action": "continue",
+                        "reason": f"{cli} CLI完成率{status['completed'] / status['total_tasks'] * 100:.0f}%，可以继续分配",
+                        "priority": "Medium",
+                    }
+                )
 
             # 规则3: 如果CLI处于Blocked状态，需要优先解决
             elif status["state"] == "Blocked":
-                suggestions.append({
-                    "cli": cli,
-                    "action": "unblock",
-                    "reason": f"{cli} CLI处于阻塞状态，需要优先解决",
-                    "priority": "Critical"
-                })
+                suggestions.append(
+                    {
+                        "cli": cli,
+                        "action": "unblock",
+                        "reason": f"{cli} CLI处于阻塞状态，需要优先解决",
+                        "priority": "Critical",
+                    }
+                )
 
-        return sorted(suggestions, key=lambda x: {
-            "Critical": 0,
-            "High": 1,
-            "Medium": 2,
-            "Low": 3
-        }.get(x["priority"], 4))
+        return sorted(
+            suggestions,
+            key=lambda x: {
+                "Critical": 0,
+                "High": 1,
+                "Medium": 2,
+                "Low": 3,
+            }.get(x["priority"], 4),
+        )
 
     def create_task_assignment(
         self,
@@ -154,10 +162,10 @@ class TaskAssigner:
         task_title: str,
         priority: str = "Medium",
         estimated_hours: float = 8.0,
-        description: str = ""
+        description: str = "",
     ) -> str:
         """创建任务分配通知"""
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"task_assignment_{timestamp}.md"
         output_file = self.clis_dir / cli_name / "mailbox" / filename
 
@@ -167,7 +175,7 @@ class TaskAssigner:
 **Subject**: 新任务分配 - {task_id}
 **From**: main CLI
 **To**: {cli_name} CLI
-**Date**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+**Date**: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 **Priority**: {priority}
 
 ---
@@ -181,7 +189,7 @@ class TaskAssigner:
 
 ## 任务描述
 
-{description if description else "请参考TASK.md中的详细任务描述。"}
+{description or "请参考TASK.md中的详细任务描述。"}
 
 ## 下一步
 
@@ -198,7 +206,7 @@ class TaskAssigner:
 """
 
         output_file.parent.mkdir(parents=True, exist_ok=True)
-        output_file.write_text(content, encoding='utf-8')
+        output_file.write_text(content, encoding="utf-8")
 
         return str(output_file)
 
@@ -208,7 +216,7 @@ class TaskAssigner:
         task_id: str,
         task_title: str,
         priority: str = "Medium",
-        estimated_hours: float = 8.0
+        estimated_hours: float = 8.0,
     ) -> bool:
         """更新CLI的TASK.md文件"""
         task_file = self.clis_dir / cli_name / "TASK.md"
@@ -218,40 +226,40 @@ class TaskAssigner:
             return False
 
         # 读取现有任务
-        content = task_file.read_text(encoding='utf-8')
+        content = task_file.read_text(encoding="utf-8")
 
         # 添加新任务
         priority_icon = {
             "Critical": "🔴",
             "High": "🟠",
             "Medium": "🟡",
-            "Low": "🟢"
+            "Low": "🟢",
         }.get(priority, "⚪")
 
         new_task = f"\n- [ ] **{task_id}**: {task_title} [{priority_icon} {priority} - {estimated_hours}h]\n"
 
         # 找到任务列表的末尾
-        lines = content.split('\n')
+        lines = content.split("\n")
         insert_position = len(lines)
 
         for i, line in enumerate(lines):
-            if i > 0 and lines[i-1].strip() == '' and not line.startswith('-'):
+            if i > 0 and lines[i - 1].strip() == "" and not line.startswith("-"):
                 insert_position = i
                 break
 
         lines.insert(insert_position, new_task.strip())
-        updated_content = '\n'.join(lines)
+        updated_content = "\n".join(lines)
 
         # 写回文件
-        task_file.write_text(updated_content, encoding='utf-8')
+        task_file.write_text(updated_content, encoding="utf-8")
 
         return True
 
     def print_status_report(self):
         """打印任务状态报告"""
-        print(f"\n{'='*70}")
+        print(f"\n{'=' * 70}")
         print("📋 CLI任务状态报告")
-        print(f"{'='*70}\n")
+        print(f"{'=' * 70}\n")
 
         for cli in self.cli_list:
             status = self.get_cli_task_status(cli)
@@ -261,19 +269,21 @@ class TaskAssigner:
                 "Active": "🟢",
                 "Idle": "🟡",
                 "Blocked": "🔴",
-                "Unknown": "⚪"
+                "Unknown": "⚪",
             }.get(status["state"], "⚪")
 
             print(f"### {cli.upper()} CLI")
             print(f"状态: {state_icon} {status['state']}")
 
             if status["has_tasks"]:
-                print(f"任务: {status['completed']}/{status['total_tasks']} "
-                      f"(完成: {status['completed']} | "
-                      f"进行中: {status['in_progress']} | "
-                      f"待开始: {status['pending']})")
+                print(
+                    f"任务: {status['completed']}/{status['total_tasks']} "
+                    f"(完成: {status['completed']} | "
+                    f"进行中: {status['in_progress']} | "
+                    f"待开始: {status['pending']})"
+                )
 
-                if status['current_task']:
+                if status["current_task"]:
                     print(f"当前: {status['current_task']}")
             else:
                 print("任务: 无任务")
@@ -288,9 +298,9 @@ class TaskAssigner:
             print("\n✅ 所有CLI状态良好，无需特殊处理")
             return
 
-        print(f"\n{'='*70}")
+        print(f"\n{'=' * 70}")
         print("💡 任务分配建议")
-        print(f"{'='*70}\n")
+        print(f"{'=' * 70}\n")
 
         priority_order = ["Critical", "High", "Medium", "Low"]
         current_priority = None
@@ -302,7 +312,7 @@ class TaskAssigner:
                     "Critical": "🔴",
                     "High": "🟠",
                     "Medium": "🟡",
-                    "Low": "🟢"
+                    "Low": "🟢",
                 }.get(current_priority, "⚪")
 
                 print(f"\n### {priority_icon} {current_priority} Priority")
@@ -316,7 +326,7 @@ class TaskAssigner:
 def main():
     """主函数"""
     parser = argparse.ArgumentParser(
-        description='任务分配辅助工具',
+        description="任务分配辅助工具",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 示例:
@@ -331,19 +341,21 @@ def main():
 
   # 同时更新TASK.md文件
   python scripts/dev/task_assigner.py --assign web --task "task-5.2" --title "实现用户认证UI界面" --priority "中" --update-task-file
-        """
+        """,
     )
 
-    parser.add_argument('--status', action='store_true', help='查看所有CLI的任务状态')
-    parser.add_argument('--suggest', action='store_true', help='生成任务分配建议')
-    parser.add_argument('--assign', type=str, metavar='CLI', help='为指定CLI分配任务')
-    parser.add_argument('--task', type=str, metavar='TASK_ID', help='任务ID（如: task-5.1）')
-    parser.add_argument('--title', type=str, metavar='TITLE', help='任务标题')
-    parser.add_argument('--priority', type=str, default='Medium', metavar='PRIORITY', help='任务优先级（Critical/High/Medium/Low）')
-    parser.add_argument('--hours', type=float, default=8.0, metavar='HOURS', help='预计工时（小时）')
-    parser.add_argument('--description', type=str, default='', metavar='DESC', help='任务描述')
-    parser.add_argument('--update-task-file', action='store_true', help='同时更新TASK.md文件')
-    parser.add_argument('--clis-dir', default='CLIS', help='CLI目录路径')
+    parser.add_argument("--status", action="store_true", help="查看所有CLI的任务状态")
+    parser.add_argument("--suggest", action="store_true", help="生成任务分配建议")
+    parser.add_argument("--assign", type=str, metavar="CLI", help="为指定CLI分配任务")
+    parser.add_argument("--task", type=str, metavar="TASK_ID", help="任务ID（如: task-5.1）")
+    parser.add_argument("--title", type=str, metavar="TITLE", help="任务标题")
+    parser.add_argument(
+        "--priority", type=str, default="Medium", metavar="PRIORITY", help="任务优先级（Critical/High/Medium/Low）"
+    )
+    parser.add_argument("--hours", type=float, default=8.0, metavar="HOURS", help="预计工时（小时）")
+    parser.add_argument("--description", type=str, default="", metavar="DESC", help="任务描述")
+    parser.add_argument("--update-task-file", action="store_true", help="同时更新TASK.md文件")
+    parser.add_argument("--clis-dir", default="CLIS", help="CLI目录路径")
 
     args = parser.parse_args()
 
@@ -379,7 +391,7 @@ def main():
             task_title=args.title,
             priority=args.priority,
             estimated_hours=args.hours,
-            description=args.description
+            description=args.description,
         )
 
         print(f"✅ 任务分配通知已创建: {output_file}")
@@ -392,7 +404,7 @@ def main():
                 task_id=args.task,
                 task_title=args.title,
                 priority=args.priority,
-                estimated_hours=args.hours
+                estimated_hours=args.hours,
             )
 
             if success:
@@ -407,5 +419,5 @@ def main():
     assigner.print_status_report()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

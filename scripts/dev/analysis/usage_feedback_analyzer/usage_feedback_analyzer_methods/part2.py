@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AI测试优化器使用反馈分析器
+"""AI测试优化器使用反馈分析器
 收集、分析和报告AI测试优化器的使用情况，为工具改进提供数据支持
 
 功能:
@@ -15,19 +14,19 @@ AI测试优化器使用反馈分析器
 日期: 2025-01-22
 """
 
+import logging
 import sys
-import sqlite3
-import statistics
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, List
-import argparse
-import logging
+
 import matplotlib.pyplot as plt
+
 
 # 设置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -150,7 +149,7 @@ class UsageFeedbackAnalyzerGenerateUsageReportMixin:
         lines = ["| 时段 | 使用次数 | 描述 |", "|------|----------|--------|"]
         for peak in peak_times:
             lines.append(
-                f"| {peak['time']} | {peak['usage_count']} | {peak['description']} |"
+                f"| {peak['time']} | {peak['usage_count']} | {peak['description']} |",
             )
         return "\n".join(lines)
 
@@ -184,14 +183,12 @@ class UsageFeedbackAnalyzerGenerateUsageReportMixin:
             return "- 暂无反馈数据"
 
         lines = []
-        total_feedback = sum(
-            item["count"] for item in feedback_stats["feedback_by_type"]
-        )
+        total_feedback = sum(item["count"] for item in feedback_stats["feedback_by_type"])
         lines.append(f"- **总反馈数**: {total_feedback}")
 
         for feedback in feedback_stats["feedback_by_type"]:
             lines.append(
-                f"- **{feedback['type']} ({feedback['category']}): {feedback['count']} 条"
+                f"- **{feedback['type']} ({feedback['category']}): {feedback['count']} 条",
             )
             if feedback["avg_rating"]:
                 lines.append(f"  - 平均评分: {feedback['avg_rating']:.1f}⭐")
@@ -214,13 +211,15 @@ class UsageFeedbackAnalyzerGenerateUsageReportMixin:
         lines = []
         for i, area in enumerate(areas, 1):
             lines.append(
-                f"{i}. **{area['area']}** (优先级: {area['priority']}, 影响: {area['impact']})"
+                f"{i}. **{area['area']}** (优先级: {area['priority']}, 影响: {area['impact']})",
             )
 
         return "\n".join(lines)
 
     def _generate_high_priority_recommendations(
-        self, usage_patterns: Dict, feedback_patterns: Dict
+        self,
+        usage_patterns: Dict,
+        feedback_patterns: Dict,
     ) -> List[str]:
         """生成高优先级改进建议"""
         recommendations = []
@@ -242,7 +241,9 @@ class UsageFeedbackAnalyzerGenerateUsageReportMixin:
         return recommendations
 
     def _generate_medium_priority_recommendations(
-        self, usage_patterns: Dict, feedback_patterns: Dict
+        self,
+        usage_patterns: Dict,
+        feedback_patterns: Dict,
     ) -> List[str]:
         """生成中优先级改进建议"""
         recommendations = []
@@ -256,7 +257,9 @@ class UsageFeedbackAnalyzerGenerateUsageReportMixin:
         return recommendations
 
     def _generate_low_priority_recommendations(
-        self, usage_patterns: Dict, feedback_patterns: Dict
+        self,
+        usage_patterns: Dict,
+        feedback_patterns: Dict,
     ) -> List[str]:
         """生成低优先级改进建议"""
         recommendations = []
@@ -320,10 +323,10 @@ class UsageFeedbackAnalyzerGenerateUsageReportMixin:
             # 图2: 反馈分布
             if "rating_distribution" in feedback_patterns["basic_stats"]:
                 ratings = list(
-                    feedback_patterns["basic_stats"]["rating_distribution"].keys()
+                    feedback_patterns["basic_stats"]["rating_distribution"].keys(),
                 )
                 counts = list(
-                    feedback_patterns["basic_stats"]["rating_distribution"].values()
+                    feedback_patterns["basic_stats"]["rating_distribution"].values(),
                 )
                 colors = ["#FF6B6B", "#4ECDC4", "#FFD700", "#87CEEB", "#F0E68C"]
 
@@ -346,10 +349,10 @@ class UsageFeedbackAnalyzerGenerateUsageReportMixin:
             # 图3: 成功率分布
             if "by_time_of_day" in usage_patterns["success_patterns"]:
                 periods = list(
-                    usage_patterns["success_patterns"]["by_time_of_day"].keys()
+                    usage_patterns["success_patterns"]["by_time_of_day"].keys(),
                 )
                 rates = list(
-                    usage_patterns["success_patterns"]["by_time_of_day"].values()
+                    usage_patterns["success_patterns"]["by_time_of_day"].values(),
                 )
 
                 colors = ["#90EE90", "#FFB6C1", "#FFDAB9"]
@@ -390,10 +393,7 @@ class UsageFeedbackAnalyzerGenerateUsageReportMixin:
             plt.tight_layout()
 
             # 保存图表
-            chart_path = (
-                self.analysis_dir
-                / f"usage_feedback_charts_{datetime.now().strftime('%Y-%m-%d')}.png"
-            )
+            chart_path = self.analysis_dir / f"usage_feedback_charts_{datetime.now().strftime('%Y-%m-%d')}.png"
             plt.savefig(chart_path, dpi=300, bbox_inches="tight")
             logger.info(f"📊 可视化图表已保存: {chart_path}")
 
@@ -402,4 +402,3 @@ class UsageFeedbackAnalyzerGenerateUsageReportMixin:
         except Exception as e:
             logger.error(f"创建可视化图表失败: {e}")
             return None
-

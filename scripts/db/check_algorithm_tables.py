@@ -1,26 +1,28 @@
 #!/usr/bin/env python3
-"""
-Check and Create Algorithm Tables Migration Script
+"""Check and Create Algorithm Tables Migration Script
 检查并创建算法相关数据库表
 
 此脚本检查algorithm_models表是否存在，如果不存在则创建它。
 """
 
+import logging
 import os
 import sys
-import logging
+
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
+
 # 添加项目根目录到Python路径
 project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
 )
 sys.path.insert(0, project_root)
 
 # 配置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -38,13 +40,17 @@ def get_db_connection():
 
     try:
         conn = psycopg2.connect(
-            host=host, port=port, user=user, password=password, database=database
+            host=host,
+            port=port,
+            user=user,
+            password=password,
+            database=database,
         )
         conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         logger.info("数据库连接成功")
         return conn
     except Exception as e:
-        logger.error(f"数据库连接失败: {str(e)}")
+        logger.error(f"数据库连接失败: {e!s}")
         raise
 
 
@@ -65,7 +71,7 @@ def check_table_exists(conn, table_name):
             exists = cursor.fetchone()[0]
             return exists
     except Exception as e:
-        logger.error(f"检查表失败: {str(e)}")
+        logger.error(f"检查表失败: {e!s}")
         return False
 
 
@@ -78,7 +84,7 @@ def create_algorithm_tables(conn):
         import yaml
 
         config_path = os.path.join(project_root, "config", "table_config.yaml")
-        with open(config_path, "r", encoding="utf-8") as f:
+        with open(config_path, encoding="utf-8") as f:
             config = yaml.safe_load(f)
 
         # 查找algorithm_models表配置
@@ -128,7 +134,7 @@ def create_algorithm_tables(conn):
             if col.get("index"):
                 index_name = f"idx_{algorithm_config['table_name']}_{col['name']}"
                 indexes.append(
-                    f"CREATE INDEX IF NOT EXISTS {index_name} ON {algorithm_config['table_name']}({col['name']});"
+                    f"CREATE INDEX IF NOT EXISTS {index_name} ON {algorithm_config['table_name']}({col['name']});",
                 )
 
         for index_sql in indexes:
@@ -139,7 +145,7 @@ def create_algorithm_tables(conn):
         return True
 
     except Exception as e:
-        logger.error(f"创建算法表失败: {str(e)}")
+        logger.error(f"创建算法表失败: {e!s}")
         return False
 
 
@@ -200,7 +206,7 @@ def verify_table_creation(conn):
             return True
 
     except Exception as e:
-        logger.error(f"验证表创建失败: {str(e)}")
+        logger.error(f"验证表创建失败: {e!s}")
         return False
 
 
@@ -248,7 +254,7 @@ def main():
             sys.exit(1)
 
     except Exception as e:
-        logger.error(f"迁移过程中发生错误: {str(e)}")
+        logger.error(f"迁移过程中发生错误: {e!s}")
         sys.exit(1)
     finally:
         conn.close()

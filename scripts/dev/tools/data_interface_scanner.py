@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-数据接口扫描工具 - Data Interface Scanner
+"""数据接口扫描工具 - Data Interface Scanner
 
 功能：
 1. 扫描 config/data_sources_registry.yaml 文件
@@ -30,10 +29,12 @@
 import argparse
 import json
 import sys
-from pathlib import Path
-from typing import Dict, Any, List, Optional
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
 import yaml
+
 
 # 添加项目根目录
 project_root = Path(__file__).parent.parent.parent
@@ -61,7 +62,7 @@ class DataInterfaceScanner:
                 print(f"错误: 配置文件不存在: {self.config_file}")
                 return False
 
-            with open(self.config_file, "r", encoding="utf-8") as f:
+            with open(self.config_file, encoding="utf-8") as f:
                 config = yaml.safe_load(f)
 
             self.data_sources = config.get("data_sources", {})
@@ -213,15 +214,15 @@ class DataInterfaceScanner:
                 report_lines.append(f"• {interface['endpoint_name']}")
                 report_lines.append(f"  数据源: {interface['source_name']} ({interface['source_type']})")
                 report_lines.append(
-                    f"  数据分类: {interface['data_category']} (级别{interface['classification_level']})"
+                    f"  数据分类: {interface['data_category']} (级别{interface['classification_level']})",
                 )
                 report_lines.append(f"  存储位置: {interface['target_db']} -> {interface['table_name']}")
                 report_lines.append(
-                    f"  质量评分: {interface['data_quality_score']:.1f}, 优先级: {interface['priority']}"
+                    f"  质量评分: {interface['data_quality_score']:.1f}, 优先级: {interface['priority']}",
                 )
                 report_lines.append(f"  更新频率: {interface['update_frequency']}, 状态: {interface['status']}")
                 report_lines.append(
-                    f"  参数: {interface['parameters']['total']}个 (必需{interface['parameters']['required']}个)"
+                    f"  参数: {interface['parameters']['total']}个 (必需{interface['parameters']['required']}个)",
                 )
                 report_lines.append(f"  测试参数: {'✅' if interface['has_test_params'] else '❌'}")
                 report_lines.append(f"  描述: {interface['description']}")
@@ -232,7 +233,9 @@ class DataInterfaceScanner:
         return "\n".join(report_lines)
 
     def filter_interfaces(
-        self, interfaces: List[Dict[str, Any]], filter_source: Optional[str] = None
+        self,
+        interfaces: List[Dict[str, Any]],
+        filter_source: Optional[str] = None,
     ) -> List[Dict[str, Any]]:
         """按条件过滤接口"""
         if not filter_source:
@@ -281,11 +284,10 @@ class DataInterfaceScanner:
                         writer.writeheader()
                         writer.writerows(data)
             print(f"✅ 数据已导出到: {output_file}")
+        elif output_format == "json":
+            print(json.dumps(data, indent=2, ensure_ascii=False))
         else:
-            if output_format == "json":
-                print(json.dumps(data, indent=2, ensure_ascii=False))
-            else:
-                print("CSV格式需要指定输出文件")
+            print("CSV格式需要指定输出文件")
 
 
 def main():

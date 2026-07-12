@@ -1,33 +1,34 @@
 # scripts/dev/auto_status.py
 
-"""
-STATUS自动更新装饰器
+"""STATUS自动更新装饰器
 
 使用装饰器自动更新STATUS.md，避免手动更新遗漏。
 """
 
-import sys
+import functools
 import os
 import re
+import sys
 import time
-import functools
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
+
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 def track_task(cli_name):
     """装饰器: 自动更新STATUS.md"""
+
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             # 开始任务
             update_status(
                 cli_name=cli_name,
-                state='active',
+                state="active",
                 current_task=func.__name__,
-                last_update=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                last_update=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             )
 
             try:
@@ -37,8 +38,8 @@ def track_task(cli_name):
                 # 任务成功
                 update_status(
                     cli_name=cli_name,
-                    state='idle',
-                    last_update=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    state="idle",
+                    last_update=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 )
 
                 return result
@@ -47,13 +48,14 @@ def track_task(cli_name):
                 # 任务失败
                 update_status(
                     cli_name=cli_name,
-                    state='error',
-                    last_update=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                    error=str(e)
+                    state="error",
+                    last_update=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    error=str(e),
                 )
                 raise
 
         return wrapper
+
     return decorator
 
 
@@ -84,8 +86,9 @@ def update_status(cli_name, **kwargs):
 
 
 # 使用示例
-if __name__ == '__main__':
-    @track_task('api')
+if __name__ == "__main__":
+
+    @track_task("api")
     def task_1_2_fix_dashboard():
         """任务1.2: 修复dashboard.py"""
         print("执行任务1.2...")

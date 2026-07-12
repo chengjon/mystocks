@@ -55,8 +55,7 @@ def normalize_relative_paths(paths: list[str] | None) -> list[str]:
         path_value = raw_path.strip().replace("\\", "/")
         if not path_value:
             continue
-        if path_value.startswith("./"):
-            path_value = path_value[2:]
+        path_value = path_value.removeprefix("./")
         normalized_path = Path(path_value).as_posix().strip("/")
         if normalized_path:
             normalized.add(normalized_path)
@@ -105,7 +104,9 @@ def evaluate_file(path_value: str, project_root: Path) -> dict[str, Any]:
     raw_startup_hits = matched_markers(content, RAW_STARTUP_MARKERS)
     canonical_pm2_hits = matched_markers(content, CANONICAL_PM2_MARKERS)
     explicit_pm2 = has_explicit_pm2_orchestration(content)
-    is_canonical_runner_file = path_value == "scripts/run_e2e_pm2.sh" and "pm2 start" in content and "playwright test" in content
+    is_canonical_runner_file = (
+        path_value == "scripts/run_e2e_pm2.sh" and "pm2 start" in content and "playwright test" in content
+    )
 
     if not acceptance_hits:
         return {
@@ -171,7 +172,7 @@ def build_report(project_root: Path, paths: list[str] | None = None) -> dict[str
                     "mode": result["mode"],
                     "raw_startup_markers": result.get("raw_startup_markers", []),
                     "acceptance_markers": result.get("acceptance_markers", []),
-                }
+                },
             )
 
     return {
@@ -208,7 +209,9 @@ def print_report(report: dict[str, Any], output_format: str) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Validate critical acceptance orchestration uses PM2 first-class runtime")
+    parser = argparse.ArgumentParser(
+        description="Validate critical acceptance orchestration uses PM2 first-class runtime"
+    )
     parser.add_argument("filenames", nargs="*")
     parser.add_argument("--root-dir", default=".")
     parser.add_argument("--path", action="append")

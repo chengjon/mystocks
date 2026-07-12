@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AI测试优化器真实项目应用示例
+"""AI测试优化器真实项目应用示例
 演示如何在MyStocks项目中实际应用AI测试优化器
 
 应用场景:
@@ -16,9 +15,9 @@ AI测试优化器真实项目应用示例
 """
 
 import sys
-from pathlib import Path
 from datetime import datetime
-from typing import Dict, List
+from pathlib import Path
+
 
 # 项目路径
 PROJECT_ROOT = Path(__file__).parent.parent.parent
@@ -94,9 +93,7 @@ class RealProjectApplicationCoreMixin:
         # 生成综合报告
         if results:
             report = self.optimizer.generate_optimization_report(results)
-            report_path = (
-                PROJECT_ROOT / "monitoring_data" / "core_module_improvement.md"
-            )
+            report_path = PROJECT_ROOT / "monitoring_data" / "core_module_improvement.md"
 
             with open(report_path, "w", encoding="utf-8") as f:
                 f.write(report)
@@ -129,7 +126,7 @@ class RealProjectApplicationCoreMixin:
 
             print("\n📋 新模块分析结果:")
             print(
-                f"  模块复杂度: {'高' if result.quality_score < 60 else '中' if result.quality_score < 80 else '低'}"
+                f"  模块复杂度: {'高' if result.quality_score < 60 else '中' if result.quality_score < 80 else '低'}",
             )
             print(f"  建议测试数: {len(result.generated_tests)}")
             print(f"  预估覆盖率提升: {95 - result.current_coverage:.1f}%")
@@ -142,12 +139,7 @@ class RealProjectApplicationCoreMixin:
 
             # 生成初始测试框架
             if result.generated_tests:
-                test_file = (
-                    PROJECT_ROOT
-                    / "tests"
-                    / "generated"
-                    / f"test_{Path(new_module).stem}_new_feature.py"
-                )
+                test_file = PROJECT_ROOT / "tests" / "generated" / f"test_{Path(new_module).stem}_new_feature.py"
                 test_file.parent.mkdir(parents=True, exist_ok=True)
 
                 with open(test_file, "w", encoding="utf-8") as f:
@@ -327,13 +319,13 @@ def create_adapter(api_key: str) -> NewMarketDataAdapter:
         try:
             # 分析重构前的状态
             before_result = self.optimizer.analyze_module_for_optimization(
-                refactor_module
+                refactor_module,
             )
 
             print("\n📊 重构前状态:")
             print(f"  代码质量评分: {before_result.quality_score:.1f}/100")
             print(
-                f"  复杂度问题: {len([s for s in before_result.optimization_suggestions if '复杂度' in s])}"
+                f"  复杂度问题: {len([s for s in before_result.optimization_suggestions if '复杂度' in s])}",
             )
 
             # 模拟重构过程
@@ -356,15 +348,16 @@ def create_adapter(api_key: str) -> NewMarketDataAdapter:
             # 模拟重构后的改进
             after_quality = before_result.quality_score + 15  # 假设重构后质量提升
             after_coverage = min(
-                95, before_result.current_coverage + 20
+                95,
+                before_result.current_coverage + 20,
             )  # 假设覆盖率提升
 
             print("\n📈 重构后预期状态:")
             print(
-                f"  代码质量评分: {after_quality:.1f}/100 (+{after_quality - before_result.quality_score:.1f})"
+                f"  代码质量评分: {after_quality:.1f}/100 (+{after_quality - before_result.quality_score:.1f})",
             )
             print(
-                f"  测试覆盖率: {after_coverage:.1f}% (+{after_coverage - before_result.current_coverage:.1f}%)"
+                f"  测试覆盖率: {after_coverage:.1f}% (+{after_coverage - before_result.current_coverage:.1f}%)",
             )
 
             # 生成重构报告
@@ -671,7 +664,7 @@ class LegacyAdapter:
             if feedback_summary["feedback_by_type"]:
                 for feedback in feedback_summary["feedback_by_type"]:
                     print(
-                        f"  {feedback['type']} ({feedback['category']}): {feedback['count']} 条"
+                        f"  {feedback['type']} ({feedback['category']}): {feedback['count']} 条",
                     )
 
             # 检测异常
@@ -686,7 +679,10 @@ class LegacyAdapter:
 
             # 生成团队质量报告
             team_report = self._generate_team_quality_report(
-                usage_stats, performance_stats, feedback_summary, anomalies
+                usage_stats,
+                performance_stats,
+                feedback_summary,
+                anomalies,
             )
             report_path = PROJECT_ROOT / "monitoring_data" / "team_quality_report.md"
 
@@ -703,4 +699,3 @@ class LegacyAdapter:
             "团队质量监控",
             f"团队使用次数: {usage_stats['total_usage']}, 成功率: {usage_stats['success_rate']:.1f}%, 异常数: {len(anomalies) if 'anomalies' in locals() else 0}",
         )
-

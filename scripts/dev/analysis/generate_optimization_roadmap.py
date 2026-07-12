@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-优化路线图生成器 - 识别优化机会
+"""优化路线图生成器 - 识别优化机会
 
 分析代码质量、性能和架构，提供优化建议。
 
@@ -11,24 +10,25 @@
     python scripts/analysis/generate_optimization_roadmap.py
 """
 
-import sys
 import json
+import sys
 from pathlib import Path
 from typing import List
+
 
 # 添加项目根目录到路径
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(PROJECT_ROOT))
 sys.path.insert(0, str(Path(__file__).parent))
 
+from generate_docs import load_inventory
+from manual_paths import get_manual_metadata_dir, get_manual_root
 from models import (
+    ModuleInventory,
     OptimizationOpportunity,
     OptimizationRoadmap,
     PriorityEnum,
-    ModuleInventory,
 )
-from manual_paths import get_manual_metadata_dir, get_manual_root
-from generate_docs import load_inventory
 
 
 MANUAL_ROOT = get_manual_root(PROJECT_ROOT)
@@ -36,14 +36,14 @@ MANUAL_METADATA_DIR = get_manual_metadata_dir(PROJECT_ROOT)
 
 
 def analyze_complexity(inventory: ModuleInventory) -> List[OptimizationOpportunity]:
-    """
-    分析函数复杂度，找出需要重构的高复杂度函数
+    """分析函数复杂度，找出需要重构的高复杂度函数
 
     Args:
         inventory: 模块清单
 
     Returns:
         优化机会列表
+
     """
     print("\n正在分析函数复杂度...")
 
@@ -71,20 +71,10 @@ def analyze_complexity(inventory: ModuleInventory) -> List[OptimizationOpportuni
         func_name = f"{cls_name}.{func.name}" if cls_name else func.name
 
         priority = (
-            PriorityEnum.P0
-            if func.complexity > 20
-            else PriorityEnum.P1
-            if func.complexity > 15
-            else PriorityEnum.P2
+            PriorityEnum.P0 if func.complexity > 20 else PriorityEnum.P1 if func.complexity > 15 else PriorityEnum.P2
         )
 
-        effort = (
-            "2-3 天"
-            if func.complexity > 20
-            else "1-2 天"
-            if func.complexity > 15
-            else "4-8 小时"
-        )
+        effort = "2-3 天" if func.complexity > 20 else "1-2 天" if func.complexity > 15 else "4-8 小时"
 
         opp = OptimizationOpportunity(
             id=f"OPT-COMPLEXITY-{len(opportunities) + 1:03d}",
@@ -98,10 +88,7 @@ def analyze_complexity(inventory: ModuleInventory) -> List[OptimizationOpportuni
             "2. 使用策略模式替代复杂的条件分支\n"
             "3. 考虑拆分为多个职责单一的函数\n"
             "4. 添加单元测试确保重构正确性",
-            expected_impact="- 提高代码可读性和可维护性\n"
-            "- 降低缺陷率约 30-40%\n"
-            "- 简化未来的功能扩展\n"
-            "- 提高测试覆盖率",
+            expected_impact="- 提高代码可读性和可维护性\n- 降低缺陷率约 30-40%\n- 简化未来的功能扩展\n- 提高测试覆盖率",
             effort_estimate=effort,
             affected_modules=[module.file_path],
         )
@@ -111,14 +98,14 @@ def analyze_complexity(inventory: ModuleInventory) -> List[OptimizationOpportuni
 
 
 def analyze_long_functions(inventory: ModuleInventory) -> List[OptimizationOpportunity]:
-    """
-    分析过长的函数
+    """分析过长的函数
 
     Args:
         inventory: 模块清单
 
     Returns:
         优化机会列表
+
     """
     print("\n正在分析函数长度...")
 
@@ -165,14 +152,14 @@ def analyze_long_functions(inventory: ModuleInventory) -> List[OptimizationOppor
 
 
 def analyze_god_objects(inventory: ModuleInventory) -> List[OptimizationOpportunity]:
-    """
-    识别 God Objects（职责过多的类）
+    """识别 God Objects（职责过多的类）
 
     Args:
         inventory: 模块清单
 
     Returns:
         优化机会列表
+
     """
     print("\n正在识别 God Objects...")
 
@@ -203,10 +190,7 @@ def analyze_god_objects(inventory: ModuleInventory) -> List[OptimizationOpportun
             "3. 提取为独立的类（如 Manager, Helper, Strategy）\n"
             "4. 使用组合或委托模式连接拆分后的类\n"
             "5. 渐进式重构，保持向后兼容",
-            expected_impact="- 提高类的内聚性\n"
-            "- 降低类之间的耦合\n"
-            "- 提高代码可测试性\n"
-            "- 简化未来的维护工作",
+            expected_impact="- 提高类的内聚性\n- 降低类之间的耦合\n- 提高代码可测试性\n- 简化未来的维护工作",
             effort_estimate="3-5 天",
             affected_modules=[module.file_path],
         )
@@ -218,14 +202,14 @@ def analyze_god_objects(inventory: ModuleInventory) -> List[OptimizationOpportun
 def analyze_missing_docstrings(
     inventory: ModuleInventory,
 ) -> List[OptimizationOpportunity]:
-    """
-    找出缺少文档的模块和函数
+    """找出缺少文档的模块和函数
 
     Args:
         inventory: 模块清单
 
     Returns:
         优化机会列表
+
     """
     print("\n正在分析文档覆盖率...")
 
@@ -263,9 +247,7 @@ def analyze_missing_docstrings(
             "2. 说明模块用途、主要类和函数\n"
             "3. 添加作者和日期信息\n"
             "4. 包含使用示例（如适用）",
-            expected_impact="- 提高代码可读性\n"
-            "- 降低新开发者学习曲线\n"
-            "- 支持自动文档生成",
+            expected_impact="- 提高代码可读性\n- 降低新开发者学习曲线\n- 支持自动文档生成",
             effort_estimate="2-3 天",
             affected_modules=[m.file_path for m in undocumented_modules[:10]],
         )
@@ -295,14 +277,14 @@ def analyze_missing_docstrings(
 def analyze_performance_opportunities(
     inventory: ModuleInventory,
 ) -> List[OptimizationOpportunity]:
-    """
-    识别性能优化机会
+    """识别性能优化机会
 
     Args:
         inventory: 模块清单
 
     Returns:
         优化机会列表
+
     """
     print("\n正在识别性能优化机会...")
 
@@ -310,9 +292,7 @@ def analyze_performance_opportunities(
 
     # 检查数据库连接管理
     db_modules = [
-        m
-        for m in inventory.modules
-        if "database" in m.file_path.lower() or "db_manager" in m.file_path.lower()
+        m for m in inventory.modules if "database" in m.file_path.lower() or "db_manager" in m.file_path.lower()
     ]
 
     if db_modules:
@@ -336,20 +316,14 @@ def analyze_performance_opportunities(
                 "2. 配置合理的池大小（如 5-20 连接）\n"
                 "3. 设置连接超时和回收策略\n"
                 "4. 添加连接健康检查",
-                expected_impact="- 减少连接建立时间 80-90%\n"
-                "- 提高并发处理能力 3-5 倍\n"
-                "- 降低数据库服务器负载",
+                expected_impact="- 减少连接建立时间 80-90%\n- 提高并发处理能力 3-5 倍\n- 降低数据库服务器负载",
                 effort_estimate="2-3 天",
                 affected_modules=[m.file_path for m in db_modules],
             )
             opportunities.append(opp)
 
     # 检查缓存使用
-    cache_modules = [
-        m
-        for m in inventory.modules
-        if "cache" in m.file_path.lower() or "redis" in m.file_path.lower()
-    ]
+    cache_modules = [m for m in inventory.modules if "cache" in m.file_path.lower() or "redis" in m.file_path.lower()]
 
     if len(cache_modules) < 3:  # 缓存使用不足
         opp = OptimizationOpportunity(
@@ -363,9 +337,7 @@ def analyze_performance_opportunities(
             "2. 实现缓存失效策略（TTL、LRU）\n"
             "3. 添加缓存预热机制\n"
             "4. 监控缓存命中率",
-            expected_impact="- 减少数据库查询 50-70%\n"
-            "- 提高响应速度 2-3 倍\n"
-            "- 提高系统可扩展性",
+            expected_impact="- 减少数据库查询 50-70%\n- 提高响应速度 2-3 倍\n- 提高系统可扩展性",
             effort_estimate="3-5 天",
             affected_modules=[],
         )
@@ -383,9 +355,7 @@ def analyze_performance_opportunities(
         "2. 实现事务批处理\n"
         "3. 使用 COPY 命令（PostgreSQL）或 LOAD DATA（MySQL）\n"
         "4. 设置合理的批次大小（如 1000-5000 条）",
-        expected_impact="- 提高数据写入速度 10-50 倍\n"
-        "- 减少网络往返次数\n"
-        "- 降低数据库锁竞争",
+        expected_impact="- 提高数据写入速度 10-50 倍\n- 减少网络往返次数\n- 降低数据库锁竞争",
         effort_estimate="1-2 天",
         affected_modules=[],
     )
@@ -396,7 +366,6 @@ def analyze_performance_opportunities(
 
 def save_roadmap(roadmap: OptimizationRoadmap, output_path: str):
     """保存优化路线图到 JSON"""
-
     data = {
         "total_opportunities": len(roadmap.opportunities),
         "by_category": {
@@ -443,7 +412,7 @@ def main():
 
     if not inventory_path.exists():
         print(f"\n✗ 错误: 清单文件不存在: {inventory_path}")
-        return
+        return None
 
     print(f"\n加载清单: {inventory_path}")
     inventory = load_inventory(str(inventory_path))

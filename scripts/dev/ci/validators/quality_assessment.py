@@ -1,15 +1,11 @@
 """量化策略验证器子模块"""
 
 import ast
-import json
 import logging
 import os
 import re
-import subprocess
-import sys
-import time
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict
+
 
 logger = logging.getLogger(__name__)
 
@@ -20,10 +16,6 @@ class QualityAssessmentMixin:
     def _validate_code_quality_assessment(self) -> Dict[str, Any]:
         """验证智能代码质量评估"""
         try:
-            import os
-            import ast
-            import re
-
             quality_metrics = {}
             quality_issues = []
             files_analyzed = 0
@@ -59,13 +51,12 @@ class QualityAssessmentMixin:
 
             # 生成质量改进建议
             improvement_suggestions = self._generate_quality_improvements(
-                quality_metrics, quality_issues
+                quality_metrics,
+                quality_issues,
             )
 
             # 质量评估通过标准：评分>=65且无严重问题
-            critical_issues = [
-                issue for issue in quality_issues if issue.get("severity") == "critical"
-            ]
+            critical_issues = [issue for issue in quality_issues if issue.get("severity") == "critical"]
             quality_ok = quality_score >= 65 and len(critical_issues) == 0
 
             return {
@@ -85,7 +76,7 @@ class QualityAssessmentMixin:
         except Exception as e:
             import traceback
 
-            error_msg = f"代码质量评估异常: {str(e)}\n{traceback.format_exc()}"
+            error_msg = f"代码质量评估异常: {e!s}\n{traceback.format_exc()}"
             return {"passed": False, "error": error_msg}
 
     def _analyze_test_coverage(self) -> dict:
@@ -116,7 +107,7 @@ class QualityAssessmentMixin:
                     "type": "测试覆盖率不足",
                     "severity": "high",
                     "description": f"测试文件比例仅为{test_ratio:.1f}%，建议提高到70%以上",
-                }
+                },
             )
 
         return {
@@ -136,7 +127,9 @@ class QualityAssessmentMixin:
                     file_path = os.path.join(root, file)
                     try:
                         with open(
-                            file_path, "r", encoding="utf-8", errors="ignore"
+                            file_path,
+                            encoding="utf-8",
+                            errors="ignore",
                         ) as f:
                             content = f.read()
 
@@ -149,9 +142,7 @@ class QualityAssessmentMixin:
                     except:
                         continue
 
-        doc_ratio = (
-            (documented_functions / total_functions * 100) if total_functions > 0 else 0
-        )
+        doc_ratio = (documented_functions / total_functions * 100) if total_functions > 0 else 0
 
         if doc_ratio < 60:
             issues.append(
@@ -160,7 +151,7 @@ class QualityAssessmentMixin:
                     "type": "文档覆盖率不足",
                     "severity": "medium",
                     "description": f"函数/类文档覆盖率仅为{doc_ratio:.1f}%，建议提高到80%以上",
-                }
+                },
             )
 
         return {
@@ -181,7 +172,9 @@ class QualityAssessmentMixin:
                     file_path = os.path.join(root, file)
                     try:
                         with open(
-                            file_path, "r", encoding="utf-8", errors="ignore"
+                            file_path,
+                            encoding="utf-8",
+                            errors="ignore",
                         ) as f:
                             content = f.read()
 
@@ -201,7 +194,7 @@ class QualityAssessmentMixin:
                                             "severity": "medium",
                                             "file": file_path,
                                             "line_number": node.lineno,
-                                        }
+                                        },
                                     )
                     except:
                         continue
@@ -226,15 +219,17 @@ class QualityAssessmentMixin:
                     file_path = os.path.join(root, file)
                     try:
                         with open(
-                            file_path, "r", encoding="utf-8", errors="ignore"
+                            file_path,
+                            encoding="utf-8",
+                            errors="ignore",
                         ) as f:
                             lines = f.readlines()
                             for i, line in enumerate(lines[:20]):  # 只检查前20行
                                 if line.strip().startswith(
-                                    "import "
+                                    "import ",
                                 ) or line.strip().startswith("from "):
                                     import_lines.append(
-                                        (line.strip(), file_path, i + 1)
+                                        (line.strip(), file_path, i + 1),
                                     )
                     except:
                         continue
@@ -258,7 +253,7 @@ class QualityAssessmentMixin:
                             "type": f"重复导入: {imp_line}",
                             "severity": "low",
                             "description": f"在{len(locations)}个文件中重复出现",
-                        }
+                        },
                     )
 
         # 标准化评分（0-100，越低越好）
@@ -282,7 +277,9 @@ class QualityAssessmentMixin:
                         file_path = os.path.join(root, file)
                         try:
                             with open(
-                                file_path, "r", encoding="utf-8", errors="ignore"
+                                file_path,
+                                encoding="utf-8",
+                                errors="ignore",
                             ) as f:
                                 content = f.read()
 
@@ -295,7 +292,7 @@ class QualityAssessmentMixin:
                                         "severity": "low",
                                         "file": file_path,
                                         "description": "建议使用绝对导入以提高可维护性",
-                                    }
+                                    },
                                 )
                                 health_score -= 5
 
@@ -308,7 +305,7 @@ class QualityAssessmentMixin:
                                         "type": "可能的循环导入",
                                         "severity": "medium",
                                         "file": file_path,
-                                    }
+                                    },
                                 )
                                 health_score -= 10
 
@@ -354,12 +351,11 @@ class QualityAssessmentMixin:
         """评估质量等级"""
         if score >= 85:
             return "excellent"
-        elif score >= 70:
+        if score >= 70:
             return "good"
-        elif score >= 55:
+        if score >= 55:
             return "fair"
-        else:
-            return "poor"
+        return "poor"
 
     def _generate_quality_improvements(self, metrics: dict, issues: list) -> list:
         """生成质量改进建议"""
@@ -373,7 +369,7 @@ class QualityAssessmentMixin:
                     "title": "提高测试覆盖率",
                     "description": "增加单元测试和集成测试",
                     "priority": "high",
-                }
+                },
             )
 
         if metrics.get("documentation_coverage", 0) < 80:
@@ -383,7 +379,7 @@ class QualityAssessmentMixin:
                     "title": "完善代码文档",
                     "description": "为函数和类添加详细的文档字符串",
                     "priority": "medium",
-                }
+                },
             )
 
         if metrics.get("avg_complexity", 0) > 10:
@@ -393,7 +389,7 @@ class QualityAssessmentMixin:
                     "title": "重构复杂函数",
                     "description": "将复杂函数拆分为更小的、可测试的函数",
                     "priority": "medium",
-                }
+                },
             )
 
         return suggestions
@@ -401,10 +397,6 @@ class QualityAssessmentMixin:
     def _validate_best_practices(self) -> Dict[str, Any]:
         """验证智能最佳实践分析"""
         try:
-            import os
-            import ast
-            import re
-
             # 扩展的最佳实践检查
             best_practice_checks = [
                 ("type_hints", "类型提示使用", self._check_type_hints),
@@ -450,7 +442,7 @@ class QualityAssessmentMixin:
 
             # 生成优先级排序的改进建议
             prioritized_suggestions = self._prioritize_best_practice_suggestions(
-                all_suggestions
+                all_suggestions,
             )
 
             # 最佳实践验证通过标准：平均评分>=60
@@ -465,13 +457,13 @@ class QualityAssessmentMixin:
                     "total_suggestions": len(all_suggestions),
                     "prioritized_suggestions": prioritized_suggestions[:5],
                     "implementation_level": self._assess_implementation_level(
-                        avg_score
+                        avg_score,
                     ),
                 },
             }
 
         except Exception as e:
-            return {"passed": False, "error": f"最佳实践分析异常: {str(e)}"}
+            return {"passed": False, "error": f"最佳实践分析异常: {e!s}"}
 
     def _prioritize_best_practice_suggestions(self, suggestions: list) -> list:
         """优先级排序最佳实践建议"""
@@ -493,12 +485,10 @@ class QualityAssessmentMixin:
         """评估最佳实践实施水平"""
         if score >= 85:
             return "excellent"
-        elif score >= 75:
+        if score >= 75:
             return "good"
-        elif score >= 65:
+        if score >= 65:
             return "fair"
-        elif score >= 50:
+        if score >= 50:
             return "basic"
-        else:
-            return "poor"
-
+        return "poor"

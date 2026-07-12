@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AI测试优化器真实项目应用示例
+"""AI测试优化器真实项目应用示例
 演示如何在MyStocks项目中实际应用AI测试优化器
 
 应用场景:
@@ -16,9 +15,10 @@ AI测试优化器真实项目应用示例
 """
 
 import sys
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 from typing import Dict, List
+
 
 # 项目路径
 PROJECT_ROOT = Path(__file__).parent.parent.parent
@@ -79,7 +79,7 @@ class RealProjectApplicationGenerateTeamQualityMixin:
         lines = []
         for feedback in feedback_summary["feedback_by_type"]:
             lines.append(
-                f"- **{feedback['type']} ({feedback['category']}): {feedback['count']} 条**"
+                f"- **{feedback['type']} ({feedback['category']}): {feedback['count']} 条**",
             )
             if feedback["avg_rating"]:
                 lines.append(f"  - 平均评分: {feedback['avg_rating']:.1f}⭐")
@@ -111,7 +111,10 @@ class RealProjectApplicationGenerateTeamQualityMixin:
         return "\n".join(lines)
 
     def _generate_team_recommendations(
-        self, usage_stats: Dict, performance_stats: Dict, anomalies: List
+        self,
+        usage_stats: Dict,
+        performance_stats: Dict,
+        anomalies: List,
     ) -> str:
         """生成团队建议"""
         recommendations = []
@@ -194,15 +197,15 @@ class RealProjectApplicationGenerateTeamQualityMixin:
                         "quality_improvement": quality_improvement,
                         "coverage_improvement": coverage_improvement,
                         "issues_resolved": min(issues, int(quality_improvement / 5)),
-                    }
+                    },
                 )
 
                 print(f"  📈 {Path(module).name}:")
                 print(
-                    f"    质量提升: +{quality_improvement:.1f}分 ({quality_score:.1f} → {new_quality:.1f})"
+                    f"    质量提升: +{quality_improvement:.1f}分 ({quality_score:.1f} → {new_quality:.1f})",
                 )
                 print(
-                    f"    覆盖率提升: +{coverage_improvement:.1f}% ({result.current_coverage:.1f} → {new_coverage:.1f})"
+                    f"    覆盖率提升: +{coverage_improvement:.1f}% ({result.current_coverage:.1f} → {new_coverage:.1f})",
                 )
 
             except Exception as e:
@@ -210,15 +213,9 @@ class RealProjectApplicationGenerateTeamQualityMixin:
 
         # 步骤5: 经验总结
         if improvement_results:
-            total_quality_improvement = sum(
-                r["quality_improvement"] for r in improvement_results
-            )
-            total_coverage_improvement = sum(
-                r["coverage_improvement"] for r in improvement_results
-            )
-            total_issues_resolved = sum(
-                r["issues_resolved"] for r in improvement_results
-            )
+            total_quality_improvement = sum(r["quality_improvement"] for r in improvement_results)
+            total_coverage_improvement = sum(r["coverage_improvement"] for r in improvement_results)
+            total_issues_resolved = sum(r["issues_resolved"] for r in improvement_results)
 
             print("\n📊 改进总结:")
             print(f"  处理模块数: {len(improvement_results)}")
@@ -261,9 +258,7 @@ class RealProjectApplicationGenerateTeamQualityMixin:
 *持续改进，追求卓越质量*
 """
 
-            report_path = (
-                PROJECT_ROOT / "monitoring_data" / "continuous_improvement_report.md"
-            )
+            report_path = PROJECT_ROOT / "monitoring_data" / "continuous_improvement_report.md"
             with open(report_path, "w", encoding="utf-8") as f:
                 f.write(improvement_report)
 
@@ -283,8 +278,7 @@ class RealProjectApplicationGenerateTeamQualityMixin:
         for result in results:
             module_name = Path(result["module"]).name
             lines.append(
-                f"| {module_name} | +{result['quality_improvement']:.1f} | +{result['coverage_improvement']:.1f}% | {result['issues_resolved']} |"
+                f"| {module_name} | +{result['quality_improvement']:.1f} | +{result['coverage_improvement']:.1f}% | {result['issues_resolved']} |",
             )
 
         return "\n".join(lines)
-

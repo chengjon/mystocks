@@ -11,6 +11,7 @@ from typing import Any
 
 import yaml
 
+
 REQUIRED_FIELDS = (
     "id",
     "rule_id",

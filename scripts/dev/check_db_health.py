@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-"""
-数据库健康检查脚本
+"""数据库健康检查脚本
 
 验证4个数据库的连接状态，为修复Web页面问题做准备
 """
 
-import sys
-from src.utils.redis_runtime_config import get_redis_connection_kwargs
 import os
+import sys
+
+from src.utils.redis_runtime_config import get_redis_connection_kwargs
+
 
 # 添加项目根目录到路径
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -21,6 +22,7 @@ def check_mysql_connection():
 
     try:
         import pymysql
+
         from web.backend.app.core.config import settings
 
         conn = pymysql.connect(
@@ -52,7 +54,7 @@ def check_mysql_connection():
 
     except Exception as e:
         print("❌ MySQL连接失败")
-        print(f"   错误: {str(e)}")
+        print(f"   错误: {e!s}")
         return False, str(e)
 
 
@@ -64,6 +66,7 @@ def check_postgresql_connection():
 
     try:
         import psycopg2
+
         from web.backend.app.core.config import settings
 
         # 测试mystocks数据库
@@ -120,13 +123,13 @@ def check_postgresql_connection():
             cursor_monitor.close()
             conn_monitor.close()
         except Exception as e:
-            print(f"⚠️  PostgreSQL监控数据库连接失败: {str(e)}")
+            print(f"⚠️  PostgreSQL监控数据库连接失败: {e!s}")
 
         return True, None
 
     except Exception as e:
         print("❌ PostgreSQL连接失败")
-        print(f"   错误: {str(e)}")
+        print(f"   错误: {e!s}")
         return False, str(e)
 
 
@@ -138,6 +141,7 @@ def check_tdengine_connection():
 
     try:
         import taos
+
         from web.backend.app.core.config import settings
 
         conn = taos.connect(
@@ -185,7 +189,7 @@ def check_tdengine_connection():
 
     except Exception as e:
         print("❌ TDengine连接失败")
-        print(f"   错误: {str(e)}")
+        print(f"   错误: {e!s}")
         print("   检查项:")
         print("   1. TDengine服务是否启动: systemctl status taosd")
         print(f"   2. 端口是否正确: {settings.tdengine_port}")
@@ -201,7 +205,6 @@ def check_redis_connection():
 
     try:
         import redis
-        from web.backend.app.core.config import settings
 
         redis_kwargs = get_redis_connection_kwargs("app_cache", decode_responses=True)
         r = redis.Redis(
@@ -217,7 +220,7 @@ def check_redis_connection():
         info = r.info()
         print("✅ Redis连接成功")
         print(f"   版本: {info.get('redis_version', 'Unknown')}")
-        print(f"   逻辑角色: app_cache")
+        print("   逻辑角色: app_cache")
         print(f"   数据库: DB{redis_kwargs['db']}")
         print(f"   内存使用: {info.get('used_memory_human', 'Unknown')}")
         print(f"   键数量: {r.dbsize()}")
@@ -226,7 +229,7 @@ def check_redis_connection():
 
     except Exception as e:
         print("❌ Redis连接失败")
-        print(f"   错误: {str(e)}")
+        print(f"   错误: {e!s}")
         return False, str(e)
 
 

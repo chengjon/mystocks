@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-检查文件语法和编码
+"""检查文件语法和编码
 Check file syntax and encoding
 """
 
@@ -21,7 +20,7 @@ def check_file_syntax():
 
     try:
         # 读取文件内容
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             content = f.read()
 
         print(f"📄 文件大小: {len(content)} 字符")
@@ -31,7 +30,7 @@ def check_file_syntax():
         lines = content.splitlines()
         print("\n📝 前10行内容:")
         for i, line in enumerate(lines[:10], 1):
-            print(f"{i:3d}: {repr(line)}")
+            print(f"{i:3d}: {line!r}")
 
         print("\n🔍 检查函数定义模式...")
         # 查找包含 "def " 的行
@@ -110,7 +109,7 @@ def check_file_syntax():
         encodings = ["gbk", "gb2312", "latin-1", "cp1252"]
         for encoding in encodings:
             try:
-                with open(file_path, "r", encoding=encoding) as f:
+                with open(file_path, encoding=encoding) as f:
                     content = f.read()
                 print(f"✅ 使用 {encoding} 编码成功读取")
                 break

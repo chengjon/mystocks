@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-自动化数据清洗调度器
+"""自动化数据清洗调度器
 
 功能:
 1. 每日收盘后自动验证K线数据
@@ -22,13 +21,13 @@
 import argparse
 import logging
 import sys
-import schedule
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict
 
-import pandas as pd
+import schedule
+
 
 # 添加项目根目录
 project_root = Path(__file__).parent.parent.parent
@@ -41,8 +40,7 @@ class AutoCleanScheduler:
     """自动化数据清洗调度器"""
 
     def __init__(self, log_level: str = "INFO"):
-        """
-        初始化调度器
+        """初始化调度器
 
         参数:
             log_level: 日志级别
@@ -76,8 +74,7 @@ class AutoCleanScheduler:
         }
 
     def daily_kline_check(self) -> Dict:
-        """
-        每日检查K线数据
+        """每日检查K线数据
 
         返回:
             检查结果字典
@@ -107,7 +104,7 @@ class AutoCleanScheduler:
                 # 判断是否需要自动修复
                 if adj_result["valid_percent"] < 95:
                     self.logger.warning(
-                        f"⚠️ {table} adj_factor有效率为{adj_result['valid_percent']:.2f}%，自动修复中..."
+                        f"⚠️ {table} adj_factor有效率为{adj_result['valid_percent']:.2f}%，自动修复中...",
                     )
 
                     fix_result = self.verifier.fix_adj_factor(table, default_value=1.0, dry_run=False)
@@ -119,7 +116,7 @@ class AutoCleanScheduler:
                             "issue": "adj_factor_incomplete",
                             "severity": "WARNING",
                             "fixed": fix_result["fixed_count"],
-                        }
+                        },
                     )
 
                     self.logger.info(f"✅ 已修复{fix_result['fixed_count']}条记录")
@@ -146,7 +143,7 @@ class AutoCleanScheduler:
                             "issue": "missing_columns",
                             "severity": "ERROR",
                             "details": structure_result["missing_columns"],
-                        }
+                        },
                     )
 
                     self._send_alert(f"K线数据结构异常: {table}", f"缺少必需列: {structure_result['missing_columns']}")
@@ -154,7 +151,7 @@ class AutoCleanScheduler:
             except Exception as e:
                 self.logger.error(f"检查 {table} 失败: {e}")
                 result["issues_found"].append(
-                    {"table": table, "issue": "check_failed", "severity": "ERROR", "error": str(e)}
+                    {"table": table, "issue": "check_failed", "severity": "ERROR", "error": str(e)},
                 )
 
         # 更新统计
@@ -166,8 +163,7 @@ class AutoCleanScheduler:
         return result
 
     def weekly_industry_check(self) -> Dict:
-        """
-        每周检查行业数据
+        """每周检查行业数据
 
         返回:
             检查结果字典
@@ -199,7 +195,7 @@ class AutoCleanScheduler:
                 if dirty_percent > 0:
                     self.logger.warning(
                         f"⚠️ {table} 脏数据率: {dirty_percent:.2f}% "
-                        f"({industry_result['dirty_rows']}/{industry_result['total_rows']})"
+                        f"({industry_result['dirty_rows']}/{industry_result['total_rows']})",
                     )
 
                     # 如果脏数据超过10%，仅告警不自动修复
@@ -213,7 +209,7 @@ class AutoCleanScheduler:
                                 "severity": "CRITICAL",
                                 "dirty_rate": dirty_percent,
                                 "dirty_rows": industry_result["dirty_rows"],
-                            }
+                            },
                         )
 
                         self._send_alert(
@@ -234,7 +230,7 @@ class AutoCleanScheduler:
                                 "severity": "WARNING",
                                 "dirty_rate": dirty_percent,
                                 "fixed": clean_result["fixed_count"],
-                            }
+                            },
                         )
 
                         self.logger.info(f"✅ 已清洗{clean_result['fixed_count']}条记录")
@@ -249,7 +245,7 @@ class AutoCleanScheduler:
             except Exception as e:
                 self.logger.error(f"检查 {table} 失败: {e}")
                 result["issues_found"].append(
-                    {"table": table, "issue": "check_failed", "severity": "ERROR", "error": str(e)}
+                    {"table": table, "issue": "check_failed", "severity": "ERROR", "error": str(e)},
                 )
 
         # 更新统计
@@ -261,8 +257,7 @@ class AutoCleanScheduler:
         return result
 
     def _send_alert(self, title: str, message: str):
-        """
-        发送告警
+        """发送告警
 
         参数:
             title: 告警标题
@@ -381,7 +376,11 @@ def main():
     parser.add_argument("--test-kline", action="store_true", help="测试单次K线检查")
     parser.add_argument("--test-industry", action="store_true", help="测试单次行业检查")
     parser.add_argument(
-        "--log-level", type=str, default="INFO", choices=["DEBUG", "INFO", "WARNING", "ERROR"], help="日志级别"
+        "--log-level",
+        type=str,
+        default="INFO",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR"],
+        help="日志级别",
     )
 
     args = parser.parse_args()

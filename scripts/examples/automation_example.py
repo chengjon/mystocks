@@ -1,5 +1,4 @@
-"""
-自动化调度系统完整示例 (Automation System Complete Example)
+"""自动化调度系统完整示例 (Automation System Complete Example)
 
 功能说明:
 - 演示如何使用TaskScheduler进行任务调度
@@ -18,8 +17,9 @@
 版本: 1.0.0
 """
 
-import sys
 import os
+import sys
+
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -27,20 +27,19 @@ import logging
 import time
 
 from automation import (
-    TaskScheduler,
+    NotificationChannel,
+    NotificationConfig,
+    NotificationLevel,
+    NotificationManager,
     TaskConfig,
     TaskPriority,
-    NotificationManager,
-    NotificationConfig,
-    NotificationChannel,
-    NotificationLevel,
+    TaskScheduler,
 )
-
 from automation.predefined_tasks import (
     PredefinedTasks,
     create_daily_update_task,
-    create_strategy_execution_task,
     create_health_check_task,
+    create_strategy_execution_task,
 )
 
 
@@ -94,7 +93,7 @@ def example_2_notification_system():
 
     # 创建通知管理器（使用日志和控制台）
     config = NotificationConfig(
-        channels=[NotificationChannel.LOG, NotificationChannel.CONSOLE]
+        channels=[NotificationChannel.LOG, NotificationChannel.CONSOLE],
     )
 
     notification_mgr = NotificationManager(config)
@@ -118,7 +117,9 @@ def example_2_notification_system():
     # 3. 任务失败通知
     print("\n3. 任务失败通知")
     notification_mgr.send_failure_notification(
-        task_name="策略执行", error_message="数据库连接超时", retry_count=2
+        task_name="策略执行",
+        error_message="数据库连接超时",
+        retry_count=2,
     )
 
     # 4. 交易信号通知
@@ -149,7 +150,7 @@ def example_3_predefined_tasks():
     # 1. 健康检查任务
     print("\n1. 执行系统健康检查")
     health_result = PredefinedTasks.health_check(
-        services=["database", "data_source", "strategy"]
+        services=["database", "data_source", "strategy"],
     )
     print(f"  结果: {health_result['status']}")
     for service, status in health_result["services"].items():
@@ -166,7 +167,9 @@ def example_3_predefined_tasks():
 
     # 策略执行任务（9:30执行）
     strategy_exec = create_strategy_execution_task(
-        strategy_name="momentum", hour=9, minute=30
+        strategy_name="momentum",
+        hour=9,
+        minute=30,
     )
     print(f"  ✓ 策略执行任务: {strategy_exec.name}")
     print("      触发时间: 每天9:30（工作日）")
@@ -220,7 +223,7 @@ def example_4_integrated_system():
             "signals": [
                 {"symbol": "sh600000", "signal": "buy", "price": 10.52},
                 {"symbol": "sh600016", "signal": "sell", "price": 5.23},
-            ]
+            ],
         }
 
     # 4. 创建任务配置
@@ -271,7 +274,7 @@ def example_5_monitoring_and_stats():
 
     # 创建调度器和通知管理器
     notification_mgr = NotificationManager(
-        NotificationConfig(channels=[NotificationChannel.LOG])
+        NotificationConfig(channels=[NotificationChannel.LOG]),
     )
     scheduler = TaskScheduler(notification_manager=notification_mgr)
 
@@ -375,7 +378,7 @@ try:
 except KeyboardInterrupt:
     print("停止调度器...")
     scheduler.stop()
-"""
+""",
     )
 
     print("\n" + "=" * 80)

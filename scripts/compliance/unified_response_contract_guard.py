@@ -7,6 +7,7 @@ import re
 from pathlib import Path
 from typing import Any
 
+
 SCOPE_ROOT = "web/backend/app/api"
 RULE_ID = "unified-response-contract"
 DEFAULT_LEGACY_BASELINE = Path("governance/compliance/unified-response-contract-legacy-baseline.json")
@@ -114,7 +115,8 @@ def is_no_content_status(decorators: list[ast.Call]) -> bool:
 
 
 def raw_response_reason(
-    function_node: ast.FunctionDef | ast.AsyncFunctionDef, decorators: list[ast.Call]
+    function_node: ast.FunctionDef | ast.AsyncFunctionDef,
+    decorators: list[ast.Call],
 ) -> str | None:
     if is_no_content_status(decorators):
         return "204 no-content endpoint"
@@ -198,7 +200,7 @@ def evaluate_file(
                     "path": path_value,
                     "rule_id": RULE_ID,
                     "message": "Target file does not exist",
-                }
+                },
             ],
             "checked_routes": 0,
             "results": [],
@@ -217,7 +219,7 @@ def evaluate_file(
                     "path": path_value,
                     "rule_id": "python-parse-error",
                     "message": f"Failed to parse Python file: {exc.msg}",
-                }
+                },
             ],
             "checked_routes": 0,
             "results": [],
@@ -245,7 +247,7 @@ def evaluate_file(
                     "passed": True,
                     "mode": "raw-exempt",
                     "message": f"Exempt raw endpoint: {exempt_reason}",
-                }
+                },
             )
             continue
 
@@ -258,7 +260,7 @@ def evaluate_file(
                     "passed": True,
                     "mode": "unified-response-model",
                     "message": f"Declares response_model={response_model_expression}",
-                }
+                },
             )
             continue
 
@@ -271,7 +273,7 @@ def evaluate_file(
                     "passed": True,
                     "mode": "legacy-baseline",
                     "message": f"Legacy endpoint baseline: {legacy_reason}",
-                }
+                },
             )
             continue
 
@@ -301,7 +303,7 @@ def evaluate_file(
                 "route": route_label,
                 "rule_id": RULE_ID,
                 "message": message,
-            }
+            },
         )
 
     return {
@@ -318,7 +320,9 @@ def evaluate_file(
 
 
 def build_report(
-    project_root: Path, paths: list[str] | None = None, baseline_path: str | None = None
+    project_root: Path,
+    paths: list[str] | None = None,
+    baseline_path: str | None = None,
 ) -> dict[str, Any]:
     normalized_inputs: list[str] = []
     results: list[dict[str, Any]] = []
@@ -381,7 +385,7 @@ def print_report(report: dict[str, Any], output_format: str) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Validate UnifiedResponse response_model contract for changed backend API routes"
+        description="Validate UnifiedResponse response_model contract for changed backend API routes",
     )
     parser.add_argument("filenames", nargs="*")
     parser.add_argument("--root-dir", default=".")

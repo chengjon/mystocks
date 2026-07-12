@@ -1,5 +1,4 @@
-"""
-MyStocks Database Index Optimization Script
+"""MyStocks Database Index Optimization Script
 Task: task-2.1 - Optimize database query performance
 
 Focus areas:
@@ -12,19 +11,22 @@ Author: DB CLI (Claude Code)
 Date: 2026-01-01
 """
 
+import json
+import logging
 import os
 import sys
-import logging
-from typing import List, Dict, Any
+from datetime import datetime
+from typing import Any, Dict, List
+
 from sqlalchemy import text
 from sqlalchemy.engine import Engine
-from datetime import datetime
-import json
+
 
 # Add parent directory to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from src.storage.database.database_manager import DatabaseTableManager
+
 
 # Setup logger
 logger = logging.getLogger(__name__)
@@ -272,7 +274,7 @@ class DatabaseIndexOptimizer:
                     FROM pg_stat_user_indexes
                     WHERE schemaname = 'public'
                     ORDER BY idx_scan ASC
-                """)
+                """),
                 )
 
                 usage_stats = []
@@ -286,7 +288,7 @@ class DatabaseIndexOptimizer:
                             "tuples_read": row[4],
                             "tuples_fetched": row[5],
                             "size": row[6],
-                        }
+                        },
                     )
 
                 self.log("📊 Index Usage Statistics", "INFO")
@@ -352,7 +354,7 @@ class DatabaseIndexOptimizer:
                     execution_time = (end_time - start_time).total_seconds() * 1000
 
                     performance_results.append(
-                        {"query": query["name"], "rows": row_count, "execution_time_ms": execution_time}
+                        {"query": query["name"], "rows": row_count, "execution_time_ms": execution_time},
                     )
 
                     self.log(f"📈 {query['name']}: {execution_time:.2f}ms, {row_count} rows", "INFO")

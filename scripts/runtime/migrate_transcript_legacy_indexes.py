@@ -12,6 +12,7 @@ from typing import Any
 
 from pymongo.errors import OperationFailure
 
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -113,7 +114,7 @@ def migrate_legacy_transcript_indexes(
                     checksum=f"sha256:{hashlib.sha256(block.body.encode('utf-8')).hexdigest()}",
                     migration_batch_id=migration_batch_id,
                     migration_recorded_at=datetime.now(UTC),
-                )
+                ),
             )
             existing_ids.add(legacy_index_id)
             counts["legacy_indexes"] += 1
@@ -123,7 +124,7 @@ def migrate_legacy_transcript_indexes(
 
 def _extract_legacy_transcript_blocks(markdown: str) -> list[_LegacyTranscriptBlock]:
     matches = list(
-        re.finditer(r"^(?P<level>##+)\s+(?P<heading>(?P<kind>AUTO|MANUAL)\b[^\n]*)$", markdown, flags=re.MULTILINE)
+        re.finditer(r"^(?P<level>##+)\s+(?P<heading>(?P<kind>AUTO|MANUAL)\b[^\n]*)$", markdown, flags=re.MULTILINE),
     )
     blocks: list[_LegacyTranscriptBlock] = []
 
@@ -143,7 +144,7 @@ def _extract_legacy_transcript_blocks(markdown: str) -> list[_LegacyTranscriptBl
                 captured_at=_extract_datetime_from_heading(heading),
                 source_anchor=f"L{line_no}",
                 body=body,
-            )
+            ),
         )
 
     return blocks
@@ -169,7 +170,7 @@ def _build_legacy_index_id(
     block_kind: str,
     index: int,
 ) -> str:
-    digest = hashlib.sha1(f"{source_artifact}:{source_anchor}:{block_kind}:{index}".encode("utf-8")).hexdigest()[:12]
+    digest = hashlib.sha1(f"{source_artifact}:{source_anchor}:{block_kind}:{index}".encode()).hexdigest()[:12]
     return f"legacy-{work_item_id.lower()}-{block_kind.lower()}-{digest}"
 
 

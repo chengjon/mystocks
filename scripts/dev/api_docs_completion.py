@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-API文档完整性检查和补充工具
+"""API文档完整性检查和补充工具
 API Documentation Completion Tool
 
 Phase 6-3: 补充API文档完整性
@@ -17,12 +16,12 @@ Author: Claude Code
 Date: 2025-11-13
 """
 
-import json
-from pathlib import Path
-from typing import Dict, List, Any, Optional, Tuple
-from datetime import datetime
 import ast
+import json
 from dataclasses import dataclass
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
 
 
 @dataclass
@@ -58,22 +57,22 @@ class APIDocumentationAnalyzer:
     """API文档分析器"""
 
     def __init__(self, api_directory: str):
-        """
-        初始化分析器
+        """初始化分析器
 
         Args:
             api_directory: API目录路径
+
         """
         self.api_directory = Path(api_directory)
         self.endpoints: List[APIEndpoint] = []
         self.coverage_stats = None
 
     def scan_api_endpoints(self) -> List[APIEndpoint]:
-        """
-        扫描所有API端点
+        """扫描所有API端点
 
         Returns:
             API端点列表
+
         """
         print("🔍 扫描API端点...")
 
@@ -95,7 +94,7 @@ class APIDocumentationAnalyzer:
         endpoints = []
 
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             # 解析AST
@@ -114,7 +113,10 @@ class APIDocumentationAnalyzer:
         return endpoints
 
     def _analyze_function(
-        self, node: ast.AST, file_path: Path, content: str
+        self,
+        node: ast.AST,
+        file_path: Path,
+        content: str,
     ) -> Optional[APIEndpoint]:
         """分析函数，提取API信息"""
         # 检查是否是API路由函数
@@ -166,7 +168,9 @@ class APIDocumentationAnalyzer:
         return False
 
     def _extract_route_info(
-        self, node: ast.FunctionDef, content: str
+        self,
+        node: ast.FunctionDef,
+        content: str,
     ) -> Tuple[Optional[str], Optional[str]]:
         """提取路由信息"""
         http_method = None
@@ -192,11 +196,7 @@ class APIDocumentationAnalyzer:
 
     def _analyze_docstring(self, node: ast.FunctionDef) -> Dict[str, Any]:
         """分析文档字符串"""
-        if (
-            not node.body
-            or not isinstance(node.body[0], ast.Expr)
-            or not isinstance(node.body[0].value, ast.Constant)
-        ):
+        if not node.body or not isinstance(node.body[0], ast.Expr) or not isinstance(node.body[0].value, ast.Constant):
             return {
                 "has_docstring": False,
                 "summary": None,
@@ -276,11 +276,7 @@ class APIDocumentationAnalyzer:
             return default_coverage
 
         documented = sum(1 for e in self.endpoints if e.has_docstring)
-        partially = sum(
-            1
-            for e in self.endpoints
-            if e.has_docstring and e.docstring_quality in ["poor", "fair"]
-        )
+        partially = sum(1 for e in self.endpoints if e.has_docstring and e.docstring_quality in ["poor", "fair"])
         undocumented = len(self.endpoints) - documented
         coverage_percentage = (documented / len(self.endpoints)) * 100
 
@@ -292,9 +288,7 @@ class APIDocumentationAnalyzer:
 
         # 缺失文档的端点
         missing_endpoints = [
-            f"{e.http_method} {e.path} ({e.function_name})"
-            for e in self.endpoints
-            if not e.has_docstring
+            f"{e.http_method} {e.path} ({e.function_name})" for e in self.endpoints if not e.has_docstring
         ]
 
         self.coverage_stats = DocumentationCoverage(
@@ -342,9 +336,7 @@ class APIDocumentationAnalyzer:
                 "missing": "⚫",
             }.get(quality, "⚪")
 
-            report += (
-                f"- {status_icon} **{quality.title()}**: {count} ({percentage:.1f}%)\n"
-            )
+            report += f"- {status_icon} **{quality.title()}**: {count} ({percentage:.1f}%)\n"
 
         if stats.missing_endpoints:
             report += "\n## ❌ 缺失文档的端点\n\n"
@@ -370,21 +362,19 @@ class APIDocumentationAnalyzer:
             # 缺失文档字符串
             if not endpoint.has_docstring:
                 gaps["missing_docstrings"].append(
-                    f"{endpoint.http_method} {endpoint.path}"
+                    f"{endpoint.http_method} {endpoint.path}",
                 )
 
             # 文档质量差
             elif endpoint.docstring_quality in ["poor", "missing"]:
                 gaps["poor_quality"].append(
-                    f"{endpoint.http_method} {endpoint.path} (质量: {endpoint.docstring_quality})"
+                    f"{endpoint.http_method} {endpoint.path} (质量: {endpoint.docstring_quality})",
                 )
 
             # 参数信息不完整
-            if endpoint.parameters and not all(
-                p.get("description") for p in endpoint.parameters
-            ):
+            if endpoint.parameters and not all(p.get("description") for p in endpoint.parameters):
                 gaps["incomplete_parameters"].append(
-                    f"{endpoint.http_method} {endpoint.path}"
+                    f"{endpoint.http_method} {endpoint.path}",
                 )
 
         return gaps
@@ -407,7 +397,7 @@ class APIDocumentationAnalyzer:
                     f.write(f"## {endpoint_path}\n\n")
                     f.write("```python\n")
                     f.write(
-                        f'@router.{endpoint_path.split()[0].lower()}("{endpoint_path.split()[1]}")\n'
+                        f'@router.{endpoint_path.split()[0].lower()}("{endpoint_path.split()[1]}")\n',
                     )
                     f.write("async def some_function():\n")
                     f.write('    """\n')
@@ -476,7 +466,9 @@ def main():
         "gaps": gaps,
     }
 
-    results_file = f"/opt/claude/mystocks_spec/var/log/api_docs_analysis_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+    results_file = (
+        f"/opt/claude/mystocks_spec/var/log/api_docs_analysis_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+    )
     with open(results_file, "w", encoding="utf-8") as f:
         json.dump(results, f, indent=2, ensure_ascii=False)
 

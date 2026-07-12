@@ -1,22 +1,23 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-MyStocks AI自动化现状分析脚本
+"""MyStocks AI自动化现状分析脚本
 第一阶段：全面评估现有AI基础设施
 """
 
-import os
 import json
-import time
-import subprocess
-import psutil
-from pathlib import Path
-from typing import Dict, List, Any
 import logging
+import os
+import subprocess
+import time
+from pathlib import Path
+from typing import Any, Dict, List
+
+import psutil
+
 
 # 设置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -53,17 +54,15 @@ class AIAutomationAnalyzer:
             },
             "disk_info": {
                 "total_gb": round(
-                    psutil.disk_usage(self.project_root).total / (1024**3), 2
+                    psutil.disk_usage(self.project_root).total / (1024**3),
+                    2,
                 ),
                 "free_gb": round(
-                    psutil.disk_usage(self.project_root).free / (1024**3), 2
+                    psutil.disk_usage(self.project_root).free / (1024**3),
+                    2,
                 ),
                 "usage_percent": round(
-                    (
-                        psutil.disk_usage(self.project_root).used
-                        / psutil.disk_usage(self.project_root).total
-                    )
-                    * 100,
+                    (psutil.disk_usage(self.project_root).used / psutil.disk_usage(self.project_root).total) * 100,
                     2,
                 ),
             },
@@ -90,7 +89,7 @@ class AIAutomationAnalyzer:
                         "memory_util": gpu.memoryUtil * 100,
                         "temperature": gpu.temperature,
                         "load": gpu.load * 100,
-                    }
+                    },
                 )
             return {"available": True, "gpus": gpu_info}
         except ImportError:
@@ -163,7 +162,7 @@ class AIAutomationAnalyzer:
             total_lines = 0
             python_files = list(gpu_api_path.rglob("*.py"))
             for py_file in python_files:
-                with open(py_file, "r", encoding="utf-8") as f:
+                with open(py_file, encoding="utf-8") as f:
                     total_lines += len(f.readlines())
 
             files_found["total_python_lines"] = total_lines
@@ -217,7 +216,7 @@ class AIAutomationAnalyzer:
         if adapters_path.exists():
             adapter_files = list(adapters_path.glob("*_adapter.py"))
             for adapter_file in adapter_files:
-                for source in data_sources.keys():
+                for source in data_sources:
                     if source in adapter_file.name.lower():
                         data_sources[source] = True
 
@@ -257,7 +256,7 @@ class AIAutomationAnalyzer:
         if monitoring_path.exists():
             monitor_files = list(monitoring_path.glob("*.py"))
             for monitor_file in monitor_files:
-                for component in monitoring_components.keys():
+                for component in monitoring_components:
                     if component.replace("_", "") in monitor_file.name.replace("_", ""):
                         monitoring_components[component] = True
 
@@ -291,7 +290,7 @@ class AIAutomationAnalyzer:
             if file_path.is_file():
                 ext = file_path.suffix
                 try:
-                    with open(file_path, "r", encoding="utf-8") as f:
+                    with open(file_path, encoding="utf-8") as f:
                         lines = len(f.readlines())
                         total_lines += lines
                         file_count += 1
@@ -401,9 +400,7 @@ class AIAutomationAnalyzer:
     def save_results(self, output_file: str = None) -> str:
         """保存分析结果"""
         if not output_file:
-            output_file = (
-                self.project_root / f"ai_automation_analysis_{int(time.time())}.json"
-            )
+            output_file = self.project_root / f"ai_automation_analysis_{int(time.time())}.json"
 
         with open(output_file, "w", encoding="utf-8") as f:
             json.dump(self.analysis_results, f, ensure_ascii=False, indent=2)

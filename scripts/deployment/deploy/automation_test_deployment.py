@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-MyStocks 自动化测试和部署系统
+"""MyStocks 自动化测试和部署系统
 第6阶段：完善自动化测试和部署
 """
 
-import sys
 import json
-import subprocess
+import logging
 import os
+import subprocess
+import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any
-import logging
+from typing import Any, Dict
+
 
 # 设置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -73,12 +73,12 @@ class AutomationTestDeployManager:
             self._calculate_test_statistics(result)
 
             logger.info(
-                f"✅ 综合测试完成: {result['passed_tests']} 通过, {result['failed_tests']} 失败"
+                f"✅ 综合测试完成: {result['passed_tests']} 通过, {result['failed_tests']} 失败",
             )
             return result
 
         except Exception as e:
-            error_msg = f"综合测试失败: {str(e)}"
+            error_msg = f"综合测试失败: {e!s}"
             logger.error(error_msg)
             result["status"] = "failed"
             result["error"] = error_msg
@@ -116,7 +116,7 @@ class AutomationTestDeployManager:
             return result
 
         except Exception as e:
-            error_msg = f"CI/CD流水线设置失败: {str(e)}"
+            error_msg = f"CI/CD流水线设置失败: {e!s}"
             logger.error(error_msg)
             result["status"] = "failed"
             result["error"] = error_msg
@@ -154,7 +154,7 @@ class AutomationTestDeployManager:
             return result
 
         except Exception as e:
-            error_msg = f"监控部署失败: {str(e)}"
+            error_msg = f"监控部署失败: {e!s}"
             logger.error(error_msg)
             result["status"] = "failed"
             result["error"] = error_msg
@@ -192,7 +192,7 @@ class AutomationTestDeployManager:
             return result
 
         except Exception as e:
-            error_msg = f"生产环境部署设置失败: {str(e)}"
+            error_msg = f"生产环境部署设置失败: {e!s}"
             logger.error(error_msg)
             result["status"] = "failed"
             result["error"] = error_msg
@@ -225,7 +225,7 @@ class AutomationTestDeployManager:
             return result
 
         except Exception as e:
-            error_msg = f"部署文档生成失败: {str(e)}"
+            error_msg = f"部署文档生成失败: {e!s}"
             logger.error(error_msg)
             result["status"] = "failed"
             result["error"] = error_msg
@@ -239,7 +239,10 @@ class AutomationTestDeployManager:
             # 运行pytest
             cmd = [sys.executable, "-m", "pytest", "tests/", "-v", "--tb=short"]
             result = subprocess.run(
-                cmd, cwd=self.project_root, capture_output=True, text=True
+                cmd,
+                cwd=self.project_root,
+                capture_output=True,
+                text=True,
             )
 
             return {
@@ -284,7 +287,10 @@ class AutomationTestDeployManager:
             # 运行AI策略分析测试
             cmd = [sys.executable, "ai_strategy_analyzer.py"]
             result = subprocess.run(
-                cmd, cwd=self.project_root, capture_output=True, text=True
+                cmd,
+                cwd=self.project_root,
+                capture_output=True,
+                text=True,
             )
 
             return {
@@ -302,9 +308,7 @@ class AutomationTestDeployManager:
 
         try:
             # 测试GPU环境
-            gpu_test_script = (
-                self.project_root / "src/gpu/api_system" / "wsl2_gpu_init.py"
-            )
+            gpu_test_script = self.project_root / "src/gpu/api_system" / "wsl2_gpu_init.py"
             cmd = [sys.executable, str(gpu_test_script)]
             result = subprocess.run(cmd, capture_output=True, text=True)
 
@@ -371,9 +375,7 @@ class AutomationTestDeployManager:
         result["passed_tests"] = passed
         result["failed_tests"] = failed
         result["total_tests"] = passed + failed
-        result["overall_coverage"] = (
-            (passed / (passed + failed) * 100) if (passed + failed) > 0 else 0
-        )
+        result["overall_coverage"] = (passed / (passed + failed) * 100) if (passed + failed) > 0 else 0
 
     def _create_github_workflows(self) -> Dict[str, Any]:
         """创建GitHub Actions工作流"""
@@ -397,7 +399,7 @@ class AutomationTestDeployManager:
                         {"run": "pytest tests/"},
                         {"run": "python ai_automation_analyzer.py"},
                     ],
-                }
+                },
             },
         }
 
@@ -412,7 +414,7 @@ class AutomationTestDeployManager:
                         {"uses": "actions/checkout@v3"},
                         {"name": "Deploy to production", "run": "./scripts/deploy.sh"},
                     ],
-                }
+                },
             },
         }
 
@@ -700,7 +702,7 @@ def main():
                     monitoring_result["status"] == "success",
                     production_result["status"] == "success",
                     docs_result["status"] == "success",
-                ]
+                ],
             ),
             "automation_level": "fully_automated",
             "deployment_ready": True,
@@ -721,7 +723,7 @@ def main():
     print(f"  • 成功阶段: {deployment_report['summary']['successful_phases']}")
     print(f"  • 自动化级别: {deployment_report['summary']['automation_level']}")
     print(
-        f"  • 部署就绪: {'✅' if deployment_report['summary']['deployment_ready'] else '❌'}"
+        f"  • 部署就绪: {'✅' if deployment_report['summary']['deployment_ready'] else '❌'}",
     )
 
     print(f"\n📄 完整报告已保存到: {report_file}")

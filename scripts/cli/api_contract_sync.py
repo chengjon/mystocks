@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
-"""
-API契约管理CLI工具
+"""API契约管理CLI工具
 提供命令行接口管理API契约版本、差异检测、验证和同步
 """
 
 import json
 import os
 import sys
-import yaml
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
 
 import click
 import requests
+import yaml
 from rich.console import Console
-from rich.table import Table
 from rich.json import JSON
 from rich.panel import Panel
+from rich.table import Table
+
 
 # API配置
 BACKEND_PORT = os.getenv("BACKEND_PORT", "").strip()
@@ -99,7 +99,7 @@ def api_request(method: str, endpoint: str, data: Optional[Dict] = None) -> Dict
             console.print(e.response.text)
         sys.exit(1)
     except Exception as e:
-        print_error(f"请求失败: {str(e)}")
+        print_error(f"请求失败: {e!s}")
         sys.exit(1)
 
 
@@ -142,29 +142,28 @@ def load_openapi_spec(file_path: str) -> Dict[str, Any]:
         sys.exit(1)
 
     try:
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             if path.suffix in [".yaml", ".yml"]:
                 return yaml.safe_load(f)
-            elif path.suffix == ".json":
+            if path.suffix == ".json":
                 return json.load(f)
-            else:
-                print_error(f"不支持的文件格式: {path.suffix}")
-                print_info("支持的格式: .yaml, .yml, .json")
-                sys.exit(1)
+            print_error(f"不支持的文件格式: {path.suffix}")
+            print_info("支持的格式: .yaml, .yml, .json")
+            sys.exit(1)
     except Exception as e:
-        print_error(f"加载文件失败: {str(e)}")
+        print_error(f"加载文件失败: {e!s}")
         sys.exit(1)
 
 
 # ==================== CLI命令 ====================
+
 
 @click.group()
 @click.version_option(version="1.0.0")
 @click.option("--api-url", default=API_BASE_URL, help="API服务器地址", envvar="API_CONTRACT_API_URL")
 @click.pass_context
 def cli(ctx, api_url):
-    """
-    API契约管理CLI工具
+    """API契约管理CLI工具
 
     管理OpenAPI契约版本、差异检测、验证和同步
     """
@@ -173,6 +172,7 @@ def cli(ctx, api_url):
 
 
 # ==================== 契约版本管理 ====================
+
 
 @cli.command("create")
 @click.argument("name", required=True)
@@ -184,8 +184,7 @@ def cli(ctx, api_url):
 @click.option("--tag", "-t", multiple=True, help="版本标签 (可多次使用)")
 @click.option("--activate", is_flag=True, help="创建后自动激活")
 def create_version(name, version, spec, commit_hash, author, description, tag, activate):
-    """
-    创建新的契约版本
+    """创建新的契约版本
 
     示例:
         api-contract-sync create market-api 1.0.0 -s openapi.yaml -a "team" -d "初始版本"
@@ -214,21 +213,23 @@ def create_version(name, version, spec, commit_hash, author, description, tag, a
         print_success(f"契约版本创建成功 (ID: {version_data.get('id')})")
 
         # 显示版本信息
-        console.print(Panel(
-            f"""
-契约名称: {version_data.get('name')}
-版本号: {version_data.get('version')}
-作者: {version_data.get('author', 'N/A')}
-描述: {version_data.get('description', 'N/A')}
-激活状态: {'是' if version_data.get('is_active') else '否'}
-创建时间: {version_data.get('created_at')}
+        console.print(
+            Panel(
+                f"""
+契约名称: {version_data.get("name")}
+版本号: {version_data.get("version")}
+作者: {version_data.get("author", "N/A")}
+描述: {version_data.get("description", "N/A")}
+激活状态: {"是" if version_data.get("is_active") else "否"}
+创建时间: {version_data.get("created_at")}
             """.strip(),
-            title="✨ 版本创建成功",
-            border_style="green"
-        ))
+                title="✨ 版本创建成功",
+                border_style="green",
+            )
+        )
 
         # 自动激活
-        if activate and not version_data.get('is_active'):
+        if activate and not version_data.get("is_active"):
             print_info("正在激活版本...")
             activate_result = api_request("POST", f"/versions/{version_data.get('id')}/activate")
             if is_success(activate_result):
@@ -243,8 +244,7 @@ def create_version(name, version, spec, commit_hash, author, description, tag, a
 @click.option("--limit", "-l", default=20, help="每页数量 (默认: 20)")
 @click.option("--offset", "-o", default=0, help="偏移量 (默认: 0)")
 def list_versions(name, limit, offset):
-    """
-    列出契约版本
+    """列出契约版本
 
     示例:
         api-contract-sync list --name market-api --limit 10
@@ -286,7 +286,7 @@ def list_versions(name, limit, offset):
             v.get("version"),
             v.get("author", "N/A"),
             "✅" if v.get("is_active") else "❌",
-            v.get("created_at", "")[:19]
+            v.get("created_at", "")[:19],
         )
 
     console.print(table)
@@ -295,8 +295,7 @@ def list_versions(name, limit, offset):
 @cli.command("show")
 @click.argument("version_id", type=int)
 def show_version(version_id):
-    """
-    显示契约版本详情
+    """显示契约版本详情
 
     示例:
         api-contract-sync show 1
@@ -309,20 +308,22 @@ def show_version(version_id):
         version_data = get_data(result)
 
         # 显示版本信息
-        console.print(Panel(
-            f"""
-契约名称: {version_data.get('name')}
-版本号: {version_data.get('version')}
-Git Commit: {version_data.get('commit_hash', 'N/A')}
-作者: {version_data.get('author', 'N/A')}
-描述: {version_data.get('description', 'N/A')}
-标签: {', '.join(version_data.get('tags', []))}
-激活状态: {'是' if version_data.get('is_active') else '否'}
-创建时间: {version_data.get('created_at')}
+        console.print(
+            Panel(
+                f"""
+契约名称: {version_data.get("name")}
+版本号: {version_data.get("version")}
+Git Commit: {version_data.get("commit_hash", "N/A")}
+作者: {version_data.get("author", "N/A")}
+描述: {version_data.get("description", "N/A")}
+标签: {", ".join(version_data.get("tags", []))}
+激活状态: {"是" if version_data.get("is_active") else "否"}
+创建时间: {version_data.get("created_at")}
             """.strip(),
-            title=f"📄 契约版本详情 (ID: {version_id})",
-            border_style="blue"
-        ))
+                title=f"📄 契约版本详情 (ID: {version_id})",
+                border_style="blue",
+            )
+        )
 
         # 询问是否显示OpenAPI规范
         if console.input("\n是否显示OpenAPI规范? [y/N]: ").lower() == "y":
@@ -335,8 +336,7 @@ Git Commit: {version_data.get('commit_hash', 'N/A')}
 @cli.command("active")
 @click.argument("name")
 def get_active_version(name):
-    """
-    获取契约的当前激活版本
+    """获取契约的当前激活版本
 
     示例:
         api-contract-sync active market-api
@@ -348,19 +348,21 @@ def get_active_version(name):
     if is_success(result):
         version_data = get_data(result)
 
-        console.print(Panel(
-            f"""
-契约名称: {version_data.get('name')}
-版本号: {version_data.get('version')}
-Git Commit: {version_data.get('commit_hash', 'N/A')}
-作者: {version_data.get('author', 'N/A')}
-描述: {version_data.get('description', 'N/A')}
-标签: {', '.join(version_data.get('tags', []))}
-创建时间: {version_data.get('created_at')}
+        console.print(
+            Panel(
+                f"""
+契约名称: {version_data.get("name")}
+版本号: {version_data.get("version")}
+Git Commit: {version_data.get("commit_hash", "N/A")}
+作者: {version_data.get("author", "N/A")}
+描述: {version_data.get("description", "N/A")}
+标签: {", ".join(version_data.get("tags", []))}
+创建时间: {version_data.get("created_at")}
             """.strip(),
-            title="⭐ 当前激活版本",
-            border_style="green"
-        ))
+                title="⭐ 当前激活版本",
+                border_style="green",
+            )
+        )
     else:
         print_error(f"查询失败: {result.get('message')}")
 
@@ -368,8 +370,7 @@ Git Commit: {version_data.get('commit_hash', 'N/A')}
 @cli.command("activate")
 @click.argument("version_id", type=int)
 def activate_version(version_id):
-    """
-    激活指定契约版本
+    """激活指定契约版本
 
     示例:
         api-contract-sync activate 2
@@ -388,8 +389,7 @@ def activate_version(version_id):
 @click.argument("version_id", type=int)
 @click.option("--force", "-f", is_flag=True, help="强制删除 (跳过确认)")
 def delete_version(version_id, force):
-    """
-    删除契约版本
+    """删除契约版本
 
     示例:
         api-contract-sync delete 1 --force
@@ -415,10 +415,10 @@ def delete_version(version_id, force):
 
 # ==================== 契约列表 ====================
 
+
 @cli.command("contracts")
 def list_contracts():
-    """
-    列出所有契约及其元数据
+    """列出所有契约及其元数据
 
     示例:
         api-contract-sync contracts
@@ -449,7 +449,7 @@ def list_contracts():
                 c.get("active_version", "N/A"),
                 str(c.get("total_versions", 0)),
                 c.get("last_updated", "")[:19],
-                ", ".join(c.get("tags", []))
+                ", ".join(c.get("tags", [])),
             )
 
         console.print(table)
@@ -459,13 +459,13 @@ def list_contracts():
 
 # ==================== 差异检测 ====================
 
+
 @cli.command("diff")
 @click.argument("from_version", type=int)
 @click.argument("to_version", type=int)
 @click.option("--json-output", "-j", is_flag=True, help="以JSON格式输出")
 def compare_versions(from_version, to_version, json_output):
-    """
-    对比两个契约版本的差异
+    """对比两个契约版本的差异
 
     示例:
         api-contract-sync diff 1 2
@@ -474,7 +474,7 @@ def compare_versions(from_version, to_version, json_output):
 
     data = {
         "from_version_id": from_version,
-        "to_version_id": to_version
+        "to_version_id": to_version,
     }
 
     result = api_request("POST", "/diff", data)
@@ -487,19 +487,21 @@ def compare_versions(from_version, to_version, json_output):
             return
 
         # 显示差异摘要
-        console.print(Panel(
-            f"""
-源版本: {diff_data.get('from_version')}
-目标版本: {diff_data.get('to_version')}
-总变更数: {diff_data.get('total_changes')}
-破坏性变更: [red]{diff_data.get('breaking_changes')}[/red]
-非破坏性变更: [green]{diff_data.get('non_breaking_changes')}[/green]
+        console.print(
+            Panel(
+                f"""
+源版本: {diff_data.get("from_version")}
+目标版本: {diff_data.get("to_version")}
+总变更数: {diff_data.get("total_changes")}
+破坏性变更: [red]{diff_data.get("breaking_changes")}[/red]
+非破坏性变更: [green]{diff_data.get("non_breaking_changes")}[/green]
 
-摘要: {diff_data.get('summary')}
+摘要: {diff_data.get("summary")}
             """.strip(),
-            title="📊 差异检测结果",
-            border_style="yellow"
-        ))
+                title="📊 差异检测结果",
+                border_style="yellow",
+            )
+        )
 
         # 显示详细差异
         diffs = diff_data.get("diffs", [])
@@ -518,7 +520,7 @@ def compare_versions(from_version, to_version, json_output):
                     f"[{type_style}]{d.get('type')}[/{type_style}]",
                     d.get("change"),
                     d.get("path"),
-                    d.get("message")
+                    d.get("message"),
                 )
 
             console.print(table)
@@ -532,13 +534,13 @@ def compare_versions(from_version, to_version, json_output):
 
 # ==================== 契约验证 ====================
 
+
 @cli.command("validate")
 @click.argument("spec_file", required=True)
 @click.option("--check-breaking", "-b", is_flag=True, help="检查破坏性变更")
 @click.option("--compare-to", "-c", type=int, help="对比的版本ID")
 def validate_contract(spec_file, check_breaking, compare_to):
-    """
-    验证OpenAPI规范
+    """验证OpenAPI规范
 
     示例:
         api-contract-sync validate openapi.yaml --check-breaking --compare-to 1
@@ -552,7 +554,7 @@ def validate_contract(spec_file, check_breaking, compare_to):
     data = {
         "spec": spec_data,
         "check_breaking_changes": check_breaking,
-        "compare_to_version_id": compare_to
+        "compare_to_version_id": compare_to,
     }
 
     # 发送请求
@@ -567,17 +569,21 @@ def validate_contract(spec_file, check_breaking, compare_to):
         warnings = validation_data.get("warnings", 0)
 
         if is_valid:
-            console.print(Panel(
-                f"✅ 验证通过\n错误: {errors}\n警告: {warnings}",
-                title="✨ 验证成功",
-                border_style="green"
-            ))
+            console.print(
+                Panel(
+                    f"✅ 验证通过\n错误: {errors}\n警告: {warnings}",
+                    title="✨ 验证成功",
+                    border_style="green",
+                )
+            )
         else:
-            console.print(Panel(
-                f"❌ 验证失败\n错误: {errors}\n警告: {warnings}",
-                title="❌ 验证失败",
-                border_style="red"
-            ))
+            console.print(
+                Panel(
+                    f"❌ 验证失败\n错误: {errors}\n警告: {warnings}",
+                    title="❌ 验证失败",
+                    border_style="red",
+                )
+            )
 
         # 显示详细验证结果
         validation_results = validation_data.get("validation_results", [])
@@ -589,7 +595,7 @@ def validate_contract(spec_file, check_breaking, compare_to):
                 level_style = {
                     "error": "red",
                     "warning": "yellow",
-                    "info": "blue"
+                    "info": "blue",
                 }.get(level, "white")
 
                 console.print(f"\n[{level_style}]{level.upper()}[/{level_style}] [{vr.get('category')}]")
@@ -608,15 +614,17 @@ def validate_contract(spec_file, check_breaking, compare_to):
 
 # ==================== 契约同步 ====================
 
+
 @cli.command("sync")
 @click.argument("name", required=True)
 @click.option("--source", "-s", required=True, help="源文件路径")
-@click.option("--direction", "-d", type=click.Choice(["code-to-db", "db-to-code"]), default="code-to-db", help="同步方向")
+@click.option(
+    "--direction", "-d", type=click.Choice(["code-to-db", "db-to-code"]), default="code-to-db", help="同步方向"
+)
 @click.option("--version", "-v", help="指定版本号")
 @click.option("--commit", is_flag=True, help="提交到Git")
 def sync_contract(name, source, direction, version, commit):
-    """
-    同步契约
+    """同步契约
 
     示例:
         api-contract-sync sync market-api -s openapi.yaml -d code-to-db -v 1.2.0
@@ -629,7 +637,7 @@ def sync_contract(name, source, direction, version, commit):
         "source_path": source,
         "direction": direction,
         "version": version,
-        "commit": commit
+        "commit": commit,
     }
 
     # 发送请求
@@ -638,16 +646,18 @@ def sync_contract(name, source, direction, version, commit):
     if is_success(result):
         sync_data = get_data(result)
 
-        console.print(Panel(
-            f"""
-同步ID: {sync_data.get('sync_id')}
-状态: {sync_data.get('status')}
-开始时间: {sync_data.get('started_at')}
-完成时间: {sync_data.get('completed_at')}
+        console.print(
+            Panel(
+                f"""
+同步ID: {sync_data.get("sync_id")}
+状态: {sync_data.get("status")}
+开始时间: {sync_data.get("started_at")}
+完成时间: {sync_data.get("completed_at")}
             """.strip(),
-            title="✅ 同步完成",
-            border_style="green"
-        ))
+                title="✅ 同步完成",
+                border_style="green",
+            )
+        )
 
         # 显示详细结果
         results = sync_data.get("results", [])
@@ -662,13 +672,13 @@ def sync_contract(name, source, direction, version, commit):
 
 # ==================== 导入/导出 ====================
 
+
 @cli.command("export")
 @click.argument("version_id", type=int)
 @click.option("--output", "-o", required=True, help="输出文件路径")
 @click.option("--format", "-f", type=click.Choice(["yaml", "json"]), default="yaml", help="输出格式")
 def export_version(version_id, output, format):
-    """
-    导出契约版本到文件
+    """导出契约版本到文件
 
     示例:
         api-contract-sync export 1 -o openapi.yaml -f yaml
@@ -698,7 +708,7 @@ def export_version(version_id, output, format):
 
         print_success(f"契约已导出到: {output}")
     except Exception as e:
-        print_error(f"导出失败: {str(e)}")
+        print_error(f"导出失败: {e!s}")
 
 
 @cli.command("import")
@@ -707,8 +717,7 @@ def export_version(version_id, output, format):
 @click.option("--file", "-f", required=True, help="导入文件路径")
 @click.option("--activate", is_flag=True, help="导入后自动激活")
 def import_version(name, version, file, activate):
-    """
-    从文件导入契约版本
+    """从文件导入契约版本
 
     示例:
         api-contract-sync import market-api 1.0.0 -f openapi.yaml --activate

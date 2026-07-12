@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""
-测试股票策略系统API端点
+"""测试股票策略系统API端点
 测试10个股票策略的各项功能
 """
 
-import requests
 import json
 import os
+
+import requests
+
 
 BACKEND_PORT = os.getenv("BACKEND_PORT", "").strip()
 if not BACKEND_PORT:
@@ -173,7 +174,7 @@ def test_multiple_strategies():
                         "strategy": strategy,
                         "symbol": symbol,
                         "matched": data.get("data", {}).get("match_result", False),
-                    }
+                    },
                 )
 
     print(f"\n{'=' * 60}")

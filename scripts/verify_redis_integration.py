@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Redis Integration Verification Script
+"""Redis Integration Verification Script
 =====================================
 
 验证三数据库架构中Redis的集成状态
@@ -10,9 +9,8 @@ Author: MyStocks Project
 """
 
 import sys
-import os
-import asyncio
 from pathlib import Path
+
 
 # 添加项目路径
 project_root = Path(__file__).parent.parent
@@ -22,9 +20,9 @@ sys.path.insert(0, str(project_root / "web" / "backend"))
 
 def test_redis_connection():
     """测试1: Redis连接"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("📋 测试1: Redis连接验证")
-    print("="*60)
+    print("=" * 60)
 
     try:
         from app.core.redis_client import redis_manager
@@ -36,9 +34,8 @@ def test_redis_connection():
             print(f"   - Port: {redis_manager.client.connection_pool.connection_kwargs['port']}")
             print(f"   - DB: {redis_manager.client.connection_pool.connection_kwargs['db']}")
             return True
-        else:
-            print("❌ Redis连接失败")
-            return False
+        print("❌ Redis连接失败")
+        return False
 
     except Exception as e:
         print(f"❌ Redis连接异常: {e}")
@@ -47,9 +44,9 @@ def test_redis_connection():
 
 def test_cache_service():
     """测试2: 缓存服务"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("📋 测试2: L2缓存服务")
-    print("="*60)
+    print("=" * 60)
 
     try:
         from app.services.redis import redis_cache
@@ -73,26 +70,27 @@ def test_cache_service():
             redis_cache.delete(test_key)
             print("🗑️  测试数据已清理")
             return True
-        else:
-            print("❌ 缓存数据不匹配")
-            return False
+        print("❌ 缓存数据不匹配")
+        return False
 
     except Exception as e:
         print(f"❌ 缓存服务异常: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
 
 def test_pubsub_service():
     """测试3: 消息总线"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("📋 测试3: 实时消息总线")
-    print("="*60)
+    print("=" * 60)
 
     try:
-        from app.services.redis import redis_pubsub
         import time
+
+        from app.services.redis import redis_pubsub
 
         # 订阅测试频道
         test_channel = "test:verification"
@@ -117,22 +115,22 @@ def test_pubsub_service():
         if received_messages and received_messages[0] == test_message:
             print("✅ 消息总线测试成功")
             return True
-        else:
-            print("⚠️  消息未收到 (可能需要启动监听器)")
-            return True  # 不算失败，因为需要单独启动监听器
+        print("⚠️  消息未收到 (可能需要启动监听器)")
+        return True  # 不算失败，因为需要单独启动监听器
 
     except Exception as e:
         print(f"❌ 消息总线异常: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
 
 def test_lock_service():
     """测试4: 分布式锁"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("📋 测试4: 分布式锁")
-    print("="*60)
+    print("=" * 60)
 
     try:
         from app.services.redis import redis_lock
@@ -155,22 +153,22 @@ def test_lock_service():
         if not redis_lock.is_locked(test_resource):
             print("✅ 锁已正确释放")
             return True
-        else:
-            print("❌ 锁未正确释放")
-            return False
+        print("❌ 锁未正确释放")
+        return False
 
     except Exception as e:
         print(f"❌ 分布式锁异常: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
 
 def test_indicator_cache():
     """测试5: 指标缓存集成"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("📋 测试5: 指标缓存专用方法")
-    print("="*60)
+    print("=" * 60)
 
     try:
         from app.services.redis import redis_cache
@@ -184,7 +182,11 @@ def test_indicator_cache():
 
         print(f"💾 缓存指标结果: {stock_code} - {indicator_code}")
         success = redis_cache.cache_indicator_result(
-            stock_code, indicator_code, params, test_result, ttl=3600
+            stock_code,
+            indicator_code,
+            params,
+            test_result,
+            ttl=3600,
         )
 
         if success:
@@ -195,25 +197,24 @@ def test_indicator_cache():
             if cached and cached == test_result:
                 print("✅ 指标缓存读取成功")
                 return True
-            else:
-                print("❌ 指标缓存读取失败")
-                return False
-        else:
-            print("❌ 指标缓存写入失败")
+            print("❌ 指标缓存读取失败")
             return False
+        print("❌ 指标缓存写入失败")
+        return False
 
     except Exception as e:
         print(f"❌ 指标缓存异常: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
 
 def main():
     """运行所有测试"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("🚀 MyStocks Redis 集成验证工具")
-    print("="*60)
+    print("=" * 60)
     print(f"项目路径: {project_root}")
     print(f"Python版本: {sys.version.split()[0]}")
 
@@ -226,9 +227,9 @@ def main():
     }
 
     # 汇总结果
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("📊 测试结果汇总")
-    print("="*60)
+    print("=" * 60)
 
     total = len(results)
     passed = sum(1 for v in results.values() if v)
@@ -237,16 +238,15 @@ def main():
         status = "✅ 通过" if result else "❌ 失败"
         print(f"{test_name:<20} {status}")
 
-    print("\n" + "-"*60)
+    print("\n" + "-" * 60)
     print(f"总计: {passed}/{total} 测试通过")
-    print("="*60)
+    print("=" * 60)
 
     if passed == total:
         print("\n🎉 所有测试通过！Redis集成成功！")
         return 0
-    else:
-        print(f"\n⚠️  {total - passed}个测试失败，请检查Redis配置")
-        return 1
+    print(f"\n⚠️  {total - passed}个测试失败，请检查Redis配置")
+    return 1
 
 
 if __name__ == "__main__":

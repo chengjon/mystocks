@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AI测试优化器使用反馈分析器
+"""AI测试优化器使用反馈分析器
 收集、分析和报告AI测试优化器的使用情况，为工具改进提供数据支持
 
 功能:
@@ -15,19 +14,19 @@ AI测试优化器使用反馈分析器
 日期: 2025-01-22
 """
 
-import sys
+import logging
 import sqlite3
 import statistics
+import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List
-import argparse
-import logging
-import matplotlib.pyplot as plt
+
 
 # 设置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -275,8 +274,7 @@ class UsageFeedbackAnalyzerCoreMixin:
 
                 return {
                     "detailed": dict(
-                        (row[0], {"count": row[1], "avg_time": row[2] if row[2] else 0})
-                        for row in command_data
+                        (row[0], {"count": row[1], "avg_time": row[2] if row[2] else 0}) for row in command_data
                     ),
                     "top_commands": dict((row[0], row[1]) for row in command_data[:5]),
                 }
@@ -314,9 +312,7 @@ class UsageFeedbackAnalyzerCoreMixin:
 
                 success_by_time = {}
                 for period, total, success in time_data:
-                    success_by_time[period] = (
-                        (success / total * 100) if total > 0 else 0
-                    )
+                    success_by_time[period] = (success / total * 100) if total > 0 else 0
 
                 # 计算总体成功率
                 total_success = conn.execute(f"""
@@ -325,11 +321,7 @@ class UsageFeedbackAnalyzerCoreMixin:
                     WHERE timestamp >= date('now', '-{days} days')
                 """).fetchone()
 
-                overall_rate = (
-                    (total_success[1] / total_success[0] * 100)
-                    if total_success[0] > 0
-                    else 0
-                )
+                overall_rate = (total_success[1] / total_success[0] * 100) if total_success[0] > 0 else 0
 
                 return {"overall_rate": overall_rate, "by_time_of_day": success_by_time}
 
@@ -373,13 +365,9 @@ class UsageFeedbackAnalyzerCoreMixin:
 
                 if session_data:
                     avg_session_length = statistics.mean(
-                        [row[2] for row in session_data]
+                        [row[2] for row in session_data],
                     )
-                    repeat_users = (
-                        len([row for row in session_data if row[1] > 1])
-                        / len(session_data)
-                        * 100
-                    )
+                    repeat_users = len([row for row in session_data if row[1] > 1]) / len(session_data) * 100
                 else:
                     avg_session_length = 0
                     repeat_users = 0
@@ -537,15 +525,9 @@ class UsageFeedbackAnalyzerCoreMixin:
                 total_feedbacks = sum(rating_dict.values())
 
                 # 计算情绪分布
-                positive_sentiment = sum(
-                    count for rating, count in rating_dict.items() if rating >= 4
-                )
-                neutral_sentiment = sum(
-                    count for rating, count in rating_dict.items() if rating == 3
-                )
-                negative_sentiment = sum(
-                    count for rating, count in rating_dict.items() if rating <= 2
-                )
+                positive_sentiment = sum(count for rating, count in rating_dict.items() if rating >= 4)
+                neutral_sentiment = sum(count for rating, count in rating_dict.items() if rating == 3)
+                negative_sentiment = sum(count for rating, count in rating_dict.items() if rating <= 2)
 
                 return {
                     "positive_sentiment": (positive_sentiment / total_feedbacks) * 100,
@@ -671,4 +653,3 @@ class UsageFeedbackAnalyzerCoreMixin:
                 "satisfaction_level": "Error",
                 "satisfaction_trend": "Error",
             }
-

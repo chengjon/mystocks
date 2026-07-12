@@ -1,26 +1,28 @@
 #!/usr/bin/env python3
-"""
-Algorithm Database Migration Script
+"""Algorithm Database Migration Script
 Phase 1.4: Database Integration for Quantitative Trading Algorithms API
 
 执行PostgreSQL数据库迁移，创建算法模型和执行结果相关的表结构
 """
 
+import logging
 import os
 import sys
-import logging
+
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
+
 # 添加项目根目录到Python路径
 project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
 )
 sys.path.insert(0, project_root)
 
 # 配置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -38,13 +40,17 @@ def get_db_connection():
 
     try:
         conn = psycopg2.connect(
-            host=host, port=port, user=user, password=password, database=database
+            host=host,
+            port=port,
+            user=user,
+            password=password,
+            database=database,
         )
         conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         logger.info("数据库连接成功")
         return conn
     except Exception as e:
-        logger.error(f"数据库连接失败: {str(e)}")
+        logger.error(f"数据库连接失败: {e!s}")
         raise
 
 
@@ -65,7 +71,7 @@ def check_table_exists(conn, table_name):
             exists = cursor.fetchone()[0]
             return exists
     except Exception as e:
-        logger.error(f"检查表失败: {str(e)}")
+        logger.error(f"检查表失败: {e!s}")
         return False
 
 
@@ -75,10 +81,10 @@ def run_migration(conn, migration_file):
 
     # 读取SQL文件
     try:
-        with open(migration_file, "r", encoding="utf-8") as f:
+        with open(migration_file, encoding="utf-8") as f:
             sql_content = f.read()
     except Exception as e:
-        logger.error(f"读取迁移文件失败: {str(e)}")
+        logger.error(f"读取迁移文件失败: {e!s}")
         raise
 
     # 分割SQL语句并执行
@@ -88,7 +94,7 @@ def run_migration(conn, migration_file):
             cursor.execute(sql_content)
             logger.info("迁移脚本执行成功")
     except Exception as e:
-        logger.error(f"执行迁移脚本失败: {str(e)}")
+        logger.error(f"执行迁移脚本失败: {e!s}")
         raise
 
 
@@ -115,7 +121,7 @@ def verify_migration(conn):
                     count = cursor.fetchone()[0]
                     logger.info(f"  - 记录数: {count}")
             except Exception as e:
-                logger.warning(f"  - 查询记录数失败: {str(e)}")
+                logger.warning(f"  - 查询记录数失败: {e!s}")
         else:
             logger.error(f"✗ 表 {table_name} 不存在")
             all_exist = False
@@ -187,7 +193,7 @@ def main():
             sys.exit(1)
 
     except Exception as e:
-        logger.error(f"迁移过程中发生错误: {str(e)}")
+        logger.error(f"迁移过程中发生错误: {e!s}")
         sys.exit(1)
     finally:
         conn.close()

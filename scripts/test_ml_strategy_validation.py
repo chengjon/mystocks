@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-ML策略验证框架测试脚本
+"""ML策略验证框架测试脚本
 
 测试策略验证和对比功能：
 - 单策略验证
@@ -13,12 +12,14 @@ ML策略验证框架测试脚本
 创建时间: 2026-01-12
 """
 
-import sys
 import asyncio
 import logging
+import sys
+from datetime import datetime, timedelta
+
 import numpy as np
 import pandas as pd
-from datetime import datetime, timedelta
+
 
 # 添加项目根目录到路径
 project_root = "/opt/claude/mystocks_spec"
@@ -72,7 +73,7 @@ async def generate_test_market_data(days: int = 400) -> pd.DataFrame:
             "volume": [
                 int(np.random.normal(2000000, 500000) * (1 + 0.3 * np.random.normal(0, 1))) for _ in range(days)
             ],
-        }
+        },
     )
 
     df.set_index("date", inplace=True)
@@ -86,8 +87,8 @@ async def test_single_strategy_validation():
     logger.info("=" * 80)
 
     try:
-        from src.ml_strategy.validation.ml_strategy_validator import MLStrategyValidator
         from src.ml_strategy.strategy.svm_trading_strategy import SVMTradingStrategy
+        from src.ml_strategy.validation.ml_strategy_validator import MLStrategyValidator
 
         # 创建验证器
         validator = MLStrategyValidator()
@@ -103,7 +104,10 @@ async def test_single_strategy_validation():
 
         # 验证策略
         validation_result = await validator.validate_strategy(
-            strategy, market_data, validation_periods=3, train_test_split=0.7
+            strategy,
+            market_data,
+            validation_periods=3,
+            train_test_split=0.7,
         )
 
         logger.info("✓ 策略验证完成")
@@ -135,10 +139,10 @@ async def test_multi_strategy_comparison():
     logger.info("=" * 80)
 
     try:
-        from src.ml_strategy.validation.ml_strategy_validator import MLStrategyValidator
-        from src.ml_strategy.strategy.svm_trading_strategy import SVMTradingStrategy
         from src.ml_strategy.strategy.decision_tree_trading_strategy import DecisionTreeTradingStrategy
         from src.ml_strategy.strategy.naive_bayes_trading_strategy import NaiveBayesTradingStrategy
+        from src.ml_strategy.strategy.svm_trading_strategy import SVMTradingStrategy
+        from src.ml_strategy.validation.ml_strategy_validator import MLStrategyValidator
 
         # 创建验证器
         validator = MLStrategyValidator()
@@ -184,7 +188,8 @@ async def test_multi_strategy_comparison():
             logger.info("\n最佳策略:")
             for metric, strategy in best.items():
                 metric_name = {"total_return": "总收益率", "sharpe_ratio": "夏普比率", "win_rate": "胜率"}.get(
-                    metric, metric
+                    metric,
+                    metric,
                 )
                 logger.info(f"  {metric_name}: {strategy}")
 
@@ -192,9 +197,9 @@ async def test_multi_strategy_comparison():
         statistical_tests = comparison_result.get("statistical_tests", {})
         if statistical_tests and "t_test_vs_benchmark" in statistical_tests:
             t_test = statistical_tests["t_test_vs_benchmark"]
-            logger.info(f"\n统计检验:")
+            logger.info("\n统计检验:")
             logger.info(
-                f"  t检验显著性: {'是' if t_test.get('significant', False) else '否'} (p={t_test.get('p_value', 'N/A'):.3f})"
+                f"  t检验显著性: {'是' if t_test.get('significant', False) else '否'} (p={t_test.get('p_value', 'N/A'):.3f})",
             )
 
         return True
@@ -215,8 +220,8 @@ async def test_validation_report_generation():
     logger.info("=" * 80)
 
     try:
-        from src.ml_strategy.validation.ml_strategy_validator import MLStrategyValidator
         from src.ml_strategy.strategy.svm_trading_strategy import SVMTradingStrategy
+        from src.ml_strategy.validation.ml_strategy_validator import MLStrategyValidator
 
         # 创建验证器和策略
         validator = MLStrategyValidator()

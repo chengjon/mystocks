@@ -1,5 +1,4 @@
-"""
-Simple Database Index Optimization Script
+"""Simple Database Index Optimization Script
 Task: task-2.1 - Optimize database query performance
 
 Author: DB CLI (Claude Code)
@@ -8,7 +7,9 @@ Date: 2026-01-01
 
 import os
 import sys
+
 from sqlalchemy import create_engine, text
+
 
 # Add parent directory to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -108,7 +109,7 @@ def main():
                     WHERE schemaname = 'public'
                     ORDER BY idx_scan DESC
                     LIMIT 10
-                """)
+                """),
                 )
 
                 print(f"   {'Table':<20} {'Index':<40} {'Scans':<10} {'Size':<10}")

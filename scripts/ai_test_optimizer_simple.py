@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AI测试优化器 - 简化版
+"""AI测试优化器 - 简化版
 提供更简单的命令行接口，解决用户反馈的CLI复杂度问题
 
 核心功能:
@@ -14,9 +13,10 @@ AI测试优化器 - 简化版
 日期: 2025-12-22
 """
 
-import sys
 import argparse
+import sys
 from pathlib import Path
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent
@@ -47,30 +47,45 @@ def create_simple_parser():
     # auto - 自动优化命令
     auto_parser = subparsers.add_parser("auto", help="自动优化所有核心模块")
     auto_parser.add_argument(
-        "--verbose", "-v", action="store_true", help="显示详细输出"
+        "--verbose",
+        "-v",
+        action="store_true",
+        help="显示详细输出",
     )
 
     # quick - 快速分析命令
     quick_parser = subparsers.add_parser("quick", help="快速分析覆盖率")
     quick_parser.add_argument("file", help="要分析的Python文件")
     quick_parser.add_argument(
-        "--verbose", "-v", action="store_true", help="显示详细输出"
+        "--verbose",
+        "-v",
+        action="store_true",
+        help="显示详细输出",
     )
 
     # test - 生成测试命令
     test_parser = subparsers.add_parser("test", help="只生成测试文件")
     test_parser.add_argument("file", help="要生成测试的Python文件")
     test_parser.add_argument(
-        "--verbose", "-v", action="store_true", help="显示详细输出"
+        "--verbose",
+        "-v",
+        action="store_true",
+        help="显示详细输出",
     )
 
     # perf - 性能检测命令
     perf_parser = subparsers.add_parser("perf", help="运行性能回归检测")
     perf_parser.add_argument(
-        "--modules", nargs="*", default=[], help="要检测的模块列表"
+        "--modules",
+        nargs="*",
+        default=[],
+        help="要检测的模块列表",
     )
     perf_parser.add_argument(
-        "--verbose", "-v", action="store_true", help="显示详细输出"
+        "--verbose",
+        "-v",
+        action="store_true",
+        help="显示详细输出",
     )
 
     return parser
@@ -131,8 +146,7 @@ def handle_quick_command(args):
 
         if result.current_coverage < 95:
             print(
-                "💡 建议: 运行 './scripts/ai_test_optimizer_simple.py test %s' 来生成测试"
-                % args.file
+                "💡 建议: 运行 './scripts/ai_test_optimizer_simple.py test %s' 来生成测试" % args.file,
             )
         else:
             print("🎉 恭喜! 覆盖率已达标")

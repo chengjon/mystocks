@@ -1,19 +1,14 @@
 """量化策略验证器子模块"""
 
 import ast
-import json
 import logging
-import os
 import re
-import subprocess
-import sys
-import time
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict
 
 from scripts.dev.ci.validators._ai_validator_performance_tail import (
     AIValidatorPerformanceAnalysisMixin,
 )
+
 
 logger = logging.getLogger(__name__)
 
@@ -24,10 +19,9 @@ class AIValidatorMixin(AIValidatorPerformanceAnalysisMixin):
     def _validate_ai_code_review(self) -> Dict[str, Any]:
         """验证AI增强代码审查"""
         try:
+            import ast
             import os
             import re
-            import ast
-            import inspect
 
             review_issues = []
             files_reviewed = 0
@@ -90,7 +84,9 @@ class AIValidatorMixin(AIValidatorPerformanceAnalysisMixin):
                         file_path = os.path.join(root, file)
                         try:
                             with open(
-                                file_path, "r", encoding="utf-8", errors="ignore"
+                                file_path,
+                                encoding="utf-8",
+                                errors="ignore",
                             ) as f:
                                 content = f.read()
                                 lines = content.split("\n")
@@ -113,9 +109,10 @@ class AIValidatorMixin(AIValidatorPerformanceAnalysisMixin):
                                                 "severity": severity,
                                                 "occurrences": len(matches),
                                                 "line_numbers": self._find_line_numbers(
-                                                    content, pattern
+                                                    content,
+                                                    pattern,
                                                 ),
-                                            }
+                                            },
                                         )
 
                                 # 2. AST分析 - 检查函数复杂度
@@ -123,10 +120,8 @@ class AIValidatorMixin(AIValidatorPerformanceAnalysisMixin):
                                     tree = ast.parse(content)
                                     for node in ast.walk(tree):
                                         if isinstance(node, ast.FunctionDef):
-                                            complexity = (
-                                                self._calculate_function_complexity(
-                                                    node
-                                                )
+                                            complexity = self._calculate_function_complexity(
+                                                node,
                                             )
                                             total_complexity_score += complexity
 
@@ -139,7 +134,7 @@ class AIValidatorMixin(AIValidatorPerformanceAnalysisMixin):
                                                         "severity": "medium",
                                                         "suggestion": "考虑重构函数，拆分为更小的函数",
                                                         "line_number": node.lineno,
-                                                    }
+                                                    },
                                                 )
 
                                         elif isinstance(node, ast.ClassDef):
@@ -152,7 +147,7 @@ class AIValidatorMixin(AIValidatorPerformanceAnalysisMixin):
                                                         "type": f"类 '{node.name}' 缺少文档字符串",
                                                         "severity": "low",
                                                         "line_number": node.lineno,
-                                                    }
+                                                    },
                                                 )
 
                                 except SyntaxError:
@@ -162,7 +157,7 @@ class AIValidatorMixin(AIValidatorPerformanceAnalysisMixin):
                                             "category": "SYNTAX",
                                             "type": "文件包含语法错误",
                                             "severity": "high",
-                                        }
+                                        },
                                     )
 
                                 # 3. 代码风格检查
@@ -174,9 +169,9 @@ class AIValidatorMixin(AIValidatorPerformanceAnalysisMixin):
                                 {
                                     "file": file_path,
                                     "category": "ERROR",
-                                    "type": f"文件读取错误: {str(e)}",
+                                    "type": f"文件读取错误: {e!s}",
                                     "severity": "medium",
-                                }
+                                },
                             )
                             continue
 
@@ -187,9 +182,7 @@ class AIValidatorMixin(AIValidatorPerformanceAnalysisMixin):
             review_score = self._calculate_review_score(review_issues, files_reviewed)
 
             # AI代码审查通过标准：评分>=70且无高严重性问题
-            high_severity_issues = [
-                issue for issue in review_issues if issue.get("severity") == "high"
-            ]
+            high_severity_issues = [issue for issue in review_issues if issue.get("severity") == "high"]
             ai_review_ok = review_score >= 70 and len(high_severity_issues) == 0
 
             return {
@@ -206,7 +199,7 @@ class AIValidatorMixin(AIValidatorPerformanceAnalysisMixin):
             }
 
         except Exception as e:
-            return {"passed": False, "error": f"AI代码审查异常: {str(e)}"}
+            return {"passed": False, "error": f"AI代码审查异常: {e!s}"}
 
     def _calculate_function_complexity(self, node: ast.FunctionDef) -> int:
         """计算函数复杂度（简化的圈复杂度）"""
@@ -222,11 +215,7 @@ class AIValidatorMixin(AIValidatorPerformanceAnalysisMixin):
 
     def _has_docstring(self, node: ast.ClassDef) -> bool:
         """检查类或函数是否有文档字符串"""
-        return (
-            len(node.body) > 0
-            and isinstance(node.body[0], ast.Expr)
-            and isinstance(node.body[0].value, ast.Str)
-        )
+        return len(node.body) > 0 and isinstance(node.body[0], ast.Expr) and isinstance(node.body[0].value, ast.Str)
 
     def _find_line_numbers(self, content: str, pattern: str) -> list:
         """查找模式匹配的行号"""
@@ -251,7 +240,7 @@ class AIValidatorMixin(AIValidatorPerformanceAnalysisMixin):
                         "type": f"行长度过长 ({len(line)} > 88)",
                         "severity": "low",
                         "line_number": i,
-                    }
+                    },
                 )
 
             # 检查连续空行
@@ -264,7 +253,7 @@ class AIValidatorMixin(AIValidatorPerformanceAnalysisMixin):
                             "type": "多余的连续空行",
                             "severity": "low",
                             "line_number": i,
-                        }
+                        },
                     )
 
         return issues
@@ -300,8 +289,8 @@ class AIValidatorMixin(AIValidatorPerformanceAnalysisMixin):
     def _validate_automated_suggestions(self) -> Dict[str, Any]:
         """验证自动化修复建议和工具链"""
         try:
-            import os
             import glob
+            import os
 
             suggestions_found = []
             tools_available = []
@@ -354,7 +343,7 @@ class AIValidatorMixin(AIValidatorPerformanceAnalysisMixin):
                                     "file": file_path,
                                     "description": check["description"],
                                     "importance": check["importance"],
-                                }
+                                },
                             )
                             break
                 elif "pattern" in check:
@@ -368,7 +357,7 @@ class AIValidatorMixin(AIValidatorPerformanceAnalysisMixin):
                                     "file": match,
                                     "description": check["description"],
                                     "importance": check["importance"],
-                                }
+                                },
                             )
 
                 if not found:
@@ -379,18 +368,17 @@ class AIValidatorMixin(AIValidatorPerformanceAnalysisMixin):
                             "description": check["description"],
                             "importance": check["importance"],
                             "suggestion": f"考虑添加{check['name']}来提高开发效率",
-                        }
+                        },
                     )
 
             # 分析工具链完整性
-            high_importance_tools = [
-                t for t in tools_available if t["importance"] == "high"
-            ]
+            high_importance_tools = [t for t in tools_available if t["importance"] == "high"]
             automation_score = len(high_importance_tools) * 25  # 每个高重要性工具25分
 
             # 生成智能建议
             smart_suggestions = self._generate_smart_suggestions(
-                tools_available, suggestions_found
+                tools_available,
+                suggestions_found,
             )
 
             # 自动化建议验证通过标准：至少有50%的建议得分
@@ -409,10 +397,12 @@ class AIValidatorMixin(AIValidatorPerformanceAnalysisMixin):
             }
 
         except Exception as e:
-            return {"passed": False, "error": f"自动化建议验证异常: {str(e)}"}
+            return {"passed": False, "error": f"自动化建议验证异常: {e!s}"}
 
     def _generate_smart_suggestions(
-        self, tools_available: list, suggestions_found: list
+        self,
+        tools_available: list,
+        suggestions_found: list,
     ) -> list:
         """生成智能化的改进建议"""
         smart_suggestions = []
@@ -428,7 +418,7 @@ class AIValidatorMixin(AIValidatorPerformanceAnalysisMixin):
                     "title": "添加Pre-commit钩子",
                     "description": "配置pre-commit来自动化代码质量检查",
                     "implementation": "安装pre-commit并配置基本的钩子（black, flake8, mypy）",
-                }
+                },
             )
 
         if "Makefile" not in tool_names:
@@ -439,7 +429,7 @@ class AIValidatorMixin(AIValidatorPerformanceAnalysisMixin):
                     "title": "创建Makefile",
                     "description": "添加make命令来简化常见开发任务",
                     "implementation": "创建包含install, test, lint, format等目标的Makefile",
-                }
+                },
             )
 
         # 基于项目规模生成建议
@@ -451,7 +441,7 @@ class AIValidatorMixin(AIValidatorPerformanceAnalysisMixin):
                     "title": "完善开发工具链",
                     "description": "项目缺少基本的自动化工具，建议完善CI/CD流程",
                     "implementation": "添加GitHub Actions工作流，配置自动化测试和部署",
-                }
+                },
             )
 
         return smart_suggestions
@@ -459,9 +449,9 @@ class AIValidatorMixin(AIValidatorPerformanceAnalysisMixin):
     def _validate_performance_optimization(self) -> Dict[str, Any]:
         """验证智能性能优化分析"""
         try:
+            import ast
             import os
             import re
-            import ast
 
             performance_issues = []
             optimization_suggestions = []
@@ -555,7 +545,9 @@ class AIValidatorMixin(AIValidatorPerformanceAnalysisMixin):
                         file_path = os.path.join(root, file)
                         try:
                             with open(
-                                file_path, "r", encoding="utf-8", errors="ignore"
+                                file_path,
+                                encoding="utf-8",
+                                errors="ignore",
                             ) as f:
                                 content = f.read()
                                 lines = content.split("\n")
@@ -570,7 +562,9 @@ class AIValidatorMixin(AIValidatorPerformanceAnalysisMixin):
                                     suggestion,
                                 ) in performance_patterns:
                                     matches = re.findall(
-                                        pattern, content, re.IGNORECASE | re.DOTALL
+                                        pattern,
+                                        content,
+                                        re.IGNORECASE | re.DOTALL,
                                     )
                                     if matches:
                                         performance_issues.append(
@@ -582,16 +576,17 @@ class AIValidatorMixin(AIValidatorPerformanceAnalysisMixin):
                                                 "suggestion": suggestion,
                                                 "occurrences": len(matches),
                                                 "lines": self._find_line_numbers(
-                                                    content, pattern
+                                                    content,
+                                                    pattern,
                                                 ),
-                                            }
+                                            },
                                         )
 
                                 # 2. AST分析 - 检测性能反模式
                                 try:
                                     tree = ast.parse(content)
                                     perf_analysis = self._analyze_performance_patterns(
-                                        tree
+                                        tree,
                                     )
                                     performance_issues.extend(perf_analysis)
                                 except SyntaxError:
@@ -601,14 +596,14 @@ class AIValidatorMixin(AIValidatorPerformanceAnalysisMixin):
                                             "category": "SYNTAX",
                                             "type": "语法错误影响性能分析",
                                             "severity": "medium",
-                                        }
+                                        },
                                     )
 
                                 # 3. 生成优化建议
-                                file_suggestions = (
-                                    self._generate_performance_suggestions(
-                                        content, lines, file_path
-                                    )
+                                file_suggestions = self._generate_performance_suggestions(
+                                    content,
+                                    lines,
+                                    file_path,
                                 )
                                 optimization_suggestions.extend(file_suggestions)
 
@@ -617,9 +612,9 @@ class AIValidatorMixin(AIValidatorPerformanceAnalysisMixin):
                                 {
                                     "file": file_path,
                                     "category": "ERROR",
-                                    "type": f"性能分析错误: {str(e)}",
+                                    "type": f"性能分析错误: {e!s}",
                                     "severity": "low",
-                                }
+                                },
                             )
                             continue
 
@@ -628,18 +623,18 @@ class AIValidatorMixin(AIValidatorPerformanceAnalysisMixin):
 
             # 计算性能优化评分
             optimization_score = self._calculate_performance_score(
-                performance_issues, files_analyzed
+                performance_issues,
+                files_analyzed,
             )
 
             # 生成智能优化建议
             smart_optimizations = self._prioritize_optimizations(
-                optimization_suggestions, performance_issues
+                optimization_suggestions,
+                performance_issues,
             )
 
             # 性能优化验证通过标准：评分>=60且无高严重性问题
-            high_severity_issues = [
-                issue for issue in performance_issues if issue.get("severity") == "high"
-            ]
+            high_severity_issues = [issue for issue in performance_issues if issue.get("severity") == "high"]
             performance_ok = optimization_score >= 60 and len(high_severity_issues) <= 2
 
             return {
@@ -657,5 +652,4 @@ class AIValidatorMixin(AIValidatorPerformanceAnalysisMixin):
             }
 
         except Exception as e:
-            return {"passed": False, "error": f"性能优化分析异常: {str(e)}"}
-
+            return {"passed": False, "error": f"性能优化分析异常: {e!s}"}

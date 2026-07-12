@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-检查 Python 文件大小的兼容入口。
+"""检查 Python 文件大小的兼容入口。
 
 该脚本保留历史 CLI 形态，但内部复用 canonical file-size guardrail 逻辑。
 """
@@ -13,6 +11,7 @@ import json
 import sys
 from pathlib import Path
 
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -21,10 +20,7 @@ from scripts.compliance.file_size_guardrail import build_report
 
 
 def to_python_file_report(report: dict[str, object], limit: int) -> dict[str, object]:
-    violations = [
-        {"path": item["path"], "lines": item["lines"]}
-        for item in report["violations"]
-    ]
+    violations = [{"path": item["path"], "lines": item["lines"]} for item in report["violations"]]
     return {
         "total_files": report["checked_files"],
         "oversized_files": violations,
@@ -47,7 +43,9 @@ def print_report(report: dict[str, object], output_format: str = "text") -> None
     if report["oversized_files"]:
         print("\n超过限制的文件:")
         for file_info in sorted(
-            report["oversized_files"], key=lambda item: item["lines"], reverse=True
+            report["oversized_files"],
+            key=lambda item: item["lines"],
+            reverse=True,
         ):
             print(f"  - {file_info['path']}: {file_info['lines']} 行")
     else:

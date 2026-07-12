@@ -1,47 +1,49 @@
 #!/usr/bin/env python3
-"""
-文件分析系统主程序
+"""文件分析系统主程序
 用途：整合所有分析器，扫描项目文件并保存到PostgreSQL数据库
 """
 
+import argparse
+import logging
 import os
 import sys
 import uuid
-import psycopg2
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 from typing import Dict, List, Optional
-import logging
-import argparse
+
+import psycopg2
+
 
 # 添加当前目录到Python路径
 sys.path.insert(0, os.path.dirname(__file__))
 
-from python_analyzer import PythonAnalyzer
-from typescript_analyzer import TypeScriptAnalyzer
-from html_analyzer import HTMLAnalyzer
 from css_analyzer import CSSAnalyzer
+from html_analyzer import HTMLAnalyzer
 from json_analyzer import JSONAnalyzer
+from python_analyzer import PythonAnalyzer
 from reference_analyzer import ReferenceAnalyzer
+from typescript_analyzer import TypeScriptAnalyzer
+
 
 # 配置日志
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler('file_analysis.log'),
-        logging.StreamHandler()
-    ]
+        logging.FileHandler("file_analysis.log"),
+        logging.StreamHandler(),
+    ],
 )
 logger = logging.getLogger(__name__)
 
 # 数据库配置
 DB_CONFIG = {
-    'host': os.getenv('POSTGRES_HOST', 'localhost'),
-    'port': int(os.getenv('POSTGRES_PORT', 5432)),
-    'database': os.getenv('ANALYSIS_DB', 'file_analysis_db'),
-    'user': os.getenv('POSTGRES_USER', 'postgres'),
-    'password': os.getenv('POSTGRES_PASSWORD', 'postgres')
+    "host": os.getenv("POSTGRES_HOST", "localhost"),
+    "port": int(os.getenv("POSTGRES_PORT", 5432)),
+    "database": os.getenv("ANALYSIS_DB", "file_analysis_db"),
+    "user": os.getenv("POSTGRES_USER", "postgres"),
+    "password": os.getenv("POSTGRES_PASSWORD", "postgres"),
 }
 
 
@@ -65,15 +67,15 @@ class FileAnalysisSystem:
 
         # 统计信息
         self.stats = {
-            'total_files': 0,
-            'python_files': 0,
-            'typescript_files': 0,
-            'javascript_files': 0,
-            'vue_files': 0,
-            'html_files': 0,
-            'css_files': 0,
-            'json_files': 0,
-            'errors': 0
+            "total_files": 0,
+            "python_files": 0,
+            "typescript_files": 0,
+            "javascript_files": 0,
+            "vue_files": 0,
+            "html_files": 0,
+            "css_files": 0,
+            "json_files": 0,
+            "errors": 0,
         }
 
         # 分析结果
@@ -99,11 +101,14 @@ class FileAnalysisSystem:
         cursor = self.conn.cursor()
 
         try:
-            cursor.execute("""
+            cursor.execute(
+                """
                 INSERT INTO analysis_runs (run_id, status, start_time)
                 VALUES (%s, 'running', NOW())
                 RETURNING id
-            """, (self.run_id,))
+            """,
+                (self.run_id,),
+            )
 
             run_db_id = cursor.fetchone()[0]
             logger.info(f"分析运行记录创建成功，ID: {run_db_id}")
@@ -134,14 +139,14 @@ class FileAnalysisSystem:
 
             params = [
                 status,
-                self.stats['total_files'],
-                self.stats['python_files'],
-                self.stats['typescript_files'],
-                self.stats['javascript_files'],
-                self.stats['vue_files'],
-                self.stats['html_files'],
-                self.stats['css_files'],
-                self.stats['json_files']
+                self.stats["total_files"],
+                self.stats["python_files"],
+                self.stats["typescript_files"],
+                self.stats["javascript_files"],
+                self.stats["vue_files"],
+                self.stats["html_files"],
+                self.stats["css_files"],
+                self.stats["json_files"],
             ]
 
             if error_message:
@@ -163,16 +168,16 @@ class FileAnalysisSystem:
         logger.info(f"开始扫描项目文件: {self.project_root}")
 
         file_patterns = [
-            '**/*.py',
-            '**/*.ts',
-            '**/*.tsx',
-            '**/*.js',
-            '**/*.jsx',
-            '**/*.vue',
-            '**/*.html',
-            '**/*.htm',
-            '**/*.css',
-            '**/*.json'
+            "**/*.py",
+            "**/*.ts",
+            "**/*.tsx",
+            "**/*.js",
+            "**/*.jsx",
+            "**/*.vue",
+            "**/*.html",
+            "**/*.htm",
+            "**/*.css",
+            "**/*.json",
         ]
 
         files = []
@@ -180,15 +185,18 @@ class FileAnalysisSystem:
         for pattern in file_patterns:
             for file_path in self.project_root.rglob(pattern):
                 # 排除特定目录
-                if any(part in file_path.parts for part in [
-                    '__pycache__',
-                    '.git',
-                    'node_modules',
-                    '.pytest_cache',
-                    'venv',
-                    'env',
-                    '.venv'
-                ]):
+                if any(
+                    part in file_path.parts
+                    for part in [
+                        "__pycache__",
+                        ".git",
+                        "node_modules",
+                        ".pytest_cache",
+                        "venv",
+                        "env",
+                        ".venv",
+                    ]
+                ):
                     continue
 
                 files.append(str(file_path))
@@ -197,29 +205,29 @@ class FileAnalysisSystem:
         return files
 
     def scan_files_incremental(self, last_scan_time: datetime) -> List[str]:
-        """
-        增量扫描文件（只扫描修改过的文件）
+        """增量扫描文件（只扫描修改过的文件）
 
         Args:
             last_scan_time: 上次扫描时间
 
         Returns:
             修改过的文件列表
+
         """
         logger.info(f"开始增量扫描项目文件: {self.project_root}")
         logger.info(f"只扫描修改时间晚于 {last_scan_time} 的文件")
 
         file_patterns = [
-            '**/*.py',
-            '**/*.ts',
-            '**/*.tsx',
-            '**/*.js',
-            '**/*.jsx',
-            '**/*.vue',
-            '**/*.html',
-            '**/*.htm',
-            '**/*.css',
-            '**/*.json'
+            "**/*.py",
+            "**/*.ts",
+            "**/*.tsx",
+            "**/*.js",
+            "**/*.jsx",
+            "**/*.vue",
+            "**/*.html",
+            "**/*.htm",
+            "**/*.css",
+            "**/*.json",
         ]
 
         files = []
@@ -227,15 +235,18 @@ class FileAnalysisSystem:
         for pattern in file_patterns:
             for file_path in self.project_root.rglob(pattern):
                 # 排除特定目录
-                if any(part in file_path.parts for part in [
-                    '__pycache__',
-                    '.git',
-                    'node_modules',
-                    '.pytest_cache',
-                    'venv',
-                    'env',
-                    '.venv'
-                ]):
+                if any(
+                    part in file_path.parts
+                    for part in [
+                        "__pycache__",
+                        ".git",
+                        "node_modules",
+                        ".pytest_cache",
+                        "venv",
+                        "env",
+                        ".venv",
+                    ]
+                ):
                     continue
 
                 # 只添加修改时间晚于上次扫描时间的文件
@@ -254,36 +265,36 @@ class FileAnalysisSystem:
         file_ext = Path(file_path).suffix.lower()
 
         try:
-            if file_ext == '.py':
+            if file_ext == ".py":
                 result = self.python_analyzer.analyze_file(file_path)
-                self.stats['python_files'] += 1
-            elif file_ext in ['.ts', '.tsx']:
+                self.stats["python_files"] += 1
+            elif file_ext in [".ts", ".tsx"]:
                 result = self.ts_analyzer.analyze_file(file_path)
-                self.stats['typescript_files'] += 1
-            elif file_ext in ['.js', '.jsx', '.mjs']:
+                self.stats["typescript_files"] += 1
+            elif file_ext in [".js", ".jsx", ".mjs"]:
                 result = self.ts_analyzer.analyze_file(file_path)
-                self.stats['javascript_files'] += 1
-            elif file_ext == '.vue':
+                self.stats["javascript_files"] += 1
+            elif file_ext == ".vue":
                 result = self.html_analyzer.analyze_file(file_path)
-                self.stats['vue_files'] += 1
-            elif file_ext in ['.html', '.htm']:
+                self.stats["vue_files"] += 1
+            elif file_ext in [".html", ".htm"]:
                 result = self.html_analyzer.analyze_file(file_path)
-                self.stats['html_files'] += 1
-            elif file_ext == '.css':
+                self.stats["html_files"] += 1
+            elif file_ext == ".css":
                 result = self.css_analyzer.analyze_file(file_path)
-                self.stats['css_files'] += 1
-            elif file_ext == '.json':
+                self.stats["css_files"] += 1
+            elif file_ext == ".json":
                 result = self.json_analyzer.analyze_file(file_path)
-                self.stats['json_files'] += 1
+                self.stats["json_files"] += 1
             else:
                 return None
 
-            self.stats['total_files'] += 1
+            self.stats["total_files"] += 1
             return result
 
         except Exception as e:
             logger.error(f"分析文件失败: {file_path} - {e}")
-            self.stats['errors'] += 1
+            self.stats["errors"] += 1
             return None
 
     def save_file_metadata(self, file_info: Dict):
@@ -292,9 +303,10 @@ class FileAnalysisSystem:
 
         try:
             # 确定分类ID
-            category_id = self._get_category_id(file_info['file_type'])
+            category_id = self._get_category_id(file_info["file_type"])
 
-            cursor.execute("""
+            cursor.execute(
+                """
                 INSERT INTO file_metadata (
                     run_id, file_name, file_path, file_type, file_size,
                     line_count, function_count, class_count, category_id,
@@ -306,30 +318,32 @@ class FileAnalysisSystem:
                     %s, %s, %s, %s, %s, NOW()
                 )
                 RETURNING id
-            """, (
-                self.run_id,
-                file_info['file_name'],
-                file_info['file_path'],
-                file_info['file_type'],
-                file_info.get('file_size', 0),
-                file_info.get('line_count', 0),
-                file_info.get('function_count', 0),
-                file_info.get('class_count', 0),
-                category_id,
-                file_info.get('file_function', ''),
-                file_info.get('module_name'),
-                file_info.get('package_name'),
-                file_info.get('imports_count', 0),
-                file_info.get('exports_count', 0),
-                file_info.get('complexity_score', 0),
-                file_info.get('last_modified'),
-                file_info.get('file_created')
-            ))
+            """,
+                (
+                    self.run_id,
+                    file_info["file_name"],
+                    file_info["file_path"],
+                    file_info["file_type"],
+                    file_info.get("file_size", 0),
+                    file_info.get("line_count", 0),
+                    file_info.get("function_count", 0),
+                    file_info.get("class_count", 0),
+                    category_id,
+                    file_info.get("file_function", ""),
+                    file_info.get("module_name"),
+                    file_info.get("package_name"),
+                    file_info.get("imports_count", 0),
+                    file_info.get("exports_count", 0),
+                    file_info.get("complexity_score", 0),
+                    file_info.get("last_modified"),
+                    file_info.get("file_created"),
+                ),
+            )
 
             file_id = cursor.fetchone()[0]
 
             # 更新文件信息
-            file_info['id'] = file_id
+            file_info["id"] = file_id
             self.file_metadata.append(file_info)
 
             cursor.close()
@@ -344,20 +358,23 @@ class FileAnalysisSystem:
 
         try:
             category_map = {
-                'python': 'py_backend',
-                'typescript': 'ts_frontend',
-                'javascript': 'js_utility',
-                'vue': 'vue_component',
-                'html': 'html_page',
-                'css': 'config',  # CSS通常用于样式配置
-                'json': 'config'   # JSON通常用于配置
+                "python": "py_backend",
+                "typescript": "ts_frontend",
+                "javascript": "js_utility",
+                "vue": "vue_component",
+                "html": "html_page",
+                "css": "config",  # CSS通常用于样式配置
+                "json": "config",  # JSON通常用于配置
             }
 
-            category_code = category_map.get(file_type, 'other')
+            category_code = category_map.get(file_type, "other")
 
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT id FROM file_categories WHERE category_code = %s
-            """, (category_code,))
+            """,
+                (category_code,),
+            )
 
             result = cursor.fetchone()
             cursor.close()
@@ -377,7 +394,8 @@ class FileAnalysisSystem:
 
         try:
             for ref in self.references:
-                cursor.execute("""
+                cursor.execute(
+                    """
                     INSERT INTO file_references (
                         run_id, source_file_id, target_file_id,
                         reference_type, reference_line, reference_code,
@@ -385,17 +403,19 @@ class FileAnalysisSystem:
                     ) VALUES (
                         %s, %s, %s, %s, %s, %s, %s, %s, %s
                     )
-                """, (
-                    self.run_id,
-                    ref.get('source_file_id'),
-                    ref.get('target_file_id'),
-                    ref.get('reference_type'),
-                    ref.get('reference_line'),
-                    ref.get('reference_code'),
-                    ref.get('is_external'),
-                    ref.get('is_valid'),
-                    ref.get('validation_message')
-                ))
+                """,
+                    (
+                        self.run_id,
+                        ref.get("source_file_id"),
+                        ref.get("target_file_id"),
+                        ref.get("reference_type"),
+                        ref.get("reference_line"),
+                        ref.get("reference_code"),
+                        ref.get("is_external"),
+                        ref.get("is_valid"),
+                        ref.get("validation_message"),
+                    ),
+                )
 
             self.conn.commit()
             cursor.close()
@@ -424,12 +444,12 @@ class FileAnalysisSystem:
         logger.info(f"引用关系分析完成，共 {len(self.references)} 条")
 
     def run(self, incremental: bool = False, since: str = None):
-        """
-        运行分析流程
+        """运行分析流程
 
         Args:
             incremental: 是否启用增量扫描
             since: 增量扫描的起始时间字符串
+
         """
         logger.info("=" * 60)
         logger.info("文件分析系统开始运行")
@@ -458,7 +478,7 @@ class FileAnalysisSystem:
                 # 增量扫描
                 if since:
                     # 使用用户指定的时间
-                    last_scan_time = datetime.strptime(since, '%Y-%m-%d %H:%M:%S')
+                    last_scan_time = datetime.strptime(since, "%Y-%m-%d %H:%M:%S")
                 else:
                     # 从数据库获取上次扫描时间
                     cursor = self.conn.cursor()
@@ -487,7 +507,7 @@ class FileAnalysisSystem:
 
             if not files:
                 logger.warning("未找到任何文件")
-                self.update_analysis_run('completed')
+                self.update_analysis_run("completed")
                 return 0
 
             # 分析文件
@@ -497,7 +517,7 @@ class FileAnalysisSystem:
                     logger.info(f"进度: {i}/{len(files)}")
 
                 result = self.analyze_file(file_path)
-                if result and not result.get('error'):
+                if result and not result.get("error"):
                     self.save_file_metadata(result)
 
             logger.info(f"文件分析完成，成功分析 {len(self.file_metadata)} 个文件")
@@ -509,7 +529,7 @@ class FileAnalysisSystem:
             self.save_references()
 
             # 更新分析运行记录
-            self.update_analysis_run('completed')
+            self.update_analysis_run("completed")
 
             # 生成报告
             self.generate_report()
@@ -536,7 +556,7 @@ class FileAnalysisSystem:
 
         except Exception as e:
             logger.error(f"分析系统运行失败: {e}")
-            self.update_analysis_run('failed', str(e))
+            self.update_analysis_run("failed", str(e))
             return 1
 
         finally:
@@ -549,14 +569,14 @@ class FileAnalysisSystem:
 
         report_file = f"analysis_report_{self.run_id[:8]}.md"
 
-        with open(report_file, 'w', encoding='utf-8') as f:
+        with open(report_file, "w", encoding="utf-8") as f:
             f.write("# 文件分析报告\n\n")
-            f.write(f"## 分析概览\n\n")
+            f.write("## 分析概览\n\n")
             f.write(f"- **运行ID**: {self.run_id}\n")
             f.write(f"- **分析时间**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
             f.write(f"- **项目路径**: {self.project_root}\n\n")
 
-            f.write(f"## 统计信息\n\n")
+            f.write("## 统计信息\n\n")
             f.write(f"- **总文件数**: {self.stats['total_files']}\n")
             f.write(f"- **Python文件**: {self.stats['python_files']}\n")
             f.write(f"- **TypeScript文件**: {self.stats['typescript_files']}\n")
@@ -569,10 +589,10 @@ class FileAnalysisSystem:
             f.write(f"- **引用关系数**: {len(self.references)}\n\n")
 
             # 引用统计
-            valid_refs = sum(1 for ref in self.references if ref.get('is_valid'))
+            valid_refs = sum(1 for ref in self.references if ref.get("is_valid"))
             invalid_refs = len(self.references) - valid_refs
 
-            f.write(f"## 引用关系统计\n\n")
+            f.write("## 引用关系统计\n\n")
             f.write(f"- **有效引用**: {valid_refs}\n")
             f.write(f"- **无效引用**: {invalid_refs}\n")
             f.write(f"- **外部引用**: {sum(1 for ref in self.references if ref.get('is_external'))}\n\n")
@@ -580,40 +600,42 @@ class FileAnalysisSystem:
             # 复杂度最高的文件
             top_complex = sorted(
                 self.file_metadata,
-                key=lambda x: x.get('complexity_score', 0),
-                reverse=True
+                key=lambda x: x.get("complexity_score", 0),
+                reverse=True,
             )[:10]
 
-            f.write(f"## 复杂度最高的10个文件\n\n")
+            f.write("## 复杂度最高的10个文件\n\n")
             f.write("| 文件名 | 路径 | 复杂度 | 行数 | 函数数 | 类数 |\n")
             f.write("|--------|------|--------|------|--------|------|\n")
 
-            for file_info in top_complex:
-                f.write(f"| {file_info['file_name']} | {file_info['file_path'][:50]}... | "
-                       f"{file_info.get('complexity_score', 0)} | {file_info.get('line_count', 0)} | "
-                       f"{file_info.get('function_count', 0)} | {file_info.get('class_count', 0)} |\n")
+            f.writelines(
+                f"| {file_info['file_name']} | {file_info['file_path'][:50]}... | "
+                f"{file_info.get('complexity_score', 0)} | {file_info.get('line_count', 0)} | "
+                f"{file_info.get('function_count', 0)} | {file_info.get('class_count', 0)} |\n"
+                for file_info in top_complex
+            )
 
         logger.info(f"分析报告已保存: {report_file}")
 
 
 def main():
     """主函数"""
-    parser = argparse.ArgumentParser(description='文件分析系统')
+    parser = argparse.ArgumentParser(description="文件分析系统")
     parser.add_argument(
-        'project_root',
-        nargs='?',
-        default='/opt/claude/mystocks_spec',
-        help='项目根目录路径'
+        "project_root",
+        nargs="?",
+        default="/opt/claude/mystocks_spec",
+        help="项目根目录路径",
     )
     parser.add_argument(
-        '--incremental',
-        action='store_true',
-        help='启用增量扫描（只扫描修改过的文件）'
+        "--incremental",
+        action="store_true",
+        help="启用增量扫描（只扫描修改过的文件）",
     )
     parser.add_argument(
-        '--since',
+        "--since",
         type=str,
-        help='增量扫描的起始时间（格式：YYYY-MM-DD HH:MM:SS）'
+        help="增量扫描的起始时间（格式：YYYY-MM-DD HH:MM:SS）",
     )
 
     args = parser.parse_args()
@@ -625,5 +647,5 @@ def main():
     return system.run(incremental=args.incremental, since=args.since)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

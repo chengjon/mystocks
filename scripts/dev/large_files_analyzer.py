@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-大文件分析脚本
+"""大文件分析脚本
 分析项目中超过2000行的Python文件，提供拆分建议
 """
 
@@ -42,7 +41,7 @@ def analyze_python_files(root_dir: str = "/opt/claude/mystocks_spec"):
             if file.endswith(".py"):
                 file_path = os.path.join(root, file)
                 try:
-                    with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+                    with open(file_path, encoding="utf-8", errors="ignore") as f:
                         lines = sum(1 for _ in f)
                         total_lines += lines
 
@@ -52,7 +51,7 @@ def analyze_python_files(root_dir: str = "/opt/claude/mystocks_spec"):
                                 path=file_path,
                                 lines=lines,
                                 relative_path=os.path.relpath(file_path, root_dir),
-                            )
+                            ),
                         )
                 except Exception as e:
                     print(f"Error reading {file_path}: {e}")
@@ -114,9 +113,9 @@ def suggest_split(file_path, lines):
 
     else:
         print("   拆分建议: 按功能模块拆分，如:")
-        print("   ├── {}_core.py (核心功能)".format(file_name[:-3]))
-        print("   ├── {}_utils.py (工具函数)".format(file_name[:-3]))
-        print("   └── {}_constants.py (常量定义)".format(file_name[:-3]))
+        print(f"   ├── {file_name[:-3]}_core.py (核心功能)")
+        print(f"   ├── {file_name[:-3]}_utils.py (工具函数)")
+        print(f"   └── {file_name[:-3]}_constants.py (常量定义)")
 
 
 if __name__ == "__main__":
@@ -126,5 +125,5 @@ if __name__ == "__main__":
         print("✅ 所有Python文件都符合大小规范 (≤2000行)")
     else:
         print(
-            f"\n📝 建议优先处理前{len([f for f in large_files if f['lines'] > 3000])}个超过3000行的文件"
+            f"\n📝 建议优先处理前{len([f for f in large_files if f['lines'] > 3000])}个超过3000行的文件",
         )

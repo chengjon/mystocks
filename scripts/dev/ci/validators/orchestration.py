@@ -1,15 +1,9 @@
 """量化策略验证器子模块"""
 
-import ast
-import json
 import logging
-import os
-import re
-import subprocess
-import sys
 import time
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict
+
 
 logger = logging.getLogger(__name__)
 
@@ -125,7 +119,7 @@ class OrchestrationMixin:
 
         print(f"\n📊 验证完成，耗时: {results['execution_time']:.2f}秒")
         print(
-            f"✅ 通过: {results['summary']['passed_checks']}/{results['summary']['total_checks']}"
+            f"✅ 通过: {results['summary']['passed_checks']}/{results['summary']['total_checks']}",
         )
         print(f"🏆 结果: {'通过' if results['summary']['overall_passed'] else '失败'}")
 
@@ -216,12 +210,10 @@ class OrchestrationMixin:
 
         print(f"\n📊 校验完成，耗时: {results['execution_time']:.2f}秒")
         print(
-            f"✅ 通过: {results['summary']['passed_checks']}/{results['summary']['total_checks']}"
+            f"✅ 通过: {results['summary']['passed_checks']}/{results['summary']['total_checks']}",
         )
         print(
-            f"🏆 总体结果: {'通过' if results['summary']['overall_passed'] else '失败'}"
+            f"🏆 总体结果: {'通过' if results['summary']['overall_passed'] else '失败'}",
         )
 
         return results
-
-

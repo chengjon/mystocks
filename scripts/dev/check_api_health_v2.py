@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-# 功能：Web API健康检查工具 v2.0 - 验证短期优化改进后的API端点
+"""# 功能：Web API健康检查工具 v2.0 - 验证短期优化改进后的API端点
 # 作者：JohnC (ninjas@sina.com) & Claude
 # 创建日期：2025-10-16
 # 版本：2.0.0
@@ -13,9 +11,11 @@
 # 版权：MyStocks Project © 2025
 """
 
-import requests
 import os
 from typing import Dict, Tuple
+
+import requests
+
 
 # 配置
 BASE_URL = os.getenv("BACKEND_URL", f"http://localhost:{os.getenv('BACKEND_PORT', '8020')}")
@@ -82,8 +82,7 @@ class APIHealthChecker:
                 data = resp.json()
                 token = data.get("access_token")
                 return True, token
-            else:
-                return False, f"Status {resp.status_code}: {resp.text[:100]}"
+            return False, f"Status {resp.status_code}: {resp.text[:100]}"
         except Exception as e:
             return False, str(e)
 
@@ -293,10 +292,7 @@ class APIHealthChecker:
 
             # 打印结果
             if result["status"] == "PASS":
-                detail = (
-                    f"Status {result.get('status_code', 'N/A')}, "
-                    f"响应时间: {result.get('response_time', 0):.0f}ms"
-                )
+                detail = f"Status {result.get('status_code', 'N/A')}, 响应时间: {result.get('response_time', 0):.0f}ms"
                 if "data_keys" in result:
                     detail += f", 返回字段: {', '.join(result['data_keys'][:5])}"
                 self.print_result(test_case["name"], "PASS", detail)
@@ -307,7 +303,9 @@ class APIHealthChecker:
                 self.print_result(test_case["name"], "FAIL", error_msg)
             else:
                 self.print_result(
-                    test_case["name"], "WARN", result.get("error", "警告")
+                    test_case["name"],
+                    "WARN",
+                    result.get("error", "警告"),
                 )
 
             print()  # 空行
@@ -335,9 +333,7 @@ class APIHealthChecker:
         # 按优先级统计
         print(f"\n{Colors.BOLD}按优先级统计:{Colors.END}")
         for priority in ["P1", "P2", "P3"]:
-            priority_results = [
-                r for r in self.results if r.get("priority") == priority
-            ]
+            priority_results = [r for r in self.results if r.get("priority") == priority]
             if priority_results:
                 p_total = len(priority_results)
                 p_passed = sum(1 for r in priority_results if r["status"] == "PASS")
@@ -346,9 +342,7 @@ class APIHealthChecker:
 
         # 性能统计
         print(f"\n{Colors.BOLD}响应时间统计:{Colors.END}")
-        response_times = [
-            r.get("response_time", 0) for r in self.results if r["status"] == "PASS"
-        ]
+        response_times = [r.get("response_time", 0) for r in self.results if r["status"] == "PASS"]
         if response_times:
             avg_time = sum(response_times) / len(response_times)
             max_time = max(response_times)
@@ -367,8 +361,7 @@ class APIHealthChecker:
                 all(
                     r["status"] == "PASS"
                     for r in self.results
-                    if r.get("priority") == "P1"
-                    and r.get("name") not in ["用户登录", "技术指标计算"]
+                    if r.get("priority") == "P1" and r.get("name") not in ["用户登录", "技术指标计算"]
                 ),
             ),
             (
@@ -377,11 +370,7 @@ class APIHealthChecker:
             ),
             (
                 "TDX核心功能100%可用",
-                all(
-                    r["status"] == "PASS"
-                    for r in self.results
-                    if "TDX" in r.get("name", "")
-                ),
+                all(r["status"] == "PASS" for r in self.results if "TDX" in r.get("name", "")),
             ),
             ("平均响应时间 < 500ms", avg_time < 500 if response_times else False),
         ]
@@ -397,7 +386,7 @@ class APIHealthChecker:
         print()
         if all_passed:
             print(
-                f"{Colors.GREEN}{Colors.BOLD}🎉 所有验收标准通过！短期优化API改进成功！{Colors.END}"
+                f"{Colors.GREEN}{Colors.BOLD}🎉 所有验收标准通过！短期优化API改进成功！{Colors.END}",
             )
         else:
             print(f"{Colors.YELLOW}⚠️  部分验收标准未通过，需要进一步优化。{Colors.END}")

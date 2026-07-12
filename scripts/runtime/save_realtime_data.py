@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-⚠️ DEPRECATED - 此脚本已弃用
+"""⚠️ DEPRECATED - 此脚本已弃用
 
 此脚本使用旧的 DatabaseTableManager 和 MySQL 配置，已被新的架构替代。
 请使用 run_realtime_market_saver.py 作为实时行情数据保存工具。
@@ -26,23 +24,26 @@
 完整的数据库保存工作流程，遵循db_manager的工作原理
 """
 
-import sys
-import os
-import pandas as pd
 import logging
+import os
+import sys
 import time
 from datetime import datetime
 from typing import Dict, List
+
+import pandas as pd
 from dotenv import load_dotenv
+
 
 # 将项目根目录添加到模块搜索路径中
 project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
 )
 sys.path.insert(0, project_root)
 
 from src.adapters.customer_adapter import CustomerDataSource
 from src.storage.database.database_manager import DatabaseTableManager, DatabaseType
+
 
 # 加载环境变量
 load_dotenv()
@@ -89,7 +90,7 @@ class RealtimeDataSaver:
         self.db_manager = DatabaseTableManager()
 
         logger.info(
-            f"初始化实时数据保存器: {database_type.value}/{database_name}/{table_name}"
+            f"初始化实时数据保存器: {database_type.value}/{database_name}/{table_name}",
         )
 
     def _validate_dataframe(self, df: pd.DataFrame) -> bool:
@@ -122,9 +123,7 @@ class RealtimeDataSaver:
         prepared_df = prepared_df.fillna("")
 
         # 处理列名，确保符合数据库命名规范
-        prepared_df.columns = [
-            col.replace(" ", "_").replace("-", "_") for col in prepared_df.columns
-        ]
+        prepared_df.columns = [col.replace(" ", "_").replace("-", "_") for col in prepared_df.columns]
 
         logger.info(f"数据准备完成: {len(prepared_df)}行")
         return prepared_df
@@ -141,7 +140,7 @@ class RealtimeDataSaver:
                 "nullable": False,
                 "primary_key": True,
                 "comment": "自增主键",
-            }
+            },
         )
 
         for col_name, dtype in df.dtypes.items():
@@ -149,7 +148,7 @@ class RealtimeDataSaver:
 
             # 根据pandas数据类型映射到SQL数据类型
             if pd.api.types.is_object_dtype(dtype) or pd.api.types.is_string_dtype(
-                dtype
+                dtype,
             ):
                 max_length = df[col_name].astype(str).apply(len).max()
                 varchar_length = min(int(max_length * 1.2) + 50, 500)  # 增加缓冲
@@ -194,7 +193,10 @@ class RealtimeDataSaver:
             # 创建表
             logger.info(f"正在创建表 {self.table_name}...")
             success = self.db_manager.create_table(
-                self.database_type, self.database_name, self.table_name, columns
+                self.database_type,
+                self.database_name,
+                self.table_name,
+                columns,
             )
 
             if success:
@@ -212,7 +214,8 @@ class RealtimeDataSaver:
         """检查表是否存在"""
         try:
             conn = self.db_manager.get_connection(
-                self.database_type, self.database_name
+                self.database_type,
+                self.database_name,
             )
             cursor = conn.cursor()
 
@@ -240,7 +243,8 @@ class RealtimeDataSaver:
         """批量插入数据"""
         try:
             conn = self.db_manager.get_connection(
-                self.database_type, self.database_name
+                self.database_type,
+                self.database_name,
             )
             cursor = conn.cursor()
 
@@ -285,7 +289,8 @@ class RealtimeDataSaver:
 
                 # 2. 验证数据
                 if not isinstance(
-                    realtime_data, pd.DataFrame
+                    realtime_data,
+                    pd.DataFrame,
                 ) or not self._validate_dataframe(realtime_data):
                     logger.error("获取的数据无效")
                     return False
@@ -304,8 +309,7 @@ class RealtimeDataSaver:
                 if self._insert_data_batch(prepared_data):
                     logger.info("实时数据保存完成")
                     return True
-                else:
-                    raise Exception("数据插入失败")
+                raise Exception("数据插入失败")
 
             except Exception as e:
                 retry_count += 1
@@ -384,13 +388,19 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="保存股票实时行情数据到数据库")
     parser.add_argument("--market", default=MARKET_SYMBOL, help="市场代码 (默认: hs)")
     parser.add_argument(
-        "--db_type", default=DATABASE_TYPE.value, help="数据库类型 (默认: MYSQL)"
+        "--db_type",
+        default=DATABASE_TYPE.value,
+        help="数据库类型 (默认: MYSQL)",
     )
     parser.add_argument(
-        "--db_name", default=DATABASE_NAME, help="数据库名称 (默认: test_db)"
+        "--db_name",
+        default=DATABASE_NAME,
+        help="数据库名称 (默认: test_db)",
     )
     parser.add_argument(
-        "--table", default=TABLE_NAME, help="表名 (默认: stock_realtime_data)"
+        "--table",
+        default=TABLE_NAME,
+        help="表名 (默认: stock_realtime_data)",
     )
     parser.add_argument(
         "--mode",
@@ -399,10 +409,15 @@ if __name__ == "__main__":
         help="数据更新模式",
     )
     parser.add_argument(
-        "--continuous", action="store_true", help="连续模式（定时任务）"
+        "--continuous",
+        action="store_true",
+        help="连续模式（定时任务）",
     )
     parser.add_argument(
-        "--interval", type=int, default=5, help="连续模式的间隔时间（分钟）"
+        "--interval",
+        type=int,
+        default=5,
+        help="连续模式的间隔时间（分钟）",
     )
 
     args = parser.parse_args()

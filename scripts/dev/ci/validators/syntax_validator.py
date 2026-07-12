@@ -1,15 +1,7 @@
 """量化策略验证器子模块"""
 
-import ast
-import json
 import logging
-import os
-import re
-import subprocess
-import sys
-import time
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +41,7 @@ class SyntaxValidatorMixin:
             full_path = self.project_root / file_path
             if full_path.exists():
                 try:
-                    with open(full_path, "r", encoding="utf-8") as f:
+                    with open(full_path, encoding="utf-8") as f:
                         compile(f.read(), str(full_path), "exec")
                     print(f"✅ {file_path}")
                 except SyntaxError as e:
@@ -114,4 +106,3 @@ class SyntaxValidatorMixin:
 
         print("✅ 所有策略模块导入成功")
         return True
-

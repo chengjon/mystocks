@@ -11,6 +11,7 @@ from fastapi.testclient import TestClient
 from pymongo import MongoClient
 from pymongo.errors import OperationFailure
 
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -20,8 +21,8 @@ from src.services.maestro.collab.services import CoordinationService
 from src.services.maestro.collab.store.models import WorkItemRecord
 from src.services.maestro.profiles.mystocks import COLLAB_CONTROL_PLANE_DEFAULTS
 from src.services.symphony.config import ServiceConfig
-from src.services.symphony.mongo_tracker import MongoWorkItemTrackerClient
 from src.services.symphony.models import WorkflowDefinition
+from src.services.symphony.mongo_tracker import MongoWorkItemTrackerClient
 from src.services.symphony.orchestrator import SymphonyOrchestrator
 from src.services.symphony.status_api import create_status_app
 from src.utils.cli_error_output import print_cli_error
@@ -40,7 +41,9 @@ class _SmokeRunnerFactory:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run a real Mongo-backed multi-CLI smoke flow.")
     parser.add_argument("--mongo-uri", default=None)
-    parser.add_argument("--mongo-db", default=None, help="Optional Mongo database name. Defaults to a temporary smoke DB.")
+    parser.add_argument(
+        "--mongo-db", default=None, help="Optional Mongo database name. Defaults to a temporary smoke DB."
+    )
     return parser
 
 
@@ -62,10 +65,12 @@ def run_smoke(*, mongo_uri: str | None, mongo_db: str | None = None) -> dict[str
 
     try:
         database = client[db_name]
-        service = CoordinationService(__import__(
-            "src.services.maestro.collab.backends.mongo.store",
-            fromlist=["MongoCollaborationStore"],
-        ).MongoCollaborationStore(database))
+        service = CoordinationService(
+            __import__(
+                "src.services.maestro.collab.backends.mongo.store",
+                fromlist=["MongoCollaborationStore"],
+            ).MongoCollaborationStore(database)
+        )
         work_item = WorkItemRecord(
             work_item_id="SMOKE-1",
             task_key="smoke-mongo-runtime",
@@ -83,7 +88,8 @@ def run_smoke(*, mongo_uri: str | None, mongo_db: str | None = None) -> dict[str
         )
         service.upsert_work_item(
             __import__("src.services.maestro.collab.authz.policy", fromlist=["ActorIdentity"]).ActorIdentity(
-                cli_name="main", role="main_cli"
+                cli_name="main",
+                role="main_cli",
             ),
             work_item,
         )
@@ -163,11 +169,7 @@ def _build_auth_error_message(*, mongo_uri: str | None, db_name: str, error: Ope
             "MAESTRO_COLLAB_MONGO_URI/COLLAB_MONGO_URI/MONGODB_URI/MONGO_URI"
         )
 
-    return (
-        f"{build_mongo_auth_runtime_error('Mongo smoke')}. "
-        f"Provide {credential_hint}. "
-        f"Original error: {error}"
-    )
+    return f"{build_mongo_auth_runtime_error('Mongo smoke')}. Provide {credential_hint}. Original error: {error}"
 
 
 def _emit_error(error: Exception) -> None:

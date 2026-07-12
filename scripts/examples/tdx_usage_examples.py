@@ -1,5 +1,4 @@
-"""
-TDX数据源适配器使用示例
+"""TDX数据源适配器使用示例
 
 展示TDX适配器的常见使用场景和最佳实践
 
@@ -9,8 +8,10 @@ TDX数据源适配器使用示例
 
 import logging
 from datetime import datetime, timedelta
-from src.adapters.tdx_adapter import TdxDataSource
+
 from src.adapters.data_source_manager import get_default_manager
+from src.adapters.tdx_adapter import TdxDataSource
+
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format="%(levelname)s - %(message)s")
@@ -32,7 +33,7 @@ def example_1_basic_quote():
         print(f"最新价: ¥{quote['price']:.2f}")
         print(
             f"涨跌: {quote['price'] - quote['pre_close']:+.2f} "
-            f"({(quote['price'] / quote['pre_close'] - 1) * 100:+.2f}%)"
+            f"({(quote['price'] / quote['pre_close'] - 1) * 100:+.2f}%)",
         )
         print(f"今开: ¥{quote['open']:.2f}")
         print(f"最高: ¥{quote['high']:.2f}")
@@ -60,7 +61,7 @@ def example_2_multiple_quotes():
     ]
 
     print(
-        f"\n{'股票代码':10s} {'股票名称':10s} {'最新价':>10s} {'涨跌幅':>10s} {'成交额':>12s}"
+        f"\n{'股票代码':10s} {'股票名称':10s} {'最新价':>10s} {'涨跌幅':>10s} {'成交额':>12s}",
     )
     print("-" * 70)
 
@@ -72,10 +73,7 @@ def example_2_multiple_quotes():
             amount_yi = quote["amount"] / 1e8
 
             print(
-                f"{symbol:10s} {quote['name']:10s} "
-                f"{quote['price']:10.2f} "
-                f"{change_pct:+9.2f}% "
-                f"{amount_yi:11.2f}亿"
+                f"{symbol:10s} {quote['name']:10s} {quote['price']:10.2f} {change_pct:+9.2f}% {amount_yi:11.2f}亿",
             )
 
 
@@ -103,7 +101,7 @@ def example_3_daily_kline():
         print(f"  最低价: ¥{df['low'].min():.2f}")
         print(f"  平均价: ¥{df['close'].mean():.2f}")
         print(
-            f"  涨跌幅: {(df['close'].iloc[-1] / df['close'].iloc[0] - 1) * 100:+.2f}%"
+            f"  涨跌幅: {(df['close'].iloc[-1] / df['close'].iloc[0] - 1) * 100:+.2f}%",
         )
 
         print("\n成交量统计:")
@@ -131,9 +129,7 @@ def example_4_intraday_kline():
         # 显示最近10根K线
         print("\n最近10根K线:")
         print(
-            df[["date", "open", "high", "low", "close", "volume"]]
-            .tail(10)
-            .to_string(index=False)
+            df[["date", "open", "high", "low", "close", "volume"]].tail(10).to_string(index=False),
         )
 
         # 计算当日涨跌
@@ -142,7 +138,7 @@ def example_4_intraday_kline():
             last_price = df["close"].iloc[-1]
             change = (last_price / first_price - 1) * 100
             print(
-                f"\n当日涨跌: {change:+.2f}% (开盘{first_price:.2f} → 现价{last_price:.2f})"
+                f"\n当日涨跌: {change:+.2f}% (开盘{first_price:.2f} → 现价{last_price:.2f})",
             )
 
 
@@ -177,9 +173,7 @@ def example_5_multiperiod_comparison():
             change = (df["close"].iloc[-1] / df["open"].iloc[0] - 1) * 100
 
             print(
-                f"{name:10s} {time_span:>10s} "
-                f"{df['date'].min()[:10]:>12s} "
-                f"{change:+9.2f}%"
+                f"{name:10s} {time_span:>10s} {df['date'].min()[:10]:>12s} {change:+9.2f}%",
             )
 
 

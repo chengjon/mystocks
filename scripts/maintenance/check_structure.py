@@ -46,9 +46,7 @@ def matches_any(path_value: str, patterns: list[str] | None) -> bool:
 
 
 def pattern_anchor(pattern: str) -> str:
-    wildcard_positions = [
-        position for position, character in enumerate(pattern) if character in {"*", "?", "["}
-    ]
+    wildcard_positions = [position for position, character in enumerate(pattern) if character in {"*", "?", "["}]
     if not wildcard_positions:
         return pattern.rstrip("/")
 
@@ -98,8 +96,7 @@ def normalize_scope_paths(paths: list[str] | None) -> list[str] | None:
         path_value = raw_path.strip()
         if not path_value:
             continue
-        if path_value.startswith("./"):
-            path_value = path_value[2:]
+        path_value = path_value.removeprefix("./")
         normalized_path = Path(path_value).as_posix().strip("/")
         if normalized_path:
             normalized.add(normalized_path)
@@ -197,9 +194,7 @@ def analyze_root_entries(
             or entry.name in tolerated_directories
             or matches_any(entry.name, [rule["pattern"] for rule in forbidden_directory_patterns])
         )
-        hidden_file_is_explicitly_governed = (
-            root_file_is_explicitly_governed
-        )
+        hidden_file_is_explicitly_governed = root_file_is_explicitly_governed
 
         if is_gitignored(project_root, entry.name):
             if entry.is_dir() and not root_dir_is_explicitly_governed:
@@ -313,9 +308,7 @@ def iter_scannable_paths(project_root: Path, policy: dict[str, Any]) -> list[str
     discovered_paths: list[str] = []
 
     for current_root, dir_names, file_names in project_root.walk(top_down=True):
-        dir_names[:] = [
-            name for name in dir_names if not name.startswith(".") and name not in ignore_names
-        ]
+        dir_names[:] = [name for name in dir_names if not name.startswith(".") and name not in ignore_names]
 
         current_path = Path(current_root)
         if current_path != project_root:
@@ -449,9 +442,8 @@ def main() -> int:
     if args.format == "json":
         if not args.quiet:
             print(json.dumps(result, ensure_ascii=False, indent=2))
-    else:
-        if not args.quiet:
-            print(build_text_report(result))
+    elif not args.quiet:
+        print(build_text_report(result))
 
     if result["summary"]["errors"] > 0:
         return 1

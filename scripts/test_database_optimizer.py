@@ -1,5 +1,4 @@
-"""
-测试数据库优化器
+"""测试数据库优化器
 Test Database Optimizer
 
 验证数据库优化、索引优化、查询分析等功能的正确性。
@@ -8,15 +7,17 @@ Validates database optimization, index optimization, query analysis functions.
 
 import asyncio
 import logging
-import sys
 import os
-from unittest.mock import patch, MagicMock
+import sys
+from unittest.mock import patch
+
 
 # Setup project path
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, project_root)
 
 from scripts.database.database_optimizer import DatabaseOptimizer
+
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -42,7 +43,7 @@ class MockDatabaseConnection:
                     "last_autovacuum": None,
                     "last_analyze": None,
                     "last_autoanalyze": None,
-                }
+                },
             ],
             "index_stats": [
                 {
@@ -69,7 +70,7 @@ class MockDatabaseConnection:
                     "attname": "high_cardinality_column",
                     "n_distinct": 10000,
                     "correlation": 0.8,
-                }
+                },
             ],
             "vacuum_candidates": [{"tablename": "test_table"}],
             "slow_queries": [
@@ -79,10 +80,10 @@ class MockDatabaseConnection:
                     "total_time": 50000,
                     "mean_time": 500,
                     "rows": 1000,
-                }
+                },
             ],
             "frequent_queries": [
-                {"query": "SELECT COUNT(*) FROM frequent_table", "calls": 5000, "total_time": 2500, "mean_time": 0.5}
+                {"query": "SELECT COUNT(*) FROM frequent_table", "calls": 5000, "total_time": 2500, "mean_time": 0.5},
             ],
         }
 
@@ -90,21 +91,21 @@ class MockDatabaseConnection:
         """模拟查询结果"""
         if "pg_stat_user_tables" in query:
             return self.fetch_results["table_stats"]
-        elif "pg_stat_user_indexes" in query:
+        if "pg_stat_user_indexes" in query:
             return self.fetch_results["index_stats"]
-        elif "pg_stats" in query:
+        if "pg_stats" in query:
             return self.fetch_results["index_candidates"]
-        elif "n_dead_tup > 1000" in query:
+        if "n_dead_tup > 1000" in query:
             return self.fetch_results["vacuum_candidates"]
-        elif "pg_stat_statements" in query and "mean_time > 1000" in query:
+        if "pg_stat_statements" in query and "mean_time > 1000" in query:
             return self.fetch_results["slow_queries"]
-        elif "pg_stat_statements" in query and "calls > 1000" in query:
+        if "pg_stat_statements" in query and "calls > 1000" in query:
             return self.fetch_results["frequent_queries"]
         return []
 
     async def fetchval(self, query: str):
         """模拟单个值查询"""
-        return None
+        return
 
     async def execute(self, query: str, *args):
         """模拟执行查询"""
@@ -372,9 +373,8 @@ async def run_all_tests():
         logger.info("🎉 所有测试通过! 数据库优化器已准备就绪。")
         logger.info("数据库优化功能包括表分析、索引优化、查询分析、数据清理等。")
         return True
-    else:
-        logger.warning("⚠️ 某些测试失败。请检查实现。")
-        return False
+    logger.warning("⚠️ 某些测试失败。请检查实现。")
+    return False
 
 
 if __name__ == "__main__":

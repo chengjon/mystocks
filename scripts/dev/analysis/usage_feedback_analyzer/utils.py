@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AI测试优化器使用反馈分析器
+"""AI测试优化器使用反馈分析器
 收集、分析和报告AI测试优化器的使用情况，为工具改进提供数据支持
 
 功能:
@@ -15,19 +14,16 @@ AI测试优化器使用反馈分析器
 日期: 2025-01-22
 """
 
-import sys
-import sqlite3
-import statistics
-from datetime import datetime, timedelta
-from pathlib import Path
-from typing import Dict, List
 import argparse
 import logging
-import matplotlib.pyplot as plt
+import sys
+from pathlib import Path
+
 
 # 设置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -35,15 +31,22 @@ logger = logging.getLogger(__name__)
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
+
 def main():
     """主函数"""
     parser = argparse.ArgumentParser(description="AI测试优化器使用反馈分析工具")
     parser.add_argument("--days", "-d", type=int, default=30, help="分析最近N天的数据")
     parser.add_argument(
-        "--usage-only", "-u", action="store_true", help="只分析使用数据，不包括反馈"
+        "--usage-only",
+        "-u",
+        action="store_true",
+        help="只分析使用数据，不包括反馈",
     )
     parser.add_argument(
-        "--feedback-only", "-f", action="store_true", help="只分析反馈数据，不包括使用"
+        "--feedback-only",
+        "-f",
+        action="store_true",
+        help="只分析反馈数据，不包括使用",
     )
     parser.add_argument("--report", "-r", action="store_true", help="生成分析报告")
     parser.add_argument("--charts", "-c", action="store_true", help="生成可视化图表")
@@ -78,17 +81,18 @@ def main():
             if "basic_stats" in usage_patterns:
                 print(f"  - 总使用次数: {usage_patterns['basic_stats']['total_usage']}")
                 print(
-                    f"  - 成功率: {usage_patterns['basic_stats']['success_rate']:.1f}%"
+                    f"  - 成功率: {usage_patterns['basic_stats']['success_rate']:.1f}%",
                 )
                 print(
-                    f"  - 平均执行时间: {usage_patterns['basic_stats']['avg_execution_time']:.2f}秒"
+                    f"  - 平均执行时间: {usage_patterns['basic_stats']['avg_execution_time']:.2f}秒",
                 )
 
             if "basic_stats" in feedback_patterns:
                 total_feedback = sum(
                     item["count"]
                     for item in feedback_patterns["basic_stats"].get(
-                        "feedback_by_type", []
+                        "feedback_by_type",
+                        [],
                     )
                 )
                 print(f"  - 总反馈数: {total_feedback}")
@@ -109,5 +113,3 @@ def main():
         return 1
 
     return 0
-
-

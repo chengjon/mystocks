@@ -1,14 +1,13 @@
 """技术负债分析器子模块"""
 
 import ast
-import json
+import asyncio
 import logging
 import re
-from collections import Counter, defaultdict
+from collections import Counter
 from pathlib import Path
-from typing import Any, Dict, List
-import asyncio
-import aiofiles
+from typing import List
+
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +21,7 @@ class CodeQualityMixin:
 
         python_files = list(self.project_root.rglob("*.py"))
         self.stats["total_files"] = len(list(self.project_root.rglob("*"))) - len(
-            list(self.project_root.rglob("__pycache__"))
+            list(self.project_root.rglob("__pycache__")),
         )
         self.stats["python_files"] = len(python_files)
 
@@ -50,12 +49,13 @@ class CodeQualityMixin:
                 self._analyze_code_duplication(py_file, content, lines)
                 self._analyze_naming_issues(py_file, tree)
                 await self._analyze_file_complexity_async(
-                    py_file, tree
+                    py_file,
+                    tree,
                 )  # Use async version
 
             except Exception as e:
                 self.issues["parsing_errors"].append(
-                    {"file": str(py_file), "error": str(e), "category": "code_quality"}
+                    {"file": str(py_file), "error": str(e), "category": "code_quality"},
                 )
 
         await asyncio.gather(*[process_file(f) for f in python_files])
@@ -96,9 +96,7 @@ class CodeQualityMixin:
             def visit_FunctionDef(self, node):
                 # 计算函数行数（包括注释和空行）
                 func_start = node.lineno - 1
-                func_end = (
-                    node.end_lineno if hasattr(node, "end_lineno") else len(self.lines)
-                )
+                func_end = node.end_lineno if hasattr(node, "end_lineno") else len(self.lines)
                 func_lines = func_end - func_start
 
                 # 警告阈值：50行以上的函数
@@ -112,7 +110,7 @@ class CodeQualityMixin:
                             "end_line": func_end,
                             "category": "code_quality",
                             "severity": "high" if func_lines > 100 else "medium",
-                        }
+                        },
                     )
 
                 self.generic_visit(node)
@@ -135,7 +133,8 @@ class CodeQualityMixin:
                 # 计算条件语句复杂度
                 for child in ast.walk(node):
                     if isinstance(
-                        child, (ast.If, ast.While, ast.For, ast.Try, ast.With)
+                        child,
+                        (ast.If, ast.While, ast.For, ast.Try, ast.With),
                     ):
                         complexity += 1
                     elif isinstance(child, ast.BoolOp):
@@ -150,7 +149,7 @@ class CodeQualityMixin:
                             "complexity": complexity,
                             "category": "code_quality",
                             "severity": "high" if complexity > 20 else "medium",
-                        }
+                        },
                     )
 
                 self.generic_visit(node)
@@ -201,7 +200,7 @@ class CodeQualityMixin:
                                 "asname": alias.asname,
                                 "category": "code_quality",
                                 "severity": "low",
-                            }
+                            },
                         )
                 self.generic_visit(node)
 
@@ -217,7 +216,7 @@ class CodeQualityMixin:
                                 "asname": alias.asname,
                                 "category": "code_quality",
                                 "severity": "low",
-                            }
+                            },
                         )
                 self.generic_visit(node)
 
@@ -225,7 +224,10 @@ class CodeQualityMixin:
         analyzer.visit(tree)
 
     def _analyze_code_duplication(
-        self, file_path: Path, content: str, lines: List[str]
+        self,
+        file_path: Path,
+        content: str,
+        lines: List[str],
     ):
         """分析代码重复"""
         # 简单的重复代码检测：查找重复的行
@@ -233,7 +235,7 @@ class CodeQualityMixin:
         for line in lines:
             stripped = line.strip()
             if len(stripped) > 10 and not stripped.startswith(
-                "#"
+                "#",
             ):  # 忽略太短的行和注释
                 line_counts[stripped] += 1
 
@@ -246,7 +248,7 @@ class CodeQualityMixin:
                         "occurrence_count": count,
                         "category": "code_quality",
                         "severity": "medium",
-                    }
+                    },
                 )
 
     def _analyze_naming_issues(self, file_path: Path, tree: ast.AST):
@@ -268,7 +270,7 @@ class CodeQualityMixin:
                             "issue": "function_name_convention",
                             "category": "code_quality",
                             "severity": "low",
-                        }
+                        },
                     )
                 self.generic_visit(node)
 
@@ -283,7 +285,7 @@ class CodeQualityMixin:
                             "issue": "class_name_convention",
                             "category": "code_quality",
                             "severity": "medium",
-                        }
+                        },
                     )
                 self.generic_visit(node)
 
@@ -332,8 +334,7 @@ class CodeQualityMixin:
                         "line_count": actual_lines,
                         "category": "code_quality",
                         "severity": "high",
-                    }
+                    },
                 )
         except Exception as e:
             logger.warning(f"分析文件复杂度失败 {file_path}: {e}")
-

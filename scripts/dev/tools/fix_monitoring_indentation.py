@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
-"""
-Fix indentation issues in monitoring module files.
+"""Fix indentation issues in monitoring module files.
 
 Day 6: Fix syntax-error in monitoring directory
 """
 
-import os
 from pathlib import Path
 
 
@@ -18,8 +16,8 @@ def fix_monitoring_database():
         return False
 
     # Read file
-    content = file_path.read_text(encoding='utf-8')
-    lines = content.split('\n')
+    content = file_path.read_text(encoding="utf-8")
+    lines = content.split("\n")
 
     print(f"📄 Processing {file_path}")
     print(f"   Total lines: {len(lines)}")
@@ -33,8 +31,8 @@ def fix_monitoring_database():
         if 32 <= line_num <= 767:
             # Add 4 spaces if line is not empty and doesn't already start with 4+ spaces
             if line.strip():  # Non-empty line
-                if not line.startswith('    '):  # Doesn't start with 4 spaces
-                    fixed_lines.append('    ' + line)
+                if not line.startswith("    "):  # Doesn't start with 4 spaces
+                    fixed_lines.append("    " + line)
                 else:
                     # Already has some indentation, keep as is
                     fixed_lines.append(line)
@@ -46,11 +44,11 @@ def fix_monitoring_database():
             fixed_lines.append(line)
 
     # Write back
-    fixed_content = '\n'.join(fixed_lines)
-    file_path.write_text(fixed_content, encoding='utf-8')
+    fixed_content = "\n".join(fixed_lines)
+    file_path.write_text(fixed_content, encoding="utf-8")
 
     print(f"✅ Fixed: {file_path}")
-    print(f"   Modified lines: 32-767 (added 4-space indentation)")
+    print("   Modified lines: 32-767 (added 4-space indentation)")
     return True
 
 
@@ -63,8 +61,8 @@ def fix_async_monitoring():
         return False
 
     # Read file
-    content = file_path.read_text(encoding='utf-8')
-    lines = content.split('\n')
+    content = file_path.read_text(encoding="utf-8")
+    lines = content.split("\n")
 
     print(f"\n📄 Processing {file_path}")
     print(f"   Total lines: {len(lines)}")
@@ -75,7 +73,7 @@ def fix_async_monitoring():
     for i in range(max(0, 40), min(len(lines), 55)):
         line_num = i + 1
         prefix = ">>> " if line_num == 46 else "    "
-        print(f"{prefix}Line {line_num}: {repr(lines[i])}")
+        print(f"{prefix}Line {line_num}: {lines[i]!r}")
 
     # Read lines around 46 to understand the issue
     # Based on error, likely need to fix indentation at line 46

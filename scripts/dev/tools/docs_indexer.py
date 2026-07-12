@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-文档索引生成工具
+"""文档索引生成工具
 
 功能：
 1. 自动扫描目录结构
@@ -14,11 +13,10 @@
     python scripts/dev/tools/docs_indexer.py --output INDEX.md
 """
 
-import os
 import sys
-from pathlib import Path
-from typing import List, Dict
 from datetime import datetime
+from pathlib import Path
+from typing import Dict, List
 
 
 class DocsIndexer:
@@ -56,7 +54,7 @@ class DocsIndexer:
                 elif item.is_file() and item.suffix == ".md" and item.name not in ["README.md", "INDEX.md", "index.md"]:
                     rel_path = item.relative_to(self.root_path)
                     result["files"].append(
-                        {"name": item.stem, "path": str(rel_path), "title": self._extract_title(item)}
+                        {"name": item.stem, "path": str(rel_path), "title": self._extract_title(item)},
                     )
         except PermissionError:
             pass
@@ -66,7 +64,7 @@ class DocsIndexer:
     def _extract_title(self, md_file: Path) -> str:
         """从Markdown文件中提取标题"""
         try:
-            with open(md_file, "r", encoding="utf-8") as f:
+            with open(md_file, encoding="utf-8") as f:
                 first_line = f.readline()
                 if first_line.startswith("#"):
                     return first_line.lstrip("#").strip()
@@ -146,7 +144,7 @@ class DocsIndexer:
         path = structure["path"]
 
         if level == 0:
-            lines.append(f"\n## 📁 项目根目录\n")
+            lines.append("\n## 📁 项目根目录\n")
         else:
             # 转换为标题
             title = self._dir_to_title(name)
@@ -214,7 +212,7 @@ class DocsIndexer:
             "generation_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         }
 
-        print(f"✅ 扫描完成:")
+        print("✅ 扫描完成:")
         print(f"  - 总文档数: {stats['total_files']:,}")
         print(f"  - 总目录数: {stats['total_dirs']:,}")
 

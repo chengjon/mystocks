@@ -20,8 +20,7 @@ def normalize_relative_paths(paths: list[str] | None) -> list[str]:
         path_value = raw_path.strip()
         if not path_value:
             continue
-        if path_value.startswith("./"):
-            path_value = path_value[2:]
+        path_value = path_value.removeprefix("./")
         normalized_path = Path(path_value).as_posix().strip("/")
         if normalized_path:
             normalized.add(normalized_path)
@@ -92,7 +91,7 @@ def build_report(project_root: Path, paths: list[str] | None = None) -> dict[str
                     "path": relative_path,
                     "rule_id": "python-parse-error",
                     "message": f"Failed to parse Python file: {exc.msg}",
-                }
+                },
             )
             continue
 
@@ -107,7 +106,7 @@ def build_report(project_root: Path, paths: list[str] | None = None) -> dict[str
                     "rule_id": RULE_ID,
                     "message": "Global singleton variables must be initialized to None at module top level",
                     "names": missing_names,
-                }
+                },
             )
 
     summary = {

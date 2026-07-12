@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 """Load environment variables before starting the app"""
 
-from dotenv import load_dotenv
-from pathlib import Path
 import os
+from pathlib import Path
+
+from dotenv import load_dotenv
+
 
 # Load .env file from project root
 env_path = Path(__file__).parent.parent.parent / ".env"
@@ -21,6 +23,7 @@ print(f"JWT_SECRET_KEY loaded: {'✅' if jwt_secret else '❌'}")
 
 # Now import and run the app
 import uvicorn
+
 
 if __name__ == "__main__":
     backend_port = os.getenv("BACKEND_PORT")

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-监控告警系统优化工具
+"""监控告警系统优化工具
 Phase 7-2: 监控告警系统优化 (P2优先级)
 
 优化方向:
@@ -16,11 +15,12 @@ Date: 2025-11-13
 """
 
 import json
-import time
 import os
-import requests
+import time
 from datetime import datetime
-from typing import Dict, List, Any
+from typing import Any, Dict, List
+
+import requests
 
 
 class AlertSystemOptimizer:
@@ -143,9 +143,7 @@ class AlertSystemOptimizer:
 
         # 模拟规则优化效果
         optimized_count = len(optimized_rules)
-        high_priority_count = sum(
-            1 for rule in optimized_rules.values() if rule["priority"] <= 2
-        )
+        high_priority_count = sum(1 for rule in optimized_rules.values() if rule["priority"] <= 2)
 
         return {
             "test": "Alert Rules Optimization",
@@ -318,9 +316,7 @@ class AlertSystemOptimizer:
             "success": True,
             "duration": time.time() - start_time,
             "routing_channels": len(routing_channels),
-            "active_channels": sum(
-                1 for ch in routing_channels.values() if ch["enabled"]
-            ),
+            "active_channels": sum(1 for ch in routing_channels.values() if ch["enabled"]),
             "routing_stats": routing_stats,
             "channels_configured": routing_channels,
             "improvement": "多渠道冗余，确保告警必达",
@@ -388,31 +384,36 @@ class AlertSystemOptimizer:
         try:
             # 测试告警规则API
             response = requests.get(
-                f"{self.base_url}/api/monitoring/alert-rules", timeout=5
+                f"{self.base_url}/api/monitoring/alert-rules",
+                timeout=5,
             )
             rules_api_ok = response.status_code == 200
 
             # 测试告警记录API
             response = requests.get(
-                f"{self.base_url}/api/monitoring/alerts?limit=5", timeout=5
+                f"{self.base_url}/api/monitoring/alerts?limit=5",
+                timeout=5,
             )
             alerts_api_ok = response.status_code == 200
 
             # 测试实时监控API
             response = requests.get(
-                f"{self.base_url}/api/monitoring/realtime?limit=3", timeout=5
+                f"{self.base_url}/api/monitoring/realtime?limit=3",
+                timeout=5,
             )
             realtime_api_ok = response.status_code == 200
 
             # 测试龙虎榜API
             response = requests.get(
-                f"{self.base_url}/api/monitoring/dragon-tiger", timeout=5
+                f"{self.base_url}/api/monitoring/dragon-tiger",
+                timeout=5,
             )
             lhb_api_ok = response.status_code == 200
 
             # 测试监控摘要API
             response = requests.get(
-                f"{self.base_url}/api/monitoring/summary", timeout=5
+                f"{self.base_url}/api/monitoring/summary",
+                timeout=5,
             )
             summary_api_ok = response.status_code == 200
 
@@ -424,7 +425,7 @@ class AlertSystemOptimizer:
                     realtime_api_ok,
                     lhb_api_ok,
                     summary_api_ok,
-                ]
+                ],
             )
             success_rate = (apis_working / apis_tested * 100) if apis_tested > 0 else 0
 
@@ -484,14 +485,8 @@ class AlertSystemOptimizer:
     def _generate_optimization_summary(self) -> Dict[str, Any]:
         """生成优化摘要"""
         total_optimizations = len(self.optimization_results)
-        successful_optimizations = sum(
-            1 for r in self.optimization_results if r.get("success", False)
-        )
-        success_rate = (
-            (successful_optimizations / total_optimizations * 100)
-            if total_optimizations > 0
-            else 0
-        )
+        successful_optimizations = sum(1 for r in self.optimization_results if r.get("success", False))
+        success_rate = (successful_optimizations / total_optimizations * 100) if total_optimizations > 0 else 0
 
         total_duration = sum(r.get("duration", 0) for r in self.optimization_results)
 
@@ -524,7 +519,7 @@ class AlertSystemOptimizer:
         print("📊 监控告警系统优化报告 (Phase 7-2)")
         print("=" * 60)
         print(
-            f"✅ 成功优化: {successful_optimizations}/{total_optimizations} ({success_rate:.1f}%)"
+            f"✅ 成功优化: {successful_optimizations}/{total_optimizations} ({success_rate:.1f}%)",
         )
         print(f"⏱️  总用时: {total_duration:.2f}秒")
 

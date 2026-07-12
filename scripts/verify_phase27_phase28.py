@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
-"""
-API验证脚本 - Phase 2.7 & 2.8
+"""API验证脚本 - Phase 2.7 & 2.8
 Technical Analysis API & Monitoring API
 """
 
-import requests
-import time
 import json
 import os
+import time
 from datetime import datetime
-from typing import Dict, Any, List
+from typing import Any, Dict, List
+
+import requests
+
 
 # ==================== 配置 ====================
 
@@ -40,8 +41,7 @@ class APIValidator:
         expected_fields: List[str] = None,
         timeout: int = 30,
     ) -> Dict[str, Any]:
-        """
-        验证API端点
+        """验证API端点
 
         Args:
             api_name: API名称
@@ -54,6 +54,7 @@ class APIValidator:
 
         Returns:
             验证结果字典
+
         """
         url = f"{BASE_URL}{endpoint}"
         result = {
@@ -91,7 +92,7 @@ class APIValidator:
                 result["status"] = "FAILED"
                 result["error"] = f"端点不存在或方法不支持 (HTTP {response.status_code})"
                 return result
-            elif response.status_code >= 500:
+            if response.status_code >= 500:
                 result["status"] = "FAILED"
                 result["error"] = f"服务器内部错误 (HTTP {response.status_code})"
                 return result
@@ -115,9 +116,7 @@ class APIValidator:
             data_field = response_data.get("data", response_data)
 
             if isinstance(data_field, (list, dict)):
-                if isinstance(data_field, list):
-                    result["data_size"] = len(data_field)
-                elif isinstance(data_field, dict):
+                if isinstance(data_field, list) or isinstance(data_field, dict):
                     result["data_size"] = len(data_field)
 
                 # 检查预期字段
@@ -179,7 +178,7 @@ class APIValidator:
         for result in self.results:
             status_emoji = "✅" if result["status"] == "SUCCESS" else "⚠️" if result["status"] == "PARTIAL" else "❌"
             report_lines.append(
-                f"| {result['api_name']} | {status_emoji} {result['status']} | {result['http_status']} | {result['response_time_ms']}ms | {result['data_size']} |"
+                f"| {result['api_name']} | {status_emoji} {result['status']} | {result['http_status']} | {result['response_time_ms']}ms | {result['data_size']} |",
             )
 
         # 统计信息
@@ -195,7 +194,7 @@ class APIValidator:
                 f"- ⚠️ 部分成功: {partial_count}",
                 f"- ❌ 失败: {failed_count}",
                 f"- 📊 成功率: {success_count / len(self.results) * 100:.1f}%",
-            ]
+            ],
         )
 
         # 错误详情
@@ -205,7 +204,7 @@ class APIValidator:
                 [
                     "\n---\n",
                     "## 错误详情\n",
-                ]
+                ],
             )
             for result in failed_results:
                 report_lines.extend(
@@ -216,7 +215,7 @@ class APIValidator:
                         f"- **HTTP状态**: {result['http_status']}",
                         f"- **错误**: {result['error']}",
                         f"- **响应时间**: {result['response_time_ms']}ms",
-                    ]
+                    ],
                 )
 
         return "\n".join(report_lines)
@@ -227,7 +226,6 @@ class APIValidator:
 
 def verify_phase27(validator: APIValidator, test_symbol: str = "600000.SH"):
     """验证Phase 2.7: Technical Analysis API"""
-
     print("=" * 80)
     print("Phase 2.7: Technical Analysis API (7个API)")
     print("=" * 80)
@@ -301,7 +299,6 @@ def verify_phase27(validator: APIValidator, test_symbol: str = "600000.SH"):
 
 def verify_phase28(validator: APIValidator, test_symbol: str = "600000.SH"):
     """验证Phase 2.8: Monitoring API"""
-
     print("\n" + "=" * 80)
     print("Phase 2.8: Monitoring API (6个API)")
     print("=" * 80)

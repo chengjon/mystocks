@@ -1,5 +1,4 @@
-"""
-TDX数据导入完整示例 (TDX Data Import Complete Example)
+"""TDX数据导入完整示例 (TDX Data Import Complete Example)
 
 功能说明:
 - 演示如何从通达信本地文件导入数据到MyStocks数据库
@@ -16,12 +15,14 @@ TDX数据导入完整示例 (TDX Data Import Complete Example)
 版本: 1.0.0
 """
 
-import sys
 import os
+import sys
+
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from datetime import date, timedelta
+
 from src.data_sources.tdx_binary_parser import TdxBinaryParser
 from src.data_sources.tdx_importer import TdxImporter
 
@@ -98,7 +99,7 @@ def example_2_parse_local_data():
                     "date": latest["date"],
                     "close": latest["close"],
                     "volume": latest["volume"],
-                }
+                },
             )
 
     if summary:

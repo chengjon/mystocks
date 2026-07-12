@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
-"""
-MyStocks 数据安全检查脚本
+"""MyStocks 数据安全检查脚本
 检查量化交易平台的数据安全配置和潜在风险
 """
 
 import os
-import sys
 import re
-import json
+import sys
 from pathlib import Path
-from typing import List, Dict, Any, Tuple
+from typing import Any, Dict, List
+
 
 # 添加项目路径
 project_root = Path(__file__).parent.parent.parent
@@ -74,12 +73,7 @@ class DataSecurityChecker:
         for root, dirs, files in os.walk(self.project_root):
             # 跳过排除的目录
             dirs[:] = [
-                d
-                for d in dirs
-                if not any(
-                    re.search(pattern, os.path.join(root, d))
-                    for pattern in exclude_patterns
-                )
+                d for d in dirs if not any(re.search(pattern, os.path.join(root, d)) for pattern in exclude_patterns)
             ]
 
             for file in files:
@@ -93,7 +87,7 @@ class DataSecurityChecker:
                     continue
 
                 try:
-                    with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
+                    with open(filepath, encoding="utf-8", errors="ignore") as f:
                         lines = f.readlines()
 
                     for line_num, line in enumerate(lines, 1):
@@ -134,12 +128,14 @@ class DataSecurityChecker:
                 filepath = os.path.join(root, file)
 
                 try:
-                    with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
+                    with open(filepath, encoding="utf-8", errors="ignore") as f:
                         content = f.read()
 
                     for pattern, description in sql_injection_patterns:
                         matches = re.findall(
-                            pattern, content, re.IGNORECASE | re.DOTALL
+                            pattern,
+                            content,
+                            re.IGNORECASE | re.DOTALL,
                         )
                         if matches:
                             for match in matches[:3]:  # 只报告前3个匹配
@@ -172,7 +168,7 @@ class DataSecurityChecker:
             filepath = self.project_root / config_file
             if filepath.exists():
                 try:
-                    with open(filepath, "r", encoding="utf-8") as f:
+                    with open(filepath, encoding="utf-8") as f:
                         content = f.read()
 
                     # 检查加密相关配置
@@ -226,7 +222,7 @@ class DataSecurityChecker:
             filepath = self.project_root / config_file
             if filepath.exists():
                 try:
-                    with open(filepath, "r", encoding="utf-8") as f:
+                    with open(filepath, encoding="utf-8") as f:
                         content = f.read()
 
                     if any(indicator in content for indicator in auth_indicators):
@@ -271,16 +267,18 @@ class DataSecurityChecker:
 
         for strategy_file in strategy_files:
             try:
-                with open(strategy_file, "r", encoding="utf-8") as f:
+                with open(strategy_file, encoding="utf-8") as f:
                     content = f.read()
 
                 # 检查数据验证相关代码
                 if re.search(
-                    r"validate|validation|check|verify", content, re.IGNORECASE
+                    r"validate|validation|check|verify",
+                    content,
+                    re.IGNORECASE,
                 ):
                     validation_found = True
                     break
-            except Exception as e:
+            except Exception:
                 continue
 
         if not validation_found:

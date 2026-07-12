@@ -36,7 +36,7 @@ class TestGenerateReport:
                 "pattern": "__pycache__",
                 "files": ["__pycache__/module.pyc"],
                 "total": 1,
-            }
+            },
         ]
         validator.successes = ["✅ .env - 已正确忽略"]
         validator.warnings = ["⚠️  temp/README.md - 文件不存在（可选）"]
@@ -59,7 +59,7 @@ class TestGenerateReport:
                 "type": "WRONGLY_IGNORED",
                 "file": ".env.example",
                 "message": "应该可见但被忽略",
-            }
+            },
         ]
         validator.successes = []
         validator.warnings = []
@@ -81,7 +81,7 @@ class TestGenerateReport:
                 "pattern": "*.log",
                 "files": ["app.log"],
                 "total": 1,
-            }
+            },
         ]
 
         with patch.object(validator, "check_gitignore_exists", return_value=True):
@@ -128,7 +128,7 @@ class TestGenerateReport:
                 "pattern": "__pycache__",
                 "files": ["__pycache__/module.pyc"],
                 "total": 1,
-            }
+            },
         ]
 
         with patch.object(validator, "check_gitignore_exists", return_value=True):

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-专门调试 market.py 文件
+"""专门调试 market.py 文件
 Debug market.py specifically
 """
 
@@ -15,7 +14,7 @@ def debug_market_py():
     print(f"🔍 分析文件: {file_path}")
 
     try:
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             content = f.read()
 
         print(f"📄 文件大小: {len(content)} 字符")

@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
-"""
-API契约管理CLI工具安装脚本
-"""
+"""API契约管理CLI工具安装脚本"""
 
-from setuptools import setup, find_packages
 from pathlib import Path
+
+from setuptools import find_packages, setup
+
 
 # 读取README
 this_directory = Path(__file__).parent
-long_description = (this_directory / "README.md").read_text(encoding="utf-8") if (this_directory / "README.md").exists() else ""
+long_description = (
+    (this_directory / "README.md").read_text(encoding="utf-8") if (this_directory / "README.md").exists() else ""
+)
 
 setup(
     name="api-contract-sync",

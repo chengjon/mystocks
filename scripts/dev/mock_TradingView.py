@@ -1,5 +1,4 @@
-"""
-Mock数据文件: TradingView
+"""Mock数据文件: TradingView
 提供接口:
 1. get_chart_config() -> Dict - 获取TradingView图表配置
 2. get_mini_chart_config() -> Dict - 获取迷你图表配置
@@ -18,7 +17,7 @@ Mock数据文件: TradingView
 生成时间: 2025-11-13
 """
 
-from typing import List, Dict, Optional
+from typing import Dict, List, Optional
 
 
 def get_chart_config(
@@ -46,6 +45,7 @@ def get_chart_config(
              - container: 容器配置
              - overrides: 样式覆盖
              - studies: 研究指标
+
     """
     # 转换股票代码为TradingView格式
     tv_symbol = convert_symbol_format(symbol, market)
@@ -100,6 +100,7 @@ def get_mini_chart_config(
 
     Returns:
         Dict: 迷你图表配置
+
     """
     tv_symbol = convert_symbol_format(symbol, market)
 
@@ -143,6 +144,7 @@ def get_ticker_tape_config(
 
     Returns:
         Dict: 滚动行情配置
+
     """
     # 默认股票列表
     if not symbols:
@@ -187,6 +189,7 @@ def get_market_overview_config(
 
     Returns:
         Dict: 市场概览配置
+
     """
     # 根据市场类型设置不同的板块
     if market == "china":
@@ -219,7 +222,7 @@ def get_market_overview_config(
                     {"s": "NASDAQ:MSFT", "d": "Microsoft"},
                     {"s": "NASDAQ:GOOGL", "d": "Google"},
                 ],
-            }
+            },
         ]
     else:  # crypto
         tabs = [
@@ -229,7 +232,7 @@ def get_market_overview_config(
                     {"s": "BINANCE:BTCUSDT", "d": "Bitcoin"},
                     {"s": "BINANCE:ETHUSDT", "d": "Ethereum"},
                 ],
-            }
+            },
         ]
 
     config = {
@@ -263,6 +266,7 @@ def get_screener_config(
 
     Returns:
         Dict: 股票筛选器配置
+
     """
     # 根据市场类型设置筛选器
     if market == "china":
@@ -285,7 +289,7 @@ def get_screener_config(
                 "left": "market_cap_basic",
                 "operation": "greater",
                 "right": 1000000000,  # 10亿
-            }
+            },
         ]
         symbols = [
             "NASDAQ:AAPL",
@@ -300,7 +304,7 @@ def get_screener_config(
                 "left": "market_cap",
                 "operation": "greater",
                 "right": 1000000000,  # 10亿
-            }
+            },
         ]
         symbols = ["BINANCE:BTCUSDT", "BINANCE:ETHUSDT", "BINANCE:BNBUSDT"]
 
@@ -332,6 +336,7 @@ def convert_symbol_format(symbol: str, market: str) -> Dict:
 
     Returns:
         Dict: 转换后的代码信息
+
     """
     # 股票代码映射
     symbol_mapping = {
@@ -381,6 +386,7 @@ def get_symbol_list_by_market(market: str = "china", limit: int = 10) -> List[Di
 
     Returns:
         List[Dict]: 股票列表
+
     """
     if market == "china":
         stock_list = [
@@ -433,6 +439,7 @@ def get_chart_studies(theme: str = "dark") -> Dict:
 
     Returns:
         Dict: 研究指标配置
+
     """
     # 研究指标配置
     studies = {
@@ -448,7 +455,7 @@ def get_chart_studies(theme: str = "dark") -> Dict:
                 "symbol": "SSE:000001",  # 上证指数作为对比
                 "displayName": "上证指数",
                 "color": "#339AF0",
-            }
+            },
         ],
         "scalesProperties": {
             "scaleProperties.backgroundColor": "#ffffff" if theme == "light" else "#131722",

@@ -5,6 +5,7 @@ import importlib
 import sys
 from unittest.mock import MagicMock, patch
 
+
 try:
     _CHECK_DB_HEALTH_MODULE = importlib.import_module("src.utils.check_db_health")
     if not hasattr(_CHECK_DB_HEALTH_MODULE, "check_mysql_connection"):
@@ -29,7 +30,12 @@ class TestEdgeCasesAndErrorHandling:
     @patch("src.utils.check_db_health.check_mysql_connection")
     @patch("builtins.print")
     def test_main_exception_handling(
-        self, mock_print, mock_mysql, mock_pg, mock_td, mock_redis
+        self,
+        mock_print,
+        mock_mysql,
+        mock_pg,
+        mock_td,
+        mock_redis,
     ):
         """测试主函数异常处理"""
         mock_mysql.side_effect = Exception("MySQL检查异常")

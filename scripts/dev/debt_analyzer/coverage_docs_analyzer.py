@@ -1,14 +1,11 @@
 """技术负债分析器子模块"""
 
 import ast
-import json
+import asyncio
 import logging
 import re
-from collections import Counter, defaultdict
 from pathlib import Path
-from typing import Any, Dict, List
-import asyncio
-import aiofiles
+
 
 logger = logging.getLogger(__name__)
 
@@ -27,9 +24,7 @@ class CoverageDocsMixin:
 
         # 查找源代码文件
         source_files = [
-            f
-            for f in list(self.project_root.rglob("*.py"))
-            if not self._should_skip_file(f) and "test" not in str(f)
+            f for f in list(self.project_root.rglob("*.py")) if not self._should_skip_file(f) and "test" not in str(f)
         ]
 
         test_to_source_ratio = len(test_files) / max(len(source_files), 1)
@@ -43,7 +38,7 @@ class CoverageDocsMixin:
                     "ratio": test_to_source_ratio,
                     "category": "testing",
                     "severity": "high",
-                }
+                },
             )
 
         # 检查是否有e2e测试
@@ -54,7 +49,7 @@ class CoverageDocsMixin:
                     "issue": "missing_e2e_tests",
                     "category": "testing",
                     "severity": "medium",
-                }
+                },
             )
 
         # 检查测试配置
@@ -65,7 +60,7 @@ class CoverageDocsMixin:
                     "issue": "missing_pytest_config",
                     "category": "testing",
                     "severity": "low",
-                }
+                },
             )
 
     async def analyze_documentation_issues(self):
@@ -89,7 +84,7 @@ class CoverageDocsMixin:
                     "issue": "missing_readme",
                     "category": "documentation",
                     "severity": "high",
-                }
+                },
             )
 
         # 检查API文档
@@ -99,15 +94,11 @@ class CoverageDocsMixin:
                     "issue": "missing_api_docs",
                     "category": "documentation",
                     "severity": "medium",
-                }
+                },
             )
 
         # 检查docstrings覆盖率
-        python_files = [
-            f
-            for f in list(self.project_root.rglob("*.py"))
-            if not self._should_skip_file(f)
-        ]
+        python_files = [f for f in list(self.project_root.rglob("*.py")) if not self._should_skip_file(f)]
 
         files_without_docstrings = 0
 
@@ -134,9 +125,7 @@ class CoverageDocsMixin:
 
         await asyncio.gather(*[check_docstring_for_file(f) for f in python_files])
 
-        if (
-            files_without_docstrings > len(python_files) * 0.7
-        ):  # 超过70%的文件没有docstring
+        if files_without_docstrings > len(python_files) * 0.7:  # 超过70%的文件没有docstring
             self.issues["documentation_issues"].append(
                 {
                     "issue": "low_docstring_coverage",
@@ -145,7 +134,7 @@ class CoverageDocsMixin:
                     "ratio": files_without_docstrings / len(python_files),
                     "category": "documentation",
                     "severity": "medium",
-                }
+                },
             )
 
     async def analyze_configuration_issues(self):
@@ -170,7 +159,7 @@ class CoverageDocsMixin:
                             "issue": "hardcoded_numbers",
                             "category": "configuration",
                             "severity": "medium",
-                        }
+                        },
                     )
 
                 if re.search(
@@ -183,7 +172,7 @@ class CoverageDocsMixin:
                             "issue": "hardcoded_config",
                             "category": "configuration",
                             "severity": "high",
-                        }
+                        },
                     )
 
             except Exception as e:
@@ -210,6 +199,5 @@ class CoverageDocsMixin:
                     "issue": "no_environment_variables",
                     "category": "configuration",
                     "severity": "medium",
-                }
+                },
             )
-

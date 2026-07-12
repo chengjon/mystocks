@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-文档清单生成工具
+"""文档清单生成工具
 
 功能：
 1. 扫描指定目录的所有Markdown文档
@@ -14,14 +13,13 @@
     python scripts/tools/docs_inventory.py --output inventory.json
 """
 
-import os
-import sys
-import json
 import argparse
-from pathlib import Path
-from datetime import datetime, timedelta
+import json
+import sys
 from collections import defaultdict
-from typing import Dict, List, Tuple
+from datetime import datetime
+from pathlib import Path
+from typing import Dict, List
 
 
 class DocsInventory:
@@ -36,9 +34,9 @@ class DocsInventory:
                 "naming": [],
                 "size": [],
                 "age": [],
-                "empty_dirs": []
+                "empty_dirs": [],
             },
-            "statistics": {}
+            "statistics": {},
         }
 
     def scan(self) -> Dict:
@@ -70,34 +68,39 @@ class DocsInventory:
             naming_issues = self._check_naming(md_file)
 
             if naming_issues:
-                self.inventory["issues"]["naming"].extend([
-                    {"file": str(rel_path), "issue": issue}
-                    for issue in naming_issues
-                ])
+                self.inventory["issues"]["naming"].extend(
+                    [{"file": str(rel_path), "issue": issue} for issue in naming_issues]
+                )
 
             # 检查文件大小
             if file_size > 1024 * 1024:  # > 1MB
-                self.inventory["issues"]["size"].append({
-                    "file": str(rel_path),
-                    "size_mb": round(file_size / (1024 * 1024), 2)
-                })
+                self.inventory["issues"]["size"].append(
+                    {
+                        "file": str(rel_path),
+                        "size_mb": round(file_size / (1024 * 1024), 2),
+                    }
+                )
 
             # 检查文件年龄
             if age_days > 180:  # > 6个月
-                self.inventory["issues"]["age"].append({
-                    "file": str(rel_path),
-                    "age_days": age_days,
-                    "last_modified": mtime.strftime("%Y-%m-%d")
-                })
+                self.inventory["issues"]["age"].append(
+                    {
+                        "file": str(rel_path),
+                        "age_days": age_days,
+                        "last_modified": mtime.strftime("%Y-%m-%d"),
+                    }
+                )
 
             # 文件信息
-            self.inventory["files"].append({
-                "path": str(rel_path),
-                "size_bytes": file_size,
-                "size_kb": round(file_size / 1024, 2),
-                "modified": mtime.strftime("%Y-%m-%d %H:%M:%S"),
-                "age_days": age_days
-            })
+            self.inventory["files"].append(
+                {
+                    "path": str(rel_path),
+                    "size_bytes": file_size,
+                    "size_kb": round(file_size / 1024, 2),
+                    "modified": mtime.strftime("%Y-%m-%d %H:%M:%S"),
+                    "age_days": age_days,
+                }
+            )
 
             # 统计
             file_types[md_file.suffix] += 1
@@ -124,7 +127,7 @@ class DocsInventory:
             "total_files": total_files,
             "total_size_mb": round(total_size / (1024 * 1024), 2),
             "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "root_path": str(self.root_path)
+            "root_path": str(self.root_path),
         }
 
         # 统计信息
@@ -135,8 +138,8 @@ class DocsInventory:
                 "naming_issues": len(self.inventory["issues"]["naming"]),
                 "large_files": len(self.inventory["issues"]["size"]),
                 "old_files": len(self.inventory["issues"]["age"]),
-                "empty_dirs": len(self.inventory["issues"]["empty_dirs"])
-            }
+                "empty_dirs": len(self.inventory["issues"]["empty_dirs"]),
+            },
         }
 
         return self.inventory
@@ -147,15 +150,15 @@ class DocsInventory:
         filename = file_path.name
 
         # 检查中文字符
-        if any('\u4e00' <= char <= '\u9fa5' for char in filename):
+        if any("\u4e00" <= char <= "\u9fa5" for char in filename):
             issues.append("包含中文字符")
 
         # 检查空格
-        if ' ' in filename:
+        if " " in filename:
             issues.append("包含空格")
 
         # 检查特殊字符（排除 . - _）
-        allowed_chars = set('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-_')
+        allowed_chars = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-_")
         if not all(c in allowed_chars for c in filename):
             issues.append("包含特殊字符")
 
@@ -184,9 +187,9 @@ class DocsInventory:
         # 统计信息
         print("\n📈 统计信息:")
         print(f"  文件类型: {stats['file_types']}")
-        print(f"\n  年龄分布:")
-        for age_range, count in stats['age_distribution'].items():
-            percentage = count / summary['total_files'] * 100 if summary['total_files'] > 0 else 0
+        print("\n  年龄分布:")
+        for age_range, count in stats["age_distribution"].items():
+            percentage = count / summary["total_files"] * 100 if summary["total_files"] > 0 else 0
             print(f"    {age_range}: {count} ({percentage:.1f}%)")
 
         # 问题汇总
@@ -198,22 +201,22 @@ class DocsInventory:
 
         # 详细问题（仅显示前10个）
         if issues["naming"]:
-            print(f"\n🔤 命名问题（前10个）:")
+            print("\n🔤 命名问题（前10个）:")
             for item in issues["naming"][:10]:
                 print(f"  ❌ {item['file']}: {item['issue']}")
 
         if issues["size"]:
-            print(f"\n📦 大文件（前10个）:")
+            print("\n📦 大文件（前10个）:")
             for item in issues["size"][:10]:
                 print(f"  ⚠️  {item['file']}: {item['size_mb']} MB")
 
         if issues["age"]:
-            print(f"\n📅 旧文件（前10个）:")
+            print("\n📅 旧文件（前10个）:")
             for item in issues["age"][:10]:
                 print(f"  🕰️  {item['file']}: {item['age_days']} 天 ({item['last_modified']})")
 
         if issues["empty_dirs"]:
-            print(f"\n📁 空目录（前10个）:")
+            print("\n📁 空目录（前10个）:")
             for dir_path in issues["empty_dirs"][:10]:
                 print(f"  📂 {dir_path}")
 
@@ -221,7 +224,7 @@ class DocsInventory:
 
     def save_json(self, output_path: str):
         """保存JSON格式清单"""
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             json.dump(self.inventory, f, ensure_ascii=False, indent=2)
         print(f"\n✅ JSON清单已保存到: {output_path}")
 
@@ -231,7 +234,7 @@ class DocsInventory:
         stats = self.inventory["statistics"]
         issues = self.inventory["issues"]
 
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             f.write("# 文档清单报告\n\n")
             f.write(f"**生成时间**: {summary['scan_time']}\n\n")
             f.write(f"**扫描路径**: `{summary['root_path']}`\n\n")
@@ -247,8 +250,8 @@ class DocsInventory:
             f.write("### 年龄分布\n\n")
             f.write("| 年龄范围 | 数量 | 占比 |\n")
             f.write("|---------|------|------|\n")
-            for age_range, count in stats['age_distribution'].items():
-                percentage = count / summary['total_files'] * 100 if summary['total_files'] > 0 else 0
+            for age_range, count in stats["age_distribution"].items():
+                percentage = count / summary["total_files"] * 100 if summary["total_files"] > 0 else 0
                 f.write(f"| {age_range} | {count} | {percentage:.1f}% |\n")
 
             # 问题汇总
@@ -261,27 +264,25 @@ class DocsInventory:
             # 详细问题
             if issues["naming"]:
                 f.write("### 🔤 命名问题\n\n")
-                for item in issues["naming"]:
-                    f.write(f"- ❌ `{item['file']}`: {item['issue']}\n")
+                f.writelines(f"- ❌ `{item['file']}`: {item['issue']}\n" for item in issues["naming"])
 
             if issues["size"]:
                 f.write("\n### 📦 大文件\n\n")
                 f.write("| 文件 | 大小 |\n")
                 f.write("|------|------|\n")
-                for item in issues["size"]:
-                    f.write(f"| `{item['file']}` | {item['size_mb']} MB |\n")
+                f.writelines(f"| `{item['file']}` | {item['size_mb']} MB |\n" for item in issues["size"])
 
             if issues["age"]:
                 f.write("\n### 📅 旧文件\n\n")
                 f.write("| 文件 | 天数 | 最后修改 |\n")
                 f.write("|------|------|----------|\n")
-                for item in issues["age"]:
-                    f.write(f"| `{item['file']}` | {item['age_days']} | {item['last_modified']} |\n")
+                f.writelines(
+                    f"| `{item['file']}` | {item['age_days']} | {item['last_modified']} |\n" for item in issues["age"]
+                )
 
             if issues["empty_dirs"]:
                 f.write("\n### 📁 空目录\n\n")
-                for dir_path in issues["empty_dirs"]:
-                    f.write(f"- 📂 `{dir_path}`\n")
+                f.writelines(f"- 📂 `{dir_path}`\n" for dir_path in issues["empty_dirs"])
 
         print(f"✅ Markdown清单已保存到: {output_path}")
 
@@ -291,8 +292,7 @@ def main():
     parser = argparse.ArgumentParser(description="文档清单生成工具")
     parser.add_argument("--path", default="docs/", help="文档目录路径（默认: docs/）")
     parser.add_argument("--output", help="输出文件路径（支持.json或.md）")
-    parser.add_argument("--format", choices=["json", "markdown", "both"], default="both",
-                       help="输出格式（默认: both）")
+    parser.add_argument("--format", choices=["json", "markdown", "both"], default="both", help="输出格式（默认: both）")
 
     args = parser.parse_args()
 

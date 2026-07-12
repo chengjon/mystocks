@@ -12,10 +12,16 @@ from uuid import uuid4
 from pymongo import MongoClient
 from pymongo.errors import OperationFailure
 
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from scripts.runtime.export_collab_snapshots import (
+    _extract_graphiti_projection,
+    render_task_markdown,
+    render_task_report_markdown,
+)
 from src.services.maestro.collab import (
     FileOwnershipIndex,
     OwnershipSuggestionEngine,
@@ -26,7 +32,6 @@ from src.services.maestro.collab import (
 from src.services.maestro.collab.authz import ActorIdentity, AuthorizationError
 from src.services.maestro.collab.backends.mongo import MongoCollaborationStore
 from src.services.maestro.collab.integrations import GraphitiAdapter, GraphitiMcpTransport
-from src.services.maestro.collab.transcript_archive import FilesystemTranscriptArchiveBackend
 from src.services.maestro.collab.services import CoordinationService, GraphitiPreflightService, TranscriptLedgerService
 from src.services.maestro.collab.store.models import (
     TranscriptLegacyIndexRecord,
@@ -35,6 +40,7 @@ from src.services.maestro.collab.store.models import (
     WorkRequestRecord,
     WorkUpdateRecord,
 )
+from src.services.maestro.collab.transcript_archive import FilesystemTranscriptArchiveBackend
 from src.services.maestro.profiles.mystocks import COLLAB_CONTROL_PLANE_DEFAULTS
 from src.utils.cli_error_output import build_cli_error_payload
 from src.utils.mongo_runtime_config import (
@@ -44,11 +50,7 @@ from src.utils.mongo_runtime_config import (
     get_runtime_mongo_uri_default,
     is_mongo_auth_error,
 )
-from scripts.runtime.export_collab_snapshots import (
-    _extract_graphiti_projection,
-    render_task_markdown,
-    render_task_report_markdown,
-)
+
 
 GRAPHITI_CLI_EXAMPLES = """Examples:
   python scripts/runtime/coordctl.py graphiti preflight --work-item-id MT-100 --actor-cli cli-1 --task-path TASK.md --output json
@@ -97,7 +99,10 @@ class _MongoCoordinationFacade:
         return work_item.model_dump(mode="json")
 
     def list_work_items(self) -> list[dict]:
-        return [item.model_dump(mode="json") for item in self._service.list_work_items(ActorIdentity(cli_name="main", role="main_cli"))]
+        return [
+            item.model_dump(mode="json")
+            for item in self._service.list_work_items(ActorIdentity(cli_name="main", role="main_cli"))
+        ]
 
     def list_work_updates(self, work_item_id: str) -> list[dict]:
         return [
@@ -118,7 +123,9 @@ class _MongoCoordinationFacade:
         ]
 
     def get_worker_status_view(self, work_item_id: str) -> dict | None:
-        status_view = self._service.get_worker_status_view(ActorIdentity(cli_name="main", role="main_cli"), work_item_id)
+        status_view = self._service.get_worker_status_view(
+            ActorIdentity(cli_name="main", role="main_cli"), work_item_id
+        )
         return None if status_view is None else status_view.model_dump(mode="json")
 
     def transition_work_item(self, work_item_id: str, status: str, actor_cli: str) -> dict:
@@ -151,7 +158,9 @@ class _MongoCoordinationFacade:
         stored = self._service.append_work_update(ActorIdentity(cli_name=actor_cli, role="worker_cli"), update)
         return stored.model_dump(mode="json")
 
-    def create_work_request(self, work_item_id: str, actor_cli: str, request_id: str, request_type: str, summary: str) -> dict:
+    def create_work_request(
+        self, work_item_id: str, actor_cli: str, request_id: str, request_type: str, summary: str
+    ) -> dict:
         request = WorkRequestRecord(
             work_item_id=work_item_id,
             request_id=request_id,
@@ -328,7 +337,7 @@ class _MongoCoordinationFacade:
                     "hot_body_available": self._is_hot_body_available(hot_body=hot_body, events=events),
                     "archive_locator": self._archive_ref_from_events(events),
                     "source": "ledger",
-                }
+                },
             )
 
         for legacy_index in self._transcript_service.list_legacy_indexes(actor, work_item_id):
@@ -339,7 +348,7 @@ class _MongoCoordinationFacade:
                     "captured_at": legacy_index.captured_at.isoformat(),
                     "archive_locator": legacy_index.archive_locator,
                     "source": "legacy",
-                }
+                },
             )
 
         return summaries
@@ -398,7 +407,8 @@ class _MongoCoordinationFacade:
         if hot_body is None:
             return False
         if any(
-            (event.event_type if hasattr(event, "event_type") else event.get("event_type")) == "transcript.hot_body_expired"
+            (event.event_type if hasattr(event, "event_type") else event.get("event_type"))
+            == "transcript.hot_body_expired"
             for event in events
         ):
             return False
@@ -534,10 +544,20 @@ def build_parser() -> argparse.ArgumentParser:
     state_parser.add_argument("issue_identifier", help="Issue identifier")
 
     suggest_parser = subparsers.add_parser("suggest", help="Suggest a likely owner from task paths and ownership rules")
-    suggest_parser.add_argument("--ownership-path", default=".FILE_OWNERSHIP", help="Path to the repository ownership rules file.")
+    suggest_parser.add_argument(
+        "--ownership-path", default=".FILE_OWNERSHIP", help="Path to the repository ownership rules file."
+    )
     suggest_parser.add_argument("--task-path", default=None, help="Optional TASK.md path used to derive path hints.")
-    suggest_parser.add_argument("--path", dest="paths", action="append", default=[], help="Explicit candidate path. Can be provided multiple times.")
-    suggest_parser.add_argument("--fallback-owner", default="main", help="Fallback owner when no explicit ownership rule matches.")
+    suggest_parser.add_argument(
+        "--path",
+        dest="paths",
+        action="append",
+        default=[],
+        help="Explicit candidate path. Can be provided multiple times.",
+    )
+    suggest_parser.add_argument(
+        "--fallback-owner", default="main", help="Fallback owner when no explicit ownership rule matches."
+    )
 
     subparsers.add_parser("list-workspaces", help="List persisted workspaces")
     subparsers.add_parser("list-stale", help="List stale persisted heartbeats")
@@ -587,7 +607,9 @@ def build_parser() -> argparse.ArgumentParser:
     work_export_task.add_argument("--output-path", default=None)
     work_export_task.add_argument("--output", choices=("json", "text"), default="json")
 
-    work_export_report = work_subparsers.add_parser("export-task-report", help="Export TASK-REPORT.md snapshot from Mongo state")
+    work_export_report = work_subparsers.add_parser(
+        "export-task-report", help="Export TASK-REPORT.md snapshot from Mongo state"
+    )
     work_export_report.add_argument("work_item_id")
     work_export_report.add_argument("--output-path", default=None)
     work_export_report.add_argument("--output", choices=("json", "text"), default="json")
@@ -791,7 +813,7 @@ def _build_coordination_service(args: argparse.Namespace) -> _MongoCoordinationF
     archive_backend = None
     if transcript_defaults.get("backend") == "filesystem":
         archive_backend = FilesystemTranscriptArchiveBackend(
-            PROJECT_ROOT / transcript_defaults.get("archive_root", ".maestro/transcript-archive")
+            PROJECT_ROOT / transcript_defaults.get("archive_root", ".maestro/transcript-archive"),
         )
     transcript_service = TranscriptLedgerService(
         store,
@@ -853,11 +875,14 @@ def _latest_graphiti_event(events: list[dict], *, event_types: tuple[str, ...]) 
             latest_created_at = created_at
     return latest_event
 
+
 def _build_mongo_client(mongo_uri: str | None) -> MongoClient:
     return build_project_runtime_mongo_client(PROJECT_ROOT, mongo_uri, server_selection_timeout_ms=3000)
 
 
-def _handle_coordination_command(args: argparse.Namespace, service: _MongoCoordinationFacade) -> tuple[dict | list[dict] | str, str]:
+def _handle_coordination_command(
+    args: argparse.Namespace, service: _MongoCoordinationFacade
+) -> tuple[dict | list[dict] | str, str]:
     if args.command == "work":
         if args.work_command == "create":
             openspec = json.loads(args.openspec_json) if args.openspec_json else None
@@ -876,7 +901,7 @@ def _handle_coordination_command(args: argparse.Namespace, service: _MongoCoordi
                     "acceptance_checks": args.acceptance_check,
                     "openspec": openspec,
                     "metadata": metadata,
-                }
+                },
             )
             return payload, args.output
         if args.work_command == "list":

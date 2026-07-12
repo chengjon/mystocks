@@ -1,13 +1,13 @@
-"""
-Watchlist & Portfolio Demo Script
+"""Watchlist & Portfolio Demo Script
 自选股与组合管理演示脚本
 
 演示自选股监控和组合管理的核心功能。
 """
 
-import sys
 import logging
+import sys
 from pathlib import Path
+
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -19,13 +19,12 @@ def demo_watchlist():
     """演示自选股功能"""
     from sqlalchemy import create_engine
     from sqlalchemy.orm import sessionmaker
-    from src.domain.watchlist.model import Watchlist
-    from src.domain.watchlist.value_objects import WatchlistType
+
+    from src.application.watchlist.watchlist_app_service import WatchlistApplicationService
     from src.infrastructure.persistence.watchlist_repository_impl import (
         WatchlistRepositoryImpl,
         WatchlistStockRepositoryImpl,
     )
-    from src.application.watchlist.watchlist_app_service import WatchlistApplicationService
 
     print("\n" + "=" * 70)
     print("自选股功能演示")
@@ -41,7 +40,10 @@ def demo_watchlist():
 
     try:
         wl = watchlist_service.create_watchlist(
-            name="技术关注组合", watchlist_type="technical", description="用于技术分析的股票观察池", color_tag="#e74c3c"
+            name="技术关注组合",
+            watchlist_type="technical",
+            description="用于技术分析的股票观察池",
+            color_tag="#e74c3c",
         )
         print(f"\n创建自选股: {wl['name']}")
         print(f"  ID: {wl['id']}")
@@ -66,7 +68,7 @@ def demo_watchlist():
             print(f"  快照ID: {result.get('snapshot_id', 'N/A')}")
 
         summary = watchlist_service.get_watchlist_summary(wl["id"])
-        print(f"\n自选股摘要:")
+        print("\n自选股摘要:")
         print(f"  股票数量: {summary['stock_count']}")
         print(f"  上涨: {summary['up_count']} 只")
         print(f"  下跌: {summary['down_count']} 只")
@@ -84,9 +86,9 @@ def demo_portfolio():
     """演示组合管理功能"""
     from sqlalchemy import create_engine
     from sqlalchemy.orm import sessionmaker
-    from src.application.portfolio.model import Portfolio
-    from src.infrastructure.persistence.portfolio_repository_impl import PortfolioRepositoryImpl
+
     from src.application.portfolio.portfolio_app_service import PortfolioApplicationService
+    from src.infrastructure.persistence.portfolio_repository_impl import PortfolioRepositoryImpl
 
     print("\n" + "=" * 70)
     print("组合管理功能演示")
@@ -118,7 +120,10 @@ def demo_portfolio():
 
         for symbol, qty, price in positions:
             result = portfolio_service.add_position(
-                portfolio_id=portfolio["id"], symbol=symbol, quantity=qty, price=price
+                portfolio_id=portfolio["id"],
+                symbol=symbol,
+                quantity=qty,
+                price=price,
             )
             print(f"\n添加持仓: {symbol}")
             print(f"  数量: {qty}")
@@ -127,13 +132,13 @@ def demo_portfolio():
         portfolio_service.update_prices(portfolio["id"], {"300750": 210.0, "002475": 31.20, "000333": 58.90})
 
         perf = portfolio_service.get_performance(portfolio["id"])
-        print(f"\n组合绩效:")
+        print("\n组合绩效:")
         print(f"  当前价值: {perf['current_value']}")
         print(f"  总收益: {perf['total_return']}%")
         print(f"  持仓价值: {perf['holdings_value']}")
 
         allocation = portfolio_service.get_allocation(portfolio["id"])
-        print(f"\n配置分析:")
+        print("\n配置分析:")
         print(f"  持仓数量: {len(allocation['holdings'])}")
         print(f"  最大持仓: {allocation['position_concentration']['max_position']}%")
 
@@ -158,12 +163,12 @@ def demo_prediction():
 
     try:
         result = prediction_service.predict_price_direction("600519", lookback_days=30)
-        print(f"\n价格走势预测 (600519):")
+        print("\n价格走势预测 (600519):")
         print(f"  预测趋势: {result.get('predicted_trend', 'N/A')}")
         print(f"  置信度: {result.get('confidence', 0):.2%}")
 
         result = prediction_service.predict_volatility("600519", period_days=10)
-        print(f"\n波动率预测:")
+        print("\n波动率预测:")
         print(f"  历史波动率: {result.get('historical_volatility', 0):.2f}%")
         print(f"  预测波动率: {result.get('predicted_volatility', 0):.2f}%")
 

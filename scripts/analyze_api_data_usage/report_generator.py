@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
-"""
-MyStocks API和Web前端数据使用分析工具（增强版）
+"""MyStocks API和Web前端数据使用分析工具（增强版）
 支持增量分析、更准确的API调用提取和可视化报告
 """
 
 import json
-import re
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
-from hashlib import md5
+from typing import Dict, List, Set
+
 
 class ReportGenerator:
     """生成分析报告"""
@@ -62,9 +60,9 @@ class ReportGenerator:
         # 统计API使用情况（从HTTP调用和endpoint字段提取）
         for call in self.frontend_api_calls:
             endpoint = None
-            if call["type"] == "http" and "endpoint" in call:
-                endpoint = call["endpoint"]
-            elif call["type"] == "api_function" and "endpoint" in call and call["endpoint"]:
+            if (call["type"] == "http" and "endpoint" in call) or (
+                call["type"] == "api_function" and "endpoint" in call and call["endpoint"]
+            ):
                 endpoint = call["endpoint"]
 
             if endpoint:
@@ -201,7 +199,7 @@ class ReportGenerator:
 
             for ep in endpoints:
                 f.write(
-                    f"| {ep['path']} | {ep['method']} | {ep['return_model']} | {ep['source_type']} | {ep['file']}:{ep['line_number']} |\n"
+                    f"| {ep['path']} | {ep['method']} | {ep['return_model']} | {ep['source_type']} | {ep['file']}:{ep['line_number']} |\n",
                 )
 
             f.write("\n")
@@ -363,7 +361,7 @@ class ReportGenerator:
                     "priority": "高",
                     "category": "代码清理",
                     "description": f"有 {len(api_unused)} 个API端点未被前端使用，建议评估是否需要删除或标记为deprecated",
-                }
+                },
             )
 
         # 2. Mock数据替换
@@ -374,7 +372,7 @@ class ReportGenerator:
                     "priority": "中",
                     "category": "数据源",
                     "description": f"有 {mock_count} 个API仍在使用Mock数据，建议替换为真实数据源",
-                }
+                },
             )
 
         # 3. API调用优化
@@ -384,7 +382,7 @@ class ReportGenerator:
                     "priority": "低",
                     "category": "性能优化",
                     "description": f"前端共 {len(self.frontend_api_calls)} 个API调用，建议分析是否有重复或冗余调用",
-                }
+                },
             )
 
         if recommendations:
@@ -449,5 +447,3 @@ def main():
     if args.incremental:
         print("\n💡 提示: 使用 --incremental 参数可以加速后续分析")
     print("=" * 60)
-
-

@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-MyStocks 代码优化 - 监控模块重复代码分析脚本
+"""MyStocks 代码优化 - 监控模块重复代码分析脚本
 分析monitoring.py与monitoring/目录之间的重复代码问题
 
 创建日期: 2025-11-25
@@ -28,7 +26,7 @@ class MonitoringDuplicationAnalyzer:
         print(f"1. 检查统一监控文件: {monitoring_py}")
 
         if monitoring_py.exists():
-            with open(monitoring_py, "r", encoding="utf-8") as f:
+            with open(monitoring_py, encoding="utf-8") as f:
                 content = f.read()
                 lines = len(content.splitlines())
                 classes = re.findall(r"^class\s+(\w+)", content, re.MULTILINE)
@@ -48,9 +46,9 @@ class MonitoringDuplicationAnalyzer:
 
             for py_file in python_files:
                 if py_file.name != "__init__.py" and not py_file.name.endswith(
-                    ".backup"
+                    ".backup",
                 ):
-                    with open(py_file, "r", encoding="utf-8") as f:
+                    with open(py_file, encoding="utf-8") as f:
                         content = f.read()
                         lines = len(content.splitlines())
                         classes = re.findall(r"^class\s+(\w+)", content, re.MULTILINE)
@@ -63,9 +61,9 @@ class MonitoringDuplicationAnalyzer:
         # 3. 分析重复类
         print("\n3. 重复类分析:")
         if monitoring_py.exists():
-            with open(monitoring_py, "r", encoding="utf-8") as f:
+            with open(monitoring_py, encoding="utf-8") as f:
                 unified_classes = set(
-                    re.findall(r"^class\s+(\w+)", f.read(), re.MULTILINE)
+                    re.findall(r"^class\s+(\w+)", f.read(), re.MULTILINE),
                 )
 
             module_classes = {cls for _, cls in all_classes}
@@ -77,7 +75,7 @@ class MonitoringDuplicationAnalyzer:
 
             # 计算重复代码量
             if monitoring_py.exists():
-                with open(monitoring_py, "r", encoding="utf-8") as f:
+                with open(monitoring_py, encoding="utf-8") as f:
                     unified_lines = len(f.read().splitlines())
                 duplicated_lines = total_lines
                 print("\n4. 重复代码统计:")
@@ -100,22 +98,21 @@ class MonitoringDuplicationAnalyzer:
                 continue
 
             try:
-                with open(py_file, "r", encoding="utf-8") as f:
+                with open(py_file, encoding="utf-8") as f:
                     content = f.read()
 
                 # 查找对monitoring.py的直接导入
                 if re.search(
-                    r"from\s+src\.monitoring\s+import|import\s+src\.monitoring", content
+                    r"from\s+src\.monitoring\s+import|import\s+src\.monitoring",
+                    content,
                 ):
                     # 提取具体的导入内容
                     imports = re.findall(
-                        r"from\s+src\.monitoring\s+import\s+([^#\n]+)", content
+                        r"from\s+src\.monitoring\s+import\s+([^#\n]+)",
+                        content,
                     )
                     dependencies.extend(
-                        [
-                            (str(py_file.relative_to(self.project_root)), imp.strip())
-                            for imp in imports
-                        ]
+                        [(str(py_file.relative_to(self.project_root)), imp.strip()) for imp in imports],
                     )
 
             except Exception:

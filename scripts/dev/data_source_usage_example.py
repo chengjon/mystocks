@@ -1,16 +1,14 @@
-"""
-数据源使用示例
+"""数据源使用示例
 演示如何使用数据源工厂动态切换数据源
 """
 
 import os
-from src.factories.data_source_factory import get_data_source, data_source_factory
+
+from src.factories.data_source_factory import data_source_factory, get_data_source
 
 
 def demo_data_source_usage():
-    """
-    演示数据源使用方法
-    """
+    """演示数据源使用方法"""
     print("数据源使用示例")
     print("=" * 50)
 
@@ -70,9 +68,7 @@ def demo_data_source_usage():
 
 
 def demo_data_source_switching():
-    """
-    演示数据源切换功能
-    """
+    """演示数据源切换功能"""
     print("\n数据源切换演示")
     print("=" * 50)
 

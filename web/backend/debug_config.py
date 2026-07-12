@@ -1,10 +1,9 @@
-"""
-调试配置加载问题
-"""
+"""调试配置加载问题"""
 
 import os
-from pydantic_settings import BaseSettings
 from typing import List
+
+from pydantic_settings import BaseSettings
 
 
 class DebugSettings(BaseSettings):

@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-SQL注入防护检查脚本
+"""SQL注入防护检查脚本
 检查代码中是否存在SQL注入风险
 """
 
-import sys
 import re
+import sys
 from pathlib import Path
 
 
@@ -45,7 +43,7 @@ def check_sql_injection():
     python_files = list(src_path.rglob("*.py"))
     for file_path in python_files:
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
                 lines = content.split("\n")
 
@@ -70,7 +68,7 @@ def check_sql_injection():
                                         "line_content": line.strip(),
                                         "violation": f"SQL注入风险: {description}",
                                         "severity": "critical",
-                                    }
+                                    },
                                 )
 
         except Exception as e:

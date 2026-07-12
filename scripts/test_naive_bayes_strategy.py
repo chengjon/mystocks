@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Naive Bayes策略测试脚本
+"""Naive Bayes策略测试脚本
 
 测试Naive Bayes增强交易策略：
 - 特征工程和概率分布转换验证
@@ -12,12 +11,14 @@ Naive Bayes策略测试脚本
 创建时间: 2026-01-12
 """
 
-import sys
 import asyncio
 import logging
+import sys
+from datetime import datetime, timedelta
+
 import numpy as np
 import pandas as pd
-from datetime import datetime, timedelta
+
 
 # 添加项目根目录到路径
 project_root = "/opt/claude/mystocks_spec"
@@ -73,7 +74,7 @@ async def generate_test_market_data(days: int = 250) -> pd.DataFrame:
             "volume": [
                 int(np.random.normal(1000000, 200000) * (1 + 0.3 * np.random.normal(0, 1))) for _ in range(days)
             ],
-        }
+        },
     )
 
     df.set_index("date", inplace=True)
@@ -89,9 +90,9 @@ async def test_naive_bayes_trading_strategy():
     try:
         # 导入Naive Bayes策略
         from src.ml_strategy.strategy.naive_bayes_trading_strategy import (
-            NaiveBayesTradingStrategy,
-            NaiveBayesConservativeStrategy,
             NaiveBayesAggressiveStrategy,
+            NaiveBayesConservativeStrategy,
+            NaiveBayesTradingStrategy,
         )
 
         logger.info("✓ 成功导入Naive Bayes策略类")
@@ -223,7 +224,10 @@ async def test_naive_bayes_backtesting_integration():
 
         # 执行回测
         result = await backtester.run_strategy_backtest(
-            strategy, market_data, start_date="2022-03-01", end_date="2022-08-01"
+            strategy,
+            market_data,
+            start_date="2022-03-01",
+            end_date="2022-08-01",
         )
 
         logger.info("✓ Naive Bayes策略回测完成")
@@ -232,7 +236,7 @@ async def test_naive_bayes_backtesting_integration():
         if "signal_statistics" in result:
             signal_stats = result["signal_statistics"]
             logger.info(
-                f"  信号统计: 总信号={signal_stats['total_signals']}, 日均={signal_stats['avg_signals_per_day']:.3f}"
+                f"  信号统计: 总信号={signal_stats['total_signals']}, 日均={signal_stats['avg_signals_per_day']:.3f}",
             )
 
         logger.info("\n🎉 Naive Bayes策略回测集成测试完成!")

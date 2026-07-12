@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
+import fnmatch
 import os
 import sys
-import fnmatch
+
 
 # 配置文件大小阈值
 MAX_FILE_LINES = 2000
@@ -69,7 +70,7 @@ def check_files(directory):
             if file.endswith(".py"):
                 file_path = os.path.join(root, file)
                 try:
-                    with open(file_path, "r", encoding="utf-8") as f:
+                    with open(file_path, encoding="utf-8") as f:
                         lines = sum(1 for line in f if line.strip())  # 只统计非空行
 
                     if is_exception_file(file_path):
@@ -77,7 +78,7 @@ def check_files(directory):
                     elif lines > MAX_FILE_LINES:
                         large_files.append(f"{file_path}: {lines} lines")
                     elif lines < MIN_FILE_LINES and not is_reasonable_small_file(
-                        file_path
+                        file_path,
                     ):
                         small_files.append(f"{file_path}: {lines} lines")
                 except Exception as e:

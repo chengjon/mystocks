@@ -24,7 +24,7 @@ class AIValidatorPerformanceAnalysisMixin:
                             "severity": "high",
                             "suggestion": "考虑重构嵌套循环，使用更高效的算法",
                             "line_number": getattr(node, "lineno", 0),
-                        }
+                        },
                     )
             elif isinstance(node, ast.ListComp) and self._is_large_comprehension(node):
                 issues.append(
@@ -35,7 +35,7 @@ class AIValidatorPerformanceAnalysisMixin:
                         "severity": "medium",
                         "suggestion": "考虑使用生成器表达式或分批处理",
                         "line_number": getattr(node, "lineno", 0),
-                    }
+                    },
                 )
 
         return issues
@@ -53,7 +53,7 @@ class AIValidatorPerformanceAnalysisMixin:
                     "description": "使用chunksize参数分块读取大文件",
                     "code_example": "pd.read_csv('large_file.csv', chunksize=10000)",
                     "impact": "high",
-                }
+                },
             )
 
         loop_count = content.count("for ") + content.count("while ")
@@ -66,7 +66,7 @@ class AIValidatorPerformanceAnalysisMixin:
                     "description": f"文件包含{loop_count}个循环，考虑向量化操作",
                     "code_example": "使用numpy数组操作替代循环",
                     "impact": "high",
-                }
+                },
             )
 
         return suggestions
@@ -106,7 +106,7 @@ class AIValidatorPerformanceAnalysisMixin:
                     "title": "架构性能审查",
                     "description": f"检测到{issue_count}个性能问题，建议进行架构级优化",
                     "priority": "critical",
-                }
+                },
             )
 
         return prioritized[:5]

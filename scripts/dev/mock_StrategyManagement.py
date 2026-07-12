@@ -1,5 +1,4 @@
-"""
-Mock数据文件: StrategyManagement
+"""Mock数据文件: StrategyManagement
 提供接口:
 1. get_strategy_definitions() -> Dict - 获取策略定义列表（对应/api/strategy/definitions）
 2. run_strategy_single() -> Dict - 单策略运行（对应/api/strategy/run/single）
@@ -18,10 +17,10 @@ Mock数据文件: StrategyManagement
 生成时间: 2025-11-13
 """
 
-from typing import List, Dict
 import datetime
 import random
 import time
+from typing import Dict, List
 
 
 def get_strategy_definitions() -> Dict:
@@ -29,6 +28,7 @@ def get_strategy_definitions() -> Dict:
 
     Returns:
         Dict: 策略定义列表数据
+
     """
     strategies = [
         {
@@ -199,6 +199,7 @@ def run_strategy_single(request: Dict) -> Dict:
 
     Returns:
         Dict: 策略运行结果
+
     """
     strategy_code = request.get("strategy_code", "STR001")
     parameters = request.get("parameters", {})
@@ -235,6 +236,7 @@ def run_strategy_batch(request: Dict) -> Dict:
 
     Returns:
         Dict: 批量策略运行结果
+
     """
     strategy_codes = request.get("strategy_codes", ["STR001", "STR002"])
     request.get("parameters", {})
@@ -256,7 +258,7 @@ def run_strategy_batch(request: Dict) -> Dict:
                 "strategy_code": strategy_code,
                 "stock_count": stock_count,
                 "matched_stocks": generate_matched_stocks(stock_count),
-            }
+            },
         )
 
     return {
@@ -280,6 +282,7 @@ def get_strategy_results(request: Dict) -> Dict:
 
     Returns:
         Dict: 策略结果数据
+
     """
     strategy_code = request.get("strategy_code", "STR001")
     limit = request.get("limit", 20)
@@ -313,6 +316,7 @@ def get_matched_stocks(request: Dict) -> Dict:
 
     Returns:
         Dict: 匹配股票数据
+
     """
     strategy_code = request.get("strategy_code", "STR001")
     filters = request.get("filters", {})
@@ -335,6 +339,7 @@ def get_strategy_stats() -> Dict:
 
     Returns:
         Dict: 策略统计数据
+
     """
     # 生成统计数据
     stats = {
@@ -381,6 +386,7 @@ def generate_matched_stocks(count: int) -> List[Dict]:
 
     Returns:
         List[Dict]: 股票数据列表
+
     """
     # 股票基础数据池
     stock_pool = [
@@ -437,7 +443,7 @@ def generate_matched_stocks(count: int) -> List[Dict]:
                 "行业": stock["industry"],
                 "策略得分": round(random.uniform(60, 95), 1),
                 "匹配时间": current_time.strftime("%Y-%m-%d %H:%M:%S"),
-            }
+            },
         )
 
     return stocks
@@ -452,6 +458,7 @@ def generate_realistic_price(base_price: float = 100.0, volatility: float = 0.02
 
     Returns:
         float: 生成的价格（保留2位小数）
+
     """
     change_rate = random.uniform(-volatility, volatility)
     price = base_price * (1 + change_rate)
@@ -463,6 +470,7 @@ def generate_realistic_volume() -> int:
 
     Returns:
         int: 成交量（股）
+
     """
     return random.randint(1000000, 100000000)
 

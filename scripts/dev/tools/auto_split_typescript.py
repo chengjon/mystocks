@@ -8,8 +8,6 @@
 import argparse
 import os
 import re
-import sys
-from pathlib import Path
 
 
 def find_export_blocks(lines):
@@ -111,7 +109,7 @@ def find_export_blocks(lines):
                     "start": block_start,
                     "end": block_end,
                     "size": size,
-                }
+                },
             )
             i = block_end + 1
         else:
@@ -201,12 +199,11 @@ def make_group_filename(group, index):
 
     if kinds == {"interface"} or kinds == {"type"} or kinds <= {"interface", "type"}:
         return f"types-{index}.ts"
-    elif kinds == {"function"} or kinds == {"const"} or kinds <= {"function", "const"}:
+    if kinds == {"function"} or kinds == {"const"} or kinds <= {"function", "const"}:
         return f"functions-{index}.ts"
-    elif "describe" in kinds:
+    if "describe" in kinds:
         return f"tests-{index}.ts"
-    else:
-        return f"part-{index}.ts"
+    return f"part-{index}.ts"
 
 
 def split_ts_file(filepath, threshold=500, dry_run=False):

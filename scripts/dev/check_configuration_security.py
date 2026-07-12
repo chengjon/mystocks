@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-配置安全检查脚本
+"""配置安全检查脚本
 检查配置文件中的安全设置
 """
 
-import sys
 import re
-import yaml
+import sys
 from pathlib import Path
+
+import yaml
 
 
 def check_configuration_security():
@@ -16,7 +15,7 @@ def check_configuration_security():
     print("⚙️  配置安全检查...")
 
     violations = []
-    config_path = Path(".")
+    config_path = Path()
 
     # 检查的配置文件
     config_files = [
@@ -117,7 +116,7 @@ def check_configuration_security():
         file_path = config_path / config_file
         if file_path.exists():
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = f.read()
                     lines = content.split("\n")
 
@@ -136,7 +135,7 @@ def check_configuration_security():
                                             "line_content": "debug: true",
                                             "violation": "调试模式开启",
                                             "severity": "high",
-                                        }
+                                        },
                                     )
                                 if data.get("database", {}).get("password"):
                                     violations.append(
@@ -146,7 +145,7 @@ def check_configuration_security():
                                             "line_content": "database.password: [值]",
                                             "violation": "数据库密码应该使用环境变量",
                                             "severity": "critical",
-                                        }
+                                        },
                                     )
                         except yaml.YAMLError:
                             # YAML解析失败，继续文本检查
@@ -159,10 +158,7 @@ def check_configuration_security():
                                 rule["files"].count("*" + ext) > 0
                                 for ext in [
                                     file_path.suffix,
-                                    file_path.stem
-                                    if file_path.suffix == ".yml"
-                                    or file_path.suffix == ".yaml"
-                                    else "",
+                                    file_path.stem if file_path.suffix == ".yml" or file_path.suffix == ".yaml" else "",
                                 ]
                             ):
                                 for check in rule["checks"]:
@@ -174,7 +170,7 @@ def check_configuration_security():
                                                 "line_content": line.strip(),
                                                 "violation": check["message"],
                                                 "severity": check["severity"],
-                                            }
+                                            },
                                         )
 
             except Exception as e:
@@ -183,7 +179,7 @@ def check_configuration_security():
     # 输出检查结果
     print("\n📊 配置安全检查结果:")
     print(
-        f"   检查文件数: {len([f for f in config_files if (config_path / f).exists()])}"
+        f"   检查文件数: {len([f for f in config_files if (config_path / f).exists()])}",
     )
     print(f"   发现违规: {len(violations)}")
 

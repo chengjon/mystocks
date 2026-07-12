@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+
 REPO_ROOT = Path("/opt/claude/mystocks_spec")
 MODEL_DIR = REPO_ROOT / ".config/opencode/model"
 CATALOG_PATH = MODEL_DIR / "model-catalog.json"
@@ -218,7 +219,9 @@ def extract_default_endpoint(defaults: dict[str, Any]) -> tuple[str, str]:
 
 
 def build_claude_env_updates(
-    defaults: dict[str, Any], omc_agents: dict[str, str], tier_models: dict[str, str]
+    defaults: dict[str, Any],
+    omc_agents: dict[str, str],
+    tier_models: dict[str, str],
 ) -> dict[str, str]:
     high = strip_provider_prefix(tier_models["HIGH"])
     medium = strip_provider_prefix(tier_models["MEDIUM"])
@@ -250,7 +253,10 @@ def build_claude_env_updates(
 
 
 def update_claude_settings(
-    settings_path: Path, defaults: dict[str, Any], omc_agents: dict[str, str], tier_models: dict[str, str]
+    settings_path: Path,
+    defaults: dict[str, Any],
+    omc_agents: dict[str, str],
+    tier_models: dict[str, str],
 ) -> None:
     existing: dict[str, Any]
     if settings_path.exists():

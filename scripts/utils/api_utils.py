@@ -1,7 +1,9 @@
-import requests
 import logging
 import os
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
+
+import requests
+
 
 logger = logging.getLogger(__name__)
 
@@ -25,8 +27,7 @@ def call_api(
     headers: Optional[Dict[str, str]] = None,
     timeout: int = 30,
 ) -> Dict[str, Any]:
-    """
-    通用API调用函数。
+    """通用API调用函数。
 
     Args:
         method: HTTP方法 ('GET', 'POST', 'PUT', 'DELETE')。
@@ -42,6 +43,7 @@ def call_api(
 
     Raises:
         requests.exceptions.RequestException: 如果请求失败。
+
     """
     try:
         response = requests.request(
@@ -66,8 +68,7 @@ def refresh_data_via_api(
     base_url: Optional[str] = None,
     method: str = "POST",
 ) -> Dict[str, Any]:
-    """
-    通过API刷新数据的通用函数。
+    """通过API刷新数据的通用函数。
 
     Args:
         endpoint: API路径（例如："/api/market/lhb/refresh"）。
@@ -77,6 +78,7 @@ def refresh_data_via_api(
 
     Returns:
         Dict[str, Any]: API响应结果。
+
     """
     if base_url is None:
         base_url = get_default_base_url()
@@ -92,11 +94,11 @@ def refresh_data_via_api(
 
         if result.get("success"):
             logger.info(
-                f"✅ 数据刷新成功 ({endpoint}): {result.get('message', '成功')}"
+                f"✅ 数据刷新成功 ({endpoint}): {result.get('message', '成功')}",
             )
         else:
             logger.warning(
-                f"⚠️  数据刷新失败 ({endpoint}): {result.get('message', '失败')}"
+                f"⚠️  数据刷新失败 ({endpoint}): {result.get('message', '失败')}",
             )
 
         return result

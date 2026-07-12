@@ -1,5 +1,4 @@
-"""
-Mock数据文件: StockSearch
+"""Mock数据文件: StockSearch
 提供接口:
 1. search_stocks() -> List[Dict] - 搜索股票（支持按代码、名称、行业搜索）
 2. get_stock_detail() -> Dict - 获取股票详情
@@ -16,9 +15,10 @@ Mock数据文件: StockSearch
 生成时间: 2025-11-13
 """
 
-from typing import List, Dict
 import datetime
 import random
+from typing import Dict, List
+
 import numpy as np
 
 
@@ -74,6 +74,7 @@ def search_stocks(keyword: str = "", industry: str = "", market: str = "", limit
                    - change_pct: 涨跌幅(%)
                    - volume: 成交量
                    - market_cap: 市值
+
     """
     # 股票数据库
     stock_database = [
@@ -228,7 +229,7 @@ def search_stocks(keyword: str = "", industry: str = "", market: str = "", limit
                 "change_pct": price_data["change_pct"],
                 "volume": price_data["volume"],
                 "market_cap": market_cap,
-            }
+            },
         )
 
     return results
@@ -246,6 +247,7 @@ def get_stock_detail(symbol: str) -> Dict:
              - financial_info: 财务信息
              - price_info: 价格信息
              - business_scope: 经营范围
+
     """
     # 股票详细信息数据库
     stock_detail_db = {
@@ -359,6 +361,7 @@ def get_industry_list() -> List[Dict]:
                    - stock_count: 股票数量
                    - avg_change_pct: 平均涨跌幅
                    - total_market_cap: 总市值
+
     """
     industries = [
         {"name": "银行", "base_count": 42, "base_cap": 8500000000000},
@@ -388,7 +391,7 @@ def get_industry_list() -> List[Dict]:
                 "avg_change_pct": avg_change_pct,
                 "total_market_cap": total_market_cap,
                 "leading_stocks": get_leading_stocks_by_industry(industry["name"]),
-            }
+            },
         )
 
     return industry_list
@@ -406,6 +409,7 @@ def get_stock_concept(concept_name: str = "") -> List[Dict]:
                    - stock_count: 股票数量
                    - avg_change_pct: 平均涨跌幅
                    - leading_stocks: 龙头股票
+
     """
     concepts = [
         {
@@ -471,7 +475,7 @@ def get_stock_concept(concept_name: str = "") -> List[Dict]:
                     "name": stock_name,
                     "price": current_price,
                     "change_pct": change_pct,
-                }
+                },
             )
 
         concept_list.append(
@@ -480,7 +484,7 @@ def get_stock_concept(concept_name: str = "") -> List[Dict]:
                 "stock_count": stock_count,
                 "avg_change_pct": avg_change_pct,
                 "leading_stocks": leading_stocks,
-            }
+            },
         )
 
     return concept_list

@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+
 MODEL_DIR = Path("/opt/claude/mystocks_spec/.config/opencode/model")
 CATALOG_PATH = MODEL_DIR / "model-catalog.json"
 PROJECT_OPENCODE_PATH = Path("/opt/claude/mystocks_spec/opencode.json")
@@ -96,7 +97,7 @@ GLM_MODEL_DEFS: dict[str, dict[str, Any]] = {
     "glm-5": {
         "name": "GLM-5",
         "thinking": True,
-    }
+    },
 }
 
 MAIN_PLUGIN_LIST = [
@@ -257,10 +258,8 @@ def build_provider_configs(catalog: dict[str, Any]) -> dict[str, Any]:
 
     providers["opencode"] = {
         "whitelist": [
-            model.split("/", 1)[1]
-            for model in catalog.get("opencode_free_models", [])
-            if model.startswith("opencode/")
-        ]
+            model.split("/", 1)[1] for model in catalog.get("opencode_free_models", []) if model.startswith("opencode/")
+        ],
     }
     return providers
 

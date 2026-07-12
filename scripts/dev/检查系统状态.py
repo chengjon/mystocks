@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-"""
-MyStocks系统状态检查脚本
+"""MyStocks系统状态检查脚本
 检查前端、后端和数据库服务的运行状态
 """
 
 import os
 import socket
 import subprocess
-import requests
 from datetime import datetime
+
+import requests
+
 
 BACKEND_PORT = int(os.getenv("BACKEND_PORT", "8020"))
 FRONTEND_PORT = int(os.getenv("FRONTEND_PORT", "3020"))
@@ -45,24 +46,25 @@ def check_service_status(name, port, url=None):
             if name == "后端服务 (API)":
                 try:
                     cache_response = requests.get(
-                        f"http://localhost:{port}/api/cache/status", timeout=5
+                        f"http://localhost:{port}/api/cache/status",
+                        timeout=5,
                     )
                     if cache_response.status_code == 200:
                         cache_data = cache_response.json()
                         print("缓存状态: ✅ 正常工作")
                         print(
-                            f"  - 总读取次数: {cache_data.get('data', {}).get('total_reads', 0)}"
+                            f"  - 总读取次数: {cache_data.get('data', {}).get('total_reads', 0)}",
                         )
                         print(
-                            f"  - 总写入次数: {cache_data.get('data', {}).get('total_writes', 0)}"
+                            f"  - 总写入次数: {cache_data.get('data', {}).get('total_writes', 0)}",
                         )
                         print(
-                            f"  - 命中率: {cache_data.get('data', {}).get('hit_rate_percent', '0.0%')}"
+                            f"  - 命中率: {cache_data.get('data', {}).get('hit_rate_percent', '0.0%')}",
                         )
                 except Exception as e:
-                    print(f"缓存状态: ❌ 无法获取 ({str(e)})")
+                    print(f"缓存状态: ❌ 无法获取 ({e!s})")
         except Exception as e:
-            print(f"HTTP连接错误: {str(e)}")
+            print(f"HTTP连接错误: {e!s}")
 
     # 检查进程
     try:
@@ -74,7 +76,7 @@ def check_service_status(name, port, url=None):
         else:
             print("进程信息: 未找到进程")
     except Exception as e:
-        print(f"进程检查错误: {str(e)}")
+        print(f"进程检查错误: {e!s}")
 
     return port_status
 
@@ -98,7 +100,8 @@ def check_logs_directory():
             print(f"  文件数量: {len(files)}")
             if files:
                 latest_file = max(
-                    [os.path.join(log_dir, f) for f in files], key=os.path.getctime
+                    [os.path.join(log_dir, f) for f in files],
+                    key=os.path.getctime,
                 )
                 print(f"  最新文件: {latest_file}")
         else:

@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 from pymongo import MongoClient
 from pymongo.errors import OperationFailure
 
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -31,13 +32,16 @@ from src.utils.mongo_runtime_config import (
     is_mongo_auth_error,
 )
 
+
 SMOKE_WORK_ITEM_ID = "GRAPHITI-PREFLIGHT-SMOKE"
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run a Mongo-backed Graphiti preflight smoke flow.")
     parser.add_argument("--mongo-uri", default=None)
-    parser.add_argument("--mongo-db", default=None, help="Optional Mongo database name. Defaults to a temporary smoke DB.")
+    parser.add_argument(
+        "--mongo-db", default=None, help="Optional Mongo database name. Defaults to a temporary smoke DB."
+    )
     parser.add_argument("--actor-cli", required=True)
     parser.add_argument("--max-wait-seconds", type=int, default=60)
     return parser
@@ -113,7 +117,7 @@ def run_smoke(
                 str(max_wait_seconds),
                 "--output",
                 "json",
-            ]
+            ],
         )
         payload = _run_coordctl_json(command)
 
@@ -146,5 +150,7 @@ def _resolve_effective_mongo_uri(mongo_uri: str | None) -> str:
 
 def _run_coordctl_json(argv: list[str]) -> dict[str, object]:
     return run_coordctl_json(argv, coordctl_main=coordctl.main)
+
+
 if __name__ == "__main__":
     raise SystemExit(main())

@@ -1,20 +1,17 @@
 #!/usr/bin/env python3
-"""
-将api_data_inventory.json拆分成多个小文件，并创建索引
-"""
+"""将api_data_inventory.json拆分成多个小文件，并创建索引"""
 
 import json
-from pathlib import Path
 from collections import defaultdict
+from pathlib import Path
 
 
 def split_api_inventory():
     """拆分API清单文件"""
-
     print("📁 拆分API数据清单文件...")
 
     # 读取原始文件
-    with open("docs/reports/api_data_inventory.json", "r", encoding="utf-8") as f:
+    with open("docs/reports/api_data_inventory.json", encoding="utf-8") as f:
         data = json.load(f)
 
     # 创建输出目录
@@ -41,8 +38,7 @@ def split_api_inventory():
     for prefix, endpoints in sorted(api_by_prefix.items()):
         # 清理前缀作为文件名
         filename = prefix.replace("/", "_").replace("{", "").replace("}", "")
-        if filename.startswith("_"):
-            filename = filename[1:]
+        filename = filename.removeprefix("_")
 
         # 创建子文件数据
         split_data = {
@@ -58,7 +54,7 @@ def split_api_inventory():
             json.dump(split_data, f, indent=2, ensure_ascii=False)
 
         split_files.append(
-            {"prefix": prefix, "filename": f"api_{filename}.json", "count": len(endpoints), "file": output_file.name}
+            {"prefix": prefix, "filename": f"api_{filename}.json", "count": len(endpoints), "file": output_file.name},
         )
 
         print(f"  ✅ 生成: {output_file.name} ({len(endpoints)} 个端点)")
@@ -91,7 +87,6 @@ def split_api_inventory():
 
 def create_markdown_index(index_data: dict, output_dir: Path):
     """创建Markdown格式的索引文档"""
-
     with open(output_dir / "API_SPLIT_INDEX.md", "w", encoding="utf-8") as f:
         # 写入头部
         f.write("# API数据清单索引\n\n")
@@ -114,7 +109,7 @@ def create_markdown_index(index_data: dict, output_dir: Path):
             # 创建相对链接
             link = f"[{file_info['file']}]({file_info['file']})"
             f.write(
-                f"| {file_info['prefix']} | {file_info['file']} | {file_info['count']} ({percentage:.1f}%) | {link} |\n"
+                f"| {file_info['prefix']} | {file_info['file']} | {file_info['count']} ({percentage:.1f}%) | {link} |\n",
             )
 
         # 写入使用说明
@@ -170,7 +165,7 @@ def create_markdown_index(index_data: dict, output_dir: Path):
             # 读取拆分文件获取详细信息
             split_file = output_dir / file_info["file"]
             try:
-                with open(split_file, "r", encoding="utf-8") as sf:
+                with open(split_file, encoding="utf-8") as sf:
                     split_data = json.load(sf)
                     for ep in split_data["endpoints"]:
                         endpoints_by_file[ep["file"]].append(ep)

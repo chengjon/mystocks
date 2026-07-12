@@ -1,3 +1,1 @@
-"""
-Web Backend Package
-"""
+"""Web Backend Package"""

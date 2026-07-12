@@ -1,15 +1,9 @@
 """量化策略验证器子模块"""
 
-import ast
-import json
 import logging
-import os
-import re
 import subprocess
-import sys
-import time
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict
+
 
 logger = logging.getLogger(__name__)
 
@@ -20,12 +14,12 @@ class IntegrationValidatorsMixin:
     def _validate_database_connection(self) -> Dict[str, Any]:
         """验证数据库连接 - 调用实际的pytest集成测试"""
         try:
-            import subprocess
             import os
+            import subprocess
 
             # 首先检查数据库配置文件是否存在
             db_config_exists = os.path.exists(".env") or os.path.exists(
-                "config/database.yaml"
+                "config/database.yaml",
             )
 
             if not db_config_exists:
@@ -75,9 +69,8 @@ class IntegrationValidatorsMixin:
                         test_output = result.stdout
                         print("    ✅ 数据库集成测试通过")
                         break
-                    else:
-                        test_errors += f"测试失败 ({' '.join(cmd)}):\n{result.stderr}\n"
-                        print(f"    ❌ 数据库集成测试失败: {result.returncode}")
+                    test_errors += f"测试失败 ({' '.join(cmd)}):\n{result.stderr}\n"
+                    print(f"    ❌ 数据库集成测试失败: {result.returncode}")
 
                 except subprocess.TimeoutExpired:
                     test_errors += f"测试超时 ({' '.join(cmd)})\n"
@@ -86,7 +79,7 @@ class IntegrationValidatorsMixin:
                     # 测试文件不存在，继续尝试其他测试
                     continue
                 except Exception as e:
-                    test_errors += f"测试异常 ({' '.join(cmd)}): {str(e)}\n"
+                    test_errors += f"测试异常 ({' '.join(cmd)}): {e!s}\n"
                     continue
 
             # 如果没有找到任何集成测试文件，使用配置文件检查作为回退
@@ -106,21 +99,19 @@ class IntegrationValidatorsMixin:
                 "details": {
                     "config_found": db_config_exists,
                     "integration_tests_run": test_passed,
-                    "test_output": test_output[:500]
-                    if test_output
-                    else "",  # 限制输出长度
+                    "test_output": test_output[:500] if test_output else "",  # 限制输出长度
                     "test_errors": test_errors[:500] if test_errors else "",
                 },
             }
 
         except Exception as e:
-            return {"passed": False, "error": f"数据库连接检查异常: {str(e)}"}
+            return {"passed": False, "error": f"数据库连接检查异常: {e!s}"}
 
     def _validate_api_endpoints(self) -> Dict[str, Any]:
         """验证API端点 - 调用实际的pytest API测试"""
         try:
-            import subprocess
             import os
+            import subprocess
 
             # 检查API相关文件和目录
             api_files = []
@@ -184,11 +175,8 @@ class IntegrationValidatorsMixin:
                         test_output = result.stdout
                         print("    ✅ API集成测试通过")
                         break
-                    else:
-                        test_errors += (
-                            f"API测试失败 ({' '.join(cmd)}):\n{result.stderr}\n"
-                        )
-                        print(f"    ❌ API集成测试失败: {result.returncode}")
+                    test_errors += f"API测试失败 ({' '.join(cmd)}):\n{result.stderr}\n"
+                    print(f"    ❌ API集成测试失败: {result.returncode}")
 
                 except subprocess.TimeoutExpired:
                     test_errors += f"API测试超时 ({' '.join(cmd)})\n"
@@ -197,7 +185,7 @@ class IntegrationValidatorsMixin:
                     # 测试文件不存在，继续尝试其他测试
                     continue
                 except Exception as e:
-                    test_errors += f"API测试异常 ({' '.join(cmd)}): {str(e)}\n"
+                    test_errors += f"API测试异常 ({' '.join(cmd)}): {e!s}\n"
                     continue
 
             # 如果没有找到API测试，使用文件存在性检查作为回退
@@ -225,13 +213,13 @@ class IntegrationValidatorsMixin:
             }
 
         except Exception as e:
-            return {"passed": False, "error": f"API端点检查异常: {str(e)}"}
+            return {"passed": False, "error": f"API端点检查异常: {e!s}"}
 
     def _validate_service_integrations(self) -> Dict[str, Any]:
         """验证服务集成 - 调用实际的服务集成测试"""
         try:
-            import subprocess
             import os
+            import subprocess
 
             # 检查服务配置文件
             service_files = ["docker-compose.yml", "docker-compose.yaml"]
@@ -249,12 +237,7 @@ class IntegrationValidatorsMixin:
                         microservice_indicators = True
                         break
 
-            service_integration_exists = (
-                len(services_found) > 0
-                or k8s_exists
-                or helm_exists
-                or microservice_indicators
-            )
+            service_integration_exists = len(services_found) > 0 or k8s_exists or helm_exists or microservice_indicators
 
             if not service_integration_exists:
                 return {
@@ -308,11 +291,8 @@ class IntegrationValidatorsMixin:
                         test_output = result.stdout
                         print("    ✅ 服务集成测试通过")
                         break
-                    else:
-                        test_errors += (
-                            f"服务测试失败 ({' '.join(cmd)}):\n{result.stderr}\n"
-                        )
-                        print(f"    ❌ 服务集成测试失败: {result.returncode}")
+                    test_errors += f"服务测试失败 ({' '.join(cmd)}):\n{result.stderr}\n"
+                    print(f"    ❌ 服务集成测试失败: {result.returncode}")
 
                 except subprocess.TimeoutExpired:
                     test_errors += f"服务测试超时 ({' '.join(cmd)})\n"
@@ -320,7 +300,7 @@ class IntegrationValidatorsMixin:
                 except FileNotFoundError:
                     continue
                 except Exception as e:
-                    test_errors += f"服务测试异常 ({' '.join(cmd)}): {str(e)}\n"
+                    test_errors += f"服务测试异常 ({' '.join(cmd)}): {e!s}\n"
                     continue
 
             # 如果没有找到服务测试，使用配置检查作为回退
@@ -352,7 +332,7 @@ class IntegrationValidatorsMixin:
             }
 
         except Exception as e:
-            return {"passed": False, "error": f"服务集成检查异常: {str(e)}"}
+            return {"passed": False, "error": f"服务集成检查异常: {e!s}"}
 
     def _validate_external_dependencies(self) -> Dict[str, Any]:
         """验证外部依赖"""
@@ -371,7 +351,7 @@ class IntegrationValidatorsMixin:
 
             # 检查requirements.txt中的外部依赖
             try:
-                with open("requirements.txt", "r") as f:
+                with open("requirements.txt") as f:
                     content = f.read()
                     deps_found = [s for s in external_services if s in content.lower()]
             except:
@@ -386,13 +366,10 @@ class IntegrationValidatorsMixin:
             for config_file in config_files:
                 if os.path.exists(config_file):
                     try:
-                        with open(config_file, "r") as f:
+                        with open(config_file) as f:
                             content = f.read()
                             for service in external_services:
-                                if (
-                                    service in content.lower()
-                                    and service not in deps_found
-                                ):
+                                if service in content.lower() and service not in deps_found:
                                     deps_found.append(service)
                     except:
                         continue
@@ -435,16 +412,13 @@ class IntegrationValidatorsMixin:
                         test_output = result.stdout
                         print("    ✅ 外部依赖测试通过")
                         break
-                    else:
-                        test_errors += (
-                            f"依赖测试失败 ({' '.join(cmd)}):\n{result.stderr}\n"
-                        )
-                        # 外部依赖测试失败不影响整体通过，因为可能是可选依赖
+                    test_errors += f"依赖测试失败 ({' '.join(cmd)}):\n{result.stderr}\n"
+                    # 外部依赖测试失败不影响整体通过，因为可能是可选依赖
 
                 except FileNotFoundError:
                     continue
                 except Exception as e:
-                    test_errors += f"依赖测试异常 ({' '.join(cmd)}): {str(e)}\n"
+                    test_errors += f"依赖测试异常 ({' '.join(cmd)}): {e!s}\n"
                     continue
 
             return {
@@ -459,7 +433,7 @@ class IntegrationValidatorsMixin:
             }
 
         except Exception as e:
-            return {"passed": False, "error": f"外部依赖检查异常: {str(e)}"}
+            return {"passed": False, "error": f"外部依赖检查异常: {e!s}"}
 
     def _validate_message_queue(self) -> Dict[str, Any]:
         """验证消息队列"""
@@ -473,7 +447,7 @@ class IntegrationValidatorsMixin:
 
             # 检查依赖文件
             try:
-                with open("requirements.txt", "r") as f:
+                with open("requirements.txt") as f:
                     content = f.read()
                     mq_found = [mq for mq in mq_systems if mq in content.lower()]
             except:
@@ -483,7 +457,7 @@ class IntegrationValidatorsMixin:
             for root, dirs, files in os.walk("config"):
                 for file in files:
                     try:
-                        with open(os.path.join(root, file), "r") as f:
+                        with open(os.path.join(root, file)) as f:
                             content = f.read()
                             for mq in mq_systems:
                                 if mq in content.lower() and mq not in mq_found:
@@ -529,15 +503,12 @@ class IntegrationValidatorsMixin:
                         test_output = result.stdout
                         print("    ✅ 消息队列测试通过")
                         break
-                    else:
-                        test_errors += (
-                            f"消息队列测试失败 ({' '.join(cmd)}):\n{result.stderr}\n"
-                        )
+                    test_errors += f"消息队列测试失败 ({' '.join(cmd)}):\n{result.stderr}\n"
 
                 except FileNotFoundError:
                     continue
                 except Exception as e:
-                    test_errors += f"消息队列测试异常 ({' '.join(cmd)}): {str(e)}\n"
+                    test_errors += f"消息队列测试异常 ({' '.join(cmd)}): {e!s}\n"
                     continue
 
             return {
@@ -552,5 +523,4 @@ class IntegrationValidatorsMixin:
             }
 
         except Exception as e:
-            return {"passed": False, "error": f"消息队列检查异常: {str(e)}"}
-
+            return {"passed": False, "error": f"消息队列检查异常: {e!s}"}

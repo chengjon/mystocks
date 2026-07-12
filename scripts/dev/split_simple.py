@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-简化版拆分脚本 - 直接基于代码内容拆分
-"""
+"""简化版拆分脚本 - 直接基于代码内容拆分"""
 
 import os
 import re
+
 
 # 添加源码路径
 SOURCE_FILE = "/opt/claude/mystocks_spec/web/frontend/nicegui_monitoring_dashboard_kline.py"
@@ -21,7 +19,7 @@ UTILITY_FILE = os.path.join(TARGET_DIR, "utility.py")
 def read_file(file_path):
     """读取文件内容"""
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, encoding="utf-8") as f:
             return f.read()
     except:
         return None
@@ -30,7 +28,7 @@ def read_file(file_path):
 def write_file(file_path, content):
     """写入文件内容"""
     try:
-        with open(file_path, 'w', encoding='utf-8') as f:
+        with open(file_path, "w", encoding="utf-8") as f:
             f.write(content)
         return True
     except:
@@ -51,7 +49,7 @@ def split_simple():
 
     # 提取所有函数
     def extract_functions(code):
-        lines = code.split('\n')
+        lines = code.split("\n")
         functions = []
         current_function = []
         in_function = False
@@ -61,15 +59,17 @@ def split_simple():
 
         for i, line in enumerate(lines):
             # 检查是否是函数定义行
-            function_match = re.match(r'^\s*def\s+([A-Za-z_]\w*)\s*\(', line)
+            function_match = re.match(r"^\s*def\s+([A-Za-z_]\w*)\s*\(", line)
 
             if function_match:
                 # 保存之前的函数
                 if in_function and current_function and function_name:
-                    functions.append({
-                        'name': function_name,
-                        'content': '\n'.join(current_function)
-                    })
+                    functions.append(
+                        {
+                            "name": function_name,
+                            "content": "\n".join(current_function),
+                        }
+                    )
 
                 # 开始新函数
                 in_function = True
@@ -86,10 +86,12 @@ def split_simple():
                     in_function = False
                     # 保存函数
                     if current_function and function_name:
-                        functions.append({
-                            'name': function_name,
-                            'content': '\n'.join(current_function)
-                        })
+                        functions.append(
+                            {
+                                "name": function_name,
+                                "content": "\n".join(current_function),
+                            }
+                        )
                     current_function = []
                     # 不添加当前行，继续处理下一行
                 else:
@@ -97,10 +99,12 @@ def split_simple():
 
         # 保存最后一个函数
         if in_function and current_function and function_name:
-            functions.append({
-                'name': function_name,
-                'content': '\n'.join(current_function)
-            })
+            functions.append(
+                {
+                    "name": function_name,
+                    "content": "\n".join(current_function),
+                }
+            )
 
         return functions
 
@@ -117,16 +121,16 @@ def split_simple():
     utility_functions = []
 
     for func in functions:
-        name = func['name'].lower()
-        if 'kline' in name or 'chart' in name:
+        name = func["name"].lower()
+        if "kline" in name or "chart" in name:
             kline_functions.append(func)
-        elif 'alert' in name or 'notification' in name:
+        elif "alert" in name or "notification" in name:
             alert_functions.append(func)
-        elif 'control' in name or 'toggle' in name or 'change' in name:
+        elif "control" in name or "toggle" in name or "change" in name:
             control_functions.append(func)
-        elif 'action' in name or 'click' in name:
+        elif "action" in name or "click" in name:
             action_functions.append(func)
-        elif func['name'].startswith('_') or 'create' in name or 'format' in name or 'setup' in name:
+        elif func["name"].startswith("_") or "create" in name or "format" in name or "setup" in name:
             utility_functions.append(func)
         else:
             utility_functions.append(func)  # 默认为工具函数
@@ -184,5 +188,5 @@ def create_component_file(file_path, title, functions):
         print(f"跳过空文件: {file_path}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     split_simple()

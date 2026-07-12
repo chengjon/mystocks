@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-__init__.py 规范检查脚本
+"""__init__.py 规范检查脚本
 
 检查新子目录是否包含规范的 __init__.py：
 1. 必须包含 __version__

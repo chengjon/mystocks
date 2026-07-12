@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-MySQL到PostgreSQL迁移脚本
+"""MySQL到PostgreSQL迁移脚本
 
 简洁实用的数据迁移工具
 遵循原则: 简洁 > 复杂, 可维护 > 功能丰富
@@ -16,10 +14,12 @@ MySQL到PostgreSQL迁移脚本
 import os
 import sys
 from datetime import datetime
-import pymysql
+
 import psycopg2
-from psycopg2.extras import execute_values
+import pymysql
 from dotenv import load_dotenv
+from psycopg2.extras import execute_values
+
 
 # 加载环境变量
 load_dotenv()
@@ -191,9 +191,8 @@ def verify_migration(table_name):
     if mysql_count == pg_count:
         print(f"  ✓ 验证通过: {pg_count} 行")
         return True
-    else:
-        print(f"  ✗ 验证失败: MySQL={mysql_count}, PostgreSQL={pg_count}")
-        return False
+    print(f"  ✗ 验证失败: MySQL={mysql_count}, PostgreSQL={pg_count}")
+    return False
 
 
 def main():

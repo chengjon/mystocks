@@ -1,6 +1,4 @@
-"""
-验证数据库索引是否正确创建
-"""
+"""验证数据库索引是否正确创建"""
 
 import subprocess
 import sys
@@ -8,12 +6,12 @@ from pathlib import Path
 
 
 def run_sql_file(sql_file_path: str, connection_string: str = None):
-    """
-    运行SQL文件
+    """运行SQL文件
 
     Args:
         sql_file_path: SQL文件路径
         connection_string: 数据库连接字符串（可选）
+
     """
     try:
         # 使用psql命令运行SQL文件
@@ -27,18 +25,18 @@ def run_sql_file(sql_file_path: str, connection_string: str = None):
             cmd.extend(
                 [
                     "--host",
-                    connection_string.split("@")[1].split(":")[0]
+                    connection_string.split("@")[1].split(":", maxsplit=1)[0]
                     if "@" in connection_string
                     else "localhost",
                     "--port",
-                    connection_string.split(":")[2].split("/")[0]
+                    connection_string.split(":")[2].split("/", maxsplit=1)[0]
                     if ":" in connection_string and "@" in connection_string
                     else "5432",
                     "--username",
-                    connection_string.split("://")[1].split("@")[0]
+                    connection_string.split("://")[1].split("@", maxsplit=1)[0]
                     if "://" in connection_string
                     else "postgres",
-                ]
+                ],
             )
 
         cmd.extend(["-f", sql_file_path])
@@ -58,7 +56,7 @@ def run_sql_file(sql_file_path: str, connection_string: str = None):
             print(result.stderr)
 
     except Exception as e:
-        print(f"❌ 执行SQL文件时出错: {str(e)}")
+        print(f"❌ 执行SQL文件时出错: {e!s}")
         return False
 
     return True
@@ -94,12 +92,11 @@ def validate_indexes():
         print("\\d+ user_audit_log")
         print("\n或者运行:")
         print(
-            "SELECT * FROM pg_indexes WHERE tablename IN ('order_records', 'daily_kline', 'stock_basic_info', 'watchlist', 'portfolio', 'alert_conditions', 'strategy_backtest', 'trade_log', 'user_audit_log') ORDER BY tablename, indexname;"
+            "SELECT * FROM pg_indexes WHERE tablename IN ('order_records', 'daily_kline', 'stock_basic_info', 'watchlist', 'portfolio', 'alert_conditions', 'strategy_backtest', 'trade_log', 'user_audit_log') ORDER BY tablename, indexname;",
         )
         return True
-    else:
-        print("\n❌ 索引验证失败")
-        return False
+    print("\n❌ 索引验证失败")
+    return False
 
 
 if __name__ == "__main__":

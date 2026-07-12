@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AI测试优化器用户反馈收集工具
+"""AI测试优化器用户反馈收集工具
 简化用户反馈提交流程，支持多种反馈类型和渠道
 
 功能:
@@ -15,20 +14,21 @@ AI测试优化器用户反馈收集工具
 日期: 2025-01-22
 """
 
+import argparse
 import json
-import sys
+import logging
 import os
 import platform
 import subprocess
+import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
-import argparse
-import logging
+
 
 # 设置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -79,20 +79,20 @@ class FeedbackCollector:
         ]
         print(f"\n反馈类型: {', '.join(feedback_types)}")
         feedback_type = self._get_user_input(
-            "反馈类型:", options=feedback_types, required=True
+            "反馈类型:", options=feedback_types, required=True,
         )
         feedback["feedback_type"] = feedback_type
 
         # 模块信息
         module = self._get_user_input(
-            "相关模块 (如: src/adapters/data_validator.py):", required=False
+            "相关模块 (如: src/adapters/data_validator.py):", required=False,
         )
         if module:
             feedback["module"] = module
 
         # 评分
         rating = self._get_user_input(
-            "评分 (1-5星):", input_type="int", min_val=1, max_val=5, required=False
+            "评分 (1-5星):", input_type="int", min_val=1, max_val=5, required=False,
         )
         if rating:
             feedback["rating"] = rating
@@ -133,7 +133,6 @@ class FeedbackCollector:
         multi_line: bool = False,
     ) -> Optional[str]:
         """获取用户输入"""
-
         while True:
             try:
                 if multi_line:
@@ -145,11 +144,10 @@ class FeedbackCollector:
                             break
                         lines.append(line.strip())
                     user_input = "\n".join(lines)
+                elif default:
+                    user_input = input(f"{prompt} [{default}]: ").strip() or default
                 else:
-                    if default:
-                        user_input = input(f"{prompt} [{default}]: ").strip() or default
-                    else:
-                        user_input = input(f"{prompt}: ").strip()
+                    user_input = input(f"{prompt}: ").strip()
 
                 if not user_input and not required:
                     return None
@@ -270,9 +268,9 @@ class FeedbackCollector:
         queue = []
         if self.feedback_file.exists():
             try:
-                with open(self.feedback_file, "r", encoding="utf-8") as f:
+                with open(self.feedback_file, encoding="utf-8") as f:
                     queue = json.load(f)
-            except (json.JSONDecodeError, IOError):
+            except (OSError, json.JSONDecodeError):
                 queue = []
 
         # 添加新反馈
@@ -293,7 +291,7 @@ class FeedbackCollector:
             return 0
 
         try:
-            with open(self.feedback_file, "r", encoding="utf-8") as f:
+            with open(self.feedback_file, encoding="utf-8") as f:
                 queue = json.load(f)
 
             processed = 0
@@ -331,7 +329,7 @@ class FeedbackCollector:
     def batch_feedback_from_file(self, file_path: str) -> int:
         """从文件批量导入反馈"""
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             # 简单解析 - 假设每行一个反馈，格式为: 类型|分类|评分|评论
@@ -403,7 +401,7 @@ class FeedbackCollector:
         if feedback_summary["rating_distribution"]:
             total_feedbacks = sum(feedback_summary["rating_distribution"].values())
             for rating in sorted(
-                feedback_summary["rating_distribution"].keys(), reverse=True
+                feedback_summary["rating_distribution"].keys(), reverse=True,
             ):
                 count = feedback_summary["rating_distribution"][rating]
                 percentage = (count / total_feedbacks) * 100
@@ -435,17 +433,17 @@ def main():
     """主函数"""
     parser = argparse.ArgumentParser(description="AI测试优化器用户反馈收集工具")
     parser.add_argument(
-        "--interactive", "-i", action="store_true", help="启动交互式反馈收集"
+        "--interactive", "-i", action="store_true", help="启动交互式反馈收集",
     )
     parser.add_argument("--batch", "-b", help="从文件批量导入反馈")
     parser.add_argument(
-        "--process-queue", "-p", action="store_true", help="处理文件队列中的反馈"
+        "--process-queue", "-p", action="store_true", help="处理文件队列中的反馈",
     )
     parser.add_argument(
-        "--report", "-r", type=int, default=30, help="生成最近N天的反馈报告"
+        "--report", "-r", type=int, default=30, help="生成最近N天的反馈报告",
     )
     parser.add_argument(
-        "--quick", "-q", help="快速反馈模式 (格式: 类型|分类|评分|评论)"
+        "--quick", "-q", help="快速反馈模式 (格式: 类型|分类|评分|评论)",
     )
 
     args = parser.parse_args()

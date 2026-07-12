@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""
-GPU加速引擎技术债务分析工具
+"""GPU加速引擎技术债务分析工具
 分析现有GPU代码库的技术债务问题，确定重构优先级
 """
 
-import os
-import sys
-from pathlib import Path
-from typing import Dict, List, Any
-from datetime import datetime
 import ast
+import os
 import re
+import sys
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List
+
 
 # 添加项目根路径
 project_root = Path(__file__).parent
@@ -70,7 +70,7 @@ def analyze_technical_debt_issues(file_path: str) -> Dict[str, Any]:
     }
 
     try:
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             content = f.read()
             lines = content.split("\n")
             issues["lines"] = len(lines)
@@ -85,7 +85,9 @@ def analyze_technical_debt_issues(file_path: str) -> Dict[str, Any]:
 
 
 def identify_issues_by_type(
-    content: str, lines: List[str], file_path: str
+    content: str,
+    lines: List[str],
+    file_path: str,
 ) -> Dict[str, Any]:
     """识别各类技术债务问题"""
     issues = {
@@ -99,17 +101,17 @@ def identify_issues_by_type(
 
     # 1. 复杂度问题
     issues["complexity_issues"].extend(
-        analyze_complexity_issues(content, lines, file_path)
+        analyze_complexity_issues(content, lines, file_path),
     )
 
     # 2. 可维护性问题
     issues["maintainability_issues"].extend(
-        analyze_maintainability_issues(content, lines, file_path)
+        analyze_maintainability_issues(content, lines, file_path),
     )
 
     # 3. 性能问题
     issues["performance_issues"].extend(
-        analyze_performance_issues(content, lines, file_path)
+        analyze_performance_issues(content, lines, file_path),
     )
 
     # 4. 安全问题
@@ -117,19 +119,21 @@ def identify_issues_by_type(
 
     # 5. 文档问题
     issues["documentation_issues"].extend(
-        analyze_documentation_issues(content, lines, file_path)
+        analyze_documentation_issues(content, lines, file_path),
     )
 
     # 6. 错误处理问题
     issues["error_handling_issues"].extend(
-        analyze_error_handling_issues(content, lines, file_path)
+        analyze_error_handling_issues(content, lines, file_path),
     )
 
     return issues
 
 
 def analyze_complexity_issues(
-    content: str, lines: List[str], file_path: str
+    content: str,
+    lines: List[str],
+    file_path: str,
 ) -> List[Dict[str, Any]]:
     """分析代码复杂度问题"""
     complexity_issues = []
@@ -144,7 +148,7 @@ def analyze_complexity_issues(
                     "line": i,
                     "description": f"代码行过长 ({len(line)} 字符)",
                     "suggestion": "将长行拆分为多行",
-                }
+                },
             )
 
     # 复杂函数定义
@@ -182,7 +186,7 @@ def analyze_function_complexity(content: str, file_path: str) -> List[Dict[str, 
                             "complexity": complexity,
                             "description": f"函数复杂度过高 ({complexity})",
                             "suggestion": "考虑拆分函数或简化逻辑",
-                        }
+                        },
                     )
 
                 # 检查参数数量
@@ -197,7 +201,7 @@ def analyze_function_complexity(content: str, file_path: str) -> List[Dict[str, 
                             "parameters": args_count,
                             "description": f"函数参数过多 ({args_count})",
                             "suggestion": "考虑使用配置对象或数据类",
-                        }
+                        },
                     )
 
     except Exception:
@@ -212,14 +216,16 @@ def analyze_function_complexity(content: str, file_path: str) -> List[Dict[str, 
                     "count": function_count,
                     "description": f"文件中函数过多 ({function_count})",
                     "suggestion": "考虑将相关功能组织到类或模块中",
-                }
+                },
             )
 
     return function_issues
 
 
 def analyze_nesting_complexity(
-    content: str, lines: List[str], file_path: str
+    content: str,
+    lines: List[str],
+    file_path: str,
 ) -> List[Dict[str, Any]]:
     """分析嵌套复杂度"""
     nesting_issues = []
@@ -229,15 +235,8 @@ def analyze_nesting_complexity(
 
     for i, line in enumerate(lines, 1):
         # 简单的嵌套检测
-        open_brackets = (
-            line.count("{")
-            + line.count("if ")
-            + line.count("for ")
-            + line.count("while ")
-        )
-        close_brackets = (
-            line.count("}") + line.count("elif ") + line.count(":") * 2
-        )  # 简化处理
+        open_brackets = line.count("{") + line.count("if ") + line.count("for ") + line.count("while ")
+        close_brackets = line.count("}") + line.count("elif ") + line.count(":") * 2  # 简化处理
 
         current_nesting += open_brackets - close_brackets
         max_nesting = max(max_nesting, current_nesting)
@@ -251,7 +250,7 @@ def analyze_nesting_complexity(
                     "nesting_level": current_nesting,
                     "description": f"嵌套层次过深 ({current_nesting} 层)",
                     "suggestion": "考虑使用早期返回或提取函数",
-                }
+                },
             )
 
     if max_nesting > 3:
@@ -263,14 +262,16 @@ def analyze_nesting_complexity(
                 "max_nesting": max_nesting,
                 "description": f"最大嵌套层次过深 ({max_nesting} 层)",
                 "suggestion": "优化代码结构，减少嵌套层次",
-            }
+            },
         )
 
     return nesting_issues
 
 
 def analyze_expression_complexity(
-    content: str, lines: List[str], file_path: str
+    content: str,
+    lines: List[str],
+    file_path: str,
 ) -> List[Dict[str, Any]]:
     """分析表达式复杂度"""
     expression_issues = []
@@ -285,7 +286,7 @@ def analyze_expression_complexity(
                     "line": i,
                     "description": f"表达式过长 ({len(line)} 字符)",
                     "suggestion": "将长表达式拆分为多行或使用中间变量",
-                }
+                },
             )
 
         # 检查复杂的链式调用
@@ -297,7 +298,7 @@ def analyze_expression_complexity(
                     "line": i,
                     "description": f"方法链过长 ({line.count('.')} 个调用)",
                     "suggestion": "考虑使用中间变量存储中间结果",
-                }
+                },
             )
 
     return expression_issues
@@ -317,7 +318,9 @@ def calculate_cyclomatic_complexity(node: ast.FunctionDef) -> int:
 
 
 def analyze_maintainability_issues(
-    content: str, lines: List[str], file_path: str
+    content: str,
+    lines: List[str],
+    file_path: str,
 ) -> List[Dict[str, Any]]:
     """分析可维护性问题"""
     maintainability_issues = []
@@ -341,14 +344,12 @@ def analyze_maintainability_issues(
                     "pattern": description,
                     "description": f"发现硬编码值: {description}",
                     "suggestion": "使用配置文件或环境变量",
-                }
+                },
             )
 
     # 缺少注释
     comment_lines = sum(1 for line in lines if line.strip().startswith("#"))
-    code_lines = sum(
-        1 for line in lines if line.strip() and not line.strip().startswith("#")
-    )
+    code_lines = sum(1 for line in lines if line.strip() and not line.strip().startswith("#"))
 
     if code_lines > 0 and comment_lines / code_lines < 0.1:
         maintainability_issues.append(
@@ -358,7 +359,7 @@ def analyze_maintainability_issues(
                 "ratio": comment_lines / code_lines,
                 "description": f"注释比例过低 ({comment_lines}/{code_lines})",
                 "suggestion": "增加代码注释和文档说明",
-            }
+            },
         )
 
     # 长类
@@ -372,14 +373,16 @@ def analyze_maintainability_issues(
                 "count": class_count,
                 "description": f"类数量过多 ({class_count})",
                 "suggestion": "考虑拆分模块或组织相关功能",
-            }
+            },
         )
 
     return maintainability_issues
 
 
 def analyze_performance_issues(
-    content: str, lines: List[str], file_path: str
+    content: str,
+    lines: List[str],
+    file_path: str,
 ) -> List[Dict[str, Any]]:
     """分析性能问题"""
     performance_issues = []
@@ -405,7 +408,7 @@ def analyze_performance_issues(
                         "pattern": description,
                         "description": f"GPU性能问题: {description}",
                         "suggestion": "优化GPU操作和内存管理",
-                    }
+                    },
                 )
 
     # 内存泄漏风险
@@ -426,14 +429,16 @@ def analyze_performance_issues(
                         "pattern": description,
                         "description": f"内存泄漏风险: {description}",
                         "suggestion": "使用内存管理工具或重新设计",
-                    }
+                    },
                 )
 
     return performance_issues
 
 
 def analyze_security_issues(
-    content: str, lines: List[str], file_path: str
+    content: str,
+    lines: List[str],
+    file_path: str,
 ) -> List[Dict[str, Any]]:
     """分析安全问题"""
     security_issues = []
@@ -447,7 +452,7 @@ def analyze_security_issues(
                     "severity": "critical",
                     "description": "可能存在SQL注入风险",
                     "suggestion": "使用参数化查询",
-                }
+                },
             )
 
     # 硬编码凭证
@@ -467,7 +472,7 @@ def analyze_security_issues(
                     "pattern": description,
                     "description": f"安全问题: {description}",
                     "suggestion": "使用环境变量或配置文件",
-                }
+                },
             )
 
     # 不安全的文件操作
@@ -478,14 +483,16 @@ def analyze_security_issues(
                 "severity": "medium",
                 "description": "可能存在不安全的文件写入操作",
                 "suggestion": "验证文件路径并使用适当的权限",
-            }
+            },
         )
 
     return security_issues
 
 
 def analyze_documentation_issues(
-    content: str, lines: List[str], file_path: str
+    content: str,
+    lines: List[str],
+    file_path: str,
 ) -> List[Dict[str, Any]]:
     """分析文档问题"""
     documentation_issues = []
@@ -499,7 +506,7 @@ def analyze_documentation_issues(
                 "file": file_path,
                 "description": "缺少模块级别的文档字符串",
                 "suggestion": "添加模块说明和功能概述",
-            }
+            },
         )
 
     # 检查类和函数文档
@@ -518,14 +525,16 @@ def analyze_documentation_issues(
                     "docstrings": docstring_count,
                     "description": f"类文档不足 ({docstring_count}/{class_count})",
                     "suggestion": "为所有类添加详细的文档字符串",
-                }
+                },
             )
 
     return documentation_issues
 
 
 def analyze_error_handling_issues(
-    content: str, lines: List[str], file_path: str
+    content: str,
+    lines: List[str],
+    file_path: str,
 ) -> List[Dict[str, Any]]:
     """分析错误处理问题"""
     error_handling_issues = []
@@ -544,7 +553,7 @@ def analyze_error_handling_issues(
                 "except_blocks": except_blocks,
                 "description": f"try块没有对应的except处理 ({try_blocks} 个try块)",
                 "suggestion": "添加适当的异常处理逻辑",
-            }
+            },
         )
 
     # 宽泛的异常处理
@@ -563,7 +572,7 @@ def analyze_error_handling_issues(
                     "pattern": description,
                     "description": f"异常处理过于宽泛: {description}",
                     "suggestion": "使用特定的异常类型和适当的处理逻辑",
-                }
+                },
             )
 
     return error_handling_issues
@@ -617,7 +626,7 @@ def generate_debt_prioritization(analysis_results: Dict[str, Any]) -> Dict[str, 
                     "count": file_critical,
                     "total_issues": file_total,
                     "details": file_analysis,
-                }
+                },
             )
         elif file_high > 0 or file_total > 10:
             priorities["medium_priority"].append(
@@ -627,7 +636,7 @@ def generate_debt_prioritization(analysis_results: Dict[str, Any]) -> Dict[str, 
                     "count": file_high,
                     "total_issues": file_total,
                     "details": file_analysis,
-                }
+                },
             )
         elif file_medium > 0 or file_total > 5:
             priorities["low_priority"].append(
@@ -637,7 +646,7 @@ def generate_debt_prioritization(analysis_results: Dict[str, Any]) -> Dict[str, 
                     "count": file_medium,
                     "total_issues": file_total,
                     "details": file_analysis,
-                }
+                },
             )
 
         total_issues += file_total
@@ -682,7 +691,7 @@ def main():
                 file_path = os.path.join(directory, file)
                 if os.path.isfile(file_path):
                     analysis_results[file_path] = analyze_technical_debt_issues(
-                        file_path
+                        file_path,
                     )
 
     # 3. 生成优先级报告

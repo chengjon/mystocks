@@ -24,8 +24,7 @@ def normalize_relative_path(raw_path: str) -> str:
     value = raw_path.strip().replace("\\", "/")
     if not value:
         return ""
-    if value.startswith("./"):
-        value = value[2:]
+    value = value.removeprefix("./")
     return Path(value).as_posix().strip("/")
 
 
@@ -108,7 +107,7 @@ def build_candidate_directories(paths: list[str]) -> list[str]:
     for path_value in paths:
         current = Path(path_value)
         for parent in current.parents:
-            if parent == Path("."):
+            if parent == Path():
                 break
             candidates.add(parent.as_posix())
     return sorted(candidates, key=lambda item: (item.count("/"), item))
@@ -122,7 +121,9 @@ def discover_deleted_directories(deleted_paths: list[str], tracked_files: set[st
     for directory in build_candidate_directories(deleted_paths):
         directory_prefix = f"{directory}/"
         tracked_under_directory = {
-            tracked_path for tracked_path in tracked_files if tracked_path == directory or tracked_path.startswith(directory_prefix)
+            tracked_path
+            for tracked_path in tracked_files
+            if tracked_path == directory or tracked_path.startswith(directory_prefix)
         }
         if tracked_under_directory and tracked_under_directory.issubset(deleted_set):
             qualifying.append(directory)
@@ -359,7 +360,7 @@ def build_waiver_audit_report(
                     "days_until_expiry": None,
                     "status": "invalid",
                     "message": structure_error,
-                }
+                },
             )
             continue
 
@@ -381,7 +382,7 @@ def build_waiver_audit_report(
                 "days_until_expiry": days_until_expiry,
                 "status": status,
                 "message": message,
-            }
+            },
         )
 
     sorted_findings = sorted(findings, key=lambda item: (item["expires_on"], item["path"]))
@@ -543,7 +544,7 @@ def build_report(
                     "mode": "internal-error",
                     "message": message,
                     "registry_path": "",
-                }
+                },
             )
 
     return {
@@ -599,7 +600,7 @@ def print_report(report: dict[str, Any], output_format: str) -> None:
         for item in report["findings"]:
             print(
                 f"- {item['kind']} {item['path']}: {item['status']} "
-                f"(expires_on={item['expires_on']}, days_until_expiry={item['days_until_expiry']})"
+                f"(expires_on={item['expires_on']}, days_until_expiry={item['days_until_expiry']})",
             )
         for item in report["errors"]:
             path_value = item.get("path", "")
@@ -626,7 +627,7 @@ def print_report(report: dict[str, Any], output_format: str) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Block tracked directory deletion and >=3 document deletion without pre-existing governance evidence"
+        description="Block tracked directory deletion and >=3 document deletion without pre-existing governance evidence",
     )
     parser.add_argument("--root-dir", default=".")
     parser.add_argument("--scope", choices=("staged", "worktree"), default="staged")

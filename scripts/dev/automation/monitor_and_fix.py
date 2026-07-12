@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-MyStocks 自动化监控和故障恢复脚本
+"""MyStocks 自动化监控和故障恢复脚本
 实现服务健康检查、系统资源监控、自动故障恢复和告警通知系统
 
 版本: 1.0
@@ -8,17 +7,18 @@ MyStocks 自动化监控和故障恢复脚本
 创建日期: 2026-01-27
 """
 
-import os
-import sys
-import time
 import json
 import logging
+import os
 import subprocess
+import sys
+import time
+from datetime import datetime
+from typing import Any, Dict, List
+
 import psutil
 import requests
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any
-from pathlib import Path
+
 
 # 添加项目根目录到路径
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -116,9 +116,8 @@ class ServiceHealthChecker:
                 self.last_restart_time[service_name] = time.time()
                 self.error_counts[service_name] = 0  # 重置错误计数
                 return True
-            else:
-                logger.error(f"{service_name} 重启失败: {result.stderr}")
-                return False
+            logger.error(f"{service_name} 重启失败: {result.stderr}")
+            return False
 
         except Exception as e:
             logger.error(f"重启服务 {service_name} 时发生异常: {e}")
@@ -176,7 +175,10 @@ class SystemResourceMonitor:
             try:
                 # 使用PM2获取进程信息
                 result = subprocess.run(
-                    ["pm2", "show", service_name, "--monit"], capture_output=True, text=True, timeout=10
+                    ["pm2", "show", service_name, "--monit"],
+                    capture_output=True,
+                    text=True,
+                    timeout=10,
                 )
 
                 if result.returncode == 0:
@@ -250,14 +252,16 @@ class AlertManager:
             if self.webhook_url:
                 try:
                     response = requests.post(
-                        self.webhook_url, json=alert_data, timeout=10, headers={"Content-Type": "application/json"}
+                        self.webhook_url,
+                        json=alert_data,
+                        timeout=10,
+                        headers={"Content-Type": "application/json"},
                     )
                     if response.status_code == 200:
                         logger.info(f"Webhook告警发送成功: {message}")
                         return True
-                    else:
-                        logger.error(f"Webhook告警发送失败: {response.status_code}")
-                        return False
+                    logger.error(f"Webhook告警发送失败: {response.status_code}")
+                    return False
                 except Exception as e:
                     logger.error(f"发送Webhook告警异常: {e}")
                     return False
@@ -283,7 +287,7 @@ class MonitoringSystem:
     def load_config(self, config_path: str) -> Dict[str, Any]:
         """加载监控配置"""
         try:
-            with open(config_path, "r", encoding="utf-8") as f:
+            with open(config_path, encoding="utf-8") as f:
                 return json.load(f)
         except FileNotFoundError:
             logger.warning(f"配置文件不存在，使用默认配置: {config_path}")

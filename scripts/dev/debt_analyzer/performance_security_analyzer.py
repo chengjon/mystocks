@@ -1,14 +1,10 @@
 """技术负债分析器子模块"""
 
-import ast
-import json
+import asyncio
 import logging
 import re
-from collections import Counter, defaultdict
 from pathlib import Path
-from typing import Any, Dict, List
-import asyncio
-import aiofiles
+
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +56,7 @@ class PerformanceSecurityMixin:
                         "query_count": len(matches),
                         "category": "performance",
                         "severity": "medium",
-                    }
+                    },
                 )
                 break
 
@@ -82,7 +78,7 @@ class PerformanceSecurityMixin:
                         "pattern": pattern,
                         "category": "performance",
                         "severity": "low",
-                    }
+                    },
                 )
                 break
 
@@ -103,7 +99,7 @@ class PerformanceSecurityMixin:
                         "pattern": pattern,
                         "category": "performance",
                         "severity": "medium",
-                    }
+                    },
                 )
                 break
 
@@ -117,7 +113,7 @@ class PerformanceSecurityMixin:
                     "issue": "inefficient_data_structure",
                     "category": "performance",
                     "severity": "low",
-                }
+                },
             )
 
     async def analyze_security_issues(self):
@@ -164,7 +160,7 @@ class PerformanceSecurityMixin:
                         "matches": matches[:3],  # 只记录前3个
                         "category": "security",
                         "severity": "high",
-                    }
+                    },
                 )
                 break
 
@@ -183,7 +179,7 @@ class PerformanceSecurityMixin:
                         "issue": "sql_injection_risk",
                         "category": "security",
                         "severity": "high",
-                    }
+                    },
                 )
                 break
 
@@ -205,14 +201,15 @@ class PerformanceSecurityMixin:
                         "pattern": pattern,
                         "category": "security",
                         "severity": "medium",
-                    }
+                    },
                 )
                 break
 
     def _check_unsafe_eval(self, file_path: Path, content: str):
         """检查不安全的eval使用"""
         if re.search(
-            r"(?<!a)eval\(", content
+            r"(?<!a)eval\(",
+            content,
         ):  # Exclude aiofiles related eval or similar
             self.issues["security_issues"].append(
                 {
@@ -220,6 +217,5 @@ class PerformanceSecurityMixin:
                     "issue": "unsafe_eval",
                     "category": "security",
                     "severity": "high",
-                }
+                },
             )
-

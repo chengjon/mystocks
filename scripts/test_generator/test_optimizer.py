@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-增强版AI测试生成器
+"""增强版AI测试生成器
 提供更智能的测试算法、模式识别和优化建议
 
 核心功能:
@@ -15,17 +14,17 @@
 日期: 2025-12-22
 """
 
-import ast
-import re
-import sys
-from pathlib import Path
-from typing import Dict, List, Tuple, Any
-from dataclasses import dataclass
 import logging
+import sys
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Dict, List
+
 
 # 设置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -57,13 +56,17 @@ class EnhancedTestOptimizer:
 
             # 3. 生成增强测试
             test_cases = self.analyzer.generate_enhanced_tests(
-                source_file, patterns, bugs
+                source_file,
+                patterns,
+                bugs,
             )
             logger.info(f"🧪 生成了 {len(test_cases)} 个增强测试用例")
 
             # 4. 获取优化建议
             suggestions = self.analyzer.get_enhancement_suggestions(
-                source_file, patterns, bugs
+                source_file,
+                patterns,
+                bugs,
             )
             logger.info(f"💡 生成了 {len(suggestions)} 个优化建议")
 
@@ -72,7 +75,11 @@ class EnhancedTestOptimizer:
 
             # 6. 生成优化报告
             report_path = self._generate_enhancement_report(
-                source_file, patterns, bugs, test_cases, suggestions
+                source_file,
+                patterns,
+                bugs,
+                test_cases,
+                suggestions,
             )
 
             return {
@@ -90,7 +97,9 @@ class EnhancedTestOptimizer:
             return {"success": False, "error": str(e)}
 
     def _generate_enhanced_test_file(
-        self, source_file: str, test_cases: List[TestCase]
+        self,
+        source_file: str,
+        test_cases: List[TestCase],
     ) -> str:
         """生成增强测试文件"""
         module_name = Path(source_file).stem
@@ -124,8 +133,7 @@ from {module_name.replace("_", "")} import {module_name}
 ''')
 
             # 添加测试用例
-            for test_case in test_cases:
-                f.write(f"\n{test_case.test_code}\n")
+            f.writelines(f"\n{test_case.test_code}\n" for test_case in test_cases)
 
             f.write("""
 
@@ -147,11 +155,7 @@ if __name__ == "__main__":
     ) -> str:
         """生成增强报告"""
         module_name = Path(source_file).stem
-        report_path = (
-            self.project_root
-            / "enhancement_reports"
-            / f"{module_name}_enhancement_report.md"
-        )
+        report_path = self.project_root / "enhancement_reports" / f"{module_name}_enhancement_report.md"
         report_path.parent.mkdir(exist_ok=True)
 
         with open(report_path, "w", encoding="utf-8") as f:
@@ -173,16 +177,16 @@ if __name__ == "__main__":
 """)
 
             # 添加高风险模式
-            high_risk_patterns = [
-                p for p in patterns if p.risk_level in ["high", "critical"]
-            ]
-            for pattern in high_risk_patterns:
-                f.write(f"""
+            high_risk_patterns = [p for p in patterns if p.risk_level in ["high", "critical"]]
+            f.writelines(
+                f"""
 - **{pattern.pattern_type}** (风险: {pattern.risk_level})
   - 复杂度评分: {pattern.complexity_score:.1f}
   - 位置: 行 {pattern.locations[0][0]}-{pattern.locations[0][1]}
   - 置信度: {pattern.confidence:.2f}
-""")
+"""
+                for pattern in high_risk_patterns
+            )
 
             f.write("""
 ## 🐛 潜在Bug预测
@@ -192,13 +196,15 @@ if __name__ == "__main__":
 
             # 添加高风险Bug
             high_risk_bugs = [b for b in bugs if b["risk_score"] > 0.8]
-            for bug in high_risk_bugs:
-                f.write(f"""
+            f.writelines(
+                f"""
 - **{bug["type"]}** (风险评分: {bug["risk_score"]:.2f})
   - 位置: 行 {bug["line"]}
   - 描述: {bug["description"]}
   - 建议: {bug["suggestion"]}
-""")
+"""
+                for bug in high_risk_bugs
+            )
 
             f.write(f"""
 ## 🧪 增强测试用例
@@ -219,8 +225,8 @@ if __name__ == "__main__":
 """)
 
             # 添加优化建议
-            for suggestion in suggestions:
-                f.write(f"""
+            f.writelines(
+                f"""
 ### {suggestion.category.upper()} (优先级: {suggestion.priority})
 **描述**: {suggestion.description}
 
@@ -230,7 +236,9 @@ if __name__ == "__main__":
 ```
 
 **预期影响**: {suggestion.impact_assessment}
-""")
+"""
+                for suggestion in suggestions
+            )
 
             f.write(f"""
 ## 📈 预期改进效果

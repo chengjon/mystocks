@@ -1,7 +1,6 @@
 # scripts/dev/simple_lock.py
 
-"""
-简化版文件锁管理器
+"""简化版文件锁管理器
 
 使用fcntl+flock实现文件锁，相比复杂的lock管理器：
 - 代码从256行减少到95行
@@ -10,8 +9,8 @@
 """
 
 import fcntl
-import time
 import os
+import time
 from pathlib import Path
 
 
@@ -25,8 +24,7 @@ class SimpleFileLock:
         self.current_lock = None
 
     def acquire(self, file_path, timeout=3600, blocking=True):
-        """
-        获取文件锁
+        """获取文件锁
 
         Args:
             file_path: 要锁定的文件路径（相对或绝对）
@@ -35,8 +33,9 @@ class SimpleFileLock:
 
         Returns:
             (success, message): (是否成功, 消息)
+
         """
-        lock_file_name = file_path.replace('/', '_').replace('\\', '_') + '.lock'
+        lock_file_name = file_path.replace("/", "_").replace("\\", "_") + ".lock"
         lock_file = self.locks_dir / lock_file_name
 
         try:
@@ -53,11 +52,11 @@ class SimpleFileLock:
                     fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
 
                 # 写入锁信息
-                with os.fdopen(fd, 'w') as f:
+                with os.fdopen(fd, "w") as f:
                     f.write(f"{self.cli_name}\n{time.time()}\n{file_path}\n")
 
                 # 重新打开文件用于后续操作
-                f = lock_file.open('r+')
+                f = lock_file.open("r+")
                 self.current_lock = (f, lock_file)
 
                 return True, f"文件已锁定: {file_path}"
@@ -67,17 +66,17 @@ class SimpleFileLock:
                 os.close(fd)
                 raise
 
-        except IOError as e:
+        except OSError as e:
             # 检查是否已被锁定
             if lock_file.exists():
-                with lock_file.open('r') as f:
+                with lock_file.open("r") as f:
                     content = f.read()
-                    holder = content.split('\n')[0]
-                    waiting_time = time.time() - float(content.split('\n')[1])
+                    holder = content.split("\n")[0]
+                    waiting_time = time.time() - float(content.split("\n")[1])
 
                     return False, f"文件已被 {holder} 锁定，等待时间: {waiting_time:.0f}秒"
 
-            return False, f"无法获取锁: {str(e)}"
+            return False, f"无法获取锁: {e!s}"
 
     def release(self):
         """释放当前持有的锁"""
@@ -99,7 +98,7 @@ class SimpleFileLock:
             return True, "锁已释放"
 
         except Exception as e:
-            return False, f"释放锁失败: {str(e)}"
+            return False, f"释放锁失败: {e!s}"
 
     def __enter__(self):
         """支持with语句"""
@@ -113,6 +112,7 @@ class SimpleFileLock:
 # 全局锁实例（按CLI命名）
 _locks = {}
 
+
 def get_lock(cli_name):
     """获取CLI的锁实例"""
     if cli_name not in _locks:
@@ -120,15 +120,15 @@ def get_lock(cli_name):
     return _locks[cli_name]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description='简化版文件锁')
-    parser.add_argument('--acquire', action='store_true', help='获取锁')
-    parser.add_argument('--release', action='store_true', help='释放锁')
-    parser.add_argument('--cli', required=True, help='CLI名称')
-    parser.add_argument('--file', help='文件路径')
-    parser.add_argument('--blocking', action='store_true', help='阻塞模式')
+    parser = argparse.ArgumentParser(description="简化版文件锁")
+    parser.add_argument("--acquire", action="store_true", help="获取锁")
+    parser.add_argument("--release", action="store_true", help="释放锁")
+    parser.add_argument("--cli", required=True, help="CLI名称")
+    parser.add_argument("--file", help="文件路径")
+    parser.add_argument("--blocking", action="store_true", help="阻塞模式")
 
     args = parser.parse_args()
 

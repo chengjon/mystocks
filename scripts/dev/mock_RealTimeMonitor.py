@@ -1,5 +1,4 @@
-"""
-Mock数据文件: RealTimeMonitor
+"""Mock数据文件: RealTimeMonitor
 提供接口:
 1. get_realtime_alerts() -> List[Dict] - 获取实时告警
 2. get_monitoring_summary() -> Dict - 获取监控摘要
@@ -15,9 +14,9 @@ Mock数据文件: RealTimeMonitor
 生成时间: 2025-11-15
 """
 
-from typing import List, Dict, Optional
 import datetime
 import random
+from typing import Dict, List, Optional
 
 
 def get_realtime_alerts(params: Optional[Dict] = None) -> List[Dict]:
@@ -39,6 +38,7 @@ def get_realtime_alerts(params: Optional[Dict] = None) -> List[Dict]:
                    - message: 告警消息
                    - timestamp: 时间戳
                    - is_read: 是否已读
+
     """
     # 默认参数
     params = params or {}
@@ -103,7 +103,7 @@ def get_realtime_alerts(params: Optional[Dict] = None) -> List[Dict]:
                 "message": message,
                 "timestamp": timestamp.strftime("%Y-%m-%d %H:%M:%S"),
                 "is_read": random.choice([True, False]) if is_read is None else is_read,
-            }
+            },
         )
 
     # 根据参数筛选和分页
@@ -135,6 +135,7 @@ def get_monitoring_summary() -> Dict:
              - total_amount: 总成交额
              - active_alerts: 活跃告警数
              - unread_alerts: 未读告警数
+
     """
     return {
         "total_stocks": 4000,
@@ -160,6 +161,7 @@ def get_monitoring_status() -> Dict:
              - monitored_symbols: 监控股票数
              - active_alerts: 活跃告警数
              - status: 状态
+
     """
     return {
         "is_running": True,
@@ -180,6 +182,7 @@ def generate_realistic_price(base_price: float = 100.0, volatility: float = 0.02
 
     Returns:
         float: 生成的价格（保留2位小数）
+
     """
     change_rate = random.uniform(-volatility, volatility)
     price = base_price * (1 + change_rate)
@@ -191,6 +194,7 @@ def generate_realistic_volume() -> int:
 
     Returns:
         int: 成交量（股）
+
     """
     return random.randint(1000000, 100000000)
 

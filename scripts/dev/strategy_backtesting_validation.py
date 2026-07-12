@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-策略回测系统设计验证工具
+"""策略回测系统设计验证工具
 Phase 8-3: 策略回测系统设计 (P3优先级)
 
 验证方向:
@@ -16,10 +15,11 @@ Date: 2025-11-13
 """
 
 import json
-import time
 import os
+import time
 from datetime import datetime
-from typing import Dict, List, Any
+from typing import Any, Dict, List
+
 import requests
 
 
@@ -116,9 +116,7 @@ class StrategyBacktestingValidator:
         }
 
         # 架构统计
-        total_components = sum(
-            len(category) for category in engine_architecture.values()
-        )
+        total_components = sum(len(category) for category in engine_architecture.values())
 
         return {
             "test": "Backtesting Engine Architecture",
@@ -351,25 +349,28 @@ class StrategyBacktestingValidator:
 
             # 测试回测结果API
             response = requests.get(
-                f"{self.base_url}/api/backtest/results?limit=5", timeout=5
+                f"{self.base_url}/api/backtest/results?limit=5",
+                timeout=5,
             )
             results_api_ok = response.status_code == 200
 
             # 测试性能报告API
             response = requests.get(
-                f"{self.base_url}/api/backtest/performance", timeout=5
+                f"{self.base_url}/api/backtest/performance",
+                timeout=5,
             )
             performance_api_ok = response.status_code == 200
 
             # 测试回测任务API
             response = requests.get(
-                f"{self.base_url}/api/backtest/tasks?limit=3", timeout=5
+                f"{self.base_url}/api/backtest/tasks?limit=3",
+                timeout=5,
             )
             tasks_api_ok = response.status_code == 200
 
             apis_tested = 4
             apis_working = sum(
-                [config_api_ok, results_api_ok, performance_api_ok, tasks_api_ok]
+                [config_api_ok, results_api_ok, performance_api_ok, tasks_api_ok],
             )
             success_rate = (apis_working / apis_tested * 100) if apis_tested > 0 else 0
 
@@ -437,14 +438,8 @@ class StrategyBacktestingValidator:
     def _generate_validation_summary(self) -> Dict[str, Any]:
         """生成验证摘要"""
         total_validations = len(self.validation_results)
-        successful_validations = sum(
-            1 for r in self.validation_results if r.get("success", False)
-        )
-        success_rate = (
-            (successful_validations / total_validations * 100)
-            if total_validations > 0
-            else 0
-        )
+        successful_validations = sum(1 for r in self.validation_results if r.get("success", False))
+        success_rate = (successful_validations / total_validations * 100) if total_validations > 0 else 0
 
         total_duration = sum(r.get("duration", 0) for r in self.validation_results)
 
@@ -477,7 +472,7 @@ class StrategyBacktestingValidator:
         print("📈 策略回测系统设计验证报告 (Phase 8-3)")
         print("=" * 60)
         print(
-            f"✅ 成功验证: {successful_validations}/{total_validations} ({success_rate:.1f}%)"
+            f"✅ 成功验证: {successful_validations}/{total_validations} ({success_rate:.1f}%)",
         )
         print(f"⏱️  总用时: {total_duration:.2f}秒")
 

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AI算法增强器
+"""AI算法增强器
 专注于智能测试生成和代码质量提升
 
 核心功能:
@@ -14,18 +13,17 @@ AI算法增强器
 日期: 2025-12-22
 """
 
-import ast
-import re
+import logging
 import sys
 import time
 from pathlib import Path
-from typing import Dict, List, Any
-from dataclasses import dataclass
-import logging
+from typing import Dict, List
+
 
 # 设置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -35,11 +33,14 @@ sys.path.insert(0, str(project_root))
 
 from .dataclasses import CodeInsight, SmartTestCase
 
+
 class _AdvancedEnhancementMixin:
     """高级测试生成与增强报告方法集"""
 
     def _generate_error_handling_test(
-        self, insight: CodeInsight, module_name: str
+        self,
+        insight: CodeInsight,
+        module_name: str,
     ) -> SmartTestCase:
         """生成错误处理测试"""
         test_name = f"test_{module_name}_{insight.function_name}_error_handling"
@@ -88,7 +89,9 @@ class _AdvancedEnhancementMixin:
         )
 
     def _generate_validation_test(
-        self, insight: CodeInsight, module_name: str
+        self,
+        insight: CodeInsight,
+        module_name: str,
     ) -> SmartTestCase:
         """生成验证测试"""
         test_name = f"test_{module_name}_{insight.function_name}_validation"
@@ -138,7 +141,9 @@ class _AdvancedEnhancementMixin:
         )
 
     def _generate_bug_prevention_test(
-        self, bug: Dict, module_name: str
+        self,
+        bug: Dict,
+        module_name: str,
     ) -> SmartTestCase:
         """生成Bug防护测试"""
         test_name = f"test_{module_name}_bug_prevention_{bug['type']}"
@@ -189,7 +194,9 @@ class _AdvancedEnhancementMixin:
         )
 
     def _generate_general_tests(
-        self, module_name: str, insights: List[CodeInsight]
+        self,
+        module_name: str,
+        insights: List[CodeInsight],
     ) -> List[SmartTestCase]:
         """生成通用测试"""
         tests = []
@@ -227,7 +234,7 @@ class _AdvancedEnhancementMixin:
                 coverage_targets=["module_level"],
                 test_type="unit",
                 priority_score=5.0,
-            )
+            ),
         )
 
         return tests
@@ -270,7 +277,10 @@ class _AdvancedEnhancementMixin:
 
             # 5. 生成增强报告
             report_path = self._generate_enhancement_report(
-                source_file, insights, bugs, test_cases
+                source_file,
+                insights,
+                bugs,
+                test_cases,
             )
 
             processing_time = time.time() - start_time
@@ -281,7 +291,7 @@ class _AdvancedEnhancementMixin:
                 "bugs_found": len(bugs),
                 "tests_generated": len(test_cases),
                 "high_risk_functions": len(
-                    [i for i in insights if i.risk_level in ["critical", "high"]]
+                    [i for i in insights if i.risk_level in ["critical", "high"]],
                 ),
                 "test_file": test_file_path,
                 "report_file": report_path,
@@ -300,7 +310,9 @@ class _AdvancedEnhancementMixin:
             }
 
     def _generate_enhanced_test_file(
-        self, source_file: str, test_cases: List[SmartTestCase]
+        self,
+        source_file: str,
+        test_cases: List[SmartTestCase],
     ) -> str:
         """生成增强测试文件"""
         module_name = Path(source_file).stem
@@ -334,8 +346,7 @@ import {module_name}
 ''')
 
             # 添加测试用例
-            for test_case in test_cases:
-                f.write(f"\n{test_case.test_code}\n")
+            f.writelines(f"\n{test_case.test_code}\n" for test_case in test_cases)
 
             f.write("""
 if __name__ == "__main__":
@@ -379,9 +390,7 @@ if __name__ == "__main__":
 """)
 
             # 添加高风险函数信息
-            high_risk_insights = [
-                i for i in insights if i.risk_level in ["critical", "high"]
-            ]
+            high_risk_insights = [i for i in insights if i.risk_level in ["critical", "high"]]
             for insight in high_risk_insights[:5]:  # 限制显示数量
                 f.write(f"""
 #### {insight.function_name}

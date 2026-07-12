@@ -4,6 +4,7 @@ import argparse
 import sys
 from pathlib import Path
 
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -15,7 +16,9 @@ from src.services.symphony.local_tracker import LocalIssueTrackerClient
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Manage the local SQLite Symphony tracker.")
     parser.add_argument(
-        "--sqlite-path", default=".symphony/tracker.db", help="Path to the local tracker sqlite database."
+        "--sqlite-path",
+        default=".symphony/tracker.db",
+        help="Path to the local tracker sqlite database.",
     )
 
     subparsers = parser.add_subparsers(dest="command", required=True)

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-ML增强交易策略测试脚本
+"""ML增强交易策略测试脚本
 
 测试机器学习增强的交易策略：
 - SVM增强策略
@@ -12,12 +11,14 @@ ML增强交易策略测试脚本
 创建时间: 2026-01-12
 """
 
-import sys
 import asyncio
 import logging
+import sys
+from datetime import datetime, timedelta
+
 import numpy as np
 import pandas as pd
-from datetime import datetime, timedelta
+
 
 # 添加项目根目录到路径
 project_root = "/opt/claude/mystocks_spec"
@@ -56,7 +57,7 @@ async def generate_test_market_data(n_samples: int = 1000) -> pd.DataFrame:
             "high": [p * (1 + abs(np.random.normal(0, 0.01))) for p in prices],
             "low": [p * (1 - abs(np.random.normal(0, 0.01))) for p in prices],
             "volume": [int(np.random.normal(1000000, 200000)) for _ in range(n_samples)],
-        }
+        },
     )
 
     df.set_index("date", inplace=True)
@@ -72,9 +73,9 @@ async def test_svm_trading_strategy():
     try:
         # 导入SVM策略
         from src.ml_strategy.strategy.svm_trading_strategy import (
-            SVMTradingStrategy,
-            SVMConservativeStrategy,
             SVMAggressiveStrategy,
+            SVMConservativeStrategy,
+            SVMTradingStrategy,
         )
 
         logger.info("✓ 成功导入SVM策略类")

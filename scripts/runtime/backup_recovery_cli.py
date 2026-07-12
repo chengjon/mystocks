@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-备份恢复命令行工具
+"""备份恢复命令行工具
 
 使用方法:
     python backup_recovery_cli.py backup tdengine full
@@ -11,22 +10,23 @@
     python backup_recovery_cli.py scheduler start
 """
 
-import sys
-import os
 import argparse
+import os
+import sys
 from datetime import datetime
+
 
 # 添加项目根目录到 Python 路径
 project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
 )
 sys.path.insert(0, project_root)
 
 from src.backup_recovery import (
     BackupManager,
-    RecoveryManager,
     BackupScheduler,
     IntegrityChecker,
+    RecoveryManager,
 )
 
 
@@ -53,7 +53,7 @@ def cmd_backup(args):
 
             return 0
 
-        elif args.type == "incremental":
+        if args.type == "incremental":
             if not args.since:
                 print("Error: --since backup_id is required for incremental backup")
                 return 1
@@ -112,7 +112,7 @@ def cmd_list(args):
 
             print(f"{status_label} [{db_label}] [{type_label}] {backup.backup_id}")
             print(
-                f"    Size: {backup.backup_size_bytes / 1024 / 1024:.2f} MB | Rows: {backup.total_rows}"
+                f"    Size: {backup.backup_size_bytes / 1024 / 1024:.2f} MB | Rows: {backup.total_rows}",
             )
             print(f"    Time: {backup.start_time} ~ {backup.end_time}")
             print()
@@ -137,11 +137,10 @@ def cmd_restore(args):
             if success:
                 print(f"✅ {message}")
                 return 0
-            else:
-                print(f"❌ {message}")
-                return 1
+            print(f"❌ {message}")
+            return 1
 
-        elif args.type == "pitr":
+        if args.type == "pitr":
             if not args.target_time:
                 print("Error: --target-time is required for PITR")
                 return 1
@@ -158,9 +157,8 @@ def cmd_restore(args):
             if success:
                 print(f"✅ {message}")
                 return 0
-            else:
-                print(f"❌ {message}")
-                return 1
+            print(f"❌ {message}")
+            return 1
 
     elif args.database == "postgresql":
         if args.type == "full":
@@ -173,9 +171,8 @@ def cmd_restore(args):
             if success:
                 print(f"✅ {message}")
                 return 0
-            else:
-                print(f"❌ {message}")
-                return 1
+            print(f"❌ {message}")
+            return 1
 
     return 1
 
@@ -209,7 +206,7 @@ def cmd_verify(args):
         return 1
 
     print(
-        f"\n{'✅' if is_valid else '❌'} Verification result: {'PASSED' if is_valid else 'FAILED'}"
+        f"\n{'✅' if is_valid else '❌'} Verification result: {'PASSED' if is_valid else 'FAILED'}",
     )
     print(f"   Tables checked: {details['tables_checked']}")
     print(f"   Tables passed: {details['tables_passed']}")
@@ -241,14 +238,14 @@ def cmd_scheduler(args):
 
         return 0
 
-    elif args.action == "stop":
+    if args.action == "stop":
         print("Stopping backup scheduler...")
         scheduler.stop()
         print("✅ Backup scheduler stopped")
 
         return 0
 
-    elif args.action == "status":
+    if args.action == "status":
         jobs = scheduler.get_scheduled_jobs()
         print(f"Scheduled jobs ({len(jobs)}):")
         for job in jobs:
@@ -301,7 +298,9 @@ def main():
     # backup 命令
     backup_parser = subparsers.add_parser("backup", help="执行备份")
     backup_parser.add_argument(
-        "database", choices=["tdengine", "postgresql"], help="数据库类型"
+        "database",
+        choices=["tdengine", "postgresql"],
+        help="数据库类型",
     )
     backup_parser.add_argument("type", choices=["full", "incremental"], help="备份类型")
     backup_parser.add_argument("--since", help="增量备份基础 (上次备份 ID)")
@@ -315,13 +314,17 @@ def main():
     # restore 命令
     restore_parser = subparsers.add_parser("restore", help="恢复数据")
     restore_parser.add_argument(
-        "database", choices=["tdengine", "postgresql"], help="数据库类型"
+        "database",
+        choices=["tdengine", "postgresql"],
+        help="数据库类型",
     )
     restore_parser.add_argument("type", choices=["full", "pitr"], help="恢复类型")
     restore_parser.add_argument("--backup-id", help="备份 ID (用于 full 恢复)")
     restore_parser.add_argument("--target-time", help="目标时间 (ISO 8601, 用于 PITR)")
     restore_parser.add_argument(
-        "--dry-run", action="store_true", help="测试运行，不修改数据库"
+        "--dry-run",
+        action="store_true",
+        help="测试运行，不修改数据库",
     )
     restore_parser.set_defaults(func=cmd_restore)
 
@@ -333,7 +336,9 @@ def main():
     # scheduler 命令
     scheduler_parser = subparsers.add_parser("scheduler", help="管理备份调度")
     scheduler_parser.add_argument(
-        "action", choices=["start", "stop", "status"], help="调度操作"
+        "action",
+        choices=["start", "stop", "status"],
+        help="调度操作",
     )
     scheduler_parser.set_defaults(func=cmd_scheduler)
 

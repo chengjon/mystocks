@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """迁移wencai问财表数据"""
 
-import pymysql
-import psycopg2
-from psycopg2.extras import execute_values
 import os
 import sys
+
+import psycopg2
+import pymysql
+from psycopg2.extras import execute_values
+
 
 # 添加项目根目录到路径
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from dotenv import load_dotenv
+
 
 load_dotenv()
 
@@ -77,7 +79,9 @@ if __name__ == "__main__":
     # 迁移wencai_qs_1（列名映射：移除括号）
     print("=== 迁移wencai_qs_1 ===")
     migrate_wencai_table(
-        "wencai_qs_1", "wencai_qs_1", {"a股市值(不含限售股)": "a股市值"}
+        "wencai_qs_1",
+        "wencai_qs_1",
+        {"a股市值(不含限售股)": "a股市值"},
     )
 
     # 迁移wencai_qs_2（列名映射：冒号改下划线）

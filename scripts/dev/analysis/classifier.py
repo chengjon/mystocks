@@ -1,5 +1,4 @@
-"""
-模块分类器 - 将模块分类到五大功能类别
+"""模块分类器 - 将模块分类到五大功能类别
 
 使用规则引擎和启发式方法将模块分类为：
 - 核心功能 (Core)
@@ -12,14 +11,14 @@
 日期: 2025-10-19
 """
 
-from typing import List, Dict
-from pathlib import Path
-
 import sys
+from pathlib import Path
+from typing import Dict, List
+
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-from models import ModuleMetadata, CategoryEnum
+from models import CategoryEnum, ModuleMetadata
 
 
 class ModuleClassifier:
@@ -31,7 +30,6 @@ class ModuleClassifier:
 
     def _init_classification_rules(self):
         """初始化分类规则"""
-
         # 核心功能特征
         self.core_indicators = {
             "path_keywords": [
@@ -176,26 +174,29 @@ class ModuleClassifier:
         }
 
     def classify_module(self, module: ModuleMetadata) -> CategoryEnum:
-        """
-        对模块进行分类
+        """对模块进行分类
 
         Args:
             module: 模块元数据
 
         Returns:
             分类结果
+
         """
         # 计算各类别的匹配分数
         scores = {
             CategoryEnum.CORE: self._score_category(module, self.core_indicators),
             CategoryEnum.AUXILIARY: self._score_category(
-                module, self.auxiliary_indicators
+                module,
+                self.auxiliary_indicators,
             ),
             CategoryEnum.INFRASTRUCTURE: self._score_category(
-                module, self.infrastructure_indicators
+                module,
+                self.infrastructure_indicators,
             ),
             CategoryEnum.MONITORING: self._score_category(
-                module, self.monitoring_indicators
+                module,
+                self.monitoring_indicators,
             ),
             CategoryEnum.UTILITY: self._score_category(module, self.utility_indicators),
         }
@@ -214,10 +215,11 @@ class ModuleClassifier:
         return CategoryEnum.UNKNOWN
 
     def _score_category(
-        self, module: ModuleMetadata, indicators: Dict[str, List[str]]
+        self,
+        module: ModuleMetadata,
+        indicators: Dict[str, List[str]],
     ) -> int:
-        """
-        计算模块与某类别的匹配分数
+        """计算模块与某类别的匹配分数
 
         Args:
             module: 模块元数据
@@ -225,6 +227,7 @@ class ModuleClassifier:
 
         Returns:
             匹配分数
+
         """
         score = 0
 
@@ -282,16 +285,17 @@ class ModuleClassifier:
         return score
 
     def classify_batch(
-        self, modules: List[ModuleMetadata]
+        self,
+        modules: List[ModuleMetadata],
     ) -> Dict[CategoryEnum, List[ModuleMetadata]]:
-        """
-        批量分类模块
+        """批量分类模块
 
         Args:
             modules: 模块列表
 
         Returns:
             按类别分组的模块字典
+
         """
         categorized = {
             CategoryEnum.CORE: [],
@@ -310,25 +314,23 @@ class ModuleClassifier:
         return categorized
 
     def get_category_stats(
-        self, modules: List[ModuleMetadata]
+        self,
+        modules: List[ModuleMetadata],
     ) -> Dict[str, Dict[str, int]]:
-        """
-        获取分类统计信息
+        """获取分类统计信息
 
         Args:
             modules: 模块列表
 
         Returns:
             统计信息字典
+
         """
         categorized = self.classify_batch(modules)
         stats = {}
 
         for category, module_list in categorized.items():
-            total_functions = sum(
-                len(m.functions) + sum(len(c.methods) for c in m.classes)
-                for m in module_list
-            )
+            total_functions = sum(len(m.functions) + sum(len(c.methods) for c in m.classes) for m in module_list)
             total_classes = sum(len(m.classes) for m in module_list)
             total_lines = sum(m.lines_of_code for m in module_list)
 
@@ -342,14 +344,14 @@ class ModuleClassifier:
         return stats
 
     def suggest_recategorization(self, module: ModuleMetadata) -> List[str]:
-        """
-        建议可能的重新分类
+        """建议可能的重新分类
 
         Args:
             module: 模块元数据
 
         Returns:
             建议列表
+
         """
         suggestions = []
 
@@ -358,7 +360,8 @@ class ModuleClassifier:
             "Core": self._score_category(module, self.core_indicators),
             "Auxiliary": self._score_category(module, self.auxiliary_indicators),
             "Infrastructure": self._score_category(
-                module, self.infrastructure_indicators
+                module,
+                self.infrastructure_indicators,
             ),
             "Monitoring": self._score_category(module, self.monitoring_indicators),
             "Utility": self._score_category(module, self.utility_indicators),
@@ -375,7 +378,7 @@ class ModuleClassifier:
             if second_score > 0 and (first_score - second_score) / first_score < 0.2:
                 suggestions.append(
                     f"模块可能同时具有 {first_cat} 和 {second_cat} 特征，"
-                    f"建议审查分类（分数：{first_score} vs {second_score}）"
+                    f"建议审查分类（分数：{first_score} vs {second_score}）",
                 )
 
         # 检查是否有多重职责
@@ -386,14 +389,14 @@ class ModuleClassifier:
 
 
 def create_category_report(modules: List[ModuleMetadata]) -> str:
-    """
-    创建分类报告
+    """创建分类报告
 
     Args:
         modules: 模块列表
 
     Returns:
         Markdown 格式的报告
+
     """
     classifier = ModuleClassifier()
     categorized = classifier.classify_batch(modules)
@@ -420,8 +423,7 @@ def create_category_report(modules: List[ModuleMetadata]) -> str:
         if cat_key in stats:
             s = stats[cat_key]
             report.append(
-                f"| {cat_name} | {s['modules']} | {s['classes']} | "
-                f"{s['functions']} | {s['lines']} |"
+                f"| {cat_name} | {s['modules']} | {s['classes']} | {s['functions']} | {s['lines']} |",
             )
 
     report.append("\n")

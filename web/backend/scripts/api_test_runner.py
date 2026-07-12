@@ -1,17 +1,17 @@
-"""
-API 自动化测试运行器
+"""API 自动化测试运行器
 
 整合 PM2 + tmux + lnav + Playwright 进行 API 测试。
 支持并行测试、实时日志查看和测试报告生成。
 """
 
 import json
+import logging
 import os
 import subprocess
-import logging
 from dataclasses import dataclass, field
-from typing import List, Dict, Any
 from datetime import datetime, timezone
+from typing import Any, Dict, List
+
 
 logger = logging.getLogger(__name__)
 

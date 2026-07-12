@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """Support helpers extracted from `scripts/tests/test_security_owasp_top10.py`."""
 
 from datetime import datetime
@@ -27,7 +26,7 @@ def owasp_test_ssrf(self, result_cls):
                         False,
                         "可能存在 SSRF 漏洞",
                         "实施 URL 验证和限制",
-                    )
+                    ),
                 )
                 break
         except Exception:
@@ -37,7 +36,7 @@ def owasp_test_ssrf(self, result_cls):
         response = self.session.get(f"{self.base_url}/api/proxy", params={"url": "http://evil.com"})
         if response.status_code == 400:
             self.results.append(
-                result_cls("URL 白名单检查", "A10:2021", "HIGH", True, "URL 白名单正常工作")
+                result_cls("URL 白名单检查", "A10:2021", "HIGH", True, "URL 白名单正常工作"),
             )
         else:
             self.results.append(
@@ -48,7 +47,7 @@ def owasp_test_ssrf(self, result_cls):
                     False,
                     "URL 白名单未正确实施",
                     "配置允许的域名白名单",
-                )
+                ),
             )
     except Exception as error:
         self.results.append(
@@ -57,9 +56,9 @@ def owasp_test_ssrf(self, result_cls):
                 "A10:2021",
                 "HIGH",
                 False,
-                f"检查失败: {str(error)}",
+                f"检查失败: {error!s}",
                 "确保代理接口正确配置",
-            )
+            ),
         )
 
 
@@ -115,7 +114,7 @@ def owasp_generate_report(self):
                     "details": result.details,
                     "recommendation": result.recommendation,
                     "timestamp": result.timestamp,
-                }
+                },
             )
 
     return report
@@ -155,7 +154,9 @@ def run_owasp_security_tests(tester_cls, json_module):
 
     print(f"\n📄 详细报告已保存至: {report_file}")
 
-    critical_high_issues = [result for result in results if not result.passed and result.severity in ["CRITICAL", "HIGH"]]
+    critical_high_issues = [
+        result for result in results if not result.passed and result.severity in ["CRITICAL", "HIGH"]
+    ]
     if critical_high_issues:
         print("\n⚠️  需要立即修复的关键问题:")
         for issue in critical_high_issues:

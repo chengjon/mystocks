@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-MyStocks 本地 CI Runner
+"""MyStocks 本地 CI Runner
 本轮修改文件验证 + 冒烟测试。
 
 用法:
@@ -12,6 +11,7 @@ import subprocess
 import sys
 import time
 from datetime import datetime
+
 
 PASS = 0
 FAIL = 0

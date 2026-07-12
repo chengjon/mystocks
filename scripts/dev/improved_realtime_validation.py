@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-改进版实时数据流验证工具
+"""改进版实时数据流验证工具
 Improved Real-Time Streaming Validation Tool
 
 Phase 7-1: 实时数据流完整性验证 (改进版)
@@ -16,13 +15,14 @@ Author: Claude Code
 Date: 2025-11-13
 """
 
-import requests
 import json
-import time
 import os
+import time
 from datetime import datetime
-from typing import Dict, List, Any
 from pathlib import Path
+from typing import Any, Dict, List
+
+import requests
 
 
 class ImprovedRealtimeValidator:
@@ -61,7 +61,7 @@ class ImprovedRealtimeValidator:
         else:
             print("\n3️⃣ 跳过实时数据测试 (API不可用)")
             self.results.append(
-                {"test": "Simple Data", "success": False, "error": "API unavailable"}
+                {"test": "Simple Data", "success": False, "error": "API unavailable"},
             )
 
         # 4. 核心数据源检查
@@ -86,15 +86,13 @@ class ImprovedRealtimeValidator:
         issues = []
         checks = {
             "数据库密码配置": bool(
-                os.getenv("POSTGRESQL_PASSWORD")
-                and os.getenv("POSTGRESQL_PASSWORD") != "your_password"
+                os.getenv("POSTGRESQL_PASSWORD") and os.getenv("POSTGRESQL_PASSWORD") != "your_password",
             ),
             "TDengine密码配置": bool(
-                os.getenv("TDENGINE_PASSWORD")
-                and os.getenv("TDENGINE_PASSWORD") != "your-tdengine-password"
+                os.getenv("TDENGINE_PASSWORD") and os.getenv("TDENGINE_PASSWORD") != "your-tdengine-password",
             ),
             "TDX数据路径": bool(
-                os.getenv("TDX_DATA_PATH") and Path(os.getenv("TDX_DATA_PATH")).exists()
+                os.getenv("TDX_DATA_PATH") and Path(os.getenv("TDX_DATA_PATH")).exists(),
             ),
             "Python依赖": self._check_python_dependencies(),
         }
@@ -159,13 +157,12 @@ class ImprovedRealtimeValidator:
                     "status": data.get("status", "unknown"),
                     "service": data.get("service", "unknown"),
                 }
-            else:
-                return {
-                    "test": "HTTP API Health",
-                    "success": False,
-                    "duration": time.time() - start_time,
-                    "error": f"HTTP {response.status_code}: {response.text[:100]}",
-                }
+            return {
+                "test": "HTTP API Health",
+                "success": False,
+                "duration": time.time() - start_time,
+                "error": f"HTTP {response.status_code}: {response.text[:100]}",
+            }
 
         except Exception as e:
             return {
@@ -198,11 +195,7 @@ class ImprovedRealtimeValidator:
                 except:
                     pass
 
-            success_rate = (
-                (working_endpoints / len(simple_endpoints) * 100)
-                if simple_endpoints
-                else 0
-            )
+            success_rate = (working_endpoints / len(simple_endpoints) * 100) if simple_endpoints else 0
 
             return {
                 "test": "Simple Data",
@@ -248,9 +241,7 @@ class ImprovedRealtimeValidator:
             except Exception as e:
                 details.append(f"❌ {name}: {str(e)[:50]}")
 
-        success_rate = (
-            (sources_working / sources_tested * 100) if sources_tested > 0 else 0
-        )
+        success_rate = (sources_working / sources_tested * 100) if sources_tested > 0 else 0
 
         return {
             "test": "Core Data Sources",
@@ -322,15 +313,15 @@ class ImprovedRealtimeValidator:
                 print(f"      📊 响应时间: {result['response_time_ms']:.1f}ms")
             if "working_endpoints" in result:
                 print(
-                    f"      📊 可用端点: {result['working_endpoints']}/{result['total_endpoints']}"
+                    f"      📊 可用端点: {result['working_endpoints']}/{result['total_endpoints']}",
                 )
             if "sources_working" in result:
                 print(
-                    f"      📊 可用数据源: {result['sources_working']}/{result['sources_tested']}"
+                    f"      📊 可用数据源: {result['sources_working']}/{result['sources_tested']}",
                 )
             if "working_ports" in result:
                 print(
-                    f"      📊 端口可用: {result['working_ports']}/{result['ports_tested']}"
+                    f"      📊 端口可用: {result['working_ports']}/{result['ports_tested']}",
                 )
             if "passed" in result:
                 print(f"      📊 环境检查: {result['passed']}/{result['total']}项通过")
@@ -353,22 +344,10 @@ class ImprovedRealtimeValidator:
 
         # 分类评估
         core_functionality = {
-            "environment": any(
-                "Environment" in r.get("test", "") and r.get("success")
-                for r in self.results
-            ),
-            "api_health": any(
-                "HTTP API Health" in r.get("test", "") and r.get("success")
-                for r in self.results
-            ),
-            "data_access": any(
-                "Simple Data" in r.get("test", "") and r.get("success")
-                for r in self.results
-            ),
-            "websocket": any(
-                "WebSocket" in r.get("test", "") and r.get("success")
-                for r in self.results
-            ),
+            "environment": any("Environment" in r.get("test", "") and r.get("success") for r in self.results),
+            "api_health": any("HTTP API Health" in r.get("test", "") and r.get("success") for r in self.results),
+            "data_access": any("Simple Data" in r.get("test", "") and r.get("success") for r in self.results),
+            "websocket": any("WebSocket" in r.get("test", "") and r.get("success") for r in self.results),
         }
 
         critical_issues = []
@@ -428,14 +407,14 @@ class ImprovedRealtimeValidator:
         if core_functionality["api_health"]:
             print("\n🟢 核心功能状态:")
             print(
-                f"   • 环境配置: {'✅' if core_functionality['environment'] else '❌'}"
+                f"   • 环境配置: {'✅' if core_functionality['environment'] else '❌'}",
             )
             print(f"   • API健康: {'✅' if core_functionality['api_health'] else '❌'}")
             print(
-                f"   • 数据访问: {'✅' if core_functionality['data_access'] else '❌'}"
+                f"   • 数据访问: {'✅' if core_functionality['data_access'] else '❌'}",
             )
             print(
-                f"   • WebSocket: {'✅' if core_functionality['websocket'] else '❌'}"
+                f"   • WebSocket: {'✅' if core_functionality['websocket'] else '❌'}",
             )
 
         # 保存详细报告
@@ -453,7 +432,8 @@ class ImprovedRealtimeValidator:
 
         # 基于环境检查结果
         env_result = next(
-            (r for r in self.results if r.get("test") == "Environment Check"), None
+            (r for r in self.results if r.get("test") == "Environment Check"),
+            None,
         )
         if env_result and not env_result.get("success"):
             checks = env_result.get("checks", {})
@@ -464,14 +444,8 @@ class ImprovedRealtimeValidator:
 
         # 基于核心功能状态
         core_status = {
-            "api_health": any(
-                r.get("test") == "HTTP API Health" and r.get("success")
-                for r in self.results
-            ),
-            "data_access": any(
-                "Simple Data" in r.get("test", "") and r.get("success")
-                for r in self.results
-            ),
+            "api_health": any(r.get("test") == "HTTP API Health" and r.get("success") for r in self.results),
+            "data_access": any("Simple Data" in r.get("test", "") and r.get("success") for r in self.results),
         }
 
         if not core_status["api_health"]:

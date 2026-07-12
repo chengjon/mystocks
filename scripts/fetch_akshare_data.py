@@ -1,22 +1,20 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-AkShare 数据获取脚本
+"""AkShare 数据获取脚本
 获取 A 股市场行业、概念、股票基本信息等数据
 
 数据来源: 东方财富网 - AkShare
 文档参考: /opt/mydoc/mymd/Astock_data_source.md
 """
 
+import time
+from datetime import datetime
+
 import akshare as ak
 import pandas as pd
-from datetime import datetime
-import time
 
 
 def fetch_industry_data():
-    """
-    获取行业板块数据
+    """获取行业板块数据
 
     数据接口: ak.stock_board_industry_name_em()
     对应文档: 行业板块名称列表
@@ -35,6 +33,7 @@ def fetch_industry_data():
         - 下跌家数
         - 领涨股票
         - 领涨股票-涨跌幅
+
     """
     print("=" * 80)
     print("📋 获取行业板块名称列表...")
@@ -50,14 +49,14 @@ def fetch_industry_data():
 
 
 def fetch_industry_cons(symbol: str = "黑色金属"):
-    """
-    获取指定行业的成分股
+    """获取指定行业的成分股
 
     Args:
         symbol: 行业板块名称或代码
 
     Returns:
         pd.DataFrame: 成分股数据
+
     """
     print("=" * 80)
     print(f"📋 获取行业 '{symbol}' 的成分股...")
@@ -73,8 +72,7 @@ def fetch_industry_cons(symbol: str = "黑色金属"):
 
 
 def fetch_concept_data():
-    """
-    获取概念板块数据
+    """获取概念板块数据
 
     数据接口: ak.stock_board_concept_name_em()
     对应文档: 概念板块名称列表
@@ -93,6 +91,7 @@ def fetch_concept_data():
         - 下跌家数
         - 领涨股票
         - 领涨股票-涨跌幅
+
     """
     print("=" * 80)
     print("📋 获取概念板块名称列表...")
@@ -108,8 +107,7 @@ def fetch_concept_data():
 
 
 def fetch_concept_cons(symbol: str = "可燃冰"):
-    """
-    获取指定概念的成分股
+    """获取指定概念的成分股
 
     Args:
         symbol: 概念板块名称或代码
@@ -132,6 +130,7 @@ def fetch_concept_cons(symbol: str = "可燃冰"):
         - 换手率
         - 市盈率-动态
         - 市净率
+
     """
     print("=" * 80)
     print(f"📋 获取概念板块 '{symbol}' 的成分股...")
@@ -147,8 +146,7 @@ def fetch_concept_cons(symbol: str = "可燃冰"):
 
 
 def fetch_stock_list():
-    """
-    获取 A 股所有股票基本信息
+    """获取 A 股所有股票基本信息
 
     数据接口: ak.stock_info_a_code_name()
     对应文档: 股票代码和名称
@@ -157,6 +155,7 @@ def fetch_stock_list():
         pd.DataFrame: 股票列表
         - code: 股票代码
         - name: 股票名称
+
     """
     print("=" * 80)
     print("📋 获取 A 股所有股票代码和名称...")
@@ -167,8 +166,8 @@ def fetch_stock_list():
         df_sz = ak.stock_info_sz_name_code(indicator="A股列表")
 
         # 合并沪深数据
-        df_sh['market'] = 'SH'
-        df_sz['market'] = 'SZ'
+        df_sh["market"] = "SH"
+        df_sz["market"] = "SZ"
 
         df = pd.concat([df_sh, df_sz], ignore_index=True)
 
@@ -181,14 +180,14 @@ def fetch_stock_list():
 
 
 def fetch_stock_info(symbol: str = "000001"):
-    """
-    获取单只股票的详细信息
+    """获取单只股票的详细信息
 
     Args:
         symbol: 股票代码（不带前缀）
 
     Returns:
         pd.DataFrame: 股票详细信息
+
     """
     print("=" * 80)
     print(f"📋 获取股票 {symbol} 的详细信息...")
@@ -204,12 +203,10 @@ def fetch_stock_info(symbol: str = "000001"):
         return pd.DataFrame()
 
 
-def fetch_stock_history(symbol: str = "000001",
-                        start_date: str = "20240101",
-                        end_date: str = "20241231",
-                        adjust: str = "hfq"):
-    """
-    获取单只股票的历史行情数据
+def fetch_stock_history(
+    symbol: str = "000001", start_date: str = "20240101", end_date: str = "20241231", adjust: str = "hfq"
+):
+    """获取单只股票的历史行情数据
 
     Args:
         symbol: 股票代码
@@ -234,6 +231,7 @@ def fetch_stock_history(symbol: str = "000001",
         - 涨跌幅
         - 涨跌额
         - 换手率
+
     """
     print("=" * 80)
     print(f"📋 获取股票 {symbol} 的历史行情 ({start_date} ~ {end_date})...")
@@ -244,7 +242,7 @@ def fetch_stock_history(symbol: str = "000001",
             period="daily",
             start_date=start_date,
             end_date=end_date,
-            adjust=adjust
+            adjust=adjust,
         )
         print(f"✅ 成功获取 {len(df)} 条历史数据")
         print(f"   列: {list(df.columns)}")
@@ -254,11 +252,8 @@ def fetch_stock_history(symbol: str = "000001",
         return pd.DataFrame()
 
 
-def fetch_concept_history(symbol: str = "绿色电力",
-                          start_date: str = "20240101",
-                          end_date: str = "20241231"):
-    """
-    获取概念板块的历史走势
+def fetch_concept_history(symbol: str = "绿色电力", start_date: str = "20240101", end_date: str = "20241231"):
+    """获取概念板块的历史走势
 
     Args:
         symbol: 概念板块名称
@@ -267,6 +262,7 @@ def fetch_concept_history(symbol: str = "绿色电力",
 
     Returns:
         pd.DataFrame: 概念板块历史数据
+
     """
     print("=" * 80)
     print(f"📋 获取概念板块 '{symbol}' 的历史走势...")
@@ -277,7 +273,7 @@ def fetch_concept_history(symbol: str = "绿色电力",
             period="daily",
             start_date=start_date,
             end_date=end_date,
-            adjust=""
+            adjust="",
         )
         print(f"✅ 成功获取 {len(df)} 条历史数据")
         print(f"   列: {list(df.columns)}")
@@ -288,16 +284,16 @@ def fetch_concept_history(symbol: str = "绿色电力",
 
 
 def save_to_csv(df: pd.DataFrame, filename: str):
-    """
-    保存数据到 CSV 文件
+    """保存数据到 CSV 文件
 
     Args:
         df: 数据框
         filename: 文件名（自动保存在 /tmp 目录）
+
     """
     if not df.empty:
         filepath = f"/tmp/{filename}"
-        df.to_csv(filepath, index=False, encoding='utf-8-sig')
+        df.to_csv(filepath, index=False, encoding="utf-8-sig")
         print(f"💾 数据已保存到: {filepath}")
     else:
         print("⚠️  数据为空，不保存文件")
@@ -306,6 +302,7 @@ def save_to_csv(df: pd.DataFrame, filename: str):
 # ============================================================================
 # 主函数 - 批量获取所有数据
 # ============================================================================
+
 
 def main():
     """主函数 - 批量获取所有数据"""
@@ -363,7 +360,7 @@ def main():
         symbol="000001",
         start_date="20240101",
         end_date="20241231",
-        adjust="hfq"
+        adjust="hfq",
     )
     if not stock_history_df.empty:
         save_to_csv(stock_history_df, f"stock_history_example_{timestamp}.csv")

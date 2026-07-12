@@ -1,24 +1,25 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-MyStocks AI监控和告警系统优化脚本
+"""MyStocks AI监控和告警系统优化脚本
 第三阶段：构建智能化监控和告警系统
 """
 
 import json
-import time
 import logging
 import smtplib
-import psutil
+import time
 from datetime import datetime
-from pathlib import Path
-from typing import Dict, List, Any
-from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from pathlib import Path
+from typing import Any, Dict, List
+
+import psutil
+
 
 # 设置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -40,7 +41,7 @@ class AIAlertManager:
         try:
             import yaml
 
-            with open(config_path, "r", encoding="utf-8") as f:
+            with open(config_path, encoding="utf-8") as f:
                 return yaml.safe_load(f)
         except Exception as e:
             logger.error(f"配置文件加载失败: {e}")
@@ -121,14 +122,10 @@ class AIAlertManager:
 
             # 检查是否超过阈值
             if (
-                rule_name
-                in ["cpu_high", "memory_high", "ai_error_rate", "response_time_slow"]
-                and value > threshold
+                rule_name in ["cpu_high", "memory_high", "ai_error_rate", "response_time_slow"] and value > threshold
             ) or (rule_name == "disk_low" and value > threshold):
                 # 检查持续时间
-                alert_key = (
-                    f"{rule_name}_{current_time.hour}_{current_time.minute // 10}"
-                )
+                alert_key = f"{rule_name}_{current_time.hour}_{current_time.minute // 10}"
 
                 alert = {
                     "rule": rule_name,
@@ -212,7 +209,8 @@ MyStocks AI系统告警
             msg.attach(MIMEText(body, "plain", "utf-8"))
 
             server = smtplib.SMTP(
-                email_config["smtp_server"], email_config["smtp_port"]
+                email_config["smtp_server"],
+                email_config["smtp_port"],
             )
             server.starttls()
             server.login(email_config["username"], email_config["password"])
@@ -248,9 +246,8 @@ MyStocks AI系统告警
             if response.status_code == 200:
                 logger.info(f"✅ Webhook告警已发送: {alert['rule']}")
                 return True
-            else:
-                logger.error(f"❌ Webhook告警发送失败: {response.status_code}")
-                return False
+            logger.error(f"❌ Webhook告警发送失败: {response.status_code}")
+            return False
 
         except Exception as e:
             logger.error(f"❌ Webhook告警发送失败: {e}")
@@ -301,9 +298,7 @@ class AIRealtimeMonitor:
             "network_io": dict(psutil.net_io_counters()._asdict()),
             "process_count": len(psutil.pids()),
             "boot_time": datetime.fromtimestamp(psutil.boot_time()).isoformat(),
-            "load_average": list(psutil.getloadavg())
-            if hasattr(psutil, "getloadavg")
-            else [0, 0, 0],
+            "load_average": list(psutil.getloadavg()) if hasattr(psutil, "getloadavg") else [0, 0, 0],
         }
 
     def simulate_ai_metrics(self) -> Dict[str, Any]:
@@ -345,7 +340,7 @@ class AIRealtimeMonitor:
                 logger.warning(f"🚨 检测到 {alert_result['total_alerts']} 个告警")
             else:
                 logger.info(
-                    f"✅ 系统运行正常 - CPU: {system_metrics['cpu_percent']:.1f}% 内存: {system_metrics['memory_percent']:.1f}%"
+                    f"✅ 系统运行正常 - CPU: {system_metrics['cpu_percent']:.1f}% 内存: {system_metrics['memory_percent']:.1f}%",
                 )
 
             time.sleep(10)  # 每10秒监控一次
@@ -392,7 +387,9 @@ class AIStrategyAnalyzer:
         logger.info(f"📈 策略已注册: {name}")
 
     def analyze_strategy_performance(
-        self, strategy_name: str, metrics: Dict[str, Any]
+        self,
+        strategy_name: str,
+        metrics: Dict[str, Any],
     ) -> Dict[str, Any]:
         """分析策略性能"""
         if strategy_name not in self.strategies:
@@ -415,7 +412,7 @@ class AIStrategyAnalyzer:
         self.performance_history.append(performance_analysis)
 
         logger.info(
-            f"📊 策略性能分析完成: {strategy_name} (得分: {performance_analysis['score']:.2f})"
+            f"📊 策略性能分析完成: {strategy_name} (得分: {performance_analysis['score']:.2f})",
         )
 
         return performance_analysis
@@ -447,12 +444,11 @@ class AIStrategyAnalyzer:
 
         if accuracy < 0.7:
             return "建议优化模型训练数据，提升预测准确率"
-        elif error_rate > 8.0:
+        if error_rate > 8.0:
             return "建议检查错误处理逻辑，降低系统错误率"
-        elif response_time > 3.0:
+        if response_time > 3.0:
             return "建议优化算法性能，减少响应时间"
-        else:
-            return "策略运行良好，建议继续监控"
+        return "策略运行良好，建议继续监控"
 
     def assess_risk_level(self, metrics: Dict[str, Any]) -> str:
         """评估风险等级"""
@@ -461,39 +457,32 @@ class AIStrategyAnalyzer:
 
         if error_rate > 10.0 or response_time > 5.0:
             return "高风险"
-        elif error_rate > 5.0 or response_time > 2.0:
+        if error_rate > 5.0 or response_time > 2.0:
             return "中等风险"
-        else:
-            return "低风险"
+        return "低风险"
 
     def get_strategy_summary(self) -> Dict[str, Any]:
         """获取策略摘要"""
         summary = {
             "total_strategies": len(self.strategies),
             "active_strategies": len(
-                [s for s in self.strategies.values() if s["status"] == "active"]
+                [s for s in self.strategies.values() if s["status"] == "active"],
             ),
             "performance_history_count": len(self.performance_history),
             "strategies": {},
         }
 
         for name, strategy in self.strategies.items():
-            recent_performance = (
-                strategy["performance"][-5:] if strategy["performance"] else []
-            )
+            recent_performance = strategy["performance"][-5:] if strategy["performance"] else []
             avg_score = (
-                sum(p["score"] for p in recent_performance) / len(recent_performance)
-                if recent_performance
-                else 0
+                sum(p["score"] for p in recent_performance) / len(recent_performance) if recent_performance else 0
             )
 
             summary["strategies"][name] = {
                 "status": strategy["status"],
                 "performance_count": len(strategy["performance"]),
                 "average_score": round(avg_score, 2),
-                "last_analysis": recent_performance[-1]["timestamp"]
-                if recent_performance
-                else None,
+                "last_analysis": recent_performance[-1]["timestamp"] if recent_performance else None,
             }
 
         return summary
@@ -533,10 +522,11 @@ def main():
 
         for strategy_name in strategy_analyzer.strategies.keys():
             analysis = strategy_analyzer.analyze_strategy_performance(
-                strategy_name, latest_metrics
+                strategy_name,
+                latest_metrics,
             )
             print(
-                f"  • {strategy_name}: 得分 {analysis['score']:.1f}, 风险等级: {analysis['risk_level']}"
+                f"  • {strategy_name}: 得分 {analysis['score']:.1f}, 风险等级: {analysis['risk_level']}",
             )
 
     # 生成策略摘要
@@ -563,7 +553,7 @@ def main():
         "strategy_summary": summary,
         "alert_rules": list(monitor.alert_manager.alert_rules.keys()),
         "notification_channels": list(
-            monitor.alert_manager.notification_channels.keys()
+            monitor.alert_manager.notification_channels.keys(),
         ),
     }
 

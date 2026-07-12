@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-MyStocks 代码优化 - 小文件分析脚本
+"""MyStocks 代码优化 - 小文件分析脚本
 分析和处理小于50行的Python文件，提出合并建议
 
 优化策略：
@@ -14,9 +12,9 @@ MyStocks 代码优化 - 小文件分析脚本
 """
 
 import re
-from pathlib import Path
-from typing import List, Dict, Tuple
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Dict, List, Tuple
 
 
 @dataclass
@@ -37,7 +35,7 @@ class SmallFilesAnalyzer:
     def count_lines(self, file_path: Path) -> int:
         """计算文件的行数"""
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 return len(f.readlines())
         except Exception:
             return 0
@@ -49,7 +47,10 @@ class SmallFilesAnalyzer:
         return classes, functions
 
     def calculate_complexity_score(
-        self, line_count: int, class_count: int, function_count: int
+        self,
+        line_count: int,
+        class_count: int,
+        function_count: int,
     ) -> int:
         """计算文件复杂度评分"""
         base_score = line_count
@@ -82,13 +83,15 @@ class SmallFilesAnalyzer:
             # 只分析小于50行的文件
             if line_count > 0 and line_count < 50:
                 try:
-                    with open(py_file, "r", encoding="utf-8") as f:
+                    with open(py_file, encoding="utf-8") as f:
                         content = f.read()
 
                     class_count, function_count = self.count_elements(content)
                     is_init_file = py_file.name == "__init__.py"
                     complexity_score = self.calculate_complexity_score(
-                        line_count, class_count, function_count
+                        line_count,
+                        class_count,
+                        function_count,
                     )
 
                     file_info = SmallFileInfo(
@@ -111,7 +114,8 @@ class SmallFilesAnalyzer:
         return small_files
 
     def categorize_small_files(
-        self, small_files: List[SmallFileInfo]
+        self,
+        small_files: List[SmallFileInfo],
     ) -> Dict[str, List[SmallFileInfo]]:
         """对小文件进行分类"""
         categories = {
@@ -155,11 +159,12 @@ class SmallFilesAnalyzer:
                 relative_path = file_info.path.relative_to(self.project_root)
                 print(f"   📄 {relative_path}")
                 print(
-                    f"      └─ {file_info.line_count} 行, {file_info.class_count} 类, {file_info.function_count} 函数"
+                    f"      └─ {file_info.line_count} 行, {file_info.class_count} 类, {file_info.function_count} 函数",
                 )
 
     def get_merge_recommendations(
-        self, categories: Dict[str, List[SmallFileInfo]]
+        self,
+        categories: Dict[str, List[SmallFileInfo]],
     ) -> List[Tuple[SmallFileInfo, str]]:
         """获取合并建议"""
         recommendations = []
@@ -181,9 +186,7 @@ class SmallFilesAnalyzer:
             if file_info.complexity_score > 200:  # 高复杂度小文件应该保留
                 reason = f"高复杂度小文件（{file_info.complexity_score}分），建议保留"
             else:
-                reason = (
-                    f"中等小文件（{file_info.line_count}行），可考虑合并到相关文件中"
-                )
+                reason = f"中等小文件（{file_info.line_count}行），可考虑合并到相关文件中"
                 recommendations.append((file_info, reason))
 
         return recommendations
@@ -197,17 +200,16 @@ class SmallFilesAnalyzer:
             relative_path = file_info.path.relative_to(self.project_root)
             print(f"\n📄 文件: {relative_path}")
             print(
-                f"   📊 大小: {file_info.line_count} 行, 复杂度: {file_info.complexity_score}"
+                f"   📊 大小: {file_info.line_count} 行, 复杂度: {file_info.complexity_score}",
             )
             print(f"   💭 建议: {reason}")
 
     def calculate_optimization_potential(
-        self, categories: Dict[str, List[SmallFileInfo]]
+        self,
+        categories: Dict[str, List[SmallFileInfo]],
     ) -> Dict:
         """计算优化潜力"""
-        total_small_lines = sum(
-            f.line_count for files in categories.values() for f in files
-        )
+        total_small_lines = sum(f.line_count for files in categories.values() for f in files)
         total_files = sum(len(files) for files in categories.values())
 
         optimization_potential = {
@@ -242,10 +244,10 @@ class SmallFilesAnalyzer:
         print(f"   📊 小文件总数: {optimization_potential['total_small_files']} 个")
         print(f"   📊 小文件行数: {optimization_potential['total_small_lines']} 行")
         print(
-            f"   🎯 可减少文件: {optimization_potential['potential_file_reduction']} 个"
+            f"   🎯 可减少文件: {optimization_potential['potential_file_reduction']} 个",
         )
         print(
-            f"   🎯 可减少行数: {optimization_potential['potential_line_reduction']} 行"
+            f"   🎯 可减少行数: {optimization_potential['potential_line_reduction']} 行",
         )
         print(f"   📈 减少比例: {optimization_potential['reduction_percentage']:.1f}%")
 

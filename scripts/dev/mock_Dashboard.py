@@ -1,5 +1,4 @@
-"""
-Mock数据文件: Dashboard
+"""Mock数据文件: Dashboard
 提供接口:
 1. get_market_stats() -> Dict - 获取市场统计数据（仪表盘顶部4个统计卡片）
 2. get_market_heat_data() -> List[Dict] - 获取市场热度数据（图表）
@@ -22,9 +21,9 @@ Mock数据文件: Dashboard
 生成时间: 2025-11-13
 """
 
-from typing import List, Dict
 import datetime
 import random
+from typing import Dict, List
 
 
 def get_market_overview() -> Dict:
@@ -32,6 +31,7 @@ def get_market_overview() -> Dict:
 
     Returns:
         Dict: 包含总股票数、活跃股票、数据更新、系统状态
+
     """
     current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -77,6 +77,7 @@ def get_market_stats() -> Dict:
 
     Returns:
         Dict: 市场统计数据，包含涨跌分布、成交额等
+
     """
     return {
         "total_stocks": 4000,
@@ -96,6 +97,7 @@ def get_market_heat() -> List[Dict]:
 
     Returns:
         List[Dict]: 各概念板块的热度指数数据
+
     """
     sectors = [
         "人工智能",
@@ -115,6 +117,7 @@ def get_realtime_alerts() -> Dict:
 
     Returns:
         Dict: 实时告警数据
+
     """
     # 告警类型和级别
     alert_types = ["价格突破", "成交量激增", "技术指标", "资金流向", "龙虎榜"]
@@ -173,7 +176,7 @@ def get_realtime_alerts() -> Dict:
                 "message": message,
                 "timestamp": timestamp.strftime("%Y-%m-%d %H:%M:%S"),
                 "is_read": random.choice([True, False]),
-            }
+            },
         )
 
     return {
@@ -188,6 +191,7 @@ def get_market_heat_data() -> List[Dict]:
 
     Returns:
         List[Dict]: 各概念板块的热度指数数据
+
     """
     sectors = [
         "人工智能",
@@ -207,6 +211,7 @@ def get_dragon_tiger_data() -> List[Dict]:
 
     Returns:
         List[Dict]: 龙虎榜数据列表
+
     """
     stocks = [
         {"symbol": "600519", "name": "贵州茅台", "change": 5.2, "amount": 1500000000},
@@ -237,6 +242,7 @@ def get_leading_sectors() -> List[Dict]:
 
     Returns:
         List[Dict]: 各板块的涨幅数据
+
     """
     sectors = ["人工智能", "芯片", "新能源", "医疗", "5G", "军工", "消费", "金融"]
     return [{"name": sector, "change": round(random.uniform(2.0, 8.5), 2)} for sector in sectors]
@@ -247,6 +253,7 @@ def get_price_distribution() -> List[Dict]:
 
     Returns:
         List[Dict]: 各涨跌区间的股票数量分布
+
     """
     return [
         {
@@ -282,6 +289,7 @@ def get_capital_flow_data() -> List[Dict]:
 
     Returns:
         List[Dict]: 各类型资金流向数据
+
     """
     return [
         {"name": "超大单", "value": round(random.uniform(100, 150), 1)},
@@ -299,6 +307,7 @@ def get_industry_fund_flow(standard: str = "csrc") -> Dict:
 
     Returns:
         Dict: 行业资金流向图表配置
+
     """
     industry_data = {
         "csrc": {
@@ -360,6 +369,7 @@ def generate_realistic_price(base_price: float = 100.0, volatility: float = 0.02
 
     Returns:
         float: 生成的价格（保留2位小数）
+
     """
     change_rate = random.uniform(-volatility, volatility)
     price = base_price * (1 + change_rate)
@@ -371,6 +381,7 @@ def generate_realistic_volume() -> int:
 
     Returns:
         int: 成交量（股）
+
     """
     return random.randint(1000000, 100000000)
 
@@ -380,6 +391,7 @@ def get_dashboard_stats() -> List[Dict]:
 
     Returns:
         List[Dict]: Dashboard.vue期望的stats数组格式
+
     """
     market_stats = get_market_stats()
 
@@ -396,6 +408,7 @@ def get_favorite_stocks() -> List[Dict]:
 
     Returns:
         List[Dict]: 自选股列表及其实时行情数据
+
     """
     stocks = [
         {"symbol": "600519", "name": "贵州茅台", "industry": "白酒"},
@@ -424,6 +437,7 @@ def get_strategy_stocks() -> List[Dict]:
 
     Returns:
         List[Dict]: 策略选股列表及评分数据
+
     """
     strategies = [
         {"symbol": "688981", "name": "中芯国际", "strategy": "突破策略", "score": 88},
@@ -452,6 +466,7 @@ def get_industry_stocks() -> List[Dict]:
 
     Returns:
         List[Dict]: 行业龙头股票数据
+
     """
     industries = [
         {
@@ -510,6 +525,7 @@ def get_concept_stocks() -> List[Dict]:
 
     Returns:
         List[Dict]: 热门概念股票数据
+
     """
     concepts = [
         {
@@ -562,6 +578,7 @@ def get_dashboard_industry_data() -> Dict:
 
     Returns:
         Dict: Dashboard.vue期望的industryData格式
+
     """
     return {
         "csrc": {

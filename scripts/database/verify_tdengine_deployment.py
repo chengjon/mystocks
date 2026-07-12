@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-TDengine Deployment Verification Script - Task 2.1
+"""TDengine Deployment Verification Script - Task 2.1
 
 This script verifies the TDengine deployment and functionality:
 1. Check Docker container status
@@ -13,21 +12,22 @@ Run this after: docker-compose -f docker-compose.tdengine.yml up -d
 """
 
 import os
-import sys
 import subprocess
+import sys
 from datetime import datetime
 from pathlib import Path
 
+
 # Add project root directory to path (3 levels up: scripts/database/verify_tdengine_deployment.py)
 project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
 )
 sys.path.insert(0, project_root)
 
 # Load .env file
 env_file = Path(project_root) / ".env"
 if env_file.exists():
-    with open(env_file, "r", encoding="utf-8") as f:
+    with open(env_file, encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if line and not line.startswith("#") and "=" in line:
@@ -71,16 +71,17 @@ class TDengineDeploymentVerifier:
 
         try:
             result = subprocess.run(
-                ["docker", "--version"], capture_output=True, text=True
+                ["docker", "--version"],
+                capture_output=True,
+                text=True,
             )
             if result.returncode == 0:
                 self.print_check("✅", "Docker installed", result.stdout.strip())
                 self.checks_passed += 1
                 return True
-            else:
-                self.print_check("❌", "Docker not found")
-                self.checks_failed += 1
-                return False
+            self.print_check("❌", "Docker not found")
+            self.checks_failed += 1
+            return False
         except FileNotFoundError:
             self.print_check("❌", "Docker command not found")
             self.checks_failed += 1
@@ -90,18 +91,21 @@ class TDengineDeploymentVerifier:
         """Check if Docker Compose is installed"""
         try:
             result = subprocess.run(
-                ["docker-compose", "--version"], capture_output=True, text=True
+                ["docker-compose", "--version"],
+                capture_output=True,
+                text=True,
             )
             if result.returncode == 0:
                 self.print_check(
-                    "✅", "Docker Compose installed", result.stdout.strip()
+                    "✅",
+                    "Docker Compose installed",
+                    result.stdout.strip(),
                 )
                 self.checks_passed += 1
                 return True
-            else:
-                self.print_check("❌", "Docker Compose not found")
-                self.checks_failed += 1
-                return False
+            self.print_check("❌", "Docker Compose not found")
+            self.checks_failed += 1
+            return False
         except FileNotFoundError:
             self.print_check("❌", "Docker Compose command not found")
             self.checks_failed += 1
@@ -115,10 +119,9 @@ class TDengineDeploymentVerifier:
                 self.print_check("✅", "Docker daemon is running")
                 self.checks_passed += 1
                 return True
-            else:
-                self.print_check("❌", "Docker daemon is not running")
-                self.checks_failed += 1
-                return False
+            self.print_check("❌", "Docker daemon is not running")
+            self.checks_failed += 1
+            return False
         except Exception as e:
             self.print_check("❌", "Cannot communicate with Docker", str(e))
             self.checks_failed += 1
@@ -144,14 +147,15 @@ class TDengineDeploymentVerifier:
 
             if "Up" in result.stdout:
                 self.print_check(
-                    "✅", "TDengine container is running", result.stdout.strip()
+                    "✅",
+                    "TDengine container is running",
+                    result.stdout.strip(),
                 )
                 self.checks_passed += 1
                 return True
-            else:
-                self.print_check("❌", "TDengine container is not running")
-                self.checks_failed += 1
-                return False
+            self.print_check("❌", "TDengine container is not running")
+            self.checks_failed += 1
+            return False
 
         except Exception as e:
             self.print_check("❌", "Cannot check container status", str(e))
@@ -176,17 +180,18 @@ class TDengineDeploymentVerifier:
 
             if "Up" in result.stdout:
                 self.print_check(
-                    "✅", "PostgreSQL container is running", result.stdout.strip()
+                    "✅",
+                    "PostgreSQL container is running",
+                    result.stdout.strip(),
                 )
                 self.checks_passed += 1
                 return True
-            else:
-                self.print_check(
-                    "⚠️",
-                    "PostgreSQL container is not running (may not be needed for this test)",
-                )
-                self.warnings += 1
-                return False
+            self.print_check(
+                "⚠️",
+                "PostgreSQL container is not running (may not be needed for this test)",
+            )
+            self.warnings += 1
+            return False
 
         except Exception as e:
             self.print_check("⚠️", "Cannot check PostgreSQL status", str(e))
@@ -290,7 +295,7 @@ class TDengineDeploymentVerifier:
             for table in tables:
                 try:
                     result = manager._execute_query(
-                        f"SELECT COUNT(*) FROM {table} LIMIT 1"
+                        f"SELECT COUNT(*) FROM {table} LIMIT 1",
                     )
                     self.print_check("✅", f"Table '{table}' exists and accessible")
                     self.checks_passed += 1
@@ -328,7 +333,10 @@ class TDengineDeploymentVerifier:
             }
 
             write_result = manager.write_cache(
-                symbol="000001", data_type="fund_flow", timeframe="1d", data=test_data
+                symbol="000001",
+                data_type="fund_flow",
+                timeframe="1d",
+                data=test_data,
             )
 
             if write_result:
@@ -357,7 +365,9 @@ class TDengineDeploymentVerifier:
             stats = manager.get_cache_stats()
             if stats:
                 self.print_check(
-                    "✅", "Cache statistics retrieval successful", str(stats)
+                    "✅",
+                    "Cache statistics retrieval successful",
+                    str(stats),
                 )
                 self.checks_passed += 1
             else:
@@ -415,19 +425,19 @@ class TDengineDeploymentVerifier:
             print("\n  🎉 All checks passed! TDengine is ready for use.")
             print("\n  Next Steps:")
             print(
-                "  1. Run integration tests: pytest web/backend/tests/test_tdengine_manager.py -v"
+                "  1. Run integration tests: pytest web/backend/tests/test_tdengine_manager.py -v",
             )
             print("  2. Start the backend service: python -m web.backend.main")
             print("  3. Monitor cache statistics: python monitor_cache_stats.py")
         else:
             print(
-                f"\n  ⚠️  {self.checks_failed} check(s) failed. Please review the issues above."
+                f"\n  ⚠️  {self.checks_failed} check(s) failed. Please review the issues above.",
             )
             print("\n  Troubleshooting:")
             print("  1. Ensure TDengine container is running:")
             print("     docker-compose -f docker-compose.tdengine.yml up -d")
             print(
-                "  2. Check Docker logs: docker-compose -f docker-compose.tdengine.yml logs tdengine"
+                "  2. Check Docker logs: docker-compose -f docker-compose.tdengine.yml logs tdengine",
             )
             print("  3. Verify credentials in .env file")
 

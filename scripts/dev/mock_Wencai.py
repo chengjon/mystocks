@@ -1,5 +1,4 @@
-"""
-Mock数据文件: Wencai
+"""Mock数据文件: Wencai
 提供接口:
 1. get_wencai_queries() -> Dict - 获取预定义查询列表（对应/api/market/wencai/queries）
 2. execute_query() -> Dict - 执行预定义查询（对应/api/market/wencai/query）
@@ -16,10 +15,10 @@ Mock数据文件: Wencai
 生成时间: 2025-11-13
 """
 
-from typing import List, Dict
 import datetime
 import random
 import time
+from typing import Dict, List
 
 
 def get_wencai_queries() -> Dict:
@@ -27,6 +26,7 @@ def get_wencai_queries() -> Dict:
 
     Returns:
         Dict: 包含queries字段的字典，queries是查询列表数组
+
     """
     # 预定义查询模板
     predefined_queries = [
@@ -130,6 +130,7 @@ def execute_query(request: Dict) -> Dict:
 
     Returns:
         Dict: 执行结果，包含total_records等字段
+
     """
     query_name = request.get("query_name", "qs_1")
     pages = request.get("pages", 1)
@@ -172,6 +173,7 @@ def execute_custom_query(request: Dict) -> Dict:
 
     Returns:
         Dict: 自定义查询结果
+
     """
     query_text = request.get("query_text", "")
     pages = request.get("pages", 1)
@@ -215,6 +217,7 @@ def get_query_results(query_name: str, limit: int = 20, offset: int = 0) -> Dict
 
     Returns:
         Dict: 查询结果数据
+
     """
     # 根据查询名称确定结果数量
     query_result_counts = {
@@ -258,6 +261,7 @@ def generate_wencai_results(count: int) -> List[Dict]:
 
     Returns:
         List[Dict]: 问财结果数据列表
+
     """
     # 股票基础数据池
     stock_pool = [
@@ -322,7 +326,7 @@ def generate_wencai_results(count: int) -> List[Dict]:
                 "换手率": f"{random.uniform(1, 15):.2f}%",
                 "振幅": f"{random.uniform(2, 12):.2f}%",
                 "查询日期": query_date,
-            }
+            },
         )
 
     return results
@@ -337,6 +341,7 @@ def generate_realistic_price(base_price: float = 100.0, volatility: float = 0.02
 
     Returns:
         float: 生成的价格（保留2位小数）
+
     """
     change_rate = random.uniform(-volatility, volatility)
     price = base_price * (1 + change_rate)
@@ -348,6 +353,7 @@ def generate_realistic_volume() -> int:
 
     Returns:
         int: 成交量（股）
+
     """
     return random.randint(1000000, 100000000)
 

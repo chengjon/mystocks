@@ -1,25 +1,20 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-MyStocks AI策略分析和回测自动化系统
+"""MyStocks AI策略分析和回测自动化系统
 第四阶段：构建智能化策略分析和回测框架
 """
 
 import json
-import random
-import numpy as np
-from datetime import datetime, timedelta
-from pathlib import Path
-from typing import Dict, List, Any
 import logging
-from dataclasses import dataclass
-from enum import Enum
+from pathlib import Path
+
 
 # 设置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
+
 
 def main():
     """主函数"""
@@ -40,7 +35,8 @@ def main():
 
     momentum_strategy = MomentumStrategy(lookback_period=20)
     mean_reversion_strategy = MeanReversionStrategy(
-        bollinger_period=20, std_dev_threshold=2.0
+        bollinger_period=20,
+        std_dev_threshold=2.0,
     )
     ml_strategy = MLBasedStrategy(feature_count=10)
 
@@ -92,5 +88,3 @@ def main():
     print("=" * 60)
 
     return analysis_results
-
-

@@ -1,20 +1,18 @@
 #!/usr/bin/env python3
-"""
-契约测试失败分析和调试工具
+"""契约测试失败分析和调试工具
 
 提供契约测试失败的详细分析、根本原因诊断和调试建议。
 支持多种分析模式：单次测试分析、批量分析、趋势分析。
 """
 
-import json
-import sys
 import argparse
-from pathlib import Path
-from typing import Dict, List, Any, Optional, Tuple
+import json
+import re
+from collections import Counter
 from dataclasses import dataclass, field
 from datetime import datetime
-from collections import defaultdict, Counter
-import re
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
 
 
 @dataclass
@@ -37,18 +35,17 @@ class TestFailure:
         """根本原因分类"""
         if "schema" in self.error_message.lower():
             return "schema_validation"
-        elif "timeout" in self.error_message.lower():
+        if "timeout" in self.error_message.lower():
             return "timeout"
-        elif "connection" in self.error_message.lower():
+        if "connection" in self.error_message.lower():
             return "connection"
-        elif "authentication" in self.error_message.lower():
+        if "authentication" in self.error_message.lower():
             return "authentication"
-        elif "authorization" in self.error_message.lower():
+        if "authorization" in self.error_message.lower():
             return "authorization"
-        elif "contract" in self.error_message.lower():
+        if "contract" in self.error_message.lower():
             return "contract_drift"
-        else:
-            return "other"
+        return "other"
 
 
 @dataclass
@@ -73,8 +70,7 @@ class ContractTestFailureAnalyzer:
 
     def load_failures_from_pytest_json(self, json_file: Path) -> None:
         """从pytest JSON报告加载失败信息"""
-
-        with open(json_file, "r") as f:
+        with open(json_file) as f:
             pytest_report = json.load(f)
 
         for test in pytest_report.get("tests", []):
@@ -90,8 +86,7 @@ class ContractTestFailureAnalyzer:
 
     def load_failures_from_contract_log(self, log_file: Path) -> None:
         """从契约测试日志加载失败信息"""
-
-        with open(log_file, "r") as f:
+        with open(log_file) as f:
             for line in f:
                 if "FAILED" in line or "ERROR" in line:
                     # 解析契约测试日志格式
@@ -122,7 +117,6 @@ class ContractTestFailureAnalyzer:
 
     def analyze_failures(self) -> FailureAnalysis:
         """分析失败模式"""
-
         analysis = FailureAnalysis()
         analysis.total_failures = len(self.failures)
 
@@ -160,7 +154,6 @@ class ContractTestFailureAnalyzer:
 
     def _generate_recommendations(self, analysis: FailureAnalysis) -> List[str]:
         """生成修复建议"""
-
         recommendations = []
 
         # 基于最常见的失败类别提供建议
@@ -196,21 +189,18 @@ class ContractTestFailureAnalyzer:
 
     def _assess_severity(self, analysis: FailureAnalysis) -> str:
         """评估失败严重程度"""
-
         failure_rate = analysis.total_failures
 
         if failure_rate > 50:
             return "critical"
-        elif failure_rate > 20:
+        if failure_rate > 20:
             return "high"
-        elif failure_rate > 10:
+        if failure_rate > 10:
             return "medium"
-        else:
-            return "low"
+        return "low"
 
     def generate_debug_report(self, analysis: FailureAnalysis) -> Dict[str, Any]:
         """生成调试报告"""
-
         report = {
             "summary": {
                 "total_failures": analysis.total_failures,
@@ -245,7 +235,6 @@ class ContractTestFailureAnalyzer:
 
     def save_debug_report(self, report: Dict[str, Any], output_file: Path) -> None:
         """保存调试报告"""
-
         with open(output_file, "w", encoding="utf-8") as f:
             json.dump(report, f, indent=2, ensure_ascii=False)
 
@@ -253,7 +242,6 @@ class ContractTestFailureAnalyzer:
 
     def print_summary(self, analysis: FailureAnalysis) -> None:
         """打印分析摘要"""
-
         print("🔍 契约测试失败分析报告")
         print(f"总失败数: {analysis.total_failures}")
         print(f"严重程度: {analysis.severity_assessment}")
@@ -279,7 +267,6 @@ class ContractTestFailureAnalyzer:
 
 def main():
     """主函数"""
-
     parser = argparse.ArgumentParser(description="契约测试失败分析和调试工具")
     parser.add_argument("--pytest-json", type=Path, help="pytest JSON报告文件")
     parser.add_argument("--contract-log", type=Path, help="契约测试日志文件")

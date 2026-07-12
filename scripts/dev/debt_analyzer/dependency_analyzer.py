@@ -1,14 +1,11 @@
 """技术负债分析器子模块"""
 
-import ast
+import asyncio
 import json
 import logging
 import re
-from collections import Counter, defaultdict
 from pathlib import Path
-from typing import Any, Dict, List
-import asyncio
-import aiofiles
+
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +25,7 @@ class DependencyMixin:
         # 分析Docker依赖
         dockerfiles = list(self.project_root.rglob("Dockerfile*"))
         await asyncio.gather(
-            *[self._analyze_docker_dependencies_async(f) for f in dockerfiles]
+            *[self._analyze_docker_dependencies_async(f) for f in dockerfiles],
         )
 
         # 分析package.json
@@ -54,7 +51,7 @@ class DependencyMixin:
                                 "issue": "unpinned_version",
                                 "category": "dependencies",
                                 "severity": "medium",
-                            }
+                            },
                         )
         except Exception as e:
             logger.warning(f"分析requirements.txt失败: {e}")
@@ -72,7 +69,7 @@ class DependencyMixin:
                         "issue": "using_latest_tag",
                         "category": "dependencies",
                         "severity": "low",
-                    }
+                    },
                 )
         except Exception as e:
             logger.warning(f"分析Dockerfile失败 {dockerfile}: {e}")
@@ -88,9 +85,7 @@ class DependencyMixin:
                 if dep_type in data:
                     for package, version in data[dep_type].items():
                         if (
-                            version == "*"
-                            or version == "latest"
-                            or not re.match(r"^\d+\.\d+\.\d+$", version)
+                            version == "*" or version == "latest" or not re.match(r"^\d+\.\d+\.\d+$", version)
                         ):  # Also check for ~ ^ versions
                             self.issues["dependency_issues"].append(
                                 {
@@ -101,8 +96,7 @@ class DependencyMixin:
                                     "dependency_type": dep_type,
                                     "category": "dependencies",
                                     "severity": "medium",
-                                }
+                                },
                             )
         except Exception as e:
             logger.warning(f"分析package.json失败: {e}")
-

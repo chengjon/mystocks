@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-代码重复检测器 - 识别重复和相似代码
+"""代码重复检测器 - 识别重复和相似代码
 
 分析代码库中的函数和代码块，找出高度相似的部分。
 
@@ -11,22 +10,23 @@
     python scripts/analysis/detect_duplicates.py
 """
 
-import sys
 import json
+import sys
+from collections import defaultdict
 from pathlib import Path
 from typing import Dict
-from collections import defaultdict
+
 
 # 添加项目根目录到路径
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(PROJECT_ROOT))
 sys.path.insert(0, str(Path(__file__).parent))
 
-from manual_paths import get_manual_metadata_dir, get_manual_root
-from models import DuplicationIndex, SeverityEnum, ModuleInventory
-from utils.similarity import SimilarityDetector
-from utils.ast_parser import extract_code_block
 from generate_docs import load_inventory
+from manual_paths import get_manual_metadata_dir, get_manual_root
+from models import DuplicationIndex, ModuleInventory, SeverityEnum
+from utils.ast_parser import extract_code_block
+from utils.similarity import SimilarityDetector
 
 
 MANUAL_ROOT = get_manual_root(PROJECT_ROOT)
@@ -34,14 +34,14 @@ MANUAL_METADATA_DIR = get_manual_metadata_dir(PROJECT_ROOT)
 
 
 def detect_function_duplicates(inventory: ModuleInventory) -> DuplicationIndex:
-    """
-    检测函数级别的重复
+    """检测函数级别的重复
 
     Args:
         inventory: 模块清单
 
     Returns:
         重复索引
+
     """
     print("\n正在检测函数级别重复...")
 
@@ -86,8 +86,8 @@ def detect_function_duplicates(inventory: ModuleInventory) -> DuplicationIndex:
 
                 pair_key = tuple(
                     sorted(
-                        [f"{file1}:{func1.line_number}", f"{file2}:{func2.line_number}"]
-                    )
+                        [f"{file1}:{func1.line_number}", f"{file2}:{func2.line_number}"],
+                    ),
                 )
 
                 if pair_key in checked_pairs:
@@ -99,10 +99,14 @@ def detect_function_duplicates(inventory: ModuleInventory) -> DuplicationIndex:
                 full_path2 = str(PROJECT_ROOT / file2)
 
                 code1 = extract_code_block(
-                    full_path1, func1.line_number, func1.line_number + func1.body_lines
+                    full_path1,
+                    func1.line_number,
+                    func1.line_number + func1.body_lines,
                 )
                 code2 = extract_code_block(
-                    full_path2, func2.line_number, func2.line_number + func2.body_lines
+                    full_path2,
+                    func2.line_number,
+                    func2.line_number + func2.body_lines,
                 )
 
                 if not code1 or not code2:
@@ -148,12 +152,12 @@ def detect_function_duplicates(inventory: ModuleInventory) -> DuplicationIndex:
 
 
 def detect_pattern_duplicates(inventory: ModuleInventory, dup_index: DuplicationIndex):
-    """
-    检测常见模式重复（如连接数据库的代码）
+    """检测常见模式重复（如连接数据库的代码）
 
     Args:
         inventory: 模块清单
         dup_index: 重复索引（将添加新发现）
+
     """
     print("\n正在检测常见模式重复...")
 
@@ -198,14 +202,14 @@ def detect_pattern_duplicates(inventory: ModuleInventory, dup_index: Duplication
 
 
 def analyze_duplicate_clusters(dup_index: DuplicationIndex) -> Dict:
-    """
-    分析重复集群（多个文件中的重复）
+    """分析重复集群（多个文件中的重复）
 
     Args:
         dup_index: 重复索引
 
     Returns:
         集群分析结果
+
     """
     print("\n正在分析重复集群...")
 
@@ -222,7 +226,7 @@ def analyze_duplicate_clusters(dup_index: DuplicationIndex) -> Dict:
 
     print(f"  重复集群数: {len(multi_file_clusters)}")
     print(
-        f"  最大集群: {max((len(files) for files in multi_file_clusters.keys()), default=0)} 个文件"
+        f"  最大集群: {max((len(files) for files in multi_file_clusters), default=0)} 个文件",
     )
 
     return {
@@ -232,16 +236,16 @@ def analyze_duplicate_clusters(dup_index: DuplicationIndex) -> Dict:
                 "files": list(files),
                 "duplication_count": len(dups),
                 "severity_breakdown": {
-                    "critical": sum(
-                        1 for d in dups if d.severity == SeverityEnum.CRITICAL
-                    ),
+                    "critical": sum(1 for d in dups if d.severity == SeverityEnum.CRITICAL),
                     "high": sum(1 for d in dups if d.severity == SeverityEnum.HIGH),
                     "medium": sum(1 for d in dups if d.severity == SeverityEnum.MEDIUM),
                     "low": sum(1 for d in dups if d.severity == SeverityEnum.LOW),
                 },
             }
             for files, dups in sorted(
-                multi_file_clusters.items(), key=lambda x: len(x[1]), reverse=True
+                multi_file_clusters.items(),
+                key=lambda x: len(x[1]),
+                reverse=True,
             )[:10]
         ],
     }
@@ -270,7 +274,7 @@ def generate_duplication_summary(dup_index: DuplicationIndex) -> str:
             lines.append(f"### {i}. {dup.id}")
             lines.append(f"- **严重性**: {dup.severity.value.upper()}")
             lines.append(
-                f"- **相似度**: Token {dup.token_similarity:.0%}, AST {dup.ast_similarity:.0%}"
+                f"- **相似度**: Token {dup.token_similarity:.0%}, AST {dup.ast_similarity:.0%}",
             )
             lines.append(f"- **位置**: {len(dup.blocks)} 处")
             for block in dup.blocks[:3]:  # 只显示前3处
@@ -282,7 +286,6 @@ def generate_duplication_summary(dup_index: DuplicationIndex) -> str:
 
 def save_duplication_index(dup_index: DuplicationIndex, output_path: str):
     """保存重复索引到 JSON"""
-
     data = {
         "total_cases": dup_index.total_cases,
         "summary": {
@@ -333,7 +336,7 @@ def main():
     if not inventory_path.exists():
         print(f"\n✗ 错误: 清单文件不存在: {inventory_path}")
         print("  请先运行: python scripts/analysis/scan_codebase.py")
-        return
+        return None
 
     print(f"\n加载清单: {inventory_path}")
     inventory = load_inventory(str(inventory_path))

@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""
-测试异常处理框架 - 验证统一异常处理是否正常工作
-"""
+"""测试异常处理框架 - 验证统一异常处理是否正常工作"""
 
-import sys
 import os
+import sys
+
 
 # 添加项目路径
 sys.path.insert(0, os.path.dirname(__file__))
@@ -12,16 +11,16 @@ sys.path.insert(0, os.path.dirname(__file__))
 try:
     from app.core.exceptions import (
         BusinessException,
-        ValidationException,
-        NotFoundException,
         ForbiddenException,
+        NotFoundException,
         UnauthorizedException,
-        register_exception_handlers,
+        ValidationException,
         raise_business_error,
-        raise_validation_error,
-        raise_not_found,
         raise_forbidden,
+        raise_not_found,
         raise_unauthorized,
+        raise_validation_error,
+        register_exception_handlers,
     )
 
     print("✅ 异常处理模块导入成功")
@@ -141,7 +140,7 @@ def test_register_handlers():
         # 检查路由数量是否增加（异常处理器会添加路由）
         routes_before = len(app.routes)
 
-        print(f"✅ 异常处理器注册成功")
+        print("✅ 异常处理器注册成功")
         print(f"   路由数量: {routes_before}")
 
         return True

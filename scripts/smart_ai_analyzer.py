@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-智能AI分析器
+"""智能AI分析器
 专注于代码质量分析、Bug预测和智能测试生成
 
 核心功能:
@@ -15,16 +14,18 @@
 """
 
 import ast
+import logging
 import re
 import sys
 import time
 from pathlib import Path
 from typing import Dict, List
-import logging
+
 
 # 设置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -65,37 +66,31 @@ class CodeFunction:
         """评估风险等级"""
         if self.complexity_score > 9:
             return "critical"
-        elif self.complexity_score > 6:
+        if self.complexity_score > 6:
             return "high"
-        elif self.complexity_score > 3:
+        if self.complexity_score > 3:
             return "medium"
-        else:
-            return "low"
+        return "low"
 
     def _determine_test_priority(self) -> str:
         """确定测试优先级"""
         risk_scores = {"critical": 10, "high": 8, "medium": 6, "low": 4}
-        priority_score = risk_scores.get(self.risk_level, 5) + (
-            self.complexity_score * 0.3
-        )
+        priority_score = risk_scores.get(self.risk_level, 5) + (self.complexity_score * 0.3)
 
         if priority_score > 12:
             return "critical"
-        elif priority_score > 9:
+        if priority_score > 9:
             return "high"
-        elif priority_score > 6:
+        if priority_score > 6:
             return "medium"
-        else:
-            return "low"
+        return "low"
 
     def _identify_issues(self) -> List[str]:
         """识别潜在问题"""
         issues = []
 
         # 检查错误处理
-        has_error_handling = any(
-            isinstance(child, ast.Try) for child in ast.walk(self.node)
-        )
+        has_error_handling = any(isinstance(child, ast.Try) for child in ast.walk(self.node))
         if not has_error_handling:
             issues.append("缺少错误处理机制")
 
@@ -125,7 +120,7 @@ class SmartAIAnalyzer:
         start_time = time.time()
 
         try:
-            with open(source_file, "r", encoding="utf-8") as f:
+            with open(source_file, encoding="utf-8") as f:
                 source_code = f.read()
 
             tree = ast.parse(source_code)
@@ -142,7 +137,9 @@ class SmartAIAnalyzer:
 
             # 生成测试用例
             test_cases = self._generate_smart_tests(
-                functions, bugs, Path(source_file).stem
+                functions,
+                bugs,
+                Path(source_file).stem,
             )
 
             # 生成分析报告
@@ -152,14 +149,12 @@ class SmartAIAnalyzer:
                 "success": True,
                 "functions_count": len(functions),
                 "high_risk_count": len(
-                    [f for f in functions if f.risk_level in ["critical", "high"]]
+                    [f for f in functions if f.risk_level in ["critical", "high"]],
                 ),
                 "bugs_found": len(bugs),
                 "tests_generated": len(test_cases),
                 "average_complexity": (
-                    (sum(f.complexity_score for f in functions) / len(functions))
-                    if functions
-                    else 0
+                    (sum(f.complexity_score for f in functions) / len(functions)) if functions else 0
                 ),
                 "analysis_time": analysis_time,
             }
@@ -186,23 +181,17 @@ class SmartAIAnalyzer:
                     line_num = source_code[: match.start()].count("\n") + 1
 
                     # 简单检查是否有防护措施
-                    context = source_code[
-                        max(0, match.start() - 200) : match.end() + 200
-                    ]
-                    has_protection = any(
-                        prot in context for prot in ["if", "try", "with", "assert"]
-                    )
+                    context = source_code[max(0, match.start() - 200) : match.end() + 200]
+                    has_protection = any(prot in context for prot in ["if", "try", "with", "assert"])
 
                     if not has_protection:
                         bugs.append(
                             {
                                 "type": bug_type,
                                 "line": line_num,
-                                "severity": "high"
-                                if bug_type in ["sql_injection", "resource_leak"]
-                                else "medium",
+                                "severity": "high" if bug_type in ["sql_injection", "resource_leak"] else "medium",
                                 "description": self._get_bug_description(bug_type),
-                            }
+                            },
                         )
 
         return bugs
@@ -218,15 +207,16 @@ class SmartAIAnalyzer:
         return descriptions.get(bug_type, "未知类型风险")
 
     def _generate_smart_tests(
-        self, functions: List[CodeFunction], bugs: List[Dict], module_name: str
+        self,
+        functions: List[CodeFunction],
+        bugs: List[Dict],
+        module_name: str,
     ) -> List[Dict]:
         """生成智能测试用例"""
         test_cases = []
 
         # 为高风险函数生成测试
-        high_risk_functions = [
-            f for f in functions if f.risk_level in ["critical", "high"]
-        ]
+        high_risk_functions = [f for f in functions if f.risk_level in ["critical", "high"]]
 
         for func in high_risk_functions[:3]:  # 限制数量
             test_cases.append(self._create_security_test(func, module_name))
@@ -403,8 +393,7 @@ class Test{module_name.title().replace("_", "")}Smart(unittest.TestCase):
 
 ''')
 
-            for test_case in test_cases:
-                f.write(f"{test_case['code']}\n")
+            f.writelines(f"{test_case['code']}\n" for test_case in test_cases)
 
             f.write("""
 
@@ -430,11 +419,7 @@ if __name__ == "__main__":
 
         with open(report_file, "w", encoding="utf-8") as f:
             # 计算平均复杂度
-            average_complexity = (
-                (sum(f.complexity_score for f in functions) / len(functions))
-                if functions
-                else 0
-            )
+            average_complexity = (sum(f.complexity_score for f in functions) / len(functions)) if functions else 0
 
             f.write(f"""# {module_name} 智能分析报告
 
@@ -451,17 +436,17 @@ if __name__ == "__main__":
 ### 高风险函数
 """)
 
-            high_risk_funcs = [
-                f for f in functions if f.risk_level in ["critical", "high"]
-            ]
-            for func in high_risk_funcs:
-                f.write(f"""
+            high_risk_funcs = [f for f in functions if f.risk_level in ["critical", "high"]]
+            f.writelines(
+                f"""
 #### {func.name}
 - **复杂度**: {func.complexity_score:.1f}
 - **风险等级**: {func.risk_level}
 - **测试优先级**: {func.test_priority}
 - **潜在问题**: {", ".join(func.issues) if func.issues else "无"}
-""")
+"""
+                for func in high_risk_funcs
+            )
 
             f.write("""
 ## 🐛 Bug预测
@@ -469,12 +454,14 @@ if __name__ == "__main__":
 ### 发现的问题
 """)
 
-            for bug in bugs:
-                f.write(f"""
+            f.writelines(
+                f"""
 - **{bug["type"]}** (行 {bug["line"]})
   - 严重程度: {bug["severity"]}
   - 描述: {bug["description"]}
-""")
+"""
+                for bug in bugs
+            )
 
             f.write(f"""
 ## 🧪 智能测试
@@ -487,14 +474,18 @@ if __name__ == "__main__":
 """)
 
             high_priority_tests = sorted(
-                test_cases, key=lambda x: x["priority"], reverse=True
+                test_cases,
+                key=lambda x: x["priority"],
+                reverse=True,
             )[:5]
-            for test in high_priority_tests:
-                f.write(f"""
+            f.writelines(
+                f"""
 - **{test["name"]}**
   - 描述: {test["description"]}
   - 优先级: {test["priority"]:.1f}
-""")
+"""
+                for test in high_priority_tests
+            )
 
         logger.info(f"✅ 分析报告已生成: {report_file}")
 
@@ -537,10 +528,10 @@ def main():
             print(f"✅ {Path(source_file).name}:")
             print(f"   函数: {result['functions_count']}, Bug: {result['bugs_found']}")
             print(
-                f"   测试: {result['tests_generated']}, 高风险: {result['high_risk_count']}"
+                f"   测试: {result['tests_generated']}, 高风险: {result['high_risk_count']}",
             )
             print(
-                f"   复杂度: {result['average_complexity']:.1f}, 耗时: {result['analysis_time']:.2f}s"
+                f"   复杂度: {result['average_complexity']:.1f}, 耗时: {result['analysis_time']:.2f}s",
             )
         else:
             print(f"❌ {Path(source_file).name}: {result['error']}")

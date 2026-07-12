@@ -7,14 +7,16 @@ import argparse
 import json
 import re
 import sys
-from collections import Counter, defaultdict
+from collections import Counter
+from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import date, datetime
 from fnmatch import fnmatch
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 import yaml
+
 
 SEVERITY_ORDER = {"P0": 0, "P1": 1, "P2": 2, "P3": 3}
 DEFAULT_RULES_PATH = "config/security/hardcoding-rules.yml"
@@ -126,7 +128,7 @@ def compile_rules(raw_rules: list[dict[str, Any]]) -> list[Rule]:
                 pattern=pattern,
                 include_extensions=include_extensions,
                 excludes=excludes,
-            )
+            ),
         )
     return compiled
 
@@ -177,7 +179,9 @@ def collect_target_files(
     return sorted(files)
 
 
-def load_exceptions(path: Path, repo_root: Path) -> tuple[dict[tuple[str, str, int], ExceptionItem], list[ExceptionItem]]:
+def load_exceptions(
+    path: Path, repo_root: Path
+) -> tuple[dict[tuple[str, str, int], ExceptionItem], list[ExceptionItem]]:
     if not path.exists():
         return {}, []
     data = load_yaml(path)
@@ -239,7 +243,7 @@ def scan_file(file_path: Path, rel_path: str, rules: list[Rule], severity_filter
                     line=idx,
                     column=match.start() + 1,
                     snippet=snippet,
-                )
+                ),
             )
     return hits
 
@@ -334,8 +338,7 @@ def render_markdown(report: dict[str, Any]) -> str:
     for finding in report["hits"][:200]:
         snippet = finding["snippet"].replace("|", "\\|").replace("`", "\\`")
         lines.append(
-            f"| {finding['severity']} | `{finding['rule_id']}` | "
-            f"`{finding['file']}:{finding['line']}` | `{snippet}` |"
+            f"| {finding['severity']} | `{finding['rule_id']}` | `{finding['file']}:{finding['line']}` | `{snippet}` |",
         )
     lines.append("")
     return "\n".join(lines)

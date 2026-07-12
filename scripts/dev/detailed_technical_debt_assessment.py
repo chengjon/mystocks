@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-详细技术债务复杂度评估器
+"""详细技术债务复杂度评估器
 专门针对特定文件进行深入的技术债务分析
 """
 
@@ -9,7 +8,8 @@ import os
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any, Dict, List
+
 import radon.complexity as radon_cc
 
 
@@ -21,31 +21,27 @@ class DetailedTechnicalDebtAssessment:
         self.assessment_results = {}
 
     def analyze_file_complexity(self, file_path: str) -> Dict[str, Any]:
-        """
-        分析单个文件的复杂度
+        """分析单个文件的复杂度
 
         Args:
             file_path: 文件路径
 
         Returns:
             Dict[str, Any]: 复杂度分析结果
+
         """
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             # 基础统计
             lines = content.split("\n")
             total_lines = len(lines)
             code_lines = len(
-                [
-                    line
-                    for line in lines
-                    if line.strip() and not line.strip().startswith("#")
-                ]
+                [line for line in lines if line.strip() and not line.strip().startswith("#")],
             )
             comment_lines = len(
-                [line for line in lines if line.strip().startswith("#")]
+                [line for line in lines if line.strip().startswith("#")],
             )
             empty_lines = total_lines - code_lines - comment_lines
 
@@ -63,23 +59,15 @@ class DetailedTechnicalDebtAssessment:
                         class_info = {
                             "name": node.name,
                             "line_start": node.lineno,
-                            "line_end": node.end_lineno
-                            if hasattr(node, "end_lineno")
-                            else "unknown",
-                            "methods": [
-                                n.name
-                                for n in node.body
-                                if isinstance(n, ast.FunctionDef)
-                            ],
+                            "line_end": node.end_lineno if hasattr(node, "end_lineno") else "unknown",
+                            "methods": [n.name for n in node.body if isinstance(n, ast.FunctionDef)],
                         }
                         classes.append(class_info)
                     elif isinstance(node, ast.FunctionDef):
                         func_info = {
                             "name": node.name,
                             "line_start": node.lineno,
-                            "line_end": node.end_lineno
-                            if hasattr(node, "end_lineno")
-                            else "unknown",
+                            "line_end": node.end_lineno if hasattr(node, "end_lineno") else "unknown",
                             "args": [arg.arg for arg in node.args.args],
                         }
                         functions.append(func_info)
@@ -103,17 +91,14 @@ class DetailedTechnicalDebtAssessment:
             try:
                 cc_results = radon_cc.cc_visit(content)
                 max_complexity = max(
-                    [result.complexity for result in cc_results], default=0
+                    [result.complexity for result in cc_results],
+                    default=0,
                 )
                 avg_complexity = (
-                    sum([result.complexity for result in cc_results]) / len(cc_results)
-                    if cc_results
-                    else 0
+                    sum([result.complexity for result in cc_results]) / len(cc_results) if cc_results else 0
                 )
 
-                complex_functions = [
-                    result for result in cc_results if result.complexity > 10
-                ]
+                complex_functions = [result for result in cc_results if result.complexity > 10]
 
             except Exception:
                 cc_results = []
@@ -130,16 +115,14 @@ class DetailedTechnicalDebtAssessment:
             # 代码质量指标
             quality_metrics = {
                 "maintainability_index": self._calculate_maintainability_index(
-                    cc_results
+                    cc_results,
                 ),
                 "documentation_ratio": self._calculate_documentation_ratio(
-                    classes, functions
+                    classes,
+                    functions,
                 ),
                 "function_length_avg": self._calculate_avg_function_length(functions),
-                "class_method_avg": len([f for f in functions if "." in f["name"]])
-                / len(classes)
-                if classes
-                else 0,
+                "class_method_avg": len([f for f in functions if "." in f["name"]]) / len(classes) if classes else 0,
             }
 
             return {
@@ -175,17 +158,20 @@ class DetailedTechnicalDebtAssessment:
                 "test_coverage": test_coverage,
                 "quality_metrics": quality_metrics,
                 "risk_assessment": self._assess_risks(
-                    max_complexity, len(classes), len(functions), dependencies
+                    max_complexity,
+                    len(classes),
+                    len(functions),
+                    dependencies,
                 ),
             }
 
         except Exception as e:
-            return {"file_path": file_path, "error": f"Analysis failed: {str(e)}"}
+            return {"file_path": file_path, "error": f"Analysis failed: {e!s}"}
 
     def _analyze_dependencies(self, file_path: str) -> Dict[str, Any]:
         """分析文件依赖"""
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             # 解析导入语句
@@ -201,7 +187,7 @@ class DetailedTechnicalDebtAssessment:
                 if isinstance(node, ast.Import):
                     for alias in node.names:
                         if alias.name.startswith(
-                            ("src.", "core.", "adapters.", "monitoring.")
+                            ("src.", "core.", "adapters.", "monitoring."),
                         ):
                             internal_deps.append(alias.name)
                         elif alias.name in [
@@ -245,12 +231,12 @@ class DetailedTechnicalDebtAssessment:
                 "external_dependencies": list(set(external_deps)),
                 "standard_dependencies": list(set(standard_deps)),
                 "total_dependencies": len(
-                    set(internal_deps + external_deps + standard_deps)
+                    set(internal_deps + external_deps + standard_deps),
                 ),
             }
 
         except Exception as e:
-            return {"error": f"Dependency analysis failed: {str(e)}"}
+            return {"error": f"Dependency analysis failed: {e!s}"}
 
     def _get_project_modules(self) -> List[str]:
         """获取项目模块列表"""
@@ -262,7 +248,8 @@ class DetailedTechnicalDebtAssessment:
                 for file in files:
                     if file.endswith(".py") and not file.startswith("__"):
                         rel_path = os.path.relpath(
-                            os.path.join(root, file), self.project_root
+                            os.path.join(root, file),
+                            self.project_root,
                         )
                         module_path = rel_path[:-3].replace(os.sep, ".")
                         modules.append(module_path)
@@ -299,16 +286,16 @@ class DetailedTechnicalDebtAssessment:
         test_methods = []
         for test_file in test_files:
             try:
-                with open(test_file, "r", encoding="utf-8") as f:
+                with open(test_file, encoding="utf-8") as f:
                     content = f.read()
 
                 tree = ast.parse(content)
                 for node in ast.walk(tree):
                     if isinstance(node, ast.FunctionDef) and node.name.startswith(
-                        "test_"
+                        "test_",
                     ):
                         test_methods.append(
-                            {"name": node.name, "file": test_file, "line": node.lineno}
+                            {"name": node.name, "file": test_file, "line": node.lineno},
                         )
             except Exception:
                 continue
@@ -317,11 +304,7 @@ class DetailedTechnicalDebtAssessment:
             "test_files_found": test_files,
             "test_methods_count": len(test_methods),
             "test_methods": test_methods[:10],  # 只显示前10个
-            "coverage_estimate": "high"
-            if len(test_methods) > 10
-            else "medium"
-            if len(test_methods) > 3
-            else "low",
+            "coverage_estimate": "high" if len(test_methods) > 10 else "medium" if len(test_methods) > 3 else "low",
         }
 
     def _calculate_maintainability_index(self, cc_results) -> float:
@@ -349,10 +332,7 @@ class DetailedTechnicalDebtAssessment:
             documented = 0
             for item in classes + functions:
                 # 简化检查：如果类/函数名称暗示其功能，认为有一定文档价值
-                if any(
-                    keyword in item["name"].lower()
-                    for keyword in ["test", "init", "main", "run"]
-                ):
+                if any(keyword in item["name"].lower() for keyword in ["test", "init", "main", "run"]):
                     documented += 1
 
             return (documented / total_items) * 100
@@ -445,7 +425,7 @@ class DetailedTechnicalDebtAssessment:
         report_lines.append("# 详细技术债务复杂度评估报告")
         report_lines.append("")
         report_lines.append(
-            f"**评估时间**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+            f"**评估时间**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         )
         report_lines.append(f"**评估文件数**: {len(file_paths)}")
         report_lines.append("")
@@ -483,7 +463,7 @@ class DetailedTechnicalDebtAssessment:
                 report_lines.append("**类列表**:")
                 for cls in structure_info["classes"]:
                     report_lines.append(
-                        f"- {cls['name']} (行 {cls['line_start']}-{cls['line_end']}, 方法: {len(cls['methods'])})"
+                        f"- {cls['name']} (行 {cls['line_start']}-{cls['line_end']}, 方法: {len(cls['methods'])})",
                     )
                 report_lines.append("")
 
@@ -492,20 +472,18 @@ class DetailedTechnicalDebtAssessment:
             report_lines.append("### ⚠️ 复杂度分析")
             report_lines.append(f"- 最高复杂度: {complexity_info['max_complexity']}")
             report_lines.append(
-                f"- 平均复杂度: {complexity_info['avg_complexity']:.2f}"
+                f"- 平均复杂度: {complexity_info['avg_complexity']:.2f}",
             )
             report_lines.append(
-                f"- 复杂函数数量: {complexity_info['complex_functions']}"
+                f"- 复杂函数数量: {complexity_info['complex_functions']}",
             )
             report_lines.append("")
 
             if complexity_info["complex_functions_detail"]:
                 report_lines.append("**高复杂度函数** (复杂度 > 10):")
-                for func in complexity_info["complex_functions_detail"][
-                    :5
-                ]:  # 只显示前5个
+                for func in complexity_info["complex_functions_detail"][:5]:  # 只显示前5个
                     report_lines.append(
-                        f"- {func['name']}: {func['complexity']} (行 {func['line']})"
+                        f"- {func['name']}: {func['complexity']} (行 {func['line']})",
                     )
                 report_lines.append("")
 
@@ -515,13 +493,13 @@ class DetailedTechnicalDebtAssessment:
                 report_lines.append("### 🔗 依赖分析")
                 report_lines.append(f"- 总依赖数: {dep_info['total_dependencies']}")
                 report_lines.append(
-                    f"- 内部依赖: {len(dep_info['internal_dependencies'])}"
+                    f"- 内部依赖: {len(dep_info['internal_dependencies'])}",
                 )
                 report_lines.append(
-                    f"- 外部依赖: {len(dep_info['external_dependencies'])}"
+                    f"- 外部依赖: {len(dep_info['external_dependencies'])}",
                 )
                 report_lines.append(
-                    f"- 标准库依赖: {len(dep_info['standard_dependencies'])}"
+                    f"- 标准库依赖: {len(dep_info['standard_dependencies'])}",
                 )
                 report_lines.append("")
 
@@ -537,13 +515,13 @@ class DetailedTechnicalDebtAssessment:
             quality_info = result["quality_metrics"]
             report_lines.append("### 📈 质量指标")
             report_lines.append(
-                f"- 可维护性指数: {quality_info['maintainability_index']:.1f}/100"
+                f"- 可维护性指数: {quality_info['maintainability_index']:.1f}/100",
             )
             report_lines.append(
-                f"- 文档覆盖率: {quality_info['documentation_ratio']:.1f}%"
+                f"- 文档覆盖率: {quality_info['documentation_ratio']:.1f}%",
             )
             report_lines.append(
-                f"- 平均函数长度: {quality_info['function_length_avg']:.1f} 行"
+                f"- 平均函数长度: {quality_info['function_length_avg']:.1f} 行",
             )
             report_lines.append("")
 
@@ -553,7 +531,7 @@ class DetailedTechnicalDebtAssessment:
             report_lines.append(f"- 风险等级: **{risk_info['risk_level']}**")
             report_lines.append(f"- 风险评分: {risk_info['risk_score']}/10")
             report_lines.append(
-                f"- 重构优先级: **{risk_info['refactoring_priority']}**"
+                f"- 重构优先级: **{risk_info['refactoring_priority']}**",
             )
             report_lines.append("")
 
@@ -579,10 +557,13 @@ def main():
 
     parser = argparse.ArgumentParser(description="详细技术债务复杂度评估")
     parser.add_argument(
-        "--target", required=True, help="目标文件路径 (支持多个文件，用逗号分隔)"
+        "--target",
+        required=True,
+        help="目标文件路径 (支持多个文件，用逗号分隔)",
     )
     parser.add_argument(
-        "--output", help="输出报告路径 (默认: detailed_technical_debt_assessment.md)"
+        "--output",
+        help="输出报告路径 (默认: detailed_technical_debt_assessment.md)",
     )
     parser.add_argument("--detailed", action="store_true", help="生成详细报告")
 

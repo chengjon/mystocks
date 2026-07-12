@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-增强版AI测试生成器
+"""增强版AI测试生成器
 提供更智能的测试算法、模式识别和优化建议
 
 核心功能:
@@ -16,16 +15,18 @@
 """
 
 import ast
+import logging
 import re
 import sys
-from pathlib import Path
-from typing import Dict, List, Tuple, Any
 from dataclasses import dataclass
-import logging
+from pathlib import Path
+from typing import Any, Dict, List
+
 
 # 设置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -142,7 +143,7 @@ class EnhancedCodeAnalyzer:
     def analyze_code_patterns(self, source_file: str) -> List[CodePattern]:
         """分析代码模式"""
         try:
-            with open(source_file, "r", encoding="utf-8") as f:
+            with open(source_file, encoding="utf-8") as f:
                 source_code = f.read()
 
             tree = ast.parse(source_code)
@@ -151,13 +152,17 @@ class EnhancedCodeAnalyzer:
             # 分析AST模式
             for pattern_type, pattern_info in self.patterns.items():
                 pattern_matches = self._find_pattern_matches(
-                    source_code, pattern_type, pattern_info
+                    source_code,
+                    pattern_type,
+                    pattern_info,
                 )
 
                 for match in pattern_matches:
                     # 计算复杂度评分
                     complexity_score = self._calculate_pattern_complexity(
-                        source_code, match["start_line"], match["end_line"]
+                        source_code,
+                        match["start_line"],
+                        match["end_line"],
                     )
 
                     # 评估风险等级
@@ -179,7 +184,10 @@ class EnhancedCodeAnalyzer:
             return []
 
     def _find_pattern_matches(
-        self, source_code: str, pattern_type: str, pattern_info: Dict
+        self,
+        source_code: str,
+        pattern_type: str,
+        pattern_info: Dict,
     ) -> List[Dict]:
         """查找模式匹配"""
         matches = []
@@ -203,13 +211,16 @@ class EnhancedCodeAnalyzer:
                         "start_line": start_line,
                         "end_line": end_line,
                         "confidence": pattern_info["weight"],
-                    }
+                    },
                 )
 
         return regex_matches
 
     def _calculate_pattern_complexity(
-        self, source_code: str, start_line: int, end_line: int
+        self,
+        source_code: str,
+        start_line: int,
+        end_line: int,
     ) -> float:
         """计算模式复杂度"""
         lines = source_code.split("\n")
@@ -236,7 +247,7 @@ class EnhancedCodeAnalyzer:
         # 复杂表达式
         complex_expressions = 0
         for line in pattern_lines:
-            if "if" in line and "and" in line or "or" in line:
+            if ("if" in line and "and" in line) or "or" in line:
                 complex_expressions += 1
             if line.count("(") > 2 or line.count("[") > 2:
                 complex_expressions += 1
@@ -255,15 +266,14 @@ class EnhancedCodeAnalyzer:
         ]:
             if complexity_score > 7:
                 return "critical"
-            elif complexity_score > 4:
+            if complexity_score > 4:
                 return "high"
-            elif complexity_score > 2:
+            if complexity_score > 2:
                 return "medium"
-        else:
-            if complexity_score > 8:
-                return "high"
-            elif complexity_score > 4:
-                return "medium"
+        elif complexity_score > 8:
+            return "high"
+        elif complexity_score > 4:
+            return "medium"
 
         return "low"
 
@@ -272,7 +282,7 @@ class EnhancedCodeAnalyzer:
         bugs = []
 
         try:
-            with open(source_file, "r", encoding="utf-8") as f:
+            with open(source_file, encoding="utf-8") as f:
                 source_code = f.read()
 
             for bug_type, bug_info in self.bug_patterns.items():
@@ -285,7 +295,8 @@ class EnhancedCodeAnalyzer:
 
                         # 检查是否有防护措施
                         has_protection = self._check_protection_measures(
-                            context, bug_info
+                            context,
+                            bug_info,
                         )
 
                         if not has_protection:
@@ -297,7 +308,7 @@ class EnhancedCodeAnalyzer:
                                     "risk_score": bug_info["risk_score"],
                                     "description": self._get_bug_description(bug_type),
                                     "suggestion": self._get_bug_suggestion(bug_type),
-                                }
+                                },
                             )
 
             return sorted(bugs, key=lambda b: b["risk_score"], reverse=True)
@@ -346,7 +357,10 @@ class EnhancedCodeAnalyzer:
         return suggestions.get(bug_type, "请仔细检查代码逻辑")
 
     def generate_enhanced_tests(
-        self, source_file: str, patterns: List[CodePattern], bugs: List[Dict]
+        self,
+        source_file: str,
+        patterns: List[CodePattern],
+        bugs: List[Dict],
     ) -> List[TestCase]:
         """生成增强测试用例"""
         test_cases = []
@@ -357,15 +371,15 @@ class EnhancedCodeAnalyzer:
                 test_cases.extend(self._generate_validation_tests(pattern, source_file))
             elif pattern.pattern_type == "error_handling":
                 test_cases.extend(
-                    self._generate_error_handling_tests(pattern, source_file)
+                    self._generate_error_handling_tests(pattern, source_file),
                 )
             elif pattern.pattern_type == "data_processing":
                 test_cases.extend(
-                    self._generate_data_processing_tests(pattern, source_file)
+                    self._generate_data_processing_tests(pattern, source_file),
                 )
             elif pattern.pattern_type == "file_operations":
                 test_cases.extend(
-                    self._generate_file_operation_tests(pattern, source_file)
+                    self._generate_file_operation_tests(pattern, source_file),
                 )
             elif pattern.pattern_type == "database_operations":
                 test_cases.extend(self._generate_database_tests(pattern, source_file))
@@ -384,13 +398,17 @@ class EnhancedCodeAnalyzer:
 
         # 按优先级排序
         test_cases = sorted(
-            test_cases, key=lambda t: self._get_test_priority_score(t), reverse=True
+            test_cases,
+            key=lambda t: self._get_test_priority_score(t),
+            reverse=True,
         )
 
         return test_cases[:20]  # 限制最多20个测试用例
 
     def _generate_validation_tests(
-        self, pattern: CodePattern, source_file: str
+        self,
+        pattern: CodePattern,
+        source_file: str,
     ) -> List[TestCase]:
         """生成验证测试"""
         tests = []
@@ -428,13 +446,15 @@ class EnhancedCodeAnalyzer:
                     coverage_target=[f"lines:{start_line}-{end_line}"],
                     test_type="unit",
                     estimated_time=2.0,
-                )
+                ),
             )
 
         return tests
 
     def _generate_error_handling_tests(
-        self, pattern: CodePattern, source_file: str
+        self,
+        pattern: CodePattern,
+        source_file: str,
     ) -> List[TestCase]:
         """生成错误处理测试"""
         tests = []
@@ -477,13 +497,15 @@ class EnhancedCodeAnalyzer:
                     coverage_target=[f"lines:{start_line}-{end_line}"],
                     test_type="unit",
                     estimated_time=3.0,
-                )
+                ),
             )
 
         return tests
 
     def _generate_data_processing_tests(
-        self, pattern: CodePattern, source_file: str
+        self,
+        pattern: CodePattern,
+        source_file: str,
     ) -> List[TestCase]:
         """生成数据处理测试"""
         tests = []
@@ -531,13 +553,15 @@ class EnhancedCodeAnalyzer:
                     coverage_target=[f"lines:{start_line}-{end_line}"],
                     test_type="performance",
                     estimated_time=5.0,
-                )
+                ),
             )
 
         return tests
 
     def _generate_file_operation_tests(
-        self, pattern: CodePattern, source_file: str
+        self,
+        pattern: CodePattern,
+        source_file: str,
     ) -> List[TestCase]:
         """生成文件操作测试"""
         tests = []
@@ -589,7 +613,7 @@ class EnhancedCodeAnalyzer:
                     coverage_target=[f"lines:{start_line}-{end_line}"],
                     test_type="integration",
                     estimated_time=3.0,
-                )
+                ),
             )
 
         return tests

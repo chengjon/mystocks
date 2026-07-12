@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
+import json
 import os
 import sys
-import json
 from datetime import datetime
+
 
 # 配置文件数量阈值
 MAX_NEW_FILES = 10
@@ -38,7 +39,7 @@ def update_baseline(count):
     """更新基线文件"""
     baseline = {}
     if os.path.exists(BASELINE_FILE):
-        with open(BASELINE_FILE, "r") as f:
+        with open(BASELINE_FILE) as f:
             baseline = json.load(f)
 
     baseline["last_count"] = count
@@ -53,7 +54,7 @@ def get_baseline():
     if not os.path.exists(BASELINE_FILE):
         return None
 
-    with open(BASELINE_FILE, "r") as f:
+    with open(BASELINE_FILE) as f:
         baseline = json.load(f)
         return baseline.get("last_count")
 

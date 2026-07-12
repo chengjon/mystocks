@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-启动数据源Prometheus监控指标服务器
+"""启动数据源Prometheus监控指标服务器
 
 功能：
 1. 启动Prometheus metrics HTTP服务器（端口8001）
@@ -28,10 +27,11 @@
 创建时间：2026-01-02
 """
 
-import sys
-import os
 import logging
+import os
+import sys
 from pathlib import Path
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -39,28 +39,24 @@ sys.path.insert(0, str(project_root))
 LOG_DIR = project_root / "var" / "log"
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 
-from src.monitoring.data_source_metrics import (
-    DataSourceMetricsExporter,
-    start_metrics_server
-)
 from src.core.data_source_manager_v2 import DataSourceManagerV2
+from src.monitoring.data_source_metrics import DataSourceMetricsExporter, start_metrics_server
 
 
 def setup_logging():
     """配置日志"""
     logging.basicConfig(
         level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
         handlers=[
             logging.StreamHandler(sys.stdout),
-            logging.FileHandler(LOG_DIR / 'metrics_server.log')
-        ]
+            logging.FileHandler(LOG_DIR / "metrics_server.log"),
+        ],
     )
 
 
 def initialize_data_source_metrics():
-    """
-    初始化所有数据源的metrics
+    """初始化所有数据源的metrics
 
     从PostgreSQL注册表加载所有数据源，为每个数据源初始化Prometheus metrics
     """
@@ -84,20 +80,20 @@ def initialize_data_source_metrics():
         initialized = 0
         for endpoint_name, source_data in all_sources.items():
             try:
-                config = source_data.get('config', {})
+                config = source_data.get("config", {})
 
                 # 初始化metrics
                 exporter.init_source_metrics(
                     endpoint_name=endpoint_name,
-                    source_name=config.get('source_name', ''),
-                    data_category=config.get('data_category', ''),
-                    source_type=config.get('source_type', ''),
-                    classification_level=config.get('classification_level', ''),
-                    target_db=config.get('target_db', ''),
-                    table_name=config.get('table_name', ''),
-                    description=config.get('description', ''),
-                    priority=config.get('priority', 10),
-                    status=config.get('status', 'unknown')
+                    source_name=config.get("source_name", ""),
+                    data_category=config.get("data_category", ""),
+                    source_type=config.get("source_type", ""),
+                    classification_level=config.get("classification_level", ""),
+                    target_db=config.get("target_db", ""),
+                    table_name=config.get("table_name", ""),
+                    description=config.get("description", ""),
+                    priority=config.get("priority", 10),
+                    status=config.get("status", "unknown"),
                 )
 
                 initialized += 1
@@ -118,6 +114,7 @@ def initialize_data_source_metrics():
     except Exception as e:
         logger.error(f"初始化数据源metrics失败: {e}")
         import traceback
+
         traceback.print_exc()
         return None
 
@@ -128,7 +125,7 @@ def main():
     logger = logging.getLogger(__name__)
 
     # 确保日志目录存在
-    Path('logs').mkdir(exist_ok=True)
+    Path("logs").mkdir(exist_ok=True)
 
     logger.info("")
     logger.info("╔══════════════════════════════════════════════════════╗")
@@ -137,7 +134,7 @@ def main():
     logger.info("")
 
     # 获取端口配置
-    metrics_port = int(os.getenv('METRICS_PORT', '8001'))
+    metrics_port = int(os.getenv("METRICS_PORT", "8001"))
 
     logger.info("配置信息:")
     logger.info(f"  - Metrics端口: {metrics_port}")
@@ -175,9 +172,10 @@ def main():
     except Exception as e:
         logger.error(f"服务器错误: {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

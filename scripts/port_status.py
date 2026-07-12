@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-MyStocks 端口服务状态展示脚本
+"""MyStocks 端口服务状态展示脚本
 展示3000-3010端口上的服务运行状态
 """
 
-import requests
-import socket
 import os
+import socket
 from datetime import datetime
+
+import requests
+
 
 FRONTEND_PORT = int(os.getenv("FRONTEND_PORT", "3020"))
 FRONTEND_BACKUP_PORT = int(os.getenv("FRONTEND_BACKUP_PORT", "3021"))
@@ -123,7 +123,7 @@ def show_port_status():
     else:
         print(f"⚠️ 后端服务 (端口 {BACKEND_PORT}): 未运行")
         print(
-            f"   启动命令: cd /opt/claude/mystocks_spec/web/backend && uvicorn app.main:app --reload --host 0.0.0.0 --port {BACKEND_PORT}"
+            f"   启动命令: cd /opt/claude/mystocks_spec/web/backend && uvicorn app.main:app --reload --host 0.0.0.0 --port {BACKEND_PORT}",
         )
         print()
 

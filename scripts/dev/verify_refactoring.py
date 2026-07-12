@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-MyStocks 量化交易数据管理系统 - 重构验证脚本
+"""MyStocks 量化交易数据管理系统 - 重构验证脚本
 
 验证代码拆分后的模块化实现是否正常工作
 
@@ -10,9 +8,10 @@ MyStocks 量化交易数据管理系统 - 重构验证脚本
 日期: 2025-11-25
 """
 
+import os
 import sys
 import traceback
-import os
+
 
 # 添加项目路径
 project_root = os.path.dirname(os.path.abspath(__file__))
@@ -21,10 +20,10 @@ sys.path.insert(0, project_root)
 # 导入模块化后的类
 try:
     from src.storage.access.data_access import (
-        TDengineDataAccess,
-        PostgreSQLDataAccess,
         MySQLDataAccess,
+        PostgreSQLDataAccess,
         RedisDataAccess,
+        TDengineDataAccess,
     )
 
     print("✅ 成功导入模块化后的数据访问类")
@@ -109,10 +108,10 @@ def verify_backward_compatibility():
         # 尝试从新模块导入，使用旧的导入方式
         from src.storage.access.data_access import (
             IDataAccess,
-            TDengineAccess,
-            PostgreSQLAccess,
             MySQLAccess,
+            PostgreSQLAccess,
             RedisAccess,
+            TDengineAccess,
         )
 
         print("✅ 向后兼容的别名导入成功")
@@ -197,9 +196,8 @@ def main():
     if all_passed:
         print("\n🎉 所有验证测试通过！模块化重构成功。")
         return 0
-    else:
-        print("\n⚠️ 存在失败的验证测试，请检查错误信息。")
-        return 1
+    print("\n⚠️ 存在失败的验证测试，请检查错误信息。")
+    return 1
 
 
 if __name__ == "__main__":

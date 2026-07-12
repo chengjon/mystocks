@@ -7,10 +7,11 @@ import argparse
 import json
 import re
 import subprocess
+from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import date, datetime, timezone
 from pathlib import Path
-from typing import Iterable
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_BASELINE = PROJECT_ROOT / "reports/analysis/tech-debt-baseline.json"
@@ -134,7 +135,7 @@ def extract_marker_violations(base_sha: str | None, as_of: date) -> list[MarkerV
                         path=rel_path,
                         line=index,
                         message=f"missing metadata fields: {', '.join(missing_fields)}",
-                    )
+                    ),
                 )
                 continue
 
@@ -149,7 +150,7 @@ def extract_marker_violations(base_sha: str | None, as_of: date) -> list[MarkerV
                         path=rel_path,
                         line=index,
                         message=f"expired ttl: {ttl.isoformat()} < {as_of.isoformat()}",
-                    )
+                    ),
                 )
     return violations
 
@@ -189,7 +190,7 @@ def collect_large_files(threshold: int) -> list[dict]:
                     {
                         "path": path.relative_to(PROJECT_ROOT).as_posix(),
                         "lines": lines,
-                    }
+                    },
                 )
     return results
 
@@ -247,7 +248,7 @@ def render_weekly_report(metrics: dict, kpi: dict, hotspots: list[dict], ttl_vio
             "- owners should remediate expired markers before merge",
             "- baseline updates are allowed only if metrics are non-increasing",
             "",
-        ]
+        ],
     )
     return "\n".join(lines)
 

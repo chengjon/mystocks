@@ -1,13 +1,12 @@
 # scripts/dev/cli_coordinator.py
 
-"""
-CLI协调器 - 基础类
-"""
+"""CLI协调器 - 基础类"""
 
-import sys
 import os
-from pathlib import Path
+import sys
 from datetime import datetime
+from pathlib import Path
+
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -24,7 +23,7 @@ class CLICoordinator:
         statuses = {}
 
         for cli_dir in self.clis_dir.iterdir():
-            if cli_dir.is_dir() and cli_dir.name not in ['locks', 'SHARED', 'templates', 'main']:
+            if cli_dir.is_dir() and cli_dir.name not in ["locks", "SHARED", "templates", "main"]:
                 status_file = cli_dir / "STATUS.md"
                 if status_file.exists():
                     statuses[cli_dir.name] = self._parse_status(status_file)
@@ -37,33 +36,33 @@ class CLICoordinator:
 
         # 解析状态字段
         status = {
-            'name': status_file.parent.name,
-            'state': 'unknown',
-            'current_task': None,
-            'last_update': None,
-            'blocked_on': None,
-            'waiting_time': 0,
-            'error': None
+            "name": status_file.parent.name,
+            "state": "unknown",
+            "current_task": None,
+            "last_update": None,
+            "blocked_on": None,
+            "waiting_time": 0,
+            "error": None,
         }
 
-        for line in content.split('\n'):
-            if line.startswith('**State**:'):
-                status['state'] = line.split(':', 1)[1].strip().split()[0]
-            elif line.startswith('**Current Task**:'):
-                status['current_task'] = line.split(':', 1)[1].strip()
-            elif line.startswith('**last_update**:'):
-                status['last_update'] = line.split(':', 1)[1].strip()
-            elif line.startswith('**Blocked On**:'):
-                status['blocked_on'] = line.split(':', 1)[1].strip()
-            elif line.startswith('**error**:'):
-                status['error'] = line.split(':', 1)[1].strip()
+        for line in content.split("\n"):
+            if line.startswith("**State**:"):
+                status["state"] = line.split(":", 1)[1].strip().split()[0]
+            elif line.startswith("**Current Task**:"):
+                status["current_task"] = line.split(":", 1)[1].strip()
+            elif line.startswith("**last_update**:"):
+                status["last_update"] = line.split(":", 1)[1].strip()
+            elif line.startswith("**Blocked On**:"):
+                status["blocked_on"] = line.split(":", 1)[1].strip()
+            elif line.startswith("**error**:"):
+                status["error"] = line.split(":", 1)[1].strip()
 
         # 计算等待时间
-        if status['last_update']:
+        if status["last_update"]:
             try:
-                last_update = datetime.strptime(status['last_update'], '%Y-%m-%d %H:%M:%S')
+                last_update = datetime.strptime(status["last_update"], "%Y-%m-%d %H:%M:%S")
                 waiting_time = (datetime.now() - last_update).total_seconds() / 60
-                status['waiting_time'] = waiting_time
+                status["waiting_time"] = waiting_time
             except:
                 pass
 
@@ -77,23 +76,23 @@ class CLICoordinator:
             return None
 
         info = {
-            'name': cli_name,
-            'exists': True,
-            'has_task': (cli_dir / "TASK.md").exists(),
-            'has_rules': (cli_dir / "RULES.md").exists(),
-            'has_status': (cli_dir / "STATUS.md").exists(),
-            'has_report': (cli_dir / "REPORT.md").exists(),
-            'has_mailbox': (cli_dir / "mailbox").exists(),
-            'has_archive': (cli_dir / "archive").exists(),
-            'has_config': (cli_dir / ".cli_config").exists()
+            "name": cli_name,
+            "exists": True,
+            "has_task": (cli_dir / "TASK.md").exists(),
+            "has_rules": (cli_dir / "RULES.md").exists(),
+            "has_status": (cli_dir / "STATUS.md").exists(),
+            "has_report": (cli_dir / "REPORT.md").exists(),
+            "has_mailbox": (cli_dir / "mailbox").exists(),
+            "has_archive": (cli_dir / "archive").exists(),
+            "has_config": (cli_dir / ".cli_config").exists(),
         }
 
         # 解析状态
         status_file = cli_dir / "STATUS.md"
         if status_file.exists():
-            info['status'] = self._parse_status(status_file)
+            info["status"] = self._parse_status(status_file)
         else:
-            info['status'] = None
+            info["status"] = None
 
         return info
 
@@ -102,22 +101,22 @@ class CLICoordinator:
         mailbox_dir = self.clis_dir / to_cli / "mailbox"
         mailbox_dir.mkdir(parents=True, exist_ok=True)
 
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         message_file = mailbox_dir / f"main_{timestamp}.md"
 
-        with open(message_file, 'w', encoding='utf-8') as f:
+        with open(message_file, "w", encoding="utf-8") as f:
             f.write(message)
 
         return True, f"消息已发送到 {to_cli}"
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description='CLI协调器')
-    parser.add_argument('--scan', action='store_true', help='扫描所有CLI状态')
-    parser.add_argument('--info', help='获取指定CLI信息')
-    parser.add_argument('--clis-dir', default='CLIS', help='CLI目录')
+    parser = argparse.ArgumentParser(description="CLI协调器")
+    parser.add_argument("--scan", action="store_true", help="扫描所有CLI状态")
+    parser.add_argument("--info", help="获取指定CLI信息")
+    parser.add_argument("--clis-dir", default="CLIS", help="CLI目录")
 
     args = parser.parse_args()
 
@@ -149,7 +148,7 @@ if __name__ == '__main__':
             print(f"  archive: {'✅' if info['has_archive'] else '❌'}")
             print(f"  .cli_config: {'✅' if info['has_config'] else '❌'}")
 
-            if info['status']:
+            if info["status"]:
                 print(f"\n  状态: {info['status']['state']}")
                 print(f"  任务: {info['status']['current_task'] or '无'}")
         else:

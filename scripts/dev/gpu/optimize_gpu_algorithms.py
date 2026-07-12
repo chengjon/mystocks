@@ -1,22 +1,21 @@
 #!/usr/bin/env python3
-"""
-优化GPU核心算法
+"""优化GPU核心算法
 Phase 6.3.4 - GPU核心算法优化
 
 优化大矩阵操作算法，提升计算性能
 """
 
 import re
-from pathlib import Path
-from typing import Dict, Any
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict
 
 
 class GPUAlgorithmOptimizer:
     """GPU算法优化器"""
 
     def __init__(self):
-        self.project_root = Path(".")
+        self.project_root = Path()
         self.matrix_kernel_path = "src/gpu/core/kernels/matrix_kernels.py"
         self.optimizations_applied = []
 
@@ -49,7 +48,7 @@ class GPUAlgorithmOptimizer:
     def _optimize_matrix_multiplication(self) -> bool:
         """优化矩阵乘法算法"""
         try:
-            with open(self.matrix_kernel_path, "r", encoding="utf-8") as f:
+            with open(self.matrix_kernel_path, encoding="utf-8") as f:
                 content = f.read()
 
             # 检查是否需要优化
@@ -196,7 +195,7 @@ class GPUAlgorithmOptimizer:
     def _add_parallel_optimization(self) -> bool:
         """添加并行计算优化"""
         try:
-            with open(self.matrix_kernel_path, "r", encoding="utf-8") as f:
+            with open(self.matrix_kernel_path, encoding="utf-8") as f:
                 content = f.read()
 
             # 检查是否已有并行优化
@@ -270,7 +269,7 @@ class GPUAlgorithmOptimizer:
     def _optimize_memory_access_patterns(self) -> bool:
         """优化内存访问模式"""
         try:
-            with open(self.matrix_kernel_path, "r", encoding="utf-8") as f:
+            with open(self.matrix_kernel_path, encoding="utf-8") as f:
                 content = f.read()
 
             # 检查是否已有内存访问优化
@@ -340,9 +339,7 @@ class GPUAlgorithmOptimizer:
             "total_optimizations": len(self.optimizations_applied),
             "success_rate": len(self.optimizations_applied) / 5.0,  # 总共5个优化步骤
             "summary": {
-                "status": "completed"
-                if len(self.optimizations_applied) >= 3
-                else "partial",
+                "status": "completed" if len(self.optimizations_applied) >= 3 else "partial",
                 "key_improvements": [
                     "Optimized matrix multiplication with algorithm selection",
                     "Added Strassen algorithm for large square matrices",
@@ -369,7 +366,7 @@ class GPUAlgorithmOptimizer:
         summary = report["summary"]
         print(f"📈 优化状态: {summary['status']}")
         print(
-            f"✅ 应用优化: {report['total_optimizations']}/5 ({report['success_rate'] * 100:.1f}%)"
+            f"✅ 应用优化: {report['total_optimizations']}/5 ({report['success_rate'] * 100:.1f}%)",
         )
         print(f"🕒 优化时间: {report['optimization_timestamp']}")
 

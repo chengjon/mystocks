@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-数据源注册表同步脚本
+"""数据源注册表同步脚本
 
 功能：
 1. 将YAML配置同步到PostgreSQL数据库
@@ -26,14 +25,16 @@
 创建时间：2026-01-02
 """
 
-import sys
-import os
 import argparse
-import yaml
 import json
-import pandas as pd
-from pathlib import Path
+import os
+import sys
 from datetime import datetime
+from pathlib import Path
+
+import pandas as pd
+import yaml
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent
@@ -49,7 +50,7 @@ def load_yaml_config(yaml_path: str) -> dict:
     if not os.path.exists(yaml_path):
         raise FileNotFoundError(f"YAML配置文件不存在: {yaml_path}")
 
-    with open(yaml_path, "r", encoding="utf-8") as f:
+    with open(yaml_path, encoding="utf-8") as f:
         config = yaml.safe_load(f)
 
     print(f"✓ YAML版本: {config.get('version')}")
@@ -98,9 +99,8 @@ def validate_yaml_config(config: dict) -> bool:
         for error in errors:
             print(f"  - {error}")
         return False
-    else:
-        print(f"✓ 配置验证通过（{len(data_sources)}个数据源）")
-        return True
+    print(f"✓ 配置验证通过（{len(data_sources)}个数据源）")
+    return True
 
 
 def sync_to_database(config: dict, force: bool = False, dry_run: bool = False):
@@ -249,7 +249,7 @@ def sync_to_database(config: dict, force: bool = False, dry_run: bool = False):
             failed += 1
             print(f"  ✗ 失败: {endpoint_key}, 错误: {e}")
 
-    print(f"\n同步完成:")
+    print("\n同步完成:")
     print(f"  新增: {synced}")
     print(f"  更新: {updated}")
     print(f"  失败: {failed}")

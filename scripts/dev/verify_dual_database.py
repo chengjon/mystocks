@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-验证双数据库集成 - PostgreSQL + TDengine
+"""验证双数据库集成 - PostgreSQL + TDengine
 
 检查PostgreSQL和TDengine数据库连接、数据表和数据访问功能。
 """
@@ -9,6 +8,7 @@ import asyncio
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -57,7 +57,7 @@ async def verify_postgresql():
         }
 
     except Exception as e:
-        print(f"❌ PostgreSQL验证失败: {str(e)}")
+        print(f"❌ PostgreSQL验证失败: {e!s}")
         import traceback
 
         traceback.print_exc()
@@ -98,7 +98,7 @@ async def verify_tdengine():
         }
 
     except Exception as e:
-        print(f"❌ TDengine验证失败: {str(e)}")
+        print(f"❌ TDengine验证失败: {e!s}")
         import traceback
 
         traceback.print_exc()
@@ -112,7 +112,7 @@ async def verify_dual_db_architecture():
     print("=" * 60)
 
     try:
-        from src.core import DataClassification, DatabaseTarget, DataStorageStrategy
+        from src.core import DatabaseTarget, DataClassification, DataStorageStrategy
 
         print("✅ 导入架构模块成功")
 
@@ -140,7 +140,7 @@ async def verify_dual_db_architecture():
         return {"status": "success"}
 
     except Exception as e:
-        print(f"❌ 架构验证失败: {str(e)}")
+        print(f"❌ 架构验证失败: {e!s}")
         import traceback
 
         traceback.print_exc()
@@ -173,7 +173,7 @@ async def verify_data_adapters():
         }
 
     except Exception as e:
-        print(f"❌ 数据源适配器验证失败: {str(e)}")
+        print(f"❌ 数据源适配器验证失败: {e!s}")
         import traceback
 
         traceback.print_exc()

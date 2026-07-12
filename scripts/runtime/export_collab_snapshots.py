@@ -8,6 +8,7 @@ from typing import Any
 
 from pymongo.errors import OperationFailure
 
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -70,7 +71,9 @@ def export_work_item_snapshots(*, database: Any, output_dir: Path) -> list[Path]
     return written_paths
 
 
-def render_work_item_snapshot(*, work_item: dict[str, Any], updates: list[dict[str, Any]], requests: list[dict[str, Any]]) -> str:
+def render_work_item_snapshot(
+    *, work_item: dict[str, Any], updates: list[dict[str, Any]], requests: list[dict[str, Any]]
+) -> str:
     lines = [
         f"# {work_item['work_item_id']}",
         "",
@@ -193,7 +196,7 @@ def render_task_report_markdown(
     if updates:
         for update in updates:
             lines.append(
-                f"- `{update['created_at']}` [{update['status']}] {update['actor_cli']}: {update['summary']}"
+                f"- `{update['created_at']}` [{update['status']}] {update['actor_cli']}: {update['summary']}",
             )
     else:
         lines.append("- (none)")
@@ -202,7 +205,7 @@ def render_task_report_markdown(
     if requests:
         for request in requests:
             lines.append(
-                f"- `{request['created_at']}` [{request['status']}] {request['request_type']} by {request['actor_cli']}: {request['summary']}"
+                f"- `{request['created_at']}` [{request['status']}] {request['request_type']} by {request['actor_cli']}: {request['summary']}",
             )
     else:
         lines.append("- (none)")
@@ -215,7 +218,7 @@ def render_task_report_markdown(
             f"- server_status: `{graphiti_projection['server_status']}`",
             f"- ingest_status: `{graphiti_projection['ingest_status']}`",
             f"- search_summary: `{graphiti_projection['search_summary']}`",
-        ]
+        ],
     )
 
     if transcripts:
@@ -229,7 +232,7 @@ def render_task_report_markdown(
             archive_locator = transcript.get("archive_locator") or transcript.get("archive_ref") or "(none)"
             source = transcript.get("source", "ledger")
             lines.append(
-                f"- `{session_label}` | source=`{source}` | actor=`{actor_cli}` | kind=`{transcript_kind}` | started=`{started_at}` | hot_body=`{hot_body_available}` | archive_ref=`{archive_locator}`"
+                f"- `{session_label}` | source=`{source}` | actor=`{actor_cli}` | kind=`{transcript_kind}` | started=`{started_at}` | hot_body=`{hot_body_available}` | archive_ref=`{archive_locator}`",
             )
 
     detailed_updates = [update for update in updates if _has_structured_report_details(update.get("details"))]
@@ -241,7 +244,7 @@ def render_task_report_markdown(
                     "",
                     f"### `{update['created_at']}` [{update['status']}] {update['actor_cli']}",
                     f"- Summary: {update['summary']}",
-                ]
+                ],
             )
             details = update.get("details") or {}
             _append_optional_section(lines, "Scope", details.get("scope"), level=4)
@@ -383,5 +386,7 @@ def _extract_graphiti_projection(events: list[dict[str, Any]]) -> dict[str, str]
         "ingest_status": str(payload.get("ingest_status", "(none)")),
         "search_summary": str(payload.get("search_summary", "(none)")),
     }
+
+
 if __name__ == "__main__":
     raise SystemExit(main())

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AI测试优化器使用示例
+"""AI测试优化器使用示例
 演示如何使用现有的测试基础设施进行智能测试优化
 
 使用场景:
@@ -13,6 +12,7 @@ AI测试优化器使用示例
 import sys
 import time
 from pathlib import Path
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent
@@ -88,13 +88,9 @@ def demo_batch_optimization():
 
         print("\n📊 优化结果排序（按覆盖率升序）:")
         for i, result in enumerate(sorted_results, 1):
-            status = (
-                "✅"
-                if result.current_coverage >= optimizer.config["coverage_target"]
-                else "⚠️"
-            )
+            status = "✅" if result.current_coverage >= optimizer.config["coverage_target"] else "⚠️"
             print(
-                f"  {i}. {status} {result.module_name}: {result.current_coverage:.1f}% (质量: {result.quality_score:.1f})"
+                f"  {i}. {status} {result.module_name}: {result.current_coverage:.1f}% (质量: {result.quality_score:.1f})",
             )
 
         # 生成报告
@@ -143,13 +139,13 @@ def demo_integration_with_existing_tools():
             print("   📊 可用分类规则:")
             print(f"      - 核心功能指标: {len(classifier.core_indicators)} 条规则")
             print(
-                f"      - 辅助功能指标: {len(classifier.auxiliary_indicators)} 条规则"
+                f"      - 辅助功能指标: {len(classifier.auxiliary_indicators)} 条规则",
             )
             print(
-                f"      - 基础设施指标: {len(classifier.infrastructure_indicators)} 条规则"
+                f"      - 基础设施指标: {len(classifier.infrastructure_indicators)} 条规则",
             )
             print(
-                f"      - 监控功能指标: {len(classifier.monitoring_indicators)} 条规则"
+                f"      - 监控功能指标: {len(classifier.monitoring_indicators)} 条规则",
             )
             print(f"      - 工具功能指标: {len(classifier.utility_indicators)} 条规则")
 
@@ -304,7 +300,7 @@ def main():
 
     print("\n🚀 快速开始:")
     print(
-        "  python scripts/ai_test_optimizer.py src/adapters/*.py --batch --generate-tests"
+        "  python scripts/ai_test_optimizer.py src/adapters/*.py --batch --generate-tests",
     )
 
 

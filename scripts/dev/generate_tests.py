@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
-"""
-TDD测试生成脚本
+"""TDD测试生成脚本
 
 基于现有代码自动生成单元测试模板
 支持双循环TDD工作流
 """
 
+import argparse
 import ast
 import sys
 from pathlib import Path
 from typing import List, Tuple
-import argparse
 
 
 class TestGenerator:
@@ -34,23 +33,15 @@ class TestGenerator:
         # src/adapters/xxx.py -> tests/unit/adapters/test_xxx.py
         parts = self.source_file.parts
         if parts[0] == "src":
-            test_parts = (
-                ["tests", "unit"]
-                + list(parts[1:-1])
-                + [f"test_{self.source_file.stem}.py"]
-            )
+            test_parts = ["tests", "unit"] + list(parts[1:-1]) + [f"test_{self.source_file.stem}.py"]
         else:
-            test_parts = (
-                ["tests", "unit"]
-                + list(parts[:-1])
-                + [f"test_{self.source_file.stem}.py"]
-            )
+            test_parts = ["tests", "unit"] + list(parts[:-1]) + [f"test_{self.source_file.stem}.py"]
 
         return Path(*test_parts)
 
     def parse_source_code(self) -> ast.Module:
         """解析源代码"""
-        with open(self.source_file, "r", encoding="utf-8") as f:
+        with open(self.source_file, encoding="utf-8") as f:
             return ast.parse(f.read())
 
     def extract_classes_and_functions(self) -> List[Tuple[str, str, List[str]]]:
@@ -58,6 +49,7 @@ class TestGenerator:
 
         Returns:
             List of (name, type, methods/signatures)
+
         """
         tree = self.parse_source_code()
         items = []
@@ -88,9 +80,7 @@ class TestGenerator:
         if defaults > 0:
             for i, default in enumerate(node.args.defaults):
                 idx = len(node.args.args) - defaults + i
-                args[-1] += (
-                    f"={ast.unparse(default) if hasattr(ast, 'unparse') else '...'}"
-                )
+                args[-1] += f"={ast.unparse(default) if hasattr(ast, 'unparse') else '...'}"
 
         # *args
         if node.args.vararg:
@@ -102,9 +92,7 @@ class TestGenerator:
 
         signature = f"{node.name}({', '.join(args)})"
         if node.returns:
-            signature += (
-                f" -> {ast.unparse(node.returns) if hasattr(ast, 'unparse') else '...'}"
-            )
+            signature += f" -> {ast.unparse(node.returns) if hasattr(ast, 'unparse') else '...'}"
 
         return signature
 
@@ -278,19 +266,29 @@ if __name__ == "__main__":
 def main():
     """主函数"""
     parser = argparse.ArgumentParser(
-        description="TDD测试生成器 - 为源代码生成单元测试模板"
+        description="TDD测试生成器 - 为源代码生成单元测试模板",
     )
     parser.add_argument(
-        "source_file", help="源代码文件路径 (如: src/adapters/akshare_adapter.py)"
+        "source_file",
+        help="源代码文件路径 (如: src/adapters/akshare_adapter.py)",
     )
     parser.add_argument(
-        "--overwrite", "-o", action="store_true", help="覆盖已存在的测试文件"
+        "--overwrite",
+        "-o",
+        action="store_true",
+        help="覆盖已存在的测试文件",
     )
     parser.add_argument(
-        "--dry-run", "-n", action="store_true", help="只显示将要生成的内容，不保存文件"
+        "--dry-run",
+        "-n",
+        action="store_true",
+        help="只显示将要生成的内容，不保存文件",
     )
     parser.add_argument(
-        "--list", "-l", action="store_true", help="列出文件中的类和函数"
+        "--list",
+        "-l",
+        action="store_true",
+        help="列出文件中的类和函数",
     )
 
     args = parser.parse_args()

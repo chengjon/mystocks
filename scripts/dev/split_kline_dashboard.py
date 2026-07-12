@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-拆分nicegui_monitoring_dashboard_kline.py文件
+"""拆分nicegui_monitoring_dashboard_kline.py文件
 
 根据《代码文件长度优化规范》拆分大文件为模块化结构。
 
@@ -13,9 +11,10 @@
 """
 
 import os
-import sys
 import shutil
+import sys
 from datetime import datetime
+
 
 # 添加源码路径
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -29,13 +28,13 @@ COMPONENTS_DIR = os.path.join(TARGET_DIR, "components")
 def read_file(file_path):
     """读取文件内容"""
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, encoding="utf-8") as f:
             return f.read()
-    except (IOError, UnicodeDecodeError):
+    except (OSError, UnicodeDecodeError):
         try:
-            with open(file_path, 'r', encoding='gbk') as f:
+            with open(file_path, encoding="gbk") as f:
                 return f.read()
-        except (IOError, UnicodeDecodeError):
+        except (OSError, UnicodeDecodeError):
             return None
 
 
@@ -43,10 +42,10 @@ def write_file(file_path, content):
     """写入文件内容"""
     try:
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
-        with open(file_path, 'w', encoding='utf-8') as f:
+        with open(file_path, "w", encoding="utf-8") as f:
             f.write(content)
         return True
-    except IOError:
+    except OSError:
         return False
 
 
@@ -58,7 +57,7 @@ def extract_class_methods(code, class_name):
     class_pattern = rf"^class\s+{class_name}\s*\("
     class_start = None
 
-    for i, line in enumerate(code.split('\n')):
+    for i, line in enumerate(code.split("\n")):
         if re.match(class_pattern, line):
             class_start = i
             break
@@ -68,7 +67,7 @@ def extract_class_methods(code, class_name):
 
     # 查找类结束位置
     # 使用缩进级别判断类结束位置
-    lines = code.split('\n')
+    lines = code.split("\n")
     class_content = []
     class_indent = None
     class_end = None
@@ -95,14 +94,14 @@ def extract_class_methods(code, class_name):
     if class_end is None:
         class_content = lines[class_start:]
 
-    return '\n'.join(class_content)
+    return "\n".join(class_content)
 
 
 def extract_functions_by_pattern(code, pattern):
     """提取符合特定模式的函数"""
     import re
 
-    lines = code.split('\n')
+    lines = code.split("\n")
     functions = []
     current_function = []
     in_function = False
@@ -115,13 +114,15 @@ def extract_functions_by_pattern(code, pattern):
         if function_match:
             # 保存之前的函数
             if in_function and current_function:
-                function_name_match = re.search(r'def\s+([A-Za-z_]\w*)', current_function[0])
+                function_name_match = re.search(r"def\s+([A-Za-z_]\w*)", current_function[0])
                 if function_name_match:
-                    functions.append({
-                        'name': function_name_match.group(1),
-                        'content': '\n'.join(current_function),
-                        'line_number': function_start
-                    })
+                    functions.append(
+                        {
+                            "name": function_name_match.group(1),
+                            "content": "\n".join(current_function),
+                            "line_number": function_start,
+                        }
+                    )
 
             # 开始新函数
             in_function = True
@@ -137,13 +138,15 @@ def extract_functions_by_pattern(code, pattern):
                 in_function = False
                 # 保存函数
                 if current_function:
-                    function_name_match = re.search(r'def\s+([A-Za-z_]\w*)', current_function[0])
+                    function_name_match = re.search(r"def\s+([A-Za-z_]\w*)", current_function[0])
                     if function_name_match:
-                        functions.append({
-                            'name': function_name_match.group(1),
-                            'content': '\n'.join(current_function),
-                            'line_number': function_start
-                        })
+                        functions.append(
+                            {
+                                "name": function_name_match.group(1),
+                                "content": "\n".join(current_function),
+                                "line_number": function_start,
+                            }
+                        )
                 current_function = []
                 # 不添加当前行，继续处理下一行
             else:
@@ -151,13 +154,15 @@ def extract_functions_by_pattern(code, pattern):
 
     # 保存最后一个函数
     if in_function and current_function:
-        function_name_match = re.search(r'def\s+([A-Za-z_]\w*)', current_function[0])
+        function_name_match = re.search(r"def\s+([A-Za-z_]\w*)", current_function[0])
         if function_name_match:
-            functions.append({
-                'name': function_name_match.group(1),
-                'content': '\n'.join(current_function),
-                'line_number': function_start
-            })
+            functions.append(
+                {
+                    "name": function_name_match.group(1),
+                    "content": "\n".join(current_function),
+                    "line_number": function_start,
+                }
+            )
 
     return functions
 
@@ -199,7 +204,7 @@ K线图表相关功能
     for func in kline_functions:
         kline_content += f"\n\n{func['content']}\n"
 
-    components['kline_charts'] = kline_content
+    components["kline_charts"] = kline_content
 
     # 实时图表组件
     chart_content = """# 实时图表功能
@@ -212,7 +217,7 @@ K线图表相关功能
     for func in chart_functions:
         chart_content += f"\n\n{func['content']}\n"
 
-    components['realtime_charts'] = chart_content
+    components["realtime_charts"] = chart_content
 
     # 告警面板组件
     alert_content = """# 告警面板功能
@@ -225,7 +230,7 @@ K线图表相关功能
     for func in alert_functions:
         alert_content += f"\n\n{func['content']}\n"
 
-    components['alert_panel'] = alert_content
+    components["alert_panel"] = alert_content
 
     # 控制面板组件
     control_content = """# 控制面板功能
@@ -238,7 +243,7 @@ K线图表相关功能
     for func in control_functions:
         control_content += f"\n\n{func['content']}\n"
 
-    components['control_panel'] = control_content
+    components["control_panel"] = control_content
 
     # 浮动操作按钮组件
     action_content = """# 浮动操作按钮功能
@@ -251,7 +256,7 @@ K线图表相关功能
     for func in action_functions:
         action_content += f"\n\n{func['content']}\n"
 
-    components['floating_actions'] = action_content
+    components["floating_actions"] = action_content
 
     # 通用工具函数
     utility_content = """# 通用工具函数
@@ -264,7 +269,7 @@ K线图表相关功能
     for func in utility_functions:
         utility_content += f"\n\n{func['content']}\n"
 
-    components['utility'] = utility_content
+    components["utility"] = utility_content
 
     # 写入组件文件
     for component_name, component_content in components.items():
@@ -280,7 +285,7 @@ K线图表相关功能
 \"\"\"
 {os.path.basename(SOURCE_FILE)} - 模块化拆分版
 原始文件: {SOURCE_FILE}
-拆分时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+拆分时间: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 \"\"\"
 
 """
@@ -303,17 +308,17 @@ K线图表相关功能
 
     # 提取导入部分
     import_section = []
-    lines = source_code.split('\n')
+    lines = source_code.split("\n")
     for i, line in enumerate(lines):
         if i < 20:  # 检查前20行的导入部分
-            if line.startswith('import ') or line.startswith('from '):
+            if line.startswith("import ") or line.startswith("from "):
                 import_section.append(line)
 
     # 添加导入部分
     if import_section:
-        main_imports = '\n'.join(import_section) + '\n\n'
+        main_imports = "\n".join(import_section) + "\n\n"
     else:
-        main_imports = ''
+        main_imports = ""
 
     # 创建主入口文件
     main_content = f"""#!/usr/bin/env python3
@@ -321,7 +326,7 @@ K线图表相关功能
 \"\"\"
 {os.path.basename(SOURCE_FILE)} - 模块化拆分版
 原始文件: {SOURCE_FILE}
-拆分时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+拆分时间: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 
 这是模块化拆分后的主入口文件，保留了原有的功能，并导入了拆分后的组件模块。
 \"\"\"
@@ -442,19 +447,19 @@ from web.frontend.nicegui_monitoring_dashboard.core import EnhancedKlineMonitori
 - 为每个模块添加适当的文档说明其功能和用法
 """
 
-    doc_file = os.path.join(TARGET_DIR, 'MODULE_SPLIT_GUIDE.md')
+    doc_file = os.path.join(TARGET_DIR, "MODULE_SPLIT_GUIDE.md")
     if write_file(doc_file, doc_content):
         print(f"创建说明文档: {doc_file}")
     else:
         print(f"创建说明文档失败: {doc_file}")
 
     # 备份原始文件
-    backup_file = SOURCE_FILE + '.bak.' + datetime.now().strftime('%Y%m%d%H%M%S')
+    backup_file = SOURCE_FILE + ".bak." + datetime.now().strftime("%Y%m%d%H%M%S")
     shutil.copy2(SOURCE_FILE, backup_file)
     print(f"原始文件已备份至: {backup_file}")
 
     return True
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     split_file()

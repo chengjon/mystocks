@@ -13,7 +13,7 @@ class TestPerformanceAndEdgeCases:
     """性能测试和边界情况"""
 
     def setup_method(self):
-        """pytest setup方法"""
+        """Pytest setup方法"""
         self.validator = DataValidator()
 
     def test_large_dataframe_validation(self):
@@ -25,7 +25,7 @@ class TestPerformanceAndEdgeCases:
                 "low": np.random.uniform(10, 100, 10000),
                 "close": np.random.uniform(10, 100, 10000),
                 "volume": np.random.randint(1000, 10000, 10000),
-            }
+            },
         )
 
         large_data["high"] = np.maximum(large_data["high"], large_data[["open", "close"]].max(axis=1))
@@ -47,7 +47,7 @@ class TestPerformanceAndEdgeCases:
                 "low": [0.01],
                 "close": [10000.0],
                 "volume": [0],
-            }
+            },
         )
         result = self.validator.validate_price_data(extreme_data)
         assert result is True
@@ -61,7 +61,7 @@ class TestPerformanceAndEdgeCases:
                 "low": [9.5],
                 "close": [10.2],
                 "volume": [1_000_000_000],
-            }
+            },
         )
         result = self.validator.validate_price_data(large_volume_data)
         assert result is True
@@ -75,7 +75,7 @@ class TestPerformanceAndEdgeCases:
                 "low": [10.123456788],
                 "close": [10.123456789],
                 "volume": [1000.123],
-            }
+            },
         )
         result = self.validator.validate_price_data(precision_data)
         assert result is True
@@ -85,7 +85,7 @@ class TestIntegrationWorkflow:
     """集成工作流测试"""
 
     def setup_method(self):
-        """pytest setup方法"""
+        """Pytest setup方法"""
         self.validator = DataValidator()
 
     def test_complete_stock_data_validation(self):
@@ -98,7 +98,7 @@ class TestIntegrationWorkflow:
                 "low": [9.5, 10.0, 10.5, 10.3, 10.9],
                 "close": [10.6, 11.0, 11.1, 10.9, 11.5],
                 "volume": [1000, 1200, 900, 1100, 1300],
-            }
+            },
         )
 
         symbol_valid = self.validator.validate_stock_symbol("000001")

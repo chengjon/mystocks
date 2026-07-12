@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-数据清洗和验证脚本
+"""数据清洗和验证脚本
 
 功能:
 1. 清洗脏数据 - industry = name 的记录设置为 NULL
@@ -16,13 +15,13 @@
 
 import argparse
 import logging
-import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict
 
-import pandas as pd
 import numpy as np
+import pandas as pd
+
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -33,8 +32,7 @@ class DataCleaner:
     """数据清洗器"""
 
     def __init__(self, dry_run: bool = False):
-        """
-        初始化数据清洗器
+        """初始化数据清洗器
 
         参数:
             dry_run: True表示仅预览不实际执行清洗
@@ -83,8 +81,7 @@ class DataCleaner:
         return df
 
     def identify_dirty_industry_data(self, df: pd.DataFrame) -> pd.DataFrame:
-        """
-        识别脏行业数据 - industry == name 的记录
+        """识别脏行业数据 - industry == name 的记录
 
         返回:
             包含脏数据标记的DataFrame
@@ -113,8 +110,7 @@ class DataCleaner:
         return df
 
     def clean_industry_data(self, df: pd.DataFrame, industry_col: str = "industry") -> pd.DataFrame:
-        """
-        清洗脏行业数据 - 将 industry == name 设置为 NULL
+        """清洗脏行业数据 - 将 industry == name 设置为 NULL
 
         参数:
             df: 输入数据
@@ -150,8 +146,7 @@ class DataCleaner:
         return df
 
     def verify_adj_factor(self, df: pd.DataFrame) -> Dict:
-        """
-        验证 adj_factor 数据完整性
+        """验证 adj_factor 数据完整性
 
         参数:
             df: K线数据
@@ -190,7 +185,7 @@ class DataCleaner:
             "valid_percent": valid_count / total * 100 if total > 0 else 0,
         }
 
-        logger.info(f"adj_factor 验证结果:")
+        logger.info("adj_factor 验证结果:")
         logger.info(f"  总行数: {total}")
         logger.info(f"  空值: {null_count} ({null_count / total * 100:.2f}%)")
         logger.info(f"  零值: {zero_count} ({zero_count / total * 100:.2f}%)")
@@ -202,8 +197,7 @@ class DataCleaner:
         return result
 
     def verify_kline_structure(self, df: pd.DataFrame) -> Dict:
-        """
-        验证K线数据结构
+        """验证K线数据结构
 
         参数:
             df: K线数据
@@ -253,8 +247,7 @@ class DataCleaner:
         return result
 
     def fix_adj_factor(self, df: pd.DataFrame, default_value: float = 1.0) -> pd.DataFrame:
-        """
-        修复 adj_factor - 将空值和零值填充为默认值
+        """修复 adj_factor - 将空值和零值填充为默认值
 
         参数:
             df: 输入数据
@@ -308,12 +301,12 @@ class DataCleaner:
 
         if self.stats["dirty_industry_rows"] > 0:
             report.append(f"  - 发现 {self.stats['dirty_industry_rows']} 条脏行业数据")
-            report.append(f"    建议: 将 industry = name 的记录设置为 NULL")
+            report.append("    建议: 将 industry = name 的记录设置为 NULL")
 
         if self.stats["null_adj_factor"] > 0 or self.stats["zero_adj_factor"] > 0:
             total_bad = self.stats["null_adj_factor"] + self.stats["zero_adj_factor"]
             report.append(f"  - 发现 {total_bad} 条不完整的 adj_factor 数据")
-            report.append(f"    建议: 填充默认值 1.0")
+            report.append("    建议: 填充默认值 1.0")
 
         if self.stats["fixed_rows"] == 0:
             report.append("  - 数据质量良好，无需清洗")
@@ -370,7 +363,11 @@ def main():
     parser.add_argument("--fix-adj-factor", action="store_true", help="修复 adj_factor 数据")
     parser.add_argument("--adj-default", type=float, default=1.0, help="adj_factor 默认值")
     parser.add_argument(
-        "--log-level", type=str, default="INFO", choices=["DEBUG", "INFO", "WARNING", "ERROR"], help="日志级别"
+        "--log-level",
+        type=str,
+        default="INFO",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR"],
+        help="日志级别",
     )
 
     args = parser.parse_args()

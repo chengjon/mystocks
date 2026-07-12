@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""
-数据源配置文件自动拆分脚本
+"""数据源配置文件自动拆分脚本
 Data Sources Configuration Auto-Split Script
 
 将大型的 data_sources_registry.yaml 文件按数据源类型自动拆分为多个子文件。
 """
 
-import os
-import yaml
-from pathlib import Path
-from typing import Dict, Any, List
 import logging
+from pathlib import Path
+from typing import Any, Dict, List
+
+import yaml
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -58,7 +58,8 @@ class DataSourcesSplitter:
         return True
 
     def _group_by_source_name(
-        self, data_sources: Dict[str, Any]
+        self,
+        data_sources: Dict[str, Any],
     ) -> Dict[str, Dict[str, Any]]:
         """按source_name对数据源进行分组"""
         grouped = {}
@@ -89,7 +90,9 @@ class DataSourcesSplitter:
         logger.info(f"✅ 创建子配置文件: {filepath} ({len(sources)} 个数据源)")
 
     def _create_main_config(
-        self, original_config: Dict[str, Any], source_names: List[str]
+        self,
+        original_config: Dict[str, Any],
+        source_names: List[str],
     ):
         """创建新的主配置文件"""
         main_config = {
@@ -144,7 +147,7 @@ class DataSourcesSplitter:
                             "required": True,
                             "description": "股票代码",
                             "example": "600000",
-                        }
+                        },
                     },
                     "description": "数据源描述",
                     "update_frequency": "daily",  # daily | weekly | realtime
@@ -160,7 +163,7 @@ class DataSourcesSplitter:
                         "max_response_time": 10.0,
                         "required_columns": ["column1", "column2"],
                     },
-                }
+                },
             },
         }
 
@@ -171,7 +174,7 @@ class DataSourcesSplitter:
     def _load_yaml_file(self, filepath: Path) -> Dict[str, Any]:
         """加载YAML文件"""
         try:
-            with open(filepath, "r", encoding="utf-8") as f:
+            with open(filepath, encoding="utf-8") as f:
                 return yaml.safe_load(f) or {}
         except Exception as e:
             logger.error(f"加载YAML文件失败 {filepath}: {e}")

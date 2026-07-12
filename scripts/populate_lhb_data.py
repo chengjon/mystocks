@@ -1,21 +1,23 @@
 #!/usr/bin/env python3
-"""
-龙虎榜数据填充脚本
+"""龙虎榜数据填充脚本
 
 功能:
 - 获取最近N个交易日的龙虎榜数据
 - 通过API刷新端点填充数据
 """
 
-import requests
 import logging
 import os
 from datetime import datetime, timedelta
 from typing import List
 
+import requests
+
+
 # Setup logging
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -26,14 +28,14 @@ DEFAULT_BASE_URL = os.getenv("API_BASE_URL", f"http://localhost:{BACKEND_PORT}")
 
 
 def get_recent_trading_dates(days: int = 10) -> List[str]:
-    """
-    获取最近N个可能的交易日（粗略估计，排除周末）
+    """获取最近N个可能的交易日（粗略估计，排除周末）
 
     Args:
         days: 需要的交易日数量
 
     Returns:
         List[str]: 日期列表 (YYYY-MM-DD格式)
+
     """
     dates = []
     current_date = datetime.now()
@@ -48,10 +50,10 @@ def get_recent_trading_dates(days: int = 10) -> List[str]:
 
 
 def refresh_lhb_for_date(
-    date_str: str, base_url: str = DEFAULT_BASE_URL
+    date_str: str,
+    base_url: str = DEFAULT_BASE_URL,
 ) -> dict:
-    """
-    刷新指定日期的龙虎榜数据
+    """刷新指定日期的龙虎榜数据
 
     Args:
         date_str: 交易日期 (YYYY-MM-DD)
@@ -59,6 +61,7 @@ def refresh_lhb_for_date(
 
     Returns:
         dict: API响应结果
+
     """
     url = f"{base_url}/api/market/lhb/refresh"
     params = {"trade_date": date_str}
@@ -82,7 +85,6 @@ def refresh_lhb_for_date(
 
 def main():
     """主函数"""
-
     logger.info("=" * 60)
     logger.info("龙虎榜数据填充脚本")
     logger.info("=" * 60)

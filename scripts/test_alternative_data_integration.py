@@ -1,5 +1,4 @@
-"""
-测试另类数据集成
+"""测试另类数据集成
 Test Alternative Data Integration
 
 验证新闻采集、情感分析、社交媒体监控等功能的正确性。
@@ -8,21 +7,23 @@ Validates news collection, sentiment analysis, social media monitoring functions
 
 import asyncio
 import logging
-import sys
 import os
+import sys
 from datetime import datetime
-from unittest.mock import patch, MagicMock, AsyncMock
+from unittest.mock import MagicMock, patch
+
 
 # Setup project path
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, project_root)
 
 from src.alternative_data.news_sentiment_analyzer import (
-    NewsCollector,
-    SentimentAnalyzer,
-    NewsSentimentService,
     NewsArticle,
+    NewsCollector,
+    NewsSentimentService,
+    SentimentAnalyzer,
 )
+
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -49,7 +50,7 @@ class MockDatabaseConnection:
                     "confidence": 0.8,
                     "symbols": ["600519"],
                     "published_at": datetime.now(),
-                }
+                },
             ]
         return []
 
@@ -322,9 +323,8 @@ async def run_all_tests():
         logger.info("🎉 所有测试通过! 另类数据集成已准备就绪。")
         logger.info("新闻采集、情感分析、数据存储等功能均正常工作。")
         return True
-    else:
-        logger.warning("⚠️ 某些测试失败。请检查实现。")
-        return False
+    logger.warning("⚠️ 某些测试失败。请检查实现。")
+    return False
 
 
 if __name__ == "__main__":

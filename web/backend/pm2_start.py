@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-MyStocks Backend Startup Script for PM2
+"""MyStocks Backend Startup Script for PM2
 This script properly sets up the Python path and starts uvicorn
 """
 

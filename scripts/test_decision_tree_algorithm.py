@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Decision Tree算法功能测试脚本
+"""Decision Tree算法功能测试脚本
 
 测试Decision Tree算法的完整功能：
 - 训练 (train)
@@ -11,12 +10,13 @@ Decision Tree算法功能测试脚本
 日期: 2026-01-12
 """
 
-import sys
 import asyncio
 import logging
+import sys
+
 import numpy as np
 import pandas as pd
-from datetime import datetime
+
 
 # 添加项目根目录到路径
 project_root = "/opt/claude/mystocks_spec"
@@ -48,7 +48,7 @@ async def test_decision_tree_algorithm():
                 "description": "Decision Tree algorithm test",
                 "algorithm_type": "classification",
                 "gpu_enabled": True,
-            }
+            },
         )
         dt = DecisionTreeAlgorithm(metadata)
         logger.info("✓ 成功创建Decision Tree算法实例")

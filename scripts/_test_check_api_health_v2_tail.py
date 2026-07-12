@@ -9,10 +9,12 @@ from unittest.mock import Mock, patch
 
 import requests
 
+
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 from src.utils.check_api_health_v2 import APIHealthChecker, main
+
 
 EXPECTED_BASE_URL = os.getenv("BACKEND_URL", f"http://localhost:{os.getenv('BACKEND_PORT', '8020')}")
 

@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-"""
-Test SVM Algorithm Implementation
+"""Test SVM Algorithm Implementation
 
 验证SVM算法的训练和预测功能是否正常工作
 """
 
 import sys
+from datetime import datetime
+
 import numpy as np
 import pandas as pd
-from datetime import datetime
+
 
 # 添加项目根目录到路径
 project_root = "/opt/claude/mystocks_spec"
@@ -17,6 +18,7 @@ sys.path.insert(0, project_root)
 import asyncio
 import logging
 
+
 # 设置日志
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -24,13 +26,12 @@ logger = logging.getLogger(__name__)
 
 async def test_svm_algorithm():
     """测试SVM算法的完整功能"""
-
     try:
         logger.info("开始测试SVM算法...")
 
         # 导入SVM算法
-        from src.algorithms.classification.svm_algorithm import SVMAlgorithm
         from src.algorithms.base import AlgorithmMetadata
+        from src.algorithms.classification.svm_algorithm import SVMAlgorithm
         from src.algorithms.types import AlgorithmType
 
         logger.info("✓ 成功导入SVM算法类")
@@ -190,7 +191,7 @@ async def test_svm_algorithm():
         return test_summary
 
     except Exception as e:
-        logger.error(f"❌ SVM算法测试失败: {str(e)}", exc_info=True)
+        logger.error(f"❌ SVM算法测试失败: {e!s}", exc_info=True)
         return False
 
 

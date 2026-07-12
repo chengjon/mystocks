@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""
-统一接口抽象层分析工具
+"""统一接口抽象层分析工具
 分析当前数据访问层架构，识别统一接口需求
 """
 
 import os
 import sys
 from pathlib import Path
+
 
 # 添加项目根路径
 project_root = Path(__file__).parent
@@ -359,9 +359,7 @@ def main():
 
     print("\n📋 实施计划:")
     total_tasks = sum(len(phase["tasks"]) for phase in implementation_plan.values())
-    total_deliverables = sum(
-        len(phase["deliverables"]) for phase in implementation_plan.values()
-    )
+    total_deliverables = sum(len(phase["deliverables"]) for phase in implementation_plan.values())
     print(f"   - 总任务数: {total_tasks}个")
     print(f"   - 总交付物: {total_deliverables}个")
 

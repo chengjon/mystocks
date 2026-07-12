@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-# 功能：验证.gitignore配置是否正确排除应忽略的文件
+"""# 功能：验证.gitignore配置是否正确排除应忽略的文件
 # 作者：JohnC (ninjas@sina.com) & Claude
 # 创建日期：2025-10-16
 # 版本：1.0.0
@@ -13,8 +11,8 @@
 # 版权：MyStocks Project © 2025
 """
 
-import subprocess
 import re
+import subprocess
 from pathlib import Path
 from typing import List
 
@@ -95,7 +93,7 @@ class GitIgnoreValidator:
                         "pattern": pattern_name,
                         "files": found_violations[:5],  # 只显示前5个
                         "total": len(found_violations),
-                    }
+                    },
                 )
             else:
                 self.successes.append(f"✅ {pattern_name} - 已正确忽略")
@@ -118,7 +116,7 @@ class GitIgnoreValidator:
                         "type": "WRONGLY_IGNORED",
                         "file": file_path,
                         "message": "应该可见但被忽略",
-                    }
+                    },
                 )
             else:
                 self.successes.append(f"✅ {file_path} - 正确可见")
@@ -134,7 +132,7 @@ class GitIgnoreValidator:
         for gitignore_path in gitignore_files:
             if gitignore_path.exists():
                 self.successes.append(
-                    f"✅ {gitignore_path.relative_to(self.root_dir)} - 存在"
+                    f"✅ {gitignore_path.relative_to(self.root_dir)} - 存在",
                 )
             else:
                 self.issues.append(
@@ -142,7 +140,7 @@ class GitIgnoreValidator:
                         "type": "MISSING_GITIGNORE",
                         "file": str(gitignore_path.relative_to(self.root_dir)),
                         "message": ".gitignore文件缺失",
-                    }
+                    },
                 )
                 all_exist = False
 
@@ -159,7 +157,7 @@ class GitIgnoreValidator:
                 if pattern == "__pycache__":
                     commands.append("# 清理Python缓存")
                     commands.append(
-                        "find . -type d -name '__pycache__' -exec rm -rf {} + 2>/dev/null"
+                        "find . -type d -name '__pycache__' -exec rm -rf {} + 2>/dev/null",
                     )
                     commands.append("find . -type f -name '*.pyc' -delete")
                 elif pattern == "*.log":
@@ -167,10 +165,10 @@ class GitIgnoreValidator:
                     commands.append("find . -type f -name '*.log' -delete")
                 elif pattern == "node_modules":
                     commands.append(
-                        "# 清理Node.js依赖（谨慎使用，可能需要重新npm install）"
+                        "# 清理Node.js依赖（谨慎使用，可能需要重新npm install）",
                     )
                     commands.append(
-                        "# find . -type d -name 'node_modules' -exec rm -rf {} +"
+                        "# find . -type d -name 'node_modules' -exec rm -rf {} +",
                     )
 
         return commands
@@ -215,9 +213,7 @@ class GitIgnoreValidator:
                     report.append(f"     发现 {issue['total']} 个文件 (显示前5个):")
                     for file in issue["files"]:
                         report.append(f"       - {file}")
-                elif issue["type"] == "WRONGLY_IGNORED":
-                    report.append(f"\n  {i}. {issue['file']} - {issue['message']}")
-                elif issue["type"] == "MISSING_GITIGNORE":
+                elif issue["type"] == "WRONGLY_IGNORED" or issue["type"] == "MISSING_GITIGNORE":
                     report.append(f"\n  {i}. {issue['file']} - {issue['message']}")
             report.append("")
 
@@ -244,31 +240,19 @@ class GitIgnoreValidator:
         checks = [
             (
                 "git status不显示__pycache__目录",
-                not any(
-                    i["type"] == "NOT_IGNORED" and i["pattern"] == "__pycache__"
-                    for i in self.issues
-                ),
+                not any(i["type"] == "NOT_IGNORED" and i["pattern"] == "__pycache__" for i in self.issues),
             ),
             (
                 "git status不显示*.pyc文件",
-                not any(
-                    i["type"] == "NOT_IGNORED" and i["pattern"] == "*.pyc"
-                    for i in self.issues
-                ),
+                not any(i["type"] == "NOT_IGNORED" and i["pattern"] == "*.pyc" for i in self.issues),
             ),
             (
                 "git status不显示*.log文件",
-                not any(
-                    i["type"] == "NOT_IGNORED" and i["pattern"] == "*.log"
-                    for i in self.issues
-                ),
+                not any(i["type"] == "NOT_IGNORED" and i["pattern"] == "*.log" for i in self.issues),
             ),
             (
                 "git status不显示.env文件",
-                not any(
-                    i["type"] == "NOT_IGNORED" and i["pattern"] == ".env"
-                    for i in self.issues
-                ),
+                not any(i["type"] == "NOT_IGNORED" and i["pattern"] == ".env" for i in self.issues),
             ),
             (
                 ".gitignore文件存在",
@@ -308,8 +292,7 @@ def main():
     # 返回退出码
     if len(validator.issues) > 0:
         return 1
-    else:
-        return 0
+    return 0
 
 
 if __name__ == "__main__":

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-优化TransformKernelEngine实现
+"""优化TransformKernelEngine实现
 Phase 6.3.2 - 优化TransformKernelEngine实现
 
 修复错误引用，添加FFT等缺失操作，提升性能
@@ -8,16 +7,16 @@ Phase 6.3.2 - 优化TransformKernelEngine实现
 
 import os
 import re
-from pathlib import Path
-from typing import Dict, Any
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict
 
 
 class TransformKernelOptimizer:
     """TransformKernelEngine优化器"""
 
     def __init__(self):
-        self.project_root = Path(".")
+        self.project_root = Path()
         self.transform_kernel_path = "src/gpu/core/kernels/transform_kernels.py"
         self.optimizations_applied = []
 
@@ -50,31 +49,38 @@ class TransformKernelOptimizer:
     def _fix_type_references(self) -> bool:
         """修复类型引用错误"""
         try:
-            with open(self.transform_kernel_path, "r", encoding="utf-8") as f:
+            with open(self.transform_kernel_path, encoding="utf-8") as f:
                 content = f.read()
 
             # 修复TransformType引用错误
             old_content = content
             content = content.replace(
-                "TransformType.DIFFERENCE", "TransformOperationType.DIFFERENCE"
+                "TransformType.DIFFERENCE",
+                "TransformOperationType.DIFFERENCE",
             )
             content = content.replace(
-                "TransformType.RETURN", "TransformOperationType.RETURN"
+                "TransformType.RETURN",
+                "TransformOperationType.RETURN",
             )
             content = content.replace(
-                "TransformType.VOLATILITY", "TransformOperationType.VOLATILITY"
+                "TransformType.VOLATILITY",
+                "TransformOperationType.VOLATILITY",
             )
             content = content.replace(
-                "TransformType.CORRELATION", "TransformOperationType.CORRELATION"
+                "TransformType.CORRELATION",
+                "TransformOperationType.CORRELATION",
             )
             content = content.replace(
-                "TransformType.ROLLING_MEAN", "TransformOperationType.ROLLING_MEAN"
+                "TransformType.ROLLING_MEAN",
+                "TransformOperationType.ROLLING_MEAN",
             )
             content = content.replace(
-                "TransformType.ROLLING_STD", "TransformOperationType.ROLLING_STD"
+                "TransformType.ROLLING_STD",
+                "TransformOperationType.ROLLING_STD",
             )
             content = content.replace(
-                "TransformType.EXPONENTIAL_MA", "TransformOperationType.EXPONENTIAL_MA"
+                "TransformType.EXPONENTIAL_MA",
+                "TransformOperationType.EXPONENTIAL_MA",
             )
 
             if content != old_content:
@@ -89,7 +95,7 @@ class TransformKernelOptimizer:
     def _add_fft_operations(self) -> bool:
         """添加FFT操作支持"""
         try:
-            with open(self.transform_kernel_path, "r", encoding="utf-8") as f:
+            with open(self.transform_kernel_path, encoding="utf-8") as f:
                 content = f.read()
 
             # 检查是否已有FFT操作
@@ -97,11 +103,9 @@ class TransformKernelOptimizer:
                 return False
 
             # 首先在标准化接口中添加FFT类型
-            standardized_interface_path = (
-                "src/gpu/core/kernels/standardized_interface.py"
-            )
+            standardized_interface_path = "src/gpu/core/kernels/standardized_interface.py"
             if os.path.exists(standardized_interface_path):
-                with open(standardized_interface_path, "r", encoding="utf-8") as f:
+                with open(standardized_interface_path, encoding="utf-8") as f:
                     interface_content = f.read()
 
                 # 添加FFT到TransformOperationType枚举
@@ -117,7 +121,9 @@ class TransformKernelOptimizer:
                         )
 
                         with open(
-                            standardized_interface_path, "w", encoding="utf-8"
+                            standardized_interface_path,
+                            "w",
+                            encoding="utf-8",
                         ) as f:
                             f.write(interface_content)
 
@@ -169,7 +175,7 @@ class TransformKernelOptimizer:
     def _optimize_gpu_memory(self) -> bool:
         """优化GPU内存管理"""
         try:
-            with open(self.transform_kernel_path, "r", encoding="utf-8") as f:
+            with open(self.transform_kernel_path, encoding="utf-8") as f:
                 content = f.read()
 
             # 优化GPU内存使用模式
@@ -199,7 +205,7 @@ class TransformKernelOptimizer:
     def _enhance_performance_metrics(self) -> bool:
         """提升性能指标收集"""
         try:
-            with open(self.transform_kernel_path, "r", encoding="utf-8") as f:
+            with open(self.transform_kernel_path, encoding="utf-8") as f:
                 content = f.read()
 
             # 在__init__方法中增强统计信息
@@ -218,7 +224,9 @@ class TransformKernelOptimizer:
             content = re.sub(old_stats_pattern, new_stats, content, flags=re.DOTALL)
 
             # 更新统计信息收集
-            old_update_pattern = r'self\.stats\["total_operations"\] \+= 1\s+self\.stats\["total_execution_time"\] \+= execution_time'
+            old_update_pattern = (
+                r'self\.stats\["total_operations"\] \+= 1\s+self\.stats\["total_execution_time"\] \+= execution_time'
+            )
             new_update = """self.stats["total_operations"] += 1
             self.stats["total_execution_time"] += execution_time
 
@@ -244,7 +252,7 @@ class TransformKernelOptimizer:
     def _improve_error_handling(self) -> bool:
         """改进错误处理"""
         try:
-            with open(self.transform_kernel_path, "r", encoding="utf-8") as f:
+            with open(self.transform_kernel_path, encoding="utf-8") as f:
                 content = f.read()
 
             # 改进异常处理逻辑
@@ -263,7 +271,10 @@ class TransformKernelOptimizer:
                 return await self._execute_cpu_transform_kernel(data, config)"""
 
             content = re.sub(
-                old_exception_pattern, new_exception, content, flags=re.DOTALL
+                old_exception_pattern,
+                new_exception,
+                content,
+                flags=re.DOTALL,
             )
 
             # 添加输入验证增强
@@ -291,9 +302,7 @@ class TransformKernelOptimizer:
 '''
 
             # 在execute_transform_kernel方法之前添加验证方法
-            class_pattern = (
-                r"(class TransformKernelEngine.*?async def execute_transform_kernel)"
-            )
+            class_pattern = r"(class TransformKernelEngine.*?async def execute_transform_kernel)"
             content = re.sub(
                 class_pattern,
                 r"\1\n" + validation_enhancement + "\n",
@@ -301,10 +310,7 @@ class TransformKernelOptimizer:
                 flags=re.DOTALL,
             )
 
-            if (
-                old_exception_pattern not in content
-                and validation_enhancement not in content
-            ):
+            if old_exception_pattern not in content and validation_enhancement not in content:
                 return False  # 如果没有找到要修改的内容
 
             with open(self.transform_kernel_path, "w", encoding="utf-8") as f:
@@ -323,9 +329,7 @@ class TransformKernelOptimizer:
             "total_optimizations": len(self.optimizations_applied),
             "success_rate": len(self.optimizations_applied) / 5.0,  # 总共5个优化步骤
             "summary": {
-                "status": "completed"
-                if len(self.optimizations_applied) >= 3
-                else "partial",
+                "status": "completed" if len(self.optimizations_applied) >= 3 else "partial",
                 "key_improvements": [
                     "Fixed type reference errors",
                     "Added FFT operation support",
@@ -350,7 +354,7 @@ class TransformKernelOptimizer:
         summary = report["summary"]
         print(f"📈 优化状态: {summary['status']}")
         print(
-            f"✅ 应用优化: {report['total_optimizations']}/5 ({report['success_rate'] * 100:.1f}%)"
+            f"✅ 应用优化: {report['total_optimizations']}/5 ({report['success_rate'] * 100:.1f}%)",
         )
         print(f"🕒 优化时间: {report['optimization_timestamp']}")
 

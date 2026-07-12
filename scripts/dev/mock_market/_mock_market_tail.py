@@ -6,6 +6,7 @@ import datetime
 import random
 from typing import Dict, List, Optional
 
+
 def get_etf_list(symbol: Optional[str] = None, keyword: Optional[str] = None, limit: int = 50) -> List[Dict]:
     """获取ETF列表
 
@@ -23,6 +24,7 @@ def get_etf_list(symbol: Optional[str] = None, keyword: Optional[str] = None, li
                    - change_pct: 涨跌幅(%)
                    - volume: 成交量
                    - amount: 成交额
+
     """
     etf_pool = [
         {
@@ -82,7 +84,7 @@ def get_etf_list(symbol: Optional[str] = None, keyword: Optional[str] = None, li
                 "change_pct": change_pct,
                 "volume": volume,
                 "amount": amount,
-            }
+            },
         )
 
     return result
@@ -125,6 +127,7 @@ def get_chip_race(
                    - bid_trust_amount: 抢筹委托金额
                    - bid_deal_amount: 抢筹成交金额
                    - bid_ratio: 抢筹占比(%)
+
     """
     if not trade_date:
         trade_date = datetime.datetime.now().strftime("%Y-%m-%d")
@@ -180,7 +183,7 @@ def get_chip_race(
                 "bid_trust_amount": bid_trust_amount,
                 "bid_deal_amount": bid_deal_amount,
                 "bid_ratio": bid_ratio,
-            }
+            },
         )
 
     race_data = sorted(race_data, key=lambda x: x["deal_amount"], reverse=True)
@@ -213,12 +216,13 @@ def get_lhb_detail(
                    - buy_amount: 买入金额
                    - sell_amount: 卖出金额
                    - reason: 上榜原因
+
     """
     if not end_date:
         end_date = datetime.datetime.now().strftime("%Y-%m-%d")
     if not start_date:
         start_date = (datetime.datetime.strptime(end_date, "%Y-%m-%d") - datetime.timedelta(days=30)).strftime(
-            "%Y-%m-%d"
+            "%Y-%m-%d",
         )
 
     # 生成龙虎榜数据
@@ -261,7 +265,7 @@ def get_lhb_detail(
                         "buy_amount": buy_amount,
                         "sell_amount": sell_amount,
                         "reason": reason,
-                    }
+                    },
                 )
 
         current_date += datetime.timedelta(days=1)
@@ -297,6 +301,7 @@ def get_stock_list(
                    - listing_board: 上市板块
                    - market_cap: 总市值
                    - circulating_market_cap: 流通市值
+
     """
     stock_pool = [
         {
@@ -380,7 +385,7 @@ def get_stock_list(
                 "listing_board": "主板" if stock["exchange"] == "SSE" else "主板",
                 "market_cap": stock["market_cap"],
                 "circulating_market_cap": stock["circulating_market_cap"],
-            }
+            },
         )
 
     return result

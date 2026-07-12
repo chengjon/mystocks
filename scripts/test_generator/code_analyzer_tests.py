@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-增强版AI测试生成器
+"""增强版AI测试生成器
 提供更智能的测试算法、模式识别和优化建议
 
 核心功能:
@@ -15,17 +14,18 @@
 日期: 2025-12-22
 """
 
-import ast
+import logging
 import re
 import sys
-from pathlib import Path
-from typing import Dict, List, Tuple, Any
 from dataclasses import dataclass
-import logging
+from pathlib import Path
+from typing import Dict, List
+
 
 # 设置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -35,13 +35,13 @@ sys.path.insert(0, str(project_root))
 
 
 @dataclass
-
 class _TestGenerationMixin:
     """EnhancedCodeAnalyzer 测试生成方法集"""
 
-
     def _generate_database_tests(
-        self, pattern: CodePattern, source_file: str
+        self,
+        pattern: CodePattern,
+        source_file: str,
     ) -> List[TestCase]:
         """生成数据库操作测试"""
         tests = []
@@ -100,13 +100,15 @@ class _TestGenerationMixin:
                     coverage_target=[f"lines:{start_line}-{end_line}"],
                     test_type="integration",
                     estimated_time=4.0,
-                )
+                ),
             )
 
         return tests
 
     def _generate_network_tests(
-        self, pattern: CodePattern, source_file: str
+        self,
+        pattern: CodePattern,
+        source_file: str,
     ) -> List[TestCase]:
         """生成网络操作测试"""
         tests = []
@@ -159,7 +161,7 @@ class _TestGenerationMixin:
                     coverage_target=[f"lines:{start_line}-{end_line}"],
                     test_type="integration",
                     estimated_time=3.0,
-                )
+                ),
             )
 
         return tests
@@ -209,7 +211,9 @@ class _TestGenerationMixin:
         )
 
     def _generate_performance_tests(
-        self, patterns: List[CodePattern], source_file: str
+        self,
+        patterns: List[CodePattern],
+        source_file: str,
     ) -> List[TestCase]:
         """生成性能测试"""
         tests = []
@@ -256,11 +260,11 @@ class _TestGenerationMixin:
                     test_code=test_code.strip(),
                     priority="medium",
                     coverage_target=[
-                        f"lines:{pattern.locations[0][0]}-{pattern.locations[0][1]}"
+                        f"lines:{pattern.locations[0][0]}-{pattern.locations[0][1]}",
                     ],
                     test_type="performance",
                     estimated_time=8.0,
-                )
+                ),
             )
 
         return tests
@@ -316,7 +320,7 @@ class _TestGenerationMixin:
                     coverage_target=["boundary_conditions"],
                     test_type="unit",
                     estimated_time=1.5,
-                )
+                ),
             )
 
         return tests
@@ -324,7 +328,7 @@ class _TestGenerationMixin:
     def _extract_function_name(self, source_file: str, line_num: int) -> str:
         """提取指定行的函数名"""
         try:
-            with open(source_file, "r", encoding="utf-8") as f:
+            with open(source_file, encoding="utf-8") as f:
                 lines = f.readlines()
 
             if 1 <= line_num <= len(lines):
@@ -372,7 +376,10 @@ class _TestGenerationMixin:
         return base_score + type_modifier + complexity_modifier
 
     def get_enhancement_suggestions(
-        self, source_file: str, patterns: List[CodePattern], bugs: List[Dict]
+        self,
+        source_file: str,
+        patterns: List[CodePattern],
+        bugs: List[Dict],
     ) -> List[EnhancementSuggestion]:
         """获取增强建议"""
         suggestions = []
@@ -387,7 +394,7 @@ class _TestGenerationMixin:
                         description=f"高风险{pattern.pattern_type}模式需要加强安全检查",
                         code_example=self._get_security_enhancement_example(pattern),
                         impact_assessment="降低安全风险，提高代码健壮性",
-                    )
+                    ),
                 )
 
         # 基于bug预测的建议
@@ -400,7 +407,7 @@ class _TestGenerationMixin:
                     description=f"发现{len(critical_bugs)}个高风险bug模式，需要立即修复",
                     code_example=self._get_bug_fix_example(critical_bugs[0]),
                     impact_assessment="防止潜在的安全漏洞和系统崩溃",
-                )
+                ),
             )
 
         # 性能优化建议
@@ -412,10 +419,10 @@ class _TestGenerationMixin:
                     priority="medium",
                     description=f"{len(high_complexity_patterns)}个高复杂度模块需要性能优化",
                     code_example=self._get_performance_optimization_example(
-                        high_complexity_patterns[0]
+                        high_complexity_patterns[0],
                     ),
                     impact_assessment="提升系统性能，降低资源消耗",
-                )
+                ),
             )
 
         # 可维护性建议
@@ -427,7 +434,7 @@ class _TestGenerationMixin:
                     description="模块包含过多代码模式，建议拆分以提高可维护性",
                     code_example=self._get_refactoring_example(),
                     impact_assessment="提高代码可读性和维护效率",
-                )
+                ),
             )
 
         return suggestions

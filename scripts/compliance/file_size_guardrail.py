@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
+
 DEFAULT_LIMITS = {
     ".py": 800,
     ".ts": 500,
@@ -35,8 +36,7 @@ def normalize_relative_paths(paths: list[str] | None) -> list[str] | None:
         path_value = raw_path.strip()
         if not path_value:
             continue
-        if path_value.startswith("./"):
-            path_value = path_value[2:]
+        path_value = path_value.removeprefix("./")
         normalized_path = Path(path_value).as_posix().strip("/")
         if normalized_path:
             normalized.add(normalized_path)
@@ -161,7 +161,7 @@ def build_report(
                     "lines": line_count,
                     "limit": effective_limits[limit_key],
                     "type": limit_key,
-                }
+                },
             )
 
     violations.sort(key=lambda item: (int(item["limit"]), int(item["lines"])), reverse=True)
@@ -198,10 +198,7 @@ def check_files(
         scope_roots=scope_roots,
         paths=paths,
     )
-    return [
-        f"🚩 {item['path']}: {item['lines']} lines (Limit: {item['limit']})"
-        for item in report["violations"]
-    ]
+    return [f"🚩 {item['path']}: {item['lines']} lines (Limit: {item['limit']})" for item in report["violations"]]
 
 
 def print_report(report: dict[str, object], output_format: str = "text") -> None:
@@ -220,8 +217,7 @@ def print_report(report: dict[str, object], output_format: str = "text") -> None
         print("\nOversized files:")
         for item in violations:
             print(
-                f"  - {item['path']}: {item['lines']} lines "
-                f"(limit: {item['limit']}, type: {item['type']})"
+                f"  - {item['path']}: {item['lines']} lines (limit: {item['limit']}, type: {item['type']})",
             )
     else:
         print("\nNo oversized files detected.")

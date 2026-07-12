@@ -1,32 +1,33 @@
 #!/usr/bin/env python3
-"""
-文件信息查询工具
+"""文件信息查询工具
 用途：从PostgreSQL数据库查询文件信息、引用关系等
 """
 
-import os
-import sys
-import psycopg2
-from typing import Dict, List, Optional
-import logging
 import argparse
 import json
+import logging
+import os
+import sys
 from datetime import datetime
+from typing import Dict, List, Optional
+
+import psycopg2
+
 
 # 配置日志
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
 # 数据库配置
 DB_CONFIG = {
-    'host': os.getenv('POSTGRES_HOST', 'localhost'),
-    'port': int(os.getenv('POSTGRES_PORT', 5432)),
-    'database': os.getenv('ANALYSIS_DB', 'file_analysis_db'),
-    'user': os.getenv('POSTGRES_USER', 'postgres'),
-    'password': os.getenv('POSTGRES_PASSWORD', 'postgres')
+    "host": os.getenv("POSTGRES_HOST", "localhost"),
+    "port": int(os.getenv("POSTGRES_PORT", 5432)),
+    "database": os.getenv("ANALYSIS_DB", "file_analysis_db"),
+    "user": os.getenv("POSTGRES_USER", "postgres"),
+    "password": os.getenv("POSTGRES_PASSWORD", "postgres"),
 }
 
 
@@ -57,7 +58,8 @@ class FileQueryTool:
         cursor = self.conn.cursor()
 
         try:
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT
                     fm.id, fm.file_name, fm.file_path, fm.file_type,
                     fm.file_size, fm.line_count, fm.function_count,
@@ -71,7 +73,9 @@ class FileQueryTool:
                 WHERE fm.file_name LIKE %s
                 ORDER BY fm.analyzed_at DESC
                 LIMIT 10
-            """, (f"%{file_name}%",))
+            """,
+                (f"%{file_name}%",),
+            )
 
             columns = [desc[0] for desc in cursor.description]
             results = []
@@ -81,7 +85,7 @@ class FileQueryTool:
                 # 转换datetime为字符串
                 for key, value in result.items():
                     if isinstance(value, datetime):
-                        result[key] = value.strftime('%Y-%m-%d %H:%M:%S')
+                        result[key] = value.strftime("%Y-%m-%d %H:%M:%S")
                 results.append(result)
 
             cursor.close()
@@ -97,7 +101,8 @@ class FileQueryTool:
         cursor = self.conn.cursor()
 
         try:
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT
                     fm.id, fm.file_name, fm.file_path, fm.file_type,
                     fm.file_size, fm.line_count, fm.function_count,
@@ -109,7 +114,9 @@ class FileQueryTool:
                 FROM file_metadata fm
                 LEFT JOIN file_categories fc ON fm.category_id = fc.id
                 WHERE fm.file_path = %s
-            """, (file_path,))
+            """,
+                (file_path,),
+            )
 
             row = cursor.fetchone()
 
@@ -120,7 +127,7 @@ class FileQueryTool:
                 # 转换datetime为字符串
                 for key, value in result.items():
                     if isinstance(value, datetime):
-                        result[key] = value.strftime('%Y-%m-%d %H:%M:%S')
+                        result[key] = value.strftime("%Y-%m-%d %H:%M:%S")
 
                 cursor.close()
                 return result
@@ -138,7 +145,8 @@ class FileQueryTool:
         cursor = self.conn.cursor()
 
         try:
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT
                     fr.id, fr.reference_type, fr.reference_line,
                     fr.reference_code, fr.is_external, fr.is_valid,
@@ -150,7 +158,9 @@ class FileQueryTool:
                 JOIN file_metadata target ON fr.target_file_id = target.id
                 WHERE fr.source_file_id = %s OR fr.target_file_id = %s
                 ORDER BY fr.reference_line
-            """, (file_id, file_id))
+            """,
+                (file_id, file_id),
+            )
 
             columns = [desc[0] for desc in cursor.description]
             results = []
@@ -171,7 +181,8 @@ class FileQueryTool:
         cursor = self.conn.cursor()
 
         try:
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT
                     fm.id, fm.file_name, fm.file_path, fm.file_type,
                     fm.line_count, fm.function_count, fm.complexity_score,
@@ -180,7 +191,9 @@ class FileQueryTool:
                 JOIN file_categories fc ON fm.category_id = fc.id
                 WHERE fc.category_code = %s
                 ORDER BY fm.complexity_score DESC
-            """, (category_code,))
+            """,
+                (category_code,),
+            )
 
             columns = [desc[0] for desc in cursor.description]
             results = []
@@ -239,7 +252,7 @@ class FileQueryTool:
                 # 转换datetime为字符串
                 for key, value in result.items():
                     if isinstance(value, datetime):
-                        result[key] = value.strftime('%Y-%m-%d %H:%M:%S')
+                        result[key] = value.strftime("%Y-%m-%d %H:%M:%S")
 
                 cursor.close()
                 return result
@@ -257,7 +270,8 @@ class FileQueryTool:
         cursor = self.conn.cursor()
 
         try:
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT
                     fm.id, fm.file_name, fm.file_path, fm.file_type,
                     fm.references_in_count, fm.references_out_count,
@@ -266,7 +280,9 @@ class FileQueryTool:
                 WHERE fm.references_in_count > 0
                 ORDER BY fm.references_in_count DESC
                 LIMIT %s
-            """, (limit,))
+            """,
+                (limit,),
+            )
 
             columns = [desc[0] for desc in cursor.description]
             results = []
@@ -334,33 +350,33 @@ def print_references(references: List[Dict]):
 
 def main():
     """主函数"""
-    parser = argparse.ArgumentParser(description='文件信息查询工具')
-    subparsers = parser.add_subparsers(dest='command', help='查询命令')
+    parser = argparse.ArgumentParser(description="文件信息查询工具")
+    subparsers = parser.add_subparsers(dest="command", help="查询命令")
 
     # 按文件名查询
-    name_parser = subparsers.add_parser('name', help='按文件名查询')
-    name_parser.add_argument('name', help='文件名（支持模糊匹配）')
+    name_parser = subparsers.add_parser("name", help="按文件名查询")
+    name_parser.add_argument("name", help="文件名（支持模糊匹配）")
 
     # 按路径查询
-    path_parser = subparsers.add_parser('path', help='按文件路径查询')
-    path_parser.add_argument('path', help='文件路径')
+    path_parser = subparsers.add_parser("path", help="按文件路径查询")
+    path_parser.add_argument("path", help="文件路径")
 
     # 按分类查询
-    category_parser = subparsers.add_parser('category', help='按分类查询')
-    category_parser.add_argument('category', help='分类代码')
+    category_parser = subparsers.add_parser("category", help="按分类查询")
+    category_parser.add_argument("category", help="分类代码")
 
     # 统计信息
-    subparsers.add_parser('stats', help='查看统计信息')
+    subparsers.add_parser("stats", help="查看统计信息")
 
     # 最新分析记录
-    subparsers.add_parser('latest', help='查看最新分析记录')
+    subparsers.add_parser("latest", help="查看最新分析记录")
 
     # 被引用最多的文件
-    top_parser = subparsers.add_parser('top', help='查看被引用最多的文件')
-    top_parser.add_argument('--limit', type=int, default=10, help='返回数量')
+    top_parser = subparsers.add_parser("top", help="查看被引用最多的文件")
+    top_parser.add_argument("--limit", type=int, default=10, help="返回数量")
 
     # JSON输出
-    parser.add_argument('--json', action='store_true', help='以JSON格式输出')
+    parser.add_argument("--json", action="store_true", help="以JSON格式输出")
 
     args = parser.parse_args()
 
@@ -371,7 +387,7 @@ def main():
         return 1
 
     try:
-        if args.command == 'name':
+        if args.command == "name":
             results = tool.get_file_by_name(args.name)
 
             if args.json:
@@ -380,7 +396,7 @@ def main():
                 for result in results:
                     print_file_info(result)
 
-        elif args.command == 'path':
+        elif args.command == "path":
             result = tool.get_file_by_path(args.path)
 
             if result:
@@ -388,12 +404,12 @@ def main():
                     print(json.dumps(result, indent=2, ensure_ascii=False))
                 else:
                     print_file_info(result)
-                    references = tool.get_file_references(result['id'])
+                    references = tool.get_file_references(result["id"])
                     print_references(references)
             else:
                 print("未找到文件")
 
-        elif args.command == 'category':
+        elif args.command == "category":
             results = tool.get_files_by_category(args.category)
 
             if args.json:
@@ -403,7 +419,7 @@ def main():
                 for result in results:
                     print(f"  - {result['file_name']} ({result['file_path']})")
 
-        elif args.command == 'stats':
+        elif args.command == "stats":
             results = tool.get_statistics()
 
             if args.json:
@@ -420,7 +436,7 @@ def main():
                     print(f"  平均复杂度: {result['avg_complexity']:.2f}")
                     print(f"  平均质量: {result['avg_quality']:.2f}")
 
-        elif args.command == 'latest':
+        elif args.command == "latest":
             result = tool.get_latest_analysis_run()
 
             if result:
@@ -433,7 +449,7 @@ def main():
             else:
                 print("未找到分析记录")
 
-        elif args.command == 'top':
+        elif args.command == "top":
             results = tool.get_most_referenced_files(args.limit)
 
             if args.json:
@@ -460,5 +476,5 @@ def main():
         tool.close()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

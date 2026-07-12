@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-检查TDengine中的表
-"""
+"""检查TDengine中的表"""
 
 import os
 import sys
+
 
 # 添加项目路径到模块搜索路径
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -88,8 +86,7 @@ def main():
         if db_name not in existing_databases:
             print(f"\n❌ 数据库 {db_name} 不存在")
             return False
-        else:
-            print(f"\n✅ 数据库 {db_name} 存在，继续检查表")
+        print(f"\n✅ 数据库 {db_name} 存在，继续检查表")
 
         # 直接在SQL语句中指定数据库名，因为REST API是无状态的
         # 先检查超级表（STABLES）
@@ -118,7 +115,7 @@ def main():
 
         total_count = len(stables_result) + len(tables_result)
         print(
-            f"\n总共找到 {total_count} 个表 ({len(stables_result)} 个超级表, {len(tables_result)} 个普通表)"
+            f"\n总共找到 {total_count} 个表 ({len(stables_result)} 个超级表, {len(tables_result)} 个普通表)",
         )
 
     except Exception as e:

@@ -1,5 +1,4 @@
-"""
-Mock数据文件: Stocks
+"""Mock数据文件: Stocks
 提供接口:
 1. get_stock_list() -> List[Dict] - 获取股票列表（支持按交易所筛选，支持分页）
 2. get_real_time_quote() -> Dict - 获取实时行情（必填参数：股票代码）
@@ -20,7 +19,7 @@ import random
 from typing import Dict, List, Optional
 
 import pandas as pd
-from scripts.dev.mock_stocks._watchlist_tail import add_to_watchlist, generate_realistic_price, get_watchlist, remove_from_watchlist
+
 
 def get_stock_list(params: Optional[Dict] = None) -> List[Dict]:
     """获取股票列表（支持按交易所筛选，支持分页）
@@ -39,6 +38,7 @@ def get_stock_list(params: Optional[Dict] = None) -> List[Dict]:
                    - area: 地区
                    - market: 市场
                    - list_date: 上市日期
+
     """
     # 默认参数
     params = params or {}
@@ -191,7 +191,7 @@ def get_stock_list(params: Optional[Dict] = None) -> List[Dict]:
                 "market": stock["market"],
                 "list_date": list_date.strftime("%Y-%m-%d"),
                 "total": total_stocks,  # 用于分页的总数量
-            }
+            },
         )
 
     return result
@@ -216,6 +216,7 @@ def get_real_time_quote(stock_codes: List[str]) -> List[Dict]:
              - high: 最高价
              - low: 最低价
              - close: 昨收价
+
     """
     # 股票基础信息
     stock_info = {
@@ -266,7 +267,7 @@ def get_real_time_quote(stock_codes: List[str]) -> List[Dict]:
                 "low": low_price,
                 "close": round(base_price, 2),
                 "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            }
+            },
         )
 
     return result
@@ -287,6 +288,7 @@ def get_history_profit(code: str, days: int = 30) -> pd.DataFrame:
                      - change_pct: 涨跌幅(%)
                      - volume: 成交量
                      - turnover: 成交额
+
     """
     # 股票基础价格
     base_prices = {
@@ -344,7 +346,7 @@ def get_history_profit(code: str, days: int = 30) -> pd.DataFrame:
             "change_pct": change_pcts,
             "volume": volumes,
             "turnover": turnovers,
-        }
+        },
     )
 
 
@@ -357,6 +359,7 @@ def get_stock_detail(params: Dict) -> Dict:
 
     Returns:
         Dict: 股票详细信息
+
     """
     stock_code = params.get("stock_code", "600000")
 
@@ -429,7 +432,7 @@ def get_stock_detail(params: Dict) -> Dict:
         "area": info["area"],
         "market": info["market"],
         "list_date": (datetime.datetime.now() - datetime.timedelta(days=random.randint(1000, 5000))).strftime(
-            "%Y-%m-%d"
+            "%Y-%m-%d",
         ),
         "total_shares": random.randint(100000000, 10000000000),
         "circulating_shares": random.randint(50000000, 8000000000),
@@ -447,6 +450,7 @@ def get_stock_financial_data(params: Dict) -> Dict:
 
     Returns:
         Dict: 股票财务数据
+
     """
     stock_code = params.get("stock_code", "600000")
 
@@ -463,7 +467,7 @@ def get_stock_financial_data(params: Dict) -> Dict:
             "debt_ratio": round(random.uniform(0.2, 0.6), 4),  # 资产负债率
             "current_ratio": round(random.uniform(0.8, 2.5), 2),  # 流动比率
             "report_date": (datetime.datetime.now() - datetime.timedelta(days=random.randint(0, 365))).strftime(
-                "%Y-%m-%d"
+                "%Y-%m-%d",
             ),  # 报告日期
         },
     }
@@ -478,6 +482,7 @@ def get_stock_indicators(params: Dict) -> Dict:
 
     Returns:
         Dict: 股票技术指标
+
     """
     stock_code = params.get("stock_code", "600000")
 
@@ -506,6 +511,7 @@ def get_realtime_quotes() -> List[Dict]:
 
     Returns:
         List[Dict]: 实时行情数据列表
+
     """
     stock_codes = [
         "600519",
@@ -548,7 +554,7 @@ def get_realtime_quotes() -> List[Dict]:
                 "open": round(base_price + random.uniform(-2, 2), 2),
                 "pre_close": round(base_price, 2),
                 "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            }
+            },
         )
 
     return result
@@ -564,6 +570,7 @@ def search_stocks(params: Dict) -> Dict:
 
     Returns:
         Dict: 搜索结果
+
     """
     keyword = params.get("q", "")
     limit = params.get("limit", 20)
@@ -607,6 +614,7 @@ def get_stock_by_industry(params: Dict) -> Dict:
 
     Returns:
         Dict: 行业股票列表
+
     """
     industry_name = params.get("industry_name", "")
     page = params.get("page", 1)

@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-MyStocks 沪深市场A股实时数据保存系统 - Saga事务版
+"""MyStocks 沪深市场A股实时数据保存系统 - Saga事务版
 通过customer_adapter统一管理efinance数据获取，按自动路由保存到PostgreSQL + TDengine
 支持跨库分布式事务保证数据一致性
 
@@ -20,24 +18,24 @@ python run_realtime_market_saver.py --test-adapter
 更新: 2026-01-03 (Saga事务集成)
 """
 
-import time
 import argparse
 import logging
-import sys
 import os
+import sys
+import time
 from datetime import datetime
+
 
 # 添加项目根目录到 Python 路径
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, project_root)
 
 # 导入MyStocks核心模块
+# 导入改进的customer适配器
+from src.adapters.customer_adapter import CustomerDataSource
 from src.core.data_classification import DataClassification
 from src.core.data_manager import DataManager
 from src.unified_manager import MyStocksUnifiedManager
-
-# 导入改进的customer适配器
-from src.adapters.customer_adapter import CustomerDataSource
 
 
 def setup_logging():
@@ -54,21 +52,22 @@ def setup_logging():
 
 
 def create_metadata_callback(timestamp: str):
-    """
-    创建元数据更新回调函数（用于Saga事务）
+    """创建元数据更新回调函数（用于Saga事务）
 
     Args:
         timestamp: 时间戳字符串
 
     Returns:
         Callable: 元数据更新回调函数
+
     """
+
     def metadata_update_func(pg_session):
-        """
-        更新PostgreSQL中的实时行情元数据表
+        """更新PostgreSQL中的实时行情元数据表
 
         Args:
             pg_session: PostgreSQL session对象
+
         """
         try:
             # 这里可以更新实时行情的元数据
@@ -111,7 +110,7 @@ def get_realtime_market_data_via_adapter():
         return data
 
     except Exception as e:
-        logger.error(f"❌ 通过customer_adapter获取实时行情数据失败: {str(e)}")
+        logger.error(f"❌ 通过customer_adapter获取实时行情数据失败: {e!s}")
         return None
 
 
@@ -125,6 +124,7 @@ def save_to_auto_routing(data, manager, use_saga=True):
 
     Returns:
         bool: 保存是否成功
+
     """
     logger = logging.getLogger(__name__)
 
@@ -152,7 +152,7 @@ def save_to_auto_routing(data, manager, use_saga=True):
                 classification=classification,
                 table_name="realtime_market_quotes",
                 use_saga=True,
-                metadata_callback=metadata_callback
+                metadata_callback=metadata_callback,
             )
 
             if success:
@@ -175,7 +175,7 @@ def save_to_auto_routing(data, manager, use_saga=True):
         return success
 
     except Exception as e:
-        logger.error(f"❌ 自动路由保存数据时出错: {str(e)}")
+        logger.error(f"❌ 自动路由保存数据时出错: {e!s}")
         return False
 
 
@@ -187,6 +187,7 @@ def run_single_fetch_and_save(use_saga=True):
 
     Returns:
         bool: 执行是否成功
+
     """
     logger = logging.getLogger(__name__)
 
@@ -202,18 +203,16 @@ def run_single_fetch_and_save(use_saga=True):
             # 保存数据
             success = save_to_auto_routing(data, manager, use_saga=use_saga)
             return success
-        else:
-            logger.error("❌ 未能获取到数据，跳过保存")
-            return False
+        logger.error("❌ 未能获取到数据，跳过保存")
+        return False
 
     except Exception as e:
-        logger.error(f"❌ 执行过程中出现错误: {str(e)}")
+        logger.error(f"❌ 执行过程中出现错误: {e!s}")
         return False
 
 
 def main():
     """主启动函数"""
-
     print("=" * 70)
     print("🚀 MyStocks 沪深市场A股实时数据保存系统")
     print("📋 使用customer_adapter + efinance + 自动数据路由 → PostgreSQL")
@@ -236,19 +235,29 @@ def main():
     )
 
     parser.add_argument(
-        "--interval", type=int, default=60, help="数据获取间隔（秒），默认60秒"
+        "--interval",
+        type=int,
+        default=60,
+        help="数据获取间隔（秒），默认60秒",
     )
 
     parser.add_argument(
-        "--count", type=int, default=1, help="运行次数，默认1次，-1表示持续运行"
+        "--count",
+        type=int,
+        default=1,
+        help="运行次数，默认1次，-1表示持续运行",
     )
 
     parser.add_argument(
-        "--test-adapter", action="store_true", help="仅测试customer_adapter是否正常工作"
+        "--test-adapter",
+        action="store_true",
+        help="仅测试customer_adapter是否正常工作",
     )
 
     parser.add_argument(
-        "--no-saga", action="store_true", help="禁用Saga事务，使用传统模式"
+        "--no-saga",
+        action="store_true",
+        help="禁用Saga事务，使用传统模式",
     )
 
     args = parser.parse_args()
@@ -303,7 +312,7 @@ def main():
     except KeyboardInterrupt:
         logger.info("🛑 用户中断，程序停止")
     except Exception as e:
-        logger.error(f"❌ 程序执行过程中出现错误: {str(e)}")
+        logger.error(f"❌ 程序执行过程中出现错误: {e!s}")
 
     finally:
         print("=" * 70)
@@ -312,9 +321,7 @@ def main():
         print(f"  - 成功次数: {success_count}")
         print(f"  - 失败次数: {run_count - success_count}")
         print(
-            f"  - 成功率: {success_count / run_count * 100:.1f}%"
-            if run_count > 0
-            else "  - 成功率: N/A"
+            f"  - 成功率: {success_count / run_count * 100:.1f}%" if run_count > 0 else "  - 成功率: N/A",
         )
         print(f"  - 事务模式: {'Saga分布式事务' if use_saga else '传统事务'}")
         print("=" * 70)

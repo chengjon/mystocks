@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-算法性能基准测试脚本
+"""算法性能基准测试脚本
 
 对比测试三个分类算法的性能：
 - SVM (Support Vector Machine)
@@ -17,14 +16,15 @@
 日期: 2026-01-12
 """
 
-import sys
 import asyncio
 import logging
+import sys
+import time
+from typing import Any, Dict, List
+
 import numpy as np
 import pandas as pd
-import time
-from datetime import datetime
-from typing import Dict, List, Any
+
 
 # 添加项目根目录到路径
 project_root = "/opt/claude/mystocks_spec"
@@ -44,9 +44,9 @@ class AlgorithmBenchmark:
 
     async def setup_algorithms(self):
         """设置所有算法实例"""
-        from src.algorithms.classification.svm_algorithm import SVMAlgorithm
         from src.algorithms.classification.decision_tree_algorithm import DecisionTreeAlgorithm
         from src.algorithms.classification.naive_bayes_algorithm import NaiveBayesAlgorithm
+        from src.algorithms.classification.svm_algorithm import SVMAlgorithm
         from src.algorithms.metadata import AlgorithmFingerprint
 
         # SVM算法
@@ -56,7 +56,7 @@ class AlgorithmBenchmark:
                 "description": "SVM algorithm benchmark",
                 "algorithm_type": "classification",
                 "gpu_enabled": True,
-            }
+            },
         )
         self.algorithms["SVM"] = SVMAlgorithm(svm_metadata)
 
@@ -67,7 +67,7 @@ class AlgorithmBenchmark:
                 "description": "Decision Tree algorithm benchmark",
                 "algorithm_type": "classification",
                 "gpu_enabled": True,
-            }
+            },
         )
         self.algorithms["Decision Tree"] = DecisionTreeAlgorithm(dt_metadata)
 
@@ -78,7 +78,7 @@ class AlgorithmBenchmark:
                 "description": "Naive Bayes algorithm benchmark",
                 "algorithm_type": "classification",
                 "gpu_enabled": True,
-            }
+            },
         )
         self.algorithms["Naive Bayes"] = NaiveBayesAlgorithm(nb_metadata)
 
@@ -136,7 +136,7 @@ class AlgorithmBenchmark:
                 "training_time": train_time,
                 "training_accuracy": train_result.get("training_metrics", {}).get("accuracy", 0.0),
                 "gpu_used_training": train_result.get("training_metrics", {}).get("gpu_used", False),
-            }
+            },
         )
 
         # 准备测试数据
@@ -152,7 +152,7 @@ class AlgorithmBenchmark:
                 "prediction_time": predict_time,
                 "gpu_used_prediction": predict_result.get("gpu_used", False),
                 "predictions_count": len(predict_result.get("predictions", [])),
-            }
+            },
         )
 
         # 评估基准测试
@@ -168,7 +168,7 @@ class AlgorithmBenchmark:
                 "precision": eval_result.get("precision", 0.0),
                 "recall": eval_result.get("recall", 0.0),
                 "f1_score": eval_result.get("f1_score", 0.0),
-            }
+            },
         )
 
         logger.info(".4f")

@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-硬编码密钥检查脚本
+"""硬编码密钥检查脚本
 检查代码中是否存在硬编码的密钥、密码等敏感信息
 """
 
-import sys
 import re
+import sys
 from pathlib import Path
 
 
@@ -40,7 +38,7 @@ def check_hardcoded_secrets():
     python_files = list(src_path.rglob("*.py"))
     for file_path in python_files:
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
                 lines = content.split("\n")
 
@@ -61,7 +59,7 @@ def check_hardcoded_secrets():
                                     "line_content": line.strip(),
                                     "violation": f"硬编码{description}",
                                     "severity": "critical",
-                                }
+                                },
                             )
 
         except Exception as e:

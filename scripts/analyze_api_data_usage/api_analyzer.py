@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
-"""
-MyStocks API和Web前端数据使用分析工具（增强版）
+"""MyStocks API和Web前端数据使用分析工具（增强版）
 支持增量分析、更准确的API调用提取和可视化报告
 """
 
 import json
 import re
-from collections import defaultdict
-from datetime import datetime
-from pathlib import Path
-from typing import Dict, List, Set, Tuple
 from hashlib import md5
+from pathlib import Path
+from typing import Dict, List, Tuple
+
 
 class APIAnalyzer:
     """分析后端API端点"""
@@ -64,7 +62,7 @@ class APIAnalyzer:
         cache_file = self.api_dir / ".analysis_cache.json"
         if cache_file.exists():
             try:
-                with open(cache_file, "r") as f:
+                with open(cache_file) as f:
                     cache = json.load(f)
                     self.file_hashes = cache.get("file_hashes", {})
             except:
@@ -82,7 +80,7 @@ class APIAnalyzer:
     def _analyze_python_file_with_regex(self, file_path: Path):
         """使用正则表达式分析Python文件提取API信息"""
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             # 提取路由定义
@@ -367,7 +365,7 @@ class FrontendAnalyzer:
         cache_file = self.frontend_dir / ".analysis_cache.json"
         if cache_file.exists():
             try:
-                with open(cache_file, "r") as f:
+                with open(cache_file) as f:
                     cache = json.load(f)
                     self.file_hashes = cache.get("file_hashes", {})
             except:
@@ -385,7 +383,7 @@ class FrontendAnalyzer:
     def _analyze_vue_file(self, file_path: Path):
         """分析Vue文件"""
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             rel_path = str(file_path.relative_to(self.frontend_dir))
@@ -400,7 +398,7 @@ class FrontendAnalyzer:
                         "type": "view" if "/views/" in rel_path else "component",
                         "api_calls": api_calls,
                         "api_count": len(api_calls),
-                    }
+                    },
                 )
 
                 # 添加到总API调用列表
@@ -429,7 +427,7 @@ class FrontendAnalyzer:
                         "method": match.group(1).upper(),
                         "endpoint": match.group(2),
                         "line": content[: match.start()].count("\n") + 1,
-                    }
+                    },
                 )
 
         # 模式2: API对象调用（dataApi.xxx, authApi.xxx等）
@@ -444,7 +442,7 @@ class FrontendAnalyzer:
                     "api_name": match.group(1),
                     "method": match.group(2),
                     "line": content[: match.start()].count("\n") + 1,
-                }
+                },
             )
 
         return api_calls
@@ -452,7 +450,7 @@ class FrontendAnalyzer:
     def _analyze_api_file(self, file_path: Path):
         """分析API调用文件"""
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             rel_path = str(file_path.relative_to(self.frontend_dir))
@@ -470,7 +468,7 @@ class FrontendAnalyzer:
                             "function_name": func["name"],
                             "endpoint": func.get("endpoint", ""),
                             "line": func["line"],
-                        }
+                        },
                     )
 
         except Exception as e:
@@ -500,7 +498,7 @@ class FrontendAnalyzer:
                         "name": func_name,
                         "endpoint": endpoint,
                         "line": content[: match.start()].count("\n") + 1,
-                    }
+                    },
                 )
 
         return functions
@@ -518,5 +516,3 @@ class FrontendAnalyzer:
             pos += 1
 
         return content[start_pos:pos]
-
-

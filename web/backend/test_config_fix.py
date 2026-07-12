@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""
-测试配置修复 - 验证环境变量正确读取
-"""
+"""测试配置修复 - 验证环境变量正确读取"""
 
 import os
 import sys
+
 
 # 添加项目路径
 sys.path.insert(0, os.path.dirname(__file__))

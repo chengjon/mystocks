@@ -130,7 +130,7 @@ def build_report(target_file: str | None = None) -> dict[str, Any]:
                 "passed": False,
                 "detail": f"Missing target file: {app_file}",
                 "matches": [],
-            }
+            },
         }
         return {
             "target_file": str(app_file),
@@ -200,7 +200,9 @@ def print_report(report: dict[str, Any], output_format: str) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Validate App.vue route purity and forbid hard-coded business components")
+    parser = argparse.ArgumentParser(
+        description="Validate App.vue route purity and forbid hard-coded business components"
+    )
     parser.add_argument("--file", help="Target App.vue file path")
     parser.add_argument("--format", choices=("text", "json"), default="text")
     args = parser.parse_args(argv)

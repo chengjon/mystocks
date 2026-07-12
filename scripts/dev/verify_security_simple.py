@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-安全修复验证脚本 - 简化版
+"""安全修复验证脚本 - 简化版
 
 不需要数据库连接，直接验证修复逻辑
 """
 
 import sys
 
-print("="*60)
+
+print("=" * 60)
 print("安全修复验证脚本（简化版）")
-print("="*60)
+print("=" * 60)
 print()
 
 # 测试1: TDengine符号验证逻辑
 print("测试1: TDengine符号验证逻辑")
 print("-" * 40)
+
 
 # 直接提取验证函数逻辑进行测试
 def validate_symbol(symbol: str) -> str:
@@ -30,12 +30,13 @@ def validate_symbol(symbol: str) -> str:
     dangerous_chars = ["'", ";", "--", "/*", "*/", "\\", "\x00"]
     for char in dangerous_chars:
         if char in symbol:
-            raise ValueError(f"Symbol contains dangerous character: {repr(char)}")
+            raise ValueError(f"Symbol contains dangerous character: {char!r}")
 
     if not any(c.isalnum() for c in symbol):
         raise ValueError(f"Symbol must contain alphanumeric characters: {symbol}")
 
     return symbol
+
 
 try:
     # 测试有效符号
@@ -74,6 +75,7 @@ try:
 except Exception as e:
     print(f"✗ 测试失败: {e}")
     import traceback
+
     traceback.print_exc()
     sys.exit(1)
 
@@ -93,7 +95,7 @@ try:
     # 创建安全的SQL对象
     query = sql.SQL("SELECT {} FROM {}").format(
         sql.SQL(", ").join(map(sql.Identifier, columns)),
-        sql.Identifier(table_name)
+        sql.Identifier(table_name),
     )
 
     # 验证对象类型（不需要连接）
@@ -129,6 +131,7 @@ try:
 except Exception as e:
     print(f"✗ 测试失败: {e}")
     import traceback
+
     traceback.print_exc()
     sys.exit(1)
 
@@ -146,10 +149,10 @@ try:
     log_stream = StringIO()
     handler = logging.StreamHandler(log_stream)
     handler.setLevel(logging.WARNING)
-    formatter = logging.Formatter('%(levelname)s: %(message)s')
+    formatter = logging.Formatter("%(levelname)s: %(message)s")
     handler.setFormatter(formatter)
 
-    logger = logging.getLogger('test_config')
+    logger = logging.getLogger("test_config")
     logger.addHandler(handler)
     logger.setLevel(logging.WARNING)
 
@@ -188,6 +191,7 @@ try:
     # 测试密钥生成
     print("\n✓ 测试密钥生成...")
     import secrets
+
     jwt_secret = secrets.token_hex(32)
     db_password = secrets.token_urlsafe(16)
 
@@ -203,14 +207,15 @@ try:
 except Exception as e:
     print(f"✗ 测试失败: {e}")
     import traceback
+
     traceback.print_exc()
     sys.exit(1)
 
 
 # 总结
-print("="*60)
+print("=" * 60)
 print("✅ 所有验证测试通过！")
-print("="*60)
+print("=" * 60)
 print()
 print("修复总结:")
 print("  1. ✅ TDengine符号验证逻辑正确")

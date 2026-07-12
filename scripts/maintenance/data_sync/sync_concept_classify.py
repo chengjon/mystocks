@@ -1,21 +1,22 @@
-"""
-概念分类数据同步脚本
+"""概念分类数据同步脚本
 从AkShare适配器获取概念分类数据并同步到数据库
 """
 
-import sys
-import os
 import argparse
 import logging
+import os
+import sys
 from datetime import datetime
 from pathlib import Path
+
 
 # 添加项目根目录到Python路径
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../"))
 
-from src.factories.data_source_factory import get_data_source
 from src.core.data_classification import DataClassification
+from src.factories.data_source_factory import get_data_source
 from src.unified_manager import MyStocksUnifiedManager
+
 
 # 配置日志
 LOG_DIR = Path(__file__).resolve().parents[3] / "var" / "log" / "data_sync"
@@ -33,9 +34,7 @@ logger = logging.getLogger(__name__)
 
 
 def sync_concept_classify_data():
-    """
-    同步概念分类数据
-    """
+    """同步概念分类数据"""
     logger.info("开始同步概念分类数据")
 
     try:
@@ -49,7 +48,7 @@ def sync_concept_classify_data():
 
         if concept_df is None or concept_df.empty:
             logger.warning("未能获取到概念分类数据")
-            return
+            return None
 
         logger.info(f"获取到 {len(concept_df)} 条概念分类数据")
 
@@ -65,14 +64,16 @@ def sync_concept_classify_data():
         # 保存到数据库（REFERENCE_DATA分类，自动路由到PostgreSQL）
         table_name = "concept_classifications"
         success = manager.save_data_by_classification(
-            DataClassification.REFERENCE_DATA, concept_df, table_name
+            DataClassification.REFERENCE_DATA,
+            concept_df,
+            table_name,
         )
 
         if success:
             logger.info(f"成功保存 {len(concept_df)} 条概念分类数据到 {table_name}")
         else:
             logger.error("保存概念分类数据失败")
-            return
+            return None
 
         # 统计信息
         stats = {

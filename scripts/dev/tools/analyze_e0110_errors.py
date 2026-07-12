@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
-"""
-快速分析abstract-class-instantiated错误分布
+"""快速分析abstract-class-instantiated错误分布
 
 用法:
 python scripts/tools/analyze_e0110_errors.py
 """
 
-import subprocess
 import re
+import subprocess
 from collections import defaultdict
-from pathlib import Path
+
 
 def main():
     """主函数"""
@@ -23,7 +22,7 @@ def main():
         "web/backend/app/",
         "--rcfile=.pylintrc",
         "--output-format=text",
-        "--reports=n"
+        "--reports=n",
     ]
 
     try:
@@ -31,7 +30,7 @@ def main():
             cmd,
             capture_output=True,
             text=True,
-            timeout=600  # 10分钟超时
+            timeout=600,  # 10分钟超时
         )
 
         # 解析输出
@@ -54,7 +53,7 @@ def main():
         total_errors = len(errors)
         total_files = len(file_errors)
 
-        print(f"📊 E0110错误统计:")
+        print("📊 E0110错误统计:")
         print(f"   总错误数: {total_errors}")
         print(f"   涉及文件: {total_files}")
         print()
@@ -88,13 +87,14 @@ def main():
             for line_num, message in errors_list[:3]:
                 print(f"      Line {line_num}: {message}")
             if len(errors_list) > 3:
-                print(f"      ... 还有 {len(errors_list)-3}个错误")
+                print(f"      ... 还有 {len(errors_list) - 3}个错误")
             print()
 
     except subprocess.TimeoutExpired:
         print("⏱️ Pylint扫描超时（10分钟）")
     except Exception as e:
         print(f"❌ 错误: {e}")
+
 
 if __name__ == "__main__":
     main()

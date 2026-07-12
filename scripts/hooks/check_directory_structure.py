@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-目录结构合规性检查脚本
+"""目录结构合规性检查脚本
 
 检查新创建的文件/目录是否符合项目规范：
 1. 新文件必须在允许的目录范围内
@@ -8,11 +7,11 @@
 3. 不允许在禁止目录中创建文件
 """
 
-import os
 import subprocess
 import sys
 from fnmatch import fnmatch
 from pathlib import Path
+
 
 # 允许的顶层目录
 ALLOWED_TOP_DIRS = [
@@ -117,7 +116,6 @@ def get_staged_changes() -> list[tuple[str, Path]]:
 
     本脚本主要用于约束“新文件”的位置，不应阻止对历史遗留目录中文件的正常修改。
     """
-
     completed = subprocess.run(
         ["git", "diff", "--cached", "--name-status"],
         check=False,
@@ -150,7 +148,7 @@ def check_file_location(file_path: Path) -> bool:
     file_str = str(file_path)
 
     # Root-level files are allowed only if they are in the explicit allowlist.
-    if file_path.parent == Path("."):
+    if file_path.parent == Path():
         if file_path.name in ALLOWED_ROOT_FILES:
             return True
         if any(fnmatch(file_path.name, pattern) for pattern in ALLOWED_ROOT_PATTERNS):

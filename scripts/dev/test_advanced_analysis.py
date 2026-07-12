@@ -1,12 +1,11 @@
-"""
-测试高级量化分析功能
+"""测试高级量化分析功能
 Test script for the advanced quantitative analysis features
 """
 
 import asyncio
-import sys
 import os
-from datetime import datetime
+import sys
+
 
 # Add project root to path
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -173,9 +172,8 @@ async def main():
     if all(results):
         print("🎉 所有测试通过！高级量化分析功能正常工作。")
         return True
-    else:
-        print("⚠️  部分测试失败，请检查配置和数据源。")
-        return False
+    print("⚠️  部分测试失败，请检查配置和数据源。")
+    return False
 
 
 if __name__ == "__main__":

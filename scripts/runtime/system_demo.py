@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-MyStocks 量化交易数据管理系统 - 完整示例和使用指南
+"""MyStocks 量化交易数据管理系统 - 完整示例和使用指南
 展示如何使用重构后的v2.0系统
 
 完全基于原始设计理念：
@@ -16,15 +14,17 @@ MyStocks 量化交易数据管理系统 - 完整示例和使用指南
 日期: 2025-09-21
 """
 
-import pandas as pd
-import numpy as np
-from datetime import datetime, timedelta
 import logging
+from datetime import datetime, timedelta
+
+import numpy as np
+import pandas as pd
 
 # 导入重构后的核心模块
 from src.core import DataClassification, DataManager
-from unified_manager import MyStocksUnifiedManager
 from src.monitoring.alert_manager import AlertLevel
+from unified_manager import MyStocksUnifiedManager
+
 
 # 配置日志
 logging.basicConfig(level=logging.INFO)
@@ -112,10 +112,10 @@ class MyStocksV2Demo:
             print(f"   {status} {table_key}")
 
         print(
-            f"✅ 监控系统: {'已初始化' if results['monitoring_initialized'] else '初始化失败'}"
+            f"✅ 监控系统: {'已初始化' if results['monitoring_initialized'] else '初始化失败'}",
         )
         print(
-            f"✅ 自动化维护: {'已启动' if results['maintenance_started'] else '启动失败'}"
+            f"✅ 自动化维护: {'已启动' if results['maintenance_started'] else '启动失败'}",
         )
 
         if results["errors"]:
@@ -160,11 +160,12 @@ class MyStocksV2Demo:
                 "sector": ["银行", "银行", "房地产", "银行"],
                 "list_date": ["1999-11-10", "1991-04-03", "1991-01-29", "2002-04-09"],
                 "is_active": [True, True, True, True],
-            }
+            },
         )
 
         success = self.manager.save_data_by_classification(
-            symbols_data, DataClassification.SYMBOLS_INFO
+            symbols_data,
+            DataClassification.SYMBOLS_INFO,
         )
         print(f"   结果: {'✅ 保存成功' if success else '❌ 保存失败'}")
 
@@ -173,7 +174,8 @@ class MyStocksV2Demo:
         daily_data = self._generate_sample_daily_data()
 
         success = self.manager.save_data_by_classification(
-            daily_data, DataClassification.DAILY_KLINE
+            daily_data,
+            DataClassification.DAILY_KLINE,
         )
         print(f"   结果: {'✅ 保存成功' if success else '❌ 保存失败'}")
 
@@ -182,7 +184,8 @@ class MyStocksV2Demo:
         indicators_data = self._generate_sample_indicators()
 
         success = self.manager.save_data_by_classification(
-            indicators_data, DataClassification.TECHNICAL_INDICATORS
+            indicators_data,
+            DataClassification.TECHNICAL_INDICATORS,
         )
         print(f"   结果: {'✅ 保存成功' if success else '❌ 保存失败'}")
 
@@ -193,7 +196,8 @@ class MyStocksV2Demo:
         # 1. 查询股票信息
         print("\n🔍 从MySQL查询股票信息...")
         symbols = self.manager.load_data_by_classification(
-            DataClassification.SYMBOLS_INFO, filters={"exchange": "SH"}
+            DataClassification.SYMBOLS_INFO,
+            filters={"exchange": "SH"},
         )
         print(f"   查询结果: {len(symbols)} 条记录")
         if not symbols.empty:
@@ -203,15 +207,15 @@ class MyStocksV2Demo:
         # 2. 查询日线数据
         print("\n📊 从PostgreSQL查询日线数据...")
         daily_data = self.manager.load_data_by_classification(
-            DataClassification.DAILY_KLINE, filters={"symbol": "600000"}, limit=5
+            DataClassification.DAILY_KLINE,
+            filters={"symbol": "600000"},
+            limit=5,
         )
         print(f"   查询结果: {len(daily_data)} 条记录")
         if not daily_data.empty:
             print("   示例数据:")
             columns_to_show = ["symbol", "trade_date", "close", "volume"]
-            available_columns = [
-                col for col in columns_to_show if col in daily_data.columns
-            ]
+            available_columns = [col for col in columns_to_show if col in daily_data.columns]
             if available_columns:
                 print(daily_data[available_columns].head().to_string(index=False))
 
@@ -231,9 +235,7 @@ class MyStocksV2Demo:
                 "indicator_name",
                 "indicator_value",
             ]
-            available_columns = [
-                col for col in columns_to_show if col in indicators.columns
-            ]
+            available_columns = [col for col in columns_to_show if col in indicators.columns]
             if available_columns:
                 print(indicators[available_columns].to_string(index=False))
 
@@ -246,7 +248,8 @@ class MyStocksV2Demo:
         tick_data = self._generate_sample_tick_data()
 
         success = self.manager.save_data_by_classification(
-            tick_data, DataClassification.TICK_DATA
+            tick_data,
+            DataClassification.TICK_DATA,
         )
         print(f"   结果: {'✅ 保存成功' if success else '❌ 保存失败'}")
         print(f"   数据量: {len(tick_data)} 条Tick记录")
@@ -256,7 +259,8 @@ class MyStocksV2Demo:
         minute_data = self._generate_sample_minute_kline()
 
         success = self.manager.save_data_by_classification(
-            minute_data, DataClassification.MINUTE_KLINE
+            minute_data,
+            DataClassification.MINUTE_KLINE,
         )
         print(f"   结果: {'✅ 保存成功' if success else '❌ 保存失败'}")
         print(f"   数据量: {len(minute_data)} 条分钟K线记录")
@@ -265,12 +269,16 @@ class MyStocksV2Demo:
         print("\n🔍 从TDengine查询高频数据...")
         try:
             recent_ticks = self.manager.load_data_by_classification(
-                DataClassification.TICK_DATA, filters={"symbol": "600000"}, limit=5
+                DataClassification.TICK_DATA,
+                filters={"symbol": "600000"},
+                limit=5,
             )
             print(f"   Tick数据查询结果: {len(recent_ticks)} 条记录")
 
             recent_minutes = self.manager.load_data_by_classification(
-                DataClassification.MINUTE_KLINE, filters={"symbol": "600000"}, limit=3
+                DataClassification.MINUTE_KLINE,
+                filters={"symbol": "600000"},
+                limit=3,
             )
             print(f"   分钟K线查询结果: {len(recent_minutes)} 条记录")
 
@@ -307,7 +315,10 @@ class MyStocksV2Demo:
         for symbol, quote in realtime_quotes.items():
             key = f"realtime:quote:{symbol}"
             success = self.manager.redis_access.save_realtime_data(
-                DataClassification.REALTIME_POSITIONS, key, quote, expire=300
+                DataClassification.REALTIME_POSITIONS,
+                key,
+                quote,
+                expire=300,
             )
             print(f"   {symbol}: {'✅ 保存成功' if success else '❌ 保存失败'}")
 
@@ -316,11 +327,12 @@ class MyStocksV2Demo:
         for symbol in ["600000", "000001"]:
             key = f"realtime:quote:{symbol}"
             quote = self.manager.redis_access.load_realtime_data(
-                DataClassification.REALTIME_POSITIONS, key
+                DataClassification.REALTIME_POSITIONS,
+                key,
             )
             if quote:
                 print(
-                    f"   {symbol}: 价格={quote.get('price', 'N/A')}, 涨跌幅={quote.get('change_pct', 'N/A')}"
+                    f"   {symbol}: 价格={quote.get('price', 'N/A')}, 涨跌幅={quote.get('change_pct', 'N/A')}",
                 )
             else:
                 print(f"   {symbol}: 无数据")
@@ -332,11 +344,13 @@ class MyStocksV2Demo:
                 "symbol": ["600000", "000001", "000002"],
                 "score": [0.85, 0.72, 0.91],
                 "rank": [2, 3, 1],
-            }
+            },
         )
 
         success = self.manager.redis_access.cache_dataframe(
-            "analysis:factor_score", analysis_result, expire=3600
+            "analysis:factor_score",
+            analysis_result,
+            expire=3600,
         )
         print(f"   结果: {'✅ 缓存成功' if success else '❌ 缓存失败'}")
 
@@ -375,7 +389,7 @@ class MyStocksV2Demo:
         print("\n🚨 查看告警状态...")
         active_alerts = self.manager.alert_manager.get_active_alerts()
         critical_alerts = self.manager.alert_manager.get_active_alerts(
-            AlertLevel.CRITICAL
+            AlertLevel.CRITICAL,
         )
         print(f"   活跃告警: {len(active_alerts)} 个")
         print(f"   严重告警: {len(critical_alerts)} 个")
@@ -543,7 +557,7 @@ class MyStocksV2Demo:
                         "volume": np.random.randint(100000, 10000000),
                         "amount": price * np.random.randint(100000, 10000000),
                         "adj_factor": 1.0,
-                    }
+                    },
                 )
 
         return pd.DataFrame(data)
@@ -565,9 +579,9 @@ class MyStocksV2Demo:
                             "indicator_name": indicator,
                             "indicator_value": np.random.uniform(0.1, 100),
                             "indicator_params": {
-                                "period": 20 if "MA" in indicator else 14
+                                "period": 20 if "MA" in indicator else 14,
                             },
-                        }
+                        },
                     )
 
         return pd.DataFrame(data)
@@ -591,7 +605,7 @@ class MyStocksV2Demo:
                         "volume": np.random.randint(100, 10000),
                         "amount": price * np.random.randint(100, 10000),
                         "exchange": "SH" if symbol.startswith("6") else "SZ",
-                    }
+                    },
                 )
 
         return pd.DataFrame(data)
@@ -618,7 +632,7 @@ class MyStocksV2Demo:
                         "volume": np.random.randint(1000, 100000),
                         "amount": price * np.random.randint(1000, 100000),
                         "frequency": "1m",
-                    }
+                    },
                 )
 
         return pd.DataFrame(data)

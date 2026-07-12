@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-# 功能：启动异步监控系统
+"""# 功能：启动异步监控系统
 # 作者：Claude (基于多角色架构评估建议)
 # 创建日期：2026-01-03
 # 版本：1.0.0
@@ -11,11 +10,12 @@
 # 版权：MyStocks Project © 2026
 """
 
-import sys
-import os
-import time
-import signal
 import logging
+import os
+import signal
+import sys
+import time
+
 
 # 添加项目根目录到路径
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -27,8 +27,8 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     handlers=[
         logging.StreamHandler(),
-        logging.FileHandler('logs/async_monitoring.log', encoding='utf-8')
-    ]
+        logging.FileHandler("logs/async_monitoring.log", encoding="utf-8"),
+    ],
 )
 logger = logging.getLogger(__name__)
 
@@ -40,7 +40,7 @@ def main():
     logger.info("=" * 60)
 
     # 检查环境变量
-    if os.getenv('ENABLE_ASYNC_MONITORING', 'false').lower() != 'true':
+    if os.getenv("ENABLE_ASYNC_MONITORING", "false").lower() != "true":
         logger.warning("⚠️ 异步监控未启用")
         logger.info("💡 提示: 设置环境变量 ENABLE_ASYNC_MONITORING=true 来启用")
         return 0

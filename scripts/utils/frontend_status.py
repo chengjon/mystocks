@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-MyStocks Web前端状态检查和展示脚本
+"""MyStocks Web前端状态检查和展示脚本
 
 展示前端页面结构和功能
 """
 
-import requests
 import os
 from datetime import datetime
+
+import requests
+
 
 FRONTEND_PORT = int(os.getenv("FRONTEND_PORT", "3020"))
 FRONTEND_BACKUP_PORT = int(os.getenv("FRONTEND_BACKUP_PORT", "3021"))

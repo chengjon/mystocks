@@ -1,5 +1,4 @@
-"""
-测试高级ML算法 - LSTM和Transformer
+"""测试高级ML算法 - LSTM和Transformer
 Test Advanced ML Algorithms - LSTM and Transformer
 
 验证LSTM和Transformer交易策略的实现和功能。
@@ -8,11 +7,12 @@ Validates the implementation and functionality of LSTM and Transformer trading s
 
 import asyncio
 import logging
-import sys
 import os
-from datetime import datetime
-import pandas as pd
+import sys
+
 import numpy as np
+import pandas as pd
+
 
 # Setup project path
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,6 +20,7 @@ sys.path.insert(0, project_root)
 
 from src.ml_strategy.strategy.lstm_trading_strategy import LSTMTradingStrategy
 from src.ml_strategy.strategy.transformer_trading_strategy import TransformerTradingStrategy
+
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -50,7 +51,7 @@ def create_mock_market_data(num_points: int = 1000) -> pd.DataFrame:
             "low": prices * (1 + np.random.normal(-0.01, 0.005, num_points)),
             "close": prices,
             "volume": volumes,
-        }
+        },
     )
 
     # 确保high >= max(open, close), low <= min(open, close)
@@ -342,9 +343,8 @@ async def run_all_tests():
         logger.info("🎉 所有测试通过! 高级ML算法已准备就绪。")
         logger.info("LSTM和Transformer策略已成功实现并测试。")
         return True
-    else:
-        logger.warning("⚠️ 某些测试失败。请检查实现。")
-        return False
+    logger.warning("⚠️ 某些测试失败。请检查实现。")
+    return False
 
 
 if __name__ == "__main__":

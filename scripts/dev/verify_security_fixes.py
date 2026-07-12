@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-安全修复验证脚本
+"""安全修复验证脚本
 
 手动验证SQL注入修复是否有效
 """
 
-import sys
 import os
+import sys
+
 
 # 添加项目根目录到路径
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-print("="*60)
+print("=" * 60)
 print("安全修复验证脚本")
-print("="*60)
+print("=" * 60)
 print()
 
 # 测试1: TDengine符号验证
@@ -22,8 +21,9 @@ print("测试1: TDengine符号验证")
 print("-" * 40)
 
 try:
-    from src.storage.access.tdengine import TDengineDataAccess
     from unittest.mock import MagicMock
+
+    from src.storage.access.tdengine import TDengineDataAccess
 
     # 创建TDengine访问器
     mock_db = MagicMock()
@@ -62,6 +62,7 @@ try:
 except Exception as e:
     print(f"✗ 测试失败: {e}")
     import traceback
+
     traceback.print_exc()
     sys.exit(1)
 
@@ -80,7 +81,7 @@ try:
 
     query = sql.SQL("SELECT {} FROM {}").format(
         sql.SQL(", ").join(map(sql.Identifier, columns)),
-        sql.Identifier(table_name)
+        sql.Identifier(table_name),
     )
 
     query_str = query.as_string(None)
@@ -95,7 +96,7 @@ try:
     print(f"  原始: {dangerous_table}")
     print(f"  转义后: {escaped}")
 
-    if ';' in dangerous_table and (';' not in escaped or '"' in escaped):
+    if ";" in dangerous_table and (";" not in escaped or '"' in escaped):
         print("  ✓ 危险字符已被转义或包裹")
     else:
         print("  ⚠ 转义检查需要人工验证")
@@ -105,6 +106,7 @@ try:
 except Exception as e:
     print(f"✗ 测试失败: {e}")
     import traceback
+
     traceback.print_exc()
     sys.exit(1)
 
@@ -114,26 +116,27 @@ print("测试3: 配置检查工具")
 print("-" * 40)
 
 try:
-    from src.utils.simple_config_check import check_config_strength, generate_strong_jwt_secret
     import logging
     from io import StringIO
-    import unittest.mock as mock
+    from unittest import mock
+
+    from src.utils.simple_config_check import check_config_strength, generate_strong_jwt_secret
 
     # 设置日志捕获
     log_stream = StringIO()
     handler = logging.StreamHandler(log_stream)
     handler.setLevel(logging.WARNING)
-    logging.getLogger('src.utils.simple_config_check').addHandler(handler)
+    logging.getLogger("src.utils.simple_config_check").addHandler(handler)
 
     # 测试弱配置
     print("✓ 测试弱配置检测...")
-    with mock.patch.dict(os.environ, {'JWT_SECRET_KEY': 'short', 'POSTGRESQL_PASSWORD': ''}, clear=False):
+    with mock.patch.dict(os.environ, {"JWT_SECRET_KEY": "short", "POSTGRESQL_PASSWORD": ""}, clear=False):
         log_stream.truncate(0)
         log_stream.seek(0)
         check_config_strength()
         output = log_stream.getvalue()
 
-        if 'JWT密钥长度不足' in output and '个人项目可以忽略' in output:
+        if "JWT密钥长度不足" in output and "个人项目可以忽略" in output:
             print("  ✓ 弱配置正确检测并友好提醒")
         else:
             print("  ⚠ 输出不符合预期")
@@ -152,14 +155,15 @@ try:
 except Exception as e:
     print(f"✗ 测试失败: {e}")
     import traceback
+
     traceback.print_exc()
     sys.exit(1)
 
 
 # 总结
-print("="*60)
+print("=" * 60)
 print("✅ 所有验证测试通过！")
-print("="*60)
+print("=" * 60)
 print()
 print("修复总结:")
 print("  1. ✅ TDengine符号验证已添加")

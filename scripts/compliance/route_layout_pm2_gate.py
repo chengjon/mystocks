@@ -23,8 +23,7 @@ def normalize_relative_paths(paths: list[str] | None) -> list[str]:
         path_value = raw_path.strip()
         if not path_value:
             continue
-        if path_value.startswith("./"):
-            path_value = path_value[2:]
+        path_value = path_value.removeprefix("./")
         normalized_path = Path(path_value).as_posix().strip("/")
         if normalized_path:
             normalized.add(normalized_path)

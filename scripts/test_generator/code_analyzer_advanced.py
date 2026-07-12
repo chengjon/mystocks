@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-增强版AI测试生成器
+"""增强版AI测试生成器
 提供更智能的测试算法、模式识别和优化建议
 
 核心功能:
@@ -15,17 +14,17 @@
 日期: 2025-12-22
 """
 
-import ast
-import re
-import sys
-from pathlib import Path
-from typing import Dict, List, Tuple, Any
-from dataclasses import dataclass
 import logging
+import sys
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Dict
+
 
 # 设置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -35,10 +34,8 @@ sys.path.insert(0, str(project_root))
 
 
 @dataclass
-
 class _AdvancedAnalysisMixin:
     """EnhancedCodeAnalyzer 高级分析方法集"""
-
 
     def _get_security_enhancement_example(self, pattern: CodePattern) -> str:
         """获取安全增强示例代码"""

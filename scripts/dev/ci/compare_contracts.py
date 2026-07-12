@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-OpenAPI契约差异检测脚本
+"""OpenAPI契约差异检测脚本
 用于CI/CD流水线中自动检测API契约的破坏性变更
 """
 
@@ -8,7 +7,8 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Any, Dict, List
+
 
 try:
     import yaml
@@ -42,13 +42,12 @@ class ContractDiffer:
         if not path.exists():
             raise FileNotFoundError(f"契约文件不存在: {path}")
 
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             if path.suffix in [".yaml", ".yml"]:
                 return yaml.safe_load(f)
-            elif path.suffix == ".json":
+            if path.suffix == ".json":
                 return json.load(f)
-            else:
-                raise ValueError(f"不支持的文件格式: {path.suffix}")
+            raise ValueError(f"不支持的文件格式: {path.suffix}")
 
     def compare_paths(self, base_spec: Dict, head_spec: Dict):
         """对比API路径变更"""
@@ -58,22 +57,26 @@ class ContractDiffer:
         # 检测删除的端点
         for path in base_paths:
             if path not in head_paths:
-                self.breaking_changes.append({
-                    "type": "paths_removed",
-                    "path": f"paths.{path}",
-                    "message": f"删除API端点: {path}",
-                    "severity": "critical"
-                })
+                self.breaking_changes.append(
+                    {
+                        "type": "paths_removed",
+                        "path": f"paths.{path}",
+                        "message": f"删除API端点: {path}",
+                        "severity": "critical",
+                    }
+                )
 
         # 检测新增的端点 (非破坏性)
         for path in head_paths:
             if path not in base_paths:
-                self.non_breaking_changes.append({
-                    "type": "path_added",
-                    "path": f"paths.{path}",
-                    "message": f"新增API端点: {path}",
-                    "severity": "info"
-                })
+                self.non_breaking_changes.append(
+                    {
+                        "type": "path_added",
+                        "path": f"paths.{path}",
+                        "message": f"新增API端点: {path}",
+                        "severity": "info",
+                    }
+                )
 
         # 检测路径内的方法变更
         for path in base_paths:
@@ -88,22 +91,26 @@ class ContractDiffer:
         # 检测删除的方法
         for method in base_methods:
             if method not in head_methods:
-                self.breaking_changes.append({
-                    "type": "path_method_removed",
-                    "path": f"paths.{path}.{method}",
-                    "message": f"删除HTTP方法: {method.upper()} {path}",
-                    "severity": "critical"
-                })
+                self.breaking_changes.append(
+                    {
+                        "type": "path_method_removed",
+                        "path": f"paths.{path}.{method}",
+                        "message": f"删除HTTP方法: {method.upper()} {path}",
+                        "severity": "critical",
+                    }
+                )
 
         # 检测新增的方法 (非破坏性)
         for method in head_methods:
             if method not in base_methods:
-                self.non_breaking_changes.append({
-                    "type": "method_added",
-                    "path": f"paths.{path}.{method}",
-                    "message": f"新增HTTP方法: {method.upper()} {path}",
-                    "severity": "info"
-                })
+                self.non_breaking_changes.append(
+                    {
+                        "type": "method_added",
+                        "path": f"paths.{path}.{method}",
+                        "message": f"新增HTTP方法: {method.upper()} {path}",
+                        "severity": "info",
+                    }
+                )
 
     def compare_schemas(self, base_spec: Dict, head_spec: Dict):
         """对比Schema定义变更"""
@@ -113,22 +120,26 @@ class ContractDiffer:
         # 检测删除的Schema
         for schema_name in base_schemas:
             if schema_name not in head_schemas:
-                self.breaking_changes.append({
-                    "type": "schema_removed",
-                    "path": f"components.schemas.{schema_name}",
-                    "message": f"删除Schema定义: {schema_name}",
-                    "severity": "high"
-                })
+                self.breaking_changes.append(
+                    {
+                        "type": "schema_removed",
+                        "path": f"components.schemas.{schema_name}",
+                        "message": f"删除Schema定义: {schema_name}",
+                        "severity": "high",
+                    }
+                )
 
         # 检测新增的Schema (非破坏性)
         for schema_name in head_schemas:
             if schema_name not in base_schemas:
-                self.non_breaking_changes.append({
-                    "type": "schema_added",
-                    "path": f"components.schemas.{schema_name}",
-                    "message": f"新增Schema定义: {schema_name}",
-                    "severity": "info"
-                })
+                self.non_breaking_changes.append(
+                    {
+                        "type": "schema_added",
+                        "path": f"components.schemas.{schema_name}",
+                        "message": f"新增Schema定义: {schema_name}",
+                        "severity": "info",
+                    }
+                )
 
         # 对比Schema字段变更
         for schema_name in base_schemas:
@@ -136,7 +147,7 @@ class ContractDiffer:
                 self.compare_schema_fields(
                     schema_name,
                     base_schemas[schema_name],
-                    head_schemas[schema_name]
+                    head_schemas[schema_name],
                 )
 
     def compare_schema_fields(self, schema_name: str, base_schema: Dict, head_schema: Dict):
@@ -151,39 +162,47 @@ class ContractDiffer:
             if field_name not in head_props:
                 # 如果是必填字段，则是破坏性变更
                 if field_name in base_required:
-                    self.breaking_changes.append({
-                        "type": "required_field_removed",
-                        "path": f"components.schemas.{schema_name}.properties.{field_name}",
-                        "message": f"删除必填字段: {schema_name}.{field_name}",
-                        "severity": "high"
-                    })
+                    self.breaking_changes.append(
+                        {
+                            "type": "required_field_removed",
+                            "path": f"components.schemas.{schema_name}.properties.{field_name}",
+                            "message": f"删除必填字段: {schema_name}.{field_name}",
+                            "severity": "high",
+                        }
+                    )
                 else:
-                    self.non_breaking_changes.append({
-                        "type": "optional_field_removed",
-                        "path": f"components.schemas.{schema_name}.properties.{field_name}",
-                        "message": f"删除可选字段: {schema_name}.{field_name}",
-                        "severity": "low"
-                    })
+                    self.non_breaking_changes.append(
+                        {
+                            "type": "optional_field_removed",
+                            "path": f"components.schemas.{schema_name}.properties.{field_name}",
+                            "message": f"删除可选字段: {schema_name}.{field_name}",
+                            "severity": "low",
+                        }
+                    )
 
         # 检测新增的必填字段 (破坏性变更)
         for field_name in head_props:
             if field_name not in base_props and field_name in head_required:
-                self.breaking_changes.append({
-                    "type": "required_param_added",
-                    "path": f"components.schemas.{schema_name}.properties.{field_name}",
-                    "message": f"新增必填字段: {schema_name}.{field_name}",
-                    "severity": "high"
-                })
+                self.breaking_changes.append(
+                    {
+                        "type": "required_param_added",
+                        "path": f"components.schemas.{schema_name}.properties.{field_name}",
+                        "message": f"新增必填字段: {schema_name}.{field_name}",
+                        "severity": "high",
+                    }
+                )
 
         # 检测新增的可选字段 (非破坏性)
         for field_name in head_props:
             if field_name not in base_props and field_name not in head_required:
-                self.non_breaking_changes.append({
-                    "type": "optional_param_added",
-                    "path": f"components.schemas.{schema_name}.properties.{field_name}",
-                    "message": f"新增可选字段: {schema_name}.{field_name}",
-                    "severity": "info"
-                })
+                self.non_breaking_changes.append(
+                    {
+                        "type": "optional_param_added",
+                        "path": f"components.schemas.{schema_name}.properties.{field_name}",
+                        "message": f"新增可选字段: {schema_name}.{field_name}",
+                        "severity": "info",
+                    }
+                )
 
         # 检测字段类型变更
         for field_name in base_props:
@@ -194,19 +213,23 @@ class ContractDiffer:
                 if base_type != head_type:
                     # 检查是否兼容 (如: string -> format: string)
                     if not self.is_type_compatible(base_type, head_type):
-                        self.breaking_changes.append({
-                            "type": "type_changed",
-                            "path": f"components.schemas.{schema_name}.properties.{field_name}",
-                            "message": f"修改字段类型: {schema_name}.{field_name} ({base_type} → {head_type})",
-                            "severity": "high"
-                        })
+                        self.breaking_changes.append(
+                            {
+                                "type": "type_changed",
+                                "path": f"components.schemas.{schema_name}.properties.{field_name}",
+                                "message": f"修改字段类型: {schema_name}.{field_name} ({base_type} → {head_type})",
+                                "severity": "high",
+                            }
+                        )
                     else:
-                        self.non_breaking_changes.append({
-                            "type": "type_refined",
-                            "path": f"components.schemas.{schema_name}.properties.{field_name}",
-                            "message": f"字段类型兼容变更: {schema_name}.{field_name} ({base_type} → {head_type})",
-                            "severity": "info"
-                        })
+                        self.non_breaking_changes.append(
+                            {
+                                "type": "type_refined",
+                                "path": f"components.schemas.{schema_name}.properties.{field_name}",
+                                "message": f"字段类型兼容变更: {schema_name}.{field_name} ({base_type} → {head_type})",
+                                "severity": "info",
+                            }
+                        )
 
     def is_type_compatible(self, base_type: str, head_type: str) -> bool:
         """检查类型变更是否兼容"""
@@ -276,30 +299,31 @@ def main():
 
   # 对比Git分支的契约
   python compare_contracts.py --base origin/main --head HEAD
-        """
+        """,
     )
 
     parser.add_argument(
         "--base",
         required=True,
-        help="基准契约文件或Git分支"
+        help="基准契约文件或Git分支",
     )
 
     parser.add_argument(
         "--head",
         required=True,
-        help="目标契约文件或Git分支"
+        help="目标契约文件或Git分支",
     )
 
     parser.add_argument(
-        "--output", "-o",
-        help="输出JSON报告文件"
+        "--output",
+        "-o",
+        help="输出JSON报告文件",
     )
 
     parser.add_argument(
         "--fail-on-breaking",
         action="store_true",
-        help="如果检测到破坏性变更则退出码为1"
+        help="如果检测到破坏性变更则退出码为1",
     )
 
     args = parser.parse_args()
@@ -318,18 +342,18 @@ def main():
         print(f"✅ 报告已保存到: {args.output}")
 
     # 打印摘要
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("📊 差异检测摘要")
-    print("="*60)
+    print("=" * 60)
     print(f"基准契约: {report['base_contract']}")
     print(f"目标契约: {report['head_contract']}")
     print(f"破坏性变更: {report['breaking_changes_count']}")
     print(f"非破坏性变更: {report['non_breaking_changes_count']}")
     print(f"摘要: {report['summary']}")
-    print("="*60)
+    print("=" * 60)
 
     # 返回退出码
-    if args.fail_on_breaking and report['breaking_changes_count'] > 0:
+    if args.fail_on_breaking and report["breaking_changes_count"] > 0:
         print("\n❌ 检测到破坏性变更，退出码: 1")
         sys.exit(1)
     else:

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-文件命名规范检查脚本
+"""文件命名规范检查脚本
 
 检查文件名是否符合规范：
 1. 必须使用英文
@@ -9,8 +8,8 @@
 """
 
 import os
-import sys
 import re
+import sys
 from pathlib import Path
 
 

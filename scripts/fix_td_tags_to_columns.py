@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
-import taos
 import sys
+
+import taos
+
 
 # Connect to TDengine
 try:
     conn = taos.connect(
-        host='localhost',
+        host="localhost",
         port=6030,
-        user='root',
-        password='your-tdengine-password',
-        database='market_data'
+        user="root",
+        password="your-tdengine-password",
+        database="market_data",
     )
     cursor = conn.cursor()
 except Exception as e:
@@ -17,14 +19,14 @@ except Exception as e:
     sys.exit(1)
 
 tables = [
-    'minute_kline',
-    'tick_data',
-    'depth_data',
-    'minute_kline_1min',
-    'minute_kline_5min',
-    'minute_kline_15min',
-    'minute_kline_30min',
-    'minute_kline_60min'
+    "minute_kline",
+    "tick_data",
+    "depth_data",
+    "minute_kline_1min",
+    "minute_kline_5min",
+    "minute_kline_15min",
+    "minute_kline_30min",
+    "minute_kline_60min",
 ]
 
 print("Starting migration: Converting txn_id and is_valid from TAGS to COLUMNS")

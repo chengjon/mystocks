@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-MyStocks 代码优化 - 监控模块合并执行脚本
+"""MyStocks 代码优化 - 监控模块合并执行脚本
 将monitoring.py的重复代码整合到monitoring/目录中
 
 执行步骤：
@@ -15,8 +13,8 @@ MyStocks 代码优化 - 监控模块合并执行脚本
 """
 
 import shutil
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 
 class MonitoringMerger:
@@ -44,9 +42,8 @@ class MonitoringMerger:
             shutil.copy2(self.monitoring_py, backup_path)
             print(f"   ✅ 已备份到: {backup_path}")
             return True
-        else:
-            print("   ⚠️  monitoring.py文件不存在")
-            return False
+        print("   ⚠️  monitoring.py文件不存在")
+        return False
 
     def update_imports(self):
         """更新对monitoring.py的导入引用"""
@@ -69,19 +66,15 @@ class MonitoringMerger:
         # 查找所有需要更新的文件
         files_to_update = []
         for py_file in self.project_root.rglob("*.py"):
-            if (
-                "__pycache__" in str(py_file)
-                or ".git" in str(py_file)
-                or ".archive" in str(py_file)
-            ):
+            if "__pycache__" in str(py_file) or ".git" in str(py_file) or ".archive" in str(py_file):
                 continue
 
             try:
-                with open(py_file, "r", encoding="utf-8") as f:
+                with open(py_file, encoding="utf-8") as f:
                     content = f.read()
 
                 # 检查是否包含对monitoring.py的导入
-                for old_import in import_mappings.keys():
+                for old_import in import_mappings:
                     if old_import in content:
                         files_to_update.append(py_file)
                         break
@@ -96,7 +89,7 @@ class MonitoringMerger:
         updated_count = 0
         for file_path in files_to_update:
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = f.read()
 
                 original_content = content
@@ -126,9 +119,8 @@ class MonitoringMerger:
             self.monitoring_py.unlink()
             print("   ✅ monitoring.py已删除")
             return True
-        else:
-            print("   ⚠️  monitoring.py文件不存在")
-            return False
+        print("   ⚠️  monitoring.py文件不存在")
+        return False
 
     def validate_imports(self):
         """验证导入仍然有效"""
@@ -146,7 +138,7 @@ class MonitoringMerger:
         for import_stmt in test_imports:
             try:
                 exec(
-                    f"import sys; sys.path.insert(0, '{self.project_root}'); {import_stmt}"
+                    f"import sys; sys.path.insert(0, '{self.project_root}'); {import_stmt}",
                 )
                 print(f"   ✅ {import_stmt}")
                 successful_imports += 1
@@ -213,16 +205,15 @@ class MonitoringMerger:
         print(f"✅ 删除文件: {'成功' if delete_success else '失败'}")
         print(f"✅ 验证导入: {'通过' if validate_success else '失败'}")
         print(
-            f"📊 代码减少: {stats['lines_removed']} 行 ({stats['reduction_percentage']:.1f}%)"
+            f"📊 代码减少: {stats['lines_removed']} 行 ({stats['reduction_percentage']:.1f}%)",
         )
         print(f"📁 文件减少: {stats['files_removed']} 个")
 
         if backup_success and delete_success and validate_success:
             print("\n🎉 监控模块合并执行成功!")
             return True
-        else:
-            print("\n❌ 合并执行过程中遇到问题，请检查日志")
-            return False
+        print("\n❌ 合并执行过程中遇到问题，请检查日志")
+        return False
 
 
 if __name__ == "__main__":

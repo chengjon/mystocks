@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
-"""
-Phase 6.2.4 GPU债务迁移分析器
+"""Phase 6.2.4 GPU债务迁移分析器
 分析GPU债务文件，制定迁移策略，为新HAL和内核接口集成做准备
 """
 
+import json
 import os
 import re
-from pathlib import Path
-from typing import List, Dict, Any, Tuple
-import json
-from dataclasses import dataclass, field
 from collections import defaultdict
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Dict, List, Tuple
 
 
 @dataclass
@@ -43,7 +42,7 @@ class GPUDebtMigrationAnalyzer:
     """GPU债务迁移分析器"""
 
     def __init__(self, project_root: str = None):
-        self.project_root = Path(project_root) if project_root else Path(".")
+        self.project_root = Path(project_root) if project_root else Path()
         self.gpu_files: List[GPUDebtFile] = []
         self.migration_patterns: List[MigrationPattern] = []
         self.analysis_results = {}
@@ -89,13 +88,12 @@ class GPUDebtMigrationAnalyzer:
     def _load_debt_report(self, report_path: str) -> Dict[str, Any]:
         """加载债务报告"""
         try:
-            with open(report_path, "r", encoding="utf-8") as f:
+            with open(report_path, encoding="utf-8") as f:
                 if report_path.endswith(".json"):
                     return json.load(f)
-                else:
-                    # 简单的文本解析
-                    content = f.read()
-                    return self._parse_text_debt_report(content)
+                # 简单的文本解析
+                content = f.read()
+                return self._parse_text_debt_report(content)
         except Exception as e:
             print(f"   警告: 无法加载债务报告 {e}")
             return self._get_default_debt_files()
@@ -117,9 +115,7 @@ class GPUDebtMigrationAnalyzer:
                 }
             elif line.startswith("Issues:") and current_file:
                 issues_str = line.replace("Issues:", "").strip()
-                current_file["issues"] = [
-                    issue.strip() for issue in issues_str.split(",")
-                ]
+                current_file["issues"] = [issue.strip() for issue in issues_str.split(",")]
 
         if current_file:
             files.append(current_file)
@@ -194,7 +190,7 @@ class GPUDebtMigrationAnalyzer:
                     "issues": [f"GPU issue {i}"],
                     "priority": "MEDIUM",
                     "complexity": "MEDIUM",
-                }
+                },
             )
 
         return {"files": default_files}
@@ -217,7 +213,7 @@ class GPUDebtMigrationAnalyzer:
 
         # 读取文件内容
         try:
-            with open(full_path, "r", encoding="utf-8") as f:
+            with open(full_path, encoding="utf-8") as f:
                 content = f.read()
         except Exception as e:
             print(f"   错误: 无法读取文件 {file_path}: {e}")
@@ -235,7 +231,9 @@ class GPUDebtMigrationAnalyzer:
 
         # 确定推荐的HAL层和内核类型
         hal_layer, kernel_type = self._recommend_hal_and_kernel(
-            file_path, content, gpu_patterns
+            file_path,
+            content,
+            gpu_patterns,
         )
 
         # 分析依赖关系
@@ -299,7 +297,10 @@ class GPUDebtMigrationAnalyzer:
         return patterns
 
     def _recommend_hal_and_kernel(
-        self, file_path: str, content: str, patterns: List[str]
+        self,
+        file_path: str,
+        content: str,
+        patterns: List[str],
     ) -> Tuple[str, str]:
         """推荐HAL层和内核类型"""
         file_name = file_path.lower()
@@ -307,18 +308,17 @@ class GPUDebtMigrationAnalyzer:
         # 根据文件名和内容推荐
         if "matrix" in file_name or any("matrix" in p for p in patterns):
             return "HardwareAbstractionLayer", "MatrixKernel"
-        elif "transform" in file_name or "feature" in file_name:
+        if "transform" in file_name or "feature" in file_name:
             return "HardwareAbstractionLayer", "TransformKernel"
-        elif "inference" in file_name or "ml" in file_name or "predict" in file_name:
+        if "inference" in file_name or "ml" in file_name or "predict" in file_name:
             return "HardwareAbstractionLayer", "InferenceKernel"
-        elif "resource" in file_name or "manager" in file_name:
+        if "resource" in file_name or "manager" in file_name:
             return "GPUResourceManager", "ResourceKernel"
-        elif "strategy" in file_name or "context" in file_name:
+        if "strategy" in file_name or "context" in file_name:
             return "StrategyGPUContext", "StrategyKernel"
-        elif "memory" in file_name or "pool" in file_name:
+        if "memory" in file_name or "pool" in file_name:
             return "MemoryPool", "MemoryKernel"
-        else:
-            return "HardwareAbstractionLayer", "GeneralKernel"
+        return "HardwareAbstractionLayer", "GeneralKernel"
 
     def _analyze_dependencies(self, content: str) -> List[str]:
         """分析文件依赖关系"""
@@ -543,7 +543,7 @@ class GPUDebtMigrationAnalyzer:
         print("\n📋 迁移计划:")
         for phase in strategy["migration_plan"]:
             print(
-                f"   阶段{phase['phase']}: {phase['name']} ({len(phase['files'])}文件)"
+                f"   阶段{phase['phase']}: {phase['name']} ({len(phase['files'])}文件)",
             )
             print(f"      预估工作量: {phase['estimated_effort']}")
 

@@ -1,23 +1,25 @@
-"""
-股票K线数据同步脚本 (Saga事务版)
+"""股票K线数据同步脚本 (Saga事务版)
 从数据源获取股票K线数据并同步到数据库
 支持跨库分布式事务保证数据一致性
 """
 
-import sys
-import os
 import argparse
 import logging
+import os
+import sys
 from datetime import datetime, timedelta
 from pathlib import Path
+
 
 # 添加项目根目录到Python路径
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../"))
 
-from scripts.data_sync.base_data_source import BaseDataSource
-from src.unified_manager import MyStocksUnifiedManager
-from src.core.data_classification import DataClassification
 import pandas as pd
+from scripts.data_sync.base_data_source import BaseDataSource
+
+from src.core.data_classification import DataClassification
+from src.unified_manager import MyStocksUnifiedManager
+
 
 # 配置日志
 LOG_DIR = Path(__file__).resolve().parents[3] / "var" / "log" / "data_sync"
@@ -35,10 +37,10 @@ logger = logging.getLogger(__name__)
 
 
 def get_latest_trade_date_for_symbol(
-    manager: MyStocksUnifiedManager, symbol: str
+    manager: MyStocksUnifiedManager,
+    symbol: str,
 ) -> str:
-    """
-    获取指定股票在数据库中的最新交易日期
+    """获取指定股票在数据库中的最新交易日期
 
     Args:
         manager: MyStocks统一管理器
@@ -46,6 +48,7 @@ def get_latest_trade_date_for_symbol(
 
     Returns:
         最新交易日期，格式为YYYY-MM-DD
+
     """
     try:
         # 查询该股票的最新交易日期
@@ -61,7 +64,7 @@ def get_latest_trade_date_for_symbol(
             filtered_df = result_df[result_df["symbol"] == symbol] if "symbol" in result_df.columns else result_df
             if not filtered_df.empty and filtered_df.iloc[0]["latest_date"]:
                 latest_date = filtered_df.iloc[0]["latest_date"]
-                return latest_date.strftime("%Y-%m-%d") if hasattr(latest_date, 'strftime') else str(latest_date)[:10]
+                return latest_date.strftime("%Y-%m-%d") if hasattr(latest_date, "strftime") else str(latest_date)[:10]
 
         # 如果没有历史数据，返回一个较早的日期
         return "2020-01-01"
@@ -72,8 +75,7 @@ def get_latest_trade_date_for_symbol(
 
 
 def create_metadata_callback(symbol: str, trade_date: str):
-    """
-    创建元数据更新回调函数（用于Saga事务）
+    """创建元数据更新回调函数（用于Saga事务）
 
     Args:
         symbol: 股票代码
@@ -81,13 +83,15 @@ def create_metadata_callback(symbol: str, trade_date: str):
 
     Returns:
         Callable: 元数据更新回调函数
+
     """
+
     def metadata_update_func(pg_session):
-        """
-        更新PostgreSQL中的元数据表
+        """更新PostgreSQL中的元数据表
 
         Args:
             pg_session: PostgreSQL session对象
+
         """
         try:
             # 这里可以更新symbol的last_sync_time等元数据
@@ -106,12 +110,12 @@ def create_metadata_callback(symbol: str, trade_date: str):
 
 
 def sync_stock_kline_data(full_sync: bool = False, use_saga: bool = True):
-    """
-    同步股票K线数据（支持Saga分布式事务）
+    """同步股票K线数据（支持Saga分布式事务）
 
     Args:
         full_sync: 是否执行全量同步（默认增量同步）
         use_saga: 是否使用Saga事务（默认启用）
+
     """
     logger.info("开始同步股票K线数据")
     logger.info(f"同步模式: {'全量同步' if full_sync else '增量同步'}")
@@ -127,12 +131,12 @@ def sync_stock_kline_data(full_sync: bool = False, use_saga: bool = True):
         stocks_df = manager.load_data_by_classification(
             classification=DataClassification.REFERENCE_DATA,
             table_name="symbols_info",
-            filters={"columns": ["symbol"]}
+            filters={"columns": ["symbol"]},
         )
 
         if stocks_df is None or stocks_df.empty:
             logger.warning("数据库中没有股票信息，无法同步K线数据")
-            return
+            return None
 
         symbols = stocks_df["symbol"].tolist()
         logger.info(f"获取到 {len(symbols)} 只股票")
@@ -148,7 +152,7 @@ def sync_stock_kline_data(full_sync: bool = False, use_saga: bool = True):
         for i, symbol in enumerate(symbols):
             try:
                 logger.info(
-                    f"[{i + 1}/{len(symbols)}] 正在同步股票 {symbol} 的K线数据..."
+                    f"[{i + 1}/{len(symbols)}] 正在同步股票 {symbol} 的K线数据...",
                 )
 
                 # 确定同步日期范围
@@ -162,7 +166,8 @@ def sync_stock_kline_data(full_sync: bool = False, use_saga: bool = True):
                     latest_date = get_latest_trade_date_for_symbol(manager, symbol)
                     # 从最新日期的下一天开始同步
                     start_date_obj = datetime.strptime(
-                        latest_date, "%Y-%m-%d"
+                        latest_date,
+                        "%Y-%m-%d",
                     ) + timedelta(days=1)
                     start_date = start_date_obj.strftime("%Y-%m-%d")
                     end_date = datetime.now().strftime("%Y-%m-%d")
@@ -176,7 +181,9 @@ def sync_stock_kline_data(full_sync: bool = False, use_saga: bool = True):
 
                 # 从数据源获取K线数据
                 kline_data_list = data_source.get_stock_kline_data(
-                    symbol, start_date, end_date
+                    symbol,
+                    start_date,
+                    end_date,
                 )
 
                 if not kline_data_list:
@@ -210,7 +217,7 @@ def sync_stock_kline_data(full_sync: bool = False, use_saga: bool = True):
                             data=df,
                             table_name="daily_kline",
                             use_saga=True,
-                            metadata_callback=metadata_callback
+                            metadata_callback=metadata_callback,
                         )
 
                         if success:
@@ -224,7 +231,7 @@ def sync_stock_kline_data(full_sync: bool = False, use_saga: bool = True):
                         success = manager.save_data_by_classification(
                             classification=DataClassification.DAILY_KLINE,
                             data=df,
-                            table_name="daily_kline"
+                            table_name="daily_kline",
                         )
 
                     if success:
@@ -261,7 +268,9 @@ def sync_stock_kline_data(full_sync: bool = False, use_saga: bool = True):
         # 如果使用Saga，输出额外的统计
         if use_saga and saga_success_count > 0:
             saga_success_rate = (saga_success_count / (saga_success_count + saga_rollback_count)) * 100
-            logger.info(f"Saga事务成功率: {saga_success_rate:.2f}% ({saga_success_count}/{saga_success_count + saga_rollback_count})")
+            logger.info(
+                f"Saga事务成功率: {saga_success_rate:.2f}% ({saga_success_count}/{saga_success_count + saga_rollback_count})"
+            )
 
         return stats
 
@@ -274,10 +283,14 @@ def main():
     """主函数"""
     parser = argparse.ArgumentParser(description="股票K线数据同步脚本 (Saga事务版)")
     parser.add_argument(
-        "--full", action="store_true", help="执行全量同步（默认增量同步）"
+        "--full",
+        action="store_true",
+        help="执行全量同步（默认增量同步）",
     )
     parser.add_argument(
-        "--no-saga", action="store_true", help="禁用Saga事务，使用传统模式"
+        "--no-saga",
+        action="store_true",
+        help="禁用Saga事务，使用传统模式",
     )
 
     args = parser.parse_args()

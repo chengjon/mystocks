@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
-"""
-性能回归测试脚本
+"""性能回归测试脚本
 为核心功能建立性能基准和回归检测
 确保代码修改不会导致性能下降
 """
 
+import statistics
 import sys
 import time
-import statistics
 from pathlib import Path
 from typing import Dict, List, Tuple
-import pandas as pd
+
 import numpy as np
+import pandas as pd
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -132,7 +133,7 @@ class PerformanceRegressionTester:
                     "low": [9.5 + i * 0.1] * 100,
                     "close": [10.2 + i * 0.1] * 100,
                     "volume": [1000 + i * 10] * 100,
-                }
+                },
             )
             test_cases.append(df)
 
@@ -168,7 +169,7 @@ class PerformanceRegressionTester:
                 "low": np.random.uniform(10, 100, 10000),
                 "close": np.random.uniform(10, 100, 10000),
                 "volume": np.random.randint(1000, 10000, 10000),
-            }
+            },
         )
 
         operations = []
@@ -199,7 +200,7 @@ class PerformanceRegressionTester:
                 "low": "min",
                 "close": "last",
                 "volume": "sum",
-            }
+            },
         )
         operations.append(time.time() - start_time)
 
@@ -297,7 +298,7 @@ class PerformanceRegressionTester:
         try:
             import json
 
-            with open(self.baseline_file, "r") as f:
+            with open(self.baseline_file) as f:
                 self.baseline_data = json.load(f)
             print(f"✅ 加载基准数据: {len(self.baseline_data)} 个测试")
             return True
@@ -339,7 +340,9 @@ class PerformanceRegressionTester:
 
             # 比较性能指标
             regression_detected = self._compare_performance(
-                test_name, current_result, baseline_result
+                test_name,
+                current_result,
+                baseline_result,
             )
 
             if regression_detected:
@@ -347,7 +350,7 @@ class PerformanceRegressionTester:
                 messages.append(f"📉 {test_name}: 检测到性能回归")
                 messages.append(f"    当前: {self._format_performance(current_result)}")
                 messages.append(
-                    f"    基准: {self._format_performance(baseline_result)}"
+                    f"    基准: {self._format_performance(baseline_result)}",
                 )
             else:
                 messages.append(f"✅ {test_name}: 性能正常或改善")
@@ -355,7 +358,10 @@ class PerformanceRegressionTester:
         return all_passed, messages
 
     def _compare_performance(
-        self, test_name: str, current: Dict, baseline: Dict
+        self,
+        test_name: str,
+        current: Dict,
+        baseline: Dict,
     ) -> bool:
         """比较性能指标"""
         # 定义性能回归阈值（允许10%的性能下降）
@@ -384,10 +390,7 @@ class PerformanceRegressionTester:
             current_speed = current_result["rows_per_second"]
             baseline_speed = baseline.get("rows_per_second", 0)
 
-            if (
-                baseline_speed > 0
-                and current_speed < baseline_speed / regression_threshold
-            ):
+            if baseline_speed > 0 and current_speed < baseline_speed / regression_threshold:
                 return True
 
         return False
@@ -396,12 +399,11 @@ class PerformanceRegressionTester:
         """格式化性能数据"""
         if "ops_per_second" in result:
             return f"{result['ops_per_second']:.1f} ops/s"
-        elif "rows_per_second" in result:
+        if "rows_per_second" in result:
             return f"{result['rows_per_second']:.1f} rows/s"
-        elif "duration" in result:
+        if "duration" in result:
             return f"{result['duration']:.3f}s"
-        else:
-            return str(result)
+        return str(result)
 
     def generate_report(self, comparison_passed: bool, messages: List[str]) -> str:
         """生成测试报告"""
@@ -494,10 +496,14 @@ def main():
 
     parser = argparse.ArgumentParser(description="性能回归测试工具")
     parser.add_argument(
-        "--save-baseline", action="store_true", help="保存当前测试结果作为基准数据"
+        "--save-baseline",
+        action="store_true",
+        help="保存当前测试结果作为基准数据",
     )
     parser.add_argument(
-        "--baseline-only", action="store_true", help="只运行基准测试，不进行比较"
+        "--baseline-only",
+        action="store_true",
+        help="只运行基准测试，不进行比较",
     )
 
     args = parser.parse_args()

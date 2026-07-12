@@ -11,12 +11,13 @@ from typing import Any
 
 from pymongo.errors import OperationFailure
 
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.services.maestro.collab.runtime_registry import MongoCollaborationRegistry
 from src.services.maestro.collab.backends.mongo.store import MongoCollaborationStore
+from src.services.maestro.collab.runtime_registry import MongoCollaborationRegistry
 from src.services.maestro.collab.store.models import WorkItemRecord, WorkUpdateRecord
 from src.utils.cli_error_output import print_cli_error
 from src.utils.mongo_runtime_config import (
@@ -128,7 +129,7 @@ def migrate_markdown_contract(*, task_path: Path, report_path: Path, mongo_datab
             openspec=None,
             created_at=now,
             updated_at=now,
-        )
+        ),
     )
 
     work_updates = 0
@@ -151,7 +152,7 @@ def migrate_markdown_contract(*, task_path: Path, report_path: Path, mongo_datab
                 summary=latest_progress,
                 details={},
                 created_at=now,
-            )
+            ),
         )
         work_updates = 1
 
@@ -176,13 +177,15 @@ def _extract_legacy_work_updates(markdown: str, *, work_item_id: str, default_ac
         updates.append(
             WorkUpdateRecord(
                 work_item_id=work_item_id,
-                update_id=_build_legacy_update_id(work_item_id=work_item_id, summary=summary, created_at=created_at, index=index),
+                update_id=_build_legacy_update_id(
+                    work_item_id=work_item_id, summary=summary, created_at=created_at, index=index
+                ),
                 actor_cli=actor_cli,
                 status="imported",
                 summary=summary,
                 details=details,
                 created_at=created_at + timedelta(seconds=index),
-            )
+            ),
         )
 
     return updates
@@ -359,5 +362,7 @@ def _table_exists(connection: sqlite3.Connection, table_name: str) -> bool:
         (table_name,),
     ).fetchone()
     return row is not None
+
+
 if __name__ == "__main__":
     raise SystemExit(main())

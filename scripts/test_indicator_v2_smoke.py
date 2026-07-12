@@ -1,12 +1,14 @@
-import pandas as pd
-import numpy as np
-import sys
 import os
+import sys
+
+import pandas as pd
+
 
 # Add root to path
 sys.path.insert(0, os.getcwd())
 
 from src.indicators.indicator_factory import IndicatorFactory
+
 
 def test_v2_architecture():
     print("--- Starting V2 Indicator System Smoke Test ---")
@@ -21,9 +23,12 @@ def test_v2_architecture():
 
     # 2. Test Batch Calculation
     print("\n--- Testing Batch Mode (SMA.5) ---")
-    data = pd.DataFrame({
-        'close': [10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
-    }, index=pd.date_range('2024-01-01', periods=10))
+    data = pd.DataFrame(
+        {
+            "close": [10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+        },
+        index=pd.date_range("2024-01-01", periods=10),
+    )
 
     try:
         result = factory.calculate("sma.5", data)
@@ -41,13 +46,14 @@ def test_v2_architecture():
         expected_val = 12.0
         actual_val = result.iloc[4]
         if abs(actual_val - expected_val) < 0.001:
-             print(f"✅ Calculation Correct (Expected {expected_val}, Got {actual_val})")
+            print(f"✅ Calculation Correct (Expected {expected_val}, Got {actual_val})")
         else:
-             print(f"❌ Calculation Wrong (Expected {expected_val}, Got {actual_val})")
+            print(f"❌ Calculation Wrong (Expected {expected_val}, Got {actual_val})")
 
     except Exception as e:
         print(f"❌ Batch Calculation Failed: {e}")
         import traceback
+
         traceback.print_exc()
 
     # 3. Test Streaming Mode
@@ -60,13 +66,13 @@ def test_v2_architecture():
         # Simulate feeding bars one by one
         stream_results = []
         for i, row in data.iterrows():
-            bar = {'close': row['close']}
+            bar = {"close": row["close"]}
             val = streamer.update(bar)
             stream_results.append(val)
             print(f"Update({row['close']}) -> {val}")
 
         # Verify Consistency with Batch
-        batch_values = result.fillna(0).values # NaNs are tricky, fill 0 for comparison checks or skip
+        batch_values = result.fillna(0).values  # NaNs are tricky, fill 0 for comparison checks or skip
 
         # Check the 5th value (index 4)
         stream_val_4 = stream_results[4]
@@ -80,7 +86,9 @@ def test_v2_architecture():
     except Exception as e:
         print(f"❌ Streaming Test Failed: {e}")
         import traceback
+
         traceback.print_exc()
+
 
 if __name__ == "__main__":
     test_v2_architecture()

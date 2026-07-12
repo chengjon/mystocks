@@ -1,5 +1,4 @@
-"""
-Mock数据文件: TechnicalAnalysis
+"""Mock数据文件: TechnicalAnalysis
 提供接口:
 1. calculate_indicators() -> Dict - 计算技术指标（对应/indicators/calculate API）
 2. get_stock_kline() -> List[Dict] - 获取股票K线数据
@@ -29,6 +28,7 @@ def get_technical_indicators(stock_code: str) -> Dict:
 
     Returns:
         Dict: 技术指标数据，包含趋势、动量、波动率、成交量等指标
+
     """
     return get_all_indicators(stock_code)
 
@@ -41,6 +41,7 @@ def get_all_indicators(stock_code: str) -> Dict:
 
     Returns:
         Dict: 所有技术指标数据，包含趋势、动量、波动率、成交量等指标
+
     """
     # 生成技术指标数据
     result = {
@@ -87,6 +88,7 @@ def get_trend_indicators(stock_code: str) -> Dict:
 
     Returns:
         Dict: 趋势指标数据
+
     """
     # 生成趋势指标数据
     result = {
@@ -124,6 +126,7 @@ def get_momentum_indicators(stock_code: str) -> Dict:
 
     Returns:
         Dict: 动量指标数据
+
     """
     # 生成动量指标数据
     result = {
@@ -150,6 +153,7 @@ def get_volatility_indicators(stock_code: str) -> Dict:
 
     Returns:
         Dict: 波动率指标数据
+
     """
     # 生成波动率指标数据
     result = {
@@ -179,6 +183,7 @@ def get_volume_indicators(stock_code: str) -> Dict:
 
     Returns:
         Dict: 成交量指标数据
+
     """
     # 生成成交量指标数据
     result = {
@@ -203,6 +208,7 @@ def get_trading_signals(stock_code: str) -> Dict:
 
     Returns:
         Dict: 交易信号数据
+
     """
     # 生成交易信号数据
     result = {
@@ -231,8 +237,10 @@ def get_kline_data(stock_code: str, start_date: str, end_date: str) -> Dict:
         stock_code: str - 股票代码
         start_date: str - 开始日期 (YYYY-MM-DD)
         end_date: str - 结束日期 (YYYY-MM-DD)
+
     Returns:
         Dict: K线历史数据
+
     """
     # 生成K线历史数据
     start_dt = datetime.datetime.strptime(start_date, "%Y-%m-%d")
@@ -258,7 +266,7 @@ def get_kline_data(stock_code: str, start_date: str, end_date: str) -> Dict:
                 "high": high_price,
                 "low": low_price,
                 "volume": volume,
-            }
+            },
         )
 
     result = {
@@ -281,6 +289,7 @@ def calculate_indicators(request: Dict) -> Dict:
 
     Returns:
         Dict: 包含OHLCV数据和计算出的技术指标
+
     """
     symbol = request.get("symbol")
     start_date = request.get("start_date")
@@ -334,6 +343,7 @@ def get_pattern_recognition(stock_code: str) -> Dict:
 
     Returns:
         Dict: 形态识别结果
+
     """
     # 生成形态识别数据
     patterns = [
@@ -378,6 +388,7 @@ def generate_realistic_price(base_price: float = 100.0, volatility: float = 0.02
 
     Returns:
         float: 生成的价格（保留2位小数）
+
     """
     change_rate = random.uniform(-volatility, volatility)
     price = base_price * (1 + change_rate)
@@ -389,6 +400,7 @@ def generate_realistic_volume() -> int:
 
     Returns:
         int: 成交量（股）
+
     """
     return random.randint(1000000, 100000000)
 

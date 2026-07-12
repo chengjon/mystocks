@@ -1,5 +1,7 @@
-import sys
 import os
+import sys
+
+
 sys.path.insert(0, os.getcwd())
 
 print(f"PYTHONPATH: {sys.path[0]}")
@@ -28,12 +30,14 @@ for module_name in modules_to_test:
 
 print("\nVerifying GPUAPIServer class...")
 try:
-    from src.gpu.api_system.main_server import GPUAPIServer
     from src.gpu.api_system.config.system_config import SystemConfig
+    from src.gpu.api_system.main_server import GPUAPIServer
+
     config = SystemConfig()
     server = GPUAPIServer(config)
     print("GPUAPIServer instantiation: SUCCESS")
 except Exception as e:
     print(f"GPUAPIServer instantiation: FAILED - {e}")
     import traceback
+
     traceback.print_exc()

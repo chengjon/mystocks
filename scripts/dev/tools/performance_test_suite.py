@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-MyStocks 量化平台性能测试环境
+"""MyStocks 量化平台性能测试环境
 Phase 5.1: 配置Locust性能测试环境
 
 功能：
@@ -13,16 +11,14 @@ Phase 5.1: 配置Locust性能测试环境
 日期：2026-01-18
 """
 
-import os
 import json
-import time
-import asyncio
-import random
-import statistics
-from pathlib import Path
-from typing import Dict, List, Any, Optional, Tuple
-from datetime import datetime, timedelta
 import logging
+import os
+import random
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List
+
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -33,11 +29,11 @@ class PerformanceBaseline:
     """性能基线管理类"""
 
     def __init__(self, project_root: str = None):
-        """
-        初始化性能基线管理器
+        """初始化性能基线管理器
 
         Args:
             project_root: 项目根目录路径
+
         """
         if project_root is None:
             project_root = self._find_project_root()
@@ -79,7 +75,7 @@ class PerformanceBaseline:
         """加载现有的性能基线"""
         if self.baseline_file.exists():
             try:
-                with open(self.baseline_file, "r", encoding="utf-8") as f:
+                with open(self.baseline_file, encoding="utf-8") as f:
                     return json.load(f)
             except Exception as e:
                 logger.warning(f"加载性能基线失败: {e}")
@@ -96,11 +92,11 @@ class PerformanceBaseline:
             logger.error(f"保存性能基线失败: {e}")
 
     def establish_baseline(self) -> Dict[str, Any]:
-        """
-        基于pytest-benchmark结果建立性能基线
+        """基于pytest-benchmark结果建立性能基线
 
         Returns:
             性能基线数据
+
         """
         logger.info("开始建立性能基线...")
 
@@ -115,7 +111,7 @@ class PerformanceBaseline:
         # 读取pytest-benchmark结果
         if self.benchmark_results_file.exists():
             try:
-                with open(self.benchmark_results_file, "r", encoding="utf-8") as f:
+                with open(self.benchmark_results_file, encoding="utf-8") as f:
                     benchmark_data = json.load(f)
 
                 # 解析基准测试结果
@@ -164,12 +160,12 @@ class PerformanceBaseline:
                 ):
                     recommendations.append(
                         f"市场概览API响应时间({mean_time:.1f}ms)超过阈值({self.thresholds['api_response_time']['market_overview']}ms)，"
-                        "建议优化数据库查询或添加缓存"
+                        "建议优化数据库查询或添加缓存",
                     )
                 elif "health" in benchmark_name and mean_time > self.thresholds["api_response_time"]["health_check"]:
                     recommendations.append(
                         f"健康检查API响应时间({mean_time:.1f}ms)超过阈值({self.thresholds['api_response_time']['health_check']}ms)，"
-                        "检查服务启动时间或网络延迟"
+                        "检查服务启动时间或网络延迟",
                     )
 
         if not recommendations:
@@ -178,14 +174,14 @@ class PerformanceBaseline:
         return recommendations
 
     def compare_with_baseline(self, current_results: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        与基线比较当前性能结果
+        """与基线比较当前性能结果
 
         Args:
             current_results: 当前性能测试结果
 
         Returns:
             比较结果
+
         """
         baseline = self.load_baseline()
         comparison = {
@@ -217,7 +213,7 @@ class PerformanceBaseline:
                             "improvement_percent": round(improvement, 2),
                             "baseline_time": baseline_mean,
                             "current_time": current_mean,
-                        }
+                        },
                     )
                 elif current_mean > baseline_mean * 1.05:  # 5%退化
                     regression = (current_mean - baseline_mean) / baseline_mean * 100
@@ -227,7 +223,7 @@ class PerformanceBaseline:
                             "regression_percent": round(regression, 2),
                             "baseline_time": baseline_mean,
                             "current_time": current_mean,
-                        }
+                        },
                     )
 
         # 确定整体状态
@@ -245,11 +241,11 @@ class LocustTestSuite:
     """Locust性能测试套件"""
 
     def __init__(self, project_root: str = None):
-        """
-        初始化Locust测试套件
+        """初始化Locust测试套件
 
         Args:
             project_root: 项目根目录路径
+
         """
         if project_root is None:
             project_root = self._find_project_root()
@@ -284,11 +280,11 @@ class LocustTestSuite:
         return Path.cwd()
 
     def create_locustfile(self) -> str:
-        """
-        创建Locust测试文件
+        """创建Locust测试文件
 
         Returns:
             Locust文件路径
+
         """
         locustfile_path = self.locust_dir / "locustfile.py"
 
@@ -428,8 +424,7 @@ def on_request_failure(request_type, name, response_time, exception, **kwargs):
         return str(locustfile_path)
 
     def run_load_test(self, users: int = None, spawn_rate: int = None, run_time: str = None) -> Dict[str, Any]:
-        """
-        运行负载测试
+        """运行负载测试
 
         Args:
             users: 并发用户数
@@ -438,6 +433,7 @@ def on_request_failure(request_type, name, response_time, exception, **kwargs):
 
         Returns:
             测试结果
+
         """
         # 更新配置
         if users:
@@ -523,11 +519,11 @@ class PerformanceMonitor:
     """性能监控和告警类"""
 
     def __init__(self, project_root: str = None):
-        """
-        初始化性能监控器
+        """初始化性能监控器
 
         Args:
             project_root: 项目根目录路径
+
         """
         if project_root is None:
             project_root = self._find_project_root()
@@ -552,14 +548,14 @@ class PerformanceMonitor:
         return Path.cwd()
 
     def check_performance_alerts(self, test_results: Dict[str, Any]) -> List[Dict[str, Any]]:
-        """
-        检查性能告警
+        """检查性能告警
 
         Args:
             test_results: 测试结果
 
         Returns:
             告警列表
+
         """
         alerts = []
 
@@ -575,7 +571,7 @@ class PerformanceMonitor:
                     "message": f"95%响应时间过高: {response_time_95p:.1f}ms (阈值: {self.alert_thresholds['response_time_95p']}ms)",
                     "value": response_time_95p,
                     "threshold": self.alert_thresholds["response_time_95p"],
-                }
+                },
             )
 
         # 检查错误率
@@ -592,7 +588,7 @@ class PerformanceMonitor:
                         "message": f"错误率过高: {error_rate:.1%} (阈值: {self.alert_thresholds['error_rate']:.1%})",
                         "value": error_rate,
                         "threshold": self.alert_thresholds["error_rate"],
-                    }
+                    },
                 )
 
         # 检查RPS
@@ -605,7 +601,7 @@ class PerformanceMonitor:
                     "message": f"RPS过低: {rps:.1f} req/s (建议 > 20 req/s)",
                     "value": rps,
                     "threshold": 20,
-                }
+                },
             )
 
         # 保存告警

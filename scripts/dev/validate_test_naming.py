@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-# 功能：验证测试文件命名规范是否符合pytest约定
+"""# 功能：验证测试文件命名规范是否符合pytest约定
 # 作者：JohnC (ninjas@sina.com) & Claude
 # 创建日期：2025-10-16
 # 版本：1.0.0
@@ -14,7 +12,7 @@
 """
 
 from pathlib import Path
-from typing import List, Dict
+from typing import Dict, List
 
 
 class TestNamingValidator:
@@ -86,9 +84,7 @@ class TestNamingValidator:
             "total": len(test_files),
             "compliant": len(self.compliant_files),
             "non_compliant": len(self.non_compliant_files),
-            "compliance_rate": (len(self.compliant_files) / len(test_files) * 100)
-            if test_files
-            else 100.0,
+            "compliance_rate": (len(self.compliant_files) / len(test_files) * 100) if test_files else 100.0,
         }
 
     def suggest_rename(self, file_path: Path) -> str:
@@ -112,15 +108,9 @@ class TestNamingValidator:
                 test_index = parts.index("test")
                 # 重组为test_开头
                 remaining = (
-                    "_".join(parts[test_index + 1 :])
-                    if test_index + 1 < len(parts)
-                    else "_".join(parts[:test_index])
+                    "_".join(parts[test_index + 1 :]) if test_index + 1 < len(parts) else "_".join(parts[:test_index])
                 )
-                return (
-                    f"test_{remaining}.py"
-                    if remaining
-                    else f"test_{name_without_ext}.py"
-                )
+                return f"test_{remaining}.py" if remaining else f"test_{name_without_ext}.py"
 
         # 默认直接加test_前缀
         return f"test_{name_without_ext}.py"
@@ -159,7 +149,7 @@ class TestNamingValidator:
                 report.append(f"  {i}. {rel_path}")
                 report.append(f"     建议: {file_path.parent}/{suggested_name}")
                 report.append(
-                    f"     命令: git mv {rel_path} {file_path.parent}/{suggested_name}"
+                    f"     命令: git mv {rel_path} {file_path.parent}/{suggested_name}",
                 )
             report.append("")
 
@@ -211,8 +201,7 @@ def main():
 
     if stats["non_compliant"] > 0:
         return 1
-    else:
-        return 0
+    return 0
 
 
 if __name__ == "__main__":

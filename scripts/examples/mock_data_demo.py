@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Mock数据系统演示脚本
+"""Mock数据系统演示脚本
 展示如何使用增强后的Mock数据系统进行开发和测试
 
 运行方法:
@@ -14,6 +12,7 @@ python examples/mock_data_demo.py
 import os
 import sys
 from pathlib import Path
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent
@@ -43,7 +42,7 @@ def demo_basic_usage():
             print(f"   获取到 {len(heatmap_data['data'])} 只股票:")
             for stock in heatmap_data["data"][:3]:  # 只显示前3只
                 print(
-                    f"   - {stock['name']}({stock['symbol']}): ¥{stock['price']:.2f} ({stock['change_pct']:+.2f}%)"
+                    f"   - {stock['name']}({stock['symbol']}): ¥{stock['price']:.2f} ({stock['change_pct']:+.2f}%)",
                 )
         else:
             print("   ❌ 获取市场热力图数据失败")
@@ -56,7 +55,7 @@ def demo_basic_usage():
             print(f"   搜索到 {len(search_data['data'])} 只股票:")
             for stock in search_data["data"]:
                 print(
-                    f"   - {stock['description']}({stock['symbol']}) - {stock.get('exchange', 'N/A')}"
+                    f"   - {stock['description']}({stock['symbol']}) - {stock.get('exchange', 'N/A')}",
                 )
         else:
             print("   ❌ 搜索股票失败")
@@ -64,7 +63,10 @@ def demo_basic_usage():
         # 获取TradingView配置
         print("\n📈 获取TradingView图表配置:")
         chart_data = manager.get_data(
-            "tradingview_chart", symbol="000001", market="CN", theme="dark"
+            "tradingview_chart",
+            symbol="000001",
+            market="CN",
+            theme="dark",
         )
 
         if chart_data and chart_data.get("config"):
@@ -209,16 +211,8 @@ def demo_realistic_data():
         print(f"   - 涨跌幅平均: {sum(changes) / len(changes):.2f}%")
 
         # 检查涨停跌停
-        limit_up = [
-            p
-            for p in prices
-            if any(s["change_pct"] >= 9.9 for s in market_data if s["price"] == p)
-        ]
-        limit_down = [
-            p
-            for p in prices
-            if any(s["change_pct"] <= -9.9 for s in market_data if s["price"] == p)
-        ]
+        limit_up = [p for p in prices if any(s["change_pct"] >= 9.9 for s in market_data if s["price"] == p)]
+        limit_down = [p for p in prices if any(s["change_pct"] <= -9.9 for s in market_data if s["price"] == p)]
 
         print(f"   📈 涨停股票数: {len(limit_up)}")
         print(f"   📉 跌停股票数: {len(limit_down)}")
@@ -228,7 +222,7 @@ def demo_realistic_data():
         for i, stock in enumerate(market_data[:5], 1):
             print(f"   {i}. {stock['name']}({stock['symbol']}): ¥{stock['price']:.2f}")
             print(
-                f"      涨跌: {stock['change_pct']:+.2f}% 成交量: {stock['volume']:,}"
+                f"      涨跌: {stock['change_pct']:+.2f}% 成交量: {stock['volume']:,}",
             )
 
         return True

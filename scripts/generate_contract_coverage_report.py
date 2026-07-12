@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-契约测试覆盖率报告生成器
+"""契约测试覆盖率报告生成器
 
 生成专门针对API契约测试的覆盖率报告，包括：
 - 契约测试执行统计
@@ -10,12 +9,10 @@
 """
 
 import json
-import os
-import sys
-from pathlib import Path
-from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List
 
 
 @dataclass
@@ -72,7 +69,6 @@ class ContractCoverageReporter:
 
     def generate_coverage_report(self, test_results: List[ContractTestResult]) -> Dict[str, Any]:
         """生成覆盖率报告"""
-
         metrics = ContractCoverageMetrics()
 
         # 分析测试结果
@@ -135,7 +131,6 @@ class ContractCoverageReporter:
 
     def _analyze_validation_types(self, result: ContractTestResult, metrics: ContractCoverageMetrics):
         """分析验证类型"""
-
         for violation in result.violations:
             violation_type = violation.get("violation_type", "")
 
@@ -171,16 +166,17 @@ class ContractCoverageReporter:
         }
 
     def _generate_recommendations(
-        self, metrics: ContractCoverageMetrics, endpoint_coverage: Dict[str, Any]
+        self,
+        metrics: ContractCoverageMetrics,
+        endpoint_coverage: Dict[str, Any],
     ) -> List[str]:
         """生成改进建议"""
-
         recommendations = []
 
         # 覆盖率检查
         if metrics.endpoint_coverage_rate < 0.8:
             recommendations.append(
-                f"端点覆盖率仅为{metrics.endpoint_coverage_rate:.1%}，建议增加对未测试端点的契约测试"
+                f"端点覆盖率仅为{metrics.endpoint_coverage_rate:.1%}，建议增加对未测试端点的契约测试",
             )
 
         if metrics.operation_coverage_rate < 0.8:
@@ -194,7 +190,7 @@ class ContractCoverageReporter:
         if untested_endpoints:
             recommendations.append(
                 f"发现{len(untested_endpoints)}个完全未测试的端点: "
-                f"{', '.join(untested_endpoints[:5])}{'...' if len(untested_endpoints) > 5 else ''}"
+                f"{', '.join(untested_endpoints[:5])}{'...' if len(untested_endpoints) > 5 else ''}",
             )
 
         # 验证类型检查
@@ -211,7 +207,6 @@ class ContractCoverageReporter:
 
     def save_report(self, report: Dict[str, Any], format: str = "json"):
         """保存报告"""
-
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
         if format == "json":
@@ -230,7 +225,6 @@ class ContractCoverageReporter:
 
     def _generate_html_report(self, report: Dict[str, Any]) -> str:
         """生成HTML报告"""
-
         metrics = report["metrics"]
 
         html = f"""
@@ -315,15 +309,13 @@ class ContractCoverageReporter:
         """获取覆盖率CSS类"""
         if rate >= 0.8:
             return "coverage-high"
-        elif rate >= 0.6:
+        if rate >= 0.6:
             return "coverage-medium"
-        else:
-            return "coverage-low"
+        return "coverage-low"
 
 
 def main():
     """主函数"""
-
     # 示例测试结果（实际使用时会从pytest结果中获取）
     sample_results = [
         ContractTestResult(
@@ -360,13 +352,13 @@ def main():
     json_file = reporter.save_report(report, "json")
     html_file = reporter.save_report(report, "html")
 
-    print(f"报告生成完成:")
+    print("报告生成完成:")
     print(f"  JSON: {json_file}")
     print(f"  HTML: {html_file}")
 
     # 打印摘要
     metrics = report["metrics"]
-    print(f"\n覆盖率摘要:")
+    print("\n覆盖率摘要:")
     print(f"  端点覆盖率: {metrics['endpoint_coverage_rate']:.1%}")
     print(f"  操作覆盖率: {metrics['operation_coverage_rate']:.1%}")
     print(f"  建议数量: {len(report.get('recommendations', []))}")

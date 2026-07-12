@@ -1,5 +1,4 @@
-"""
-Phase 12.4 + 12.5: Enhanced Real-time MTM Demo
+"""Phase 12.4 + 12.5: Enhanced Real-time MTM Demo
 增强版实时盯市演示脚本
 
 演示内容：
@@ -12,11 +11,10 @@ Phase 12.4 + 12.5: Enhanced Real-time MTM Demo
 """
 
 import asyncio
-import sys
 import os
+import sys
 import time
-from datetime import datetime
-from typing import Dict
+
 
 # 确保项目根目录在 path 中
 sys.path.append(os.getcwd())
@@ -24,15 +22,13 @@ sys.path.append(os.getcwd())
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from src.storage.database.database_manager import Base
-from src.infrastructure.persistence.models import PortfolioModel
-from src.infrastructure.persistence.repository_impl import PortfolioRepositoryImpl
-from src.infrastructure.market_data.streaming import MockPriceStreamAdapter
-from src.application.market_data.price_stream_processor import PriceStreamProcessor
 from src.application.market_data.price_stream_processor_cached import CachedPriceStreamProcessor
+from src.domain.portfolio.model.portfolio import Portfolio
 from src.domain.portfolio.service.portfolio_valuation_service import PortfolioValuationService
 from src.domain.portfolio.service.portfolio_valuation_service_optimized import OptimizedPortfolioValuationService
-from src.domain.portfolio.model.portfolio import Portfolio
+from src.infrastructure.market_data.streaming import MockPriceStreamAdapter
+from src.infrastructure.persistence.repository_impl import PortfolioRepositoryImpl
+from src.storage.database.database_manager import Base
 
 
 class PerformanceBenchmark:
@@ -48,7 +44,7 @@ class PerformanceBenchmark:
         elapsed = time.time() - start
         self.results[name] = {
             "elapsed": elapsed,
-            "result": result
+            "result": result,
         }
         return result
 
@@ -109,11 +105,11 @@ async def demo_baseline_performance():
         performance = valuation_service.revaluate_portfolio(portfolio.id, prices)
 
         if i % 5 == 0:
-            print(f"   [{i+1}/10] Holdings value: ¥{performance.holdings_value:,.2f}")
+            print(f"   [{i + 1}/10] Holdings value: ¥{performance.holdings_value:,.2f}")
 
     elapsed_baseline = time.time() - start
     print(f"\n⏱️ Total time: {elapsed_baseline:.3f}s")
-    print(f"   Average per update: {elapsed_baseline/10*1000:.2f}ms")
+    print(f"   Average per update: {elapsed_baseline / 10 * 1000:.2f}ms")
 
     return elapsed_baseline
 
@@ -173,20 +169,20 @@ async def demo_optimized_performance():
     for i in range(10):
         # 模拟价格更新（只更新部分持仓）
         symbols_to_update = [pos["symbol"] for pos in test_positions[:3]]  # 只更新前3个
-        prices = {symbol: test_positions[0]["price"] * (1 + 0.01 * i) for symbol in symbols_to_update}
+        prices = dict.fromkeys(symbols_to_update, test_positions[0]["price"] * (1 + 0.01 * i))
 
         performance = valuation_service.revaluate_portfolio(portfolio.id, prices)
 
         if i % 5 == 0:
-            print(f"   [{i+1}/10] Holdings value: ¥{performance.holdings_value:,.2f}")
+            print(f"   [{i + 1}/10] Holdings value: ¥{performance.holdings_value:,.2f}")
 
     elapsed_optimized = time.time() - start
     print(f"\n⏱️ Total time: {elapsed_optimized:.3f}s")
-    print(f"   Average per update: {elapsed_optimized/10*1000:.2f}ms")
+    print(f"   Average per update: {elapsed_optimized / 10 * 1000:.2f}ms")
 
     # 显示优化指标
     metrics = valuation_service.get_metrics()
-    print(f"\n📊 Optimization Metrics:")
+    print("\n📊 Optimization Metrics:")
     print(f"   Incremental updates: {metrics.get('incremental_updates', 0)}")
     print(f"   Full recalculations: {metrics.get('full_recalculations', 0)}")
     print(f"   Incremental ratio: {metrics.get('incremental_ratio', 0):.1%}")
@@ -212,6 +208,7 @@ async def demo_cached_processor():
     # 创建带缓存的处理器
     try:
         from src.infrastructure.messaging.redis_event_bus import RedisEventBus
+
         event_bus = RedisEventBus(host="localhost", port=6379, db=0)
         print("✅ Redis Event Bus connected")
     except Exception as e:
@@ -221,7 +218,7 @@ async def demo_cached_processor():
     valuation_service = PortfolioValuationService(portfolio_repo)
 
     processor = CachedPriceStreamProcessor(
-        event_bus=event_bus if event_bus else type("MockEventBus", (), {"publish": lambda self, e: None})(),
+        event_bus=event_bus or type("MockEventBus", (), {"publish": lambda self, e: None})(),
         valuation_service=valuation_service,
         batch_size=10,
         batch_timeout=0.5,
@@ -286,9 +283,11 @@ async def demo_cached_processor():
         holdings_value = sum(p.quantity * p.current_price for p in current_portfolio.positions.values())
         total_value = current_portfolio.cash + holdings_value
         total_return = total_value - current_portfolio.initial_capital
-        return_rate = (total_return / current_portfolio.initial_capital) * 100 if current_portfolio.initial_capital > 0 else 0
+        return_rate = (
+            (total_return / current_portfolio.initial_capital) * 100 if current_portfolio.initial_capital > 0 else 0
+        )
 
-        print(f"\n📊 [{i+1}s] Portfolio Performance:")
+        print(f"\n📊 [{i + 1}s] Portfolio Performance:")
         print(f"   Total Value: ¥{total_value:,.2f}")
         print(f"   Total Return: ¥{total_return:,.2f}")
         print(f"   Return Rate: {return_rate:.2f}%")
@@ -300,7 +299,7 @@ async def demo_cached_processor():
 
     # 显示缓存指标
     metrics = processor.get_metrics()
-    print(f"\n💾 Cache Metrics:")
+    print("\n💾 Cache Metrics:")
     print(f"   Cache hits: {metrics.get('cache_hits', 0)}")
     print(f"   Cache misses: {metrics.get('cache_misses', 0)}")
     print(f"   Cache hit rate: {metrics.get('cache_hit_rate', 0):.1%}")
@@ -327,7 +326,7 @@ async def main():
     print("=" * 80)
     print(f"Baseline (no cache):      {baseline_time:.3f}s")
     print(f"Optimized (cache + inc):  {optimized_time:.3f}s")
-    print(f"Improvement:              {(baseline_time - optimized_time)/baseline_time*100:.1f}% faster")
+    print(f"Improvement:              {(baseline_time - optimized_time) / baseline_time * 100:.1f}% faster")
 
     # 4. 缓存处理器演示
     await demo_cached_processor()
@@ -345,5 +344,6 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"\n\n❌ Demo failed with error: {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)

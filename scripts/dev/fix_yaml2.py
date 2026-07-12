@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
-"""
-Fix YAML indentation issues in data_sources_registry.yaml
-"""
+"""Fix YAML indentation issues in data_sources_registry.yaml"""
 
 
 def fix_indentation():
-    with open("config/data_sources_registry.yaml", "r", encoding="utf-8") as f:
+    with open("config/data_sources_registry.yaml", encoding="utf-8") as f:
         lines = f.readlines()
 
     fixed_lines = []
@@ -15,11 +13,7 @@ def fix_indentation():
         stripped = line.rstrip()
 
         # Look for patterns that need fixing
-        if (
-            stripped.endswith("table_name:")
-            or stripped.endswith("endpoint_name:")
-            or stripped.endswith("call_method:")
-        ):
+        if stripped.endswith("table_name:") or stripped.endswith("endpoint_name:") or stripped.endswith("call_method:"):
             # This is a correctly indented line, check the next few lines
             fixed_lines.append(line)
             i += 1

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-MyStocks 数据模式切换工具
+"""MyStocks 数据模式切换工具
 
 用途：在Mock数据和Real数据之间切换
 作者：Claude Code
@@ -13,11 +12,12 @@ MyStocks 数据模式切换工具
     python scripts/switch_data_mode.py --status      # 查看当前模式
 """
 
-import os
-import sys
 import argparse
+import os
 import subprocess
+import sys
 from pathlib import Path
+
 
 # 添加项目根目录到Python路径
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -119,7 +119,9 @@ def restart_backend():
     try:
         # 停止现有服务
         subprocess.run(
-            ["pkill", "-f", "python.*start_server"], capture_output=True, check=False
+            ["pkill", "-f", "python.*start_server"],
+            capture_output=True,
+            check=False,
         )
 
         # 等待一下
@@ -148,8 +150,9 @@ def test_api_endpoints():
     """测试API端点"""
     print("🧪 测试API端点...")
 
-    import requests
     import time
+
+    import requests
 
     # 等待服务启动
     print("   等待后端服务启动...")
@@ -174,7 +177,7 @@ def test_api_endpoints():
                 print(f"   ⚠️  {name}: HTTP {response.status_code}")
                 results.append((name, False, response.status_code))
         except Exception as e:
-            print(f"   ❌ {name}: {str(e)}")
+            print(f"   ❌ {name}: {e!s}")
             results.append((name, False, None))
 
     return results
@@ -238,16 +241,12 @@ def show_status():
 
         # 后端服务
         backend_response = requests.get(f"{backend_base_url}/health", timeout=3)
-        backend_status = (
-            "✅ 运行中" if backend_response.status_code == 200 else "⚠️  异常"
-        )
+        backend_status = "✅ 运行中" if backend_response.status_code == 200 else "⚠️  异常"
         print(f"   后端服务 ({backend_base_url}): {backend_status}")
 
         # 前端服务
         frontend_response = requests.get(frontend_base_url, timeout=3)
-        frontend_status = (
-            "✅ 运行中" if frontend_response.status_code == 200 else "⚠️  异常"
-        )
+        frontend_status = "✅ 运行中" if frontend_response.status_code == 200 else "⚠️  异常"
         print(f"   前端服务 ({frontend_base_url}): {frontend_status}")
 
     except Exception as e:
@@ -258,7 +257,9 @@ def main():
     """主函数"""
     parser = argparse.ArgumentParser(description="MyStocks 数据模式切换工具")
     parser.add_argument(
-        "--mode", choices=["mock", "real", "status"], help="切换模式: mock/real/status"
+        "--mode",
+        choices=["mock", "real", "status"],
+        help="切换模式: mock/real/status",
     )
     parser.add_argument("--no-restart", action="store_true", help="不重启后端服务")
     parser.add_argument("--test", action="store_true", help="切换后运行测试")
@@ -269,7 +270,7 @@ def main():
         show_status()
         return
 
-    elif args.mode == "mock":
+    if args.mode == "mock":
         if switch_to_mock():
             if not args.no_restart:
                 restart_backend()

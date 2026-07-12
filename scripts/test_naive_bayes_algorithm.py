@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Naive Bayes算法功能测试脚本
+"""Naive Bayes算法功能测试脚本
 
 测试Naive Bayes算法的完整功能：
 - 训练 (train)
@@ -11,12 +10,13 @@ Naive Bayes算法功能测试脚本
 日期: 2026-01-12
 """
 
-import sys
 import asyncio
 import logging
+import sys
+
 import numpy as np
 import pandas as pd
-from datetime import datetime
+
 
 # 添加项目根目录到路径
 project_root = "/opt/claude/mystocks_spec"
@@ -48,7 +48,7 @@ async def test_naive_bayes_algorithm():
                 "description": "Naive Bayes algorithm test",
                 "algorithm_type": "classification",
                 "gpu_enabled": True,
-            }
+            },
         )
         nb = NaiveBayesAlgorithm(metadata)
         logger.info("✓ 成功创建Naive Bayes算法实例")

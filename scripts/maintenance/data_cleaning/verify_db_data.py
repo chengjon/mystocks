@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-数据库数据验证脚本
+"""数据库数据验证脚本
 
 直接从PostgreSQL数据库验证数据质量:
 1. 检查脏行业数据 (industry = name)
@@ -16,13 +15,11 @@
 
 import argparse
 import logging
-import sys
 from datetime import datetime
-from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict
 
 import pandas as pd
-import numpy as np
+
 
 # 尝试导入数据库相关模块
 try:
@@ -42,8 +39,7 @@ class DatabaseVerifier:
     """数据库数据验证器"""
 
     def __init__(self, connection_string: str = None):
-        """
-        初始化数据库验证器
+        """初始化数据库验证器
 
         参数:
             connection_string: 数据库连接字符串，如果为None则从环境变量读取
@@ -75,8 +71,7 @@ class DatabaseVerifier:
             self.engine = None
 
     def check_industry_data(self, table_name: str = "stocks_basic") -> Dict:
-        """
-        检查脏行业数据
+        """检查脏行业数据
 
         参数:
             table_name: 表名
@@ -142,8 +137,7 @@ class DatabaseVerifier:
         return result
 
     def clean_industry_data(self, table_name: str = "stocks_basic", dry_run: bool = True) -> Dict:
-        """
-        清洗脏行业数据 - 将 industry = name 设置为 NULL
+        """清洗脏行业数据 - 将 industry = name 设置为 NULL
 
         参数:
             table_name: 表名
@@ -200,8 +194,7 @@ class DatabaseVerifier:
         return result
 
     def check_adj_factor(self, table_name: str = "stocks_daily") -> Dict:
-        """
-        检查 adj_factor 数据完整性
+        """检查 adj_factor 数据完整性
 
         参数:
             table_name: 表名
@@ -258,7 +251,7 @@ class DatabaseVerifier:
                     "max": row[6],
                 }
 
-            logger.info(f"adj_factor 验证结果:")
+            logger.info("adj_factor 验证结果:")
             logger.info(f"  总行数: {result['total_rows']}")
             logger.info(f"  空值: {result['null_count']} ({result['null_count'] / result['total_rows'] * 100:.2f}%)")
             logger.info(f"  零值: {result['zero_count']} ({result['zero_count'] / result['total_rows'] * 100:.2f}%)")
@@ -267,7 +260,7 @@ class DatabaseVerifier:
                 logger.info(
                     f"  统计: avg={result['statistics']['avg']:.4f}, "
                     f"min={result['statistics']['min']:.4f}, "
-                    f"max={result['statistics']['max']:.4f}"
+                    f"max={result['statistics']['max']:.4f}",
                 )
 
         except Exception as e:
@@ -276,10 +269,12 @@ class DatabaseVerifier:
         return result
 
     def fix_adj_factor(
-        self, table_name: str = "stocks_daily", default_value: float = 1.0, dry_run: bool = True
+        self,
+        table_name: str = "stocks_daily",
+        default_value: float = 1.0,
+        dry_run: bool = True,
     ) -> Dict:
-        """
-        修复 adj_factor - 将空值和零值填充为默认值
+        """修复 adj_factor - 将空值和零值填充为默认值
 
         参数:
             table_name: 表名
@@ -333,8 +328,7 @@ class DatabaseVerifier:
         return result
 
     def check_kline_structure(self, table_name: str = "stocks_daily") -> Dict:
-        """
-        验证K线数据结构
+        """验证K线数据结构
 
         参数:
             table_name: 表名
@@ -439,7 +433,7 @@ class DatabaseVerifier:
                     stats = ar["statistics"]
                     report.append(
                         f"  统计: avg={stats.get('avg', 0):.4f}, "
-                        f"min={stats.get('min', 0):.4f}, max={stats.get('max', 0):.4f}"
+                        f"min={stats.get('min', 0):.4f}, max={stats.get('max', 0):.4f}",
                     )
             else:
                 report.append("\n【adj_factor】数据库不可用或无数据")

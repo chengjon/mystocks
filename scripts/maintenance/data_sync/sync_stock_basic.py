@@ -1,21 +1,23 @@
-"""
-股票基础信息同步脚本
+"""股票基础信息同步脚本
 从数据源获取股票基础信息并同步到数据库
 """
 
-import sys
-import os
 import argparse
 import logging
+import os
+import sys
 from datetime import datetime
 from pathlib import Path
+
 
 # 添加项目根目录到Python路径
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../"))
 
-from scripts.data_sync.base_data_source import BaseDataSource
-from src.data_access.postgresql_access import PostgreSQLDataAccess
 import pandas as pd
+from scripts.data_sync.base_data_source import BaseDataSource
+
+from src.data_access.postgresql_access import PostgreSQLDataAccess
+
 
 # 配置日志
 LOG_DIR = Path(__file__).resolve().parents[3] / "var" / "log" / "data_sync"
@@ -33,11 +35,11 @@ logger = logging.getLogger(__name__)
 
 
 def sync_stock_basic_info(full_sync: bool = False):
-    """
-    同步股票基础信息
+    """同步股票基础信息
 
     Args:
         full_sync: 是否执行全量同步（默认增量同步）
+
     """
     logger.info("开始同步股票基础信息")
     logger.info(f"同步模式: {'全量同步' if full_sync else '增量同步'}")
@@ -56,9 +58,7 @@ def sync_stock_basic_info(full_sync: bool = False):
         try:
             industry_info_list = data_source.get_stock_industry_info()
             # 将行业信息映射到股票信息
-            industry_map = {
-                info["symbol"]: info["industry"] for info in industry_info_list
-            }
+            industry_map = {info["symbol"]: info["industry"] for info in industry_info_list}
             logger.info(f"获取到 {len(industry_info_list)} 条行业信息")
         except Exception as e:
             logger.warning(f"获取行业信息失败: {e}")
@@ -87,11 +87,7 @@ def sync_stock_basic_info(full_sync: bool = False):
             # 查询数据库中已有的股票代码
             try:
                 existing_stocks_df = db_access.query("symbols_info", columns=["symbol"])
-                existing_symbols = (
-                    set(existing_stocks_df["symbol"].tolist())
-                    if not existing_stocks_df.empty
-                    else set()
-                )
+                existing_symbols = set(existing_stocks_df["symbol"].tolist()) if not existing_stocks_df.empty else set()
                 logger.info(f"数据库中已有 {len(existing_symbols)} 只股票")
 
                 # 过滤出新增的股票
@@ -124,7 +120,8 @@ def sync_stock_basic_info(full_sync: bool = False):
                         # 如果upsert失败，尝试使用insert_dataframe
                         try:
                             rows_inserted = db_access.insert_dataframe(
-                                "symbols_info", df
+                                "symbols_info",
+                                df,
                             )
                             logger.info(f"成功插入 {rows_inserted} 条股票记录到数据库")
                         except Exception as insert_error:
@@ -177,7 +174,9 @@ def main():
     """主函数"""
     parser = argparse.ArgumentParser(description="股票基础信息同步脚本")
     parser.add_argument(
-        "--full", action="store_true", help="执行全量同步（默认增量同步）"
+        "--full",
+        action="store_true",
+        help="执行全量同步（默认增量同步）",
     )
 
     args = parser.parse_args()

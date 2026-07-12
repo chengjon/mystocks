@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-模块合并指南生成器 - 提供模块合并建议
+"""模块合并指南生成器 - 提供模块合并建议
 
 基于重复分析和功能相似性，提供模块合并策略。
 
@@ -11,25 +10,26 @@
     python scripts/analysis/generate_consolidation_guide.py
 """
 
-import sys
 import json
+import sys
+from collections import defaultdict
 from pathlib import Path
 from typing import List
-from collections import defaultdict
+
 
 # 添加项目根目录到路径
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(PROJECT_ROOT))
 sys.path.insert(0, str(Path(__file__).parent))
 
-from models import (
-    MergeRecommendation,
-    ConsolidationGuide,
-    ModuleInventory,
-    CategoryEnum,
-)
-from manual_paths import get_manual_metadata_dir, get_manual_root
 from generate_docs import load_inventory
+from manual_paths import get_manual_metadata_dir, get_manual_root
+from models import (
+    CategoryEnum,
+    ConsolidationGuide,
+    MergeRecommendation,
+    ModuleInventory,
+)
 
 
 MANUAL_ROOT = get_manual_root(PROJECT_ROOT)
@@ -37,14 +37,14 @@ MANUAL_METADATA_DIR = get_manual_metadata_dir(PROJECT_ROOT)
 
 
 def analyze_similar_modules(inventory: ModuleInventory) -> List[MergeRecommendation]:
-    """
-    识别功能相似的模块
+    """识别功能相似的模块
 
     Args:
         inventory: 模块清单
 
     Returns:
         合并建议列表
+
     """
     print("\n正在分析功能相似的模块...")
 
@@ -110,10 +110,10 @@ def find_similar_module_names(modules: List) -> List[List]:
 
 
 def create_merge_recommendation_for_group(
-    modules: List, category: CategoryEnum
+    modules: List,
+    category: CategoryEnum,
 ) -> MergeRecommendation:
     """为模块组创建合并建议"""
-
     if len(modules) < 2:
         return None
 
@@ -133,7 +133,7 @@ def create_merge_recommendation_for_group(
 
     # 建议的新模块名
     common_prefix = find_common_prefix(base_names)
-    new_name = common_prefix if common_prefix else "merged_module"
+    new_name = common_prefix or "merged_module"
 
     rec = MergeRecommendation(
         id=f"MERGE-{category.value.upper()}-{len(module_paths):02d}",
@@ -217,16 +217,13 @@ def generate_migration_steps(modules: List, new_name: str) -> List[str]:
 def assess_risk_level(modules: List) -> str:
     """评估合并风险"""
     total_lines = sum(m.lines_of_code for m in modules)
-    total_functions = sum(
-        len(m.functions) + sum(len(c.methods) for c in m.classes) for m in modules
-    )
+    total_functions = sum(len(m.functions) + sum(len(c.methods) for c in m.classes) for m in modules)
 
     if total_lines > 1000 or total_functions > 50:
         return "high"
-    elif total_lines > 500 or total_functions > 20:
+    if total_lines > 500 or total_functions > 20:
         return "medium"
-    else:
-        return "low"
+    return "low"
 
 
 def estimate_merge_effort(modules: List) -> str:
@@ -235,25 +232,24 @@ def estimate_merge_effort(modules: List) -> str:
 
     if total_lines > 1000:
         return "3-5 天"
-    elif total_lines > 500:
+    if total_lines > 500:
         return "2-3 天"
-    elif total_lines > 200:
+    if total_lines > 200:
         return "1-2 天"
-    else:
-        return "4-8 小时"
+    return "4-8 小时"
 
 
 def analyze_duplicate_based_merges(
     duplication_index_path: Path,
 ) -> List[MergeRecommendation]:
-    """
-    基于重复分析提供合并建议
+    """基于重复分析提供合并建议
 
     Args:
         duplication_index_path: 重复索引文件路径
 
     Returns:
         合并建议列表
+
     """
     print("\n正在分析基于重复的合并机会...")
 
@@ -263,7 +259,7 @@ def analyze_duplicate_based_merges(
         print("  警告: 重复索引文件不存在，跳过此分析")
         return recommendations
 
-    with open(duplication_index_path, "r", encoding="utf-8") as f:
+    with open(duplication_index_path, encoding="utf-8") as f:
         dup_data = json.load(f)
 
     # 找出涉及相同文件组的高严重性重复
@@ -323,14 +319,14 @@ def analyze_duplicate_based_merges(
 def analyze_utility_consolidation(
     inventory: ModuleInventory,
 ) -> List[MergeRecommendation]:
-    """
-    分析工具类模块的合并机会
+    """分析工具类模块的合并机会
 
     Args:
         inventory: 模块清单
 
     Returns:
         合并建议列表
+
     """
     print("\n正在分析工具类模块合并机会...")
 
@@ -411,7 +407,6 @@ def analyze_utility_consolidation(
 
 def save_consolidation_guide(guide: ConsolidationGuide, output_path: str):
     """保存合并指南到 JSON"""
-
     data = {
         "total_recommendations": len(guide.recommendations),
         "by_risk_level": {
@@ -452,7 +447,7 @@ def main():
 
     if not inventory_path.exists():
         print(f"\n✗ 错误: 清单文件不存在: {inventory_path}")
-        return
+        return None
 
     print(f"\n加载清单: {inventory_path}")
     inventory = load_inventory(str(inventory_path))

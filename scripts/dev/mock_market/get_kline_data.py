@@ -1,5 +1,4 @@
-"""
-Mock数据文件: Market
+"""Mock数据文件: Market
 提供接口:
 1. get_market_heatmap() -> List[Dict] - 获取市场热力图数据
 2. get_real_time_quotes() -> List[Dict] - 获取实时行情
@@ -20,11 +19,10 @@ Mock数据文件: Market
 生成时间: 2025-11-13
 """
 
-from typing import List, Dict, Optional
 import datetime
 import random
-import numpy as np
-import math
+from typing import Dict, List, Optional
+
 
 def get_kline_data(
     stock_code: str,
@@ -51,6 +49,7 @@ def get_kline_data(
                    - close: 收盘价
                    - volume: 成交量
                    - amount: 成交额
+
     """
     # 股票基础价格
     base_prices = {
@@ -71,7 +70,7 @@ def get_kline_data(
         end_date = datetime.datetime.now().strftime("%Y-%m-%d")
     if not start_date:
         start_date = (datetime.datetime.strptime(end_date, "%Y-%m-%d") - datetime.timedelta(days=60)).strftime(
-            "%Y-%m-%d"
+            "%Y-%m-%d",
         )
 
     # 根据周期调整日期间隔
@@ -111,7 +110,7 @@ def get_kline_data(
                     "close": close_price,
                     "volume": volume,
                     "amount": amount,
-                }
+                },
             )
 
             # 更新价格
@@ -131,6 +130,7 @@ def generate_realistic_price(base_price: float = 100.0, volatility: float = 0.02
 
     Returns:
         float: 生成的价格（保留2位小数）
+
     """
     change_rate = random.uniform(-volatility, volatility)
     price = base_price * (1 + change_rate)
@@ -142,7 +142,6 @@ def generate_realistic_volume() -> int:
 
     Returns:
         int: 成交量（股）
+
     """
     return random.randint(1000000, 100000000)
-
-

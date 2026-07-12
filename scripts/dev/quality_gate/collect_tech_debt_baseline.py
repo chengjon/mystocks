@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-技术债基线采集脚本（Stage C 1.2）
+"""技术债基线采集脚本（Stage C 1.2）
 
 输出字段：
 - frontend_type_errors
@@ -20,10 +19,11 @@ import argparse
 import json
 import re
 import subprocess
+from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Iterable
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-数据访问层测试覆盖率分析脚本
+"""数据访问层测试覆盖率分析脚本
 分析 PostgreSQL 和 TDengine 访问层的测试覆盖率现状
 """
 
@@ -15,13 +14,17 @@ def run_command(cmd, description=""):
 
     try:
         result = subprocess.run(
-            cmd, shell=True, capture_output=True, text=True, timeout=300
+            cmd,
+            shell=True,
+            capture_output=True,
+            text=True,
+            timeout=300,
         )
         return result.returncode == 0, result.stdout, result.stderr
     except subprocess.TimeoutExpired:
         return False, "", "命令执行超时"
     except Exception as e:
-        return False, "", f"执行错误: {str(e)}"
+        return False, "", f"执行错误: {e!s}"
 
 
 def analyze_file_structure():
@@ -95,7 +98,8 @@ def calculate_test_coverage(module_path):
     if success:
         # 生成覆盖率报告
         success, coverage_output, coverage_error = run_command(
-            f"coverage report --include={module_path}", "生成覆盖率报告"
+            f"coverage report --include={module_path}",
+            "生成覆盖率报告",
         )
 
         if success and coverage_output:
@@ -113,9 +117,8 @@ def calculate_test_coverage(module_path):
 
         print("⚠️ 无法解析覆盖率报告")
         return 0, []
-    else:
-        print(f"❌ 测试执行失败: {error}")
-        return 0, []
+    print(f"❌ 测试执行失败: {error}")
+    return 0, []
 
 
 def identify_test_gaps(module_path, current_coverage, target_coverage):
@@ -137,7 +140,7 @@ def identify_test_gaps(module_path, current_coverage, target_coverage):
     suggestions = []
 
     try:
-        with open(module_file, "r", encoding="utf-8") as f:
+        with open(module_file, encoding="utf-8") as f:
             content = f.read()
 
         # 分析类和方法
@@ -160,7 +163,7 @@ def identify_test_gaps(module_path, current_coverage, target_coverage):
                     functions.append((func_name, i + 1))
 
         print(
-            f"📋 发现 {len(classes)} 个类, {len(methods)} 个方法, {len(functions)} 个函数"
+            f"📋 发现 {len(classes)} 个类, {len(methods)} 个方法, {len(functions)} 个函数",
         )
 
         # 建议测试项目
@@ -178,7 +181,7 @@ def identify_test_gaps(module_path, current_coverage, target_coverage):
                 "添加边界条件测试",
                 "添加集成测试场景",
                 "添加性能测试用例",
-            ]
+            ],
         )
 
     except Exception as e:
@@ -203,7 +206,7 @@ def generate_test_plan(postgresql_coverage, tdengine_coverage):
                 "current": postgresql_coverage,
                 "target": 67,
                 "priority": "HIGH" if postgresql_coverage < 50 else "MEDIUM",
-            }
+            },
         )
 
     if tdengine_coverage < 56:
@@ -213,7 +216,7 @@ def generate_test_plan(postgresql_coverage, tdengine_coverage):
                 "current": tdengine_coverage,
                 "target": 56,
                 "priority": "HIGH" if tdengine_coverage < 40 else "MEDIUM",
-            }
+            },
         )
 
     # 按优先级排序
@@ -239,10 +242,14 @@ def main():
 
     # 4. 识别测试缺口
     pg_suggestions = identify_test_gaps(
-        "src/data_access/postgresql_access.py", pg_coverage, 67
+        "src/data_access/postgresql_access.py",
+        pg_coverage,
+        67,
     )
     td_suggestions = identify_test_gaps(
-        "src/data_access/tdengine_access.py", td_coverage, 56
+        "src/data_access/tdengine_access.py",
+        td_coverage,
+        56,
     )
 
     # 5. 生成改进计划
@@ -251,7 +258,7 @@ def main():
     print("\n📋 测试覆盖率改进计划:")
     for item in plan:
         print(
-            f"  🎯 {item['module']}: {item['current']}% → {item['target']}% (优先级: {item['priority']})"
+            f"  🎯 {item['module']}: {item['current']}% → {item['target']}% (优先级: {item['priority']})",
         )
 
     # 6. 保存分析结果

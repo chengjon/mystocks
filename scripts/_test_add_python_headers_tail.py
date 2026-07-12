@@ -88,7 +88,7 @@ class TestTailScenarios:
             )
             assert result is True
 
-            with open(file_path, "r", encoding="utf-8") as file_handle:
+            with open(file_path, encoding="utf-8") as file_handle:
                 new_content = file_handle.read()
 
             assert original_content in new_content

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-整体测试覆盖率分析脚本
+"""整体测试覆盖率分析脚本
 分析项目中所有模块的测试覆盖率，识别优先改进目标
 """
 
@@ -14,13 +13,17 @@ def run_command(cmd, description=""):
 
     try:
         result = subprocess.run(
-            cmd, shell=True, capture_output=True, text=True, timeout=300
+            cmd,
+            shell=True,
+            capture_output=True,
+            text=True,
+            timeout=300,
         )
         return result.returncode == 0, result.stdout, result.stderr
     except subprocess.TimeoutExpired:
         return False, "", "命令执行超时"
     except Exception as e:
-        return False, "", f"执行错误: {str(e)}"
+        return False, "", f"执行错误: {e!s}"
 
 
 def parse_coverage_report():
@@ -40,8 +43,7 @@ def parse_coverage_report():
             "Name" in line
             or "TOTAL" in line
             or "----------" in line
-            or "-------------------------------------------------------------------------------"
-            in line
+            or "-------------------------------------------------------------------------------" in line
         ):
             continue
 
@@ -59,7 +61,7 @@ def parse_coverage_report():
                         "statements": stmts,
                         "missing": miss,
                         "coverage": coverage_pct,
-                    }
+                    },
                 )
             except (ValueError, IndexError):
                 continue
@@ -122,11 +124,7 @@ def identify_priority_modules(modules, exclude_patterns=None):
 def identify_high_value_targets(modules):
     """识别高价值改进目标"""
     # 高价值目标：语句数多、有一定覆盖率的模块
-    high_value = [
-        module
-        for module in modules
-        if module["statements"] > 50 and 10 < module["coverage"] < 50
-    ]
+    high_value = [module for module in modules if module["statements"] > 50 and 10 < module["coverage"] < 50]
 
     return sorted(high_value, key=lambda x: x["coverage"])
 
@@ -144,13 +142,11 @@ def generate_recommendations(categories, priority_modules):
                 "title": "优先改进模块 (低覆盖率)",
                 "modules": priority_1,
                 "action": "立即添加单元测试，目标覆盖率80%",
-            }
+            },
         )
 
     # 优先级2: 中等覆盖率模块
-    medium_modules = [m for m in categories["medium_coverage"] if m["statements"] > 30][
-        :5
-    ]
+    medium_modules = [m for m in categories["medium_coverage"] if m["statements"] > 30][:5]
     if medium_modules:
         recommendations.append(
             {
@@ -158,13 +154,11 @@ def generate_recommendations(categories, priority_modules):
                 "title": "中等覆盖率模块优化",
                 "modules": medium_modules,
                 "action": "补充边界情况和错误处理测试，目标覆盖率85%",
-            }
+            },
         )
 
     # 优先级3: 零覆盖率模块
-    no_coverage_modules = [
-        m for m in categories["no_coverage"] if m["statements"] > 20
-    ][:5]
+    no_coverage_modules = [m for m in categories["no_coverage"] if m["statements"] > 20][:5]
     if no_coverage_modules:
         recommendations.append(
             {
@@ -172,7 +166,7 @@ def generate_recommendations(categories, priority_modules):
                 "title": "零覆盖率模块基础测试",
                 "modules": no_coverage_modules,
                 "action": "创建基础单元测试框架，目标覆盖率60%",
-            }
+            },
         )
 
     return recommendations
@@ -199,7 +193,7 @@ def analyze_todo_comments():
                             "file": parts[0],
                             "line": parts[1],
                             "content": parts[2].strip(),
-                        }
+                        },
                     )
 
     print(f"📊 发现 {len(todos)} 个TODO/FIXME/XXX注释")

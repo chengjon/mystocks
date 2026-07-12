@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-ML策略回测集成测试脚本
+"""ML策略回测集成测试脚本
 
 测试ML策略与回测引擎的集成：
 - SVM策略回测执行
@@ -12,12 +11,14 @@ ML策略回测集成测试脚本
 创建时间: 2026-01-12
 """
 
-import sys
 import asyncio
 import logging
+import sys
+from datetime import datetime, timedelta
+
 import numpy as np
 import pandas as pd
-from datetime import datetime, timedelta
+
 
 # 添加项目根目录到路径
 project_root = "/opt/claude/mystocks_spec"
@@ -62,7 +63,7 @@ async def generate_test_market_data(days: int = 500) -> pd.DataFrame:
             "high": [p * (1 + abs(np.random.normal(0, 0.005))) for p in prices],
             "low": [p * (1 - abs(np.random.normal(0, 0.005))) for p in prices],
             "volume": [int(np.random.normal(1000000, 300000)) for _ in range(days)],
-        }
+        },
     )
 
     df.set_index("date", inplace=True)
@@ -79,9 +80,9 @@ async def test_ml_strategy_backtesting():
         # 导入必要的组件
         from src.ml_strategy.backtest.ml_strategy_backtester import MLStrategyBacktester
         from src.ml_strategy.strategy.svm_trading_strategy import (
-            SVMTradingStrategy,
-            SVMConservativeStrategy,
             SVMAggressiveStrategy,
+            SVMConservativeStrategy,
+            SVMTradingStrategy,
         )
 
         logger.info("✓ 成功导入ML策略回测组件")
@@ -115,7 +116,10 @@ async def test_ml_strategy_backtesting():
         svm_strategy = strategies[0]
 
         single_result = await backtester.run_strategy_backtest(
-            svm_strategy, market_data, start_date="2022-06-01", end_date="2023-06-01"
+            svm_strategy,
+            market_data,
+            start_date="2022-06-01",
+            end_date="2023-06-01",
         )
 
         logger.info("✓ 单策略回测完成")
@@ -126,7 +130,10 @@ async def test_ml_strategy_backtesting():
         # 测试多策略对比
         logger.info("\n--- 测试多策略对比 ---")
         comparison_result = await backtester.compare_strategies(
-            strategies, market_data, start_date="2022-06-01", end_date="2023-06-01"
+            strategies,
+            market_data,
+            start_date="2022-06-01",
+            end_date="2023-06-01",
         )
 
         logger.info("✓ 多策略对比完成")
@@ -161,7 +168,7 @@ async def test_ml_strategy_backtesting():
             if "signal_distribution" in signal_stats:
                 dist = signal_stats["signal_distribution"]
                 logger.info(
-                    "  信号分布: 买入={}, 持有={}, 卖出={}".format(dist.get(1, 0), dist.get(0, 0), dist.get(-1, 0))
+                    f"  信号分布: 买入={dist.get(1, 0)}, 持有={dist.get(0, 0)}, 卖出={dist.get(-1, 0)}",
                 )
 
         # 验证风险指标
@@ -194,7 +201,7 @@ async def test_backtest_configuration():
     logger.info("=" * 80)
 
     try:
-        from src.ml_strategy.backtest.ml_strategy_backtester import MLStrategyBacktester, MLStrategyBacktestConfig
+        from src.ml_strategy.backtest.ml_strategy_backtester import MLStrategyBacktestConfig, MLStrategyBacktester
         from src.ml_strategy.backtest.vectorized_backtester import BacktestConfig
         from src.ml_strategy.strategy.svm_trading_strategy import SVMTradingStrategy
 

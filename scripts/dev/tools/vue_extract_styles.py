@@ -8,7 +8,6 @@
 import argparse
 import os
 import re
-import sys
 
 
 def parse_vue_sections(content):
@@ -81,7 +80,7 @@ def extract_styles(vue_path, dry_run=False, min_lines=50):
                 "original_end": style["end"],
                 "replacement": replacement,
                 "lines_saved": style["lines"] - 1,
-            }
+            },
         )
 
     if dry_run:
@@ -159,11 +158,11 @@ def main():
 
         if args.dry_run:
             print(
-                f"{status} {result['file']}: {result['total']} -> {result['remaining']} (-{result['style_lines']} style)"
+                f"{status} {result['file']}: {result['total']} -> {result['remaining']} (-{result['style_lines']} style)",
             )
         else:
             print(
-                f"{status} {result['file']}: {result['total']} -> {result['remaining']} ({result['extractions']} style files)"
+                f"{status} {result['file']}: {result['total']} -> {result['remaining']} ({result['extractions']} style files)",
             )
 
     print(f"\nTotal: {success} extracted, {skipped} skipped, {fixed} now under 500 lines")

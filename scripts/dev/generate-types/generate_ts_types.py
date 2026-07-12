@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-从OpenAPI契约自动生成TypeScript类型定义
+"""从OpenAPI契约自动生成TypeScript类型定义
 
 支持工具:
 - openapi-typescript-codegen
@@ -28,7 +27,7 @@ class TypeScriptTypesGenerator:
         self,
         contracts_dir: str = "docs/api/contracts",
         output_dir: str = "web/frontend/src/types/api",
-        tool: str = "openapi-typescript"
+        tool: str = "openapi-typescript",
     ):
         self.contracts_dir = Path(contracts_dir)
         self.output_dir = Path(output_dir)
@@ -38,7 +37,7 @@ class TypeScriptTypesGenerator:
         self.supported_tools = [
             "openapi-typescript",
             "dtsgenerator",
-            "openapi-generator"
+            "openapi-generator",
         ]
 
         if tool not in self.supported_tools:
@@ -60,14 +59,14 @@ class TypeScriptTypesGenerator:
             result = subprocess.run(
                 ["npm", "list", "-g", "openapi-typescript-codegen"],
                 capture_output=True,
-                text=True
+                text=True,
             )
             if result.returncode != 0:
                 print("⚠️  openapi-typescript-codeg未全局安装")
                 print("正在安装...")
                 subprocess.run(
                     ["npm", "install", "-g", "openapi-typescript-codegen"],
-                    check=True
+                    check=True,
                 )
 
         elif self.tool == "dtsgenerator":
@@ -75,7 +74,7 @@ class TypeScriptTypesGenerator:
                 print("⚠️  dtsgenerator未安装，正在安装...")
                 subprocess.run(
                     ["npm", "install", "-g", "dtsgenerator"],
-                    check=True
+                    check=True,
                 )
 
         elif self.tool == "openapi-generator":
@@ -83,7 +82,7 @@ class TypeScriptTypesGenerator:
                 print("⚠️  openapi-generator未安装，正在安装...")
                 subprocess.run(
                     ["npm", "install", "-g", "@openapitools/openapi-generator-cli"],
-                    check=True
+                    check=True,
                 )
 
         print("✅ 依赖检查通过")
@@ -95,7 +94,7 @@ class TypeScriptTypesGenerator:
             subprocess.run(
                 ["which", command],
                 check=True,
-                capture_output=True
+                capture_output=True,
             )
             return True
         except subprocess.CalledProcessError:
@@ -154,7 +153,7 @@ class TypeScriptTypesGenerator:
         subprocess.run(
             ["npx", "openapi-typescript-codegen", str(input_file), "-o", str(output_file)],
             check=True,
-            capture_output=True
+            capture_output=True,
         )
 
     def _generate_with_dtsgenerator(self, input_file: Path, output_file: Path):
@@ -162,29 +161,37 @@ class TypeScriptTypesGenerator:
         subprocess.run(
             ["dtsgen", "--input", str(input_file), "--out", str(output_file)],
             check=True,
-            capture_output=True
+            capture_output=True,
         )
 
     def _generate_with_openapi_generator(self, input_file: Path, output_file: Path):
         """使用openapi-generator生成TypeScript类型"""
-        subprocess.run([
-            "openapi-generator",
-            "generate",
-            "-i", str(input_file),
-            "-g", "typescript-fetch",
-            "-o", str(self.output_dir / f"temp_{input_file.stem}"),
-            "--additional-properties="
-            "supportsES6=true,"
-            "withSeparateModelsAndApi=true,"
-            "modelPackage=models,"
-            "apiPackage=api"
-        ], check=True, capture_output=True)
+        subprocess.run(
+            [
+                "openapi-generator",
+                "generate",
+                "-i",
+                str(input_file),
+                "-g",
+                "typescript-fetch",
+                "-o",
+                str(self.output_dir / f"temp_{input_file.stem}"),
+                "--additional-properties="
+                "supportsES6=true,"
+                "withSeparateModelsAndApi=true,"
+                "modelPackage=models,"
+                "apiPackage=api",
+            ],
+            check=True,
+            capture_output=True,
+        )
 
         # 移动生成的文件
         temp_dir = self.output_dir / f"temp_{input_file.stem}"
         models_file = temp_dir / "models" / "index.ts"
         if models_file.exists():
             import shutil
+
             shutil.copy(models_file, output_file)
             shutil.rmtree(temp_dir)
 
@@ -248,7 +255,7 @@ class TypeScriptTypesGenerator:
         """运行生成流程"""
         print("🚀 TypeScript类型定义生成器")
         print(f"使用工具: {self.tool}")
-        print("")
+        print()
 
         # 检查依赖
         if not self.check_dependencies():
@@ -263,11 +270,11 @@ class TypeScriptTypesGenerator:
             print("⚠️  未找到契约文件，退出")
             return False
 
-        print("")
+        print()
         print("📝 找到以下契约文件:")
         for contract in contract_files:
             print(f"  - {contract}")
-        print("")
+        print()
 
         # 生成类型定义
         generated_files = []
@@ -283,7 +290,7 @@ class TypeScriptTypesGenerator:
             # 生成README
             self.generate_readme()
 
-        print("")
+        print()
         print("✅ TypeScript类型定义生成完成")
         print(f"输出目录: {self.output_dir}")
         print(f"生成文件数: {len(generated_files)}")
@@ -314,26 +321,26 @@ def main():
     --tool openapi-typescript \\
     --contracts-dir docs/api/contracts \\
     --output-dir web/frontend/src/types/api
-        """
+        """,
     )
 
     parser.add_argument(
         "--contracts-dir",
         default="docs/api/contracts",
-        help="OpenAPI契约目录 (默认: docs/api/contracts)"
+        help="OpenAPI契约目录 (默认: docs/api/contracts)",
     )
 
     parser.add_argument(
         "--output-dir",
         default="web/frontend/src/types/api",
-        help="TypeScript类型输出目录 (默认: web/frontend/src/types/api)"
+        help="TypeScript类型输出目录 (默认: web/frontend/src/types/api)",
     )
 
     parser.add_argument(
         "--tool",
         default="openapi-typescript",
         choices=["openapi-typescript", "dtsgenerator", "openapi-generator"],
-        help="生成工具 (默认: openapi-typescript)"
+        help="生成工具 (默认: openapi-typescript)",
     )
 
     args = parser.parse_args()
@@ -342,7 +349,7 @@ def main():
     generator = TypeScriptTypesGenerator(
         contracts_dir=args.contracts_dir,
         output_dir=args.output_dir,
-        tool=args.tool
+        tool=args.tool,
     )
 
     success = generator.run()

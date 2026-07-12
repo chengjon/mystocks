@@ -1,18 +1,14 @@
 #!/usr/bin/env python3
-"""
-ArtDeco量化交易管理中心 - CI/CD验证脚本
+"""ArtDeco量化交易管理中心 - CI/CD验证脚本
 验证ArtDeco主题页面的安全、质量、集成、性能和AI增强符合性
 """
 
-import os
-import sys
-import json
-import time
 import asyncio
-import subprocess
-from typing import Dict, Any, List
+import json
+import sys
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any, Dict
 
 
 @dataclass
@@ -72,7 +68,7 @@ class ArtDecoTradingCenterValidator:
                 results[check_name] = result
                 status = "✅" if result["passed"] else "❌"
                 print(
-                    f"  {status} {check_name} {'通过' if result['passed'] else '失败'}"
+                    f"  {status} {check_name} {'通过' if result['passed'] else '失败'}",
                 )
 
                 if "details" in result:
@@ -292,7 +288,7 @@ class ArtDecoTradingCenterValidator:
                                 "file": str(file_path.relative_to(self.project_root)),
                                 "pattern": pattern,
                                 "description": description,
-                            }
+                            },
                         )
             except Exception:
                 continue
@@ -313,7 +309,7 @@ class ArtDecoTradingCenterValidator:
             if not package_json.exists():
                 return {"passed": False, "error": "package.json not found"}
 
-            with open(package_json, "r", encoding="utf-8") as f:
+            with open(package_json, encoding="utf-8") as f:
                 package_data = json.load(f)
 
             dependencies = package_data.get("dependencies", {})
@@ -498,7 +494,7 @@ class ArtDecoTradingCenterValidator:
         for category, result in validations.items():
             status = "✅" if result.passed else "❌"
             print(
-                f"{status} {category.replace('_', ' ').title()}: {'通过' if result.passed else '失败'}"
+                f"{status} {category.replace('_', ' ').title()}: {'通过' if result.passed else '失败'}",
             )
 
             if not result.passed and result.error:

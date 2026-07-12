@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-股票基础信息数据填充脚本
+"""股票基础信息数据填充脚本
 
 功能:
 - 从AkShare获取A股股票列表
@@ -8,33 +7,37 @@
 - 支持增量更新
 """
 
-import sys
 import os
+import sys
 from pathlib import Path
+
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
+import logging
+from datetime import datetime
+from typing import Dict, List
+
 import akshare as ak
 import psycopg2
-from datetime import datetime
-from typing import List, Dict
-import logging
+
 
 # Setup logging
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
 
 def get_stock_list_from_akshare() -> List[Dict]:
-    """
-    从AkShare获取股票列表
+    """从AkShare获取股票列表
 
     Returns:
         List[Dict]: 股票信息列表
+
     """
     logger.info("正在从AkShare获取股票列表...")
 
@@ -87,7 +90,7 @@ def get_stock_list_from_akshare() -> List[Dict]:
                     "security_type": security_type,
                     "listing_board": listing_board,
                     "status": "ACTIVE",  # Assume active if in current list
-                }
+                },
             )
 
         return stocks
@@ -98,12 +101,12 @@ def get_stock_list_from_akshare() -> List[Dict]:
 
 
 def populate_stock_info(stocks: List[Dict], db_config: Dict):
-    """
-    将股票信息写入PostgreSQL数据库
+    """将股票信息写入PostgreSQL数据库
 
     Args:
         stocks: 股票信息列表
         db_config: 数据库连接配置
+
     """
     logger.info(f"开始写入 {len(stocks)} 条股票信息到数据库...")
 
@@ -140,7 +143,7 @@ def populate_stock_info(stocks: List[Dict], db_config: Dict):
         batch_data = []
         for stock in stocks:
             batch_data.append(
-                {**stock, "created_at": current_time, "updated_at": current_time}
+                {**stock, "created_at": current_time, "updated_at": current_time},
             )
 
         # Execute batch insert
@@ -169,7 +172,6 @@ def populate_stock_info(stocks: List[Dict], db_config: Dict):
 
 def main():
     """主函数"""
-
     password = os.getenv("POSTGRESQL_PASSWORD")
     if not password:
         raise ValueError("POSTGRESQL_PASSWORD environment variable must be set")

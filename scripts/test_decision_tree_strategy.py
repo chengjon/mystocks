@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Decision Tree策略测试脚本
+"""Decision Tree策略测试脚本
 
 测试Decision Tree增强交易策略：
 - 特征工程验证
@@ -12,12 +11,14 @@ Decision Tree策略测试脚本
 创建时间: 2026-01-12
 """
 
-import sys
 import asyncio
 import logging
+import sys
+from datetime import datetime, timedelta
+
 import numpy as np
 import pandas as pd
-from datetime import datetime, timedelta
+
 
 # 添加项目根目录到路径
 project_root = "/opt/claude/mystocks_spec"
@@ -71,7 +72,7 @@ async def generate_test_market_data(days: int = 300) -> pd.DataFrame:
             "volume": [
                 int(np.random.normal(1000000, 300000) * (1 + 0.5 * np.sin(2 * np.pi * i / 5))) for i in range(days)
             ],
-        }
+        },
     )
 
     df.set_index("date", inplace=True)
@@ -87,9 +88,9 @@ async def test_decision_tree_trading_strategy():
     try:
         # 导入Decision Tree策略
         from src.ml_strategy.strategy.decision_tree_trading_strategy import (
-            DecisionTreeTradingStrategy,
-            DecisionTreeConservativeStrategy,
             DecisionTreeAggressiveStrategy,
+            DecisionTreeConservativeStrategy,
+            DecisionTreeTradingStrategy,
         )
 
         logger.info("✓ 成功导入Decision Tree策略类")
@@ -232,7 +233,10 @@ async def test_decision_tree_backtesting_integration():
 
         # 执行回测
         result = await backtester.run_strategy_backtest(
-            strategy, market_data, start_date="2022-03-01", end_date="2022-09-01"
+            strategy,
+            market_data,
+            start_date="2022-03-01",
+            end_date="2022-09-01",
         )
 
         logger.info("✓ Decision Tree策略回测完成")
@@ -241,7 +245,7 @@ async def test_decision_tree_backtesting_integration():
         if "signal_statistics" in result:
             signal_stats = result["signal_statistics"]
             logger.info(
-                f"  信号统计: 总信号={signal_stats['total_signals']}, 日均={signal_stats['avg_signals_per_day']:.3f}"
+                f"  信号统计: 总信号={signal_stats['total_signals']}, 日均={signal_stats['avg_signals_per_day']:.3f}",
             )
 
         logger.info("\n🎉 Decision Tree策略回测集成测试完成!")

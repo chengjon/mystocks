@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
-"""
-代码质量检查脚本
+"""代码质量检查脚本
 运行 ruff 和 mypy 检查，并生成报告
 """
 
+import json
 import subprocess
 import sys
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Tuple
-import json
-from datetime import datetime
 
 
 class CodeQualityChecker:
@@ -28,7 +27,10 @@ class CodeQualityChecker:
         """运行命令并返回结果"""
         try:
             result = subprocess.run(
-                cmd, capture_output=True, text=True, cwd=cwd or self.project_root
+                cmd,
+                capture_output=True,
+                text=True,
+                cwd=cwd or self.project_root,
             )
             return result.returncode, result.stdout, result.stderr
         except Exception as e:
@@ -40,7 +42,7 @@ class CodeQualityChecker:
 
         # 检查代码风格
         returncode, stdout, stderr = self.run_command(
-            ["ruff", "check", ".", "--output-format=json"]
+            ["ruff", "check", ".", "--output-format=json"],
         )
 
         if returncode == 0:
@@ -52,24 +54,20 @@ class CodeQualityChecker:
                 issues = json.loads(stdout)
                 self.results["ruff"]["status"] = "failed"
                 self.results["ruff"]["errors"] = [
-                    issue
-                    for issue in issues
-                    if issue.get("code", "").startswith(("E", "F"))
+                    issue for issue in issues if issue.get("code", "").startswith(("E", "F"))
                 ]
                 self.results["ruff"]["warnings"] = [
-                    issue
-                    for issue in issues
-                    if issue.get("code", "").startswith(("W", "I"))
+                    issue for issue in issues if issue.get("code", "").startswith(("W", "I"))
                 ]
             except:
                 self.results["ruff"]["status"] = "error"
                 self.results["ruff"]["errors"] = [
-                    {"message": "Failed to parse ruff output"}
+                    {"message": "Failed to parse ruff output"},
                 ]
 
         # 检查格式
         returncode_fmt, stdout_fmt, stderr_fmt = self.run_command(
-            ["ruff", "format", "--check", "."]
+            ["ruff", "format", "--check", "."],
         )
 
         self.results["ruff"]["format_ok"] = returncode_fmt == 0
@@ -90,7 +88,7 @@ class CodeQualityChecker:
                 "--ignore-missing-imports",
                 "--show-error-codes",
                 "--no-error-summary",
-            ]
+            ],
         )
 
         if returncode == 0:
@@ -98,9 +96,7 @@ class CodeQualityChecker:
             self.results["mypy"]["errors"] = []
         else:
             self.results["mypy"]["status"] = "failed"
-            self.results["mypy"]["errors"] = (
-                stderr.split("\n") if stderr else ["Unknown error"]
-            )
+            self.results["mypy"]["errors"] = stderr.split("\n") if stderr else ["Unknown error"]
 
         print(f"   MyPy: {self.results['mypy']['status']}")
 

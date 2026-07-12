@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-密码策略检查脚本
+"""密码策略检查脚本
 验证代码中的密码处理是否符合安全策略
 """
 
-import sys
 import re
+import sys
 from pathlib import Path
 
 
@@ -33,7 +31,7 @@ def check_password_policy():
     python_files = list(src_path.rglob("*.py"))
     for file_path in python_files:
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
                 lines = content.split("\n")
 
@@ -50,15 +48,11 @@ def check_password_policy():
                                         "line_content": line.strip(),
                                         "violation": "使用弱哈希算法",
                                         "severity": "high",
-                                    }
+                                    },
                                 )
 
                             # 检查是否明文存储密码
-                            if (
-                                "password" in line.lower()
-                                and "=" in line
-                                and "getenv" not in line
-                            ):
+                            if "password" in line.lower() and "=" in line and "getenv" not in line:
                                 violations.append(
                                     {
                                         "file": str(file_path),
@@ -66,7 +60,7 @@ def check_password_policy():
                                         "line_content": line.strip(),
                                         "violation": "可能明文存储密码",
                                         "severity": "critical",
-                                    }
+                                    },
                                 )
 
                             # 检查密码长度验证
@@ -78,7 +72,7 @@ def check_password_policy():
                                         "line_content": line.strip(),
                                         "violation": "密码长度验证不足",
                                         "severity": "medium",
-                                    }
+                                    },
                                 )
 
         except Exception as e:

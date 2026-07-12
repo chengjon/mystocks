@@ -1,14 +1,9 @@
 """技术负债分析器子模块"""
 
-import ast
-import json
 import logging
-import re
-from collections import Counter, defaultdict
-from pathlib import Path
+from collections import defaultdict
 from typing import Any, Dict, List
-import asyncio
-import aiofiles
+
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +48,7 @@ class ReportMixin:
                         "提取公共逻辑到独立函数",
                         "使用装饰器简化横切关注点",
                     ],
-                }
+                },
             )
 
         if len(self.issues["security_issues"]) > 0:
@@ -68,7 +63,7 @@ class ReportMixin:
                         "使用环境变量管理敏感配置",
                         "实施输入验证和SQL注入防护",
                     ],
-                }
+                },
             )
 
         if len(self.issues["test_issues"]) > 0:
@@ -83,7 +78,7 @@ class ReportMixin:
                         "实施自动化测试",
                         "增加端到端测试",
                     ],
-                }
+                },
             )
 
         return recommendations
@@ -124,7 +119,8 @@ class ReportMixin:
 
         all_issues.sort(
             key=lambda x: {"critical": 4, "high": 3, "medium": 2, "low": 1}.get(
-                x.get("severity", "low"), 1
+                x.get("severity", "low"),
+                1,
             ),
             reverse=True,
         )
@@ -138,9 +134,7 @@ class ReportMixin:
                     "file": issue.get("file", "N/A"),
                     "issue": issue.get("issue", issue.get("category", "unknown")),
                     "description": f"在{issue.get('file', '未知文件')}中发现{issue.get('issue', '问题')}",
-                }
+                },
             )
 
         return actions
-
-

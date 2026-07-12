@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Phase 3 Task 20: Key Rotation CLI Tool
+"""Phase 3 Task 20: Key Rotation CLI Tool
 Provides command-line interface for managing encryption key rotation
 
 Usage:
@@ -26,8 +25,9 @@ Environment Variables:
 import argparse
 import os
 import sys
-from typing import Optional
 from datetime import datetime
+from typing import Optional
+
 
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
@@ -39,11 +39,11 @@ class KeyRotationCLI:
     """CLI for key rotation operations"""
 
     def __init__(self, master_password: Optional[str] = None):
-        """
-        Initialize CLI
+        """Initialize CLI
 
         Args:
             master_password: Master password (if None, reads from env)
+
         """
         self.master_password = master_password or os.getenv("ENCRYPTION_MASTER_PASSWORD")
 
@@ -106,12 +106,12 @@ class KeyRotationCLI:
         print("\n" + "=" * 70 + "\n")
 
     def cmd_rotate(self, new_version: int, dry_run: bool = False):
-        """
-        Rotate to new key version
+        """Rotate to new key version
 
         Args:
             new_version: New version number
             dry_run: If True, only show what would happen
+
         """
         print("\n" + "=" * 70)
         print(f"🔄 Key Rotation: Version {self.encryption_mgr.current_key_version} → {new_version}")
@@ -120,7 +120,7 @@ class KeyRotationCLI:
         # Validation
         if new_version <= self.encryption_mgr.current_key_version:
             print(
-                f"\n❌ Error: New version ({new_version}) must be greater than current version ({self.encryption_mgr.current_key_version})"
+                f"\n❌ Error: New version ({new_version}) must be greater than current version ({self.encryption_mgr.current_key_version})",
             )
             return False
 
@@ -145,18 +145,17 @@ class KeyRotationCLI:
             print("\n⚠️  Note: Existing secrets are still encrypted with old versions.")
             print(f"   Run 'migrate --target-version {new_version}' to re-encrypt them.")
             return True
-        else:
-            print("❌ Rotation failed")
-            return False
+        print("❌ Rotation failed")
+        return False
 
     def cmd_migrate(self, target_version: int, dry_run: bool = False, force: bool = False):
-        """
-        Migrate secrets to target version
+        """Migrate secrets to target version
 
         Args:
             target_version: Target version number
             dry_run: If True, only show what would happen
             force: Skip confirmation prompt
+
         """
         print("\n" + "=" * 70)
         print(f"🔄 Secret Migration to Version {target_version}")
@@ -183,7 +182,7 @@ class KeyRotationCLI:
         # Confirm
         if not force:
             response = input(
-                f"\n⚠️  Migrate {report['needs_migration']} secrets to version {target_version}? (yes/no): "
+                f"\n⚠️  Migrate {report['needs_migration']} secrets to version {target_version}? (yes/no): ",
             )
             if response.lower() != "yes":
                 print("❌ Migration cancelled")
@@ -225,12 +224,12 @@ class KeyRotationCLI:
         return success
 
     def cmd_full_rotation(self, new_version: int, dry_run: bool = False):
-        """
-        Perform full rotation workflow (rotate + migrate)
+        """Perform full rotation workflow (rotate + migrate)
 
         Args:
             new_version: New version number
             dry_run: If True, only show what would happen
+
         """
         print("\n" + "=" * 70)
         print(f"🔄 Full Key Rotation Workflow to Version {new_version}")
@@ -301,7 +300,7 @@ class KeyRotationCLI:
             print(f"   ✅ All secrets current (version {report['current_encryption_version']})")
         else:
             print(
-                f"   ⚠️  {report['needs_migration']} secrets need migration to version {report['current_encryption_version']}"
+                f"   ⚠️  {report['needs_migration']} secrets need migration to version {report['current_encryption_version']}",
             )
 
         # Check 4: Test encryption/decryption

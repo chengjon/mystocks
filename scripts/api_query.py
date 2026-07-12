@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
-"""
-API快速查询工具
+"""API快速查询工具
 用于快速查找和显示API端点信息
 """
 
-import json
 import argparse
-from pathlib import Path
+import json
 from collections import defaultdict
+from pathlib import Path
 
 
 def load_index():
@@ -18,7 +17,7 @@ def load_index():
         print("   请先运行: python scripts/split_api_inventory.py")
         return None
 
-    with open(index_file, "r", encoding="utf-8") as f:
+    with open(index_file, encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -29,7 +28,7 @@ def search_by_path(path_pattern: str, index_data: dict):
     for file_info in index_data["split_files"]:
         split_file = Path("docs/reports/api_split") / file_info["file"]
         try:
-            with open(split_file, "r", encoding="utf-8") as f:
+            with open(split_file, encoding="utf-8") as f:
                 split_data = json.load(f)
                 for ep in split_data["endpoints"]:
                     if path_pattern.lower() in ep["path"].lower():
@@ -47,7 +46,7 @@ def search_by_method(method: str, index_data: dict):
     for file_info in index_data["split_files"]:
         split_file = Path("docs/reports/api_split") / file_info["file"]
         try:
-            with open(split_file, "r", encoding="utf-8") as f:
+            with open(split_file, encoding="utf-8") as f:
                 split_data = json.load(f)
                 for ep in split_data["endpoints"]:
                     if ep["method"].upper() == method.upper():
@@ -65,7 +64,7 @@ def search_by_file(filename: str, index_data: dict):
     for file_info in index_data["split_files"]:
         split_file = Path("docs/reports/api_split") / file_info["file"]
         try:
-            with open(split_file, "r", encoding="utf-8") as f:
+            with open(split_file, encoding="utf-8") as f:
                 split_data = json.load(f)
                 for ep in split_data["endpoints"]:
                     if filename.lower() in ep["file"].lower():
@@ -83,7 +82,7 @@ def search_by_function(function_name: str, index_data: dict):
     for file_info in index_data["split_files"]:
         split_file = Path("docs/reports/api_split") / file_info["file"]
         try:
-            with open(split_file, "r", encoding="utf-8") as f:
+            with open(split_file, encoding="utf-8") as f:
                 split_data = json.load(f)
                 for ep in split_data["endpoints"]:
                     if function_name.lower() in ep["function"].lower():
@@ -131,7 +130,7 @@ def show_summary(index_data: dict):
     for file_info in index_data["split_files"]:
         split_file = Path("docs/reports/api_split") / file_info["file"]
         try:
-            with open(split_file, "r", encoding="utf-8") as f:
+            with open(split_file, encoding="utf-8") as f:
                 split_data = json.load(f)
                 for ep in split_data["endpoints"]:
                     method_count[ep["method"]] += 1

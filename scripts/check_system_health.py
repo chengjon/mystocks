@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-自动化基础设施和代码质量检查脚本
+"""自动化基础设施和代码质量检查脚本
 Automated Infrastructure and Code Quality Check Script
 
 执行全面的系统健康检查，包括：
@@ -13,12 +12,11 @@ Automated Infrastructure and Code Quality Check Script
 python scripts/check_system_health.py
 """
 
-import os
-import sys
-import subprocess
 import json
-from pathlib import Path
-from typing import Dict, List, Tuple
+import os
+import subprocess
+import sys
+from typing import Dict, List
 
 
 class SystemHealthChecker:
@@ -58,11 +56,11 @@ class SystemHealthChecker:
         python_version = sys.version_info
         if python_version >= (3, 8):
             self.log_success(
-                f"Python版本: {python_version.major}.{python_version.minor}.{python_version.micro}"
+                f"Python版本: {python_version.major}.{python_version.minor}.{python_version.micro}",
             )
         else:
             self.log_error(
-                f"Python版本过低: {python_version.major}.{python_version.minor} (需要3.8+)"
+                f"Python版本过低: {python_version.major}.{python_version.minor} (需要3.8+)",
             )
             success = False
 
@@ -230,9 +228,8 @@ class SystemHealthChecker:
             if len(error_files) > 5:
                 print(f"    ... 和其他 {len(error_files) - 5} 个文件")
             return False
-        else:
-            self.log_success("未发现语法错误")
-            return True
+        self.log_success("未发现语法错误")
+        return True
 
     def _check_imports(self) -> bool:
         """检查导入问题"""
@@ -273,15 +270,16 @@ class SystemHealthChecker:
 
             # 运行black检查 (不修改文件)
             result = subprocess.run(
-                ["black", "--check", "--diff", "src/"], capture_output=True, text=True
+                ["black", "--check", "--diff", "src/"],
+                capture_output=True,
+                text=True,
             )
 
             if result.returncode == 0:
                 self.log_success("代码格式符合black标准")
                 return True
-            else:
-                self.log_warning("代码格式不符合black标准 (可选择性修复)")
-                return True  # 不算错误，只是警告
+            self.log_warning("代码格式不符合black标准 (可选择性修复)")
+            return True  # 不算错误，只是警告
 
         except (subprocess.CalledProcessError, FileNotFoundError):
             self.log_warning("black未安装，跳过格式检查")
@@ -318,7 +316,7 @@ class SystemHealthChecker:
         for config_file in config_files:
             if os.path.exists(config_file):
                 try:
-                    with open(config_file, "r", encoding="utf-8") as f:
+                    with open(config_file, encoding="utf-8") as f:
                         yaml.safe_load(f)
                     self.log_success(f"YAML配置有效: {config_file}")
                 except yaml.YAMLError as e:
@@ -397,19 +395,13 @@ class SystemHealthChecker:
     def generate_report(self) -> Dict:
         """生成检查报告"""
         total_checks = len(self.results)
-        successful_checks = sum(
-            1
-            for category in self.results.values()
-            if category.get("overall_success", False)
-        )
+        successful_checks = sum(1 for category in self.results.values() if category.get("overall_success", False))
 
         report = {
             "summary": {
                 "total_checks": total_checks,
                 "successful_checks": successful_checks,
-                "success_rate": successful_checks / total_checks
-                if total_checks > 0
-                else 0,
+                "success_rate": successful_checks / total_checks if total_checks > 0 else 0,
                 "errors_count": len(self.errors),
                 "warnings_count": len(self.warnings),
             },

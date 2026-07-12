@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
-"""
-MyStocks AI自动化工作流
+"""MyStocks AI自动化工作流
 自动化处理：数据获取 → AI分析 → 策略决策 → 性能监控
 """
 
 import asyncio
-import time
 import logging
+import time
+
 import yaml
+
 
 # 设置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -26,7 +28,7 @@ class AIAutomationWorkflow:
     def load_config(self, config_path: str) -> dict:
         """加载配置文件"""
         try:
-            with open(config_path, "r", encoding="utf-8") as f:
+            with open(config_path, encoding="utf-8") as f:
                 return yaml.safe_load(f)
         except Exception as e:
             logger.error(f"配置文件加载失败: {e}")
@@ -51,7 +53,7 @@ class AIAutomationWorkflow:
                         "timestamp": time.time(),
                         "status": "success",
                         "records": 1000,  # 模拟记录数
-                    }
+                    },
                 )
 
         logger.info(f"✅ 数据获取完成，共 {len(acquired_data)} 个数据源")
@@ -101,10 +103,7 @@ class AIAutomationWorkflow:
             "execution_time": time.time() - self.start_time,
             "processed_items": self.processed_items,
             "error_count": len(self.errors),
-            "success_rate": (
-                self.processed_items / max(self.processed_items + len(self.errors), 1)
-            )
-            * 100,
+            "success_rate": (self.processed_items / max(self.processed_items + len(self.errors), 1)) * 100,
             "cpu_usage": "15%",  # 模拟值
             "memory_usage": "512MB",  # 模拟值
         }
@@ -129,7 +128,7 @@ class AIAutomationWorkflow:
 
             # 步骤4: 性能监控
             monitoring = await self.performance_monitoring(
-                {"data": data, "analysis": analysis, "decision": decision}
+                {"data": data, "analysis": analysis, "decision": decision},
             )
 
             # 构建完整结果
@@ -173,7 +172,7 @@ async def main():
     print("=" * 60)
     print(f"状态: {result.get('status', 'unknown')}")
     print(
-        f"执行时间: {result.get('workflow_summary', {}).get('total_duration', 0):.2f}秒"
+        f"执行时间: {result.get('workflow_summary', {}).get('total_duration', 0):.2f}秒",
     )
     print(f"成功率: {result.get('workflow_summary', {}).get('success_rate', 0):.1f}%")
     print(f"AI信心度: {result.get('workflow_summary', {}).get('ai_confidence', 0):.2f}")

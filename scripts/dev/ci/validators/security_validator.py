@@ -1,15 +1,8 @@
 """量化策略验证器子模块"""
 
-import ast
-import json
 import logging
-import os
-import re
-import subprocess
-import sys
-import time
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict
+
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +37,7 @@ class SecurityValidatorMixin:
                         details = result["details"]
                         if "vulnerabilities_found" in details:
                             print(
-                                f"       发现漏洞: {details['vulnerabilities_found']}"
+                                f"       发现漏洞: {details['vulnerabilities_found']}",
                             )
                         if "secrets_found" in details:
                             print(f"       发现敏感信息: {details['secrets_found']}")
@@ -72,9 +65,9 @@ class SecurityValidatorMixin:
     def _validate_code_security(self) -> Dict[str, Any]:
         """验证代码安全性 - 使用专业安全工具"""
         try:
-            import subprocess
             import json
             import os
+            import subprocess
 
             security_issues = []
             total_files_scanned = 0
@@ -91,9 +84,7 @@ class SecurityValidatorMixin:
                     timeout=30,
                 )
 
-                if (
-                    result.returncode == 0 or result.returncode == 1
-                ):  # bandit返回1表示发现问题
+                if result.returncode == 0 or result.returncode == 1:  # bandit返回1表示发现问题
                     try:
                         # bandit的JSON输出可能需要不同的解析方式
                         if result.stdout.strip():
@@ -114,7 +105,8 @@ class SecurityValidatorMixin:
                                                     if isinstance(file_issues, list):
                                                         for file_issue in file_issues:
                                                             if isinstance(
-                                                                file_issue, dict
+                                                                file_issue,
+                                                                dict,
                                                             ):
                                                                 security_issues.append(
                                                                     {
@@ -124,35 +116,35 @@ class SecurityValidatorMixin:
                                                                             file_issue.get(
                                                                                 "test_id",
                                                                                 "unknown",
-                                                                            )
+                                                                            ),
                                                                         ),
                                                                         "description": str(
                                                                             file_issue.get(
                                                                                 "issue_text",
                                                                                 "",
-                                                                            )
+                                                                            ),
                                                                         ),
                                                                         "severity": str(
                                                                             file_issue.get(
                                                                                 "issue_severity",
                                                                                 "unknown",
-                                                                            )
+                                                                            ),
                                                                         ),
                                                                         "confidence": str(
                                                                             file_issue.get(
                                                                                 "issue_confidence",
                                                                                 "unknown",
-                                                                            )
+                                                                            ),
                                                                         ),
                                                                         "line": file_issue.get(
                                                                             "line_number",
                                                                             0,
                                                                         ),
                                                                         "tool": "bandit",
-                                                                    }
+                                                                    },
                                                                 )
                                 print(
-                                    f"    ✅ bandit扫描完成，发现{len([i for i in security_issues if i.get('tool') == 'bandit'])}个安全问题"
+                                    f"    ✅ bandit扫描完成，发现{len([i for i in security_issues if i.get('tool') == 'bandit'])}个安全问题",
                                 )
 
                             except (
@@ -169,11 +161,11 @@ class SecurityValidatorMixin:
                                                 "type": "bandit_issue",
                                                 "description": line.strip(),
                                                 "tool": "bandit",
-                                            }
+                                            },
                                         )
                                 tools_used.append("bandit")
                                 print(
-                                    f"    ✅ bandit文本解析完成，发现{len([i for i in security_issues if i.get('tool') == 'bandit'])}个安全问题"
+                                    f"    ✅ bandit文本解析完成，发现{len([i for i in security_issues if i.get('tool') == 'bandit'])}个安全问题",
                                 )
                         else:
                             print("    ⚠️ bandit没有输出结果")
@@ -193,7 +185,7 @@ class SecurityValidatorMixin:
                                         "type": "bandit_issue",
                                         "description": line.strip(),
                                         "tool": "bandit",
-                                    }
+                                    },
                                 )
 
                 else:
@@ -232,11 +224,11 @@ class SecurityValidatorMixin:
                                     "package": issue.get("package", ""),
                                     "version": issue.get("version", ""),
                                     "vulnerability_id": issue.get("id", ""),
-                                }
+                                },
                             )
 
                         print(
-                            f"    ✅ safety检查完成，发现{len([i for i in security_issues if i.get('tool') == 'safety'])}个依赖漏洞"
+                            f"    ✅ safety检查完成，发现{len([i for i in security_issues if i.get('tool') == 'safety'])}个依赖漏洞",
                         )
 
                     except json.JSONDecodeError:
@@ -245,20 +237,17 @@ class SecurityValidatorMixin:
                 elif result.returncode == 255:  # safety返回255表示发现漏洞
                     # 解析文本输出
                     for line in result.stdout.split("\n"):
-                        if "==" in line and (
-                            "vulnerability" in line.lower()
-                            or "insecure" in line.lower()
-                        ):
+                        if "==" in line and ("vulnerability" in line.lower() or "insecure" in line.lower()):
                             security_issues.append(
                                 {
                                     "type": "dependency_vulnerability",
                                     "description": line.strip(),
                                     "severity": "high",
                                     "tool": "safety",
-                                }
+                                },
                             )
                     tools_used.append("safety")
-                    print(f"    ⚠️ safety发现依赖漏洞")
+                    print("    ⚠️ safety发现依赖漏洞")
 
             except FileNotFoundError:
                 print("    ⚠️ safety未安装")
@@ -287,7 +276,9 @@ class SecurityValidatorMixin:
                 for file_path in python_files:
                     try:
                         with open(
-                            file_path, "r", encoding="utf-8", errors="ignore"
+                            file_path,
+                            encoding="utf-8",
+                            errors="ignore",
                         ) as f:
                             content = f.read()
                             total_files_scanned += 1
@@ -307,7 +298,7 @@ class SecurityValidatorMixin:
                                             "type": "dangerous_function",
                                             "description": description,
                                             "tool": "builtin",
-                                        }
+                                        },
                                     )
 
                     except Exception:
@@ -317,12 +308,8 @@ class SecurityValidatorMixin:
                 print(f"    ✅ 内置安全检查完成，扫描{total_files_scanned}个文件")
 
             # 评估安全状态
-            critical_issues = [
-                i for i in security_issues if i.get("severity") == "high"
-            ]
-            medium_issues = [
-                i for i in security_issues if i.get("severity") == "medium"
-            ]
+            critical_issues = [i for i in security_issues if i.get("severity") == "high"]
+            medium_issues = [i for i in security_issues if i.get("severity") == "medium"]
 
             # 安全检查通过（没有严重安全问题，或问题数量在可接受范围内）
             security_ok = len(critical_issues) == 0 and len(security_issues) <= 10
@@ -337,7 +324,7 @@ class SecurityValidatorMixin:
                     "issues_by_tool": {
                         tool: len([i for i in security_issues if i.get("tool") == tool])
                         for tool in set(
-                            [i.get("tool", "unknown") for i in security_issues]
+                            [i.get("tool", "unknown") for i in security_issues],
                         )
                     },
                     "top_issues": security_issues[:5],  # 显示前5个问题
@@ -345,7 +332,7 @@ class SecurityValidatorMixin:
             }
 
         except Exception as e:
-            return {"passed": False, "error": f"代码安全检查异常: {str(e)}"}
+            return {"passed": False, "error": f"代码安全检查异常: {e!s}"}
 
     def _validate_dependency_security(self) -> Dict[str, Any]:
         """验证依赖包安全性"""
@@ -360,7 +347,7 @@ class SecurityValidatorMixin:
                 },
             }
         except Exception as e:
-            return {"passed": False, "error": f"依赖检查异常: {str(e)}"}
+            return {"passed": False, "error": f"依赖检查异常: {e!s}"}
 
     def _validate_sensitive_data(self) -> Dict[str, Any]:
         """验证敏感信息泄露"""
@@ -392,14 +379,18 @@ class SecurityValidatorMixin:
                         file_path = os.path.join(root, file)
                         try:
                             with open(
-                                file_path, "r", encoding="utf-8", errors="ignore"
+                                file_path,
+                                encoding="utf-8",
+                                errors="ignore",
                             ) as f:
                                 content = f.read()
                                 files_scanned += 1
 
                                 for pattern, description in secret_patterns:
                                     matches = re.findall(
-                                        pattern, content, re.IGNORECASE
+                                        pattern,
+                                        content,
+                                        re.IGNORECASE,
                                     )
                                     if matches:
                                         secrets_found.append(
@@ -407,7 +398,7 @@ class SecurityValidatorMixin:
                                                 "file": file_path,
                                                 "type": description,
                                                 "matches": len(matches),
-                                            }
+                                            },
                                         )
                                         if file_path not in sensitive_files:
                                             sensitive_files.append(file_path)
@@ -430,7 +421,7 @@ class SecurityValidatorMixin:
             }
 
         except Exception as e:
-            return {"passed": False, "error": f"敏感信息检测异常: {str(e)}"}
+            return {"passed": False, "error": f"敏感信息检测异常: {e!s}"}
 
     def _validate_sql_injection(self) -> Dict[str, Any]:
         """验证SQL注入防护"""
@@ -457,7 +448,9 @@ class SecurityValidatorMixin:
                         file_path = os.path.join(root, file)
                         try:
                             with open(
-                                file_path, "r", encoding="utf-8", errors="ignore"
+                                file_path,
+                                encoding="utf-8",
+                                errors="ignore",
                             ) as f:
                                 content = f.read()
                                 files_checked += 1
@@ -468,7 +461,7 @@ class SecurityValidatorMixin:
                                             {
                                                 "file": file_path,
                                                 "type": description,
-                                            }
+                                            },
                                         )
 
                         except Exception:
@@ -487,7 +480,7 @@ class SecurityValidatorMixin:
             }
 
         except Exception as e:
-            return {"passed": False, "error": f"SQL注入检查异常: {str(e)}"}
+            return {"passed": False, "error": f"SQL注入检查异常: {e!s}"}
 
     def _validate_xss_vulnerabilities(self) -> Dict[str, Any]:
         """验证XSS漏洞防护"""
@@ -506,14 +499,13 @@ class SecurityValidatorMixin:
                 for dep_file in dep_files:
                     if os.path.exists(dep_file):
                         with open(
-                            dep_file, "r", encoding="utf-8", errors="ignore"
+                            dep_file,
+                            encoding="utf-8",
+                            errors="ignore",
                         ) as f:
                             content = f.read()
                             template_usage = (
-                                "jinja2" in content
-                                or "flask" in content
-                                or "django" in content
-                                or "fastapi" in content
+                                "jinja2" in content or "flask" in content or "django" in content or "fastapi" in content
                             )
                             if template_usage:
                                 break
@@ -533,5 +525,4 @@ class SecurityValidatorMixin:
             }
 
         except Exception as e:
-            return {"passed": False, "error": f"XSS检查异常: {str(e)}"}
-
+            return {"passed": False, "error": f"XSS检查异常: {e!s}"}

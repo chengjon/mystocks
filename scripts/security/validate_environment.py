@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-环境变量安全验证脚本
+"""环境变量安全验证脚本
 验证所有必需的安全配置项是否已正确设置
 """
 
@@ -10,14 +9,14 @@ from pathlib import Path
 
 
 def check_password_strength(password: str) -> tuple[bool, str]:
-    """
-    检查密码强度
+    """检查密码强度
 
     Args:
         password: 要检查的密码
 
     Returns:
         tuple: (是否通过, 错误信息)
+
     """
     if not password or password == "":
         return False, "密码不能为空"
@@ -48,11 +47,11 @@ def check_password_strength(password: str) -> tuple[bool, str]:
 
 
 def validate_environment() -> tuple[bool, list[str]]:
-    """
-    验证环境变量配置
+    """验证环境变量配置
 
     Returns:
         tuple: (是否通过, 错误列表)
+
     """
     errors = []
 
@@ -143,11 +142,7 @@ def generate_security_report():
         if value:
             # 隐藏敏感信息
             if "password" in var.lower() or "secret" in var.lower():
-                masked = (
-                    "*" * max(8, len(value) - 4) + value[-4:]
-                    if len(value) > 4
-                    else "*" * len(value)
-                )
+                masked = "*" * max(8, len(value) - 4) + value[-4:] if len(value) > 4 else "*" * len(value)
                 print(f"  {var}: {masked}")
             else:
                 print(f"  {var}: {value}")

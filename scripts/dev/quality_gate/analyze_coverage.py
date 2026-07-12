@@ -1,19 +1,21 @@
 #!/usr/bin/env python3
-"""
-测试覆盖率分析脚本
+"""测试覆盖率分析脚本
 - 分析当前测试覆盖率
 - 识别低覆盖率模块
 - 生成改进建议
 """
+
+import json
 import os
 import sys
-import json
-from pathlib import Path
 from collections import defaultdict
+from pathlib import Path
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
+
 
 def analyze_module_structure():
     """分析src目录模块结构"""
@@ -22,28 +24,29 @@ def analyze_module_structure():
 
     for root, dirs, files in os.walk(src_path):
         for file in files:
-            if file.endswith('.py') and not file.startswith('__'):
+            if file.endswith(".py") and not file.startswith("__"):
                 file_path = Path(root) / file
                 rel_path = file_path.relative_to(src_path)
 
                 # 计算代码行数
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, encoding="utf-8") as f:
                     lines = f.readlines()
-                    code_lines = len([l for l in lines if l.strip() and not l.strip().startswith('#')])
+                    code_lines = len([l for l in lines if l.strip() and not l.strip().startswith("#")])
 
                 # 模块分类
-                parts = str(rel_path).split('/')
+                parts = str(rel_path).split("/")
                 if len(parts) >= 2:
                     module_type = parts[0]
-                    module_name = str(rel_path.with_suffix(''))
+                    module_name = str(rel_path.with_suffix(""))
 
                     modules[module_type][module_name] = {
-                        'path': str(rel_path),
-                        'code_lines': code_lines,
-                        'test_file': None
+                        "path": str(rel_path),
+                        "code_lines": code_lines,
+                        "test_file": None,
                     }
 
     return modules
+
 
 def find_test_files():
     """查找测试文件"""
@@ -52,24 +55,26 @@ def find_test_files():
 
     for root, dirs, files in os.walk(tests_path):
         for file in files:
-            if file.startswith('test_') and file.endswith('.py'):
+            if file.startswith("test_") and file.endswith(".py"):
                 file_path = Path(root) / file
                 test_files[file] = str(file_path.relative_to(tests_path))
 
     return test_files
 
+
 def match_tests_to_modules(modules, test_files):
     """匹配测试文件到模块"""
     for test_file, test_path in test_files.items():
         # 从测试文件名推断被测试的模块
-        module_name = test_file.replace('test_', '').replace('.py', '')
+        module_name = test_file.replace("test_", "").replace(".py", "")
 
         # 查找对应的源代码模块
         for module_type, module_dict in modules.items():
             for mod_name, mod_info in module_dict.items():
                 if module_name in mod_name or mod_name.endswith(module_name):
-                    mod_info['test_file'] = test_path
+                    mod_info["test_file"] = test_path
                     break
+
 
 def calculate_priority_score(module_info):
     """计算改进优先级分数
@@ -78,7 +83,7 @@ def calculate_priority_score(module_info):
     score = 0
 
     # 1. 代码行数（大型模块优先）
-    code_lines = module_info['code_lines']
+    code_lines = module_info["code_lines"]
     if code_lines > 1000:
         score += 50
     elif code_lines > 500:
@@ -87,19 +92,20 @@ def calculate_priority_score(module_info):
         score += 10
 
     # 2. 是否有测试（没有测试的优先）
-    if not module_info['test_file']:
+    if not module_info["test_file"]:
         score += 40
 
     # 3. 模块类型（核心模块优先）
-    module_path = module_info['path']
-    if module_path.startswith('core/'):
+    module_path = module_info["path"]
+    if module_path.startswith("core/"):
         score += 30
-    elif module_path.startswith('data_access/'):
+    elif module_path.startswith("data_access/"):
         score += 25
-    elif module_path.startswith('adapters/'):
+    elif module_path.startswith("adapters/"):
         score += 20
 
     return score
+
 
 def generate_coverage_report():
     """生成覆盖率分析报告"""
@@ -126,9 +132,7 @@ def generate_coverage_report():
     print("\n4. 统计测试覆盖率...")
     total_modules = sum(len(m) for m in modules.values())
     tested_modules = sum(
-        1 for module_dict in modules.values()
-        for mod_info in module_dict.values()
-        if mod_info['test_file']
+        1 for module_dict in modules.values() for mod_info in module_dict.values() if mod_info["test_file"]
     )
 
     coverage_rate = (tested_modules / total_modules * 100) if total_modules > 0 else 0
@@ -140,7 +144,7 @@ def generate_coverage_report():
     print("\n5. 按模块类型统计:")
     for module_type, module_dict in sorted(modules.items()):
         total = len(module_dict)
-        tested = sum(1 for m in module_dict.values() if m['test_file'])
+        tested = sum(1 for m in module_dict.values() if m["test_file"])
         rate = (tested / total * 100) if total > 0 else 0
         print(f"   {module_type:20s}: {tested:3d}/{total:3d} ({rate:5.1f}%)")
 
@@ -154,18 +158,20 @@ def generate_coverage_report():
     for module_type, module_dict in modules.items():
         for mod_name, mod_info in module_dict.items():
             priority = calculate_priority_score(mod_info)
-            all_modules.append({
-                'type': module_type,
-                'name': mod_name,
-                'path': mod_info['path'],
-                'lines': mod_info['code_lines'],
-                'has_test': '✓' if mod_info['test_file'] else '✗',
-                'priority': priority,
-                'test_file': mod_info['test_file']
-            })
+            all_modules.append(
+                {
+                    "type": module_type,
+                    "name": mod_name,
+                    "path": mod_info["path"],
+                    "lines": mod_info["code_lines"],
+                    "has_test": "✓" if mod_info["test_file"] else "✗",
+                    "priority": priority,
+                    "test_file": mod_info["test_file"],
+                }
+            )
 
     # 按优先级排序
-    all_modules.sort(key=lambda x: x['priority'], reverse=True)
+    all_modules.sort(key=lambda x: x["priority"], reverse=True)
 
     for i, mod in enumerate(all_modules[:20], 1):
         print(f"   {i:2d}. ({mod['priority']:3d}) {mod['path']:<50} {mod['lines']:>6}  {mod['has_test']}")
@@ -173,30 +179,32 @@ def generate_coverage_report():
     # 7. 生成详细报告文件
     print("\n7. 生成详细报告...")
     report = {
-        'summary': {
-            'total_modules': total_modules,
-            'tested_modules': tested_modules,
-            'coverage_rate': round(coverage_rate, 2),
-            'total_test_files': len(test_files)
+        "summary": {
+            "total_modules": total_modules,
+            "tested_modules": tested_modules,
+            "coverage_rate": round(coverage_rate, 2),
+            "total_test_files": len(test_files),
         },
-        'by_type': {
+        "by_type": {
             module_type: {
-                'total': len(module_dict),
-                'tested': sum(1 for m in module_dict.values() if m['test_file']),
-                'coverage_rate': round(
-                    (sum(1 for m in module_dict.values() if m['test_file']) / len(module_dict) * 100)
-                    if len(module_dict) > 0 else 0, 2
-                )
+                "total": len(module_dict),
+                "tested": sum(1 for m in module_dict.values() if m["test_file"]),
+                "coverage_rate": round(
+                    (sum(1 for m in module_dict.values() if m["test_file"]) / len(module_dict) * 100)
+                    if len(module_dict) > 0
+                    else 0,
+                    2,
+                ),
             }
             for module_type, module_dict in modules.items()
         },
-        'priority_modules': all_modules[:20]
+        "priority_modules": all_modules[:20],
     }
 
     report_path = project_root / "docs" / "reports" / "test_coverage_analysis.json"
     report_path.parent.mkdir(parents=True, exist_ok=True)
 
-    with open(report_path, 'w', encoding='utf-8') as f:
+    with open(report_path, "w", encoding="utf-8") as f:
         json.dump(report, f, indent=2, ensure_ascii=False)
 
     print(f"   详细报告已保存到: {report_path}")
@@ -225,12 +233,14 @@ def generate_coverage_report():
 
     return report
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     try:
         report = generate_coverage_report()
         sys.exit(0)
     except Exception as e:
         print(f"\n错误: {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)

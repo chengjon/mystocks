@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Pre-commit hook: block new Vue pages under web/frontend/src/views
+"""Pre-commit hook: block new Vue pages under web/frontend/src/views
 unless they are declared in the restructure migration table.
 
 Migration table source:

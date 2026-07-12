@@ -1,5 +1,4 @@
-"""
-Mock数据文件: TaskManagement
+"""Mock数据文件: TaskManagement
 提供接口:
 1. get_data_list() -> List[Dict] - 获取数据列表
 2. get_data_detail() -> Dict - 获取数据详情
@@ -15,10 +14,11 @@ Mock数据文件: TaskManagement
 生成时间: 2025-11-13
 """
 
-from typing import List, Dict
-import pandas as pd
 import datetime
 import random
+from typing import Dict, List
+
+import pandas as pd
 
 
 def get_data_list() -> List[Dict]:
@@ -29,8 +29,8 @@ def get_data_list() -> List[Dict]:
 
     Returns:
         List[Dict]: 获取数据列表数据列表
-    """
 
+    """
     # 示例Mock数据
     mock_data = [
         {
@@ -38,7 +38,7 @@ def get_data_list() -> List[Dict]:
             "name": "示例数据",
             "value": 100.0,
             "created_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        }
+        },
     ]
     return mock_data
 
@@ -51,8 +51,8 @@ def get_data_detail() -> Dict:
 
     Returns:
         Dict: 获取数据详情数据
-    """
 
+    """
     mock_data = {
         "id": 1,
         "name": "示例数据",
@@ -70,8 +70,8 @@ def get_data_table() -> pd.DataFrame:
 
     Returns:
         pd.DataFrame: 获取数据表格数据表格，列名对应前端表格字段
-    """
 
+    """
     # 示例DataFrame数据
     data = {
         "date": ["2025-01-01", "2025-01-02", "2025-01-03"],
@@ -90,6 +90,7 @@ def generate_realistic_price(base_price: float = 100.0, volatility: float = 0.02
 
     Returns:
         float: 生成的价格（保留2位小数）
+
     """
     change_rate = random.uniform(-volatility, volatility)
     price = base_price * (1 + change_rate)
@@ -101,6 +102,7 @@ def generate_realistic_volume() -> int:
 
     Returns:
         int: 成交量（股）
+
     """
     return random.randint(1000000, 100000000)
 

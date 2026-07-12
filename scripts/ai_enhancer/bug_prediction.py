@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AI算法增强器
+"""AI算法增强器
 专注于智能测试生成和代码质量提升
 
 核心功能:
@@ -14,18 +13,17 @@ AI算法增强器
 日期: 2025-12-22
 """
 
-import ast
+import logging
 import re
 import sys
-import time
 from pathlib import Path
-from typing import Dict, List, Any
-from dataclasses import dataclass
-import logging
+from typing import Dict, List
+
 
 # 设置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -34,6 +32,7 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 from .dataclasses import CodeInsight, SmartTestCase
+
 
 class _BugPredictionMixin:
     """Bug 预测与测试生成方法集"""
@@ -45,7 +44,7 @@ class _BugPredictionMixin:
         bugs = []
 
         try:
-            with open(source_file, "r", encoding="utf-8") as f:
+            with open(source_file, encoding="utf-8") as f:
                 source_code = f.read()
 
             lines = source_code.split("\n")
@@ -73,7 +72,7 @@ class _BugPredictionMixin:
                                     "severity": bug_info["severity"],
                                     "description": self._get_bug_description(bug_type),
                                     "suggestion": self._get_bug_suggestion(bug_type),
-                                }
+                                },
                             )
 
             logger.info(f"✅ Bug预测完成，发现 {len(bugs)} 个潜在问题")
@@ -121,7 +120,10 @@ class _BugPredictionMixin:
         return suggestions.get(bug_type, "请仔细检查代码逻辑")
 
     def generate_smart_tests(
-        self, source_file: str, insights: List[CodeInsight], bugs: List[Dict]
+        self,
+        source_file: str,
+        insights: List[CodeInsight],
+        bugs: List[Dict],
     ) -> List[SmartTestCase]:
         """生成智能测试用例"""
         logger.info(f"🧪 开始生成智能测试: {source_file}")
@@ -131,9 +133,7 @@ class _BugPredictionMixin:
         module_name = Path(source_file).stem
 
         # 为每个高优先级洞察生成测试
-        high_priority_insights = [
-            i for i in insights if i.test_priority in ["critical", "high"]
-        ]
+        high_priority_insights = [i for i in insights if i.test_priority in ["critical", "high"]]
 
         for insight in high_priority_insights:
             test_cases.extend(self._generate_tests_for_insight(insight, module_name))
@@ -152,7 +152,9 @@ class _BugPredictionMixin:
         return test_cases[:15]  # 限制测试数量
 
     def _generate_tests_for_insight(
-        self, insight: CodeInsight, module_name: str
+        self,
+        insight: CodeInsight,
+        module_name: str,
     ) -> List[SmartTestCase]:
         """为洞察生成测试"""
         tests = []
@@ -179,7 +181,9 @@ class _BugPredictionMixin:
         return tests
 
     def _generate_security_test(
-        self, insight: CodeInsight, module_name: str
+        self,
+        insight: CodeInsight,
+        module_name: str,
     ) -> SmartTestCase:
         """生成安全测试"""
         test_name = f"test_{module_name}_{insight.function_name}_security"
@@ -221,7 +225,9 @@ class _BugPredictionMixin:
         )
 
     def _generate_error_test(
-        self, insight: CodeInsight, module_name: str
+        self,
+        insight: CodeInsight,
+        module_name: str,
     ) -> SmartTestCase:
         """生成错误测试"""
         test_name = f"test_{module_name}_{insight.function_name}_errors"
@@ -261,7 +267,9 @@ class _BugPredictionMixin:
         )
 
     def _generate_boundary_test(
-        self, insight: CodeInsight, module_name: str
+        self,
+        insight: CodeInsight,
+        module_name: str,
     ) -> SmartTestCase:
         """生成边界测试"""
         test_name = f"test_{module_name}_{insight.function_name}_boundary"
@@ -310,7 +318,9 @@ class _BugPredictionMixin:
         )
 
     def _generate_performance_test(
-        self, insight: CodeInsight, module_name: str
+        self,
+        insight: CodeInsight,
+        module_name: str,
     ) -> SmartTestCase:
         """生成性能测试"""
         test_name = f"test_{module_name}_{insight.function_name}_performance"

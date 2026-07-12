@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-"""
-本地测试覆盖率检查脚本
+"""本地测试覆盖率检查脚本
 模拟CI/CD环境中的覆盖率检查
 用于开发阶段的质量保证
 """
 
-import sys
-import subprocess
 import json
+import subprocess
+import sys
 from pathlib import Path
 from typing import Dict, List, Tuple
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -62,13 +62,16 @@ class CoverageChecker:
                 ]
 
                 result = subprocess.run(
-                    cmd, capture_output=True, text=True, cwd=project_root
+                    cmd,
+                    capture_output=True,
+                    text=True,
+                    cwd=project_root,
                 )
 
                 if result.returncode == 0:
                     # 解析覆盖率结果
                     coverage = self._parse_coverage_json(
-                        f"{module.replace('.', '/')}/.coverage"
+                        f"{module.replace('.', '/')}/.coverage",
                     )
                     if coverage:
                         results[module] = coverage
@@ -89,7 +92,7 @@ class CoverageChecker:
         try:
             coverage_path = project_root / coverage_file
             if coverage_path.exists():
-                with open(coverage_path, "r") as f:
+                with open(coverage_path) as f:
                     data = json.load(f)
                     return data["totals"]["percent_covered"]
         except Exception:
@@ -104,7 +107,7 @@ class CoverageChecker:
             for alt_path in alternative_paths:
                 if alt_path.exists():
                     try:
-                        with open(alt_path, "r") as f:
+                        with open(alt_path) as f:
                             data = json.load(f)
                             return data["totals"]["percent_covered"]
                     except:
@@ -126,18 +129,21 @@ class CoverageChecker:
 
             if coverage >= threshold:
                 messages.append(
-                    f"✅ {module}: {coverage:.1f}% ≥ {threshold:.1f}% (通过)"
+                    f"✅ {module}: {coverage:.1f}% ≥ {threshold:.1f}% (通过)",
                 )
             else:
                 messages.append(
-                    f"❌ {module}: {coverage:.1f}% < {threshold:.1f}% (失败)"
+                    f"❌ {module}: {coverage:.1f}% < {threshold:.1f}% (失败)",
                 )
                 all_passed = False
 
         return all_passed, messages
 
     def generate_report(
-        self, results: Dict[str, float], check_passed: bool, messages: List[str]
+        self,
+        results: Dict[str, float],
+        check_passed: bool,
+        messages: List[str],
     ) -> str:
         """生成覆盖率报告"""
         report = []
@@ -161,7 +167,7 @@ class CoverageChecker:
             status = "✅" if coverage >= threshold else "❌"
             module_name = module.split(".")[-1]
             report.append(
-                f"  {status} {module_name:<20} {coverage:6.1f}% (目标: {threshold:.1f}%)"
+                f"  {status} {module_name:<20} {coverage:6.1f}% (目标: {threshold:.1f}%)",
             )
 
         report.append("")

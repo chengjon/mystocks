@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-MyStocks AI测试助手集成模块
+"""MyStocks AI测试助手集成模块
 Phase 4.2: 实施AI助手集成优化
 
 功能：
@@ -13,15 +11,15 @@ Phase 4.2: 实施AI助手集成优化
 日期：2026-01-18
 """
 
-import os
-import json
-import re
 import glob
-from pathlib import Path
-from datetime import datetime
-from typing import Dict, List, Optional, Tuple, Any
-from dataclasses import dataclass, asdict
+import json
 import logging
+import re
+from dataclasses import dataclass
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
+
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -72,11 +70,11 @@ class AITestAssistant:
     """AI测试助手主类"""
 
     def __init__(self, project_root: str = None):
-        """
-        初始化AI测试助手
+        """初始化AI测试助手
 
         Args:
             project_root: 项目根目录路径，默认自动检测
+
         """
         if project_root is None:
             project_root = self._find_project_root()
@@ -149,11 +147,11 @@ class AITestAssistant:
         }
 
     def collect_test_results(self) -> List[TestResult]:
-        """
-        收集所有测试结果
+        """收集所有测试结果
 
         Returns:
             测试结果列表
+
         """
         results = []
 
@@ -189,7 +187,7 @@ class AITestAssistant:
 
             # 读取文件内容
             if file_path.suffix == ".json":
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = json.load(f)
                 status = content.get("status", "unknown")
                 duration = content.get("duration", 0)
@@ -198,7 +196,7 @@ class AITestAssistant:
                 metrics = content.get("metrics", {})
             else:
                 # 日志文件处理
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = f.read()
 
                 # 分析日志内容
@@ -233,15 +231,15 @@ class AITestAssistant:
         # 从文件名或内容推断
         if "esm" in path_str.lower():
             return "phase_0"
-        elif "environment" in path_str.lower():
+        if "environment" in path_str.lower():
             return "phase_1"
-        elif "schemathesis" in path_str.lower():
+        if "schemathesis" in path_str.lower():
             return "phase_2"
-        elif "playwright" in path_str.lower():
+        if "playwright" in path_str.lower():
             return "phase_3"
-        elif "orchestration" in path_str.lower():
+        if "orchestration" in path_str.lower():
             return "phase_4"
-        elif "performance" in path_str.lower():
+        if "performance" in path_str.lower():
             return "phase_5"
 
         return "unknown"
@@ -310,14 +308,14 @@ class AITestAssistant:
         return datetime.fromtimestamp(file_path.stat().st_mtime)
 
     def diagnose_issues(self, test_results: List[TestResult]) -> List[DiagnosticResult]:
-        """
-        基于测试结果进行智能诊断
+        """基于测试结果进行智能诊断
 
         Args:
             test_results: 测试结果列表
 
         Returns:
             诊断结果列表
+
         """
         diagnostics = []
 
@@ -349,7 +347,8 @@ class AITestAssistant:
                 unique_diagnostics.append(diag)
 
         unique_diagnostics.sort(
-            key=lambda x: {"critical": 4, "high": 3, "medium": 2, "low": 1}[x.severity], reverse=True
+            key=lambda x: {"critical": 4, "high": 3, "medium": 2, "low": 1}[x.severity],
+            reverse=True,
         )
 
         logger.info(f"生成 {len(unique_diagnostics)} 个诊断结果")
@@ -408,7 +407,7 @@ class AITestAssistant:
                     root_cause="可能存在性能瓶颈或资源不足",
                     suggestions=["检查系统资源使用情况", "优化测试配置", "考虑并行执行", "分析性能瓶颈"],
                     confidence=0.7,
-                )
+                ),
             )
 
         return diagnostics
@@ -451,10 +450,11 @@ class AITestAssistant:
         return suggestions_map.get(rule_name, ["查看详细日志", "联系技术支持"])
 
     def generate_optimization_recommendations(
-        self, test_results: List[TestResult], diagnostics: List[DiagnosticResult]
+        self,
+        test_results: List[TestResult],
+        diagnostics: List[DiagnosticResult],
     ) -> List[OptimizationRecommendation]:
-        """
-        生成测试优化推荐
+        """生成测试优化推荐
 
         Args:
             test_results: 测试结果列表
@@ -462,6 +462,7 @@ class AITestAssistant:
 
         Returns:
             优化推荐列表
+
         """
         recommendations = []
 
@@ -482,7 +483,7 @@ class AITestAssistant:
                         "添加错误处理和重试机制",
                         "更新测试脚本和配置",
                     ],
-                )
+                ),
             )
 
         # 基于诊断结果分析
@@ -505,7 +506,7 @@ class AITestAssistant:
                         "优化PM2进程管理配置",
                         "使用随机端口分配策略",
                     ],
-                )
+                ),
             )
 
         if error_categories.get("performance_issues", 0) > 0:
@@ -523,7 +524,7 @@ class AITestAssistant:
                         "实现测试结果缓存",
                         "考虑分布式测试执行",
                     ],
-                )
+                ),
             )
 
         # 通用优化建议
@@ -547,7 +548,7 @@ class AITestAssistant:
                     effort="medium",
                     implementation_steps=["实现自动环境清理", "添加智能重试机制", "优化CI/CD集成", "创建一键测试脚本"],
                 ),
-            ]
+            ],
         )
 
         # 按优先级排序
@@ -558,14 +559,14 @@ class AITestAssistant:
         return recommendations
 
     def generate_report(self, output_file: str = None) -> str:
-        """
-        生成完整的AI助手分析报告
+        """生成完整的AI助手分析报告
 
         Args:
             output_file: 输出文件路径，如果为None则返回字符串
 
         Returns:
             分析报告内容
+
         """
         logger.info("开始生成AI助手分析报告...")
 

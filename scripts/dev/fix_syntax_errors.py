@@ -1,30 +1,26 @@
 #!/usr/bin/env python3
-"""
-批量修复Python文件语法错误
+"""批量修复Python文件语法错误
 Batch fix Python syntax errors
 
 用于修复项目中的缩进错误和其他常见语法问题
 """
 
 import os
-import re
-import ast
 import subprocess
-from pathlib import Path
 
 
 def fix_indentation_issues(file_path: str) -> bool:
-    """
-    修复常见的缩进问题
+    """修复常见的缩进问题
 
     Args:
         file_path: 文件路径
 
     Returns:
         是否修复成功
+
     """
     try:
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             lines = f.readlines()
 
         # 查找并修复常见的缩进错误模式
@@ -66,11 +62,11 @@ def fix_indentation_issues(file_path: str) -> bool:
 
 
 def find_and_fix_syntax_errors(directory: str):
-    """
-    查找并修复目录中的语法错误
+    """查找并修复目录中的语法错误
 
     Args:
         directory: 目录路径
+
     """
     print(f"开始扫描目录: {directory}")
 
@@ -109,7 +105,7 @@ def find_and_fix_syntax_errors(directory: str):
                     else:
                         error_count += 1
 
-    print(f"\n修复完成:")
+    print("\n修复完成:")
     print(f"  ✅ 成功修复: {fixed_count} 个文件")
     print(f"  ❌ 仍需手动修复: {error_count} 个文件")
 

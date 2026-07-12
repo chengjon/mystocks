@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AI智能测试优化器
+"""AI智能测试优化器
 复用现有测试基础设施，提供智能测试生成和优化功能
 
 核心功能:
@@ -16,25 +15,27 @@ AI智能测试优化器
 
 import ast
 import json
+import logging
 import os
+import subprocess
 import sys
 import time
-import subprocess
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional
-from dataclasses import dataclass
-import argparse
-import logging
+
 
 # 设置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
+
 
 @dataclass
 class TestOptimizationResult:
@@ -65,8 +66,8 @@ class AITestOptimizer:
     def __init__(self, config_path: Optional[str] = None):
         self.config = self._load_config(config_path)
         self.project_root = Path(__file__).parent.parent
-        self.test_generator = TestGenerator if TestGenerator else None
-        self.classifier = ModuleClassifier if ModuleClassifier else None
+        self.test_generator = TestGenerator or None
+        self.classifier = ModuleClassifier or None
 
     def _load_config(self, config_path: Optional[str]) -> Dict:
         """加载配置文件"""
@@ -85,7 +86,7 @@ class AITestOptimizer:
 
         if config_path and Path(config_path).exists():
             try:
-                with open(config_path, "r", encoding="utf-8") as f:
+                with open(config_path, encoding="utf-8") as f:
                     user_config = json.load(f)
                 default_config.update(user_config)
             except Exception as e:
@@ -94,7 +95,8 @@ class AITestOptimizer:
         return default_config
 
     def analyze_module_for_optimization(
-        self, source_file: str
+        self,
+        source_file: str,
     ) -> TestOptimizationResult:
         """分析模块并生成优化建议"""
         logger.info(f"🔍 分析模块: {source_file}")
@@ -110,7 +112,9 @@ class AITestOptimizer:
 
         # 4. 生成优化建议
         suggestions = self._generate_optimization_suggestions(
-            module_info, coverage_gaps, current_coverage
+            module_info,
+            coverage_gaps,
+            current_coverage,
         )
 
         # 5. 生成改进测试
@@ -118,7 +122,9 @@ class AITestOptimizer:
 
         # 6. 质量评分
         quality_score = self._calculate_quality_score(
-            module_info, current_coverage, coverage_gaps
+            module_info,
+            current_coverage,
+            coverage_gaps,
         )
 
         # 7. 性能基准（如果适用）
@@ -137,7 +143,7 @@ class AITestOptimizer:
     def _extract_module_info(self, source_file: str) -> Dict:
         """提取模块基础信息"""
         try:
-            with open(source_file, "r", encoding="utf-8") as f:
+            with open(source_file, encoding="utf-8") as f:
                 content = f.read()
 
             tree = ast.parse(content)
@@ -148,18 +154,14 @@ class AITestOptimizer:
 
             for node in ast.walk(tree):
                 if isinstance(node, ast.ClassDef):
-                    methods = [
-                        n.name for n in node.body if isinstance(n, ast.FunctionDef)
-                    ]
+                    methods = [n.name for n in node.body if isinstance(n, ast.FunctionDef)]
                     classes.append(
                         {
                             "name": node.name,
                             "methods": methods,
-                            "base_classes": [
-                                base.id for base in node.bases if hasattr(base, "id")
-                            ],
+                            "base_classes": [base.id for base in node.bases if hasattr(base, "id")],
                             "line_number": node.lineno,
-                        }
+                        },
                     )
                 elif isinstance(node, ast.FunctionDef):
                     functions.append(
@@ -168,14 +170,14 @@ class AITestOptimizer:
                             "args": len(node.args.args),
                             "line_number": node.lineno,
                             "complexity": self._calculate_function_complexity(node),
-                        }
+                        },
                     )
 
             # 识别复杂度问题
             for func in functions:
                 if func["complexity"] > self.config["complexity_limit"]:
                     complexity_issues.append(
-                        f"函数 {func['name']} 复杂度过高 ({func['complexity']})"
+                        f"函数 {func['name']} 复杂度过高 ({func['complexity']})",
                     )
 
             return {
@@ -196,9 +198,7 @@ class AITestOptimizer:
         complexity = 1  # 基础复杂度
 
         for child in ast.walk(node):
-            if isinstance(child, (ast.If, ast.While, ast.For, ast.With)):
-                complexity += 1
-            elif isinstance(child, ast.ExceptHandler):
+            if isinstance(child, (ast.If, ast.While, ast.For, ast.With)) or isinstance(child, ast.ExceptHandler):
                 complexity += 1
             elif isinstance(child, ast.BoolOp):
                 complexity += len(child.values) - 1
@@ -249,13 +249,13 @@ class AITestOptimizer:
 
             if coverage_file.exists():
                 try:
-                    with open(coverage_file, "r") as f:
+                    with open(coverage_file) as f:
                         coverage_data = json.load(f)
 
                     # 验证数据格式
                     if not isinstance(coverage_data, dict):
                         logger.warning(
-                            f"覆盖率数据格式错误: 期望dict，实际{type(coverage_data)}"
+                            f"覆盖率数据格式错误: 期望dict，实际{type(coverage_data)}",
                         )
                         return 0.0
 
@@ -357,7 +357,7 @@ class AITestOptimizer:
             for func in module_info.get("functions", []):
                 if func["complexity"] > 3:
                     uncovered_branches.append(
-                        f"{func['name']} (复杂度: {func['complexity']})"
+                        f"{func['name']} (复杂度: {func['complexity']})",
                     )
 
             return CoverageGap(
@@ -372,7 +372,10 @@ class AITestOptimizer:
             return CoverageGap([], [], [], [])
 
     def _generate_optimization_suggestions(
-        self, module_info: Dict, gaps: CoverageGap, current_coverage: float
+        self,
+        module_info: Dict,
+        gaps: CoverageGap,
+        current_coverage: float,
     ) -> List[str]:
         """生成优化建议"""
         suggestions = []
@@ -380,29 +383,29 @@ class AITestOptimizer:
         # 覆盖率建议
         if current_coverage < self.config["coverage_target"]:
             suggestions.append(
-                f"🎯 覆盖率需要提升 {self.config['coverage_target'] - current_coverage:.1f}% 到达目标"
+                f"🎯 覆盖率需要提升 {self.config['coverage_target'] - current_coverage:.1f}% 到达目标",
             )
 
         # 函数覆盖建议
         if gaps.uncovered_functions:
             suggestions.append(
-                f"📝 添加以下函数的测试: {', '.join(gaps.uncovered_functions[:3])}"
+                f"📝 添加以下函数的测试: {', '.join(gaps.uncovered_functions[:3])}",
             )
             if len(gaps.uncovered_functions) > 3:
                 suggestions.append(
-                    f"   ...以及另外 {len(gaps.uncovered_functions) - 3} 个函数"
+                    f"   ...以及另外 {len(gaps.uncovered_functions) - 3} 个函数",
                 )
 
         # 分支覆盖建议
         if gaps.uncovered_branches:
             suggestions.append(
-                f"🔀 增加分支测试覆盖: {len(gaps.uncovered_branches)} 个复杂分支"
+                f"🔀 增加分支测试覆盖: {len(gaps.uncovered_branches)} 个复杂分支",
             )
 
         # 复杂度建议
         if gaps.complexity_issues:
             suggestions.append(
-                f"⚠️  处理复杂度问题: {'; '.join(gaps.complexity_issues[:2])}"
+                f"⚠️  处理复杂度问题: {'; '.join(gaps.complexity_issues[:2])}",
             )
 
         # 异常处理建议
@@ -422,7 +425,9 @@ class AITestOptimizer:
         return suggestions
 
     def _generate_improved_tests(
-        self, source_file: str, gaps: CoverageGap
+        self,
+        source_file: str,
+        gaps: CoverageGap,
     ) -> List[str]:
         """生成改进的测试代码"""
         generated_tests = []
@@ -480,7 +485,7 @@ class AITestOptimizer:
 
     def _generate_branch_test(self, module_name: str, branch_info: str) -> str:
         """为复杂分支生成测试"""
-        func_name = branch_info.split("(")[0].strip()
+        func_name = branch_info.split("(", maxsplit=1)[0].strip()
 
         return f'''
     def test_{func_name}_branch_coverage(self):
@@ -536,7 +541,10 @@ class AITestOptimizer:
 '''
 
     def _calculate_quality_score(
-        self, module_info: Dict, coverage: float, gaps: CoverageGap
+        self,
+        module_info: Dict,
+        coverage: float,
+        gaps: CoverageGap,
     ) -> float:
         """计算测试质量评分"""
         score = 0.0
@@ -554,14 +562,12 @@ class AITestOptimizer:
         total_functions = len(module_info.get("functions", []))
         uncovered_functions = len(gaps.uncovered_functions)
         if total_functions > 0:
-            function_score = (
-                (total_functions - uncovered_functions) / total_functions
-            ) * 20
+            function_score = ((total_functions - uncovered_functions) / total_functions) * 20
             score += function_score
 
         # 分支覆盖权重 (10%)
         total_branches = len(
-            [f for f in module_info.get("functions", []) if f["complexity"] > 1]
+            [f for f in module_info.get("functions", []) if f["complexity"] > 1],
         )
         uncovered_branches = len(gaps.uncovered_branches)
         if total_branches > 0:
@@ -601,7 +607,8 @@ class AITestOptimizer:
             return None
 
     def optimize_batch_modules(
-        self, source_files: List[str]
+        self,
+        source_files: List[str],
     ) -> List[TestOptimizationResult]:
         """批量优化多个模块"""
         logger.info(f"🚀 开始批量优化 {len(source_files)} 个模块")
@@ -613,7 +620,7 @@ class AITestOptimizer:
                 result = self.analyze_module_for_optimization(source_file)
                 results.append(result)
                 logger.info(
-                    f"✅ 完成 {source_file}: 质量 {result.quality_score:.1f}/100"
+                    f"✅ 完成 {source_file}: 质量 {result.quality_score:.1f}/100",
                 )
             except Exception as e:
                 logger.error(f"❌ 优化失败 {source_file}: {e}")
@@ -621,7 +628,8 @@ class AITestOptimizer:
         return results
 
     def generate_optimization_report(
-        self, results: List[TestOptimizationResult]
+        self,
+        results: List[TestOptimizationResult],
     ) -> str:
         """生成优化报告"""
         report = []
@@ -631,18 +639,14 @@ class AITestOptimizer:
         report.append("")
 
         # 总体统计
-        avg_coverage = (
-            sum(r.current_coverage for r in results) / len(results) if results else 0
-        )
-        avg_quality = (
-            sum(r.quality_score for r in results) / len(results) if results else 0
-        )
+        avg_coverage = sum(r.current_coverage for r in results) / len(results) if results else 0
+        avg_quality = sum(r.quality_score for r in results) / len(results) if results else 0
 
         report.append("## 📊 总体统计")
         report.append(f"- 平均覆盖率: {avg_coverage:.1f}%")
         report.append(f"- 平均质量评分: {avg_quality:.1f}/100")
         report.append(
-            f"- 需要优化的模块: {sum(1 for r in results if r.current_coverage < self.config['coverage_target'])}"
+            f"- 需要优化的模块: {sum(1 for r in results if r.current_coverage < self.config['coverage_target'])}",
         )
         report.append("")
 
@@ -675,5 +679,3 @@ class AITestOptimizer:
             report.append(f"{i}. {result.module_name}: {result.current_coverage:.1f}%")
 
         return "\n".join(report)
-
-

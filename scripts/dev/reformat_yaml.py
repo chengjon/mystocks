@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
-"""
-Fix YAML indentation by parsing and re-serializing
-"""
+"""Fix YAML indentation by parsing and re-serializing"""
+
+import sys
 
 import yaml
-import sys
 
 
 def fix_yaml():
     try:
-        with open("config/data_sources_registry.yaml", "r", encoding="utf-8") as f:
+        with open("config/data_sources_registry.yaml", encoding="utf-8") as f:
             content = f.read()
 
         # Try to load and immediately dump to fix formatting

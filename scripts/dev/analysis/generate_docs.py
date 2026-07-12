@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-文档生成器 - 生成功能分类手册文档
+"""文档生成器 - 生成功能分类手册文档
 
 从扫描的模块清单生成完整的分类手册文档。
 
@@ -11,10 +10,11 @@
     python scripts/analysis/generate_docs.py
 """
 
-import sys
 import json
-from pathlib import Path
+import sys
 from datetime import datetime
+from pathlib import Path
+
 
 # 添加项目根目录到路径
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
@@ -23,14 +23,14 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from manual_paths import get_manual_metadata_dir, get_manual_root
 from models import (
+    CategoryEnum,
+    ClassMetadata,
+    DataFlow,
+    FunctionMetadata,
+    ManualMetadata,
     ModuleInventory,
     ModuleMetadata,
-    ClassMetadata,
-    FunctionMetadata,
     ParameterMetadata,
-    CategoryEnum,
-    ManualMetadata,
-    DataFlow,
 )
 from utils.markdown_writer import MarkdownWriter
 
@@ -40,16 +40,16 @@ MANUAL_METADATA_DIR = get_manual_metadata_dir(PROJECT_ROOT)
 
 
 def load_inventory(json_path: str) -> ModuleInventory:
-    """
-    从 JSON 文件加载清单
+    """从 JSON 文件加载清单
 
     Args:
         json_path: JSON 文件路径
 
     Returns:
         ModuleInventory 对象
+
     """
-    with open(json_path, "r", encoding="utf-8") as f:
+    with open(json_path, encoding="utf-8") as f:
         data = json.load(f)
 
     # 重建对象
@@ -135,9 +135,7 @@ def load_inventory(json_path: str) -> ModuleInventory:
             blank_lines=module_data.get("blank_lines", 0),
             comment_lines=module_data.get("comment_lines", 0),
             last_modified=(
-                datetime.fromisoformat(module_data["last_modified"])
-                if module_data.get("last_modified")
-                else None
+                datetime.fromisoformat(module_data["last_modified"]) if module_data.get("last_modified") else None
             ),
         )
         modules.append(module)
@@ -262,7 +260,10 @@ def generate_category_documents(inventory: ModuleInventory, writer: MarkdownWrit
 
         info = category_info[category]
         filepath = writer.generate_category_document(
-            category, modules, info["name"], info["description"]
+            category,
+            modules,
+            info["name"],
+            info["description"],
         )
         print(f"  ✓ {info['name']}: {filepath}")
 
@@ -439,7 +440,7 @@ def update_readme_stats(inventory: ModuleInventory):
     """更新 README 中的统计表"""
     readme_path = MANUAL_ROOT / "README.md"
 
-    with open(readme_path, "r", encoding="utf-8") as f:
+    with open(readme_path, encoding="utf-8") as f:
         content = f.read()
 
     # 构建新的统计表
@@ -463,14 +464,14 @@ def update_readme_stats(inventory: ModuleInventory):
         if cat_key in inventory.metadata.category_stats:
             stats = inventory.metadata.category_stats[cat_key]
             stats_lines.append(
-                f"| {cat_name} | {stats['modules']} | {stats['functions']} | {stats['lines']:,} |"
+                f"| {cat_name} | {stats['modules']} | {stats['functions']} | {stats['lines']:,} |",
             )
             total_modules += stats["modules"]
             total_functions += stats["functions"]
             total_lines += stats["lines"]
 
     stats_lines.append(
-        f"| **总计** | **{total_modules}** | **{total_functions}** | **{total_lines:,}** |"
+        f"| **总计** | **{total_modules}** | **{total_functions}** | **{total_lines:,}** |",
     )
 
     new_stats_table = "\n".join(stats_lines)

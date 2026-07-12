@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-机器学习特征工程验证工具
+"""机器学习特征工程验证工具
 Phase 8-2: 机器学习特征工程 (P3优先级)
 
 验证方向:
@@ -16,13 +15,14 @@ Date: 2025-11-13
 """
 
 import json
-import time
 import os
-import pandas as pd
-import numpy as np
-import requests
+import time
 from datetime import datetime
-from typing import Dict, List, Any
+from typing import Any, Dict, List
+
+import numpy as np
+import pandas as pd
+import requests
 
 
 class MLFeatureEngineeringValidator:
@@ -93,12 +93,8 @@ class MLFeatureEngineeringValidator:
         # 趋势指标特征
         features["sma_5"] = pd.Series(price_data).rolling(5).mean().fillna(0).tolist()
         features["sma_20"] = pd.Series(price_data).rolling(20).mean().fillna(0).tolist()
-        features["ema_12"] = (
-            pd.Series(price_data).ewm(span=12).mean().fillna(0).tolist()
-        )
-        features["ema_26"] = (
-            pd.Series(price_data).ewm(span=26).mean().fillna(0).tolist()
-        )
+        features["ema_12"] = pd.Series(price_data).ewm(span=12).mean().fillna(0).tolist()
+        features["ema_26"] = pd.Series(price_data).ewm(span=26).mean().fillna(0).tolist()
 
         # 动量指标特征
         features["rsi"] = self._calculate_rsi(price_data).tolist()
@@ -106,16 +102,16 @@ class MLFeatureEngineeringValidator:
         features["macd"] = features["ema_12"][-1] - features["ema_26"][-1]
 
         # 成交量指标特征
-        features["volume_sma"] = (
-            pd.Series(volume_data).rolling(10).mean().fillna(0).tolist()
-        )
+        features["volume_sma"] = pd.Series(volume_data).rolling(10).mean().fillna(0).tolist()
         features["volume_ratio"] = (volume_data / features["volume_sma"][-1]).tolist()
 
         # 波动性指标特征
         returns = pd.Series(price_data).pct_change().fillna(0)
         features["volatility"] = returns.rolling(20).std().fillna(0).tolist()
         features["atr"] = self._calculate_atr(
-            price_data, price_data * 1.01, price_data * 0.99
+            price_data,
+            price_data * 1.01,
+            price_data * 0.99,
         ).tolist()
 
         # 特征统计
@@ -399,19 +395,22 @@ class MLFeatureEngineeringValidator:
         try:
             # 测试特征提取API
             response = requests.get(
-                f"{self.base_url}/api/ml/features/600000", timeout=5
+                f"{self.base_url}/api/ml/features/600000",
+                timeout=5,
             )
             features_api_ok = response.status_code == 200
 
             # 测试模型预测API
             response = requests.get(
-                f"{self.base_url}/api/ml/prediction/sample", timeout=5
+                f"{self.base_url}/api/ml/prediction/sample",
+                timeout=5,
             )
             prediction_api_ok = response.status_code == 200
 
             # 测试特征重要性API
             response = requests.get(
-                f"{self.base_url}/api/ml/feature-importance", timeout=5
+                f"{self.base_url}/api/ml/feature-importance",
+                timeout=5,
             )
             importance_api_ok = response.status_code == 200
 
@@ -426,7 +425,7 @@ class MLFeatureEngineeringValidator:
                     prediction_api_ok,
                     importance_api_ok,
                     model_status_api_ok,
-                ]
+                ],
             )
             success_rate = (apis_working / apis_tested * 100) if apis_tested > 0 else 0
 
@@ -494,7 +493,11 @@ class MLFeatureEngineeringValidator:
         return k_percent.values
 
     def _calculate_atr(
-        self, highs: np.ndarray, lows: np.ndarray, closes: np.ndarray, period: int = 14
+        self,
+        highs: np.ndarray,
+        lows: np.ndarray,
+        closes: np.ndarray,
+        period: int = 14,
     ) -> np.ndarray:
         """计算ATR指标"""
         high_low = highs - lows
@@ -533,14 +536,8 @@ class MLFeatureEngineeringValidator:
     def _generate_validation_summary(self) -> Dict[str, Any]:
         """生成验证摘要"""
         total_validations = len(self.validation_results)
-        successful_validations = sum(
-            1 for r in self.validation_results if r.get("success", False)
-        )
-        success_rate = (
-            (successful_validations / total_validations * 100)
-            if total_validations > 0
-            else 0
-        )
+        successful_validations = sum(1 for r in self.validation_results if r.get("success", False))
+        success_rate = (successful_validations / total_validations * 100) if total_validations > 0 else 0
 
         total_duration = sum(r.get("duration", 0) for r in self.validation_results)
 
@@ -573,7 +570,7 @@ class MLFeatureEngineeringValidator:
         print("🤖 机器学习特征工程验证报告 (Phase 8-2)")
         print("=" * 60)
         print(
-            f"✅ 成功验证: {successful_validations}/{total_validations} ({success_rate:.1f}%)"
+            f"✅ 成功验证: {successful_validations}/{total_validations} ({success_rate:.1f}%)",
         )
         print(f"⏱️  总用时: {total_duration:.2f}秒")
 

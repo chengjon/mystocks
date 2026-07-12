@@ -1,5 +1,4 @@
-"""
-API 目录生成器
+"""API 目录生成器
 
 从 FastAPI 应用生成完整的 API 目录文档，包括：
 - 端点列表
@@ -8,9 +7,10 @@ API 目录生成器
 - 数据源状态
 """
 
-import yaml
 from datetime import datetime, timezone
-from typing import Dict, Any, List
+from typing import Any, Dict, List
+
+import yaml
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 
@@ -86,7 +86,7 @@ class APICatalogGenerator:
                     "in": param.get("in"),
                     "required": param.get("required", False),
                     "schema": str(param.get("schema", {})),
-                }
+                },
             )
         return params
 

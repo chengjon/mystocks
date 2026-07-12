@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AI测试优化器监控和反馈收集系统
+"""AI测试优化器监控和反馈收集系统
 实时监控工具使用情况、收集用户反馈、分析性能指标
 
 功能:
@@ -16,18 +15,19 @@ AI测试优化器监控和反馈收集系统
 """
 
 import json
-import time
+import logging
 import sqlite3
+import time
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional
-from dataclasses import dataclass
-import argparse
-import logging
+
 
 # 设置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -38,6 +38,7 @@ MONITORING_DIR.mkdir(exist_ok=True)
 
 # 数据库路径
 DB_PATH = MONITORING_DIR / "ai_optimizer_monitor.db"
+
 
 @dataclass
 class UsageRecord:
@@ -149,13 +150,13 @@ class AIOptimizerMonitor:
 
             # 创建索引
             conn.execute(
-                "CREATE INDEX IF NOT EXISTS idx_usage_timestamp ON usage_logs(timestamp)"
+                "CREATE INDEX IF NOT EXISTS idx_usage_timestamp ON usage_logs(timestamp)",
             )
             conn.execute(
-                "CREATE INDEX IF NOT EXISTS idx_perf_timestamp ON performance_metrics(timestamp)"
+                "CREATE INDEX IF NOT EXISTS idx_perf_timestamp ON performance_metrics(timestamp)",
             )
             conn.execute(
-                "CREATE INDEX IF NOT EXISTS idx_feedback_timestamp ON user_feedback(timestamp)"
+                "CREATE INDEX IF NOT EXISTS idx_feedback_timestamp ON user_feedback(timestamp)",
             )
 
     def record_usage(self, usage: UsageRecord):
@@ -252,7 +253,8 @@ class AIOptimizerMonitor:
 
             # 总使用次数
             total_usage = conn.execute(
-                "SELECT COUNT(*) FROM usage_logs WHERE timestamp >= ?", (start_date,)
+                "SELECT COUNT(*) FROM usage_logs WHERE timestamp >= ?",
+                (start_date,),
             ).fetchone()[0]
 
             # 成功率
@@ -345,8 +347,7 @@ class AIOptimizerMonitor:
                 "avg_disk_io": avg_metrics[2] or 0,
                 "avg_files_processed": avg_metrics[3] or 0,
                 "performance_trend": [
-                    {"date": row[0], "avg_cpu": row[1], "avg_memory": row[2]}
-                    for row in performance_trend
+                    {"date": row[0], "avg_cpu": row[1], "avg_memory": row[2]} for row in performance_trend
                 ],
             }
 
@@ -448,10 +449,7 @@ class AIOptimizerMonitor:
                 previous_failure_rate = 0
 
             # 失败率增加超过50%则告警
-            if (
-                recent_failure_rate > 0.1
-                and recent_failure_rate > previous_failure_rate * 1.5
-            ):
+            if recent_failure_rate > 0.1 and recent_failure_rate > previous_failure_rate * 1.5:
                 anomalies.append(
                     {
                         "type": "failure_rate_spike",
@@ -463,7 +461,7 @@ class AIOptimizerMonitor:
                             "recent_total": recent_stats[0],
                             "recent_failures": recent_stats[1],
                         },
-                    }
+                    },
                 )
 
         return anomalies
@@ -492,7 +490,7 @@ class AIOptimizerMonitor:
                             "avg_execution_time": recent_perf[0],
                             "max_execution_time": recent_perf[1],
                         },
-                    }
+                    },
                 )
 
             # 检测内存使用异常
@@ -508,7 +506,7 @@ class AIOptimizerMonitor:
                         "severity": "high",
                         "message": f"内存使用过高: {recent_memory[0]:.1f}MB",
                         "data": {"avg_memory_usage": recent_memory[0]},
-                    }
+                    },
                 )
 
         return anomalies
@@ -521,7 +519,8 @@ class AIOptimizerMonitor:
             # 最近7天的使用量
             recent_start = (datetime.now() - timedelta(days=7)).isoformat()
             recent_usage = conn.execute(
-                "SELECT COUNT(*) FROM usage_logs WHERE timestamp >= ?", (recent_start,)
+                "SELECT COUNT(*) FROM usage_logs WHERE timestamp >= ?",
+                (recent_start,),
             ).fetchone()[0]
 
             # 前7天的使用量
@@ -542,10 +541,9 @@ class AIOptimizerMonitor:
                         "data": {
                             "recent_usage": recent_usage,
                             "previous_usage": previous_usage,
-                            "drop_percentage": (1 - recent_usage / previous_usage)
-                            * 100,
+                            "drop_percentage": (1 - recent_usage / previous_usage) * 100,
                         },
-                    }
+                    },
                 )
 
         return anomalies
@@ -618,9 +616,7 @@ class AIOptimizerMonitor:
 
         summary = ""
         for feedback in feedback_summary["feedback_by_type"]:
-            summary += (
-                f"- {feedback['type']} ({feedback['category']}): {feedback['count']} 条"
-            )
+            summary += f"- {feedback['type']} ({feedback['category']}): {feedback['count']} 条"
             if feedback["avg_rating"]:
                 summary += f", 平均评分: {feedback['avg_rating']:.1f}⭐"
             summary += "\n"
@@ -654,7 +650,10 @@ class AIOptimizerMonitor:
         return trend
 
     def _generate_recommendations(
-        self, usage_stats: Dict, performance_stats: Dict, anomalies: List
+        self,
+        usage_stats: Dict,
+        performance_stats: Dict,
+        anomalies: List,
     ) -> str:
         """生成建议"""
         recommendations = []
@@ -708,7 +707,7 @@ def run_monitoring_daemon():
                     logger.warning(f"🚨 检测到 {len(anomalies)} 个异常")
                     for anomaly in anomalies:
                         logger.warning(
-                            f"  - {anomaly['severity']}: {anomaly['message']}"
+                            f"  - {anomaly['severity']}: {anomaly['message']}",
                         )
 
                         # 创建告警记录
@@ -736,5 +735,3 @@ def run_monitoring_daemon():
 
     except KeyboardInterrupt:
         logger.info("⏹️  监控守护进程已停止")
-
-

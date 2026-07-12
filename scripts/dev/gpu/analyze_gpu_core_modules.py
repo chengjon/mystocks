@@ -1,24 +1,23 @@
 #!/usr/bin/env python3
-"""
-分析GPU核心计算模块
+"""分析GPU核心计算模块
 Phase 6.3.1 - 分析现有GPU核心计算模块
 
 识别重构目标、优化机会和技术债务
 """
 
+import json
 import os
 import re
-from pathlib import Path
-from typing import Dict, List, Any
-import json
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List
 
 
 class GPUCoreAnalyzer:
     """GPU核心模块分析器"""
 
     def __init__(self):
-        self.project_root = Path(".")
+        self.project_root = Path()
         self.analysis_results = {}
 
         # GPU核心模块路径
@@ -80,9 +79,7 @@ class GPUCoreAnalyzer:
                 "total_files": total_files,
                 "total_lines": total_lines,
                 "total_size_kb": total_size / 1024,
-                "average_lines_per_file": total_lines / total_files
-                if total_files > 0
-                else 0,
+                "average_lines_per_file": total_lines / total_files if total_files > 0 else 0,
             },
         }
 
@@ -151,9 +148,7 @@ class GPUCoreAnalyzer:
             "success": True,
             "files_analyzed": total_files_analyzed,
             "performance_hotspots": performance_patterns,
-            "total_hotspots": sum(
-                len(occurrences) for occurrences in performance_patterns.values()
-            ),
+            "total_hotspots": sum(len(occurrences) for occurrences in performance_patterns.values()),
         }
 
     def analyze_dependencies(self) -> Dict[str, Any]:
@@ -180,13 +175,13 @@ class GPUCoreAnalyzer:
                         total_files_analyzed += 1
                         dependencies["external_libraries"].update(file_deps["external"])
                         dependencies["internal_dependencies"].update(
-                            file_deps["internal"]
+                            file_deps["internal"],
                         )
 
         # Convert sets to lists for JSON serialization
         dependencies["external_libraries"] = list(dependencies["external_libraries"])
         dependencies["internal_dependencies"] = list(
-            dependencies["internal_dependencies"]
+            dependencies["internal_dependencies"],
         )
 
         return {
@@ -210,18 +205,18 @@ class GPUCoreAnalyzer:
             # 高优先级：潜在bug和性能问题
             priorities["high_priority"].extend(quality_issues.get("potential_bugs", []))
             priorities["high_priority"].extend(
-                quality_issues.get("performance_issues", [])
+                quality_issues.get("performance_issues", []),
             )
 
             # 中优先级：复杂函数和大文件
             priorities["medium_priority"].extend(
-                quality_issues.get("complex_functions", [])
+                quality_issues.get("complex_functions", []),
             )
             priorities["medium_priority"].extend(quality_issues.get("large_files", []))
 
             # 低优先级：文档问题
             priorities["low_priority"].extend(
-                quality_issues.get("missing_documentation", [])
+                quality_issues.get("missing_documentation", []),
             )
 
         if "性能热点分析" in self.analysis_results:
@@ -230,12 +225,12 @@ class GPUCoreAnalyzer:
             # 高优先级：嵌套循环和同步GPU调用
             priorities["high_priority"].extend(hotspots.get("nested_loops", []))
             priorities["high_priority"].extend(
-                hotspots.get("synchronous_gpu_calls", [])
+                hotspots.get("synchronous_gpu_calls", []),
             )
 
             # 中优先级：大数组操作
             priorities["medium_priority"].extend(
-                hotspots.get("large_array_operations", [])
+                hotspots.get("large_array_operations", []),
             )
 
             # 低优先级：内存分配和文件IO
@@ -263,7 +258,7 @@ class GPUCoreAnalyzer:
                 if file.endswith(".py"):
                     file_path = os.path.join(root, file)
                     try:
-                        with open(file_path, "r", encoding="utf-8") as f:
+                        with open(file_path, encoding="utf-8") as f:
                             lines = f.readlines()
                             file_count += 1
                             line_count += len(lines)
@@ -288,7 +283,7 @@ class GPUCoreAnalyzer:
         }
 
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
                 lines = content.split("\n")
 
@@ -329,19 +324,19 @@ class GPUCoreAnalyzer:
 
                 if func_lines > 50:  # 大于50行认为是复杂函数
                     issues["complex_functions"].append(
-                        f"{file_path}: {func_name} ({func_lines} lines, nested: {max_nested_level})"
+                        f"{file_path}: {func_name} ({func_lines} lines, nested: {max_nested_level})",
                     )
 
                 # 检查潜在bug
                 if "eval(" in content or "exec(" in content:
                     issues["potential_bugs"].append(
-                        f"{file_path}: Contains eval/exec usage"
+                        f"{file_path}: Contains eval/exec usage",
                     )
 
             # 检查文档
             if not content.startswith('"""') and not content.startswith("'''"):
                 issues["missing_documentation"].append(
-                    f"{file_path}: Missing module docstring"
+                    f"{file_path}: Missing module docstring",
                 )
 
             # 检查性能问题
@@ -350,7 +345,7 @@ class GPUCoreAnalyzer:
 
             if ".cuda()" in content or ".to(device)" in content:
                 issues["performance_issues"].append(
-                    f"{file_path}: Direct GPU calls without HAL"
+                    f"{file_path}: Direct GPU calls without HAL",
                 )
 
         except Exception as e:
@@ -369,7 +364,7 @@ class GPUCoreAnalyzer:
         }
 
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 lines = f.readlines()
 
             for i, line in enumerate(lines, 1):
@@ -380,40 +375,31 @@ class GPUCoreAnalyzer:
                     prev_lines = "".join(lines[max(0, i - 10) : i])
                     if prev_lines.count("for ") >= 1:
                         patterns["nested_loops"].append(
-                            f"{file_path}:{i} - Nested loop detected"
+                            f"{file_path}:{i} - Nested loop detected",
                         )
 
                 # 大数组操作
-                if any(
-                    keyword in line_content
-                    for keyword in ["np.zeros(", "np.ones(", "np.empty(", "cupy."]
-                ):
+                if any(keyword in line_content for keyword in ["np.zeros(", "np.ones(", "np.empty(", "cupy."]):
                     patterns["large_array_operations"].append(
-                        f"{file_path}:{i} - Large array operation"
+                        f"{file_path}:{i} - Large array operation",
                     )
 
                 # 同步GPU调用
-                if any(
-                    keyword in line_content
-                    for keyword in [".cuda()", ".to(device)", "cuda.synchronize()"]
-                ):
+                if any(keyword in line_content for keyword in [".cuda()", ".to(device)", "cuda.synchronize()"]):
                     patterns["synchronous_gpu_calls"].append(
-                        f"{file_path}:{i} - Synchronous GPU call"
+                        f"{file_path}:{i} - Synchronous GPU call",
                     )
 
                 # 内存分配
                 if "allocate" in line_content or "malloc" in line_content:
                     patterns["memory_allocations"].append(
-                        f"{file_path}:{i} - Memory allocation"
+                        f"{file_path}:{i} - Memory allocation",
                     )
 
                 # 文件IO操作
-                if any(
-                    keyword in line_content
-                    for keyword in ["open(", "with open", "read(", "write("]
-                ):
+                if any(keyword in line_content for keyword in ["open(", "with open", "read(", "write("]):
                     patterns["file_io_operations"].append(
-                        f"{file_path}:{i} - File I/O operation"
+                        f"{file_path}:{i} - File I/O operation",
                     )
 
         except Exception:
@@ -426,7 +412,7 @@ class GPUCoreAnalyzer:
         dependencies = {"external": [], "internal": []}
 
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             # 查找import语句
@@ -464,7 +450,7 @@ class GPUCoreAnalyzer:
         """生成分析摘要"""
         summary = {
             "total_modules_analyzed": len(
-                [p for p in self.core_module_paths if os.path.exists(p)]
+                [p for p in self.core_module_paths if os.path.exists(p)],
             ),
             "key_findings": [],
         }
@@ -472,25 +458,25 @@ class GPUCoreAnalyzer:
         if "模块规模分析" in self.analysis_results:
             scale_summary = self.analysis_results["模块规模分析"]["summary"]
             summary["key_findings"].append(
-                f"总代码量: {scale_summary['total_lines']:,} 行 ({scale_summary['total_files']} 个文件)"
+                f"总代码量: {scale_summary['total_lines']:,} 行 ({scale_summary['total_files']} 个文件)",
             )
 
         if "代码质量分析" in self.analysis_results:
             quality_summary = self.analysis_results["代码质量分析"]
             summary["key_findings"].append(
-                f"代码质量问题: {quality_summary['total_issues']} 个问题在 {quality_summary['files_analyzed']} 个文件中"
+                f"代码质量问题: {quality_summary['total_issues']} 个问题在 {quality_summary['files_analyzed']} 个文件中",
             )
 
         if "性能热点分析" in self.analysis_results:
             perf_summary = self.analysis_results["性能热点分析"]
             summary["key_findings"].append(
-                f"性能热点: {perf_summary['total_hotspots']} 个热点需要优化"
+                f"性能热点: {perf_summary['total_hotspots']} 个热点需要优化",
             )
 
         if "重构优先级分析" in self.analysis_results:
             priority_summary = self.analysis_results["重构优先级分析"]["summary"]
             summary["key_findings"].append(
-                f"重构优先级: {priority_summary['high_priority_count']} 高优先级, {priority_summary['medium_priority_count']} 中优先级"
+                f"重构优先级: {priority_summary['high_priority_count']} 高优先级, {priority_summary['medium_priority_count']} 中优先级",
             )
 
         return summary
@@ -505,14 +491,15 @@ class GPUCoreAnalyzer:
                 "Phase 6.3.3: 优化MemoryPool内存管理 - 提高内存分配和释放性能",
                 "Phase 6.3.4: GPU核心算法优化 - 针对大矩阵操作进行算法优化",
                 "Phase 6.3.5: 核心功能重构测试验证 - 确保重构后的性能提升和稳定性",
-            ]
+            ],
         )
 
         if "重构优先级分析" in self.analysis_results:
             priority_data = self.analysis_results["重构优先级分析"]
             if "summary" in priority_data:
                 high_priority_count = priority_data["summary"].get(
-                    "high_priority_count", 0
+                    "high_priority_count",
+                    0,
                 )
                 if high_priority_count > 5:
                     recommendations.append("优先处理高优先级重构项目，减少技术债务")

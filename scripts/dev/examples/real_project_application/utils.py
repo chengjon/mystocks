@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AI测试优化器真实项目应用示例
+"""AI测试优化器真实项目应用示例
 演示如何在MyStocks项目中实际应用AI测试优化器
 
 应用场景:
@@ -17,12 +16,12 @@ AI测试优化器真实项目应用示例
 
 import sys
 from pathlib import Path
-from datetime import datetime
-from typing import Dict, List
+
 
 # 项目路径
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
+
 
 def main():
     """主函数"""
@@ -60,5 +59,3 @@ def main():
         import traceback
 
         traceback.print_exc()
-
-

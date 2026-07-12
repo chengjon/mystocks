@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-CLI性能指标收集脚本
+"""CLI性能指标收集脚本
 
 收集和分析CLI的性能指标，包括：
 - 任务执行指标（完成时间、阻塞时间）
@@ -16,12 +15,12 @@ Usage:
     python scripts/dev/metrics_collector.py --generate-report
 """
 
-import os
-import json
 import argparse
+import json
+import os
 import re
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 from typing import Dict, List
 
 
@@ -37,7 +36,7 @@ class MetricsCollector:
         """发现所有CLI目录"""
         clis = []
         for item in self.clis_dir.iterdir():
-            if item.is_dir() and not item.name.startswith('_'):
+            if item.is_dir() and not item.name.startswith("_"):
                 if (item / "STATUS.md").exists():
                     clis.append(item.name)
         return sorted(clis)
@@ -53,10 +52,10 @@ class MetricsCollector:
                 "in_progress_tasks": 0,
                 "pending_tasks": 0,
                 "completion_rate": 0.0,
-                "avg_completion_hours": 0.0
+                "avg_completion_hours": 0.0,
             }
 
-        content = task_file.read_text(encoding='utf-8')
+        content = task_file.read_text(encoding="utf-8")
         total_tasks = 0
         completed_tasks = 0
         in_progress_tasks = 0
@@ -64,24 +63,24 @@ class MetricsCollector:
         total_hours = 0
         completed_hours = 0
 
-        task_pattern = r'- \[(.*?)\] (task-[\d.]+)[:：](.*?)(?:\n|$)'
+        task_pattern = r"- \[(.*?)\] (task-[\d.]+)[:：](.*?)(?:\n|$)"
         for match in re.finditer(task_pattern, content):
             total_tasks += 1
             status = match.group(1)
 
-            if status.lower() in ['x', '✅', 'done', '完成']:
+            if status.lower() in ["x", "✅", "done", "完成"]:
                 completed_tasks += 1
-            elif status.lower() in ['>', '🔄', 'wip', '进行中']:
+            elif status.lower() in [">", "🔄", "wip", "进行中"]:
                 in_progress_tasks += 1
             else:
                 pending_tasks += 1
 
             task_text = match.group(3)
-            hours_match = re.search(r'(\d+(?:\.\d+)?)\s*[h小时]', task_text)
+            hours_match = re.search(r"(\d+(?:\.\d+)?)\s*[h小时]", task_text)
             if hours_match:
                 hours = float(hours_match.group(1))
                 total_hours += hours
-                if status.lower() in ['x', '✅', 'done', '完成']:
+                if status.lower() in ["x", "✅", "done", "完成"]:
                     completed_hours += hours
 
         completion_rate = (completed_tasks / total_tasks * 100) if total_tasks > 0 else 0.0
@@ -96,7 +95,7 @@ class MetricsCollector:
             "estimated_total_hours": total_hours,
             "completed_hours": completed_hours,
             "remaining_hours": total_hours - completed_hours,
-            "avg_completion_hours": avg_completion_hours
+            "avg_completion_hours": avg_completion_hours,
         }
 
     def collect_resource_metrics(self, cli_name: str) -> Dict:
@@ -106,7 +105,7 @@ class MetricsCollector:
         total_size_kb = 0
 
         for root, dirs, files in os.walk(cli_dir):
-            dirs[:] = [d for d in dirs if d not in ['__pycache__', 'node_modules', '.git']]
+            dirs[:] = [d for d in dirs if d not in ["__pycache__", "node_modules", ".git"]]
             for file in files:
                 file_path = Path(root) / file
                 if file_path.is_file():
@@ -116,8 +115,8 @@ class MetricsCollector:
                     except:
                         pass
 
-        mailbox_count = len(list((cli_dir / "mailbox").glob('*'))) if (cli_dir / "mailbox").exists() else 0
-        archive_count = len(list((cli_dir / "archive").glob('*'))) if (cli_dir / "archive").exists() else 0
+        mailbox_count = len(list((cli_dir / "mailbox").glob("*"))) if (cli_dir / "mailbox").exists() else 0
+        archive_count = len(list((cli_dir / "archive").glob("*"))) if (cli_dir / "archive").exists() else 0
 
         return {
             "total_files": total_files,
@@ -125,7 +124,9 @@ class MetricsCollector:
             "total_size_mb": round(total_size_kb / 1024, 2),
             "mailbox_messages": mailbox_count,
             "archived_messages": archive_count,
-            "archive_ratio": round(archive_count / (mailbox_count + archive_count) * 100, 1) if (mailbox_count + archive_count) > 0 else 0.0
+            "archive_ratio": round(archive_count / (mailbox_count + archive_count) * 100, 1)
+            if (mailbox_count + archive_count) > 0
+            else 0.0,
         }
 
     def collect_quality_metrics(self, cli_name: str) -> Dict:
@@ -136,12 +137,12 @@ class MetricsCollector:
             "has_status": False,
             "has_config": False,
             "rule_lines": 0,
-            "documentation_completeness": 0.0
+            "documentation_completeness": 0.0,
         }
 
         if (cli_dir / "RULES.md").exists():
             metrics["has_rules"] = True
-            metrics["rule_lines"] = len((cli_dir / "RULES.md").read_text(encoding='utf-8').split('\n'))
+            metrics["rule_lines"] = len((cli_dir / "RULES.md").read_text(encoding="utf-8").split("\n"))
 
         if (cli_dir / "STATUS.md").exists():
             metrics["has_status"] = True
@@ -155,9 +156,8 @@ class MetricsCollector:
         existing_optional = sum(1 for f in optional_files if (cli_dir / f).exists())
 
         metrics["documentation_completeness"] = round(
-            (existing_required / len(required_files) * 70) +
-            (existing_optional / len(optional_files) * 30),
-            1
+            (existing_required / len(required_files) * 70) + (existing_optional / len(optional_files) * 30),
+            1,
         )
 
         return metrics
@@ -171,38 +171,42 @@ class MetricsCollector:
                 "total_coordinations": 0,
                 "coordinations_today": 0,
                 "last_coordination": None,
-                "avg_coordination_interval_hours": 0.0
+                "avg_coordination_interval_hours": 0.0,
             }
 
-        content = coord_log.read_text(encoding='utf-8')
-        coord_sections = re.findall(r'## 自动协调:', content)
+        content = coord_log.read_text(encoding="utf-8")
+        coord_sections = re.findall(r"## 自动协调:", content)
         total_coordinations = len(coord_sections)
 
-        today = datetime.now().strftime('%Y-%m-%d')
-        coordinations_today = len(re.findall(rf'{today}', content))
+        today = datetime.now().strftime("%Y-%m-%d")
+        coordinations_today = len(re.findall(rf"{today}", content))
 
-        last_coord_match = re.search(r'(\d{{4}}-\d{{2}}-\d{{2}} \d{{2}}:\d{{2}})', content[-500:])
+        last_coord_match = re.search(r"(\d{{4}}-\d{{2}}-\d{{2}} \d{{2}}:\d{{2}})", content[-500:])
         last_coordination = last_coord_match.group(1) if last_coord_match else None
 
         return {
             "total_coordinations": total_coordinations,
             "coordinations_today": coordinations_today,
             "last_coordination": last_coordination,
-            "coordination_activity": "High" if coordinations_today >= 3 else "Medium" if coordinations_today >= 1 else "Low"
+            "coordination_activity": "High"
+            if coordinations_today >= 3
+            else "Medium"
+            if coordinations_today >= 1
+            else "Low",
         }
 
     def collect_all_metrics(self) -> Dict:
         """收集所有CLI的指标"""
         all_metrics = {
-            "generated_at": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            "clis": {}
+            "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "clis": {},
         }
 
         for cli in self.cli_list:
             all_metrics["clis"][cli] = {
                 "tasks": self.collect_task_metrics(cli),
                 "resources": self.collect_resource_metrics(cli),
-                "quality": self.collect_quality_metrics(cli)
+                "quality": self.collect_quality_metrics(cli),
             }
 
         all_metrics["coordination"] = self.collect_coordination_metrics()
@@ -218,7 +222,7 @@ class MetricsCollector:
             "overall_completion_rate": 0.0,
             "active_clis": 0,
             "total_files": 0,
-            "total_size_mb": 0.0
+            "total_size_mb": 0.0,
         }
 
         for cli_data in metrics["clis"].values():
@@ -236,7 +240,7 @@ class MetricsCollector:
         if summary["total_tasks"] > 0:
             summary["overall_completion_rate"] = round(
                 summary["total_completed"] / summary["total_tasks"] * 100,
-                1
+                1,
             )
 
         return summary
@@ -270,7 +274,7 @@ class MetricsCollector:
         lines.append(f"- **今日协调**: {metrics['coordination']['coordinations_today']}")
         lines.append(f"- **协调活跃度**: {metrics['coordination']['coordination_activity']}")
 
-        if metrics['coordination']['last_coordination']:
+        if metrics["coordination"]["last_coordination"]:
             lines.append("")
             lines.append(f"- **最后协调**: {metrics['coordination']['last_coordination']}")
 
@@ -287,7 +291,9 @@ class MetricsCollector:
             task_data = cli_metrics["tasks"]
             lines.append("#### 任务执行")
             lines.append(f"- **任务总数**: {task_data['total_tasks']}")
-            lines.append(f"- **完成**: {task_data['completed_tasks']} | **进行中**: {task_data['in_progress_tasks']} | **待开始**: {task_data['pending_tasks']}")
+            lines.append(
+                f"- **完成**: {task_data['completed_tasks']} | **进行中**: {task_data['in_progress_tasks']} | **待开始**: {task_data['pending_tasks']}"
+            )
             lines.append(f"- **完成率**: {task_data['completion_rate']:.1f}%")
             lines.append(f"- **预计总工时**: {task_data['estimated_total_hours']:.1f}小时")
             lines.append(f"- **已完成工时**: {task_data['completed_hours']:.1f}小时")
@@ -305,7 +311,9 @@ class MetricsCollector:
             quality_data = cli_metrics["quality"]
             lines.append("#### 文档质量")
             lines.append(f"- **文档完整性**: {quality_data['documentation_completeness']}%")
-            lines.append(f"- **规则文件**: {'✅' if quality_data['has_rules'] else '❌'} ({quality_data['rule_lines']}行)")
+            lines.append(
+                f"- **规则文件**: {'✅' if quality_data['has_rules'] else '❌'} ({quality_data['rule_lines']}行)"
+            )
             lines.append(f"- **配置文件**: {'✅' if quality_data['has_config'] else '❌'}")
             lines.append("")
             lines.append("---")
@@ -320,7 +328,9 @@ class MetricsCollector:
         lines.append(f"**最佳任务完成率**: {best_cli[0].upper()} CLI ({best_cli[1]['tasks']['completion_rate']:.1f}%)")
 
         best_docs = max(metrics["clis"].items(), key=lambda x: x[1]["quality"]["documentation_completeness"])
-        lines.append(f"**最佳文档质量**: {best_docs[0].upper()} CLI ({best_docs[1]['quality']['documentation_completeness']}%)")
+        lines.append(
+            f"**最佳文档质量**: {best_docs[0].upper()} CLI ({best_docs[1]['quality']['documentation_completeness']}%)"
+        )
 
         lines.append("")
         lines.append("### ⚠️ 需要关注")
@@ -347,17 +357,17 @@ class MetricsCollector:
         lines.append(f"**报告生成**: {metrics['generated_at']}")
         lines.append("**脚本**: `scripts/dev/metrics_collector.py`")
 
-        return '\n'.join(lines)
+        return "\n".join(lines)
 
 
 def main():
     """主函数"""
-    parser = argparse.ArgumentParser(description='CLI性能指标收集工具')
-    parser.add_argument('--cli', type=str, help='收集指定CLI的指标')
-    parser.add_argument('--all', action='store_true', help='收集所有CLI的指标')
-    parser.add_argument('--generate-report', action='store_true', help='生成METRICS.md报告')
-    parser.add_argument('--export-json', type=str, help='导出JSON格式到指定文件')
-    parser.add_argument('--clis-dir', default='CLIS', help='CLI目录路径')
+    parser = argparse.ArgumentParser(description="CLI性能指标收集工具")
+    parser.add_argument("--cli", type=str, help="收集指定CLI的指标")
+    parser.add_argument("--all", action="store_true", help="收集所有CLI的指标")
+    parser.add_argument("--generate-report", action="store_true", help="生成METRICS.md报告")
+    parser.add_argument("--export-json", type=str, help="导出JSON格式到指定文件")
+    parser.add_argument("--clis-dir", default="CLIS", help="CLI目录路径")
 
     args = parser.parse_args()
 
@@ -369,7 +379,7 @@ def main():
 
         output_file = Path(args.clis_dir) / "main" / "METRICS.md"
         output_file.parent.mkdir(parents=True, exist_ok=True)
-        output_file.write_text(report, encoding='utf-8')
+        output_file.write_text(report, encoding="utf-8")
 
         print(f"✅ 指标报告已生成: {output_file}")
         return
@@ -379,7 +389,7 @@ def main():
         metrics = collector.collect_all_metrics()
 
         output_file = Path(args.export_json)
-        output_file.write_text(json.dumps(metrics, indent=2, ensure_ascii=False), encoding='utf-8')
+        output_file.write_text(json.dumps(metrics, indent=2, ensure_ascii=False), encoding="utf-8")
 
         print(f"✅ JSON数据已导出: {output_file}")
         return
@@ -387,9 +397,9 @@ def main():
     if args.cli or args.all:
         cli_list = [args.cli] if args.cli else collector.cli_list
 
-        print(f"\n{'='*70}")
+        print(f"\n{'=' * 70}")
         print("📊 CLI性能指标")
-        print(f"{'='*70}\n")
+        print(f"{'=' * 70}\n")
 
         for cli in cli_list:
             task_metrics = collector.collect_task_metrics(cli)
@@ -397,7 +407,9 @@ def main():
             quality_metrics = collector.collect_quality_metrics(cli)
 
             print(f"### {cli.upper()} CLI")
-            print(f"任务: {task_metrics['completed_tasks']}/{task_metrics['total_tasks']} ({task_metrics['completion_rate']:.1f}%)")
+            print(
+                f"任务: {task_metrics['completed_tasks']}/{task_metrics['total_tasks']} ({task_metrics['completion_rate']:.1f}%)"
+            )
             print(f"存储: {resource_metrics['total_size_mb']:.2f} MB ({resource_metrics['total_files']} 文件)")
             print(f"文档: {quality_metrics['documentation_completeness']}% 完整")
             print()
@@ -406,5 +418,5 @@ def main():
         parser.print_help()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

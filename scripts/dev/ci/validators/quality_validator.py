@@ -1,15 +1,7 @@
 """量化策略验证器子模块"""
 
-import ast
-import json
 import logging
-import os
-import re
-import subprocess
-import sys
-import time
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+
 
 logger = logging.getLogger(__name__)
 
@@ -44,11 +36,11 @@ class QualityValidatorMixin:
                         details = result["details"]
                         if "average_complexity" in details:
                             print(
-                                f"       平均复杂度: {details['average_complexity']:.2f}"
+                                f"       平均复杂度: {details['average_complexity']:.2f}",
                             )
                         if "coverage_percentage" in details:
                             print(
-                                f"       覆盖率: {details['coverage_percentage']:.1f}%"
+                                f"       覆盖率: {details['coverage_percentage']:.1f}%",
                             )
                 else:
                     error_detail = result.get("error", "未知错误")
@@ -96,7 +88,7 @@ class QualityValidatorMixin:
                             print(f"       响应时间: {details['response_time']:.2f}ms")
                         if "connections_established" in details:
                             print(
-                                f"       连接数: {details['connections_established']}"
+                                f"       连接数: {details['connections_established']}",
                             )
                 else:
                     error_detail = result.get("error", "未知错误")
@@ -162,4 +154,3 @@ class QualityValidatorMixin:
         self._regression_validation_results = regression_results
 
         return regression_passed
-

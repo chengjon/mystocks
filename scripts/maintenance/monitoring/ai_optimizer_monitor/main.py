@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AI测试优化器监控和反馈收集系统
+"""AI测试优化器监控和反馈收集系统
 实时监控工具使用情况、收集用户反馈、分析性能指标
 
 功能:
@@ -15,19 +14,16 @@ AI测试优化器监控和反馈收集系统
 日期: 2025-01-22
 """
 
-import json
-import time
-import sqlite3
-from datetime import datetime, timedelta
-from pathlib import Path
-from typing import Dict, List, Optional
-from dataclasses import dataclass
 import argparse
+import json
 import logging
+from pathlib import Path
+
 
 # 设置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -39,24 +35,42 @@ MONITORING_DIR.mkdir(exist_ok=True)
 # 数据库路径
 DB_PATH = MONITORING_DIR / "ai_optimizer_monitor.db"
 
+
 def main():
     """主函数"""
     parser = argparse.ArgumentParser(description="AI测试优化器监控和反馈收集系统")
     parser.add_argument("--daemon", "-d", action="store_true", help="运行监控守护进程")
     parser.add_argument(
-        "--report", "-r", action="store_true", help="生成并显示每日报告"
+        "--report",
+        "-r",
+        action="store_true",
+        help="生成并显示每日报告",
     )
     parser.add_argument(
-        "--usage-stats", "-u", type=int, default=7, help="获取最近N天的使用统计"
+        "--usage-stats",
+        "-u",
+        type=int,
+        default=7,
+        help="获取最近N天的使用统计",
     )
     parser.add_argument(
-        "--performance-stats", "-p", type=int, default=7, help="获取最近N天的性能统计"
+        "--performance-stats",
+        "-p",
+        type=int,
+        default=7,
+        help="获取最近N天的性能统计",
     )
     parser.add_argument(
-        "--check-anomalies", "-a", action="store_true", help="检查并报告异常"
+        "--check-anomalies",
+        "-a",
+        action="store_true",
+        help="检查并报告异常",
     )
     parser.add_argument(
-        "--feedback", "-f", action="store_true", help="显示用户反馈摘要"
+        "--feedback",
+        "-f",
+        action="store_true",
+        help="显示用户反馈摘要",
     )
 
     args = parser.parse_args()
@@ -106,5 +120,3 @@ def main():
         return 1
 
     return 0
-
-

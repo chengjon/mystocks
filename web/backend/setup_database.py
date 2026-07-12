@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-MyStocks数据库初始化脚本
+"""MyStocks数据库初始化脚本
 功能:
 1. 验证TimescaleDB扩展
 2. 创建所有PostgreSQL表
@@ -10,9 +9,11 @@ MyStocks数据库初始化脚本
 import os
 import sys
 from pathlib import Path
+
 import psycopg2
 import pymysql
 from dotenv import load_dotenv
+
 
 # 加载环境变量
 env_path = Path(__file__).parent.parent.parent / ".env"
@@ -56,7 +57,7 @@ class DatabaseSetup:
                 SELECT extname, extversion
                 FROM pg_extension
                 WHERE extname = 'timescaledb';
-            """
+            """,
             )
 
             result = cur.fetchone()
@@ -73,13 +74,12 @@ class DatabaseSetup:
                 cur.close()
                 conn.close()
                 return True
-            else:
-                print("❌ TimescaleDB未安装")
-                print("   请先安装TimescaleDB扩展:")
-                print("   CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;")
-                cur.close()
-                conn.close()
-                return False
+            print("❌ TimescaleDB未安装")
+            print("   请先安装TimescaleDB扩展:")
+            print("   CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;")
+            cur.close()
+            conn.close()
+            return False
 
         except Exception as e:
             print(f"❌ 连接PostgreSQL失败: {e}")
@@ -103,7 +103,7 @@ class DatabaseSetup:
                 print(f"❌ SQL文件不存在: {sql_file}")
                 return False
 
-            with open(sql_file, "r", encoding="utf-8") as f:
+            with open(sql_file, encoding="utf-8") as f:
                 sql_content = f.read()
 
             # 移除\echo命令(psql特有命令)
@@ -138,7 +138,7 @@ class DatabaseSetup:
                         WHERE table_schema = 'public'
                         AND table_name = '{table}'
                     );
-                """
+                """,
                 )
                 exists = cur.fetchone()[0]
                 status = "✅" if exists else "❌"
@@ -151,7 +151,7 @@ class DatabaseSetup:
                 SELECT hypertable_name
                 FROM timescaledb_information.hypertables
                 WHERE hypertable_schema = 'public';
-            """
+            """,
             )
             hypertables = cur.fetchall()
 
@@ -190,7 +190,7 @@ class DatabaseSetup:
                 print(f"❌ SQL文件不存在: {sql_file}")
                 return False
 
-            with open(sql_file, "r", encoding="utf-8") as f:
+            with open(sql_file, encoding="utf-8") as f:
                 sql_content = f.read()
 
             # 分割并执行每条SQL语句

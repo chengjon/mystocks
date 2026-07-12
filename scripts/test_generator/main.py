@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-增强版AI测试生成器
+"""增强版AI测试生成器
 提供更智能的测试算法、模式识别和优化建议
 
 核心功能:
@@ -15,17 +14,16 @@
 日期: 2025-12-22
 """
 
-import ast
-import re
-import sys
-from pathlib import Path
-from typing import Dict, List, Tuple, Any
-from dataclasses import dataclass
 import logging
+import sys
+from dataclasses import dataclass
+from pathlib import Path
+
 
 # 设置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -69,7 +67,7 @@ def main():
             total_tests += result["tests_generated"]
 
             print(
-                f"✅ {source_file}: 模式={result['patterns_found']}, Bug={result['bugs_predicted']}, 测试={result['tests_generated']}"
+                f"✅ {source_file}: 模式={result['patterns_found']}, Bug={result['bugs_predicted']}, 测试={result['tests_generated']}",
             )
         else:
             print(f"❌ {source_file}: {result['error']}")

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AI智能测试优化器
+"""AI智能测试优化器
 复用现有测试基础设施，提供智能测试生成和优化功能
 
 核心功能:
@@ -14,21 +13,17 @@ AI智能测试优化器
 日期: 2025-01-22
 """
 
-import ast
-import json
-import os
-import sys
-import time
-import subprocess
-from pathlib import Path
-from typing import Dict, List, Optional
-from dataclasses import dataclass
 import argparse
 import logging
+import sys
+import time
+from pathlib import Path
+
 
 # 设置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -36,10 +31,11 @@ logger = logging.getLogger(__name__)
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
+
 def main():
     """主函数"""
     parser = argparse.ArgumentParser(
-        description="AI智能测试优化器 - 自动分析和改进测试覆盖率"
+        description="AI智能测试优化器 - 自动分析和改进测试覆盖率",
     )
     parser.add_argument(
         "source_files",
@@ -48,10 +44,16 @@ def main():
     )
     parser.add_argument("--config", "-c", help="配置文件路径 (JSON格式)")
     parser.add_argument(
-        "--output", "-o", default="test_optimization_report.md", help="输出报告文件路径"
+        "--output",
+        "-o",
+        default="test_optimization_report.md",
+        help="输出报告文件路径",
     )
     parser.add_argument(
-        "--generate-tests", "-g", action="store_true", help="生成改进的测试代码文件"
+        "--generate-tests",
+        "-g",
+        action="store_true",
+        help="生成改进的测试代码文件",
     )
     parser.add_argument("--batch", "-b", action="store_true", help="批量处理模式")
     parser.add_argument("--verbose", "-v", action="store_true", help="详细输出模式")
@@ -75,9 +77,7 @@ def main():
                 source_files.append(Path(pattern))
 
         # 过滤Python文件
-        source_files = [
-            str(f) for f in source_files if f.suffix == ".py" and f.exists()
-        ]
+        source_files = [str(f) for f in source_files if f.suffix == ".py" and f.exists()]
 
         if not source_files:
             print("❌ 未找到有效的Python文件")
@@ -89,9 +89,7 @@ def main():
         if args.batch:
             results = optimizer.optimize_batch_modules(source_files)
         else:
-            results = [
-                optimizer.analyze_module_for_optimization(str(f)) for f in source_files
-            ]
+            results = [optimizer.analyze_module_for_optimization(str(f)) for f in source_files]
 
         # 生成报告
         report = optimizer.generate_optimization_report(results)
@@ -144,10 +142,10 @@ class Test{result.module_name.title()}Optimized:
         print("\n📊 优化摘要:")
         print(f"- 分析文件: {len(results)} 个")
         print(
-            f"- 平均覆盖率: {sum(r.current_coverage for r in results) / len(results):.1f}%"
+            f"- 平均覆盖率: {sum(r.current_coverage for r in results) / len(results):.1f}%",
         )
         print(
-            f"- 需要改进: {sum(1 for r in results if r.current_coverage < optimizer.config['coverage_target'])} 个"
+            f"- 需要改进: {sum(1 for r in results if r.current_coverage < optimizer.config['coverage_target'])} 个",
         )
 
         return 0
@@ -161,5 +159,3 @@ class Test{result.module_name.title()}Optimized:
 
         traceback.print_exc()
         return 1
-
-

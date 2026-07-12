@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-前端UI开发准备验证工具
+"""前端UI开发准备验证工具
 Phase 8-1: 前端UI开发准备 (P3优先级)
 
 验证内容:
@@ -18,7 +17,7 @@ import json
 import subprocess
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any, Dict, List
 
 
 class FrontendPreparationValidator:
@@ -83,7 +82,7 @@ class FrontendPreparationValidator:
 
         # 读取package.json
         try:
-            with open(self.package_json, "r", encoding="utf-8") as f:
+            with open(self.package_json, encoding="utf-8") as f:
                 package_data = json.load(f)
         except Exception as e:
             return {
@@ -132,9 +131,7 @@ class FrontendPreparationValidator:
         # 检查脚本命令
         scripts = package_data.get("scripts", {})
         required_scripts = ["dev", "build", "preview", "lint"]
-        missing_scripts = [
-            script for script in required_scripts if script not in scripts
-        ]
+        missing_scripts = [script for script in required_scripts if script not in scripts]
 
         # 计算架构评分
         architecture_score = (
@@ -143,11 +140,7 @@ class FrontendPreparationValidator:
             + (len(required_scripts) - len(missing_scripts)) * 5  # 每个脚本5分
         )
 
-        max_score = (
-            len(required_deps) * 25
-            + len(optional_deps) * 10
-            + len(required_scripts) * 5
-        )
+        max_score = len(required_deps) * 25 + len(optional_deps) * 10 + len(required_scripts) * 5
         success = len(missing_required) == 0 and len(missing_scripts) == 0
 
         return {
@@ -243,12 +236,7 @@ class FrontendPreparationValidator:
             + sum(env_status.values()) * 5  # 每个环境文件5分
         )
 
-        max_score = (
-            len(key_directories) * 10
-            + len(component_files) * 5
-            + 20
-            + len(env_files) * 5
-        )
+        max_score = len(key_directories) * 10 + len(component_files) * 5 + 20 + len(env_files) * 5
         success = len(missing_dirs) == 0 and len(missing_files) == 0 and vite_exists
 
         return {
@@ -287,7 +275,9 @@ class FrontendPreparationValidator:
         node_version = "unknown"
         try:
             result = subprocess.run(
-                ["node", "--version"], capture_output=True, text=True
+                ["node", "--version"],
+                capture_output=True,
+                text=True,
             )
             if result.returncode == 0:
                 node_version = result.stdout.strip()
@@ -298,7 +288,9 @@ class FrontendPreparationValidator:
         npm_version = "unknown"
         try:
             result = subprocess.run(
-                ["npm", "--version"], capture_output=True, text=True
+                ["npm", "--version"],
+                capture_output=True,
+                text=True,
             )
             if result.returncode == 0:
                 npm_version = result.stdout.strip()
@@ -329,7 +321,7 @@ class FrontendPreparationValidator:
         port_config = "未配置"
         if (self.frontend_dir / ".env.development").exists():
             try:
-                with open(self.frontend_dir / ".env.development", "r") as f:
+                with open(self.frontend_dir / ".env.development") as f:
                     content = f.read()
                     if "3000" in content:
                         port_config = "3000"
@@ -395,7 +387,7 @@ class FrontendPreparationValidator:
 
         # 读取Vite配置
         try:
-            with open(self.vite_config, "r", encoding="utf-8") as f:
+            with open(self.vite_config, encoding="utf-8") as f:
                 vite_config_content = f.read()
         except Exception as e:
             return {
@@ -407,8 +399,7 @@ class FrontendPreparationValidator:
 
         # 检查关键配置项
         config_checks = {
-            "基础配置": "import" in vite_config_content
-            and "defineConfig" in vite_config_content,
+            "基础配置": "import" in vite_config_content and "defineConfig" in vite_config_content,
             "Vue支持": "@vitejs/plugin-vue" in vite_config_content,
             "路径别名": "@" in vite_config_content or "alias" in vite_config_content,
             "代理配置": "proxy" in vite_config_content,
@@ -420,9 +411,7 @@ class FrontendPreparationValidator:
         root_env = (self.project_root / ".env").exists()
 
         # 检查Docker配置
-        docker_compose_exists = (
-            Path("/opt/claude/mystocks_spec/web") / "docker-compose.yml"
-        ).exists()
+        docker_compose_exists = (Path("/opt/claude/mystocks_spec/web") / "docker-compose.yml").exists()
 
         # 检查dist目录
         dist_exists = (self.frontend_dir / "dist").exists()
@@ -438,9 +427,7 @@ class FrontendPreparationValidator:
         if dist_exists:
             config_score += 5
 
-        max_score = (
-            len(config_checks) * 20 + 40
-        )  # 环境配置40分 + Docker 15分 + dist 5分
+        max_score = len(config_checks) * 20 + 40  # 环境配置40分 + Docker 15分 + dist 5分
         success = config_score >= max_score * 0.7  # 70%及格
 
         return {
@@ -515,11 +502,7 @@ class FrontendPreparationValidator:
 
         # 计算组件完整性
         expected_major_views = ["Dashboard", "TechnicalAnalysis", "Market", "Portfolio"]
-        found_major_views = [
-            view
-            for view in views_list
-            if any(major in view for major in expected_major_views)
-        ]
+        found_major_views = [view for view in views_list if any(major in view for major in expected_major_views)]
 
         component_categories = {
             "业务组件": components_count,
@@ -606,14 +589,8 @@ class FrontendPreparationValidator:
     def _generate_validation_summary(self) -> Dict[str, Any]:
         """生成验证摘要"""
         total_validations = len(self.validation_results)
-        successful_validations = sum(
-            1 for r in self.validation_results if r.get("success", False)
-        )
-        success_rate = (
-            (successful_validations / total_validations * 100)
-            if total_validations > 0
-            else 0
-        )
+        successful_validations = sum(1 for r in self.validation_results if r.get("success", False))
+        success_rate = (successful_validations / total_validations * 100) if total_validations > 0 else 0
 
         total_duration = sum(r.get("duration", 0) for r in self.validation_results)
 
@@ -656,7 +633,7 @@ class FrontendPreparationValidator:
         print("📊 前端UI开发准备验证报告 (Phase 8-1)")
         print("=" * 60)
         print(
-            f"✅ 成功验证: {successful_validations}/{total_validations} ({success_rate:.1f}%)"
+            f"✅ 成功验证: {successful_validations}/{total_validations} ({success_rate:.1f}%)",
         )
         print(f"⏱️  总用时: {total_duration:.2f}秒")
         print(f"🚀 开发就绪: {'是' if success_rate >= 80 else '否'}")

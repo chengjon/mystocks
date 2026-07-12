@@ -1,33 +1,33 @@
-"""
-基础数据源工具类
+"""基础数据源工具类
 统一管理股票数据源的连接和数据获取
 支持AkShare和Tushare双数据源
 """
 
-import time
-import akshare as ak
-import tushare as ts
-from typing import Dict, List
-import pandas as pd
 import logging
 import os
+import time
+from typing import Dict, List
+
+import akshare as ak
+import pandas as pd
+import tushare as ts
+
 
 # 配置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
 
 class BaseDataSource:
-    """
-    基础数据源工具类，封装数据源连接逻辑
+    """基础数据源工具类，封装数据源连接逻辑
     支持AkShare和Tushare双数据源，提供重试机制和标准化数据格式
     """
 
     def __init__(self):
-        """
-        初始化数据源
+        """初始化数据源
         优先使用AkShare，如果失败则使用Tushare
         """
         self.use_tushare = False
@@ -42,10 +42,14 @@ class BaseDataSource:
             logger.info("未配置Tushare token，将优先使用AkShare")
 
     def _retry_request(
-        self, func, max_retries: int = 3, delay: int = 2, *args, **kwargs
+        self,
+        func,
+        max_retries: int = 3,
+        delay: int = 2,
+        *args,
+        **kwargs,
     ):
-        """
-        重试装饰器，用于数据请求失败时重试
+        """重试装饰器，用于数据请求失败时重试
 
         Args:
             func: 要执行的函数
@@ -55,6 +59,7 @@ class BaseDataSource:
 
         Returns:
             函数执行结果
+
         """
         for attempt in range(max_retries):
             try:
@@ -64,13 +69,12 @@ class BaseDataSource:
                     logger.error(f"请求失败，已达到最大重试次数 {max_retries}: {e}")
                     raise e
                 logger.warning(
-                    f"请求失败，{delay}秒后重试 ({attempt + 1}/{max_retries}): {e}"
+                    f"请求失败，{delay}秒后重试 ({attempt + 1}/{max_retries}): {e}",
                 )
                 time.sleep(delay)
 
     def get_stock_basic_info(self) -> List[Dict]:
-        """
-        获取股票基础信息
+        """获取股票基础信息
 
         Returns:
             包含股票基础信息的字典列表
@@ -84,6 +88,7 @@ class BaseDataSource:
                     "list_date": "",
                 }
             ]
+
         """
 
         def _fetch_basic_info():
@@ -100,11 +105,7 @@ class BaseDataSource:
 
                         # 确定市场
                         market = (
-                            "SZ"
-                            if symbol.startswith("0")
-                            or symbol.startswith("2")
-                            or symbol.startswith("3")
-                            else "SH"
+                            "SZ" if symbol.startswith("0") or symbol.startswith("2") or symbol.startswith("3") else "SH"
                         )
                         # 添加市场后缀
                         symbol_with_suffix = f"{symbol}.{market}"
@@ -117,7 +118,7 @@ class BaseDataSource:
                                 "area": "",
                                 "market": market,
                                 "list_date": "",
-                            }
+                            },
                         )
 
                     return result
@@ -146,17 +147,11 @@ class BaseDataSource:
                             {
                                 "symbol": row["ts_code"],
                                 "name": row["name"],
-                                "industry": row["industry"]
-                                if pd.notna(row["industry"])
-                                else "",
+                                "industry": row["industry"] if pd.notna(row["industry"]) else "",
                                 "area": row["area"] if pd.notna(row["area"]) else "",
-                                "market": row["market"]
-                                if pd.notna(row["market"])
-                                else "",
-                                "list_date": str(row["list_date"])
-                                if pd.notna(row["list_date"])
-                                else "",
-                            }
+                                "market": row["market"] if pd.notna(row["market"]) else "",
+                                "list_date": str(row["list_date"]) if pd.notna(row["list_date"]) else "",
+                            },
                         )
 
                     return result
@@ -167,10 +162,12 @@ class BaseDataSource:
         return self._retry_request(_fetch_basic_info)
 
     def get_stock_kline_data(
-        self, symbol: str, start_date: str, end_date: str
+        self,
+        symbol: str,
+        start_date: str,
+        end_date: str,
     ) -> List[Dict]:
-        """
-        获取单只股票K线数据
+        """获取单只股票K线数据
 
         Args:
             symbol: 股票代码，格式如 "000001.SZ" 或 "600000.SH"
@@ -191,6 +188,7 @@ class BaseDataSource:
                     "amount": 10300000.0
                 }
             ]
+
         """
 
         def _fetch_kline_data():
@@ -198,23 +196,17 @@ class BaseDataSource:
                 try:
                     # 使用AkShare获取股票历史数据
                     logger.info(
-                        f"正在使用AkShare获取股票 {symbol} 的K线数据，日期范围: {start_date} 到 {end_date}"
+                        f"正在使用AkShare获取股票 {symbol} 的K线数据，日期范围: {start_date} 到 {end_date}",
                     )
 
                     # 移除后缀获取纯股票代码
                     if "." in symbol:
-                        code = symbol.split(".")[0]
+                        code = symbol.split(".", maxsplit=1)[0]
                         market = symbol.split(".")[1]
                     else:
                         code = symbol
                         # 根据代码前缀判断市场
-                        market = (
-                            "SZ"
-                            if code.startswith("0")
-                            or code.startswith("2")
-                            or code.startswith("3")
-                            else "SH"
-                        )
+                        market = "SZ" if code.startswith("0") or code.startswith("2") or code.startswith("3") else "SH"
 
                     stock_zh_a_hist_df = ak.stock_zh_a_hist(
                         symbol=code,
@@ -226,7 +218,7 @@ class BaseDataSource:
 
                     if stock_zh_a_hist_df.empty:
                         logger.warning(
-                            f"未获取到股票 {symbol} 在 {start_date} 到 {end_date} 的数据"
+                            f"未获取到股票 {symbol} 在 {start_date} 到 {end_date} 的数据",
                         )
                         return []
 
@@ -246,19 +238,15 @@ class BaseDataSource:
                                 "high": float(row["最高"]),
                                 "low": float(row["最低"]),
                                 "close": float(row["收盘"]),
-                                "volume": int(row["成交量"])
-                                if pd.notna(row["成交量"])
-                                else 0,
-                                "amount": float(row["成交额"])
-                                if pd.notna(row["成交额"])
-                                else 0.0,
-                            }
+                                "volume": int(row["成交量"]) if pd.notna(row["成交量"]) else 0,
+                                "amount": float(row["成交额"]) if pd.notna(row["成交额"]) else 0.0,
+                            },
                         )
 
                     return result
                 except Exception as e:
                     logger.error(
-                        f"AkShare获取股票 {symbol} K线数据失败: {type(e).__name__}: {e}"
+                        f"AkShare获取股票 {symbol} K线数据失败: {type(e).__name__}: {e}",
                     )
                     # 如果AkShare失败，切换到Tushare
                     if self.tushare_token:
@@ -271,7 +259,7 @@ class BaseDataSource:
                 # 使用Tushare获取股票历史数据
                 try:
                     logger.info(
-                        f"正在使用Tushare获取股票 {symbol} 的K线数据，日期范围: {start_date} 到 {end_date}"
+                        f"正在使用Tushare获取股票 {symbol} 的K线数据，日期范围: {start_date} 到 {end_date}",
                     )
 
                     # Tushare需要将日期格式转换为YYYYMMDD
@@ -279,12 +267,14 @@ class BaseDataSource:
                     ts_end_date = end_date.replace("-", "")
 
                     kline_data = self.pro.daily(
-                        ts_code=symbol, start_date=ts_start_date, end_date=ts_end_date
+                        ts_code=symbol,
+                        start_date=ts_start_date,
+                        end_date=ts_end_date,
                     )
 
                     if kline_data.empty:
                         logger.warning(
-                            f"未获取到股票 {symbol} 在 {start_date} 到 {end_date} 的数据"
+                            f"未获取到股票 {symbol} 在 {start_date} 到 {end_date} 的数据",
                         )
                         return []
 
@@ -296,36 +286,31 @@ class BaseDataSource:
                         result.append(
                             {
                                 "symbol": row["ts_code"],
-                                "trade_date": row[
-                                    "trade_date"
-                                ],  # Tushare已经是YYYYMMDD格式
+                                "trade_date": row["trade_date"],  # Tushare已经是YYYYMMDD格式
                                 "open": float(row["open"]),
                                 "high": float(row["high"]),
                                 "low": float(row["low"]),
                                 "close": float(row["close"]),
-                                "volume": int(row["vol"])
-                                * 100,  # Tushare的成交量单位是手，需要转换为股
-                                "amount": float(row["amount"])
-                                if pd.notna(row["amount"])
-                                else 0.0,
-                            }
+                                "volume": int(row["vol"]) * 100,  # Tushare的成交量单位是手，需要转换为股
+                                "amount": float(row["amount"]) if pd.notna(row["amount"]) else 0.0,
+                            },
                         )
 
                     return result
                 except Exception as e:
                     logger.error(
-                        f"Tushare获取股票 {symbol} K线数据失败: {type(e).__name__}: {e}"
+                        f"Tushare获取股票 {symbol} K线数据失败: {type(e).__name__}: {e}",
                     )
                     raise e
 
         return self._retry_request(_fetch_kline_data)
 
     def get_stock_industry_info(self) -> List[Dict]:
-        """
-        获取股票行业信息
+        """获取股票行业信息
 
         Returns:
             包含股票行业信息的字典列表
+
         """
 
         def _fetch_industry_info():
@@ -339,11 +324,7 @@ class BaseDataSource:
                         symbol = str(row["代码"])
                         # 确定市场
                         market = (
-                            "SZ"
-                            if symbol.startswith("0")
-                            or symbol.startswith("2")
-                            or symbol.startswith("3")
-                            else "SH"
+                            "SZ" if symbol.startswith("0") or symbol.startswith("2") or symbol.startswith("3") else "SH"
                         )
                         symbol_with_suffix = f"{symbol}.{market}"
 
@@ -352,7 +333,7 @@ class BaseDataSource:
                                 "symbol": symbol_with_suffix,
                                 "industry": row["板块名称"],
                                 "industry_code": row["板块代码"],
-                            }
+                            },
                         )
 
                     return result
@@ -369,14 +350,15 @@ class BaseDataSource:
                 # Tushare获取行业信息
                 try:
                     stock_industry_df = self.pro.stock_basic(
-                        exchange="", fields="ts_code,industry"
+                        exchange="",
+                        fields="ts_code,industry",
                     )
 
                     result = []
                     for _, row in stock_industry_df.iterrows():
                         if pd.notna(row["industry"]):
                             result.append(
-                                {"symbol": row["ts_code"], "industry": row["industry"]}
+                                {"symbol": row["ts_code"], "industry": row["industry"]},
                             )
 
                     return result

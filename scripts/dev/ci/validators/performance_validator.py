@@ -1,15 +1,10 @@
 """量化策略验证器子模块"""
 
-import ast
 import json
 import logging
-import os
-import re
-import subprocess
-import sys
 import time
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict
+
 
 logger = logging.getLogger(__name__)
 
@@ -64,8 +59,8 @@ class PerformanceValidatorMixin:
     def _validate_historical_performance(self) -> Dict[str, Any]:
         """验证历史性能对比"""
         try:
-            import os
             import json
+            import os
 
             # 检查是否有历史性能数据文件
             performance_files = [
@@ -81,7 +76,7 @@ class PerformanceValidatorMixin:
                 for perf_file in performance_files:
                     if os.path.exists(perf_file):
                         try:
-                            with open(perf_file, "r") as f:
+                            with open(perf_file) as f:
                                 data = json.load(f)
                                 historical_performance.update(data)
                         except:
@@ -103,9 +98,7 @@ class PerformanceValidatorMixin:
                     if "response_time" in baseline:
                         current_rt = current_performance["response_time"]
                         baseline_rt = baseline["response_time"]
-                        performance_change = (
-                            (current_rt - baseline_rt) / baseline_rt
-                        ) * 100
+                        performance_change = ((current_rt - baseline_rt) / baseline_rt) * 100
                         performance_degraded = performance_change > 10  # 超过10%降级
 
                 return {
@@ -116,25 +109,25 @@ class PerformanceValidatorMixin:
                         "current_metrics": current_performance,
                     },
                 }
-            else:
-                # 没有历史数据，创建基准
-                return {
-                    "passed": True,
-                    "details": {
-                        "historical_data_found": False,
-                        "message": "首次运行，建议建立性能基准",
-                    },
-                }
+            # 没有历史数据，创建基准
+            return {
+                "passed": True,
+                "details": {
+                    "historical_data_found": False,
+                    "message": "首次运行，建议建立性能基准",
+                },
+            }
 
         except Exception as e:
-            return {"passed": False, "error": f"历史性能对比异常: {str(e)}"}
+            return {"passed": False, "error": f"历史性能对比异常: {e!s}"}
 
     def _validate_memory_leak_detection(self) -> Dict[str, Any]:
         """验证内存泄漏检测"""
         try:
-            import psutil
-            import time
             import os
+            import time
+
+            import psutil
 
             process = psutil.Process(os.getpid())
 
@@ -174,7 +167,7 @@ class PerformanceValidatorMixin:
             }
 
         except Exception as e:
-            return {"passed": False, "error": f"内存泄漏检测异常: {str(e)}"}
+            return {"passed": False, "error": f"内存泄漏检测异常: {e!s}"}
 
     def _validate_response_time_regression(self) -> Dict[str, Any]:
         """验证响应时间回归 - 使用真实性能监控"""
@@ -211,26 +204,23 @@ class PerformanceValidatorMixin:
                     signal.alarm(3)
                     try:
                         performance_summary = monitor.get_performance_summary(
-                            hours=1
+                            hours=1,
                         )  # 最近1小时的性能数据
                         signal.alarm(0)  # 取消超时
 
-                        if (
-                            performance_summary
-                            and "avg_response_time" in performance_summary
-                        ):
+                        if performance_summary and "avg_response_time" in performance_summary:
                             avg_response_time = performance_summary["avg_response_time"]
                             max_response_time = performance_summary.get(
-                                "max_response_time", avg_response_time
+                                "max_response_time",
+                                avg_response_time,
                             )
                             min_response_time = performance_summary.get(
-                                "min_response_time", avg_response_time
+                                "min_response_time",
+                                avg_response_time,
                             )
 
                             # 检查响应时间是否在合理范围内（使用监控数据）
-                            response_time_ok = (
-                                avg_response_time < 2000
-                            )  # 平均响应时间 < 2秒
+                            response_time_ok = avg_response_time < 2000  # 平均响应时间 < 2秒
 
                             return {
                                 "passed": response_time_ok,
@@ -262,12 +252,10 @@ class PerformanceValidatorMixin:
             return self._fallback_response_time_test()
 
         except Exception as e:
-            return {"passed": False, "error": f"响应时间回归异常: {str(e)}"}
+            return {"passed": False, "error": f"响应时间回归异常: {e!s}"}
 
     def _fallback_response_time_test(self) -> Dict[str, Any]:
         """备用响应时间测试"""
-        import time
-
         # 执行简化的性能测试
         response_times = []
 
@@ -305,8 +293,9 @@ class PerformanceValidatorMixin:
     def _validate_resource_usage_monitoring(self) -> Dict[str, Any]:
         """验证资源使用监控"""
         try:
-            import psutil
             import os
+
+            import psutil
 
             process = psutil.Process(os.getpid())
 
@@ -340,13 +329,13 @@ class PerformanceValidatorMixin:
             }
 
         except Exception as e:
-            return {"passed": False, "error": f"资源使用监控异常: {str(e)}"}
+            return {"passed": False, "error": f"资源使用监控异常: {e!s}"}
 
     def _validate_performance_baselines(self) -> Dict[str, Any]:
         """验证性能基准测试 - 使用真实监控数据"""
         try:
-            import os
             import json
+            import os
             import time
 
             # 首先尝试从性能监控器获取基准数据
@@ -359,20 +348,21 @@ class PerformanceValidatorMixin:
 
                 # 获取历史性能摘要作为基准
                 historical_summary = monitor.get_performance_summary(
-                    hours=24
+                    hours=24,
                 )  # 过去24小时作为基准
 
                 if historical_summary and any(
-                    key in historical_summary
-                    for key in ["avg_response_time", "total_operations"]
+                    key in historical_summary for key in ["avg_response_time", "total_operations"]
                 ):
                     # 使用真实的监控数据作为基准
                     baseline_metrics = {
                         "avg_response_time": historical_summary.get(
-                            "avg_response_time", 100
+                            "avg_response_time",
+                            100,
                         ),
                         "total_operations": historical_summary.get(
-                            "total_operations", 1000
+                            "total_operations",
+                            1000,
                         ),
                         "error_count": historical_summary.get("error_count", 1),
                         "data_source": "performance_monitor",
@@ -380,16 +370,18 @@ class PerformanceValidatorMixin:
 
                     # 获取当前性能数据进行比较
                     current_summary = monitor.get_performance_summary(
-                        hours=1
+                        hours=1,
                     )  # 最近1小时
 
                     if current_summary:
                         current_metrics = {
                             "avg_response_time": current_summary.get(
-                                "avg_response_time", 100
+                                "avg_response_time",
+                                100,
                             ),
                             "total_operations": current_summary.get(
-                                "total_operations", 1000
+                                "total_operations",
+                                1000,
                             ),
                             "error_count": current_summary.get("error_count", 1),
                         }
@@ -401,10 +393,7 @@ class PerformanceValidatorMixin:
                         # 检查响应时间变化（不应该增加超过20%）
                         if baseline_metrics["avg_response_time"] > 0:
                             rt_deviation = (
-                                (
-                                    current_metrics["avg_response_time"]
-                                    - baseline_metrics["avg_response_time"]
-                                )
+                                (current_metrics["avg_response_time"] - baseline_metrics["avg_response_time"])
                                 / baseline_metrics["avg_response_time"]
                             ) * 100
                             deviations["response_time_change"] = rt_deviation
@@ -414,10 +403,7 @@ class PerformanceValidatorMixin:
                         # 检查操作数量变化（应该保持相对稳定）
                         if baseline_metrics["total_operations"] > 0:
                             op_deviation = (
-                                (
-                                    current_metrics["total_operations"]
-                                    - baseline_metrics["total_operations"]
-                                )
+                                (current_metrics["total_operations"] - baseline_metrics["total_operations"])
                                 / baseline_metrics["total_operations"]
                             ) * 100
                             deviations["operations_change"] = op_deviation
@@ -445,7 +431,7 @@ class PerformanceValidatorMixin:
             if baseline_exists:
                 # 读取现有基准数据
                 try:
-                    with open(baseline_file, "r") as f:
+                    with open(baseline_file) as f:
                         baseline_data = json.load(f)
 
                     baseline_metrics = baseline_data.get("metrics", {})
@@ -453,9 +439,7 @@ class PerformanceValidatorMixin:
 
                     # 检查基准是否过期（超过7天）
                     current_time = time.time()
-                    is_expired = (current_time - baseline_time) > (
-                        7 * 24 * 60 * 60
-                    )  # 7天
+                    is_expired = (current_time - baseline_time) > (7 * 24 * 60 * 60)  # 7天
 
                     if is_expired:
                         print("    ⚠️ 性能基准已过期，将更新基准")
@@ -472,10 +456,11 @@ class PerformanceValidatorMixin:
                 return self._create_new_baseline(baseline_file)
 
         except Exception as e:
-            return {"passed": False, "error": f"性能基准测试异常: {str(e)}"}
+            return {"passed": False, "error": f"性能基准测试异常: {e!s}"}
 
     def _compare_with_baseline(
-        self, baseline_metrics: Dict[str, Any]
+        self,
+        baseline_metrics: Dict[str, Any],
     ) -> Dict[str, Any]:
         """与基准进行比较"""
         # 简化的基准比较
@@ -512,9 +497,6 @@ class PerformanceValidatorMixin:
 
     def _create_new_baseline(self, baseline_file: str) -> Dict[str, Any]:
         """创建新的性能基准"""
-        import time
-        import json
-
         # 创建性能基准
         baseline_data = {
             "created_at": time.time(),
@@ -535,5 +517,4 @@ class PerformanceValidatorMixin:
                 },
             }
         except Exception as e:
-            return {"passed": False, "error": f"创建基准文件失败: {str(e)}"}
-
+            return {"passed": False, "error": f"创建基准文件失败: {e!s}"}

@@ -1,15 +1,18 @@
-import sys
-import os
-import json
-import yaml
 import argparse
+import json
+import os
+import sys
+
+import yaml
+
 
 # Add paths
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(current_dir)
-backend_path = os.path.join(project_root, 'web', 'backend')
+backend_path = os.path.join(project_root, "web", "backend")
 sys.path.insert(0, project_root)
 sys.path.insert(0, backend_path)
+
 
 def generate_spec(tag_filter=None, output_file=None):
     try:
@@ -22,8 +25,9 @@ def generate_spec(tag_filter=None, output_file=None):
         os.environ.setdefault("REDIS_CELERY_BROKER_DB", "0")
         os.environ.setdefault("REDIS_CELERY_RESULT_DB", "1")
 
-        from app.main import app
         from fastapi.openapi.utils import get_openapi
+
+        from app.main import app
 
         schema = get_openapi(
             title=app.title,
@@ -60,7 +64,9 @@ def generate_spec(tag_filter=None, output_file=None):
     except Exception as e:
         print(f"Error: {e}")
         import traceback
+
         traceback.print_exc()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

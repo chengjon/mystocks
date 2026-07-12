@@ -1,26 +1,28 @@
 # scripts/dev/mailbox_watcher.py
 
-"""
-Mailbox事件监听器 - 实时响应新消息
+"""Mailbox事件监听器 - 实时响应新消息
 
 使用watchdog监听文件系统事件，新消息到达时立即处理。
 替代定时扫描机制，实现秒级响应。
 """
 
-import sys
-import os
-import time
 import logging
-from pathlib import Path
+import os
+import sys
+import time
 from datetime import datetime
-from watchdog.observers import Observer
+from pathlib import Path
+
 from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer
+
 
 # 添加项目根目录到路径
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # 先解析参数
 import argparse
+
 
 parser = argparse.ArgumentParser(description="CLI Mailbox监听器")
 parser.add_argument("--cli", required=True, help="CLI名称（如: web, api, db）")
@@ -69,7 +71,7 @@ class MailboxWatcher(FileSystemEventHandler):
         logger.info(f"处理消息: {msg_file}")
 
         # 读取消息内容
-        with open(msg_file, "r", encoding="utf-8") as f:
+        with open(msg_file, encoding="utf-8") as f:
             content = f.read()
 
         # 解析消息

@@ -1,22 +1,24 @@
-"""
-个股行业概念关联数据同步脚本
+"""个股行业概念关联数据同步脚本
 从AkShare适配器获取个股行业概念关联数据并同步到数据库
 """
 
-import sys
-import os
 import argparse
 import logging
+import os
+import sys
 from datetime import datetime
 from pathlib import Path
+
 import pandas as pd
+
 
 # 添加项目根目录到Python路径
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../"))
 
-from src.factories.data_source_factory import get_data_source
 from src.core.data_classification import DataClassification
+from src.factories.data_source_factory import get_data_source
 from src.unified_manager import MyStocksUnifiedManager
+
 
 # 配置日志
 LOG_DIR = Path(__file__).resolve().parents[3] / "var" / "log" / "data_sync"
@@ -34,11 +36,11 @@ logger = logging.getLogger(__name__)
 
 
 def sync_stock_industry_concept_data(stock_limit: int = None):
-    """
-    同步个股行业概念关联数据
+    """同步个股行业概念关联数据
 
     Args:
         stock_limit: int - 限制同步的股票数量（用于测试）
+
     """
     logger.info("开始同步个股行业概念关联数据")
 
@@ -51,12 +53,13 @@ def sync_stock_industry_concept_data(stock_limit: int = None):
         logger.info("正在获取股票列表...")
         # 使用统一管理器获取股票基础信息
         stock_df = manager.load_data_by_classification(
-            DataClassification.SYMBOLS_INFO, "symbols_info"
+            DataClassification.SYMBOLS_INFO,
+            "symbols_info",
         )
 
         if stock_df is None or stock_df.empty:
             logger.warning("数据库中没有股票信息，无法同步个股行业概念关联数据")
-            return
+            return None
 
         symbols = stock_df["symbol"].tolist()
         if stock_limit:
@@ -71,7 +74,7 @@ def sync_stock_industry_concept_data(stock_limit: int = None):
         for i, symbol in enumerate(symbols):
             try:
                 logger.info(
-                    f"[{i + 1}/{len(symbols)}] 正在获取股票 {symbol} 的行业概念信息..."
+                    f"[{i + 1}/{len(symbols)}] 正在获取股票 {symbol} 的行业概念信息...",
                 )
 
                 # 提取纯股票代码（去除市场后缀）
@@ -80,9 +83,7 @@ def sync_stock_industry_concept_data(stock_limit: int = None):
                 # 从AkShare适配器获取个股行业概念信息
                 stock_info = data_source.get_stock_industry_concept(pure_symbol)
 
-                if not stock_info or (
-                    not stock_info.get("industries") and not stock_info.get("concepts")
-                ):
+                if not stock_info or (not stock_info.get("industries") and not stock_info.get("concepts")):
                     logger.info(f"  股票 {symbol} 没有行业概念信息")
                     continue
 
@@ -99,7 +100,7 @@ def sync_stock_industry_concept_data(stock_limit: int = None):
 
         if not all_stock_info:
             logger.warning("没有获取到任何股票的行业概念信息")
-            return
+            return None
 
         logger.info(f"共获取到 {len(all_stock_info)} 只股票的行业概念信息")
 
@@ -118,7 +119,7 @@ def sync_stock_industry_concept_data(stock_limit: int = None):
                         "category_type": "industry",
                         "category_name": industry,
                         "updated_at": updated_at,
-                    }
+                    },
                 )
 
             # 处理概念信息
@@ -129,12 +130,12 @@ def sync_stock_industry_concept_data(stock_limit: int = None):
                         "category_type": "concept",
                         "category_name": concept,
                         "updated_at": updated_at,
-                    }
+                    },
                 )
 
         if not expanded_data:
             logger.warning("没有可保存的行业概念关联数据")
-            return
+            return None
 
         df = pd.DataFrame(expanded_data)
         logger.info(f"转换为 {len(df)} 条关联记录")
@@ -150,14 +151,16 @@ def sync_stock_industry_concept_data(stock_limit: int = None):
         # 保存到数据库（REFERENCE_DATA分类，自动路由到PostgreSQL）
         table_name = "stock_industry_concept_relations"
         success = manager.save_data_by_classification(
-            DataClassification.REFERENCE_DATA, df, table_name
+            DataClassification.REFERENCE_DATA,
+            df,
+            table_name,
         )
 
         if success:
             logger.info(f"成功保存 {len(df)} 条个股行业概念关联数据到 {table_name}")
         else:
             logger.error("保存个股行业概念关联数据失败")
-            return
+            return None
 
         # 统计信息
         stats = {

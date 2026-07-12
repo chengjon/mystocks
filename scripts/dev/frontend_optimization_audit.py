@@ -232,7 +232,7 @@ def validate_component_mapping(
                     "path": path,
                     "expected_component": expected_component,
                     "actual_component": "",
-                }
+                },
             )
             continue
 
@@ -244,7 +244,7 @@ def validate_component_mapping(
                     "path": path,
                     "expected_component": expected_component,
                     "actual_component": actual_component,
-                }
+                },
             )
 
     return issues
@@ -291,7 +291,7 @@ def validate_api_verification(
                     "type": "verified_without_api",
                     "path": row.get("path", ""),
                     "api_pattern": "",
-                }
+                },
             )
             continue
 
@@ -301,7 +301,7 @@ def validate_api_verification(
                     "type": "verified_api_not_found",
                     "path": row.get("path", ""),
                     "api_pattern": pattern,
-                }
+                },
             )
 
     return issues
@@ -374,7 +374,7 @@ def build_report_markdown(
     else:
         for issue in component_issues:
             lines.append(
-                f"- [{issue['type']}] {issue['path']}: expected `{issue['expected_component']}` actual `{issue['actual_component']}`"
+                f"- [{issue['type']}] {issue['path']}: expected `{issue['expected_component']}` actual `{issue['actual_component']}`",
             )
     lines.append("")
 

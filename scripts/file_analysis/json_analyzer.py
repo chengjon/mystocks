@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
-"""
-JSON文件分析器
+"""JSON文件分析器
 用途：分析JSON文件，提取键值对、嵌套结构、引用信息等
 """
 
-import os
 import json
-from pathlib import Path
-from typing import Dict, List, Optional
 import logging
+import os
+from typing import Dict, List, Optional
+
 
 logger = logging.getLogger(__name__)
 
@@ -20,14 +19,14 @@ class JSONAnalyzer:
         pass
 
     def analyze_file(self, file_path: str) -> Optional[Dict]:
-        """
-        分析JSON文件
+        """分析JSON文件
 
         Args:
             file_path: 文件路径
 
         Returns:
             文件分析结果字典
+
         """
         logger.info(f"开始分析JSON文件: {file_path}")
 
@@ -37,7 +36,7 @@ class JSONAnalyzer:
                 return None
 
             # 读取文件内容
-            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+            with open(file_path, encoding="utf-8", errors="ignore") as f:
                 content = f.read()
 
             # 解析JSON
@@ -59,45 +58,51 @@ class JSONAnalyzer:
 
             # 计算复杂度
             complexity_score = self._calculate_complexity(
-                len(keys), depth, array_count, object_count
+                len(keys),
+                depth,
+                array_count,
+                object_count,
             )
 
             # 生成功能描述
             file_function = self._generate_function_description(
-                file_name, structure_type, keys, depth
+                file_name,
+                structure_type,
+                keys,
+                depth,
             )
 
             result = {
-                'file_name': file_name,
-                'file_path': file_path,
-                'file_type': 'json',
-                'file_size': file_stat.st_size,
-                'line_count': len(content.split('\n')),
-                'function_count': len(keys),
-                'class_count': 0,
-                'file_function': file_function,
-                'module_name': None,
-                'package_name': None,
-                'imports_count': len(file_references),
-                'exports_count': 0,
-                'complexity_score': complexity_score,
-                'quality_score': 0,
-                'last_modified': self._format_timestamp(file_stat.st_mtime),
-                'file_created': self._format_timestamp(file_stat.st_ctime),
-                'error': None,
-                'details': {
-                    'keys': keys[:20],  # 只保留前20个键
-                    'structure_type': structure_type,
-                    'nesting_depth': depth,
-                    'array_count': array_count,
-                    'object_count': object_count,
-                    'total_keys': len(keys),
-                    'file_references': file_references[:10],  # 只保留前10个
-                    'is_config_file': self._is_config_file(file_name, keys),
-                    'is_data_file': self._is_data_file(file_name, keys),
-                    'has_nested_arrays': depth > 1 and array_count > 0,
-                    'has_nested_objects': depth > 1 and object_count > 0
-                }
+                "file_name": file_name,
+                "file_path": file_path,
+                "file_type": "json",
+                "file_size": file_stat.st_size,
+                "line_count": len(content.split("\n")),
+                "function_count": len(keys),
+                "class_count": 0,
+                "file_function": file_function,
+                "module_name": None,
+                "package_name": None,
+                "imports_count": len(file_references),
+                "exports_count": 0,
+                "complexity_score": complexity_score,
+                "quality_score": 0,
+                "last_modified": self._format_timestamp(file_stat.st_mtime),
+                "file_created": self._format_timestamp(file_stat.st_ctime),
+                "error": None,
+                "details": {
+                    "keys": keys[:20],  # 只保留前20个键
+                    "structure_type": structure_type,
+                    "nesting_depth": depth,
+                    "array_count": array_count,
+                    "object_count": object_count,
+                    "total_keys": len(keys),
+                    "file_references": file_references[:10],  # 只保留前10个
+                    "is_config_file": self._is_config_file(file_name, keys),
+                    "is_data_file": self._is_data_file(file_name, keys),
+                    "has_nested_arrays": depth > 1 and array_count > 0,
+                    "has_nested_objects": depth > 1 and object_count > 0,
+                },
             }
 
             logger.info(f"JSON文件分析完成: {file_name}")
@@ -110,7 +115,7 @@ class JSONAnalyzer:
             logger.error(f"分析JSON文件失败: {file_path} - {e}")
             return self._create_error_result(file_path, str(e))
 
-    def _extract_keys(self, data, prefix='') -> List[str]:
+    def _extract_keys(self, data, prefix="") -> List[str]:
         """提取所有键"""
         keys = []
 
@@ -129,15 +134,14 @@ class JSONAnalyzer:
     def _determine_structure_type(self, data) -> str:
         """确定JSON结构类型"""
         if isinstance(data, dict):
-            return 'object'
-        elif isinstance(data, list):
-            return 'array'
-        elif isinstance(data, (str, int, float, bool)):
-            return 'primitive'
-        elif data is None:
-            return 'null'
-        else:
-            return 'unknown'
+            return "object"
+        if isinstance(data, list):
+            return "array"
+        if isinstance(data, (str, int, float, bool)):
+            return "primitive"
+        if data is None:
+            return "null"
+        return "unknown"
 
     def _calculate_depth(self, data, current_depth=0) -> int:
         """计算嵌套深度"""
@@ -145,12 +149,11 @@ class JSONAnalyzer:
             if not data:
                 return current_depth
             return max(self._calculate_depth(v, current_depth + 1) for v in data.values())
-        elif isinstance(data, list):
+        if isinstance(data, list):
             if not data:
                 return current_depth
             return max(self._calculate_depth(item, current_depth + 1) for item in data)
-        else:
-            return current_depth
+        return current_depth
 
     def _count_arrays(self, data) -> int:
         """计算数组数量"""
@@ -183,7 +186,7 @@ class JSONAnalyzer:
         def search_in_value(value):
             if isinstance(value, str):
                 # 检查文件路径模式
-                if any(pattern in value for pattern in ['/', '\\', '.json', '.js', '.ts', '.py']):
+                if any(pattern in value for pattern in ["/", "\\", ".json", ".js", ".ts", ".py"]):
                     references.append(value)
             elif isinstance(value, (dict, list)):
                 if isinstance(value, dict):
@@ -197,8 +200,11 @@ class JSONAnalyzer:
         return references
 
     def _calculate_complexity(
-        self, key_count: int, depth: int,
-        array_count: int, object_count: int
+        self,
+        key_count: int,
+        depth: int,
+        array_count: int,
+        object_count: int,
     ) -> int:
         """计算JSON复杂度"""
         complexity = 0
@@ -218,15 +224,18 @@ class JSONAnalyzer:
         return min(int(complexity), 30)
 
     def _generate_function_description(
-        self, file_name: str, structure_type: str,
-        keys: List[str], depth: int
+        self,
+        file_name: str,
+        structure_type: str,
+        keys: List[str],
+        depth: int,
     ) -> str:
         """生成功能描述"""
         parts = []
 
-        if structure_type == 'object':
+        if structure_type == "object":
             parts.append(f"{len(keys)}个键")
-        elif structure_type == 'array':
+        elif structure_type == "array":
             parts.append("数组结构")
         else:
             parts.append(f"{structure_type}类型")
@@ -234,48 +243,49 @@ class JSONAnalyzer:
         if depth > 1:
             parts.append(f"{depth}层嵌套")
 
-        return ', '.join(parts) if parts else 'JSON数据文件'
+        return ", ".join(parts) if parts else "JSON数据文件"
 
     def _is_config_file(self, file_name: str, keys: List[str]) -> bool:
         """判断是否为配置文件"""
-        config_keywords = ['config', 'setting', 'option', 'parameter', 'env']
+        config_keywords = ["config", "setting", "option", "parameter", "env"]
         return any(keyword in file_name.lower() for keyword in config_keywords)
 
     def _is_data_file(self, file_name: str, keys: List[str]) -> bool:
         """判断是否为数据文件"""
-        data_keywords = ['data', 'list', 'items', 'records', 'entries']
+        data_keywords = ["data", "list", "items", "records", "entries"]
         return any(keyword in file_name.lower() for keyword in data_keywords)
 
     def _create_error_result(self, file_path: str, error_msg: str) -> Dict:
         """创建错误结果"""
         return {
-            'file_name': os.path.basename(file_path),
-            'file_path': file_path,
-            'file_type': 'json',
-            'file_size': 0,
-            'line_count': 0,
-            'function_count': 0,
-            'class_count': 0,
-            'file_function': '',
-            'module_name': None,
-            'package_name': None,
-            'imports_count': 0,
-            'exports_count': 0,
-            'complexity_score': 0,
-            'quality_score': 0,
-            'last_modified': None,
-            'file_created': None,
-            'error': error_msg,
-            'details': {}
+            "file_name": os.path.basename(file_path),
+            "file_path": file_path,
+            "file_type": "json",
+            "file_size": 0,
+            "line_count": 0,
+            "function_count": 0,
+            "class_count": 0,
+            "file_function": "",
+            "module_name": None,
+            "package_name": None,
+            "imports_count": 0,
+            "exports_count": 0,
+            "complexity_score": 0,
+            "quality_score": 0,
+            "last_modified": None,
+            "file_created": None,
+            "error": error_msg,
+            "details": {},
         }
 
     def _format_timestamp(self, timestamp: float) -> str:
         """格式化时间戳"""
         from datetime import datetime
-        return datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
+
+        return datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d %H:%M:%S")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # 测试代码
     import tempfile
 
@@ -297,7 +307,7 @@ if __name__ == '__main__':
 }
 """
 
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
         f.write(test_json)
         temp_path = f.name
 

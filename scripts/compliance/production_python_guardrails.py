@@ -30,8 +30,7 @@ def normalize_relative_paths(paths: list[str] | None) -> list[str] | None:
         path_value = raw_path.strip()
         if not path_value:
             continue
-        if path_value.startswith("./"):
-            path_value = path_value[2:]
+        path_value = path_value.removeprefix("./")
         normalized_path = Path(path_value).as_posix().strip("/")
         if normalized_path:
             normalized.add(normalized_path)
@@ -146,7 +145,7 @@ def build_report(
                     rule_id="python-lines-error",
                     message=f"Python file exceeds failure threshold ({line_count} > {failure_lines})",
                     lines=line_count,
-                )
+                ),
             )
         elif line_count > warning_lines:
             warnings.append(
@@ -156,7 +155,7 @@ def build_report(
                     rule_id="python-lines-warning",
                     message=f"Python file exceeds warning threshold ({line_count} > {warning_lines})",
                     lines=line_count,
-                )
+                ),
             )
 
         source = read_source(file_path)
@@ -171,7 +170,7 @@ def build_report(
                     message=f"Python file is not parseable: {error.msg}",
                     line=error.lineno or 0,
                     column=error.offset or 0,
-                )
+                ),
             )
             continue
 
@@ -184,7 +183,7 @@ def build_report(
                     message="Bare print() is forbidden in production Python code; use the project logger instead",
                     line=line,
                     column=column,
-                )
+                ),
             )
 
     errors.sort(key=lambda item: (item["path"], item["rule_id"], item.get("line", 0)))

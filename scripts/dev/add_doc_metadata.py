@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-批量为MD文档添加元数据标记
+"""批量为MD文档添加元数据标记
 
 用法:
     python utils/add_doc_metadata.py --doc README.md --creator "JohnC & Claude" --version "2.1.0"
@@ -29,8 +28,7 @@ def add_metadata(
     approved_date: str = None,
     revision_notes: str = "添加文档元数据标记",
 ):
-    """
-    为MD文档添加元数据
+    """为MD文档添加元数据
 
     Args:
         file_path: 文档路径
@@ -38,13 +36,14 @@ def add_metadata(
         version: 版本号
         approved_date: 批准日期 (可选，默认今天)
         revision_notes: 修订内容描述
+
     """
     if not os.path.exists(file_path):
         print(f"❌ 文件不存在: {file_path}")
         return False
 
     # 读取文件
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(file_path, encoding="utf-8") as f:
         content = f.read()
 
     # 检查是否已有元数据
@@ -54,7 +53,7 @@ def add_metadata(
 
     # 准备元数据
     today = datetime.now().strftime("%Y-%m-%d")
-    approved = approved_date if approved_date else today
+    approved = approved_date or today
 
     metadata = METADATA_TEMPLATE.format(
         creator=creator,
@@ -88,7 +87,6 @@ def add_metadata(
 
 def batch_add_metadata():
     """批量为核心文档添加元数据"""
-
     # 核心文档清单 (来自Phase 0 R2)
     docs = [
         # 根目录文档
@@ -177,7 +175,7 @@ def batch_add_metadata():
             else:
                 skipped += 1
         except Exception as e:
-            print(f"❌ {doc} 处理失败: {str(e)}")
+            print(f"❌ {doc} 处理失败: {e!s}")
             failed += 1
 
     print("\n" + "=" * 80)

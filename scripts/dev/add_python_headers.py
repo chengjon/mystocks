@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-# 功能：批量为Python核心文件添加规范化头注释
+"""# 功能：批量为Python核心文件添加规范化头注释
 # 作者：JohnC (ninjas@sina.com) & Claude
 # 创建日期：2025-10-16
 # 版本：1.0.0
@@ -16,6 +14,7 @@
 import os
 import re
 from typing import Tuple
+
 
 # Python头注释模板
 PYTHON_HEADER_TEMPLATE = """'''
@@ -88,10 +87,9 @@ class PythonHeaderAdder:
         copyright: str = "MyStocks Project © 2025",
     ) -> bool:
         """为单个Python文件添加头注释"""
-
         try:
             # 读取文件
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             # 检查是否已有标准头注释
@@ -177,7 +175,6 @@ class PythonHeaderAdder:
 
 def batch_add_headers():
     """批量为核心文件添加头注释"""
-
     adder = PythonHeaderAdder()
 
     # 定义要处理的文件及其描述

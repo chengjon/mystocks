@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AI算法增强器
+"""AI算法增强器
 专注于智能测试生成和代码质量提升
 
 核心功能:
@@ -14,24 +13,22 @@ AI算法增强器
 日期: 2025-12-22
 """
 
-import ast
-import re
-import sys
-import time
-from pathlib import Path
-from typing import Dict, List, Any
-from dataclasses import dataclass
 import logging
+import sys
+from pathlib import Path
+
 
 # 设置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
+
 
 def main():
     """主入口函数"""
@@ -70,10 +67,10 @@ def main():
 
             print(f"✅ {source_file}:")
             print(
-                f"   洞察: {result['insights_count']}, Bug: {result['bugs_found']}, 测试: {result['tests_generated']}"
+                f"   洞察: {result['insights_count']}, Bug: {result['bugs_found']}, 测试: {result['tests_generated']}",
             )
             print(
-                f"   高风险函数: {result['high_risk_functions']}, 耗时: {result['processing_time']:.2f}s"
+                f"   高风险函数: {result['high_risk_functions']}, 耗时: {result['processing_time']:.2f}s",
             )
         else:
             print(f"❌ {source_file}: {result['error']}")

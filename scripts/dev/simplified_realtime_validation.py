@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-简化版实时数据流验证工具
+"""简化版实时数据流验证工具
 Simplified Real-Time Streaming Validation Tool
 
 Phase 7-1: 实时数据流完整性验证 (简化版)
@@ -16,14 +15,15 @@ Author: Claude Code
 Date: 2025-11-13
 """
 
-import requests
-import json
-import time
 import asyncio
+import json
 import os
-import websockets
+import time
 from datetime import datetime
 from typing import Dict, List
+
+import requests
+import websockets
 
 
 class SimplifiedRealtimeValidator:
@@ -56,7 +56,7 @@ class SimplifiedRealtimeValidator:
         else:
             print("\n2️⃣ 跳过实时数据测试 (API不可用)")
             self.results.append(
-                {"test": "Realtime Data", "success": False, "error": "API unavailable"}
+                {"test": "Realtime Data", "success": False, "error": "API unavailable"},
             )
 
         # 3. 数据源完整性检查
@@ -93,13 +93,12 @@ class SimplifiedRealtimeValidator:
                     "status": data.get("status", "unknown"),
                     "service": data.get("service", "unknown"),
                 }
-            else:
-                return {
-                    "test": "HTTP API Health",
-                    "success": False,
-                    "duration": time.time() - start_time,
-                    "error": f"HTTP {response.status_code}",
-                }
+            return {
+                "test": "HTTP API Health",
+                "success": False,
+                "duration": time.time() - start_time,
+                "error": f"HTTP {response.status_code}",
+            }
 
         except Exception as e:
             return {
@@ -134,20 +133,18 @@ class SimplifiedRealtimeValidator:
                         "response_time_ms": response.elapsed.total_seconds() * 1000,
                         "timestamp": data.get("timestamp", ""),
                     }
-                else:
-                    return {
-                        "test": "Realtime Data",
-                        "success": False,
-                        "duration": time.time() - start_time,
-                        "error": "Invalid response format",
-                    }
-            else:
                 return {
                     "test": "Realtime Data",
                     "success": False,
                     "duration": time.time() - start_time,
-                    "error": f"HTTP {response.status_code}",
+                    "error": "Invalid response format",
                 }
+            return {
+                "test": "Realtime Data",
+                "success": False,
+                "duration": time.time() - start_time,
+                "error": f"HTTP {response.status_code}",
+            }
 
         except Exception as e:
             return {
@@ -202,9 +199,7 @@ class SimplifiedRealtimeValidator:
         except:
             pass
 
-        success_rate = (
-            (sources_working / sources_tested * 100) if sources_tested > 0 else 0
-        )
+        success_rate = (sources_working / sources_tested * 100) if sources_tested > 0 else 0
 
         return {
             "test": "Data Sources",
@@ -247,11 +242,7 @@ class SimplifiedRealtimeValidator:
 
             asyncio.run(run_ws_tests())
 
-            success_rate = (
-                (connections_working / connections_tested * 100)
-                if connections_tested > 0
-                else 0
-            )
+            success_rate = (connections_working / connections_tested * 100) if connections_tested > 0 else 0
 
             return {
                 "test": "WebSocket Connection",
@@ -288,7 +279,7 @@ class SimplifiedRealtimeValidator:
                 print(f"      📊 成功率: {result['success_rate']:.1f}%")
             if "sources_working" in result:
                 print(
-                    f"      📊 可用数据源: {result['sources_working']}/{result['sources_tested']}"
+                    f"      📊 可用数据源: {result['sources_working']}/{result['sources_tested']}",
                 )
         else:
             error = result.get("error", "Unknown error")
@@ -311,7 +302,8 @@ class SimplifiedRealtimeValidator:
                 avg_response_time = max(avg_response_time, result["response_time_ms"])
             if "sources_working" in result:
                 data_sources_working = max(
-                    data_sources_working, result["sources_working"]
+                    data_sources_working,
+                    result["sources_working"],
                 )
 
         summary = {
@@ -360,16 +352,11 @@ class SimplifiedRealtimeValidator:
             recommendations.append("Web服务可能未完全启动，检查端口8888是否可用")
             recommendations.append("验证API路由配置是否正确")
 
-        if not any(
-            "WebSocket" in r.get("test", "") and r.get("success") for r in self.results
-        ):
+        if not any("WebSocket" in r.get("test", "") and r.get("success") for r in self.results):
             recommendations.append("WebSocket连接需要适当的认证配置")
             recommendations.append("检查WebSocket端点路径是否正确")
 
-        if not any(
-            "Realtime Data" in r.get("test", "") and r.get("success")
-            for r in self.results
-        ):
+        if not any("Realtime Data" in r.get("test", "") and r.get("success") for r in self.results):
             recommendations.append("实时数据API可能需要数据源配置")
             recommendations.append("验证数据库连接和缓存配置")
 

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-配置管理技术债务清理脚本
+"""配置管理技术债务清理脚本
 Configuration Management Technical Debt Cleanup Script
 
 识别和清理配置管理中的技术债务：
@@ -10,12 +9,12 @@ Configuration Management Technical Debt Cleanup Script
 - 缺少验证
 """
 
-import os
-import yaml
-import json
-from pathlib import Path
-from typing import Dict, List, Set
 import hashlib
+import json
+import os
+from typing import Dict, List
+
+import yaml
 
 
 class ConfigDebtAnalyzer:
@@ -71,7 +70,7 @@ class ConfigDebtAnalyzer:
                         "size_mb": size_mb,
                         "severity": "medium",
                         "message": f"配置文件过大 ({size_mb:.1f}MB)，建议拆分",
-                    }
+                    },
                 )
                 self.statistics["large_files"] += 1
 
@@ -83,13 +82,13 @@ class ConfigDebtAnalyzer:
                         "file": file_path,
                         "severity": "low",
                         "message": "空配置文件",
-                    }
+                    },
                 )
                 self.statistics["empty_files"] += 1
                 return
 
             # 验证YAML格式
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             # 计算内容哈希以检测重复
@@ -102,7 +101,7 @@ class ConfigDebtAnalyzer:
                         "duplicate_of": file_hashes[content_hash],
                         "severity": "high",
                         "message": f"与 {file_hashes[content_hash]} 内容完全相同",
-                    }
+                    },
                 )
                 self.statistics["duplicates"] += 1
             else:
@@ -125,7 +124,7 @@ class ConfigDebtAnalyzer:
                         "error": str(e),
                         "severity": "high",
                         "message": f"YAML格式错误: {e}",
-                    }
+                    },
                 )
                 self.statistics["invalid_yaml"] += 1
 
@@ -137,7 +136,7 @@ class ConfigDebtAnalyzer:
                     "error": str(e),
                     "severity": "high",
                     "message": f"无法读取文件: {e}",
-                }
+                },
             )
 
     def _analyze_data_source_config(self, file_path: str, data: Dict):
@@ -156,9 +155,7 @@ class ConfigDebtAnalyzer:
 
             # 检查必需字段
             required_fields = ["source_name", "source_type", "data_category"]
-            missing_fields = [
-                field for field in required_fields if field not in source_config
-            ]
+            missing_fields = [field for field in required_fields if field not in source_config]
 
             if missing_fields:
                 self.issues.append(
@@ -169,7 +166,7 @@ class ConfigDebtAnalyzer:
                         "missing_fields": missing_fields,
                         "severity": "medium",
                         "message": f"数据源 {source_name} 缺少必需字段: {', '.join(missing_fields)}",
-                    }
+                    },
                 )
 
             # 检查数据分类一致性
@@ -186,12 +183,12 @@ class ConfigDebtAnalyzer:
 
         if self.statistics["invalid_yaml"] > 0:
             recommendations.append(
-                f"🔴 修复 {self.statistics['invalid_yaml']} 个YAML格式错误"
+                f"🔴 修复 {self.statistics['invalid_yaml']} 个YAML格式错误",
             )
 
         if self.statistics["duplicates"] > 0:
             recommendations.append(
-                f"🟡 清理 {self.statistics['duplicates']} 个重复配置文件"
+                f"🟡 清理 {self.statistics['duplicates']} 个重复配置文件",
             )
 
         if self.statistics["large_files"] > 0:
@@ -199,7 +196,7 @@ class ConfigDebtAnalyzer:
 
         if self.statistics["empty_files"] > 0:
             recommendations.append(
-                f"🟢 删除 {self.statistics['empty_files']} 个空配置文件"
+                f"🟢 删除 {self.statistics['empty_files']} 个空配置文件",
             )
 
         recommendations.extend(
@@ -208,7 +205,7 @@ class ConfigDebtAnalyzer:
                 "🔄 实现配置版本控制",
                 "📊 添加配置健康监控",
                 "🏷️ 为配置添加文档注释",
-            ]
+            ],
         )
 
         return recommendations

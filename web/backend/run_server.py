@@ -1,10 +1,9 @@
 #!/usr/bin/env python
-"""
-简单的服务器启动脚本
-"""
+"""简单的服务器启动脚本"""
 
-import sys
 import os
+import sys
+
 
 # 添加根目录到 Python 路径
 sys.path.append("/opt/claude/mystocks_spec")

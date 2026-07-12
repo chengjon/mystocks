@@ -1,14 +1,11 @@
 """技术负债分析器子模块"""
 
 import ast
-import json
-import logging
-import re
-from collections import Counter, defaultdict
-from pathlib import Path
-from typing import Any, Dict, List
 import asyncio
-import aiofiles
+import logging
+from collections import defaultdict
+from pathlib import Path
+
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +27,7 @@ class ArchitectureMixin:
                 "issue": "单一职责原则需要进一步分析",
                 "severity": "medium",
                 "recommendation": "建议进行更深入的架构分析",
-            }
+            },
         )
 
         # 分析循环依赖
@@ -43,7 +40,7 @@ class ArchitectureMixin:
                 "issue": "依赖注入模式使用情况需要评估",
                 "severity": "medium",
                 "recommendation": "检查是否应该使用依赖注入容器",
-            }
+            },
         )
 
     async def _analyze_coupling_async(self):
@@ -83,17 +80,13 @@ class ArchitectureMixin:
                         "dependencies": list(deps),
                         "category": "architecture",
                         "severity": "high",
-                    }
+                    },
                 )
 
     async def _analyze_circular_dependencies_async(self):
         """分析循环依赖"""
         # 简化的循环依赖检测
-        python_files = [
-            f
-            for f in list(self.project_root.rglob("*.py"))
-            if not self._should_skip_file(f)
-        ]
+        python_files = [f for f in list(self.project_root.rglob("*.py")) if not self._should_skip_file(f)]
 
         # 构建依赖图
         dependencies = defaultdict(set)
@@ -107,8 +100,7 @@ class ArchitectureMixin:
                     if isinstance(node, ast.ImportFrom):
                         module = node.module
                         if module and (
-                            module.startswith("src.")
-                            or module.startswith("web.backend.app.")
+                            module.startswith("src.") or module.startswith("web.backend.app.")
                         ):  # Consider project-specific modules
                             dependencies[str(py_file)].add(module)
             except Exception as e:
@@ -123,6 +115,5 @@ class ArchitectureMixin:
                 "issue": "循环依赖检测需要完善",
                 "severity": "medium",
                 "recommendation": "建议使用专业工具如pycircular进行检测",
-            }
+            },
         )
-

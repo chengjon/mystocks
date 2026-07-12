@@ -1,23 +1,25 @@
 #!/usr/bin/env python3
-"""
-GPU加速引擎性能基准测试
+"""GPU加速引擎性能基准测试
 Phase 6.2.5 - 测试验证和性能基准
 
 测试HAL和内核层的性能，验证GPU/CPU回退机制，建立性能基准
 """
 
 import asyncio
-import time
-import numpy as np
-import statistics
-from pathlib import Path
-from typing import Dict, Any
 import json
+import statistics
+import time
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict
+
+import numpy as np
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent
 import sys
+
 
 sys.path.insert(0, str(project_root))
 
@@ -129,8 +131,8 @@ class GPUPerformanceBenchmark:
         try:
             from src.gpu.core.kernels import MatrixKernelEngine
             from src.gpu.core.kernels.standardized_interface import (
-                MatrixOperationType,
                 MatrixOperationConfig,
+                MatrixOperationType,
             )
 
             kernel = MatrixKernelEngine()
@@ -149,10 +151,12 @@ class GPUPerformanceBenchmark:
                     start_time = time.time()
                     try:
                         config = MatrixOperationConfig(
-                            operation_type=MatrixOperationType.MULTIPLY
+                            operation_type=MatrixOperationType.MULTIPLY,
                         )
                         result = await kernel.execute_matrix_operation(
-                            matrix_a, matrix_b, config
+                            matrix_a,
+                            matrix_b,
+                            config,
                         )
                         if result.success:
                             multiply_times.append(result.execution_time_ms)
@@ -182,8 +186,8 @@ class GPUPerformanceBenchmark:
         try:
             from src.gpu.core.kernels import TransformKernelEngine
             from src.gpu.core.kernels.standardized_interface import (
-                TransformOperationType,
                 TransformOperationConfig,
+                TransformOperationType,
             )
 
             kernel = TransformKernelEngine()
@@ -201,10 +205,11 @@ class GPUPerformanceBenchmark:
                     start_time = time.time()
                     try:
                         config = TransformOperationConfig(
-                            operation_type=TransformOperationType.NORMALIZE
+                            operation_type=TransformOperationType.NORMALIZE,
                         )
                         result = await kernel.execute_transform_operation(
-                            test_data, config
+                            test_data,
+                            config,
                         )
                         if result.success:
                             normalize_times.append(result.execution_time_ms)
@@ -219,10 +224,11 @@ class GPUPerformanceBenchmark:
                     start_time = time.time()
                     try:
                         config = TransformOperationConfig(
-                            operation_type=TransformOperationType.FFT
+                            operation_type=TransformOperationType.FFT,
                         )
                         result = await kernel.execute_transform_operation(
-                            test_data, config
+                            test_data,
+                            config,
                         )
                         if result.success:
                             fft_times.append(result.execution_time_ms)
@@ -313,24 +319,26 @@ class GPUPerformanceBenchmark:
                 """并发矩阵乘法任务"""
                 try:
                     matrix_a = np.random.random((matrix_size, matrix_size)).astype(
-                        np.float32
+                        np.float32,
                     )
                     matrix_b = np.random.random((matrix_size, matrix_size)).astype(
-                        np.float32
+                        np.float32,
                     )
 
                     from src.gpu.core.kernels import MatrixKernelEngine
                     from src.gpu.core.kernels.standardized_interface import (
-                        MatrixOperationType,
                         MatrixOperationConfig,
+                        MatrixOperationType,
                     )
 
                     kernel = MatrixKernelEngine()
                     config = MatrixOperationConfig(
-                        operation_type=MatrixOperationType.MULTIPLY
+                        operation_type=MatrixOperationType.MULTIPLY,
                     )
                     result = await kernel.execute_matrix_operation(
-                        matrix_a, matrix_b, config
+                        matrix_a,
+                        matrix_b,
+                        config,
                     )
                     return result.execution_time_ms if result.success else 1.0
                 except:
@@ -345,9 +353,7 @@ class GPUPerformanceBenchmark:
                 print(f"     ⚡ 测试并发级别: {concurrency}")
 
                 start_time = time.time()
-                tasks = [
-                    concurrent_matrix_multiply(matrix_size) for _ in range(concurrency)
-                ]
+                tasks = [concurrent_matrix_multiply(matrix_size) for _ in range(concurrency)]
                 execution_times = await asyncio.gather(*tasks)
                 total_time = time.time() - start_time
 
@@ -372,8 +378,8 @@ class GPUPerformanceBenchmark:
         try:
             from src.gpu.core.kernels import MatrixKernelEngine
             from src.gpu.core.kernels.standardized_interface import (
-                MatrixOperationType,
                 MatrixOperationConfig,
+                MatrixOperationType,
             )
 
             kernel = MatrixKernelEngine()
@@ -386,11 +392,13 @@ class GPUPerformanceBenchmark:
             for _ in range(10):
                 start_time = time.time()
                 config = MatrixOperationConfig(
-                    operation_type=MatrixOperationType.MULTIPLY
+                    operation_type=MatrixOperationType.MULTIPLY,
                 )
                 try:
                     result = await kernel.execute_matrix_operation(
-                        test_matrix, test_matrix, config
+                        test_matrix,
+                        test_matrix,
+                        config,
                     )
                     if result.success:
                         normal_times.append(result.execution_time_ms)
@@ -400,9 +408,7 @@ class GPUPerformanceBenchmark:
                     normal_times.append(1.0)
 
             # 统计成功率和回退率
-            success_count = sum(
-                1 for t in normal_times if t < 0.5
-            )  # 小于0.5ms认为是GPU成功
+            success_count = sum(1 for t in normal_times if t < 0.5)  # 小于0.5ms认为是GPU成功
             fallback_count = len(normal_times) - success_count
 
             return {
@@ -414,12 +420,12 @@ class GPUPerformanceBenchmark:
                     "success_rate_percent": (success_count / len(normal_times)) * 100,
                     "average_execution_time_ms": statistics.mean(normal_times),
                     "gpu_average_ms": statistics.mean(
-                        [t for t in normal_times if t < 0.5]
+                        [t for t in normal_times if t < 0.5],
                     )
                     if success_count > 0
                     else 0,
                     "cpu_fallback_average_ms": statistics.mean(
-                        [t for t in normal_times if t >= 0.5]
+                        [t for t in normal_times if t >= 0.5],
                     )
                     if fallback_count > 0
                     else 0,
@@ -432,9 +438,7 @@ class GPUPerformanceBenchmark:
     def _generate_comprehensive_report(self) -> Dict[str, Any]:
         """生成综合性能报告"""
         total_tests = len(self.results)
-        successful_tests = sum(
-            1 for r in self.results.values() if r.get("success", False)
-        )
+        successful_tests = sum(1 for r in self.results.values() if r.get("success", False))
 
         # 计算关键性能指标
         key_metrics = {}
@@ -445,39 +449,30 @@ class GPUPerformanceBenchmark:
             key_metrics["hal_allocation_avg_ms"] = hal_data["average_ms"]
 
         # 矩阵操作性能指标
-        if (
-            "矩阵操作性能测试" in self.results
-            and self.results["矩阵操作性能测试"]["success"]
-        ):
+        if "矩阵操作性能测试" in self.results and self.results["矩阵操作性能测试"]["success"]:
             matrix_data = self.results["矩阵操作性能测试"]["matrix_multiplication"]
             if "size_1000" in matrix_data:
-                key_metrics["matrix_1000x1000_avg_ms"] = matrix_data["size_1000"][
-                    "average_ms"
-                ]
+                key_metrics["matrix_1000x1000_avg_ms"] = matrix_data["size_1000"]["average_ms"]
 
         # 并发性能指标
         if "并发性能测试" in self.results and self.results["并发性能测试"]["success"]:
             concurrent_data = self.results["并发性能测试"]["concurrent_operations"]
             if "concurrency_4" in concurrent_data:
-                key_metrics["concurrency_4_throughput"] = concurrent_data[
-                    "concurrency_4"
-                ]["throughput_tasks_per_second"]
+                key_metrics["concurrency_4_throughput"] = concurrent_data["concurrency_4"][
+                    "throughput_tasks_per_second"
+                ]
 
         # 故障容灾指标
         if "故障容灾测试" in self.results and self.results["故障容灾测试"]["success"]:
             fault_data = self.results["故障容灾测试"]["fault_tolerance"]
-            key_metrics["fault_tolerance_success_rate"] = fault_data[
-                "success_rate_percent"
-            ]
+            key_metrics["fault_tolerance_success_rate"] = fault_data["success_rate_percent"]
 
         return {
             "summary": {
                 "total_test_suites": total_tests,
                 "successful_test_suites": successful_tests,
                 "failed_test_suites": total_tests - successful_tests,
-                "success_rate_percent": (successful_tests / total_tests * 100)
-                if total_tests > 0
-                else 0,
+                "success_rate_percent": (successful_tests / total_tests * 100) if total_tests > 0 else 0,
                 "timestamp": datetime.now().isoformat(),
                 "test_environment": "CPU-only (GPU fallback enabled)",
             },
@@ -505,7 +500,7 @@ class GPUPerformanceBenchmark:
 
         summary = report["summary"]
         print(
-            f"📈 测试套件成功率: {summary['success_rate_percent']:.1f}% ({summary['successful_test_suites']}/{summary['total_test_suites']})"
+            f"📈 测试套件成功率: {summary['success_rate_percent']:.1f}% ({summary['successful_test_suites']}/{summary['total_test_suites']})",
         )
         print(f"🕒 测试时间: {summary['timestamp']}")
         print(f"🖥️ 测试环境: {summary['test_environment']}")
@@ -516,15 +511,15 @@ class GPUPerformanceBenchmark:
             print(f"   • HAL内存分配平均时间: {metrics['hal_allocation_avg_ms']:.3f}ms")
         if "matrix_1000x1000_avg_ms" in metrics:
             print(
-                f"   • 1000x1000矩阵乘法平均时间: {metrics['matrix_1000x1000_avg_ms']:.3f}ms"
+                f"   • 1000x1000矩阵乘法平均时间: {metrics['matrix_1000x1000_avg_ms']:.3f}ms",
             )
         if "concurrency_4_throughput" in metrics:
             print(
-                f"   • 4并发吞吐量: {metrics['concurrency_4_throughput']:.1f} 任务/秒"
+                f"   • 4并发吞吐量: {metrics['concurrency_4_throughput']:.1f} 任务/秒",
             )
         if "fault_tolerance_success_rate" in metrics:
             print(
-                f"   • 故障容灾成功率: {metrics['fault_tolerance_success_rate']:.1f}%"
+                f"   • 故障容灾成功率: {metrics['fault_tolerance_success_rate']:.1f}%",
             )
 
         print("\n📋 详细结果:")

@@ -1,5 +1,4 @@
-"""
-Mock数据文件: Market
+"""Mock数据文件: Market
 提供接口:
 1. get_market_heatmap() -> List[Dict] - 获取市场热力图数据
 2. get_real_time_quotes() -> List[Dict] - 获取实时行情
@@ -20,11 +19,13 @@ Mock数据文件: Market
 生成时间: 2025-11-13
 """
 
-from typing import List, Dict, Optional
 import datetime
-import random
-import numpy as np
 import math
+import random
+from typing import Dict, List, Optional
+
+import numpy as np
+
 
 def _generate_realistic_stock_price(base_price: float, volatility: float = 0.02) -> float:
     """生成更真实的股票价格，使用对数正态分布
@@ -35,6 +36,7 @@ def _generate_realistic_stock_price(base_price: float, volatility: float = 0.02)
 
     Returns:
         float: 生成的股票价格
+
     """
     # 使用对数正态分布模拟股票价格
     log_return = np.random.normal(0, volatility)
@@ -50,6 +52,7 @@ def _generate_realistic_volume(market_cap: float) -> int:
 
     Returns:
         int: 成交量(股)
+
     """
     # 大市值股票成交量通常更大，使用幂律分布
     base_volume = 1000000  # 100万股
@@ -66,6 +69,7 @@ def _generate_correlated_change(volatility: float = 0.02) -> tuple:
 
     Returns:
         tuple: (change_amount, change_percent)
+
     """
     # 生成正态分布的收益率
     daily_return = np.random.normal(0, volatility)
@@ -93,6 +97,7 @@ def get_market_heatmap(market: str = "cn", limit: int = 50) -> List[Dict]:
                    - volume: 成交量
                    - amount: 成交额
                    - market_cap: 市值
+
     """
     # 股票池数据
     if market == "cn":
@@ -238,7 +243,7 @@ def get_market_heatmap(market: str = "cn", limit: int = 50) -> List[Dict]:
                 "volume": volume,
                 "amount": amount,
                 "market_cap": stock["market_cap"],
-            }
+            },
         )
 
     # 按涨跌幅排序
@@ -266,6 +271,7 @@ def get_real_time_quotes(symbols: Optional[str] = None) -> List[Dict]:
                    - high: 最高价
                    - low: 最低价
                    - close: 昨收价
+
     """
     # 默认股票列表
     default_symbols = ["000001", "600519", "000858", "601318", "600036"]
@@ -316,7 +322,7 @@ def get_real_time_quotes(symbols: Optional[str] = None) -> List[Dict]:
                 "low": low_price,
                 "close": round(base_price, 2),
                 "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            }
+            },
         )
 
     return quotes
@@ -344,6 +350,7 @@ def get_fund_flow(
                    - retail_inflow: 散户净流入
                    - retail_outflow: 散户净流出
                    - net_amount: 净流入额
+
     """
     # 基础资金流向数据
     base_flow = random.randint(-50000000, 50000000)  # 基础净流入
@@ -354,7 +361,7 @@ def get_fund_flow(
     if not start_date:
         days = int(timeframe) if timeframe.isdigit() else 1
         start_date = (datetime.datetime.strptime(end_date, "%Y-%m-%d") - datetime.timedelta(days=days)).strftime(
-            "%Y-%m-%d"
+            "%Y-%m-%d",
         )
 
     start_dt = datetime.datetime.strptime(start_date, "%Y-%m-%d")
@@ -382,7 +389,7 @@ def get_fund_flow(
                     "retail_inflow": retail_inflow,
                     "retail_outflow": retail_outflow,
                     "net_amount": net_amount,
-                }
+                },
             )
 
             # 更新基础流向（模拟趋势）
@@ -391,7 +398,3 @@ def get_fund_flow(
         start_dt += datetime.timedelta(days=1)
 
     return fund_flow_data
-
-
-
-from scripts.dev.mock_market._mock_market_tail import get_chip_race, get_etf_list, get_lhb_detail, get_stock_list

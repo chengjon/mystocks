@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""
-简单的监控状态页面 - 替代Grafana/Prometheus
-"""
+"""简单的监控状态页面 - 替代Grafana/Prometheus"""
 
 import os
 import time
-import psutil
 from datetime import datetime
-from fastapi import FastAPI
+
+import psutil
 import uvicorn
+from fastapi import FastAPI
+
 
 # 创建监控API
 monitor_app = FastAPI(title="MyStocks Monitor", description="系统监控面板")

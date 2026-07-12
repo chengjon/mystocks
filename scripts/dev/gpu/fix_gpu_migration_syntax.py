@@ -1,19 +1,17 @@
 #!/usr/bin/env python3
-"""
-修复GPU迁移中的语法错误
-"""
+"""修复GPU迁移中的语法错误"""
 
 import os
 import re
 from pathlib import Path
-from typing import Dict, List, Tuple, Any
+from typing import Any, Dict, List, Tuple
 
 
 class GPUMigrationFixer:
     """GPU迁移语法修复器"""
 
     def __init__(self):
-        self.project_root = Path(".")
+        self.project_root = Path()
         self.fixes_log = []
 
     def fix_migration_syntax_errors(self) -> Dict[str, Any]:
@@ -44,7 +42,7 @@ class GPUMigrationFixer:
 
         try:
             # 读取原文件
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             # 应用修复规则
@@ -116,13 +114,13 @@ class GPUMigrationFixer:
                         # 这是导入语句后，应该没有缩进
                         fixed_lines.append("params = {}")
                         fixes.append(
-                            f"Line {line_num}: Fixed indentation for params assignment"
+                            f"Line {line_num}: Fixed indentation for params assignment",
                         )
                         continue
 
             # 修复其他缩进问题
             if line.strip().startswith("from src.gpu.core.") and not line.startswith(
-                "from "
+                "from ",
             ):
                 # 导入语句不应该有缩进
                 fixed_lines.append(line.strip())
@@ -160,8 +158,7 @@ class GPUMigrationFixer:
 
             # 检查是否需要添加except块
             if in_try_block and (
-                "from src.gpu.core.hardware_abstraction" in line
-                or "from src.gpu.core.kernels" in line
+                "from src.gpu.core.hardware_abstraction" in line or "from src.gpu.core.kernels" in line
             ):
                 # 这看起来是插入在try块中间的导入语句
                 # 需要完成try/except结构
@@ -170,10 +167,7 @@ class GPUMigrationFixer:
                 # 检查下一行是否有except
                 if i + 1 < len(lines):
                     next_line = lines[i + 1]
-                    if not (
-                        next_line.strip().startswith("except")
-                        or next_line.strip().startswith("finally")
-                    ):
+                    if not (next_line.strip().startswith("except") or next_line.strip().startswith("finally")):
                         # 需要添加except块
                         fixed_lines.append("except ImportError:")
                         fixed_lines.append("    pass")
@@ -203,9 +197,7 @@ class GPUMigrationFixer:
             if "from src.gpu.core" in line or "import src.gpu.core" in line:
                 gpu_imports.append(line)
                 fixes.append("Moved GPU import to proper location")
-            elif (
-                line.strip().startswith("import ") or line.strip().startswith("from ")
-            ) and not import_section_ended:
+            elif (line.strip().startswith("import ") or line.strip().startswith("from ")) and not import_section_ended:
                 other_imports.append(line)
             elif line.strip() == "" and len(other_imports) > 0:
                 # 导入段还在继续
@@ -240,9 +232,7 @@ class GPUMigrationFixer:
                 "total_files": total_files,
                 "successful_files": successful_files,
                 "failed_files": failed_files,
-                "success_rate": (successful_files / total_files * 100)
-                if total_files > 0
-                else 0,
+                "success_rate": (successful_files / total_files * 100) if total_files > 0 else 0,
                 "total_fixes": total_fixes,
             },
             "files": results,

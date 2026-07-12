@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Slow Query Analyzer and Index Optimization Tool
+"""Slow Query Analyzer and Index Optimization Tool
 Analyzes query patterns and suggests index improvements
 """
 
@@ -12,6 +11,7 @@ from typing import Dict, List, Optional
 @dataclass
 class QueryPattern:
     """Represent a query pattern"""
+
     query_type: str
     table: str
     columns: List[str] = field(default_factory=list)
@@ -64,9 +64,8 @@ class SlowQueryAnalyzer:
             existing = self.query_patterns[key]
             existing.frequency += 1
             existing.avg_duration_ms = (
-                (existing.avg_duration_ms * (existing.frequency - 1) + duration_ms)
-                / existing.frequency
-            )
+                existing.avg_duration_ms * (existing.frequency - 1) + duration_ms
+            ) / existing.frequency
         else:
             self.query_patterns[key] = pattern
 
@@ -74,7 +73,7 @@ class SlowQueryAnalyzer:
 
     def _extract_query_type(self, query: str) -> str:
         """Extract query type (SELECT, INSERT, UPDATE, DELETE)"""
-        match = re.match(r'^\s*(select|insert|update|delete)\s+', query)
+        match = re.match(r"^\s*(select|insert|update|delete)\s+", query)
         if match:
             return match.group(1).upper()
         return "UNKNOWN"
@@ -82,48 +81,48 @@ class SlowQueryAnalyzer:
     def _extract_table(self, query: str) -> str:
         """Extract main table name"""
         patterns = [
-            r'\bfrom\s+(\w+)',
-            r'\binto\s+(\w+)',
-            r'\bupdate\s+(\w+)',
-            r'\bdelete\s+from\s+(\w+)',
+            r"\bfrom\s+(\w+)",
+            r"\binto\s+(\w+)",
+            r"\bupdate\s+(\w+)",
+            r"\bdelete\s+from\s+(\w+)",
         ]
         for pattern in patterns:
             match = re.search(pattern, query, re.IGNORECASE)
             if match:
                 table = match.group(1)
-                if table not in ('where', 'order', 'limit'):
+                if table not in ("where", "order", "limit"):
                     return table
         return "unknown"
 
     def _extract_columns(self, query: str) -> List[str]:
         """Extract selected/updated columns"""
         if "select" in query:
-            match = re.search(r'select\s+(.+?)\s+from', query, re.IGNORECASE | re.DOTALL)
+            match = re.search(r"select\s+(.+?)\s+from", query, re.IGNORECASE | re.DOTALL)
             if match:
-                cols = re.findall(r'(\w+)', match.group(1))
-                return [c for c in cols if c not in ('select', 'distinct', 'count', 'sum', 'avg', 'max', 'min')]
+                cols = re.findall(r"(\w+)", match.group(1))
+                return [c for c in cols if c not in ("select", "distinct", "count", "sum", "avg", "max", "min")]
         return []
 
     def _extract_where_columns(self, query: str) -> List[str]:
         """Extract columns used in WHERE clause"""
-        match = re.search(r'where\s+(.+?)(?:\s+order\s+|\s+group\s+|\s+limit\s+|$)', query, re.IGNORECASE | re.DOTALL)
+        match = re.search(r"where\s+(.+?)(?:\s+order\s+|\s+group\s+|\s+limit\s+|$)", query, re.IGNORECASE | re.DOTALL)
         if match:
             where_clause = match.group(1)
-            cols = re.findall(r'(\w+)\s*(?:=|>|<|>=|<=|!=|<>|like|ilike|in|between)', where_clause)
+            cols = re.findall(r"(\w+)\s*(?:=|>|<|>=|<=|!=|<>|like|ilike|in|between)", where_clause)
             return list(set(cols))
         return []
 
     def _extract_order_columns(self, query: str) -> List[str]:
         """Extract columns used in ORDER BY"""
-        match = re.search(r'order\s+by\s+(.+?)(?:\s+limit\s+|$)', query, re.IGNORECASE)
+        match = re.search(r"order\s+by\s+(.+?)(?:\s+limit\s+|$)", query, re.IGNORECASE)
         if match:
-            cols = re.findall(r'(\w+)', match.group(1))
+            cols = re.findall(r"(\w+)", match.group(1))
             return list(set(cols))
         return []
 
     def _extract_join_columns(self, query: str) -> List[str]:
         """Extract columns used in JOINs"""
-        matches = re.findall(r'join\s+\w+\s+on\s+(\w+)\.(\w+)\s*=\s*(\w+)\.(\w+)', query, re.IGNORECASE)
+        matches = re.findall(r"join\s+\w+\s+on\s+(\w+)\.(\w+)\s*=\s*(\w+)\.(\w+)", query, re.IGNORECASE)
         cols = []
         for m in matches:
             cols.extend([m[1], m[3]])
@@ -185,9 +184,9 @@ class SlowQueryAnalyzer:
             "slow_patterns": len(slow_queries),
             "total_queries_analyzed": sum(p.frequency for p in self.query_patterns.values()),
             "avg_duration_ms": round(
-                sum(p.avg_duration_ms * p.frequency for p in self.query_patterns.values()) /
-                max(sum(p.frequency for p in self.query_patterns.values()), 1),
-                2
+                sum(p.avg_duration_ms * p.frequency for p in self.query_patterns.values())
+                / max(sum(p.frequency for p in self.query_patterns.values()), 1),
+                2,
             ),
             "suggestions_count": len(self.generate_index_suggestions()),
         }
@@ -216,11 +215,11 @@ class IndexRecommendationGenerator:
             columns_str = ", ".join(sugg["columns"])
 
             sql = f"""
--- {sugg['reason']}
--- Priority: {sugg['priority']}
--- Estimated improvement: {sugg['avg_duration_ms']:.0f}ms -> {(sugg['avg_duration_ms'] * 0.3):.0f}ms
+-- {sugg["reason"]}
+-- Priority: {sugg["priority"]}
+-- Estimated improvement: {sugg["avg_duration_ms"]:.0f}ms -> {(sugg["avg_duration_ms"] * 0.3):.0f}ms
 CREATE INDEX IF NOT EXISTS {index_name}
-ON {sugg['table']} USING {sugg['index_type']} ({columns_str});
+ON {sugg["table"]} USING {sugg["index_type"]} ({columns_str});
 """
             output.append(sql)
 
@@ -228,19 +227,21 @@ ON {sugg['table']} USING {sugg['index_type']} ({columns_str});
 
     def generate_tdengine_indexes(self, suggestions: List[Dict]) -> str:
         """Generate TDengine-specific index recommendations"""
-        output = ["""-- TDengine Index Recommendations
+        output = [
+            """-- TDengine Index Recommendations
 -- Note: TDengine uses time-based partitioning
 -- Focus on timestamp columns and tag indexes
-"""]
+"""
+        ]
 
         for sugg in suggestions:
             columns_str = ", ".join(sugg["columns"])
 
             sql = f"""
--- {sugg['reason']}
+-- {sugg["reason"]}
 -- Note: TDengine may not need traditional B-tree indexes
 -- Consider using TAGS for filtering if columns are tags
-CREATE STABLE IF NOT EXISTS {sugg['table']}_optimized
+CREATE STABLE IF NOT EXISTS {sugg["table"]}_optimized
 (...);
 """
             output.append(sql)
@@ -263,14 +264,15 @@ def main():
     generator = IndexRecommendationGenerator()
 
     if args.analyze:
-        with open(args.analyze, 'r') as f:
+        with open(args.analyze) as f:
             for line in f:
                 try:
                     import json
+
                     log = json.loads(line.strip())
                     analyzer.analyze_query(
                         log.get("query", ""),
-                        log.get("duration_ms", 0)
+                        log.get("duration_ms", 0),
                     )
                 except (json.JSONDecodeError, KeyError):
                     continue
@@ -284,7 +286,7 @@ def main():
     if args.generate_indexes:
         suggestions = analyzer.generate_index_suggestions()
         sql = generator.generate_postgresql_indexes(suggestions)
-        with open(args.output, 'w') as f:
+        with open(args.output, "w") as f:
             f.write(sql)
         print(f"Index recommendations written to {args.output}")
 

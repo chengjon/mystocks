@@ -105,11 +105,7 @@ class TestIntegrationScenarios:
                                 return (True, "成功", 200)
                             return (False, "数据源连接失败", 503)
 
-                        return (
-                            (True, "成功", 200)
-                            if "系统" in endpoint["name"]
-                            else (False, "功能未实现", 404)
-                        )
+                        return (True, "成功", 200) if "系统" in endpoint["name"] else (False, "功能未实现", 404)
 
                     mock_test.side_effect = realistic_side_effect
 

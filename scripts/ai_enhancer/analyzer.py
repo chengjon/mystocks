@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AI算法增强器
+"""AI算法增强器
 专注于智能测试生成和代码质量提升
 
 核心功能:
@@ -15,17 +14,17 @@ AI算法增强器
 """
 
 import ast
+import logging
 import re
 import sys
-import time
 from pathlib import Path
-from typing import Dict, List, Any
-from dataclasses import dataclass
-import logging
+from typing import Any, Dict, List
+
 
 # 设置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -33,7 +32,8 @@ logger = logging.getLogger(__name__)
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from .dataclasses import CodeInsight, SmartTestCase
+from .dataclasses import CodeInsight
+
 
 class AIAlgorithmEnhancer:
     """AI算法增强器"""
@@ -102,7 +102,7 @@ class AIAlgorithmEnhancer:
         logger.info(f"🔍 开始增强代码分析: {source_file}")
 
         try:
-            with open(source_file, "r", encoding="utf-8") as f:
+            with open(source_file, encoding="utf-8") as f:
                 source_code = f.read()
 
             tree = ast.parse(source_code)
@@ -112,7 +112,9 @@ class AIAlgorithmEnhancer:
             for node in ast.walk(tree):
                 if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                     insight = self._analyze_function_enhanced(
-                        node, source_code, source_file
+                        node,
+                        source_code,
+                        source_file,
                     )
                     insights.append(insight)
 
@@ -127,7 +129,10 @@ class AIAlgorithmEnhancer:
             return []
 
     def _analyze_function_enhanced(
-        self, node, source_code: str, source_file: str
+        self,
+        node,
+        source_code: str,
+        source_file: str,
     ) -> CodeInsight:
         """增强函数分析"""
         function_name = node.name
@@ -137,12 +142,16 @@ class AIAlgorithmEnhancer:
 
         # 确定风险等级
         risk_level = self._determine_risk_level(
-            complexity_score, function_name, source_code
+            complexity_score,
+            function_name,
+            source_code,
         )
 
         # 确定测试优先级
         test_priority = self._determine_test_priority(
-            risk_level, complexity_score, function_name
+            risk_level,
+            complexity_score,
+            function_name,
         )
 
         # 识别潜在问题
@@ -150,7 +159,10 @@ class AIAlgorithmEnhancer:
 
         # 生成优化建议
         optimization_suggestions = self._generate_optimization_suggestions(
-            complexity_score, risk_level, potential_issues, node
+            complexity_score,
+            risk_level,
+            potential_issues,
+            node,
         )
 
         return CodeInsight(
@@ -189,7 +201,10 @@ class AIAlgorithmEnhancer:
         return min(complexity, 20.0)  # 限制最大复杂度
 
     def _determine_risk_level(
-        self, complexity_score: float, function_name: str, source_code: str
+        self,
+        complexity_score: float,
+        function_name: str,
+        source_code: str,
     ) -> str:
         """确定风险等级"""
         # 基于复杂度的风险
@@ -203,10 +218,7 @@ class AIAlgorithmEnhancer:
             base_risk = "low"
 
         # 基于函数名称和内容的调整
-        if any(
-            keyword in function_name.lower()
-            for keyword in ["admin", "root", "exec", "eval"]
-        ):
+        if any(keyword in function_name.lower() for keyword in ["admin", "root", "exec", "eval"]):
             if base_risk != "critical":
                 base_risk = "high"
 
@@ -226,7 +238,10 @@ class AIAlgorithmEnhancer:
         return base_risk
 
     def _determine_test_priority(
-        self, risk_level: str, complexity_score: float, function_name: str
+        self,
+        risk_level: str,
+        complexity_score: float,
+        function_name: str,
     ) -> str:
         """确定测试优先级"""
         # 计算优先级评分
@@ -236,19 +251,18 @@ class AIAlgorithmEnhancer:
         # 特殊函数处理
         if function_name in ["__init__", "__main__"]:
             return "medium"
-        elif function_name.startswith("test_"):
+        if function_name.startswith("test_"):
             return "low"
-        elif function_name.startswith("_"):
+        if function_name.startswith("_"):
             priority_score += 1  # 私有函数稍微提高优先级
 
         if priority_score > 12:
             return "critical"
-        elif priority_score > 9:
+        if priority_score > 9:
             return "high"
-        elif priority_score > 6:
+        if priority_score > 6:
             return "medium"
-        else:
-            return "low"
+        return "low"
 
     def _identify_potential_issues(self, node, source_code: str) -> List[str]:
         """识别潜在问题"""
@@ -276,7 +290,11 @@ class AIAlgorithmEnhancer:
         return issues
 
     def _generate_optimization_suggestions(
-        self, complexity_score: float, risk_level: str, issues: List[str], node
+        self,
+        complexity_score: float,
+        risk_level: str,
+        issues: List[str],
+        node,
     ) -> List[str]:
         """生成优化建议"""
         suggestions = []

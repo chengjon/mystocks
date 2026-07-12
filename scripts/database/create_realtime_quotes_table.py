@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-创建实时行情数据表
-"""
+"""创建实时行情数据表"""
+
+import os
 
 import psycopg2
-import os
 from dotenv import load_dotenv
+
 
 # 加载环境变量
 load_dotenv()
@@ -90,7 +89,7 @@ def create_realtime_quotes_table():
         return True
 
     except Exception as e:
-        print(f"❌ 创建表失败: {str(e)}")
+        print(f"❌ 创建表失败: {e!s}")
         return False
 
 

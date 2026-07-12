@@ -1,15 +1,7 @@
 """量化策略验证器子模块"""
 
-import ast
-import json
 import logging
-import os
-import re
-import subprocess
-import sys
-import time
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+
 
 logger = logging.getLogger(__name__)
 
@@ -58,18 +50,19 @@ class CorrectnessValidatorMixin:
             total_return = metrics.total_return(sample_returns)
 
             print(
-                f"✅ 性能指标计算正常 - Sharpe: {sharpe:.2f}, MaxDD: {max_dd:.2f}, Total Return: {total_return:.2%}"
+                f"✅ 性能指标计算正常 - Sharpe: {sharpe:.2f}, MaxDD: {max_dd:.2f}, Total Return: {total_return:.2%}",
             )
 
             # 测试风险指标计算
             risk_metrics = RiskMetrics()
             var_95 = risk_metrics.value_at_risk(sample_returns, confidence_level=0.95)
             cvar_95 = risk_metrics.conditional_value_at_risk(
-                sample_returns, confidence_level=0.95
+                sample_returns,
+                confidence_level=0.95,
             )
 
             print(
-                f"✅ 风险指标计算正常 - VaR(95%): {var_95:.2%}, CVaR(95%): {cvar_95:.2%}"
+                f"✅ 风险指标计算正常 - VaR(95%): {var_95:.2%}, CVaR(95%): {cvar_95:.2%}",
             )
 
             return True
@@ -130,4 +123,3 @@ class CorrectnessValidatorMixin:
         self._security_validation_results = security_results
 
         return security_passed
-

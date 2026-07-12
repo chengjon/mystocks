@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-查询模式分析脚本
+"""查询模式分析脚本
 分析应用的实际数据访问需求
 
 用途: Week 2 Day 1 - 查询模式分析
@@ -11,8 +9,8 @@
 import os
 import re
 from collections import Counter, defaultdict
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 
 class QueryPatternAnalyzer:
@@ -38,7 +36,7 @@ class QueryPatternAnalyzer:
     def analyze_file(self, file_path: Path):
         """分析单个Python文件"""
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
                 # 查找各类查询
@@ -49,7 +47,7 @@ class QueryPatternAnalyzer:
                             # 清理匹配结果
                             clean_match = " ".join(match.split())[:200]  # 限制长度
                             self.queries[pattern_name].append(
-                                {"file": str(file_path), "query": clean_match}
+                                {"file": str(file_path), "query": clean_match},
                             )
                             self.file_stats[str(file_path)] += 1
 
@@ -124,7 +122,7 @@ class QueryPatternAnalyzer:
         report_lines.append(f"总查询数: {total_queries}")
 
         for query_type, queries in sorted(
-            self.queries.items(), key=lambda x: len(x[1]), reverse=True
+            self.queries.items(), key=lambda x: len(x[1]), reverse=True,
         ):
             count = len(queries)
             percentage = (count / total_queries * 100) if total_queries > 0 else 0
@@ -150,7 +148,7 @@ class QueryPatternAnalyzer:
         report_lines.append("-" * 60)
 
         for file_path, count in sorted(
-            self.file_stats.items(), key=lambda x: x[1], reverse=True
+            self.file_stats.items(), key=lambda x: x[1], reverse=True,
         )[:10]:
             # 简化路径显示
             short_path = file_path if len(file_path) < 60 else "..." + file_path[-57:]

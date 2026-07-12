@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-MyStocks 代码优化 - 小文件合并执行脚本
+"""MyStocks 代码优化 - 小文件合并执行脚本
 删除冗余的兼容性包装器文件
 
 优化目标：
@@ -15,8 +13,8 @@ MyStocks 代码优化 - 小文件合并执行脚本
 """
 
 import shutil
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 
 class SmallFilesMerger:
@@ -38,9 +36,7 @@ class SmallFilesMerger:
 
         # 创建备份目录
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        backup_subdir = (
-            self.archive_dir / f"db_manager_compatibility_backup_{timestamp}"
-        )
+        backup_subdir = self.archive_dir / f"db_manager_compatibility_backup_{timestamp}"
         backup_subdir.mkdir(parents=True, exist_ok=True)
 
         backed_up_count = 0
@@ -69,15 +65,11 @@ class SmallFilesMerger:
 
         referenced_files = []
         for py_file in self.project_root.rglob("*.py"):
-            if (
-                "__pycache__" in str(py_file)
-                or ".git" in str(py_file)
-                or ".archive" in str(py_file)
-            ):
+            if "__pycache__" in str(py_file) or ".git" in str(py_file) or ".archive" in str(py_file):
                 continue
 
             try:
-                with open(py_file, "r", encoding="utf-8") as f:
+                with open(py_file, encoding="utf-8") as f:
                     content = f.read()
 
                 for import_stmt in compatibility_imports:
@@ -114,7 +106,7 @@ class SmallFilesMerger:
             full_path = self.project_root / file_path
 
             try:
-                with open(full_path, "r", encoding="utf-8") as f:
+                with open(full_path, encoding="utf-8") as f:
                     content = f.read()
 
                 original_content = content
@@ -171,16 +163,14 @@ class SmallFilesMerger:
         for init_file in small_init_files:
             if init_file.exists():
                 try:
-                    with open(init_file, "r", encoding="utf-8") as f:
+                    with open(init_file, encoding="utf-8") as f:
                         content = f.read()
 
                     # 如果文件太小，只保留必要的部分
                     lines = content.strip().split("\n")
                     if len(lines) <= 4:
                         # 创建最小的__init__.py
-                        minimal_content = (
-                            '"""MyStocks package modules"""\n\n__all__ = []\n'
-                        )
+                        minimal_content = '"""MyStocks package modules"""\n\n__all__ = []\n'
 
                         with open(init_file, "w", encoding="utf-8") as f:
                             f.write(minimal_content)
@@ -208,7 +198,7 @@ class SmallFilesMerger:
         for import_stmt in test_imports:
             try:
                 exec(
-                    f"import sys; sys.path.insert(0, '{self.project_root}'); {import_stmt}"
+                    f"import sys; sys.path.insert(0, '{self.project_root}'); {import_stmt}",
                 )
                 print(f"   ✅ {import_stmt}")
                 successful_imports += 1
@@ -275,9 +265,8 @@ class SmallFilesMerger:
         if backup_success and delete_success and validate_success:
             print("\n🎉 小文件合并执行成功!")
             return True
-        else:
-            print("\n❌ 合并执行过程中遇到问题，请检查日志")
-            return False
+        print("\n❌ 合并执行过程中遇到问题，请检查日志")
+        return False
 
 
 if __name__ == "__main__":

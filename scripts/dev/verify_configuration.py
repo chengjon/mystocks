@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""
-配置验证脚本
+"""配置验证脚本
 验证项目配置文件的一致性和正确性
 """
 
 import sys
-import toml
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any, Dict, List
+
+import toml
 
 
 def load_pyproject_config() -> Dict[str, Any]:
@@ -43,9 +43,8 @@ def check_python_version_compatibility() -> bool:
     if current_version >= min_version:
         print(f"✅ Python版本兼容: {current_version} >= {min_version}")
         return True
-    else:
-        print(f"❌ Python版本不兼容: {current_version} < {min_version}")
-        return False
+    print(f"❌ Python版本不兼容: {current_version} < {min_version}")
+    return False
 
 
 def check_mypy_config() -> bool:
@@ -93,9 +92,8 @@ def check_pytest_config() -> bool:
     if existing_paths:
         print(f"✅ pytest配置正常，最小版本: {minversion}, 测试路径: {existing_paths}")
         return True
-    else:
-        print("❌ 没有有效的测试路径")
-        return False
+    print("❌ 没有有效的测试路径")
+    return False
 
 
 def check_dependency_conflicts() -> bool:
@@ -127,8 +125,7 @@ def check_dependency_conflicts() -> bool:
     if not conflict_found:
         print("✅ 未发现依赖版本冲突")
         return True
-    else:
-        return False
+    return False
 
 
 def check_removed_config_files() -> List[str]:
@@ -183,9 +180,8 @@ def main():
     if all_checks_pass:
         print("🎉 所有配置检查通过!")
         return 0
-    else:
-        print("❌ 存在配置问题，请检查上述错误")
-        return 1
+    print("❌ 存在配置问题，请检查上述错误")
+    return 1
 
 
 if __name__ == "__main__":

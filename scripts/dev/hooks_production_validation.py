@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Hooks系统生产验证工具
+"""Hooks系统生产验证工具
 Phase 7-3: Hooks系统生产验证 (P2优先级)
 
 验证内容:
@@ -14,11 +13,11 @@ Date: 2025-11-13
 """
 
 import json
-import time
 import os
+import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any, Dict, List
 
 
 class HooksProductionValidator:
@@ -197,9 +196,7 @@ class HooksProductionValidator:
         }
 
         # 统计功能覆盖
-        total_features = sum(
-            len(test["features"]) for test in functionality_tests.values()
-        )
+        total_features = sum(len(test["features"]) for test in functionality_tests.values())
         working_features = total_features  # 假设所有功能都正常
 
         # 统计高级功能
@@ -291,9 +288,7 @@ class HooksProductionValidator:
                 pass
 
         # 统计合规性
-        compliant_checks = sum(
-            1 for check in compliance_checks.values() if check["status"] == "✅"
-        )
+        compliant_checks = sum(1 for check in compliance_checks.values() if check["status"] == "✅")
         compliance_score = (compliant_checks / len(compliance_checks)) * 100
 
         return {
@@ -335,17 +330,11 @@ class HooksProductionValidator:
         }
 
         # 安全分数
-        security_score = (
-            len([s for s in security_checks.values() if s.startswith("✅")])
-            / len(security_checks)
-            * 100
-        )
+        security_score = len([s for s in security_checks.values() if s.startswith("✅")]) / len(security_checks) * 100
 
         # 性能评分
         performance_score = (
-            len([p for p in performance_metrics.values() if p["status"] == "✅"])
-            / len(performance_metrics)
-            * 100
+            len([p for p in performance_metrics.values() if p["status"] == "✅"]) / len(performance_metrics) * 100
         )
 
         return {
@@ -391,14 +380,8 @@ class HooksProductionValidator:
     def _generate_validation_summary(self) -> Dict[str, Any]:
         """生成验证摘要"""
         total_validations = len(self.validation_results)
-        successful_validations = sum(
-            1 for r in self.validation_results if r.get("success", False)
-        )
-        success_rate = (
-            (successful_validations / total_validations * 100)
-            if total_validations > 0
-            else 0
-        )
+        successful_validations = sum(1 for r in self.validation_results if r.get("success", False))
+        success_rate = (successful_validations / total_validations * 100) if total_validations > 0 else 0
 
         total_duration = sum(r.get("duration", 0) for r in self.validation_results)
 
@@ -440,7 +423,7 @@ class HooksProductionValidator:
         print("📊 Hooks系统生产验证报告 (Phase 7-3)")
         print("=" * 60)
         print(
-            f"✅ 成功验证: {successful_validations}/{total_validations} ({success_rate:.1f}%)"
+            f"✅ 成功验证: {successful_validations}/{total_validations} ({success_rate:.1f}%)",
         )
         print(f"⏱️  总用时: {total_duration:.2f}秒")
         print(f"🚀 生产就绪: {'是' if success_rate >= 90 else '否'}")

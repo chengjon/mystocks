@@ -91,7 +91,6 @@ def is_denied_path(path: str) -> tuple[bool, dict[str, Any]]:
     - action: str
     - reason: str
     """
-
     for rule in DENIED:
         if rule.path is not None and path == rule.path:
             return True, {"action": rule.action, "reason": rule.reason}
@@ -104,7 +103,6 @@ def is_denied_path(path: str) -> tuple[bool, dict[str, Any]]:
 
 def should_ignore(path: str) -> tuple[bool, dict[str, Any]]:
     """Return (ignored, info)."""
-
     for rule in IGNORED:
         if rule.pattern is not None and fnmatch.fnmatch(path, rule.pattern):
             return True, {"action": rule.action, "reason": rule.reason}

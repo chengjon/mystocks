@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-MyStocks AI自动化改进点识别与实施脚本
+"""MyStocks AI自动化改进点识别与实施脚本
 第二阶段：实施核心改进，提升AI自动化水平
 """
 
-import os
 import json
-import time
-import subprocess
-from pathlib import Path
-from typing import Dict, Any
 import logging
+import os
+import subprocess
+import time
+from pathlib import Path
+from typing import Any, Dict
+
 
 # 设置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -46,7 +46,9 @@ class AIAutomationImprover:
         # 安装GPU监控库
         try:
             result = subprocess.run(
-                ["pip", "install", "GPUtil"], capture_output=True, text=True
+                ["pip", "install", "GPUtil"],
+                capture_output=True,
+                text=True,
             )
             if result.returncode == 0:
                 gpu_improvement["status"] = "success"
@@ -58,9 +60,7 @@ class AIAutomationImprover:
             gpu_improvement["status"] = "error"
             gpu_improvement["error"] = str(e)
 
-        self.improvement_results["system_enhancements"]["gpu_monitoring"] = (
-            gpu_improvement
-        )
+        self.improvement_results["system_enhancements"]["gpu_monitoring"] = gpu_improvement
         self.improvement_results["improvements_implemented"].append("GPU监控配置")
 
         return gpu_improvement
@@ -95,9 +95,7 @@ class AIAutomationImprover:
 
                 # 创建__init__.py
                 init_file = endpoint_dir / "__init__.py"
-                init_content = (
-                    f'"""\\n{description}模块\\n"""\\n\\nfrom .routes import *\\n'
-                )
+                init_content = f'"""\\n{description}模块\\n"""\\n\\nfrom .routes import *\\n'
                 with open(init_file, "w", encoding="utf-8") as f:
                     f.write(init_content)
 
@@ -112,17 +110,13 @@ class AIAutomationImprover:
                         "name": endpoint_name,
                         "path": str(endpoint_dir),
                         "description": description,
-                    }
+                    },
                 )
 
-        api_improvement["status"] = (
-            "completed" if api_improvement["created_endpoints"] else "skipped"
-        )
-        self.improvement_results["system_enhancements"]["api_endpoints"] = (
-            api_improvement
-        )
+        api_improvement["status"] = "completed" if api_improvement["created_endpoints"] else "skipped"
+        self.improvement_results["system_enhancements"]["api_endpoints"] = api_improvement
         self.improvement_results["improvements_implemented"].append(
-            f"API端点创建 ({len(api_improvement['created_endpoints'])}个)"
+            f"API端点创建 ({len(api_improvement['created_endpoints'])}个)",
         )
 
         return api_improvement
@@ -164,7 +158,10 @@ class AIAutomationImprover:
             import yaml
 
             yaml.dump(
-                automation_config, f, default_flow_style=False, allow_unicode=True
+                automation_config,
+                f,
+                default_flow_style=False,
+                allow_unicode=True,
             )
 
         pipeline_improvement["optimizations"].append("AI自动化配置已优化")
@@ -358,11 +355,9 @@ if __name__ == "__main__":
         os.chmod(workflow_script, 0o755)
 
         pipeline_improvement["optimizations"].append("AI自动化工作流脚本已创建")
-        self.improvement_results["system_enhancements"]["automation_pipeline"] = (
-            pipeline_improvement
-        )
+        self.improvement_results["system_enhancements"]["automation_pipeline"] = pipeline_improvement
         self.improvement_results["improvements_implemented"].append(
-            "AI自动化流水线优化"
+            "AI自动化流水线优化",
         )
 
         return pipeline_improvement
@@ -469,9 +464,7 @@ if __name__ == "__main__":
 
         monitoring_improvement["enhancements"].append("AI性能监控器已创建")
 
-        self.improvement_results["system_enhancements"]["monitoring"] = (
-            monitoring_improvement
-        )
+        self.improvement_results["system_enhancements"]["monitoring"] = monitoring_improvement
         self.improvement_results["improvements_implemented"].append("AI监控系统增强")
 
         return monitoring_improvement
@@ -511,10 +504,7 @@ if __name__ == "__main__":
     def save_results(self, output_file: str = None) -> str:
         """保存改进结果"""
         if not output_file:
-            output_file = (
-                self.project_root
-                / f"ai_automation_improvements_{int(time.time())}.json"
-            )
+            output_file = self.project_root / f"ai_automation_improvements_{int(time.time())}.json"
 
         with open(output_file, "w", encoding="utf-8") as f:
             json.dump(self.improvement_results, f, ensure_ascii=False, indent=2)
@@ -528,17 +518,16 @@ if __name__ == "__main__":
         print("=" * 60)
 
         print(
-            f"\\n✅ 已实施的改进 ({len(self.improvement_results['improvements_implemented'])}项):"
+            f"\\n✅ 已实施的改进 ({len(self.improvement_results['improvements_implemented'])}项):",
         )
         for i, improvement in enumerate(
-            self.improvement_results["improvements_implemented"], 1
+            self.improvement_results["improvements_implemented"],
+            1,
         ):
             print(f"  {i}. {improvement}")
 
         print("\\n🔧 系统增强:")
-        for enhancement, details in self.improvement_results[
-            "system_enhancements"
-        ].items():
+        for enhancement, details in self.improvement_results["system_enhancements"].items():
             print(f"  • {enhancement}: {details.get('status', 'unknown')}")
 
         print("\\n📋 下一步计划:")

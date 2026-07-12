@@ -1,10 +1,9 @@
-"""
-详细调试配置加载问题
-"""
+"""详细调试配置加载问题"""
 
 import os
-from pydantic_settings import BaseSettings
 from typing import List
+
+from pydantic_settings import BaseSettings
 
 
 # 逐个测试字段
@@ -30,7 +29,7 @@ def test_field(field_name, field_type, default_value, env_value=None):
 
     try:
         settings = TestSettings()
-        print(f"✓ {field_name}: {getattr(settings, 'test_field')}")
+        print(f"✓ {field_name}: {settings.test_field}")
         return True
     except Exception as e:
         print(f"✗ {field_name}: {e}")

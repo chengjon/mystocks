@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-问财功能Celery配置示例
+"""问财功能Celery配置示例
 
 将以下配置添加到现有的celeryconfig.py文件中
 
@@ -10,6 +8,7 @@
 """
 
 from celery.schedules import crontab
+
 
 # ============================================================================
 # 问财定时任务配置

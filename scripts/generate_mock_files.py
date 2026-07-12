@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""
-批量生成Mock文件模板脚本
+"""批量生成Mock文件模板脚本
 基于页面清单自动生成25个Mock文件模板
 
 生成时间: 2025-11-13
 """
 
 import os
-from typing import List, Dict
+from typing import Dict, List
+
 
 # Mock文件存放目录
 MOCK_DIR = "/opt/claude/mystocks_spec/src/mock"
@@ -220,10 +220,7 @@ def generate_function_params_and_docs(params_str: str) -> tuple[str, str]:
     params = [p.strip() for p in params_str.split(",")]
     param_str = ", ".join(params)
     args_docs = "\n        ".join(
-        [
-            f"{p.split(':')[0].strip()}: {p.split(':')[1].strip() if ':' in p else 'str'} - 参数说明"
-            for p in params
-        ]
+        [f"{p.split(':')[0].strip()}: {p.split(':')[1].strip() if ':' in p else 'str'} - 参数说明" for p in params],
     )
 
     return param_str, args_docs
@@ -266,9 +263,7 @@ def main():
                 func1_params = "exchange: Optional[str] = None"
                 func2_params = "code: str"
                 func3_params = "code: str, days: int = 30"
-                func1_args_docs = (
-                    "exchange: Optional[str] - 交易所筛选（sh=上交所，sz=深交所）"
-                )
+                func1_args_docs = "exchange: Optional[str] - 交易所筛选（sh=上交所，sz=深交所）"
                 func2_args_docs = "code: str - 股票代码（必填）"
                 func3_args_docs = "code: str - 股票代码（必填）\n        days: int - 历史天数，默认30天"
 

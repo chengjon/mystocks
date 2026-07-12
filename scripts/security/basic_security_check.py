@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
-"""
-MyStocks项目基础安全检查
+"""MyStocks项目基础安全检查
 在没有外部工具依赖的情况下的基础安全检查
 """
 
-import os
 import json
+import os
 import re
 import sys
-from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Any
+from pathlib import Path
+from typing import Any, Dict, List
 
 
 class BasicSecurityChecker:
@@ -40,13 +39,12 @@ class BasicSecurityChecker:
         for pattern in sensitive_patterns:
             for file_path in self.project_root.rglob("*"):
                 if file_path.is_file() and re.search(
-                    pattern, file_path.name, re.IGNORECASE
+                    pattern,
+                    file_path.name,
+                    re.IGNORECASE,
                 ):
                     # 排除已知的安全文件
-                    if not any(
-                        skip in str(file_path)
-                        for skip in ["__pycache__", "node_modules", ".git"]
-                    ):
+                    if not any(skip in str(file_path) for skip in ["__pycache__", "node_modules", ".git"]):
                         issues.append(
                             {
                                 "type": "sensitive_file",
@@ -54,7 +52,7 @@ class BasicSecurityChecker:
                                 "pattern": pattern,
                                 "severity": "HIGH",
                                 "description": f"发现敏感文件模式: {pattern}",
-                            }
+                            },
                         )
 
         return issues
@@ -78,7 +76,7 @@ class BasicSecurityChecker:
         # 检查Python文件
         for py_file in self.project_root.rglob("*.py"):
             try:
-                with open(py_file, "r", encoding="utf-8", errors="ignore") as f:
+                with open(py_file, encoding="utf-8", errors="ignore") as f:
                     content = f.read()
 
                 for pattern, secret_type in secret_patterns:
@@ -94,7 +92,7 @@ class BasicSecurityChecker:
                                 "severity": "HIGH",
                                 "description": f"发现硬编码敏感信息: {secret_type}",
                                 "content": match.group(0),
-                            }
+                            },
                         )
 
             except Exception:
@@ -114,7 +112,7 @@ class BasicSecurityChecker:
 
         for py_file in self.project_root.rglob("*.py"):
             try:
-                with open(py_file, "r", encoding="utf-8", errors="ignore") as f:
+                with open(py_file, encoding="utf-8", errors="ignore") as f:
                     content = f.read()
 
                 for pattern in sql_patterns:
@@ -129,7 +127,7 @@ class BasicSecurityChecker:
                                 "severity": "HIGH",
                                 "description": "潜在的SQL注入风险",
                                 "content": match.group(0),
-                            }
+                            },
                         )
 
             except Exception:
@@ -150,7 +148,7 @@ class BasicSecurityChecker:
 
         for py_file in self.project_root.rglob("*.py"):
             try:
-                with open(py_file, "r", encoding="utf-8", errors="ignore") as f:
+                with open(py_file, encoding="utf-8", errors="ignore") as f:
                     content = f.read()
 
                 for pattern in random_patterns:
@@ -165,7 +163,7 @@ class BasicSecurityChecker:
                                 "severity": "MEDIUM",
                                 "description": "使用不安全的随机数生成器，建议使用secrets模块",
                                 "content": match.group(0),
-                            }
+                            },
                         )
 
             except Exception:
@@ -185,7 +183,7 @@ class BasicSecurityChecker:
 
         for py_file in self.project_root.rglob("*.py"):
             try:
-                with open(py_file, "r", encoding="utf-8", errors="ignore") as f:
+                with open(py_file, encoding="utf-8", errors="ignore") as f:
                     content = f.read()
 
                 for pattern, issue_type in insecure_patterns:
@@ -202,7 +200,7 @@ class BasicSecurityChecker:
                                 "severity": severity,
                                 "description": f"发现{issue_type.replace('_', ' ')}风险",
                                 "content": match.group(0),
-                            }
+                            },
                         )
 
             except Exception:
@@ -223,7 +221,7 @@ class BasicSecurityChecker:
 
         for py_file in self.project_root.rglob("*.py"):
             try:
-                with open(py_file, "r", encoding="utf-8", errors="ignore") as f:
+                with open(py_file, encoding="utf-8", errors="ignore") as f:
                     content = f.read()
 
                 for pattern, issue_type in insecure_patterns:
@@ -239,7 +237,7 @@ class BasicSecurityChecker:
                                 "severity": "HIGH",
                                 "description": f"发现{issue_type.replace('_', ' ')}风险",
                                 "content": match.group(0),
-                            }
+                            },
                         )
 
             except Exception:
@@ -262,7 +260,7 @@ class BasicSecurityChecker:
 
         for py_file in self.project_root.rglob("*.py"):
             try:
-                with open(py_file, "r", encoding="utf-8", errors="ignore") as f:
+                with open(py_file, encoding="utf-8", errors="ignore") as f:
                     content = f.read()
 
                 for pattern, issue_type in insecure_patterns:
@@ -278,7 +276,7 @@ class BasicSecurityChecker:
                                 "severity": "MEDIUM",
                                 "description": f"使用{issue_type.replace('_', ' ')}弱加密算法",
                                 "content": match.group(0),
-                            }
+                            },
                         )
 
             except Exception:
@@ -314,9 +312,7 @@ class BasicSecurityChecker:
         # 统计问题严重性
         severity_counts = {"HIGH": 0, "MEDIUM": 0, "LOW": 0}
         for issue in all_issues:
-            severity_counts[issue["severity"]] = (
-                severity_counts.get(issue["severity"], 0) + 1
-            )
+            severity_counts[issue["severity"]] = severity_counts.get(issue["severity"], 0) + 1
 
         # 生成扫描结果
         result = {

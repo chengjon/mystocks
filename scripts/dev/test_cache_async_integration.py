@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
-"""
-测试CacheManager异步化与Redis集成
+"""测试CacheManager异步化与Redis集成
 验证三级缓存架构是否正常工作
 """
 
 import asyncio
-import sys
 import os
+import sys
+
 
 # 添加项目根目录到Python路径
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, project_root)
 
 import sys
+
 
 sys.path.append("web/backend")
 
@@ -42,7 +43,11 @@ async def test_cache_manager_async():
         test_data = {"symbol": "600000", "price": 10.50, "volume": 1000000, "timestamp": "2025-01-10T10:00:00Z"}
 
         success = await cache_manager.write_to_cache(
-            symbol="600000", data_type="realtime_quote", timeframe="1m", data=test_data, ttl_days=1
+            symbol="600000",
+            data_type="realtime_quote",
+            timeframe="1m",
+            data=test_data,
+            ttl_days=1,
         )
 
         if success:
@@ -133,9 +138,8 @@ async def main():
     if cache_test_result and redis_test_result:
         print("🎉 所有测试通过! 三级缓存架构正常工作")
         return 0
-    else:
-        print("❌ 部分测试失败，请检查配置")
-        return 1
+    print("❌ 部分测试失败，请检查配置")
+    return 1
 
 
 if __name__ == "__main__":

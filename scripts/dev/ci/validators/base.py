@@ -1,21 +1,15 @@
 """量化策略验证器子模块"""
 
-import ast
-import json
 import logging
-import os
-import re
-import subprocess
-import sys
-import time
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List
+
 
 logger = logging.getLogger(__name__)
 
 
 class BaseValidatorMixin:
     """基础验证器：初始化与基准加载"""
+
 
 class QuantStrategyValidator:
     """量化策略校验器"""
@@ -57,7 +51,7 @@ class QuantStrategyValidator:
                     "expected_total_return": 0.35,
                     "tolerance": 0.05,
                 },
-            }
+            },
         )
 
         # ML策略基准
@@ -73,4 +67,3 @@ class QuantStrategyValidator:
             }
 
         return benchmarks
-

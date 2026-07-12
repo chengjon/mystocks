@@ -1,14 +1,12 @@
 """技术负债分析器子模块"""
 
-import ast
-import json
 import logging
-import re
-from collections import Counter, defaultdict
+from collections import defaultdict
 from pathlib import Path
-from typing import Any, Dict, List
-import asyncio
+from typing import Any, Dict
+
 import aiofiles
+
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +29,9 @@ class CoreAnalyzerMixin:
     async def _read_file_content_async(self, file_path: Path) -> str:
         """异步读取文件内容"""
         async with aiofiles.open(
-            file_path, "r", encoding="utf-8", errors="ignore"
+            file_path,
+            encoding="utf-8",
+            errors="ignore",
         ) as f:
             content = await f.read()
         return content
@@ -71,4 +71,3 @@ class CoreAnalyzerMixin:
             "technical_debt_score": self.calculate_debt_score(),
             "priority_actions": self.get_priority_actions(),
         }
-

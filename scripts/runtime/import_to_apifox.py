@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-"""
-MyStocks API 自动导入到 Apifox
+"""MyStocks API 自动导入到 Apifox
 使用 Apifox Open API 将项目的 OpenAPI 文档导入到 Apifox 平台
 """
 
 import json
+import os
 import sys
 from pathlib import Path
+
 import requests
-import os
+
 
 # 添加项目根目录到 Python 路径
 project_root = Path(__file__).parent.parent.parent
@@ -19,12 +20,12 @@ class ApifoxImporter:
     """Apifox 导入器"""
 
     def __init__(self, access_token: str, project_id: str = None):
-        """
-        初始化导入器
+        """初始化导入器
 
         Args:
             access_token: Apifox API 访问令牌
             project_id: Apifox 项目 ID（可选，稍后设置）
+
         """
         self.access_token = access_token
         self.project_id = project_id
@@ -67,8 +68,7 @@ class ApifoxImporter:
             return []
 
     def create_project(self, name: str, description: str = ""):
-        """
-        创建新项目
+        """创建新项目
 
         Args:
             name: 项目名称
@@ -76,6 +76,7 @@ class ApifoxImporter:
 
         Returns:
             创建的项目ID
+
         """
         url = f"{self.base_url}/v1/projects"
 
@@ -101,8 +102,7 @@ class ApifoxImporter:
             return None
 
     def import_openapi_from_file(self, openapi_file: str, options: dict = None):
-        """
-        从文件导入 OpenAPI 文档
+        """从文件导入 OpenAPI 文档
 
         Args:
             openapi_file: OpenAPI 文件路径
@@ -110,6 +110,7 @@ class ApifoxImporter:
 
         Returns:
             导入结果统计
+
         """
         if not self.project_id:
             print("❌ 错误: 未设置项目ID")
@@ -117,7 +118,7 @@ class ApifoxImporter:
 
         # 读取 OpenAPI 文件
         try:
-            with open(openapi_file, "r", encoding="utf-8") as f:
+            with open(openapi_file, encoding="utf-8") as f:
                 openapi_content = f.read()
         except Exception as e:
             print(f"❌ 读取 OpenAPI 文件失败: {e}")
@@ -192,8 +193,7 @@ class ApifoxImporter:
             return None
 
     def import_openapi_from_url(self, openapi_url: str, options: dict = None):
-        """
-        从 URL 导入 OpenAPI 文档
+        """从 URL 导入 OpenAPI 文档
 
         Args:
             openapi_url: OpenAPI 文档的 URL
@@ -201,6 +201,7 @@ class ApifoxImporter:
 
         Returns:
             导入结果统计
+
         """
         if not self.project_id:
             print("❌ 错误: 未设置项目ID")
@@ -241,12 +242,12 @@ class ApifoxImporter:
             print(
                 f"   接口: 新增 {counters['endpointCreated']}, "
                 f"更新 {counters['endpointUpdated']}, "
-                f"失败 {counters['endpointFailed']}"
+                f"失败 {counters['endpointFailed']}",
             )
             print(
                 f"   数据模型: 新增 {counters['schemaCreated']}, "
                 f"更新 {counters['schemaUpdated']}, "
-                f"失败 {counters['schemaFailed']}"
+                f"失败 {counters['schemaFailed']}",
             )
             print("-" * 80)
 
@@ -268,7 +269,6 @@ class ApifoxImporter:
 
 def main():
     """主函数"""
-
     print("=" * 80)
     print("MyStocks API 导入 Apifox 工具")
     print("=" * 80)
@@ -300,7 +300,7 @@ def main():
     print("\n步骤 2/3: 导入 OpenAPI 文档")
 
     # 读取文件信息
-    with open(OPENAPI_FILE, "r", encoding="utf-8") as f:
+    with open(OPENAPI_FILE, encoding="utf-8") as f:
         openapi_data = json.load(f)
 
     api_count = len(openapi_data.get("paths", {}))

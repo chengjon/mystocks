@@ -1,6 +1,7 @@
-import pandas as pd
-import numpy as np
 import subprocess
+
+import numpy as np
+import pandas as pd
 
 
 def generate_test_data(symbol, start_date, end_date):
@@ -37,7 +38,7 @@ def generate_test_data(symbol, start_date, end_date):
                 "close": round(close_price, 2),
                 "volume": volume,
                 "amount": round(amount, 2),
-            }
+            },
         )
 
     return data
@@ -82,7 +83,7 @@ def import_test_data():
         values = []
         for row in data:
             values.append(
-                f"('{row['symbol']}', '{row['date']}', {row['open']}, {row['high']}, {row['low']}, {row['close']}, {row['volume']}, {row['amount']})"
+                f"('{row['symbol']}', '{row['date']}', {row['open']}, {row['high']}, {row['low']}, {row['close']}, {row['volume']}, {row['amount']})",
             )
 
         if values:

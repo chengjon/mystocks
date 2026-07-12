@@ -94,7 +94,7 @@ class TestIntegration:
             log_error("Error via convenience function")
 
             assert os.path.exists(log_file)
-            with open(log_file, "r", encoding="utf-8") as file_handle:
+            with open(log_file, encoding="utf-8") as file_handle:
                 content = file_handle.read()
                 assert "Debug message" in content
                 assert "Info message" in content
@@ -168,7 +168,7 @@ class TestIntegration:
                 main_logger.error(f"Application error: {error}")
                 log_error(f"Error via convenience function: {error}")
 
-            with open(log_file, "r", encoding="utf-8") as file_handle:
+            with open(log_file, encoding="utf-8") as file_handle:
                 content = file_handle.read()
                 assert "Application started" in content
                 assert "API server listening" in content

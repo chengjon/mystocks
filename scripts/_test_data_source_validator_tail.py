@@ -7,6 +7,7 @@ from unittest.mock import Mock, patch
 
 import pandas as pd
 
+
 sys.modules["src.storage.database.connection_manager"] = Mock()
 sys.modules["src.data_access"] = Mock()
 sys.modules["src.database.database_service"] = Mock()
@@ -55,14 +56,14 @@ class TestPerformanceAndScalability:
                 "col1": range(10000),
                 "col2": [f"value_{i}" for i in range(10000)],
                 "col3": [i % 100 for i in range(10000)],
-            }
+            },
         )
         large_df2 = pd.DataFrame(
             {
                 "col1": range(10000),
                 "col2": [f"value_{i}" for i in range(10000)],
                 "col3": [i % 100 for i in range(10000)],
-            }
+            },
         )
 
         start_time = time.time()
@@ -246,10 +247,10 @@ class TestIntegrationScenarios:
             getattr(mock_source, method_name).return_value = return_value
             getattr(real_source, method_name).return_value = return_value
 
-        getattr(mock_source, "get_stock_list").return_value = {"result": "ok"}
-        getattr(real_source, "get_stock_list").return_value = {"result": "ok"}
-        getattr(mock_source, "get_realtime_alerts").return_value = {"result": "ok"}
-        getattr(real_source, "get_realtime_alerts").return_value = {"result": "ok"}
+        mock_source.get_stock_list.return_value = {"result": "ok"}
+        real_source.get_stock_list.return_value = {"result": "ok"}
+        mock_source.get_realtime_alerts.return_value = {"result": "ok"}
+        real_source.get_realtime_alerts.return_value = {"result": "ok"}
 
         remaining_methods = [
             "get_trading_signals",

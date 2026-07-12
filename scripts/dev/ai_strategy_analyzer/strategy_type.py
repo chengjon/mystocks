@@ -1,25 +1,25 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-MyStocks AI策略分析和回测自动化系统
+"""MyStocks AI策略分析和回测自动化系统
 第四阶段：构建智能化策略分析和回测框架
 """
 
-import json
-import random
-import numpy as np
-from datetime import datetime, timedelta
-from pathlib import Path
-from typing import Dict, List, Any
 import logging
+import random
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 from enum import Enum
+from typing import Any, Dict, List
+
+import numpy as np
+
 
 # 设置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
+
 
 class StrategyType(Enum):
     """策略类型"""
@@ -107,13 +107,18 @@ class MockMarketDataGenerator:
 
         for symbol in self.symbols:
             self.price_data[symbol] = self._generate_symbol_data(
-                symbol, start_date, end_date
+                symbol,
+                start_date,
+                end_date,
             )
 
         return self.price_data
 
     def _generate_symbol_data(
-        self, symbol: str, start_date: datetime, end_date: datetime
+        self,
+        symbol: str,
+        start_date: datetime,
+        end_date: datetime,
     ) -> List[MarketData]:
         """为单个股票生成数据"""
         data = []
@@ -174,7 +179,9 @@ class AITradingStrategy:
         raise NotImplementedError
 
     def calculate_confidence(
-        self, market_data: List[MarketData], current_index: int
+        self,
+        market_data: List[MarketData],
+        current_index: int,
     ) -> float:
         """计算信号置信度"""
         # 基础置信度计算
@@ -211,7 +218,7 @@ class MomentumStrategy(AITradingStrategy):
             ma_previous = np.mean([d.close for d in lookback_data[:-5]])
 
             # 动量信号
-            if current_data.close > ma_current and ma_current > ma_previous:
+            if current_data.close > ma_current > ma_previous:
                 signal = TradeSignal(
                     timestamp=current_data.timestamp,
                     symbol=current_data.symbol,
@@ -221,7 +228,7 @@ class MomentumStrategy(AITradingStrategy):
                     quantity=100,
                     reason=f"动量突破：价格{current_data.close:.2f} > MA{ma_current:.2f}",
                 )
-            elif current_data.close < ma_current and ma_current < ma_previous:
+            elif current_data.close < ma_current < ma_previous:
                 signal = TradeSignal(
                     timestamp=current_data.timestamp,
                     symbol=current_data.symbol,
@@ -365,7 +372,9 @@ class MLBasedStrategy(AITradingStrategy):
         return signals
 
     def _extract_features(
-        self, market_data: List[MarketData], index: int
+        self,
+        market_data: List[MarketData],
+        index: int,
     ) -> List[float]:
         """提取特征（模拟）"""
         lookback_data = market_data[max(0, index - 19) : index + 1]
@@ -444,7 +453,10 @@ class BacktestEngine:
         self.commission_rate = 0.001  # 0.1%手续费
 
     def run_backtest(
-        self, strategy: AITradingStrategy, market_data: List[MarketData], symbol: str
+        self,
+        strategy: AITradingStrategy,
+        market_data: List[MarketData],
+        symbol: str,
     ) -> BacktestResult:
         """运行回测"""
         logger.info(f"📊 开始回测策略: {strategy.name} ({symbol})")
@@ -476,7 +488,7 @@ class BacktestEngine:
                             "quantity": signal.quantity,
                             "cost": total_cost,
                             "reason": signal.reason,
-                        }
+                        },
                     )
 
             elif signal.signal_type == SignalType.SELL and position > 0:
@@ -495,7 +507,7 @@ class BacktestEngine:
                         "quantity": position,
                         "proceeds": net_proceeds,
                         "reason": signal.reason,
-                    }
+                    },
                 )
 
                 position = 0
@@ -509,16 +521,13 @@ class BacktestEngine:
             portfolio_values.append(portfolio_value)
 
         # 计算性能指标
-        final_capital = capital + (
-            position * market_data[-1].close if position > 0 else 0
-        )
+        final_capital = capital + (position * market_data[-1].close if position > 0 else 0)
         total_return = (final_capital - self.initial_capital) / self.initial_capital
 
         # 计算夏普比率
         if len(portfolio_values) > 1:
             returns = [
-                (portfolio_values[i] - portfolio_values[i - 1])
-                / portfolio_values[i - 1]
+                (portfolio_values[i] - portfolio_values[i - 1]) / portfolio_values[i - 1]
                 for i in range(1, len(portfolio_values))
             ]
             sharpe_ratio = np.mean(returns) / (np.std(returns) + 0.0001) * np.sqrt(252)
@@ -549,11 +558,7 @@ class BacktestEngine:
                 losing_trades += 1
                 total_losses += abs(profit)
 
-        win_rate = (
-            winning_trades / (winning_trades + losing_trades)
-            if (winning_trades + losing_trades) > 0
-            else 0
-        )
+        win_rate = winning_trades / (winning_trades + losing_trades) if (winning_trades + losing_trades) > 0 else 0
         avg_win = total_wins / winning_trades if winning_trades > 0 else 0
         avg_loss = total_losses / losing_trades if losing_trades > 0 else 0
         profit_factor = total_wins / total_losses if total_losses > 0 else float("inf")
@@ -577,7 +582,7 @@ class BacktestEngine:
         )
 
         logger.info(
-            f"✅ 回测完成: 总收益{total_return:.2%}, 夏普比率{sharpe_ratio:.2f}, 最大回撤{max_drawdown:.2%}"
+            f"✅ 回测完成: 总收益{total_return:.2%}, 夏普比率{sharpe_ratio:.2f}, 最大回撤{max_drawdown:.2%}",
         )
 
         return result
@@ -591,12 +596,10 @@ class BacktestEngine:
         max_drawdown = 0
 
         for value in portfolio_values:
-            if value > peak:
-                peak = value
+            peak = max(peak, value)
 
             drawdown = (peak - value) / peak
-            if drawdown > max_drawdown:
-                max_drawdown = drawdown
+            max_drawdown = max(max_drawdown, drawdown)
 
         return max_drawdown
 
@@ -614,7 +617,8 @@ class AIStrategyAnalyzer:
         logger.info(f"📈 策略已注册: {strategy.name} ({strategy.strategy_type.value})")
 
     def run_comprehensive_analysis(
-        self, market_data: Dict[str, List[MarketData]]
+        self,
+        market_data: Dict[str, List[MarketData]],
     ) -> Dict[str, Any]:
         """运行综合策略分析"""
         logger.info("🚀 开始AI策略综合分析...")
@@ -663,25 +667,25 @@ class AIStrategyAnalyzer:
 
                 symbol_performances.append(result)
                 strategy_result["strategy_info"]["signal_count"] += len(
-                    strategy.signals
+                    strategy.signals,
                 )
 
             # 计算聚合指标
             if symbol_performances:
                 strategy_result["aggregated_metrics"] = {
                     "avg_total_return": np.mean(
-                        [r.total_return for r in symbol_performances]
+                        [r.total_return for r in symbol_performances],
                     ),
                     "avg_sharpe_ratio": np.mean(
-                        [r.sharpe_ratio for r in symbol_performances]
+                        [r.sharpe_ratio for r in symbol_performances],
                     ),
                     "avg_max_drawdown": np.mean(
-                        [r.max_drawdown for r in symbol_performances]
+                        [r.max_drawdown for r in symbol_performances],
                     ),
                     "avg_win_rate": np.mean([r.win_rate for r in symbol_performances]),
                     "total_trades": sum([r.total_trades for r in symbol_performances]),
                     "success_rate": len(
-                        [r for r in symbol_performances if r.total_return > 0]
+                        [r for r in symbol_performances if r.total_return > 0],
                     )
                     / len(symbol_performances),
                 }
@@ -714,9 +718,9 @@ class AIStrategyAnalyzer:
             analysis_results["overall_performance"] = {
                 "best_strategy": max(
                     analysis_results["strategy_results"].keys(),
-                    key=lambda k: analysis_results["strategy_results"][k]
-                    .get("aggregated_metrics", {})
-                    .get("avg_total_return", 0),
+                    key=lambda k: (
+                        analysis_results["strategy_results"][k].get("aggregated_metrics", {}).get("avg_total_return", 0)
+                    ),
                 ),
                 "avg_portfolio_return": np.mean(all_returns),
                 "avg_sharpe_ratio": np.mean(all_sharpe_ratios),
@@ -734,7 +738,8 @@ class AIStrategyAnalyzer:
 
         # 风险建议
         avg_drawdown = analysis_results["overall_performance"].get(
-            "avg_max_drawdown", 0
+            "avg_max_drawdown",
+            0,
         )
         if avg_drawdown > 0.2:
             recommendations.append("⚠️  风险警示: 平均回撤较高，建议增加风险控制措施")
@@ -745,18 +750,17 @@ class AIStrategyAnalyzer:
         avg_sharpe = analysis_results["overall_performance"].get("avg_sharpe_ratio", 0)
         if avg_sharpe > 1.5:
             recommendations.append(
-                "📈 收益风险比优秀: 夏普比率较高，风险调整后收益良好"
+                "📈 收益风险比优秀: 夏普比率较高，风险调整后收益良好",
             )
         elif avg_sharpe < 0.5:
             recommendations.append("📉 收益风险比需改进: 夏普比率较低，建议优化策略")
 
         # 策略多样化建议
         strategy_count = analysis_results["overall_performance"].get(
-            "strategy_count", 0
+            "strategy_count",
+            0,
         )
         if strategy_count < 3:
             recommendations.append("🔄 策略多样化: 建议增加更多不同类型的策略")
 
         analysis_results["recommendations"] = recommendations
-
-

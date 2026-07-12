@@ -3,7 +3,7 @@
 
 import os
 import tempfile
-from unittest.mock import patch, mock_open
+from unittest.mock import mock_open, patch
 
 from src.utils.tdx_server_config import TdxServerConfig
 
@@ -101,7 +101,7 @@ Port01=7709
         """测试配置文件IO错误"""
         config_file = os.path.join(self.temp_dir, "io_error.cfg")
 
-        with patch("builtins.open", side_effect=IOError("IO错误")):
+        with patch("builtins.open", side_effect=OSError("IO错误")):
             config = TdxServerConfig(config_file)
             assert len(config.servers) == 1
             assert config.servers[0] == ("101.227.73.20", 7709, "默认服务器")

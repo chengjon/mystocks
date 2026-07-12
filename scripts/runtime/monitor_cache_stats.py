@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Cache Statistics Monitoring Script - Task 2.1
+"""Cache Statistics Monitoring Script - Task 2.1
 
 Real-time monitoring of TDengine cache statistics:
 - Cache hit rate (target: ≥80%)
@@ -16,7 +15,8 @@ import os
 import sys
 import time
 from datetime import datetime
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
+
 
 # Add parent directory to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -26,11 +26,11 @@ class CacheMonitor:
     """Monitor TDengine cache statistics"""
 
     def __init__(self, interval: int = 5):
-        """
-        Initialize cache monitor
+        """Initialize cache monitor
 
         Args:
             interval: Update interval in seconds
+
         """
         self.interval = interval
         self.manager = None
@@ -52,7 +52,7 @@ class CacheMonitor:
             return True
 
         except Exception as e:
-            print(f"❌ Initialization failed: {str(e)}")
+            print(f"❌ Initialization failed: {e!s}")
             return False
 
     def get_cache_stats(self) -> Optional[Dict[str, Any]]:
@@ -68,7 +68,7 @@ class CacheMonitor:
             return None
 
         except Exception as e:
-            print(f"⚠️ Error getting stats: {str(e)}")
+            print(f"⚠️ Error getting stats: {e!s}")
             return None
 
     def calculate_hit_rate(self) -> Optional[float]:
@@ -85,7 +85,7 @@ class CacheMonitor:
             return None
 
         except Exception as e:
-            print(f"⚠️ Error calculating hit rate: {str(e)}")
+            print(f"⚠️ Error calculating hit rate: {e!s}")
             return None
 
     def get_hot_symbols(self) -> Optional[list]:
@@ -103,14 +103,11 @@ class CacheMonitor:
             """
             result = self.manager._execute_query(sql)
             if result:
-                return [
-                    {"symbol": row[0], "access_count": row[1], "last_access": row[2]}
-                    for row in result
-                ]
+                return [{"symbol": row[0], "access_count": row[1], "last_access": row[2]} for row in result]
             return []
 
         except Exception as e:
-            print(f"⚠️ Error getting hot symbols: {str(e)}")
+            print(f"⚠️ Error getting hot symbols: {e!s}")
             return None
 
     def print_stats(self, stats: Dict[str, Any]):
@@ -145,7 +142,7 @@ class CacheMonitor:
                     print(
                         f"    {i:2}. {symbol['symbol']} - "
                         f"Accesses: {symbol['access_count']} - "
-                        f"Last: {symbol['last_access']}"
+                        f"Last: {symbol['last_access']}",
                     )
             else:
                 print("\n  ℹ️ No hot symbols data available yet")
@@ -173,11 +170,10 @@ class CacheMonitor:
 
             self.print_stats(stats)
             return True
-        else:
-            print(
-                f"⚠️ Could not retrieve cache statistics at {datetime.now().isoformat()}"
-            )
-            return False
+        print(
+            f"⚠️ Could not retrieve cache statistics at {datetime.now().isoformat()}",
+        )
+        return False
 
     def print_summary(self):
         """Print monitoring summary"""

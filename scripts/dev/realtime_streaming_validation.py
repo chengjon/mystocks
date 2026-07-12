@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-实时数据流完整性验证工具
+"""实时数据流完整性验证工具
 Real-Time Streaming Integrity Validation Tool
 
 Phase 7-1: 实时数据流完整性验证
@@ -18,17 +17,18 @@ Date: 2025-11-13
 """
 
 import asyncio
-import time
+import concurrent.futures
 import json
 import os
-import websockets
-import requests
 import statistics
-from datetime import datetime
-from typing import Dict, List, Optional, Any
+import time
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
-import concurrent.futures
+from typing import Any, Dict, List, Optional
+
+import requests
+import websockets
 
 
 @dataclass
@@ -60,11 +60,11 @@ class RealtimeStreamingValidator:
     """实时数据流验证器"""
 
     def __init__(self, config_file: str = None):
-        """
-        初始化验证器
+        """初始化验证器
 
         Args:
             config_file: 配置文件路径
+
         """
         self.config_file = config_file
         self.results: List[ValidationResult] = []
@@ -92,7 +92,7 @@ class RealtimeStreamingValidator:
 
         if self.config_file and Path(self.config_file).exists():
             try:
-                with open(self.config_file, "r", encoding="utf-8") as f:
+                with open(self.config_file, encoding="utf-8") as f:
                     user_config = json.load(f)
                     default_config.update(user_config)
             except Exception as e:
@@ -131,7 +131,7 @@ class RealtimeStreamingValidator:
                     success=False,
                     duration=0.0,
                     error_message="WebSocket连接测试失败",
-                )
+                ),
             )
 
         # 4. 数据完整性验证
@@ -214,7 +214,7 @@ class RealtimeStreamingValidator:
                 test_name="HTTP API Connection",
                 success=False,
                 duration=time.time() - start_time,
-                error_message=f"HTTP连接失败: {str(e)}",
+                error_message=f"HTTP连接失败: {e!s}",
             )
 
     def _test_websocket_connection(self) -> ValidationResult:
@@ -243,7 +243,7 @@ class RealtimeStreamingValidator:
                         response = await asyncio.wait_for(websocket.recv(), timeout=5)
                         return True, connection_time
                 except Exception as e:
-                    print(f"   ❌ {endpoint}: {str(e)}")
+                    print(f"   ❌ {endpoint}: {e!s}")
                     return False, 0
 
             # 使用asyncio运行所有连接测试
@@ -298,7 +298,7 @@ class RealtimeStreamingValidator:
                 test_name="WebSocket Connection",
                 success=False,
                 duration=time.time() - start_time,
-                error_message=f"WebSocket测试异常: {str(e)}",
+                error_message=f"WebSocket测试异常: {e!s}",
             )
 
     def _test_streaming_data(self) -> ValidationResult:
@@ -333,11 +333,7 @@ class RealtimeStreamingValidator:
             # 计算指标
             duration = time.time() - start_time
             throughput = len(received_messages) / duration if duration > 0 else 0
-            loss_rate = (
-                ((sent_count - len(received_messages)) / sent_count * 100)
-                if sent_count > 0
-                else 0
-            )
+            loss_rate = ((sent_count - len(received_messages)) / sent_count * 100) if sent_count > 0 else 0
 
             # 计算延迟（如果有时间戳）
             latencies = []
@@ -354,10 +350,7 @@ class RealtimeStreamingValidator:
             avg_latency = statistics.mean(latencies) if latencies else 0
             max_latency = max(latencies) if latencies else 0
 
-            success = (
-                throughput > self.config["throughput_threshold"]
-                and loss_rate < self.config["loss_threshold"]
-            )
+            success = throughput > self.config["throughput_threshold"] and loss_rate < self.config["loss_threshold"]
 
             return ValidationResult(
                 test_name="Streaming Data Transfer",
@@ -385,7 +378,7 @@ class RealtimeStreamingValidator:
                 test_name="Streaming Data Transfer",
                 success=False,
                 duration=time.time() - start_time,
-                error_message=f"流媒体数据测试异常: {str(e)}",
+                error_message=f"流媒体数据测试异常: {e!s}",
             )
 
     def _test_single_stream(self, symbol: str) -> Dict[str, Any]:
@@ -422,7 +415,8 @@ class RealtimeStreamingValidator:
 
                             # 接收消息
                             response = await asyncio.wait_for(
-                                websocket.recv(), timeout=1
+                                websocket.recv(),
+                                timeout=1,
                             )
                             msg = json.loads(response)
                             messages.append(msg)
@@ -462,7 +456,8 @@ class RealtimeStreamingValidator:
                 # HTTP API获取数据
                 http_url = f"{self.base_url}/api/market/quotes?symbols={symbol}"
                 http_response = requests.get(
-                    http_url, timeout=(5, self.config["timeout"])
+                    http_url,
+                    timeout=(5, self.config["timeout"]),
                 )
 
                 if http_response.status_code == 200:
@@ -478,22 +473,16 @@ class RealtimeStreamingValidator:
 
                     if missing_fields:
                         consistency_issues.append(
-                            f"{symbol}: 缺少字段 {missing_fields}"
+                            f"{symbol}: 缺少字段 {missing_fields}",
                         )
 
                     # 计算数据质量分数
                     if http_data:
-                        quality_score = (
-                            (len(required_fields) - len(missing_fields))
-                            / len(required_fields)
-                            * 100
-                        )
+                        quality_score = (len(required_fields) - len(missing_fields)) / len(required_fields) * 100
                         data_quality_scores.append(quality_score)
 
             # 检查数据一致性
-            average_quality = (
-                statistics.mean(data_quality_scores) if data_quality_scores else 0
-            )
+            average_quality = statistics.mean(data_quality_scores) if data_quality_scores else 0
             success = average_quality > 80 and len(consistency_issues) == 0
 
             return ValidationResult(
@@ -512,7 +501,7 @@ class RealtimeStreamingValidator:
                 test_name="Data Integrity",
                 success=False,
                 duration=time.time() - start_time,
-                error_message=f"数据完整性测试异常: {str(e)}",
+                error_message=f"数据完整性测试异常: {e!s}",
             )
 
     def _test_stream_state_management(self) -> ValidationResult:
@@ -566,7 +555,7 @@ class RealtimeStreamingValidator:
                 test_name="Stream State Management",
                 success=False,
                 duration=time.time() - start_time,
-                error_message=f"流状态管理测试异常: {str(e)}",
+                error_message=f"流状态管理测试异常: {e!s}",
             )
 
     def _test_error_recovery(self) -> ValidationResult:
@@ -595,7 +584,8 @@ class RealtimeStreamingValidator:
 
                             # 验证响应
                             response = await asyncio.wait_for(
-                                websocket.recv(), timeout=2
+                                websocket.recv(),
+                                timeout=2,
                             )
                             return True
 
@@ -605,11 +595,7 @@ class RealtimeStreamingValidator:
                 except Exception:
                     continue
 
-            recovery_rate = (
-                successful_recoveries / recovery_attempts
-                if recovery_attempts > 0
-                else 0
-            )
+            recovery_rate = successful_recoveries / recovery_attempts if recovery_attempts > 0 else 0
             success = recovery_rate > 0.5  # 50%以上的恢复成功率
 
             return ValidationResult(
@@ -628,7 +614,7 @@ class RealtimeStreamingValidator:
                 test_name="Error Recovery",
                 success=False,
                 duration=time.time() - start_time,
-                error_message=f"错误恢复测试异常: {str(e)}",
+                error_message=f"错误恢复测试异常: {e!s}",
             )
 
     def _print_result(self, result: ValidationResult):
@@ -657,19 +643,11 @@ class RealtimeStreamingValidator:
         total_errors = sum(r.metrics.error_count for r in self.results if r.metrics)
 
         # 性能指标
-        avg_latencies = [
-            r.metrics.average_latency
-            for r in self.results
-            if r.metrics and r.metrics.average_latency > 0
-        ]
+        avg_latencies = [r.metrics.average_latency for r in self.results if r.metrics and r.metrics.average_latency > 0]
         avg_throughput = [
-            r.metrics.data_throughput
-            for r in self.results
-            if r.metrics and r.metrics.data_throughput > 0
+            r.metrics.data_throughput for r in self.results if r.metrics and r.metrics.data_throughput > 0
         ]
-        avg_loss_rates = [
-            r.metrics.message_loss_rate for r in self.results if r.metrics
-        ]
+        avg_loss_rates = [r.metrics.message_loss_rate for r in self.results if r.metrics]
 
         report = {
             "timestamp": datetime.now().isoformat(),
@@ -681,15 +659,9 @@ class RealtimeStreamingValidator:
                 "total_errors": total_errors,
             },
             "performance_metrics": {
-                "average_latency": statistics.mean(avg_latencies)
-                if avg_latencies
-                else 0,
-                "average_throughput": statistics.mean(avg_throughput)
-                if avg_throughput
-                else 0,
-                "average_loss_rate": statistics.mean(avg_loss_rates)
-                if avg_loss_rates
-                else 0,
+                "average_latency": statistics.mean(avg_latencies) if avg_latencies else 0,
+                "average_throughput": statistics.mean(avg_throughput) if avg_throughput else 0,
+                "average_loss_rate": statistics.mean(avg_loss_rates) if avg_loss_rates else 0,
             },
             "individual_results": [
                 {
@@ -698,23 +670,13 @@ class RealtimeStreamingValidator:
                     "duration": r.duration,
                     "error_message": r.error_message,
                     "metrics": {
-                        "connection_latency": r.metrics.connection_latency
-                        if r.metrics
-                        else None,
-                        "data_throughput": r.metrics.data_throughput
-                        if r.metrics
-                        else None,
-                        "message_loss_rate": r.metrics.message_loss_rate
-                        if r.metrics
-                        else None,
-                        "average_latency": r.metrics.average_latency
-                        if r.metrics
-                        else None,
+                        "connection_latency": r.metrics.connection_latency if r.metrics else None,
+                        "data_throughput": r.metrics.data_throughput if r.metrics else None,
+                        "message_loss_rate": r.metrics.message_loss_rate if r.metrics else None,
+                        "average_latency": r.metrics.average_latency if r.metrics else None,
                         "max_latency": r.metrics.max_latency if r.metrics else None,
                         "error_count": r.metrics.error_count if r.metrics else None,
-                        "connection_stability": r.metrics.connection_stability
-                        if r.metrics
-                        else None,
+                        "connection_stability": r.metrics.connection_stability if r.metrics else None,
                     }
                     if r.metrics
                     else None,

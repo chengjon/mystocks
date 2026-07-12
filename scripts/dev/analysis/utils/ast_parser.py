@@ -1,5 +1,4 @@
-"""
-AST 解析器 - 提取 Python 代码的结构化元数据
+"""AST 解析器 - 提取 Python 代码的结构化元数据
 
 使用 Python 的 ast 模块解析代码文件，提取类、函数、参数等信息。
 
@@ -9,21 +8,21 @@ AST 解析器 - 提取 Python 代码的结构化元数据
 
 import ast
 import os
+import sys
+from datetime import datetime
 from pathlib import Path
 from typing import List, Optional
-from datetime import datetime
 
-import sys
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from models import (
-    ModuleMetadata,
     ClassMetadata,
     FunctionMetadata,
+    ModuleMetadata,
     ParameterMetadata,
-    estimate_complexity,
     categorize_module_by_path,
+    estimate_complexity,
 )
 
 
@@ -31,26 +30,26 @@ class ASTParser:
     """AST 解析器类"""
 
     def __init__(self, project_root: str):
-        """
-        初始化 AST 解析器
+        """初始化 AST 解析器
 
         Args:
             project_root: 项目根目录路径
+
         """
         self.project_root = Path(project_root)
 
     def parse_file(self, file_path: Path) -> Optional[ModuleMetadata]:
-        """
-        解析单个 Python 文件
+        """解析单个 Python 文件
 
         Args:
             file_path: 文件路径
 
         Returns:
             ModuleMetadata 对象，如果解析失败则返回 None
+
         """
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 source = f.read()
 
             # 解析 AST
@@ -73,9 +72,7 @@ class ASTParser:
             lines = source.split("\n")
             module.lines_of_code = len(lines)
             module.blank_lines = sum(1 for line in lines if not line.strip())
-            module.comment_lines = sum(
-                1 for line in lines if line.strip().startswith("#")
-            )
+            module.comment_lines = sum(1 for line in lines if line.strip().startswith("#"))
 
             # 遍历顶级节点
             for node in tree.body:
@@ -84,7 +81,8 @@ class ASTParser:
                     class_meta = self._parse_class(node)
                     module.classes.append(class_meta)
                 elif isinstance(node, ast.FunctionDef) or isinstance(
-                    node, ast.AsyncFunctionDef
+                    node,
+                    ast.AsyncFunctionDef,
                 ):
                     # 解析函数
                     func_meta = self._parse_function(node)
@@ -114,14 +112,14 @@ class ASTParser:
         return ".".join(parts)
 
     def _parse_class(self, node: ast.ClassDef) -> ClassMetadata:
-        """
-        解析类定义
+        """解析类定义
 
         Args:
             node: ast.ClassDef 节点
 
         Returns:
             ClassMetadata 对象
+
         """
         # 提取基类
         base_classes = []
@@ -147,7 +145,8 @@ class ASTParser:
         # 解析方法
         for item in node.body:
             if isinstance(item, ast.FunctionDef) or isinstance(
-                item, ast.AsyncFunctionDef
+                item,
+                ast.AsyncFunctionDef,
             ):
                 method_meta = self._parse_function(item)
                 class_meta.methods.append(method_meta)
@@ -155,16 +154,17 @@ class ASTParser:
         return class_meta
 
     def _parse_function(
-        self, node: ast.FunctionDef | ast.AsyncFunctionDef
+        self,
+        node: ast.FunctionDef | ast.AsyncFunctionDef,
     ) -> FunctionMetadata:
-        """
-        解析函数定义
+        """解析函数定义
 
         Args:
             node: ast.FunctionDef 或 ast.AsyncFunctionDef 节点
 
         Returns:
             FunctionMetadata 对象
+
         """
         # 提取参数
         parameters = self._parse_parameters(node.args)
@@ -200,14 +200,14 @@ class ASTParser:
         )
 
     def _parse_parameters(self, args: ast.arguments) -> List[ParameterMetadata]:
-        """
-        解析函数参数
+        """解析函数参数
 
         Args:
             args: ast.arguments 节点
 
         Returns:
             参数元数据列表
+
         """
         parameters = []
 
@@ -218,11 +218,7 @@ class ASTParser:
         for arg, default in zip(all_args, defaults):
             param = ParameterMetadata(
                 name=arg.arg,
-                type_annotation=(
-                    self._get_type_annotation(arg.annotation)
-                    if arg.annotation
-                    else None
-                ),
+                type_annotation=(self._get_type_annotation(arg.annotation) if arg.annotation else None),
                 default_value=self._get_default_value(default) if default else None,
                 is_required=default is None,
             )
@@ -234,12 +230,10 @@ class ASTParser:
                 ParameterMetadata(
                     name=f"*{args.vararg.arg}",
                     type_annotation=(
-                        self._get_type_annotation(args.vararg.annotation)
-                        if args.vararg.annotation
-                        else None
+                        self._get_type_annotation(args.vararg.annotation) if args.vararg.annotation else None
                     ),
                     is_required=False,
-                )
+                ),
             )
 
         # 处理 **kwargs
@@ -248,12 +242,10 @@ class ASTParser:
                 ParameterMetadata(
                     name=f"**{args.kwarg.arg}",
                     type_annotation=(
-                        self._get_type_annotation(args.kwarg.annotation)
-                        if args.kwarg.annotation
-                        else None
+                        self._get_type_annotation(args.kwarg.annotation) if args.kwarg.annotation else None
                     ),
                     is_required=False,
-                )
+                ),
             )
 
         return parameters
@@ -265,21 +257,20 @@ class ASTParser:
 
         if isinstance(annotation, ast.Name):
             return annotation.id
-        elif isinstance(annotation, ast.Constant):
+        if isinstance(annotation, ast.Constant):
             return str(annotation.value)
-        elif isinstance(annotation, ast.Subscript):
+        if isinstance(annotation, ast.Subscript):
             # 处理泛型类型，如 List[str], Dict[str, int]
             value = self._get_type_annotation(annotation.value)
             slice_val = self._get_type_annotation(annotation.slice)
             return f"{value}[{slice_val}]"
-        elif isinstance(annotation, ast.Tuple):
+        if isinstance(annotation, ast.Tuple):
             # 处理元组类型
             elements = [self._get_type_annotation(elt) for elt in annotation.elts]
             return f"({', '.join(elements)})"
-        elif isinstance(annotation, ast.Attribute):
+        if isinstance(annotation, ast.Attribute):
             return f"{annotation.value.id}.{annotation.attr}"
-        else:
-            return "Any"
+        return "Any"
 
     def _get_default_value(self, default) -> str:
         """提取默认值字符串"""
@@ -288,13 +279,13 @@ class ASTParser:
             if isinstance(value, str):
                 return f'"{value}"'
             return str(value)
-        elif isinstance(default, ast.Name):
+        if isinstance(default, ast.Name):
             return default.id
-        elif isinstance(default, ast.List):
+        if isinstance(default, ast.List):
             return "[]"
-        elif isinstance(default, ast.Dict):
+        if isinstance(default, ast.Dict):
             return "{}"
-        elif isinstance(default, ast.Call):
+        if isinstance(default, ast.Call):
             if isinstance(default.func, ast.Name):
                 return f"{default.func.id}()"
         return "..."
@@ -303,20 +294,21 @@ class ASTParser:
         """提取装饰器名称"""
         if isinstance(decorator, ast.Name):
             return decorator.id
-        elif isinstance(decorator, ast.Call):
+        if isinstance(decorator, ast.Call):
             if isinstance(decorator.func, ast.Name):
                 return decorator.func.id
-            elif isinstance(decorator.func, ast.Attribute):
+            if isinstance(decorator.func, ast.Attribute):
                 return f"{decorator.func.value.id}.{decorator.func.attr}"
         elif isinstance(decorator, ast.Attribute):
             return f"{decorator.value.id}.{decorator.attr}"
         return "unknown"
 
     def scan_directory(
-        self, directory: Path, exclude_patterns: List[str] = None
+        self,
+        directory: Path,
+        exclude_patterns: List[str] = None,
     ) -> List[ModuleMetadata]:
-        """
-        扫描目录下的所有 Python 文件
+        """扫描目录下的所有 Python 文件
 
         Args:
             directory: 目录路径
@@ -324,6 +316,7 @@ class ASTParser:
 
         Returns:
             模块元数据列表
+
         """
         if exclude_patterns is None:
             exclude_patterns = [
@@ -362,8 +355,7 @@ class ASTParser:
 
 
 def extract_code_block(file_path: str, start_line: int, end_line: int) -> str:
-    """
-    从文件中提取代码块
+    """从文件中提取代码块
 
     Args:
         file_path: 文件路径
@@ -372,9 +364,10 @@ def extract_code_block(file_path: str, start_line: int, end_line: int) -> str:
 
     Returns:
         代码块字符串
+
     """
     try:
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             lines = f.readlines()
             # 转换为 0-based index
             return "".join(lines[start_line - 1 : end_line])
@@ -384,14 +377,14 @@ def extract_code_block(file_path: str, start_line: int, end_line: int) -> str:
 
 
 def tokenize_code(code: str) -> List[str]:
-    """
-    将代码分词为 token 列表
+    """将代码分词为 token 列表
 
     Args:
         code: 代码字符串
 
     Returns:
         token 列表
+
     """
     import re
 

@@ -1,44 +1,44 @@
 #!/usr/bin/env python3
-"""
-文件分析数据库初始化脚本
+"""文件分析数据库初始化脚本
 用途：创建PostgreSQL数据库并初始化表结构
 """
 
+import logging
 import os
 import sys
+
 import psycopg2
 from psycopg2 import sql
-from datetime import datetime
-import logging
+
 
 # 配置日志
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
 # 数据库配置
 DB_CONFIG = {
-    'host': os.getenv('POSTGRES_HOST', 'localhost'),
-    'port': int(os.getenv('POSTGRES_PORT', 5432)),
-    'database': os.getenv('POSTGRES_DB', 'mystocks'),
-    'user': os.getenv('POSTGRES_USER', 'postgres'),
-    'password': os.getenv('POSTGRES_PASSWORD', 'postgres')
+    "host": os.getenv("POSTGRES_HOST", "localhost"),
+    "port": int(os.getenv("POSTGRES_PORT", 5432)),
+    "database": os.getenv("POSTGRES_DB", "mystocks"),
+    "user": os.getenv("POSTGRES_USER", "postgres"),
+    "password": os.getenv("POSTGRES_PASSWORD", "postgres"),
 }
 
 # 数据库名称
-ANALYSIS_DB_NAME = 'file_analysis_db'
+ANALYSIS_DB_NAME = "file_analysis_db"
 
 
 def create_connection(dbname=None):
     """创建数据库连接"""
     config = DB_CONFIG.copy()
     if dbname:
-        config['database'] = dbname
+        config["database"] = dbname
     else:
         # 连接到postgres数据库以创建新数据库
-        config['database'] = 'postgres'
+        config["database"] = "postgres"
 
     try:
         conn = psycopg2.connect(**config)
@@ -60,8 +60,8 @@ def create_database():
         # 检查数据库是否已存在
         cursor.execute(
             sql.SQL("SELECT 1 FROM pg_database WHERE datname = {}").format(
-                sql.Literal(ANALYSIS_DB_NAME)
-            )
+                sql.Literal(ANALYSIS_DB_NAME),
+            ),
         )
         exists = cursor.fetchone()
 
@@ -71,8 +71,8 @@ def create_database():
             # 创建数据库
             cursor.execute(
                 sql.SQL("CREATE DATABASE {}").format(
-                    sql.Identifier(ANALYSIS_DB_NAME)
-                )
+                    sql.Identifier(ANALYSIS_DB_NAME),
+                ),
             )
             logger.info(f"数据库 {ANALYSIS_DB_NAME} 创建成功")
 
@@ -98,7 +98,7 @@ def execute_schema_file(conn, schema_file_path):
         return False
 
     try:
-        with open(schema_file_path, 'r', encoding='utf-8') as f:
+        with open(schema_file_path, encoding="utf-8") as f:
             schema_sql = f.read()
 
         cursor = conn.cursor()
@@ -118,10 +118,10 @@ def verify_tables(conn):
     logger.info("开始验证表结构")
 
     expected_tables = [
-        'analysis_runs',
-        'file_categories',
-        'file_metadata',
-        'file_references'
+        "analysis_runs",
+        "file_categories",
+        "file_metadata",
+        "file_references",
     ]
 
     cursor = conn.cursor()
@@ -143,9 +143,8 @@ def verify_tables(conn):
         if missing_tables:
             logger.warning(f"缺少的表: {', '.join(missing_tables)}")
             return False
-        else:
-            logger.info("所有表创建成功")
-            return True
+        logger.info("所有表创建成功")
+        return True
 
     except Exception as e:
         logger.error(f"验证表失败: {e}")
@@ -163,11 +162,14 @@ def insert_test_data(conn):
     try:
         # 创建一个测试分析运行记录
         test_run_id = "test-run-001"
-        cursor.execute("""
+        cursor.execute(
+            """
             INSERT INTO analysis_runs (run_id, status, total_files)
             VALUES (%s, 'completed', 0)
             RETURNING id
-        """, (test_run_id,))
+        """,
+            (test_run_id,),
+        )
 
         run_id = cursor.fetchone()[0]
         logger.info(f"测试分析运行记录创建成功，ID: {run_id}")
@@ -198,7 +200,7 @@ def main():
         # 执行schema文件
         schema_file = os.path.join(
             os.path.dirname(__file__),
-            'schema.sql'
+            "schema.sql",
         )
 
         if not execute_schema_file(conn, schema_file):
@@ -230,5 +232,5 @@ def main():
         return 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

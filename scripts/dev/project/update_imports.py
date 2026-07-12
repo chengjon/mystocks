@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""
-更新项目中的import路径
+"""更新项目中的import路径
 将旧的直接导入改为从src目录导入
 """
 
 import re
 from pathlib import Path
+
 
 # 定义需要更新的模块映射
 MODULE_MAPPINGS = {
@@ -37,7 +37,7 @@ MODULE_MAPPINGS = {
 def update_imports_in_file(file_path):
     """更新单个文件中的import语句"""
     try:
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             content = f.read()
 
         original_content = content
@@ -148,7 +148,7 @@ def main():
         print("  1. 检查更改: git diff")
         print("  2. 运行测试: pytest tests/")
         print(
-            "  3. 提交更改: git add -A && git commit -m 'refactor: update import paths to src module'"
+            "  3. 提交更改: git add -A && git commit -m 'refactor: update import paths to src module'",
         )
     else:
         print("✓ 没有需要更新的文件")

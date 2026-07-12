@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
-"""
-文档目录重组脚本
+"""文档目录重组脚本
 
 将文档从旧结构迁移到8大分类新结构
 """
 
-import os
-import sys
 import shutil
-from pathlib import Path
 import subprocess
+import sys
+from pathlib import Path
 
 
 # 目录映射表
@@ -21,7 +19,6 @@ DIRECTORY_MAPPINGS = {
     "04-测试与质量保障文档": "testing",
     "05-部署与运维监控文档": "operations",
     "06-项目管理与报告": "reports",
-
     # 英文目录合并
     "architecture": "architecture",  # 已存在，需合并
     "api": "api",  # 已存在，需合并
@@ -29,7 +26,6 @@ DIRECTORY_MAPPINGS = {
     "operations": "operations",  # 已存在，需合并
     "reports": "reports",  # 已存在，需合并
     "guides": "guides",  # 已存在，需保留
-
     # 归档目录
     "archived": "archive/legacy",
     "归档文档": "archive/legacy-zh",
@@ -58,7 +54,7 @@ ROOT_FILE_MAPPINGS = {
 def run_git_mv(src, dst):
     """使用git mv移动文件"""
     try:
-        subprocess.run(['git', 'mv', str(src), str(dst)], check=True, capture_output=True)
+        subprocess.run(["git", "mv", str(src), str(dst)], check=True, capture_output=True)
         return True, f"✅ {src} → {dst}"
     except subprocess.CalledProcessError as e:
         return False, f"❌ {src}: {e.stderr.decode().strip()}"
@@ -94,7 +90,9 @@ def migrate_directory(old_dir, new_dir, docs_root):
     except:
         pass
 
-    return success_count > 0, f"📁 {old_dir} → {new_dir} ({success_count} files)" + ("\n" + "\n".join(errors) if errors else "")
+    return success_count > 0, f"📁 {old_dir} → {new_dir} ({success_count} files)" + (
+        "\n" + "\n".join(errors) if errors else ""
+    )
 
 
 def migrate_root_files(docs_root):
@@ -162,7 +160,7 @@ def main():
                 total_errors.append(msg)
 
     print("\n" + "=" * 80)
-    print(f"✅ 迁移完成！")
+    print("✅ 迁移完成！")
     print(f"  成功: {total_success}")
     print(f"  错误: {len(total_errors)}")
     print("=" * 80)

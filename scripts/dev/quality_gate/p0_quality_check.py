@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-# 功能：本地P0质量门禁检查脚本
+"""# 功能：本地P0质量门禁检查脚本
 # 用法：python scripts/quality_gate/p0_quality_check.py
 # 作用：在提交前本地运行质量检查，避免CI失败
 # 作者：Claude (基于P0优先级任务)
@@ -8,15 +7,16 @@
 # 版本：1.0.0
 """
 
-import sys
-import subprocess
 import logging
+import subprocess
+import sys
 from pathlib import Path
+
 
 # 配置日志
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -31,8 +31,7 @@ class QualityCheckResult:
 
 
 def run_command(command: list, description: str) -> tuple[bool, str]:
-    """
-    运行命令并返回结果
+    """运行命令并返回结果
 
     Args:
         command: 命令列表
@@ -40,6 +39,7 @@ def run_command(command: list, description: str) -> tuple[bool, str]:
 
     Returns:
         (success, output): 是否成功和输出
+
     """
     logger.info(f"🔍 {description}...")
     try:
@@ -66,87 +66,88 @@ def run_command(command: list, description: str) -> tuple[bool, str]:
 def check_pylint_errors() -> QualityCheckResult:
     """检查Pylint Error级别问题"""
     success, output = run_command(
-        ["pylint", "src/", "--rcfile=.pylintrc", "--errors-only",
-         "--disable=import-error,no-member", "--output-format=colorized"],
-        "Pylint Error级别检查"
+        [
+            "pylint",
+            "src/",
+            "--rcfile=.pylintrc",
+            "--errors-only",
+            "--disable=import-error,no-member",
+            "--output-format=colorized",
+        ],
+        "Pylint Error级别检查",
     )
 
     if success:
         return QualityCheckResult("Pylint Errors", True, "✅ 无Error级别问题")
-    else:
-        return QualityCheckResult(
-            "Pylint Errors",
-            False,
-            "❌ 发现Error级别问题\n💡 修复: pylint src/ --errors-only --disable=import-error,no-member"
-        )
+    return QualityCheckResult(
+        "Pylint Errors",
+        False,
+        "❌ 发现Error级别问题\n💡 修复: pylint src/ --errors-only --disable=import-error,no-member",
+    )
 
 
 def check_black_formatting() -> QualityCheckResult:
     """检查Black格式化"""
     success, output = run_command(
         ["black", "--check", "--diff", "--line-length=120", "src/"],
-        "Black格式检查"
+        "Black格式检查",
     )
 
     if success:
         return QualityCheckResult("代码格式化", True, "✅ 格式符合规范")
-    else:
-        return QualityCheckResult(
-            "代码格式化",
-            False,
-            "❌ 格式不符合规范\n💡 修复: black src/ --line-length=120"
-        )
+    return QualityCheckResult(
+        "代码格式化",
+        False,
+        "❌ 格式不符合规范\n💡 修复: black src/ --line-length=120",
+    )
 
 
 def check_isort_imports() -> QualityCheckResult:
     """检查isort导入排序"""
     success, output = run_command(
         ["isort", "--check-only", "--diff", "src/"],
-        "isort导入检查"
+        "isort导入检查",
     )
 
     if success:
         return QualityCheckResult("导入排序", True, "✅ 导入排序正确")
-    else:
-        return QualityCheckResult(
-            "导入排序",
-            False,
-            "❌ 导入排序不符合规范\n💡 修复: isort src/"
-        )
+    return QualityCheckResult(
+        "导入排序",
+        False,
+        "❌ 导入排序不符合规范\n💡 修复: isort src/",
+    )
 
 
 def check_bandit_security() -> QualityCheckResult:
     """检查Bandit安全问题"""
     success, output = run_command(
         ["bandit", "-r", "src/", "-c", "config/.security.yml", "-ll"],
-        "Bandit安全扫描"
+        "Bandit安全扫描",
     )
 
     if success:
         return QualityCheckResult("安全扫描", True, "✅ 无安全问题")
-    else:
-        return QualityCheckResult(
-            "安全扫描",
-            False,
-            "❌ 发现安全问题\n💡 检查: bandit -r src/ -c config/.security.yml"
-        )
+    return QualityCheckResult(
+        "安全扫描",
+        False,
+        "❌ 发现安全问题\n💡 检查: bandit -r src/ -c config/.security.yml",
+    )
 
 
 def check_safety_dependencies() -> QualityCheckResult:
     """检查Safety依赖安全"""
     success, output = run_command(
         ["safety", "check", "--json"],
-        "Safety依赖检查"
+        "Safety依赖检查",
     )
 
     if success:
         return QualityCheckResult("依赖安全", True, "✅ 无依赖漏洞")
-    else:
-        return QualityCheckResult(
-            "依赖安全",
-            False,
-            "❌ 发现依赖漏洞\n💡 更新: pip install --upgrade <package>"
-        )
+    return QualityCheckResult(
+        "依赖安全",
+        False,
+        "❌ 发现依赖漏洞\n💡 更新: pip install --upgrade <package>",
+    )
 
 
 def check_python_syntax() -> QualityCheckResult:
@@ -160,8 +161,8 @@ def check_python_syntax() -> QualityCheckResult:
 
         for py_file in python_files:
             try:
-                with open(py_file, 'r', encoding='utf-8') as f:
-                    compile(f.read(), py_file, 'exec')
+                with open(py_file, encoding="utf-8") as f:
+                    compile(f.read(), py_file, "exec")
             except SyntaxError as e:
                 errors.append(f"{py_file}: {e}")
 
@@ -169,16 +170,15 @@ def check_python_syntax() -> QualityCheckResult:
             return QualityCheckResult(
                 "Python语法",
                 False,
-                f"❌ 发现语法错误\n{''.join(errors)}"
+                f"❌ 发现语法错误\n{''.join(errors)}",
             )
-        else:
-            return QualityCheckResult("Python语法", True, "✅ 语法正确")
+        return QualityCheckResult("Python语法", True, "✅ 语法正确")
 
     except Exception as e:
         return QualityCheckResult(
             "Python语法",
             False,
-            f"❌ 检查失败: {e}"
+            f"❌ 检查失败: {e}",
         )
 
 

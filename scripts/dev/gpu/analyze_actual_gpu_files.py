@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
-"""
-分析实际的GPU文件
+"""分析实际的GPU文件
 识别需要迁移的关键文件，制定具体的迁移计划
 """
 
+import json
 import os
 import re
-from pathlib import Path
-from typing import List, Dict, Any, Tuple
-import json
-from dataclasses import dataclass, field
 from collections import defaultdict
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Dict, List, Tuple
 
 
 @dataclass
@@ -77,7 +76,7 @@ class GPUFileAnalyzer:
     def _analyze_gpu_file(self, file_path: str) -> GPUFileInfo:
         """分析单个GPU文件"""
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
         except Exception as e:
             print(f"   ⚠️  无法读取 {file_path}: {e}")
@@ -100,12 +99,18 @@ class GPUFileAnalyzer:
 
         # 确定迁移复杂度和优先级
         complexity, priority = self._assess_migration_complexity(
-            file_path, content, has_direct_gpu, gpu_libraries
+            file_path,
+            content,
+            has_direct_gpu,
+            gpu_libraries,
         )
 
         # 推荐行动
         recommended_action = self._recommend_action(
-            file_path, content, has_direct_gpu, gpu_libraries
+            file_path,
+            content,
+            has_direct_gpu,
+            gpu_libraries,
         )
 
         return GPUFileInfo(
@@ -179,9 +184,7 @@ class GPUFileAnalyzer:
         # 复杂度评估
         complexity = "MEDIUM"  # 默认
 
-        if file_size > 2000:  # 大文件
-            complexity = "HIGH"
-        elif has_direct_gpu and len(gpu_libraries) > 2:  # 多GPU库
+        if file_size > 2000 or (has_direct_gpu and len(gpu_libraries) > 2):  # 大文件
             complexity = "HIGH"
         elif not has_direct_gpu and not gpu_libraries:
             complexity = "LOW"
@@ -189,16 +192,10 @@ class GPUFileAnalyzer:
         # 优先级评估
         priority = "MEDIUM"  # 默认
 
-        if file_name.startswith("gpu_") and (
-            "manager" in file_name or "resource" in file_name
-        ):
-            priority = "HIGH"
-        elif file_name.startswith("gpu_") and (
-            "api" in file_name or "server" in file_name
-        ):
-            priority = "HIGH"
-        elif file_name.startswith("gpu_") and (
-            "accelerated" in file_name or "engine" in file_name
+        if (
+            (file_name.startswith("gpu_") and ("manager" in file_name or "resource" in file_name))
+            or (file_name.startswith("gpu_") and ("api" in file_name or "server" in file_name))
+            or (file_name.startswith("gpu_") and ("accelerated" in file_name or "engine" in file_name))
         ):
             priority = "HIGH"
         elif "test" in file_name:
@@ -245,15 +242,9 @@ class GPUFileAnalyzer:
         # HAL层分布统计
         hal_layer_stats = defaultdict(int)
         for file_info in self.gpu_files:
-            if (
-                "manager" in file_info.name.lower()
-                or "resource" in file_info.name.lower()
-            ):
+            if "manager" in file_info.name.lower() or "resource" in file_info.name.lower():
                 hal_layer_stats["GPUResourceManager"] += 1
-            elif (
-                "accelerated" in file_info.name.lower()
-                or "engine" in file_info.name.lower()
-            ):
+            elif "accelerated" in file_info.name.lower() or "engine" in file_info.name.lower():
                 hal_layer_stats["AcceleratedEngine"] += 1
             elif "api" in file_info.name.lower() or "server" in file_info.name.lower():
                 hal_layer_stats["APIServer"] += 1
@@ -284,9 +275,7 @@ class GPUFileAnalyzer:
                 "total_files": total_files,
                 "total_size_bytes": total_size,
                 "files_with_direct_gpu": files_with_gpu,
-                "gpu_usage_percentage": (files_with_gpu / total_files * 100)
-                if total_files > 0
-                else 0,
+                "gpu_usage_percentage": (files_with_gpu / total_files * 100) if total_files > 0 else 0,
             },
             "statistics": {
                 "priority_distribution": dict(priority_stats),
@@ -314,9 +303,7 @@ class GPUFileAnalyzer:
         """创建迁移计划"""
         # 按优先级分组
         high_priority = [f for f in self.gpu_files if f.migration_priority == "HIGH"]
-        medium_priority = [
-            f for f in self.gpu_files if f.migration_priority == "MEDIUM"
-        ]
+        medium_priority = [f for f in self.gpu_files if f.migration_priority == "MEDIUM"]
         low_priority = [f for f in self.gpu_files if f.migration_priority == "LOW"]
 
         # 关键文件识别
@@ -444,7 +431,7 @@ def main():
 
     if not results:
         print("❌ 未找到GPU文件或分析失败")
-        return
+        return None
 
     # 保存分析结果
     report_path = "gpu_files_analysis_report.json"
