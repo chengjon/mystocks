@@ -1,5 +1,4 @@
-"""
-信号监控 API 端点
+"""信号监控 API 端点
 Signal Monitoring API Endpoints
 
 提供信号历史查询、质量报告和实时监控功能。
@@ -10,19 +9,20 @@ Signal Monitoring API Endpoints
 """
 
 import logging
-from datetime import date, datetime, timedelta
+from datetime import datetime
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from pydantic import BaseModel
 
 from app.core.security import User, get_current_user
+
 from .signal_history_response import (
     ActiveSignalsResponse,
     SignalStatisticsResponse,
     StrategyDetailedHealthResponse,
 )
 from .signal_history_response_schemas import ActiveSignalItem
+
 
 logger = logging.getLogger(__name__)
 
@@ -35,8 +35,7 @@ async def get_signal_statistics(
     hours: int = Query(24, ge=1, le=168, description="查询最近多少小时的统计数据"),
     current_user: User = Depends(get_current_user),
 ):
-    """
-    获取信号统计（小时级）
+    """获取信号统计（小时级）
 
     **功能说明**:
     - 从 signal_statistics_hourly 表查询聚合统计数据
@@ -143,7 +142,7 @@ async def get_signal_statistics(
         raise
     except Exception as e:
         logger.error("查询信号统计失败: %(e)s")
-        raise HTTPException(status_code=500, detail=f"查询失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"查询失败: {e!s}")
 
 
 @router.get("/signals/active", response_model=ActiveSignalsResponse)
@@ -152,8 +151,7 @@ async def get_active_signals(
     limit: int = Query(100, ge=1, le=1000, description="返回数量限制"),
     current_user: User = Depends(get_current_user),
 ):
-    """
-    获取活跃信号列表
+    """获取活跃信号列表
 
     **功能说明**:
     - 查询当前活跃的信号（状态为 generated 或 executed）
@@ -245,7 +243,7 @@ async def get_active_signals(
                 )
             else:
                 count_row = await conn.fetchrow(
-                    "SELECT COUNT(*) as total FROM signal_records WHERE status IN ('generated', 'executed')"
+                    "SELECT COUNT(*) as total FROM signal_records WHERE status IN ('generated', 'executed')",
                 )
 
         total_count = count_row["total"] if count_row else 0
@@ -277,7 +275,7 @@ async def get_active_signals(
         raise
     except Exception as e:
         logger.error("查询活跃信号失败: %(e)s")
-        raise HTTPException(status_code=500, detail=f"查询失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"查询失败: {e!s}")
 
 
 @router.get("/strategies/{strategy_id}/health/detailed", response_model=StrategyDetailedHealthResponse)
@@ -285,8 +283,7 @@ async def get_strategy_detailed_health(
     strategy_id: str,
     current_user: User = Depends(get_current_user),
 ):
-    """
-    获取策略详细健康状态（组件级）
+    """获取策略详细健康状态（组件级）
 
     **功能说明**:
     - 查询策略的详细健康状态，包括各组件状态
@@ -398,4 +395,4 @@ async def get_strategy_detailed_health(
         raise
     except Exception as e:
         logger.error("查询策略详细健康状态失败: %(e)s")
-        raise HTTPException(status_code=500, detail=f"查询失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"查询失败: {e!s}")

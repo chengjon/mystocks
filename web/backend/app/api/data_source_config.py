@@ -1,5 +1,4 @@
-"""
-数据源配置CRUD API (完全符合API契约管理规范)
+"""数据源配置CRUD API (完全符合API契约管理规范)
 
 提供数据源配置的完整CRUD操作、版本管理和热重载功能。
 
@@ -28,8 +27,7 @@ Contract Version: 1.0
 import logging
 from typing import Optional
 
-from config.data_sources_loader import YAML_DATA_SOURCES_REGISTRY_PATH
-from fastapi import APIRouter, Depends, Query, Request, Header, HTTPException
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request
 
 # 导入统一响应格式
 from app.api.data_source_config_schemas import (
@@ -50,6 +48,8 @@ from app.core.responses import (
     not_found,
 )
 from app.core.security import verify_token
+from config.data_sources_loader import YAML_DATA_SOURCES_REGISTRY_PATH
+
 
 logger = logging.getLogger(__name__)
 
@@ -124,20 +124,19 @@ def handle_config_error(error: str, request_id: Optional[str] = None) -> Unified
             error_code="DUPLICATE_ENDPOINT",
             request_id=request_id,
         )
-    elif "not found" in error:
+    if "not found" in error:
         return create_unified_error_response(
             code=BusinessCode.NOT_FOUND,
             message="数据源配置不存在",
             error_code="ENDPOINT_NOT_FOUND",
             request_id=request_id,
         )
-    else:
-        return create_unified_error_response(
-            code=BusinessCode.INTERNAL_ERROR,
-            message=error,
-            error_code="CONFIG_ERROR",
-            request_id=request_id,
-        )
+    return create_unified_error_response(
+        code=BusinessCode.INTERNAL_ERROR,
+        message=error,
+        error_code="CONFIG_ERROR",
+        request_id=request_id,
+    )
 
 
 # ==================== API Endpoints ====================
@@ -145,8 +144,7 @@ def handle_config_error(error: str, request_id: Optional[str] = None) -> Unified
 
 @router.post("/", response_model=UnifiedResponse, status_code=201)
 async def create_data_source(config: DataSourceCreate, request: Request, current_user: str = Depends(get_current_user)):
-    """
-    创建新的数据源配置
+    """创建新的数据源配置
 
     创建全新的数据源端点配置，自动记录版本历史（版本1）。
     验证配置有效性，保存到YAML文件和PostgreSQL数据库。
@@ -165,6 +163,7 @@ async def create_data_source(config: DataSourceCreate, request: Request, current
     Raises:
         409: 端点名称已存在
         400: 配置验证失败
+
     """
     request_id = getattr(request.state, "request_id", None)
     logger.info("Creating data source: {config.endpoint_name}", extra={"request_id": request_id})
@@ -201,7 +200,7 @@ async def create_data_source(config: DataSourceCreate, request: Request, current
         logger.error("Failed to create data source: {str(e)}", extra={"request_id": request_id})
         return create_unified_error_response(
             code=BusinessCode.INTERNAL_ERROR,
-            message=f"创建数据源配置失败: {str(e)}",
+            message=f"创建数据源配置失败: {e!s}",
             error_code="CREATE_ENDPOINT_ERROR",
             request_id=request_id,
         )
@@ -209,10 +208,9 @@ async def create_data_source(config: DataSourceCreate, request: Request, current
 
 @router.put("/{endpoint_name}", response_model=UnifiedResponse)
 async def update_data_source(
-    endpoint_name: str, updates: DataSourceUpdate, request: Request, current_user: str = Depends(get_current_user)
+    endpoint_name: str, updates: DataSourceUpdate, request: Request, current_user: str = Depends(get_current_user),
 ):
-    """
-    更新数据源配置
+    """更新数据源配置
 
     更新现有数据源配置的字段，自动记录版本历史。
     保存变更前后的值到元数据。
@@ -228,6 +226,7 @@ async def update_data_source(
     Raises:
         404: 端点不存在
         400: 无有效更新字段
+
     """
     request_id = getattr(request.state, "request_id", None)
     logger.info("Updating data source: {endpoint_name}", extra={"request_id": request_id})
@@ -276,7 +275,7 @@ async def update_data_source(
         logger.error("Failed to update data source {endpoint_name}: {str(e)}", extra={"request_id": request_id})
         return create_unified_error_response(
             code=BusinessCode.INTERNAL_ERROR,
-            message=f"更新数据源配置失败: {str(e)}",
+            message=f"更新数据源配置失败: {e!s}",
             error_code="UPDATE_ENDPOINT_ERROR",
             request_id=request_id,
         )
@@ -284,8 +283,7 @@ async def update_data_source(
 
 @router.delete("/{endpoint_name}", response_model=UnifiedResponse)
 async def delete_data_source(endpoint_name: str, request: Request, current_user: str = Depends(get_current_user)):
-    """
-    删除数据源配置
+    """删除数据源配置
 
     删除数据源配置（软删除），记录版本历史，可通过回滚恢复。
 
@@ -294,6 +292,7 @@ async def delete_data_source(endpoint_name: str, request: Request, current_user:
 
     Raises:
         404: 端点不存在
+
     """
     request_id = getattr(request.state, "request_id", None)
     logger.info("Deleting data source: {endpoint_name}", extra={"request_id": request_id})
@@ -319,7 +318,7 @@ async def delete_data_source(endpoint_name: str, request: Request, current_user:
         logger.error("Failed to delete data source {endpoint_name}: {str(e)}", extra={"request_id": request_id})
         return create_unified_error_response(
             code=BusinessCode.INTERNAL_ERROR,
-            message=f"删除数据源配置失败: {str(e)}",
+            message=f"删除数据源配置失败: {e!s}",
             error_code="DELETE_ENDPOINT_ERROR",
             request_id=request_id,
         )
@@ -327,8 +326,7 @@ async def delete_data_source(endpoint_name: str, request: Request, current_user:
 
 @router.get("/{endpoint_name}", response_model=UnifiedResponse)
 async def get_data_source(endpoint_name: str, request: Request):
-    """
-    获取单个数据源配置
+    """获取单个数据源配置
 
     返回指定数据源的完整配置信息。
 
@@ -339,6 +337,7 @@ async def get_data_source(endpoint_name: str, request: Request):
 
     Raises:
         404: 端点不存在
+
     """
     request_id = getattr(request.state, "request_id", None)
 
@@ -359,7 +358,7 @@ async def get_data_source(endpoint_name: str, request: Request):
         logger.error("Failed to get data source {endpoint_name}: {str(e)}", extra={"request_id": request_id})
         return create_unified_error_response(
             code=BusinessCode.INTERNAL_ERROR,
-            message=f"获取数据源配置失败: {str(e)}",
+            message=f"获取数据源配置失败: {e!s}",
             error_code="GET_ENDPOINT_ERROR",
             request_id=request_id,
         )
@@ -372,8 +371,7 @@ async def list_data_sources(
     source_type: Optional[str] = Query(None, description="数据源类型"),
     status: Optional[str] = Query("active", description="状态（active, maintenance, deprecated）"),
 ):
-    """
-    列出数据源配置
+    """列出数据源配置
 
     支持按以下条件过滤:
     - **data_category**: 数据分类
@@ -384,6 +382,7 @@ async def list_data_sources(
 
     Returns:
         UnifiedResponse: 包含数据源配置列表
+
     """
     request_id = getattr(request.state, "request_id", None)
 
@@ -404,7 +403,7 @@ async def list_data_sources(
         logger.error("Failed to list data sources: {str(e)}", extra={"request_id": request_id})
         return create_unified_error_response(
             code=BusinessCode.INTERNAL_ERROR,
-            message=f"列出数据源配置失败: {str(e)}",
+            message=f"列出数据源配置失败: {e!s}",
             error_code="LIST_ENDPOINTS_ERROR",
             request_id=request_id,
         )
@@ -412,10 +411,9 @@ async def list_data_sources(
 
 @router.post("/batch", response_model=UnifiedResponse)
 async def batch_operations(
-    batch_request: BatchOperationRequest, request: Request, current_user: str = Depends(get_current_user)
+    batch_request: BatchOperationRequest, request: Request, current_user: str = Depends(get_current_user),
 ):
-    """
-    批量操作数据源配置
+    """批量操作数据源配置
 
     支持批量创建、更新、删除操作，每次最多50个操作。
 
@@ -424,6 +422,7 @@ async def batch_operations(
 
     Raises:
         400: 操作列表无效或超过50个
+
     """
     request_id = getattr(request.state, "request_id", None)
     logger.info("Batch operations: {len(batch_request.operations)} items", extra={"request_id": request_id})
@@ -468,7 +467,7 @@ async def batch_operations(
                         if op.updates.description is not None:
                             updates_dict["description"] = op.updates.description
                     result = manager.update_endpoint(
-                        endpoint_name=op.endpoint_name, updates=updates_dict, changed_by=current_user
+                        endpoint_name=op.endpoint_name, updates=updates_dict, changed_by=current_user,
                     )
 
                 elif action == "delete":
@@ -491,7 +490,7 @@ async def batch_operations(
                         "endpoint_name": getattr(result, "endpoint_name", None),
                         "version": getattr(result, "version", None),
                         "error": None if result.success else result.error,
-                    }
+                    },
                 )
 
             except Exception as e:
@@ -513,7 +512,7 @@ async def batch_operations(
         logger.error("Failed to execute batch operations: {str(e)}", extra={"request_id": request_id})
         return create_unified_error_response(
             code=BusinessCode.INTERNAL_ERROR,
-            message=f"批量操作失败: {str(e)}",
+            message=f"批量操作失败: {e!s}",
             error_code="BATCH_OPERATION_ERROR",
             request_id=request_id,
         )
@@ -525,8 +524,7 @@ async def get_version_history(
     request: Request,
     limit: int = Query(10, description="返回数量限制", ge=1, le=100),
 ):
-    """
-    获取数据源配置的版本历史
+    """获取数据源配置的版本历史
 
     返回指定数据源的所有版本历史，按版本号倒序排列。
 
@@ -538,6 +536,7 @@ async def get_version_history(
 
     Raises:
         404: 端点不存在或无版本历史
+
     """
     request_id = getattr(request.state, "request_id", None)
 
@@ -576,7 +575,7 @@ async def get_version_history(
         logger.error("Failed to get version history for {endpoint_name}: {str(e)}", extra={"request_id": request_id})
         return create_unified_error_response(
             code=BusinessCode.INTERNAL_ERROR,
-            message=f"获取版本历史失败: {str(e)}",
+            message=f"获取版本历史失败: {e!s}",
             error_code="GET_VERSIONS_ERROR",
             request_id=request_id,
         )
@@ -590,8 +589,7 @@ async def rollback_to_version(
     rollback_req: RollbackRequest,
     current_user: str = Depends(get_current_user),
 ):
-    """
-    回滚数据源配置到指定版本
+    """回滚数据源配置到指定版本
 
     将配置恢复到指定版本的快照，自动创建新的版本记录（restore类型）。
 
@@ -603,6 +601,7 @@ async def rollback_to_version(
 
     Raises:
         404: 端点或版本不存在
+
     """
     request_id = getattr(request.state, "request_id", None)
     logger.info("Rolling back {endpoint_name} to version {version}", extra={"request_id": request_id})
@@ -610,7 +609,7 @@ async def rollback_to_version(
     try:
         manager = get_config_manager()
         result = manager.rollback_to_version(
-            endpoint_name=endpoint_name, target_version=version, changed_by=current_user
+            endpoint_name=endpoint_name, target_version=version, changed_by=current_user,
         )
 
         if not result.success:
@@ -628,11 +627,11 @@ async def rollback_to_version(
 
     except Exception as e:
         logger.error(
-            f"Failed to rollback {endpoint_name} to version {version}: {str(e)}", extra={"request_id": request_id}
+            f"Failed to rollback {endpoint_name} to version {version}: {e!s}", extra={"request_id": request_id},
         )
         return create_unified_error_response(
             code=BusinessCode.INTERNAL_ERROR,
-            message=f"回滚配置失败: {str(e)}",
+            message=f"回滚配置失败: {e!s}",
             error_code="ROLLBACK_ERROR",
             request_id=request_id,
         )
@@ -640,13 +639,13 @@ async def rollback_to_version(
 
 @router.post("/reload", response_model=UnifiedResponse)
 async def reload_config(request: Request, reload_req: ReloadRequest, current_user: str = Depends(get_current_user)):
-    """
-    触发配置热重载
+    """触发配置热重载
 
     从YAML文件重新加载配置，通知所有注册的回调函数。
 
     Returns:
         UnifiedResponse: 重载结果统计
+
     """
     request_id = getattr(request.state, "request_id", None)
     logger.info("Reloading data source configurations", extra={"request_id": request_id})
@@ -670,7 +669,7 @@ async def reload_config(request: Request, reload_req: ReloadRequest, current_use
         logger.error("Failed to reload config: {str(e)}", extra={"request_id": request_id})
         return create_unified_error_response(
             code=BusinessCode.INTERNAL_ERROR,
-            message=f"配置热重载失败: {str(e)}",
+            message=f"配置热重载失败: {e!s}",
             error_code="RELOAD_ERROR",
             request_id=request_id,
         )

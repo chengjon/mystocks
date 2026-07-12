@@ -1,5 +1,4 @@
-"""
-GPU Indicator Adapter - GPU指标适配器
+"""GPU Indicator Adapter - GPU指标适配器
 
 利用NVIDIA RAPIDS (cuDF/cuPy) 提供高性能技术指标计算：
 - 向量化的GPU计算
@@ -56,7 +55,6 @@ except ImportError:
     logger.warning("⚠️ GPU libraries not available, falling back to CPU")
 
 try:
-    pass
 
     NUMBA_CUDA_AVAILABLE = True
     logger.info("✅ Numba CUDA acceleration available")
@@ -66,8 +64,7 @@ except ImportError:
 
 
 class GPUResourceManager:
-    """
-    GPU资源管理器
+    """GPU资源管理器
 
     管理GPU内存和计算资源：
     - GPU内存监控
@@ -96,14 +93,14 @@ class GPUResourceManager:
             self.available_memory = 0
 
     def should_use_gpu(self, estimated_memory: int) -> bool:
-        """
-        判断是否应该使用GPU
+        """判断是否应该使用GPU
 
         Args:
             estimated_memory: 预估需要的内存（字节）
 
         Returns:
             是否使用GPU
+
         """
         if not GPU_AVAILABLE:
             return False
@@ -115,8 +112,7 @@ class GPUResourceManager:
         return True
 
     def get_optimal_batch_size(self, data_size: int, indicator_type: str) -> int:
-        """
-        获取最优批量大小
+        """获取最优批量大小
 
         Args:
             data_size: 数据大小
@@ -124,6 +120,7 @@ class GPUResourceManager:
 
         Returns:
             批量大小
+
         """
         # 基于指标类型和数据大小计算最优批量
         base_batch_size = 10000
@@ -139,8 +136,7 @@ class GPUResourceManager:
 
 
 class GPUIndicatorAdapter(IndicatorInterface):
-    """
-    GPU指标适配器
+    """GPU指标适配器
 
     提供GPU加速的技术指标计算：
     - 自动GPU/CPU选择
@@ -150,11 +146,11 @@ class GPUIndicatorAdapter(IndicatorInterface):
     """
 
     def __init__(self, config: IndicatorConfig):
-        """
-        初始化GPU指标适配器
+        """初始化GPU指标适配器
 
         Args:
             config: 指标配置
+
         """
         super().__init__(config)
         self.resource_manager = GPUResourceManager()
@@ -188,8 +184,7 @@ class GPUIndicatorAdapter(IndicatorInterface):
         return base_memory
 
     def calculate(self, data: Dict[str, Any], parameters: Optional[Dict[str, Any]] = None) -> IndicatorResult:
-        """
-        计算技术指标
+        """计算技术指标
 
         Args:
             data: 市场数据
@@ -197,6 +192,7 @@ class GPUIndicatorAdapter(IndicatorInterface):
 
         Returns:
             指标结果
+
         """
         start_time = time.time()
 
@@ -239,8 +235,7 @@ class GPUIndicatorAdapter(IndicatorInterface):
 
     @abstractmethod
     def _calculate_gpu(self, data: Dict[str, Any], parameters: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        GPU计算实现
+        """GPU计算实现
 
         Args:
             data: 市场数据
@@ -248,12 +243,12 @@ class GPUIndicatorAdapter(IndicatorInterface):
 
         Returns:
             计算结果
+
         """
 
     @abstractmethod
     def _calculate_cpu(self, data: Dict[str, Any], parameters: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        CPU计算实现（回退用）
+        """CPU计算实现（回退用）
 
         Args:
             data: 市场数据
@@ -261,6 +256,7 @@ class GPUIndicatorAdapter(IndicatorInterface):
 
         Returns:
             计算结果
+
         """
 
     def get_performance_stats(self) -> Dict[str, Any]:
@@ -505,8 +501,7 @@ class GPUIndicatorFactory:
 
     @classmethod
     def create_indicator(cls, indicator_type: str, config: IndicatorConfig) -> GPUIndicatorAdapter:
-        """
-        创建GPU指标实例
+        """创建GPU指标实例
 
         Args:
             indicator_type: 指标类型
@@ -514,6 +509,7 @@ class GPUIndicatorFactory:
 
         Returns:
             GPU指标实例
+
         """
         if indicator_type not in cls.INDICATOR_MAP:
             raise ValueError(f"Unsupported GPU indicator: {indicator_type}")

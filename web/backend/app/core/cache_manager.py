@@ -1,5 +1,6 @@
-from app.core.cache import CacheManager  # noqa: F401
+from app.core.cache import CacheManager
 from app.core.cache.stats_health import get_cache_manager_async as _get_async
+
 
 _manager = None
 

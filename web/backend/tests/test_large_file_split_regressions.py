@@ -6,11 +6,12 @@ import sys
 from pathlib import Path
 from types import ModuleType
 
+
 LINE_LIMIT = 850
 
 
 def _line_count(path: str) -> int:
-    with open(path, "r", encoding="utf-8") as file:
+    with open(path, encoding="utf-8") as file:
         return sum(1 for _ in file)
 
 
@@ -128,16 +129,16 @@ def _load_operation_metrics_split_module():
     module_name = "test_operation_metrics_split_regressions_module"
     module_paths = {
         "src.monitoring.monitoring_service._operation_metric_models": Path(
-            "src/monitoring/monitoring_service/_operation_metric_models.py"
+            "src/monitoring/monitoring_service/_operation_metric_models.py",
         ),
         "src.monitoring.monitoring_service._monitoring_database": Path(
-            "src/monitoring/monitoring_service/_monitoring_database.py"
+            "src/monitoring/monitoring_service/_monitoring_database.py",
         ),
         "src.monitoring.monitoring_service._data_quality_monitor": Path(
-            "src/monitoring/monitoring_service/_data_quality_monitor.py"
+            "src/monitoring/monitoring_service/_data_quality_monitor.py",
         ),
         "src.monitoring.monitoring_service._performance_monitor": Path(
-            "src/monitoring/monitoring_service/_performance_monitor.py"
+            "src/monitoring/monitoring_service/_performance_monitor.py",
         ),
     }
 
@@ -180,19 +181,19 @@ def _load_turning_point_split_module():
     module_name = "src.advanced_analysis.timeseries_analyzer.turning_point"
     module_paths = {
         "src.advanced_analysis.timeseries_analyzer._turning_point_models": Path(
-            "src/advanced_analysis/timeseries_analyzer/_turning_point_models.py"
+            "src/advanced_analysis/timeseries_analyzer/_turning_point_models.py",
         ),
         "src.advanced_analysis.timeseries_analyzer._turning_point_detection": Path(
-            "src/advanced_analysis/timeseries_analyzer/_turning_point_detection.py"
+            "src/advanced_analysis/timeseries_analyzer/_turning_point_detection.py",
         ),
         "src.advanced_analysis.timeseries_analyzer._turning_point_pattern_analysis": Path(
-            "src/advanced_analysis/timeseries_analyzer/_turning_point_pattern_analysis.py"
+            "src/advanced_analysis/timeseries_analyzer/_turning_point_pattern_analysis.py",
         ),
         "src.advanced_analysis.timeseries_analyzer._turning_point_reporting": Path(
-            "src/advanced_analysis/timeseries_analyzer/_turning_point_reporting.py"
+            "src/advanced_analysis/timeseries_analyzer/_turning_point_reporting.py",
         ),
         "src.advanced_analysis.timeseries_analyzer._assess_ts_risk": Path(
-            "src/advanced_analysis/timeseries_analyzer/_assess_ts_risk.py"
+            "src/advanced_analysis/timeseries_analyzer/_assess_ts_risk.py",
         ),
     }
 

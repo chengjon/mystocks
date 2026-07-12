@@ -55,9 +55,9 @@ const router = createRouter({
           meta: { title: '行业概念分析', icon: 'Box' }
         },
         {
-          path: 'stocks',
-          name: 'stocks',
-          component: () => import('@/views/Stocks.vue'),
+          path: 'stock',
+          name: 'stock',
+          component: () => import('@/views/Stock.vue'),
           meta: { title: '股票管理', icon: 'Grid' }
         },
         {

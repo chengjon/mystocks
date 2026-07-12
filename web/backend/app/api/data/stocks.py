@@ -1,9 +1,10 @@
+"""股票基础信息路由 (Stocks Basic Info)
 """
-股票基础信息路由 (Stocks Basic Info)
-"""
+
 import os
 from datetime import datetime
 from typing import Any, Dict, Optional
+
 from fastapi import APIRouter, Depends, Query
 
 from app.core.database import db_service
@@ -11,14 +12,12 @@ from app.core.exceptions import BusinessException
 from app.core.responses import ErrorCodes, create_error_response
 from app.core.security import User, get_current_user
 
+
 router = APIRouter()
 
 
 def _runtime_fallback_enabled() -> bool:
-    return (
-        os.getenv("TESTING", "false").lower() == "true"
-        or os.getenv("DEVELOPMENT_MODE", "false").lower() == "true"
-    )
+    return os.getenv("TESTING", "false").lower() == "true" or os.getenv("DEVELOPMENT_MODE", "false").lower() == "true"
 
 
 def _normalize_market_code(symbol: str, raw_market: str) -> str:
@@ -81,10 +80,7 @@ def _build_runtime_stocks_basic_result(params: Dict[str, Any]) -> Dict[str, Any]
         rows.append(normalized)
 
     if search:
-        rows = [
-            row for row in rows
-            if search in str(row["symbol"]).lower() or search in str(row["name"]).lower()
-        ]
+        rows = [row for row in rows if search in str(row["symbol"]).lower() or search in str(row["name"]).lower()]
 
     if industry:
         rows = [row for row in rows if str(row.get("industry", "")) == industry]
@@ -106,6 +102,7 @@ def _build_runtime_stocks_basic_result(params: Dict[str, Any]) -> Dict[str, Any]
         "source": "runtime_fallback",
     }
 
+
 @router.get("/stocks/basic")
 async def get_stocks_basic(
     limit: int = Query(100, ge=1, le=1000, description="返回记录数限制"),
@@ -115,7 +112,7 @@ async def get_stocks_basic(
     concept: Optional[str] = Query(None, description="概念筛选"),
     market: Optional[str] = Query(None, description="市场筛选: SH/SZ"),
     sort_field: Optional[str] = Query(
-        None, description="排序字段: symbol,name,industry,price,change_pct,turnover,volume"
+        None, description="排序字段: symbol,name,industry,price,change_pct,turnover,volume",
     ),
     sort_order: Optional[str] = Query(None, description="排序方向: asc,desc"),
     current_user: User = Depends(get_current_user),
@@ -173,7 +170,8 @@ async def get_stocks_basic(
                 "source": fallback_result.get("source", "runtime_fallback"),
                 "message": fallback_result.get("message", "查询成功"),
             }
-        raise BusinessException(detail=f"查询失败: {str(e)}", status_code=500)
+        raise BusinessException(detail=f"查询失败: {e!s}", status_code=500)
+
 
 @router.get("/stocks/industries")
 async def get_stocks_industries(current_user: User = Depends(get_current_user)) -> Dict[str, Any]:
@@ -189,12 +187,20 @@ async def get_stocks_industries(current_user: User = Depends(get_current_user)) 
             return {"success": True, "data": [], "total": 0}
 
         industries = sorted(df["industry"].dropna().unique().tolist())
-        industry_list = [{"industry_name": ind, "industry_code": f"IND_{i+1:03d}"} for i, ind in enumerate(industries)]
-        result = {"success": True, "data": industry_list, "total": len(industry_list), "timestamp": datetime.now().isoformat()}
+        industry_list = [
+            {"industry_name": ind, "industry_code": f"IND_{i + 1:03d}"} for i, ind in enumerate(industries)
+        ]
+        result = {
+            "success": True,
+            "data": industry_list,
+            "total": len(industry_list),
+            "timestamp": datetime.now().isoformat(),
+        }
         db_service.set_cache_data(cache_key, result, ttl=3600)
         return result
     except Exception as e:
         return create_error_response(ErrorCodes.DATABASE_ERROR, str(e)).model_dump()
+
 
 @router.get("/stocks/concepts")
 async def get_stocks_concepts(current_user: User = Depends(get_current_user)) -> Dict[str, Any]:
@@ -210,11 +216,17 @@ async def get_stocks_concepts(current_user: User = Depends(get_current_user)) ->
             return {"success": True, "data": [], "total": 0}
 
         concept_list = [{"concept_name": row["name"], "concept_code": row["code"]} for _, row in df.iterrows()]
-        result = {"success": True, "data": concept_list, "total": len(concept_list), "timestamp": datetime.now().isoformat()}
+        result = {
+            "success": True,
+            "data": concept_list,
+            "total": len(concept_list),
+            "timestamp": datetime.now().isoformat(),
+        }
         db_service.set_cache_data(cache_key, result, ttl=3600)
         return result
     except Exception as e:
         return create_error_response(ErrorCodes.DATABASE_ERROR, str(e)).model_dump()
+
 
 @router.get("/stocks/search")
 async def search_stocks(
@@ -225,6 +237,7 @@ async def search_stocks(
     """股票搜索接口"""
     try:
         from app.services.data_source_factory import get_data_source_factory
+
         factory = await get_data_source_factory()
         result = await factory.get_data("data", "stocks/search", {"keyword": keyword, "limit": limit})
         if result.get("status") == "success":
@@ -241,6 +254,7 @@ async def search_stocks(
     except Exception as e:
         raise BusinessException(detail=str(e), status_code=500)
 
+
 @router.get("/stocks/{symbol}/detail")
 async def get_stock_detail(symbol: str, current_user: User = Depends(get_current_user)) -> Dict[str, Any]:
     """获取股票详细信息 — OpenStock 真实数据"""
@@ -252,10 +266,9 @@ async def get_stock_detail(symbol: str, current_user: User = Depends(get_current
 
         # 复用 /market/quotes 的 OpenStock 真实数据管道
         from app.services.data_source_factory import get_data_source_factory
+
         factory = await get_data_source_factory()
-        result = await factory.get_data_with_fallback(
-            "openstock_market", "quotes", {"symbols": [symbol]}
-        )
+        result = await factory.get_data_with_fallback("openstock_market", "quotes", {"symbols": [symbol]})
 
         quote = None
         if result.get("status") == "success" and result.get("data"):
@@ -283,7 +296,8 @@ async def get_stock_detail(symbol: str, current_user: User = Depends(get_current
                 "symbol": symbol,
                 "name": str(symbol),
                 "market": "SH" if symbol.startswith("6") else "SZ",
-                "price": 0, "change_pct": 0,
+                "price": 0,
+                "change_pct": 0,
             }
 
         result_out = {"success": True, "data": stock_detail, "timestamp": datetime.now().isoformat()}

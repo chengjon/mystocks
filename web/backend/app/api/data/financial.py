@@ -1,10 +1,11 @@
-"""
-财务数据路由 (Financial Data)
+"""财务数据路由 (Financial Data)
 """
 from typing import Any, Dict
+
 from fastapi import APIRouter, Depends
 
 from app.core.security import User, get_current_user
+
 
 router = APIRouter()
 

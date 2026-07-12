@@ -1,11 +1,12 @@
+"""风险告警与规则扩展路由 (V3.1)
 """
-风险告警与规则扩展路由 (V3.1)
-"""
-import structlog
 from typing import Any, Dict, List
+
+import structlog
 from fastapi import APIRouter
 
 from app.core.exceptions import BusinessException
+
 
 # 导入Week 4-5的新增组件
 try:
@@ -37,11 +38,11 @@ async def send_risk_alert(request: Dict[str, Any]) -> Dict[str, Any]:
 
         if "symbol" in request:
             result = await notification_manager.send_stock_risk_alert(
-                symbol=request["symbol"], risk_level=severity, risk_metrics=request.get("metrics", {})
+                symbol=request["symbol"], risk_level=severity, risk_metrics=request.get("metrics", {}),
             )
         else:
             result = await notification_manager.send_risk_alert(
-                alert_type=alert_type, severity=severity, message=request.get("message", "")
+                alert_type=alert_type, severity=severity, message=request.get("message", ""),
             )
         return result
     except Exception as e:
@@ -58,7 +59,7 @@ async def evaluate_alert_rules(request: Dict[str, Any]) -> List[Dict[str, Any]]:
     context = AlertContext(
         symbol=request.get("symbol"),
         portfolio_id=request.get("portfolio_id"),
-        metrics=request.get("metrics", {})
+        metrics=request.get("metrics", {}),
     )
     results = await get_alert_rule_engine().evaluate_rules(context)
     return [{"rule_id": r.rule_id, "severity": r.severity.value} for r in results]

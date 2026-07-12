@@ -1,5 +1,4 @@
-"""
-Momentum Strategy
+"""Momentum Strategy
 
 动量策略模板 - 追涨杀跌
 """
@@ -10,8 +9,7 @@ from app.backtest.strategies.base import BaseStrategy, SignalType, StrategySigna
 
 
 class MomentumStrategy(BaseStrategy):
-    """
-    动量策略
+    """动量策略
 
     核心逻辑：
     - 价格突破均线一定比例时买入
@@ -97,7 +95,6 @@ class MomentumStrategy(BaseStrategy):
         position: Optional[Dict[str, Any]] = None,
     ) -> Optional[StrategySignal]:
         """生成交易信号"""
-
         # 更新历史数据
         self.update_history(symbol, current_data)
 

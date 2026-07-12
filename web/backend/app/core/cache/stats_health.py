@@ -1,12 +1,9 @@
 """缓存管理器子模块"""
 
 import logging
-import time
-from collections import OrderedDict
-from datetime import datetime, timezone, timedelta
-from typing import Any, Dict, List, Optional, Union
+from datetime import datetime, timedelta, timezone
+from typing import Any, Dict, List, Optional
 
-import pandas as pd
 
 logger = logging.getLogger(__name__)
 
@@ -15,8 +12,7 @@ class CacheStatsHealthMixin:
     """缓存统计、内存管理、健康检查"""
 
     async def is_cache_valid(self, symbol: str, data_type: str, max_age_days: int = 7) -> bool:
-        """
-        检查三级缓存的有效性
+        """检查三级缓存的有效性
 
         Args:
             symbol: 股票代码
@@ -25,6 +21,7 @@ class CacheStatsHealthMixin:
 
         Returns:
             True 如果缓存有效且未过期，False 否则
+
         """
         try:
             # 优先检查L1内存缓存
@@ -136,8 +133,7 @@ class CacheStatsHealthMixin:
             return False
 
     def get_cache_key(self, symbol: str, data_type: str, timeframe: str = "1d") -> str:
-        """
-        生成缓存键
+        """生成缓存键
 
         Args:
             symbol: 股票代码
@@ -146,17 +142,18 @@ class CacheStatsHealthMixin:
 
         Returns:
             缓存键字符串
+
         """
         return f"{data_type}:{symbol}:{timeframe}".lower()
 
     # ==================== 统计与监控 ====================
 
     def get_cache_stats(self) -> Dict[str, Any]:
-        """
-        获取缓存统计信息 (增强版)
+        """获取缓存统计信息 (增强版)
 
         Returns:
             统计信息字典
+
         """
         hit_rate = self._calculate_hit_rate()
         avg_response_time = self._cache_stats["total_response_time"] / max(self._cache_stats["reads"], 1)
@@ -431,11 +428,11 @@ class CacheStatsHealthMixin:
     # ==================== 生命周期 ====================
 
     def health_check(self) -> Dict[str, Any]:
-        """
-        健康检查 (增强版)
+        """健康检查 (增强版)
 
         Returns:
             健康状态字典
+
         """
         health_status: Dict[str, Any] = {
             "overall_healthy": True,
@@ -508,7 +505,7 @@ class CacheStatsHealthMixin:
             logger.error("❌ 缓存系统健康检查失败", error=str(e))
             health_status["overall_healthy"] = False
             error_issues: List[str] = health_status["issues"]
-            error_issues.append(f"Health check error: {str(e)}")
+            error_issues.append(f"Health check error: {e!s}")
             return health_status
 
     def close(self) -> None:
@@ -523,16 +520,15 @@ class CacheStatsHealthMixin:
 
 # ==================== 全局单例管理 ====================
 
-_cache_manager: Optional['CacheManager'] = None
+_cache_manager: Optional["CacheManager"] = None
 REDIS_CACHE_AVAILABLE = False
 
 
 async def get_cache_manager_async(
     tdengine_manager: Optional[Any] = None,
     redis_cache: Optional[Any] = None,
-) -> 'CacheManager':
-    """
-    获取异步缓存管理器单例 (支持Redis注入)
+) -> "CacheManager":
+    """获取异步缓存管理器单例 (支持Redis注入)
 
     Args:
         tdengine_manager: TDengineManager 实例
@@ -540,6 +536,7 @@ async def get_cache_manager_async(
 
     Returns:
         CacheManager 单例实例
+
     """
     global _cache_manager
 

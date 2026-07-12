@@ -1,5 +1,4 @@
-"""
-邮件发送服务模块
+"""邮件发送服务模块
 从 OpenStock 迁移，适配 FastAPI 架构
 支持欢迎邮件、每日新闻简报等功能
 """
@@ -12,6 +11,7 @@ from email.header import Header
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from typing import Dict, List
+
 
 logger = logging.getLogger(__name__)
 
@@ -27,8 +27,7 @@ class EmailService:
         password: str = None,
         use_tls: bool = True,
     ):
-        """
-        初始化邮件服务
+        """初始化邮件服务
 
         Args:
             smtp_host: SMTP服务器地址（默认从环境变量读取）
@@ -36,6 +35,7 @@ class EmailService:
             username: 邮箱用户名（默认从环境变量读取）
             password: 邮箱密码或应用密码（默认从环境变量读取）
             use_tls: 是否使用TLS加密
+
         """
         self.smtp_host = smtp_host or os.getenv("SMTP_HOST", "smtp.gmail.com")
         self.smtp_port = smtp_port or int(os.getenv("SMTP_PORT", "587"))
@@ -48,11 +48,11 @@ class EmailService:
             logger.warning("邮件服务未配置：请设置 SMTP_USERNAME 和 SMTP_PASSWORD 环境变量")
 
     def is_configured(self) -> bool:
-        """
-        检查邮件服务是否已配置
+        """检查邮件服务是否已配置
 
         Returns:
             bool: 是否已配置
+
         """
         return bool(self.username and self.password)
 
@@ -64,8 +64,7 @@ class EmailService:
         content_type: str = "plain",
         from_name: str = None,
     ) -> Dict[str, any]:
-        """
-        发送邮件
+        """发送邮件
 
         Args:
             to_addresses: 收件人地址列表
@@ -76,6 +75,7 @@ class EmailService:
 
         Returns:
             Dict: 发送结果 {"success": bool, "message": str}
+
         """
         if not self.is_configured():
             return {"success": False, "message": "邮件服务未配置，请设置 SMTP 环境变量"}
@@ -105,13 +105,12 @@ class EmailService:
                 "message": f"邮件已发送至 {', '.join(to_addresses)}",
             }
         except Exception as e:
-            error_msg = f"发送邮件失败: {str(e)}"
+            error_msg = f"发送邮件失败: {e!s}"
             logger.exception(error_msg)
             return {"success": False, "message": error_msg}
 
     def send_welcome_email(self, user_email: str, user_name: str) -> Dict[str, any]:
-        """
-        发送欢迎邮件
+        """发送欢迎邮件
 
         Args:
             user_email: 用户邮箱
@@ -119,6 +118,7 @@ class EmailService:
 
         Returns:
             Dict: 发送结果
+
         """
         subject = "欢迎使用 MyStocks 量化交易平台"
         content = f"""
@@ -161,8 +161,7 @@ class EmailService:
         watchlist_symbols: List[str],
         news_data: List[Dict],
     ) -> Dict[str, any]:
-        """
-        发送每日新闻简报
+        """发送每日新闻简报
 
         Args:
             user_email: 用户邮箱
@@ -172,6 +171,7 @@ class EmailService:
 
         Returns:
             Dict: 发送结果
+
         """
         today = datetime.now().strftime("%Y年%m月%d日")
         subject = f"{today} MyStocks 每日新闻简报"
@@ -251,8 +251,7 @@ class EmailService:
         alert_condition: str,
         alert_price: float,
     ) -> Dict[str, any]:
-        """
-        发送价格提醒邮件
+        """发送价格提醒邮件
 
         Args:
             user_email: 用户邮箱
@@ -265,6 +264,7 @@ class EmailService:
 
         Returns:
             Dict: 发送结果
+
         """
         subject = f"价格提醒：{stock_name}({symbol}) 已{alert_condition} {alert_price}"
 
@@ -320,11 +320,11 @@ _email_service = None
 
 
 def get_email_service() -> EmailService:
-    """
-    获取邮件服务实例（单例）
+    """获取邮件服务实例（单例）
 
     Returns:
         EmailService: 邮件服务实例
+
     """
     global _email_service
     if _email_service is None:

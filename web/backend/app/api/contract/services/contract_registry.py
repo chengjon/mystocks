@@ -1,5 +1,4 @@
-"""
-API 契约注册中心
+"""API 契约注册中心
 
 自动注册所有 API 端点到契约管理系统。
 确保每个端点都有对应的契约定义。
@@ -9,6 +8,7 @@ import logging
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
+
 
 logger = logging.getLogger(__name__)
 
@@ -38,11 +38,11 @@ class ContractRegistry:
         self.modules: Dict[str, Dict] = {}
 
     def register_from_openapi(self, openapi_spec: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        从 OpenAPI spec 注册所有端点契约
+        """从 OpenAPI spec 注册所有端点契约
 
         Returns:
             注册报告
+
         """
         registered = 0
         skipped = 0
@@ -118,7 +118,7 @@ class ContractRegistry:
             if module not in self.modules:
                 self.modules[module] = {"name": module, "endpoints": [], "total": 0, "registered": 0}
             self.modules[module]["endpoints"].append(
-                {"path": contract.path, "method": contract.method, "operation_id": contract.operation_id}
+                {"path": contract.path, "method": contract.method, "operation_id": contract.operation_id},
             )
             self.modules[module]["total"] += 1
 
@@ -133,7 +133,7 @@ class ContractRegistry:
                         "path": contract.path,
                         "method": contract.method,
                         "operation_id": contract.operation_id,
-                    }
+                    },
                 )
         return unregistered
 

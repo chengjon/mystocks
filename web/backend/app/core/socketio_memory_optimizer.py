@@ -1,5 +1,4 @@
-"""
-WebSocket内存优化和清理
+"""WebSocket内存优化和清理
 WebSocket Memory Optimization - Memory Management and Cleanup
 
 Task 14.2: WebSocket性能优化
@@ -25,6 +24,7 @@ from typing import Any, Dict, List, Optional
 
 import psutil
 import structlog
+
 
 logger = structlog.get_logger()
 
@@ -69,14 +69,14 @@ class WebSocketMemoryOptimizer:
         gc_interval: int = 300,
         monitor_interval: int = 30,
     ):
-        """
-        初始化内存优化器
+        """初始化内存优化器
 
         Args:
             max_memory_percent: 最大内存占用百分比
             cleanup_interval: 清理间隔（秒）
             gc_interval: 垃圾回收间隔（秒）
             monitor_interval: 监控间隔（秒）
+
         """
         self.max_memory_percent = max_memory_percent
         self.cleanup_interval = cleanup_interval
@@ -112,12 +112,12 @@ class WebSocketMemoryOptimizer:
         )
 
     def register_pressure_callback(self, pressure_level: MemoryPressureLevel, callback: callable) -> None:
-        """
-        注册内存压力回调
+        """注册内存压力回调
 
         Args:
             pressure_level: 内存压力级别
             callback: 回调函数
+
         """
         self.pressure_callbacks[pressure_level].append(callback)
         logger.info(

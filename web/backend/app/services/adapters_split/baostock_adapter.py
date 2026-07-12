@@ -1,14 +1,15 @@
-"""
-Baostock东方财富数据源适配器
+"""Baostock东方财富数据源适配器
 
 提供Baostock中国历史数据获取功能，支持复权数据、高质量历史数据等
 """
 
 from typing import Dict, List, Optional
 
-from .base_adapter import BaseAdapter
 from app.core.database import db_service
 from app.services.data_quality_monitor import get_data_quality_monitor
+
+from .base_adapter import BaseAdapter
+
 
 logger = __import__("logging").getLogger(__name__)
 
@@ -63,16 +64,15 @@ class BaostockAdapter(BaseAdapter):
                 }
                 self._log_data_quality(stock_info, "get_stock_basic")
                 return stock_info
-            else:
-                self._log_request_error("get_stock_basic", Exception("股票不存在"))
-                return None
+            self._log_request_error("get_stock_basic", Exception("股票不存在"))
+            return None
 
         except Exception as e:
             self._log_request_error("get_stock_basic", e)
             return None
 
     async def get_stock_daily(
-        self, stock_code: str, start_date: str, end_date: str, adj_type: str = "qfq"
+        self, stock_code: str, start_date: str, end_date: str, adj_type: str = "qfq",
     ) -> Optional[List[Dict]]:
         """获取日线数据"""
         try:
@@ -109,13 +109,12 @@ class BaostockAdapter(BaseAdapter):
                             "volume": result["volume"],
                             "amount": result["amount"],
                             "adj_factor": result["adj_factor"],
-                        }
+                        },
                     )
                 self._log_data_quality(daily_data, "get_stock_daily")
                 return daily_data
-            else:
-                self._log_request_error("get_stock_daily", Exception("未返回数据"))
-                return []
+            self._log_request_error("get_stock_daily", Exception("未返回数据"))
+            return []
 
         except Exception as e:
             self._log_request_error("get_stock_daily", e)
@@ -157,7 +156,7 @@ class BaostockAdapter(BaseAdapter):
                             "volume": result["volume"],
                             "turnover": result["turnover"],
                             "quote_time": result["quote_time"].isoformat() if result["quote_time"] else "",
-                        }
+                        },
                     )
 
             self._log_request_success("get_realtime_quotes", f"返回{len(quotes)}条实时行情")
@@ -204,13 +203,12 @@ class BaostockAdapter(BaseAdapter):
                             "ex_div_price": result["ex_div_price"],
                             "bonus_ratio": result["bonus_ratio"],
                             "bonus_type": result["bonus_type"],
-                        }
+                        },
                     )
                 self._log_data_quality(dividend_data, "get_dividend_data")
                 return dividend_data
-            else:
-                self._log_request_error("get_dividend_data", Exception("未返回数据"))
-                return []
+            self._log_request_error("get_dividend_data", Exception("未返回数据"))
+            return []
 
         except Exception as e:
             self._log_request_error("get_dividend_data", e)
@@ -228,9 +226,8 @@ class BaostockAdapter(BaseAdapter):
             if result and result["count"] > 0:
                 self._log_request_success("check_health", "Baostock数据源健康")
                 return "healthy"
-            else:
-                self._log_request_error("check_health", Exception("Baostock数据源不可用"))
-                return "unhealthy"
+            self._log_request_error("check_health", Exception("Baostock数据源不可用"))
+            return "unhealthy"
 
         except Exception as e:
             self._log_request_error("check_health", e)

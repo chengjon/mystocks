@@ -1,5 +1,4 @@
-"""
-# pylint: disable=no-member  # TODO: 实现缺失的 GPU/业务方法
+"""# pylint: disable=no-member  # TODO: 实现缺失的 GPU/业务方法
 FastAPI Integration for Advanced Quantitative Analysis
 A股量化分析平台高级分析功能API接口
 
@@ -19,6 +18,7 @@ from src.advanced_analysis import AdvancedAnalysisEngine, AnalysisType
 from src.core import MyStocksUnifiedManager
 from src.monitoring import AlertManager
 
+
 logger = logging.getLogger(__name__)
 
 # Initialize components
@@ -35,7 +35,7 @@ class AnalysisRequest(BaseModel):
 
     stock_code: str = Field(..., description="股票代码", example="600000")
     analysis_types: Optional[List[str]] = Field(
-        None, description="分析类型列表，不指定则执行所有分析", example=["fundamental", "technical", "trading_signals"]
+        None, description="分析类型列表，不指定则执行所有分析", example=["fundamental", "technical", "trading_signals"],
     )
     include_raw_data: bool = Field(False, description="是否包含原始数据", example=False)
 
@@ -61,7 +61,7 @@ class TradingSignalsRequest(AnalysisRequest):
     """交易信号分析请求"""
 
     signal_types: Optional[List[str]] = Field(
-        None, description="信号类型过滤", example=["long_term", "short_term", "real_time"]
+        None, description="信号类型过滤", example=["long_term", "short_term", "real_time"],
     )
     min_confidence: float = Field(0.5, description="最小置信度", ge=0, le=1, example=0.5)
 
@@ -110,8 +110,7 @@ class BatchAnalysisRequest(BaseModel):
 
 @router.post("/fundamental", response_model=AnalysisResponse)
 async def analyze_fundamental(request: FundamentalAnalysisRequest):
-    """
-    基本面分析接口
+    """基本面分析接口
 
     执行股票的基本面分析，包括财务比率计算、评分和估值分析。
     """
@@ -138,20 +137,19 @@ async def analyze_fundamental(request: FundamentalAnalysisRequest):
         processing_time = (datetime.now() - start_time).total_seconds()
 
         return AnalysisResponse(
-            success=True, code=0, message="基本面分析完成", data=result, processing_time=processing_time
+            success=True, code=0, message="基本面分析完成", data=result, processing_time=processing_time,
         )
 
     except Exception as e:
         processing_time = (datetime.now() - start_time).total_seconds()
         return AnalysisResponse(
-            success=False, code=500, message=f"基本面分析失败: {str(e)}", processing_time=processing_time
+            success=False, code=500, message=f"基本面分析失败: {e!s}", processing_time=processing_time,
         )
 
 
 @router.post("/technical", response_model=AnalysisResponse)
 async def analyze_technical(request: TechnicalAnalysisRequest):
-    """
-    技术分析接口
+    """技术分析接口
 
     执行股票的技术分析，包括指标计算、信号生成和市场状态识别。
     """
@@ -179,20 +177,19 @@ async def analyze_technical(request: TechnicalAnalysisRequest):
         processing_time = (datetime.now() - start_time).total_seconds()
 
         return AnalysisResponse(
-            success=True, code=0, message="技术分析完成", data=result, processing_time=processing_time
+            success=True, code=0, message="技术分析完成", data=result, processing_time=processing_time,
         )
 
     except Exception as e:
         processing_time = (datetime.now() - start_time).total_seconds()
         return AnalysisResponse(
-            success=False, code=500, message=f"技术分析失败: {str(e)}", processing_time=processing_time
+            success=False, code=500, message=f"技术分析失败: {e!s}", processing_time=processing_time,
         )
 
 
 @router.post("/trading-signals", response_model=AnalysisResponse)
 async def analyze_trading_signals(request: TradingSignalsRequest):
-    """
-    交易信号分析接口
+    """交易信号分析接口
 
     执行股票的交易信号分析，包括买卖点计算和预警。
     """
@@ -218,20 +215,19 @@ async def analyze_trading_signals(request: TradingSignalsRequest):
         processing_time = (datetime.now() - start_time).total_seconds()
 
         return AnalysisResponse(
-            success=True, code=0, message="交易信号分析完成", data=result, processing_time=processing_time
+            success=True, code=0, message="交易信号分析完成", data=result, processing_time=processing_time,
         )
 
     except Exception as e:
         processing_time = (datetime.now() - start_time).total_seconds()
         return AnalysisResponse(
-            success=False, code=500, message=f"交易信号分析失败: {str(e)}", processing_time=processing_time
+            success=False, code=500, message=f"交易信号分析失败: {e!s}", processing_time=processing_time,
         )
 
 
 @router.post("/multidimensional-radar", response_model=AnalysisResponse)
 async def analyze_multidimensional_radar(request: AnalysisRequest):
-    """
-    多维度雷达分析接口
+    """多维度雷达分析接口
 
     执行股票的多维度雷达分析，整合所有8个核心分析维度：
     - 基本面分析
@@ -265,20 +261,19 @@ async def analyze_multidimensional_radar(request: AnalysisRequest):
         processing_time = (datetime.now() - start_time).total_seconds()
 
         return AnalysisResponse(
-            success=True, code=0, message="多维度雷达分析完成", data=result, processing_time=processing_time
+            success=True, code=0, message="多维度雷达分析完成", data=result, processing_time=processing_time,
         )
 
     except Exception as e:
         processing_time = (datetime.now() - start_time).total_seconds()
         return AnalysisResponse(
-            success=False, code=500, message=f"多维度雷达分析失败: {str(e)}", processing_time=processing_time
+            success=False, code=500, message=f"多维度雷达分析失败: {e!s}", processing_time=processing_time,
         )
 
 
 @router.post("/comprehensive", response_model=AnalysisResponse)
 async def comprehensive_analysis(request: ComprehensiveAnalysisRequest, background_tasks: BackgroundTasks):
-    """
-    综合分析接口
+    """综合分析接口
 
     执行股票的全面量化分析，包括基本面、技术面、交易信号等多维度分析。
     支持异步执行和批量处理。
@@ -314,31 +309,29 @@ async def comprehensive_analysis(request: ComprehensiveAnalysisRequest, backgrou
             background_tasks.add_task(_execute_comprehensive_analysis_async, request.stock_code, analysis_types, params)
 
             return AnalysisResponse(
-                success=True, code=0, message="综合分析已提交异步执行", data={"status": "processing", "async": True}
+                success=True, code=0, message="综合分析已提交异步执行", data={"status": "processing", "async": True},
             )
-        else:
-            # 同步执行
-            result = await asyncio.get_event_loop().run_in_executor(
-                None, analysis_engine.comprehensive_analysis, request.stock_code, analysis_types, params
-            )
+        # 同步执行
+        result = await asyncio.get_event_loop().run_in_executor(
+            None, analysis_engine.comprehensive_analysis, request.stock_code, analysis_types, params,
+        )
 
-            processing_time = (datetime.now() - start_time).total_seconds()
+        processing_time = (datetime.now() - start_time).total_seconds()
 
-            return AnalysisResponse(
-                success=True, code=0, message="综合分析完成", data=result, processing_time=processing_time
-            )
+        return AnalysisResponse(
+            success=True, code=0, message="综合分析完成", data=result, processing_time=processing_time,
+        )
 
     except Exception as e:
         processing_time = (datetime.now() - start_time).total_seconds()
         return AnalysisResponse(
-            success=False, code=500, message=f"综合分析失败: {str(e)}", processing_time=processing_time
+            success=False, code=500, message=f"综合分析失败: {e!s}", processing_time=processing_time,
         )
 
 
 @router.post("/batch", response_model=AnalysisResponse)
 async def batch_analysis(request: BatchAnalysisRequest, background_tasks: BackgroundTasks):
-    """
-    批量分析接口
+    """批量分析接口
 
     对多个股票执行批量分析，支持优先级调度。
     """
@@ -357,7 +350,7 @@ async def batch_analysis(request: BatchAnalysisRequest, background_tasks: Backgr
 
         # 异步批量处理
         background_tasks.add_task(
-            _execute_batch_analysis_async, request.stock_codes, analysis_types, request.parameters, request.priority
+            _execute_batch_analysis_async, request.stock_codes, analysis_types, request.parameters, request.priority,
         )
 
         return AnalysisResponse(
@@ -370,14 +363,13 @@ async def batch_analysis(request: BatchAnalysisRequest, background_tasks: Backgr
     except Exception as e:
         processing_time = (datetime.now() - start_time).total_seconds()
         return AnalysisResponse(
-            success=False, code=500, message=f"批量分析提交失败: {str(e)}", processing_time=processing_time
+            success=False, code=500, message=f"批量分析提交失败: {e!s}", processing_time=processing_time,
         )
 
 
 @router.get("/market-overview", response_model=AnalysisResponse)
 async def get_market_overview():
-    """
-    市场全景分析接口
+    """市场全景分析接口
 
     获取当前市场的全景分析，包括资金流向、交易活跃度、趋势变化等。
     """
@@ -389,20 +381,19 @@ async def get_market_overview():
         processing_time = (datetime.now() - start_time).total_seconds()
 
         return AnalysisResponse(
-            success=True, code=0, message="市场全景分析完成", data=result, processing_time=processing_time
+            success=True, code=0, message="市场全景分析完成", data=result, processing_time=processing_time,
         )
 
     except Exception as e:
         processing_time = (datetime.now() - start_time).total_seconds()
         return AnalysisResponse(
-            success=False, code=500, message=f"市场全景分析失败: {str(e)}", processing_time=processing_time
+            success=False, code=500, message=f"市场全景分析失败: {e!s}", processing_time=processing_time,
         )
 
 
 @router.get("/realtime-alerts/{stock_code}", response_model=AnalysisResponse)
 async def get_realtime_alerts(stock_code: str):
-    """
-    实时预警接口
+    """实时预警接口
 
     获取指定股票的实时分析预警信息。
     """
@@ -424,7 +415,7 @@ async def get_realtime_alerts(stock_code: str):
     except Exception as e:
         processing_time = (datetime.now() - start_time).total_seconds()
         return AnalysisResponse(
-            success=False, code=500, message=f"获取实时预警失败: {str(e)}", processing_time=processing_time
+            success=False, code=500, message=f"获取实时预警失败: {e!s}", processing_time=processing_time,
         )
 
 
@@ -441,7 +432,7 @@ async def health_check():
 
 # Background task functions
 async def _execute_comprehensive_analysis_async(
-    stock_code: str, analysis_types: Optional[List[AnalysisType]], params: Dict[str, Any]
+    stock_code: str, analysis_types: Optional[List[AnalysisType]], params: Dict[str, Any],
 ):
     """异步执行综合分析"""
     try:

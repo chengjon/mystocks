@@ -1,5 +1,4 @@
-"""
-TDX数据API的Pydantic模型定义
+"""TDX数据API的Pydantic模型定义
 """
 
 from typing import List, Optional
@@ -48,8 +47,8 @@ class RealTimeQuoteResponse(BaseModel):
                 "timestamp": "2025-10-15 14:30:00",
                 "change": 5.50,
                 "change_pct": 0.30,
-            }
-        }
+            },
+        },
     )
 
 
@@ -74,8 +73,8 @@ class KlineDataPoint(BaseModel):
                 "close": 1848.50,
                 "volume": 12345,
                 "amount": 22800000.00,
-            }
-        }
+            },
+        },
     )
 
 
@@ -101,11 +100,11 @@ class KlineResponse(BaseModel):
                         "close": 1848.50,
                         "volume": 12345,
                         "amount": 22800000.00,
-                    }
+                    },
                 ],
                 "count": 1,
-            }
-        }
+            },
+        },
     )
 
 
@@ -140,8 +139,8 @@ class IndexQuoteResponse(BaseModel):
                 "change": 5.50,
                 "change_pct": 0.17,
                 "timestamp": "2025-10-15 14:30:00",
-            }
-        }
+            },
+        },
     )
 
 
@@ -158,8 +157,8 @@ class ErrorResponse(BaseModel):
                 "error": "InvalidParameter",
                 "message": "无效的股票代码",
                 "detail": "股票代码必须为6位数字",
-            }
-        }
+            },
+        },
     )
 
 

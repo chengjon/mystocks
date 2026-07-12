@@ -1,5 +1,4 @@
-"""
-User Database Repository
+"""User Database Repository
 Handles all user-related database operations with proper error handling
 """
 
@@ -12,11 +11,14 @@ from sqlalchemy.orm import Session
 
 from app.core.security import UserInDB
 
+
 logger = logging.getLogger(__name__)
 
 try:
     from src.core.exceptions import (
         DatabaseOperationError as _BaseDatabaseOperationError,
+    )
+    from src.core.exceptions import (
         DataValidationError as _BaseDataValidationError,
     )
 except ImportError:
@@ -58,17 +60,16 @@ class UserRepository:
     """User repository with database access and error handling"""
 
     def __init__(self, session: Session):
-        """
-        Initialize user repository with database session
+        """Initialize user repository with database session
 
         Args:
             session: SQLAlchemy database session
+
         """
         self.session = session
 
     def get_user_by_username(self, username: str) -> Optional[UserInDB]:
-        """
-        Retrieve user from database by username
+        """Retrieve user from database by username
 
         Args:
             username: Username to look up
@@ -80,6 +81,7 @@ class UserRepository:
             DatabaseConnectionError: If database connection fails
             DataValidationError: If username is invalid
             DatabaseOperationError: If query execution fails
+
         """
         if not username or not isinstance(username, str):
             raise DataValidationError(
@@ -96,7 +98,7 @@ class UserRepository:
                 FROM users
                 WHERE username = :username AND is_active = true
                 LIMIT 1
-                """
+                """,
             )
 
             result = self.session.execute(query, {"username": username}).fetchone()
@@ -117,22 +119,20 @@ class UserRepository:
         except SQLAlchemyError as e:
             if "connection" in str(e).lower():
                 raise DatabaseConnectionError(
-                    message=f"Failed to connect to database when looking up user: {str(e)}",
+                    message=f"Failed to connect to database when looking up user: {e!s}",
                     code="DB_CONNECTION_FAILED",
                     severity="CRITICAL",
                     original_exception=e,
                 )
-            else:
-                raise DatabaseOperationError(
-                    message=f"Database query failed for user lookup: {str(e)}",
-                    code="DB_QUERY_FAILED",
-                    severity="HIGH",
-                    original_exception=e,
-                )
+            raise DatabaseOperationError(
+                message=f"Database query failed for user lookup: {e!s}",
+                code="DB_QUERY_FAILED",
+                severity="HIGH",
+                original_exception=e,
+            )
 
     def get_user_by_id(self, user_id: int) -> Optional[UserInDB]:
-        """
-        Retrieve user from database by ID
+        """Retrieve user from database by ID
 
         Args:
             user_id: User ID to look up
@@ -144,6 +144,7 @@ class UserRepository:
             DatabaseConnectionError: If database connection fails
             DataValidationError: If user_id is invalid
             DatabaseOperationError: If query execution fails
+
         """
         if not isinstance(user_id, int) or user_id <= 0:
             raise DataValidationError(
@@ -159,7 +160,7 @@ class UserRepository:
                 FROM users
                 WHERE id = :user_id AND is_active = true
                 LIMIT 1
-                """
+                """,
             )
 
             result = self.session.execute(query, {"user_id": user_id}).fetchone()
@@ -179,22 +180,20 @@ class UserRepository:
         except SQLAlchemyError as e:
             if "connection" in str(e).lower():
                 raise DatabaseConnectionError(
-                    message=f"Failed to connect to database when looking up user by ID: {str(e)}",
+                    message=f"Failed to connect to database when looking up user by ID: {e!s}",
                     code="DB_CONNECTION_FAILED",
                     severity="CRITICAL",
                     original_exception=e,
                 )
-            else:
-                raise DatabaseOperationError(
-                    message=f"Database query failed for user lookup by ID: {str(e)}",
-                    code="DB_QUERY_FAILED",
-                    severity="HIGH",
-                    original_exception=e,
-                )
+            raise DatabaseOperationError(
+                message=f"Database query failed for user lookup by ID: {e!s}",
+                code="DB_QUERY_FAILED",
+                severity="HIGH",
+                original_exception=e,
+            )
 
     def get_user_by_email(self, email: str) -> Optional[UserInDB]:
-        """
-        Retrieve user from database by email
+        """Retrieve user from database by email
 
         Args:
             email: Email address to look up
@@ -206,6 +205,7 @@ class UserRepository:
             DatabaseConnectionError: If database connection fails
             DataValidationError: If email is invalid
             DatabaseOperationError: If query execution fails
+
         """
         if not email or "@" not in email:
             raise DataValidationError(
@@ -221,7 +221,7 @@ class UserRepository:
                 FROM users
                 WHERE email = :email AND is_active = true
                 LIMIT 1
-                """
+                """,
             )
 
             result = self.session.execute(query, {"email": email}).fetchone()
@@ -241,22 +241,20 @@ class UserRepository:
         except SQLAlchemyError as e:
             if "connection" in str(e).lower():
                 raise DatabaseConnectionError(
-                    message=f"Failed to connect to database when looking up user by email: {str(e)}",
+                    message=f"Failed to connect to database when looking up user by email: {e!s}",
                     code="DB_CONNECTION_FAILED",
                     severity="CRITICAL",
                     original_exception=e,
                 )
-            else:
-                raise DatabaseOperationError(
-                    message=f"Database query failed for user lookup by email: {str(e)}",
-                    code="DB_QUERY_FAILED",
-                    severity="HIGH",
-                    original_exception=e,
-                )
+            raise DatabaseOperationError(
+                message=f"Database query failed for user lookup by email: {e!s}",
+                code="DB_QUERY_FAILED",
+                severity="HIGH",
+                original_exception=e,
+            )
 
     def get_all_users(self) -> List[UserInDB]:
-        """
-        Retrieve all active users from database
+        """Retrieve all active users from database
 
         Returns:
             List of UserInDB objects
@@ -264,6 +262,7 @@ class UserRepository:
         Raises:
             DatabaseConnectionError: If database connection fails
             DatabaseOperationError: If query execution fails
+
         """
         try:
             query = text(
@@ -272,7 +271,7 @@ class UserRepository:
                 FROM users
                 WHERE is_active = true
                 ORDER BY username ASC
-                """
+                """,
             )
 
             results = self.session.execute(query).fetchall()
@@ -292,18 +291,17 @@ class UserRepository:
         except SQLAlchemyError as e:
             if "connection" in str(e).lower():
                 raise DatabaseConnectionError(
-                    message=f"Failed to connect to database when retrieving users: {str(e)}",
+                    message=f"Failed to connect to database when retrieving users: {e!s}",
                     code="DB_CONNECTION_FAILED",
                     severity="CRITICAL",
                     original_exception=e,
                 )
-            else:
-                raise DatabaseOperationError(
-                    message=f"Database query failed for users retrieval: {str(e)}",
-                    code="DB_QUERY_FAILED",
-                    severity="HIGH",
-                    original_exception=e,
-                )
+            raise DatabaseOperationError(
+                message=f"Database query failed for users retrieval: {e!s}",
+                code="DB_QUERY_FAILED",
+                severity="HIGH",
+                original_exception=e,
+            )
 
     def log_user_action(
         self,
@@ -313,8 +311,7 @@ class UserRepository:
         user_agent: Optional[str] = None,
         details: Optional[dict] = None,
     ) -> bool:
-        """
-        Log user action to audit log table
+        """Log user action to audit log table
 
         Args:
             user_id: User ID (optional, for failed logins)
@@ -325,13 +322,14 @@ class UserRepository:
 
         Returns:
             True if logging succeeded, False otherwise
+
         """
         try:
             insert_query = text(
                 """
                 INSERT INTO user_audit_log (user_id, action, ip_address, user_agent, details)
                 VALUES (:user_id, :action, :ip_address, :user_agent, :details)
-                """
+                """,
             )
 
             self.session.execute(
@@ -361,8 +359,7 @@ class UserRepository:
         role: str = "user",
         is_active: bool = True,
     ) -> UserInDB:
-        """
-        Create a new user in the database
+        """Create a new user in the database
 
         Args:
             username: Username (must be unique)
@@ -378,6 +375,7 @@ class UserRepository:
             DataValidationError: If input data is invalid
             DatabaseOperationError: If username/email already exists or query fails
             DatabaseConnectionError: If database connection fails
+
         """
         # Validate input
         if not username or not isinstance(username, str):
@@ -433,7 +431,7 @@ class UserRepository:
                 INSERT INTO users (username, email, hashed_password, role, is_active)
                 VALUES (:username, :email, :hashed_password, :role, :is_active)
                 RETURNING id, username, email, hashed_password, role, is_active
-                """
+                """,
             )
 
             result = self.session.execute(
@@ -468,23 +466,22 @@ class UserRepository:
             self.session.rollback()
             if "connection" in str(e).lower():
                 raise DatabaseConnectionError(
-                    message=f"Failed to connect to database when creating user: {str(e)}",
+                    message=f"Failed to connect to database when creating user: {e!s}",
                     code="DB_CONNECTION_FAILED",
                     severity="CRITICAL",
                     original_exception=e,
                 )
-            else:
-                raise DatabaseOperationError(
-                    message=f"Database query failed for user creation: {str(e)}",
-                    code="DB_QUERY_FAILED",
-                    severity="HIGH",
-                    original_exception=e,
-                )
+            raise DatabaseOperationError(
+                message=f"Database query failed for user creation: {e!s}",
+                code="DB_QUERY_FAILED",
+                severity="HIGH",
+                original_exception=e,
+            )
 
         except Exception as e:
             self.session.rollback()
             raise DatabaseOperationError(
-                message=f"Unexpected error during user creation: {str(e)}",
+                message=f"Unexpected error during user creation: {e!s}",
                 code="USER_CREATION_FAILED",
                 severity="HIGH",
                 original_exception=e,

@@ -1,5 +1,4 @@
-"""
-WebSocket客户端重连机制管理器
+"""WebSocket客户端重连机制管理器
 
 Client Reconnection Manager - Handle auto-reconnect with message buffering
 
@@ -24,6 +23,7 @@ from typing import Any, Dict, List, Optional
 
 import structlog
 
+
 logger = structlog.get_logger()
 
 
@@ -45,13 +45,13 @@ class OfflineMessage:
         data: Dict[str, Any],
         room: Optional[str] = None,
     ):
-        """
-        初始化离线消息
+        """初始化离线消息
 
         Args:
             event: 事件名称
             data: 消息数据
             room: 房间名称
+
         """
         self.id = str(uuid.uuid4())
         self.event = event
@@ -76,11 +76,11 @@ class MessageBuffer:
     """离线消息缓冲区"""
 
     def __init__(self, max_size: int = 100):
-        """
-        初始化消息缓冲区
+        """初始化消息缓冲区
 
         Args:
             max_size: 最大缓冲消息数量
+
         """
         self.max_size = max_size
         self.messages: List[OfflineMessage] = []
@@ -155,13 +155,13 @@ class ReconnectionManager:
         max_interval: float = 30.0,
         max_retries: int = 5,
     ):
-        """
-        初始化重连管理器
+        """初始化重连管理器
 
         Args:
             base_interval: 基础重连间隔（秒）
             max_interval: 最大重连间隔（秒）
             max_retries: 最大重试次数
+
         """
         self.base_interval = base_interval
         self.max_interval = max_interval

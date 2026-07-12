@@ -1,5 +1,4 @@
-"""
-RBAC (Role-Based Access Control) Models
+"""RBAC (Role-Based Access Control) Models
 ======================================
 
 This module defines the database models for Role-Based Access Control
@@ -24,6 +23,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+
 
 Base = declarative_base()
 
@@ -360,7 +360,7 @@ class SecurityEvent(Base):
 
     # Event details
     event_type = Column(
-        String(50), nullable=False, index=True
+        String(50), nullable=False, index=True,
     )  # e.g., 'failed_login', 'rate_limit', 'suspicious_activity'
     severity = Column(String(20), nullable=False, index=True)  # 'low', 'medium', 'high', 'critical'
 

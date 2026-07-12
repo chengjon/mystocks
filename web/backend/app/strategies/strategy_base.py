@@ -1,5 +1,4 @@
-"""
-策略基类和策略注册表
+"""策略基类和策略注册表
 
 复用现有组件:
 - indicator_calculator (161个TA-Lib指标) - EXISTING
@@ -12,6 +11,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 
 import pandas as pd
+
 
 logger = logging.getLogger(__name__)
 
@@ -26,8 +26,7 @@ class StrategyCategory(Enum):
 
 
 class StrategyBase(ABC):
-    """
-    策略基类
+    """策略基类
 
     所有策略必须继承此类并实现execute()方法
     """
@@ -40,8 +39,7 @@ class StrategyBase(ABC):
 
     @abstractmethod
     def execute(self, symbol: str, start_date: str, end_date: str, parameters: Dict[str, Any]) -> pd.DataFrame:
-        """
-        执行策略生成交易信号
+        """执行策略生成交易信号
 
         Args:
             symbol: 股票代码
@@ -53,6 +51,7 @@ class StrategyBase(ABC):
             pd.DataFrame: 信号DataFrame
                 columns: ['date', 'signal', 'price', 'reason']
                 signal: 1=买入, -1=卖出, 0=持有
+
         """
 
     def get_default_parameters(self) -> Dict[str, Any]:
@@ -95,7 +94,7 @@ class StrategyRegistry:
                     "description": instance.description,
                     "category": instance.category.value,
                     "default_parameters": instance.get_default_parameters(),
-                }
+                },
             )
         return strategies
 

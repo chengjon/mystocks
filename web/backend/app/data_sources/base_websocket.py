@@ -1,5 +1,4 @@
-"""
-WebSocket Adapter Interface - WebSocket适配器接口
+"""WebSocket Adapter Interface - WebSocket适配器接口
 
 定义WebSocket数据源的标准接口，包括：
 - 连接管理
@@ -18,12 +17,12 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Protocol
 
+
 logger = logging.getLogger(__name__)
 
 
 class WebSocketCapability(Protocol):
-    """
-    WebSocket能力协议
+    """WebSocket能力协议
 
     定义WebSocket适配器必须实现的方法
     """
@@ -76,18 +75,17 @@ class WebSocketConfig:
 
 
 class BaseWebSocketAdapter(ABC):
-    """
-    WebSocket适配器基类
+    """WebSocket适配器基类
 
     提供WebSocket连接的基本功能和生命周期管理
     """
 
     def __init__(self, config: WebSocketConfig):
-        """
-        初始化WebSocket适配器
+        """初始化WebSocket适配器
 
         Args:
             config: WebSocket配置
+
         """
         self.config = config
         self.websocket = None
@@ -104,11 +102,11 @@ class BaseWebSocketAdapter(ABC):
 
     @abstractmethod
     async def connect(self) -> bool:
-        """
-        建立WebSocket连接
+        """建立WebSocket连接
 
         Returns:
             是否连接成功
+
         """
 
     @abstractmethod
@@ -117,8 +115,7 @@ class BaseWebSocketAdapter(ABC):
 
     @abstractmethod
     async def _send_subscription_message(self, symbols: List[str], action: str) -> bool:
-        """
-        发送订阅/取消订阅消息
+        """发送订阅/取消订阅消息
 
         Args:
             symbols: 股票代码列表
@@ -126,17 +123,18 @@ class BaseWebSocketAdapter(ABC):
 
         Returns:
             是否发送成功
+
         """
 
     async def subscribe(self, symbols: List[str]) -> bool:
-        """
-        订阅股票数据
+        """订阅股票数据
 
         Args:
             symbols: 股票代码列表
 
         Returns:
             是否订阅成功
+
         """
         try:
             if not self.is_connected():
@@ -150,23 +148,22 @@ class BaseWebSocketAdapter(ABC):
                 self.subscribed_symbols.update(symbols)
                 logger.info("Subscribed to symbols: %(symbols)s")
                 return True
-            else:
-                logger.error("Failed to subscribe to symbols: %(symbols)s")
-                return False
+            logger.error("Failed to subscribe to symbols: %(symbols)s")
+            return False
 
         except Exception:
             logger.error("Error subscribing to symbols %(symbols)s: %(e)s")
             return False
 
     async def unsubscribe(self, symbols: List[str]) -> bool:
-        """
-        取消订阅股票数据
+        """取消订阅股票数据
 
         Args:
             symbols: 股票代码列表
 
         Returns:
             是否取消订阅成功
+
         """
         try:
             if not self.is_connected():
@@ -179,30 +176,29 @@ class BaseWebSocketAdapter(ABC):
                 self.subscribed_symbols.difference_update(symbols)
                 logger.info("Unsubscribed from symbols: %(symbols)s")
                 return True
-            else:
-                logger.error("Failed to unsubscribe from symbols: %(symbols)s")
-                return False
+            logger.error("Failed to unsubscribe from symbols: %(symbols)s")
+            return False
 
         except Exception:
             logger.error("Error unsubscribing from symbols %(symbols)s: %(e)s")
             return False
 
     def on_message(self, handler: Callable[[Dict[str, Any]], None]) -> None:
-        """
-        添加消息处理器
+        """添加消息处理器
 
         Args:
             handler: 消息处理函数
+
         """
         self.message_handlers.append(handler)
         logger.debug("Added message handler: {handler.__name__}")
 
     async def _handle_message(self, message: Dict[str, Any]) -> None:
-        """
-        处理接收到的消息
+        """处理接收到的消息
 
         Args:
             message: 消息数据
+
         """
         try:
             # 更新心跳时间
@@ -219,11 +215,11 @@ class BaseWebSocketAdapter(ABC):
             logger.error("Error handling message: %(e)s")
 
     def is_connected(self) -> bool:
-        """
-        检查连接状态
+        """检查连接状态
 
         Returns:
             是否已连接
+
         """
         return self.websocket is not None and self.is_running
 
@@ -300,8 +296,7 @@ class BaseWebSocketAdapter(ABC):
 
 
 class SinaFinanceWebSocketAdapter(BaseWebSocketAdapter):
-    """
-    新浪财经WebSocket适配器
+    """新浪财经WebSocket适配器
 
     连接新浪财经的实时数据WebSocket服务
     """

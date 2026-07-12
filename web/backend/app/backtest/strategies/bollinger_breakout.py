@@ -1,5 +1,4 @@
-"""
-Bollinger Bands Breakout Strategy
+"""Bollinger Bands Breakout Strategy
 
 布林带突破策略 - 波动率突破交易
 """
@@ -11,8 +10,7 @@ from app.backtest.strategies.base import BaseStrategy, SignalType, StrategySigna
 
 
 class BollingerBreakoutStrategy(BaseStrategy):
-    """
-    布林带突破策略
+    """布林带突破策略
 
     核心逻辑:
     - 上轨突破: 价格突破上轨买入 (动量突破)
@@ -106,11 +104,11 @@ class BollingerBreakoutStrategy(BaseStrategy):
         return (upper - lower) / middle
 
     def _calculate_band_position(self, price: float, upper: float, lower: float) -> float:
-        """
-        计算价格在布林带中的位置
+        """计算价格在布林带中的位置
 
         Returns:
             0.0 = 下轨, 0.5 = 中轨, 1.0 = 上轨
+
         """
         if upper == lower:
             return 0.5
@@ -166,7 +164,6 @@ class BollingerBreakoutStrategy(BaseStrategy):
         position: Optional[Dict[str, Any]] = None,
     ) -> Optional[StrategySignal]:
         """生成交易信号"""
-
         self.update_history(symbol, current_data)
 
         bb_period = self.parameters["bb_period"]

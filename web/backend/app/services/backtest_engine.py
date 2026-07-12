@@ -1,5 +1,4 @@
-"""
-回测引擎 - 支持策略回测和性能评估
+"""回测引擎 - 支持策略回测和性能评估
 
 复用现有组件:
 - DataService: 获取历史OHLCV数据
@@ -12,6 +11,7 @@ from typing import Any, Dict
 
 import numpy as np
 import pandas as pd
+
 
 logger = logging.getLogger(__name__)
 
@@ -59,8 +59,7 @@ class BacktestEngine:
         end_date: str,
         strategy_params: Dict[str, Any] = None,
     ) -> BacktestResult:
-        """
-        运行单策略回测
+        """运行单策略回测
 
         Args:
             strategy_id: 策略ID
@@ -71,6 +70,7 @@ class BacktestEngine:
 
         Returns:
             BacktestResult: 回测结果
+
         """
         try:
             import uuid
@@ -132,7 +132,7 @@ class BacktestEngine:
                         "price": entry_price,
                         "shares": shares,
                         "amount": entry_price * shares,
-                    }
+                    },
                 )
 
             # 卖出信号
@@ -155,7 +155,7 @@ class BacktestEngine:
                         "commission": commission,
                         "profit": net_profit,
                         "return_rate": net_profit / (entry_price * shares),
-                    }
+                    },
                 )
 
                 position = 0

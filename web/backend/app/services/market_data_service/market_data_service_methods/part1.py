@@ -1,5 +1,4 @@
-"""
-市场数据服务 (MarketDataService)
+"""市场数据服务 (MarketDataService)
 
 业务逻辑层,负责:
 1. 数据获取: 调用adapters获取外部数据
@@ -24,7 +23,8 @@ from sqlalchemy.orm import sessionmaker
 from app.adapters.akshare_extension import get_akshare_extension
 from app.adapters.tqlex_adapter import get_tqlex_adapter
 from app.core.cache_integration import get_cache_integration
-from app.models.market_data import ChipRaceEndData, ChipRaceOpenData, ETFData, FundFlow, LongHuBangData
+from app.models.market_data import ChipRaceEndData, ChipRaceOpenData, ETFData, FundFlow
+
 
 logger = logging.getLogger(__name__)
 
@@ -33,11 +33,11 @@ class MarketDataServiceCoreMixin:
     """MarketDataService 方法集 Part 1"""
 
     def __init__(self, use_cache: bool = True):
-        """
-        初始化数据库连接
+        """初始化数据库连接
 
         Args:
             use_cache: 是否启用缓存 (默认True)
+
         """
         db_url = os.getenv("DATABASE_URL") or self._build_db_url()
         self.engine = create_engine(db_url, pool_pre_ping=True, echo=False)
@@ -69,8 +69,7 @@ class MarketDataServiceCoreMixin:
         )
 
     def fetch_and_save_fund_flow_cached(self, symbol: str, timeframe: str = "1") -> Dict[str, Any]:
-        """
-        获取并保存资金流向数据 (带缓存支持)
+        """获取并保存资金流向数据 (带缓存支持)
 
         先检查缓存，如果缓存有效则返回缓存数据；
         否则从Akshare获取数据，保存到数据库和缓存。
@@ -81,6 +80,7 @@ class MarketDataServiceCoreMixin:
 
         Returns:
             保存结果字典，包含缓存来源信息
+
         """
 
         def fetch_from_source():
@@ -110,7 +110,7 @@ class MarketDataServiceCoreMixin:
                             FundFlow.symbol == symbol,
                             FundFlow.trade_date == fund_flow.trade_date,
                             FundFlow.timeframe == timeframe,
-                        )
+                        ),
                     )
                     .first()
                 )
@@ -154,8 +154,7 @@ class MarketDataServiceCoreMixin:
             return {"success": False, "message": str(e)}
 
     def fetch_and_save_fund_flow(self, symbol: str, timeframe: str = "1") -> Dict[str, Any]:
-        """
-        获取并保存资金流向数据
+        """获取并保存资金流向数据
 
         Args:
             symbol: 股票代码
@@ -163,6 +162,7 @@ class MarketDataServiceCoreMixin:
 
         Returns:
             保存结果字典
+
         """
         try:
             # 1. 从Akshare获取数据
@@ -194,7 +194,7 @@ class MarketDataServiceCoreMixin:
                             FundFlow.symbol == symbol,
                             FundFlow.trade_date == fund_flow.trade_date,
                             FundFlow.timeframe == timeframe,
-                        )
+                        ),
                     )
                     .first()
                 )
@@ -229,8 +229,7 @@ class MarketDataServiceCoreMixin:
         start_date: Optional[date] = None,
         end_date: Optional[date] = None,
     ) -> List[FundFlow]:
-        """
-        查询资金流向历史数据
+        """查询资金流向历史数据
 
         Args:
             symbol: 股票代码
@@ -240,6 +239,7 @@ class MarketDataServiceCoreMixin:
 
         Returns:
             FundFlow对象列表
+
         """
         db = self.SessionLocal()
         try:
@@ -256,14 +256,14 @@ class MarketDataServiceCoreMixin:
             db.close()
 
     def fetch_and_save_etf_spot_cached(self) -> Dict[str, Any]:
-        """
-        获取并保存ETF实时数据(全市场) - 带缓存支持
+        """获取并保存ETF实时数据(全市场) - 带缓存支持
 
         先检查缓存，如果缓存有效则返回缓存数据；
         否则从Akshare获取全市场数据，保存到数据库和缓存。
 
         Returns:
             保存结果字典，包含缓存来源信息
+
         """
 
         def fetch_from_source():
@@ -336,7 +336,7 @@ class MarketDataServiceCoreMixin:
                                 and_(
                                     ETFData.symbol == etf_data.symbol,
                                     ETFData.trade_date == today,
-                                )
+                                ),
                             )
                             .first()
                         )
@@ -364,11 +364,11 @@ class MarketDataServiceCoreMixin:
             return {"success": False, "message": str(e)}
 
     def fetch_and_save_etf_spot(self) -> Dict[str, Any]:
-        """
-        获取并保存ETF实时数据(全市场)
+        """获取并保存ETF实时数据(全市场)
 
         Returns:
             保存结果字典
+
         """
         try:
             # 1. 从Akshare获取全市场ETF数据
@@ -426,7 +426,7 @@ class MarketDataServiceCoreMixin:
                             and_(
                                 ETFData.symbol == etf_data.symbol,
                                 ETFData.trade_date == today,
-                            )
+                            ),
                         )
                         .first()
                     )
@@ -458,8 +458,7 @@ class MarketDataServiceCoreMixin:
         keyword: Optional[str] = None,
         limit: int = 50,
     ) -> List[ETFData]:
-        """
-        查询ETF数据（查询最新可用数据）
+        """查询ETF数据（查询最新可用数据）
 
         Args:
             symbol: ETF代码
@@ -468,6 +467,7 @@ class MarketDataServiceCoreMixin:
 
         Returns:
             ETFData对象列表
+
         """
         db = self.SessionLocal()
         try:
@@ -490,7 +490,7 @@ class MarketDataServiceCoreMixin:
                     or_(
                         ETFData.symbol.like(f"%{keyword}%"),
                         ETFData.name.like(f"%{keyword}%"),
-                    )
+                    ),
                 )
 
             return query.order_by(ETFData.change_percent.desc()).limit(limit).all()
@@ -499,10 +499,9 @@ class MarketDataServiceCoreMixin:
             db.close()
 
     def fetch_and_save_chip_race_cached(
-        self, race_type: str = "open", trade_date: Optional[str] = None
+        self, race_type: str = "open", trade_date: Optional[str] = None,
     ) -> Dict[str, Any]:
-        """
-        获取并保存竞价抢筹数据 - 带缓存支持
+        """获取并保存竞价抢筹数据 - 带缓存支持
 
         参考instock实现: /opt/iflow/instock/instock/core/stockfetch.py
 
@@ -512,6 +511,7 @@ class MarketDataServiceCoreMixin:
 
         Returns:
             保存结果字典，包含缓存来源信息
+
         """
         if not self.tqlex:
             return {"success": False, "message": "TQLEX适配器未配置"}
@@ -570,7 +570,7 @@ class MarketDataServiceCoreMixin:
                                 and_(
                                     ChipRaceModel.code == chip_data.code,
                                     ChipRaceModel.date == today,
-                                )
+                                ),
                             )
                             .first()
                         )
@@ -598,8 +598,7 @@ class MarketDataServiceCoreMixin:
             return {"success": False, "message": str(e)}
 
     def fetch_and_save_chip_race(self, race_type: str = "open", trade_date: Optional[str] = None) -> Dict[str, Any]:
-        """
-        获取并保存竞价抢筹数据
+        """获取并保存竞价抢筹数据
 
         Args:
             race_type: 抢筹类型 (open=早盘, end=尾盘)
@@ -607,6 +606,7 @@ class MarketDataServiceCoreMixin:
 
         Returns:
             保存结果字典
+
         """
         try:
             if race_type == "open":
@@ -646,7 +646,7 @@ class MarketDataServiceCoreMixin:
                             and_(
                                 ChipRaceModel.code == chip_data.code,
                                 ChipRaceModel.date == today,
-                            )
+                            ),
                         )
                         .first()
                     )

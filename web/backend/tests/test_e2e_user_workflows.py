@@ -1,5 +1,4 @@
-"""
-端到端 (E2E) 用户工作流测试
+"""端到端 (E2E) 用户工作流测试
 
 测试覆盖关键用户场景:
 1. 用户登录 → 搜索股票 → 添加到自选
@@ -16,6 +15,7 @@ from ._test_e2e_user_workflows_orders import (
 from ._test_e2e_user_workflows_real_data import TestRealDataIntegration
 from ._test_e2e_user_workflows_strategy import TestUserWorkflowStrategyBacktest
 from ._test_e2e_user_workflows_support import RealDataValidationMixin, _install_fake_api_modules
+
 
 __all__ = [
     "RealDataValidationMixin",

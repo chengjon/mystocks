@@ -1,5 +1,4 @@
-"""
-End-to-End Browser Tests using Playwright
+"""End-to-End Browser Tests using Playwright
 核心工作流浏览器端到端测试 - 登录 -> 订阅 -> 查询数据流
 
 Test Coverage:
@@ -9,12 +8,14 @@ Test Coverage:
 - 6.4: 测试数据管理和报告 - Test data management and reporting
 """
 
-import pytest
 import asyncio
+import logging
 import os
 from datetime import datetime, timezone
-import logging
+
+import pytest
 from dotenv import load_dotenv
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -41,8 +42,7 @@ def event_loop():
 
 @pytest.fixture(scope="session")
 async def browser_instance():
-    """
-    Session-scoped browser instance
+    """Session-scoped browser instance
     Reused across all tests for performance
     """
     from playwright.async_api import async_playwright
@@ -60,8 +60,7 @@ async def browser_instance():
 
 @pytest.fixture
 async def page(browser_instance):
-    """
-    Per-test browser page
+    """Per-test browser page
     Fresh page context for each test
     """
     context = await browser_instance.new_context(
@@ -118,8 +117,7 @@ def test_symbols():
 
 @pytest.fixture
 def test_data_manager():
-    """
-    Test data manager for creating and cleaning up test data
+    """Test data manager for creating and cleaning up test data
     Implements 6.4 test data management
     """
 
@@ -137,7 +135,7 @@ def test_data_manager():
                     "type": resource_type,
                     "id": resource_id,
                     "created_at": self.created_at,
-                }
+                },
             )
 
         async def cleanup(self):
@@ -170,8 +168,7 @@ class TestLoginFlow:
     """User authentication workflow tests"""
 
     async def test_login_page_loads(self, page, base_url):
-        """
-        6.2.1: Verify login page loads correctly
+        """6.2.1: Verify login page loads correctly
         - Navigate to login page
         - Verify page elements exist
         - Check page title
@@ -202,8 +199,7 @@ class TestLoginFlow:
         logger.info("✅ Login page loaded successfully")
 
     async def test_login_with_valid_credentials(self, page, base_url, test_user_credentials, test_data_manager):
-        """
-        6.2.2: Test successful login with valid credentials
+        """6.2.2: Test successful login with valid credentials
         - Enter email and password
         - Click login button
         - Verify redirect to dashboard
@@ -239,8 +235,7 @@ class TestLoginFlow:
             pytest.skip("API not available for login test")
 
     async def test_login_with_invalid_credentials(self, page, base_url):
-        """
-        6.2.3: Test login fails with invalid credentials
+        """6.2.3: Test login fails with invalid credentials
         - Enter invalid email and password
         - Verify error message appears
         - Verify user stays on login page
@@ -270,8 +265,7 @@ class TestLoginFlow:
         logger.info("✅ Login correctly failed with invalid credentials")
 
     async def test_remember_me_functionality(self, page, base_url):
-        """
-        6.2.4: Test "remember me" checkbox functionality
+        """6.2.4: Test "remember me" checkbox functionality
         - Check the remember me checkbox
         - Login successfully
         - Verify cookie is set
@@ -304,8 +298,7 @@ class TestSubscriptionFlow:
     """Market data subscription and query workflow tests"""
 
     async def test_market_data_page_loads(self, page, base_url):
-        """
-        6.3.1: Verify market data page loads
+        """6.3.1: Verify market data page loads
         - Navigate to market data page
         - Verify page structure
         - Check data table or list exists
@@ -325,8 +318,7 @@ class TestSubscriptionFlow:
         logger.info("✅ Market data page loaded")
 
     async def test_subscribe_to_stock_symbol(self, page, base_url, test_symbols):
-        """
-        6.3.2: Test subscribing to a stock symbol
+        """6.3.2: Test subscribing to a stock symbol
         - Navigate to subscription page
         - Search for a stock symbol
         - Click subscribe button
@@ -364,8 +356,7 @@ class TestSubscriptionFlow:
             logger.warning("⚠️  Symbol search input not found")
 
     async def test_query_market_data(self, page, base_url, test_symbols):
-        """
-        6.3.3: Test querying market data for subscribed symbols
+        """6.3.3: Test querying market data for subscribed symbols
         - Navigate to market data query page
         - Select a symbol
         - Set date range
@@ -422,8 +413,7 @@ class TestSubscriptionFlow:
             logger.warning("⚠️  Symbol selector not found")
 
     async def test_filter_market_data(self, page, base_url):
-        """
-        6.3.4: Test filtering market data results
+        """6.3.4: Test filtering market data results
         - Navigate to market data page
         - Apply various filters
         - Verify results update
@@ -467,8 +457,7 @@ class TestDataManagement:
     """Test data management and reporting"""
 
     async def test_generate_test_report(self, test_data_manager):
-        """
-        6.4.1: Generate test execution report
+        """6.4.1: Generate test execution report
         - Collect test metrics
         - Generate report
         - Verify report structure
@@ -493,8 +482,7 @@ class TestDataManagement:
         logger.info("✅ Test report generated: %s", report)
 
     async def test_data_isolation(self, page, test_data_manager):
-        """
-        6.4.2: Verify test data isolation between tests
+        """6.4.2: Verify test data isolation between tests
         - Each test should have isolated data
         - No cross-test contamination
         """
@@ -517,8 +505,7 @@ class TestCompleteWorkflows:
     """Complete end-to-end workflow tests"""
 
     async def test_complete_user_journey(self, page, base_url, test_user_credentials, test_symbols, test_data_manager):
-        """
-        6.3.5: Complete user journey test
+        """6.3.5: Complete user journey test
         Login -> Subscribe -> Query Data -> View Results
 
         This test verifies the entire core workflow works correctly
@@ -581,8 +568,7 @@ class TestPerformanceAndErrors:
     """Performance and error handling tests"""
 
     async def test_page_load_performance(self, page, base_url):
-        """
-        6.4.3: Verify page load performance
+        """6.4.3: Verify page load performance
         - Measure page load time
         - Verify acceptable performance
         """
@@ -602,8 +588,7 @@ class TestPerformanceAndErrors:
         logger.info("✅ Page load performance acceptable")
 
     async def test_error_handling(self, page, base_url):
-        """
-        6.4.4: Verify error handling and error messages
+        """6.4.4: Verify error handling and error messages
         - Navigate to non-existent page
         - Verify error is handled gracefully
         - Verify error message is displayed

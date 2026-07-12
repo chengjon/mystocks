@@ -1,5 +1,4 @@
-"""
-SSE (Server-Sent Events) Manager for Real-time Updates
+"""SSE (Server-Sent Events) Manager for Real-time Updates
 Week 2 Day 3 - SSE Real-time Push Implementation
 
 This module provides infrastructure for streaming real-time updates to frontend clients
@@ -22,11 +21,13 @@ import asyncio
 import logging
 import uuid
 from collections import defaultdict
+from collections.abc import AsyncGenerator
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, AsyncGenerator, Dict, Optional, Set
+from typing import Any, Dict, Optional, Set
 
 from fastapi import Request
+
 
 logger = logging.getLogger(__name__)
 
@@ -54,8 +55,7 @@ class SSEEvent:
 
 
 class SSEConnectionManager:
-    """
-    Manages SSE connections and event broadcasting
+    """Manages SSE connections and event broadcasting
 
     Features:
     - Channel-based subscriptions (training, backtest, alerts, dashboard)
@@ -65,11 +65,11 @@ class SSEConnectionManager:
     """
 
     def __init__(self, max_queue_size: int = 100):
-        """
-        Initialize SSE Connection Manager
+        """Initialize SSE Connection Manager
 
         Args:
             max_queue_size: Maximum events to queue per connection
+
         """
         # {channel: {client_id: asyncio.Queue}}
         self._connections: Dict[str, Dict[str, asyncio.Queue]] = defaultdict(dict)
@@ -82,8 +82,7 @@ class SSEConnectionManager:
         logger.info("✅ SSEConnectionManager initialized (max_queue_size=%(max_queue_size)s)")
 
     async def connect(self, channel: str, client_id: Optional[str] = None) -> tuple[str, asyncio.Queue]:
-        """
-        Register a new SSE connection
+        """Register a new SSE connection
 
         Args:
             channel: Channel name (e.g., 'training', 'backtest', 'alerts', 'dashboard')
@@ -91,6 +90,7 @@ class SSEConnectionManager:
 
         Returns:
             Tuple of (client_id, event_queue)
+
         """
         if client_id is None:
             client_id = str(uuid.uuid4())
@@ -104,7 +104,7 @@ class SSEConnectionManager:
 
         logger.info(
             f"🔗 SSE client connected: client_id={client_id}, channel={channel}, "
-            f"total_clients={self.get_connection_count(channel)}"
+            f"total_clients={self.get_connection_count(channel)}",
         )
 
         # Send initial connection event
@@ -125,12 +125,12 @@ class SSEConnectionManager:
         return client_id, queue
 
     async def disconnect(self, channel: str, client_id: str):
-        """
-        Unregister an SSE connection
+        """Unregister an SSE connection
 
         Args:
             channel: Channel name
             client_id: Client identifier
+
         """
         if channel in self._connections and client_id in self._connections[channel]:
             # Remove from connections
@@ -148,16 +148,16 @@ class SSEConnectionManager:
 
             logger.info(
                 f"🔌 SSE client disconnected: client_id={client_id}, "
-                f"channel={channel}, remaining_clients={self.get_connection_count(channel)}"
+                f"channel={channel}, remaining_clients={self.get_connection_count(channel)}",
             )
 
     async def broadcast(self, channel: str, event: SSEEvent):
-        """
-        Broadcast event to all clients on a channel
+        """Broadcast event to all clients on a channel
 
         Args:
             channel: Channel name
             event: SSE event to broadcast
+
         """
         if channel not in self._connections:
             logger.debug("No clients connected to channel: %(channel)s")
@@ -186,13 +186,13 @@ class SSEConnectionManager:
             logger.debug("📡 Broadcasted {event.event} to %(client_count)s clients on %(channel)s channel")
 
     async def send_to_client(self, channel: str, client_id: str, event: SSEEvent):
-        """
-        Send event to specific client
+        """Send event to specific client
 
         Args:
             channel: Channel name
             client_id: Client identifier
             event: SSE event to send
+
         """
         if channel in self._connections and client_id in self._connections[channel]:
             queue = self._connections[channel][client_id]
@@ -206,19 +206,18 @@ class SSEConnectionManager:
                 logger.error("Failed to send event to client %(client_id)s: %(e)s")
 
     def get_connection_count(self, channel: Optional[str] = None) -> int:
-        """
-        Get number of active connections
+        """Get number of active connections
 
         Args:
             channel: Optional channel name (all channels if None)
 
         Returns:
             Number of active connections
+
         """
         if channel:
             return len(self._connections.get(channel, {}))
-        else:
-            return sum(len(clients) for clients in self._connections.values())
+        return sum(len(clients) for clients in self._connections.values())
 
     def get_channels(self) -> list[str]:
         """Get list of active channels"""
@@ -230,18 +229,17 @@ class SSEConnectionManager:
 
 
 class SSEBroadcaster:
-    """
-    High-level SSE broadcasting interface
+    """High-level SSE broadcasting interface
 
     Provides convenient methods for broadcasting different event types
     """
 
     def __init__(self, manager: SSEConnectionManager):
-        """
-        Initialize SSE Broadcaster
+        """Initialize SSE Broadcaster
 
         Args:
             manager: SSE connection manager instance
+
         """
         self.manager = manager
 
@@ -253,8 +251,7 @@ class SSEBroadcaster:
         message: str,
         metrics: Optional[Dict[str, Any]] = None,
     ):
-        """
-        Broadcast model training progress
+        """Broadcast model training progress
 
         Args:
             task_id: Training task identifier
@@ -262,6 +259,7 @@ class SSEBroadcaster:
             status: Status (running, completed, failed)
             message: Human-readable message
             metrics: Optional training metrics (loss, accuracy, etc.)
+
         """
         event = SSEEvent(
             event="training_progress",
@@ -285,8 +283,7 @@ class SSEBroadcaster:
         current_date: Optional[str] = None,
         results: Optional[Dict[str, Any]] = None,
     ):
-        """
-        Broadcast backtest execution progress
+        """Broadcast backtest execution progress
 
         Args:
             backtest_id: Backtest identifier
@@ -295,6 +292,7 @@ class SSEBroadcaster:
             message: Human-readable message
             current_date: Current simulation date
             results: Optional partial results
+
         """
         event = SSEEvent(
             event="backtest_progress",
@@ -321,8 +319,7 @@ class SSEBroadcaster:
         entity_type: Optional[str] = None,
         entity_id: Optional[str] = None,
     ):
-        """
-        Broadcast risk alert notification
+        """Broadcast risk alert notification
 
         Args:
             alert_type: Alert type (var_exceeded, drawdown_limit, etc.)
@@ -333,6 +330,7 @@ class SSEBroadcaster:
             threshold: Alert threshold
             entity_type: Optional entity type (portfolio, strategy, etc.)
             entity_id: Optional entity identifier
+
         """
         event = SSEEvent(
             event="risk_alert",
@@ -351,12 +349,12 @@ class SSEBroadcaster:
         await self.manager.broadcast("alerts", event)
 
     async def send_dashboard_update(self, update_type: str, data: Dict[str, Any]):
-        """
-        Broadcast dashboard data update
+        """Broadcast dashboard data update
 
         Args:
             update_type: Update type (metrics, positions, orders, etc.)
             data: Update data
+
         """
         event = SSEEvent(
             event="dashboard_update",
@@ -389,10 +387,9 @@ def get_sse_broadcaster() -> SSEBroadcaster:
 
 
 async def sse_event_generator(
-    request: Request, channel: str, client_id: Optional[str] = None
+    request: Request, channel: str, client_id: Optional[str] = None,
 ) -> AsyncGenerator[Dict[str, Any], None]:
-    """
-    SSE event generator for FastAPI endpoint
+    """SSE event generator for FastAPI endpoint
 
     Args:
         request: FastAPI request object
@@ -401,6 +398,7 @@ async def sse_event_generator(
 
     Yields:
         SSE events as dictionaries
+
     """
     manager = get_sse_manager()
     client_id, queue = await manager.connect(channel, client_id)
@@ -445,10 +443,10 @@ async def sse_event_generator(
 
 # Export public API
 __all__ = [
-    "SSEEvent",
-    "SSEConnectionManager",
     "SSEBroadcaster",
-    "get_sse_manager",
+    "SSEConnectionManager",
+    "SSEEvent",
     "get_sse_broadcaster",
+    "get_sse_manager",
     "sse_event_generator",
 ]

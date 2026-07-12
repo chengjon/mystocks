@@ -1,5 +1,4 @@
-"""
-Redis Services Module
+"""Redis Services Module
 ====================
 
 三数据库架构中的Redis服务集合
@@ -16,11 +15,12 @@ from .redis_cache import RedisCacheService, redis_cache
 from .redis_lock import RedisLockService, redis_lock
 from .redis_pubsub import RedisPubSubService, redis_pubsub
 
+
 __all__ = [
-    "redis_cache",
     "RedisCacheService",
-    "redis_pubsub",
-    "RedisPubSubService",
-    "redis_lock",
     "RedisLockService",
+    "RedisPubSubService",
+    "redis_cache",
+    "redis_lock",
+    "redis_pubsub",
 ]

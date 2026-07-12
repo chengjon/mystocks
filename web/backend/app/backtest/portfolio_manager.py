@@ -1,5 +1,4 @@
-"""
-Portfolio Manager
+"""Portfolio Manager
 
 管理回测过程中的持仓、资金和PnL计算
 """
@@ -17,10 +16,10 @@ class Position:
     def __init__(self, symbol: str):
         self.symbol = symbol
         self.quantity = 0  # 持仓数量（正数=多头，负数=空头）
-        self.avg_cost = Decimal("0")  # 平均成本
-        self.market_value = Decimal("0")  # 市值
-        self.unrealized_pnl = Decimal("0")  # 未实现盈亏
-        self.realized_pnl = Decimal("0")  # 已实现盈亏
+        self.avg_cost = Decimal(0)  # 平均成本
+        self.market_value = Decimal(0)  # 市值
+        self.unrealized_pnl = Decimal(0)  # 未实现盈亏
+        self.realized_pnl = Decimal(0)  # 已实现盈亏
 
     def update_market_value(self, current_price: Decimal):
         """更新市值和未实现盈亏"""
@@ -28,17 +27,17 @@ class Position:
             self.market_value = Decimal(self.quantity) * current_price
             self.unrealized_pnl = self.market_value - (Decimal(self.quantity) * self.avg_cost)
         else:
-            self.market_value = Decimal("0")
-            self.unrealized_pnl = Decimal("0")
+            self.market_value = Decimal(0)
+            self.unrealized_pnl = Decimal(0)
 
     def add_position(self, quantity: int, price: Decimal, commission: Decimal):
-        """
-        增加持仓
+        """增加持仓
 
         Args:
             quantity: 数量（正数=买入，负数=卖出）
             price: 价格
             commission: 手续费
+
         """
         if self.quantity == 0:
             # 新开仓
@@ -49,35 +48,34 @@ class Position:
             total_cost = (Decimal(self.quantity) * self.avg_cost) + (Decimal(quantity) * price)
             self.quantity += quantity
             self.avg_cost = total_cost / Decimal(self.quantity)
+        # 减仓或反向开仓
+        elif abs(quantity) < abs(self.quantity):
+            # 减仓
+            realized = (price - self.avg_cost) * Decimal(abs(quantity))
+            if self.quantity < 0:  # 空头平仓
+                realized = -realized
+            self.realized_pnl += realized
+            self.quantity += quantity
+        elif abs(quantity) == abs(self.quantity):
+            # 平仓
+            realized = (price - self.avg_cost) * Decimal(abs(self.quantity))
+            if self.quantity < 0:
+                realized = -realized
+            self.realized_pnl += realized
+            self.quantity = 0
+            self.avg_cost = Decimal(0)
         else:
-            # 减仓或反向开仓
-            if abs(quantity) < abs(self.quantity):
-                # 减仓
-                realized = (price - self.avg_cost) * Decimal(abs(quantity))
-                if self.quantity < 0:  # 空头平仓
-                    realized = -realized
-                self.realized_pnl += realized
-                self.quantity += quantity
-            elif abs(quantity) == abs(self.quantity):
-                # 平仓
-                realized = (price - self.avg_cost) * Decimal(abs(self.quantity))
-                if self.quantity < 0:
-                    realized = -realized
-                self.realized_pnl += realized
-                self.quantity = 0
-                self.avg_cost = Decimal("0")
-            else:
-                # 平仓后反向开仓
-                close_qty = -self.quantity
-                realized = (price - self.avg_cost) * Decimal(abs(close_qty))
-                if self.quantity < 0:
-                    realized = -realized
-                self.realized_pnl += realized
+            # 平仓后反向开仓
+            close_qty = -self.quantity
+            realized = (price - self.avg_cost) * Decimal(abs(close_qty))
+            if self.quantity < 0:
+                realized = -realized
+            self.realized_pnl += realized
 
-                # 反向开仓
-                new_qty = quantity + self.quantity
-                self.quantity = new_qty
-                self.avg_cost = price
+            # 反向开仓
+            new_qty = quantity + self.quantity
+            self.quantity = new_qty
+            self.avg_cost = price
 
     def to_dict(self) -> Dict[str, Any]:
         """转换为字典"""
@@ -92,8 +90,7 @@ class Position:
 
 
 class PortfolioManager:
-    """
-    组合管理器
+    """组合管理器
 
     管理回测过程中的持仓、资金和交易记录
     """
@@ -104,13 +101,13 @@ class PortfolioManager:
         commission_rate: Decimal = Decimal("0.0003"),
         slippage_rate: Decimal = Decimal("0.001"),
     ):
-        """
-        初始化组合管理器
+        """初始化组合管理器
 
         Args:
             initial_capital: 初始资金
             commission_rate: 手续费率（默认0.03%）
             slippage_rate: 滑点率（默认0.1%）
+
         """
         self.initial_capital = initial_capital
         self.commission_rate = commission_rate
@@ -119,7 +116,7 @@ class PortfolioManager:
         # 资金状态
         self.cash = initial_capital  # 现金
         self.equity = initial_capital  # 总资产
-        self.margin_used = Decimal("0")  # 保证金使用
+        self.margin_used = Decimal(0)  # 保证金使用
 
         # 持仓管理
         self.positions: Dict[str, Position] = {}  # symbol -> Position
@@ -130,15 +127,15 @@ class PortfolioManager:
         self.trades: List[Dict[str, Any]] = []
 
         # 统计
-        self.total_commission = Decimal("0")
-        self.total_slippage = Decimal("0")
+        self.total_commission = Decimal(0)
+        self.total_slippage = Decimal(0)
 
     def update_market_data(self, market_event: MarketEvent):
-        """
-        更新市场数据
+        """更新市场数据
 
         Args:
             market_event: 市场数据事件
+
         """
         self.current_prices[market_event.symbol] = market_event.close
 
@@ -150,14 +147,14 @@ class PortfolioManager:
         self._update_equity()
 
     def process_fill(self, fill_event: FillEvent) -> bool:
-        """
-        处理成交事件
+        """处理成交事件
 
         Args:
             fill_event: 成交事件
 
         Returns:
             是否成功处理
+
         """
         symbol = fill_event.symbol
         action = fill_event.action
@@ -204,7 +201,7 @@ class PortfolioManager:
                 "amount": float(fill_price * Decimal(quantity)),
                 "commission": float(commission),
                 "profit_loss": float(position.realized_pnl) if action == "SELL" else None,
-            }
+            },
         )
 
         # 更新总资产
@@ -221,19 +218,19 @@ class PortfolioManager:
         self.equity = self.cash + total_market_value
 
     def record_equity_curve(self, trade_date: datetime):
-        """
-        记录资金曲线
+        """记录资金曲线
 
         Args:
             trade_date: 交易日期
+
         """
         # 计算回撤
         if len(self.equity_curve) == 0:
             peak_equity = self.equity
-            drawdown = Decimal("0")
+            drawdown = Decimal(0)
         else:
             peak_equity = max(self.equity, max(point["equity"] for point in self.equity_curve))
-            drawdown = (peak_equity - self.equity) / peak_equity if peak_equity > 0 else Decimal("0")
+            drawdown = (peak_equity - self.equity) / peak_equity if peak_equity > 0 else Decimal(0)
 
         self.equity_curve.append(
             {
@@ -242,7 +239,7 @@ class PortfolioManager:
                 "cash": self.cash,
                 "drawdown": drawdown,
                 "total_market_value": self.equity - self.cash,
-            }
+            },
         )
 
     def get_position(self, symbol: str) -> Optional[Position]:
@@ -264,7 +261,7 @@ class PortfolioManager:
     def get_portfolio_summary(self) -> Dict[str, Any]:
         """获取组合摘要"""
         total_pnl = self.equity - self.initial_capital
-        total_return = (total_pnl / self.initial_capital) if self.initial_capital > 0 else Decimal("0")
+        total_return = (total_pnl / self.initial_capital) if self.initial_capital > 0 else Decimal(0)
 
         return {
             "initial_capital": float(self.initial_capital),
@@ -285,8 +282,7 @@ class PortfolioManager:
         max_position_size: float,
         current_price: Decimal,
     ) -> int:
-        """
-        计算仓位大小
+        """计算仓位大小
 
         Args:
             symbol: 股票代码
@@ -296,6 +292,7 @@ class PortfolioManager:
 
         Returns:
             应该买入的数量
+
         """
         # 可用资金
         available_cash = self.cash * Decimal(max_position_size) * Decimal(signal_strength)
@@ -313,10 +310,10 @@ class PortfolioManager:
         """重置组合状态（用于新的回测）"""
         self.cash = self.initial_capital
         self.equity = self.initial_capital
-        self.margin_used = Decimal("0")
+        self.margin_used = Decimal(0)
         self.positions.clear()
         self.current_prices.clear()
         self.equity_curve.clear()
         self.trades.clear()
-        self.total_commission = Decimal("0")
-        self.total_slippage = Decimal("0")
+        self.total_commission = Decimal(0)
+        self.total_slippage = Decimal(0)

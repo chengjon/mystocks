@@ -1,5 +1,4 @@
-"""
-Unit Tests for Dependency Graph and Smart Scheduler
+"""Unit Tests for Dependency Graph and Smart Scheduler
 ====================================================
 
 测试依赖管理和智能调度模块的功能。
@@ -14,22 +13,23 @@ Coverage:
 Author: MyStocks Project
 """
 
-import pytest
-import numpy as np
 import time
 
+import numpy as np
+import pytest
+
 from app.services.indicators import (
-    IndicatorDependencyGraph,
+    CalculationMode,
+    CalculationStatus,
     DependencyNode,
-    NodeState,
     DependencyValidator,
     IncrementalCalculator,
-    SmartScheduler,
-    ScheduleResult,
-    CalculationMode,
-    OHLCVData,
+    IndicatorDependencyGraph,
     IndicatorResult,
-    CalculationStatus,
+    NodeState,
+    OHLCVData,
+    ScheduleResult,
+    SmartScheduler,
     reset_indicator_registry,
 )
 
@@ -82,7 +82,7 @@ class TestIndicatorDependencyGraph:
 
         # 添加依赖EMA的指标
         node_id = self.graph.add_indicator(
-            abbreviation="MACD", params={"fastperiod": 12, "slowperiod": 26}, dependencies=["EMA"]
+            abbreviation="MACD", params={"fastperiod": 12, "slowperiod": 26}, dependencies=["EMA"],
         )
 
         # 格式: key1-value1_key2-value2

@@ -1,5 +1,4 @@
-"""
-Rate Limiter - Token Bucket Algorithm Implementation
+"""Rate Limiter - Token Bucket Algorithm Implementation
 
 Provides rate limiting using the token bucket algorithm.
 Each client/endpoint has a bucket that refills at a specified rate.
@@ -15,6 +14,7 @@ from dataclasses import dataclass
 from typing import Dict, Optional, Tuple
 
 import structlog
+
 
 logger = structlog.get_logger()
 
@@ -36,6 +36,7 @@ class RateLimiter:
 
         Args:
             config: Rate limit configuration
+
         """
         self.config = config or RateLimitConfig()
         self.buckets: Dict[str, Dict] = {}
@@ -49,6 +50,7 @@ class RateLimiter:
 
         Returns:
             Bucket state dictionary
+
         """
         if client_id not in self.buckets:
             self.buckets[client_id] = {
@@ -62,6 +64,7 @@ class RateLimiter:
 
         Args:
             bucket: Bucket state dictionary
+
         """
         now = time.time()
         elapsed = now - bucket["last_refill"]
@@ -82,6 +85,7 @@ class RateLimiter:
 
         Returns:
             Tuple of (allowed, stats) where stats contains remaining tokens and reset time
+
         """
         bucket = self._get_bucket(client_id)
         self._refill_bucket(bucket)
@@ -131,6 +135,7 @@ class RateLimiter:
 
         Args:
             client_id: Unique client identifier
+
         """
         if client_id in self.buckets:
             self.buckets[client_id] = {
@@ -147,6 +152,7 @@ class RateLimiter:
 
         Returns:
             Statistics dictionary
+
         """
         bucket = self._get_bucket(client_id)
         self._refill_bucket(bucket)
@@ -167,6 +173,7 @@ class RateLimiter:
 
         Returns:
             Number of buckets cleaned up
+
         """
         now = time.time()
         stale_clients = [
@@ -190,6 +197,7 @@ class RateLimiter:
 
         Returns:
             Dictionary with stats for each client
+
         """
         stats = {}
         for client_id in self.buckets:

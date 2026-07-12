@@ -8,6 +8,7 @@ from fastapi import APIRouter, Query
 from app.core.cache_utils import cache_response
 from app.core.exceptions import BusinessException
 
+
 router = APIRouter()
 
 
@@ -60,7 +61,7 @@ async def get_market_heatmap(
                         "volume": int(row.get("成交量", 0)),
                         "amount": float(row.get("成交额", 0)),
                         "market_cap": float(row.get("总市值", 0)) if "总市值" in row else None,
-                    }
+                    },
                 )
             except Exception:
                 continue
@@ -78,7 +79,7 @@ async def get_market_heatmap(
         raise BusinessException(detail="AKShare库未安装", status_code=500, error_code="LIBRARY_NOT_INSTALLED")
     except Exception as error:
         raise BusinessException(
-            detail=f"获取热力图数据失败: {str(error)}",
+            detail=f"获取热力图数据失败: {error!s}",
             status_code=500,
             error_code="HEATMAP_DATA_FAILED",
         )

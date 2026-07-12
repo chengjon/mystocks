@@ -1,5 +1,4 @@
-"""
-风险管理 API Pydantic 数据模型
+"""风险管理 API Pydantic 数据模型
 
 定义风险管理相关的Pydantic模型，用于API请求和响应，增强类型校验和文档生成。
 
@@ -12,6 +11,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
+
 
 # ============================================================================
 # 请求模型
@@ -31,8 +31,8 @@ class VaRCVaRRequest(BaseModel):
                 "entity_type": "portfolio",
                 "entity_id": 101,
                 "confidence_level": 0.95,
-            }
-        }
+            },
+        },
     )
 
 
@@ -49,8 +49,8 @@ class BetaRequest(BaseModel):
                 "entity_type": "portfolio",
                 "entity_id": 101,
                 "market_index": "000300.SH",
-            }
-        }
+            },
+        },
     )
 
 
@@ -77,8 +77,8 @@ class RiskAlertCreate(BaseModel):
                 "entity_id": 101,
                 "is_active": True,
                 "notification_channels": ["email"],
-            }
-        }
+            },
+        },
     )
 
 
@@ -100,8 +100,8 @@ class RiskAlertUpdate(BaseModel):
                 "name": "组合VaR超限预警 (更新)",
                 "threshold_value": 0.06,
                 "is_active": False,
-            }
-        }
+            },
+        },
     )
 
 
@@ -116,8 +116,8 @@ class NotificationTestRequest(BaseModel):
             "example": {
                 "notification_type": "email",
                 "config_data": {"email": "test@example.com", "subject": "Test", "message": "Hello"},
-            }
-        }
+            },
+        },
     )
 
 
@@ -146,8 +146,8 @@ class VaRCVaRResult(BaseModel):
                 "var_99_hist": -0.0385,
                 "cvar_95": -0.0360,
                 "cvar_99": -0.0432,
-            }
-        }
+            },
+        },
     )
 
 
@@ -165,8 +165,8 @@ class BetaResult(BaseModel):
             "example": {
                 "beta": 1.23,
                 "correlation": 0.85,
-            }
-        }
+            },
+        },
     )
 
 
@@ -217,14 +217,14 @@ class RiskDashboardResponse(BaseModel):
                         "name": "VaR超限",
                         "metric_type": "VaR",
                         "threshold_value": 0.03,
-                    }
+                    },
                 ],
                 "risk_history": [
                     {"date": "2024-01-01", "var_95_hist": -0.01, "cvar_95": -0.015, "beta": 1.0},
                     {"date": "2024-01-02", "var_95_hist": -0.012, "cvar_95": -0.018, "beta": 1.05},
                 ],
-            }
-        }
+            },
+        },
     )
 
 
@@ -239,9 +239,9 @@ class RiskMetricsHistoryResponse(BaseModel):
                 "metrics_history": [
                     {"date": "2024-01-01", "var_95_hist": -0.01, "cvar_95": -0.015, "beta": 1.0},
                     {"date": "2024-01-02", "var_95_hist": -0.012, "cvar_95": -0.018, "beta": 1.05},
-                ]
-            }
-        }
+                ],
+            },
+        },
     )
 
 
@@ -274,8 +274,8 @@ class RiskAlertResponse(BaseModel):
                 "notification_channels": ["email"],
                 "created_at": "2024-12-26T10:00:00",
                 "updated_at": "2024-12-26T11:00:00",
-            }
-        }
+            },
+        },
     )
 
 
@@ -300,10 +300,10 @@ class RiskAlertListResponse(BaseModel):
                         "notification_channels": ["email"],
                         "created_at": "2024-12-26T10:00:00",
                         "updated_at": "2024-12-26T11:00:00",
-                    }
-                ]
-            }
-        }
+                    },
+                ],
+            },
+        },
     )
 
 
@@ -318,6 +318,6 @@ class NotificationTestResponse(BaseModel):
             "example": {
                 "success": True,
                 "message": "测试通知发送成功",
-            }
-        }
+            },
+        },
     )

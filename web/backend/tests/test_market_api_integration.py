@@ -1,5 +1,4 @@
-"""
-市场数据API集成测试
+"""市场数据API集成测试
 
 测试市场数据模块的集成功能，包括:
 - /api/v1/data/markets/overview - 市场概览
@@ -12,9 +11,10 @@
 遵循统一响应格式规范
 """
 
+from unittest.mock import Mock
+
 import pytest
 from fastapi.testclient import TestClient
-from unittest.mock import Mock, AsyncMock, patch
 
 # 导入应用
 from app.main import app
@@ -119,7 +119,7 @@ class TestMarketOverview:
 
     @pytest.mark.skip(reason="Overview endpoint requires auth and uses different service (data.market)")
     def test_overview_contains_required_fields(
-        self, client, mock_etf_data, mock_chip_race_data, mock_lhb_data
+        self, client, mock_etf_data, mock_chip_race_data, mock_lhb_data,
     ):
         """测试市场概览包含必需字段"""
         response = client.get("/api/v1/data/markets/overview")

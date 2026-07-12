@@ -1,5 +1,4 @@
-"""
-机器学习 API 端点
+"""机器学习 API 端点
 提供模型训练、预测、评估等功能
 """
 
@@ -28,6 +27,7 @@ from app.schemas.ml_schemas import (
 )
 from app.services.feature_engineering_service import FeatureEngineeringService
 from app.services.tdx_parser_service import TdxDataService
+
 
 try:
     from app.services.ml_prediction_service import MLPredictionService
@@ -61,8 +61,7 @@ def _build_ml_service() -> "MLPredictionService":
 
 @router.post("/tdx/data", response_model=TdxDataResponse)
 async def get_tdx_data(request: TdxDataRequest, current_user: User = Depends(get_current_user)):
-    """
-    获取通达信股票数据
+    """获取通达信股票数据
 
     - **stock_code**: 股票代码（如：000001）
     - **market**: 市场代码（sh/sz）
@@ -92,8 +91,7 @@ async def get_tdx_data(request: TdxDataRequest, current_user: User = Depends(get
 
 @router.get("/tdx/stocks/{market}", response_model=List[str])
 async def list_tdx_stocks(market: str, current_user: User = Depends(get_current_user)):
-    """
-    列出可用的股票代码
+    """列出可用的股票代码
 
     - **market**: 市场代码（sh/sz）
     """
@@ -109,8 +107,7 @@ async def list_tdx_stocks(market: str, current_user: User = Depends(get_current_
 
 @router.post("/features/generate", response_model=FeatureGenerationResponse)
 async def generate_features(request: FeatureGenerationRequest, current_user: User = Depends(get_current_user)):
-    """
-    生成特征数据
+    """生成特征数据
 
     - **stock_code**: 股票代码
     - **market**: 市场代码
@@ -129,7 +126,7 @@ async def generate_features(request: FeatureGenerationRequest, current_user: Use
 
         # 生成特征
         X, y, metadata = feature_service.prepare_model_data(
-            df, step=request.step, include_indicators=request.include_indicators
+            df, step=request.step, include_indicators=request.include_indicators,
         )
 
         return FeatureGenerationResponse(
@@ -151,8 +148,7 @@ async def generate_features(request: FeatureGenerationRequest, current_user: Use
 
 @router.post("/models/train", response_model=ModelTrainResponse)
 async def train_model(request: ModelTrainRequest, current_user: User = Depends(get_current_user)):
-    """
-    训练预测模型
+    """训练预测模型
 
     - **stock_code**: 股票代码
     - **market**: 市场代码
@@ -199,8 +195,7 @@ async def train_model(request: ModelTrainRequest, current_user: User = Depends(g
 
 @router.post("/models/predict", response_model=ModelPredictResponse)
 async def predict_with_model(request: ModelPredictRequest, current_user: User = Depends(get_current_user)):
-    """
-    使用模型进行预测
+    """使用模型进行预测
 
     - **model_name**: 模型名称
     - **stock_code**: 股票代码
@@ -241,7 +236,7 @@ async def predict_with_model(request: ModelPredictRequest, current_user: User = 
                     "date": "T+1",
                     "predicted_price": float(prediction),
                     "confidence": None,
-                }
+                },
             ]
 
             return ModelPredictResponse(
@@ -251,8 +246,7 @@ async def predict_with_model(request: ModelPredictRequest, current_user: User = 
                 stock_code=request.stock_code,
                 predictions=predictions,
             )
-        else:
-            raise HTTPException(status_code=400, detail="数据不足，无法进行预测")
+        raise HTTPException(status_code=400, detail="数据不足，无法进行预测")
 
     except HTTPException:
         raise
@@ -310,8 +304,7 @@ async def get_model_detail(model_name: str, current_user: User = Depends(get_cur
 
 @router.post("/models/hyperparameter-search", response_model=HyperparameterSearchResponse)
 async def hyperparameter_search(request: HyperparameterSearchRequest, current_user: User = Depends(get_current_user)):
-    """
-    超参数搜索
+    """超参数搜索
 
     - **stock_code**: 股票代码
     - **market**: 市场代码
@@ -356,8 +349,7 @@ async def hyperparameter_search(request: HyperparameterSearchRequest, current_us
 
 @router.post("/models/evaluate", response_model=ModelEvaluationResponse)
 async def evaluate_model(request: ModelEvaluationRequest, current_user: User = Depends(get_current_user)):
-    """
-    评估模型性能
+    """评估模型性能
 
     - **model_name**: 模型名称
     - **stock_code**: 股票代码

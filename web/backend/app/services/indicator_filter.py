@@ -1,5 +1,4 @@
-"""
-技术指标过滤服务 - Technical Indicator Filter
+"""技术指标过滤服务 - Technical Indicator Filter
 
 Task 8: 实现灵活的用户订阅过滤系统
 
@@ -18,6 +17,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 
 import structlog
+
 
 logger = structlog.get_logger()
 
@@ -56,8 +56,7 @@ class IndicatorCalculator:
         logger.info("✅ Indicator Calculator initialized")
 
     def calculate_rsi(self, prices: List[float], period: int = 14) -> float:
-        """
-        计算相对强度指数 (RSI)
+        """计算相对强度指数 (RSI)
 
         Args:
             prices: 价格列表（从旧到新）
@@ -65,6 +64,7 @@ class IndicatorCalculator:
 
         Returns:
             RSI值 (0-100)
+
         """
         self.calculations += 1
 
@@ -75,7 +75,7 @@ class IndicatorCalculator:
         deltas = [prices[i] - prices[i - 1] for i in range(1, len(prices))]
 
         # 分离上升和下降
-        gains = [d if d > 0 else 0 for d in deltas]
+        gains = [max(0, d) for d in deltas]
         losses = [-d if d < 0 else 0 for d in deltas]
 
         # 计算平均收益和损失
@@ -91,8 +91,7 @@ class IndicatorCalculator:
         return round(rsi, 2)
 
     def calculate_sma(self, prices: List[float], period: int = 20) -> float:
-        """
-        计算简单移动平均 (SMA)
+        """计算简单移动平均 (SMA)
 
         Args:
             prices: 价格列表（从旧到新）
@@ -100,6 +99,7 @@ class IndicatorCalculator:
 
         Returns:
             SMA值
+
         """
         self.calculations += 1
 
@@ -110,8 +110,7 @@ class IndicatorCalculator:
         return round(sma, 2)
 
     def calculate_ema(self, prices: List[float], period: int = 20, alpha: Optional[float] = None) -> float:
-        """
-        计算指数移动平均 (EMA)
+        """计算指数移动平均 (EMA)
 
         Args:
             prices: 价格列表（从旧到新）
@@ -120,6 +119,7 @@ class IndicatorCalculator:
 
         Returns:
             EMA值
+
         """
         self.calculations += 1
 
@@ -145,8 +145,7 @@ class IndicatorCalculator:
         slow_period: int = 26,
         signal_period: int = 9,
     ) -> Dict[str, float]:
-        """
-        计算MACD指标
+        """计算MACD指标
 
         Args:
             prices: 价格列表（从旧到新）
@@ -156,6 +155,7 @@ class IndicatorCalculator:
 
         Returns:
             {'macd': value, 'signal': value, 'histogram': value}
+
         """
         self.calculations += 1
 
@@ -187,8 +187,7 @@ class IndicatorCalculator:
         period: int = 20,
         std_dev: float = 2.0,
     ) -> Dict[str, float]:
-        """
-        计算布林带
+        """计算布林带
 
         Args:
             prices: 价格列表（从旧到新）
@@ -197,6 +196,7 @@ class IndicatorCalculator:
 
         Returns:
             {'upper': value, 'middle': value, 'lower': value}
+
         """
         self.calculations += 1
 
@@ -229,8 +229,7 @@ class IndicatorCalculator:
         k_period: int = 14,
         d_period: int = 3,
     ) -> Dict[str, float]:
-        """
-        计算随机指标 (Stochastic Oscillator)
+        """计算随机指标 (Stochastic Oscillator)
 
         Args:
             prices: 收盘价列表
@@ -241,6 +240,7 @@ class IndicatorCalculator:
 
         Returns:
             {'k': value, 'd': value}
+
         """
         self.calculations += 1
 
@@ -280,13 +280,13 @@ class IndicatorFilter:
         logger.info("✅ Indicator Filter initialized")
 
     def add_price_data(self, symbol: str, price: float, max_cache: int = 100) -> None:
-        """
-        添加价格数据到缓存
+        """添加价格数据到缓存
 
         Args:
             symbol: 股票代码
             price: 价格
             max_cache: 最大缓存数
+
         """
         if symbol not in self.price_cache:
             self.price_cache[symbol] = []
@@ -298,8 +298,7 @@ class IndicatorFilter:
             self.price_cache[symbol] = self.price_cache[symbol][-max_cache:]
 
     def evaluate_rsi(self, symbol: str, operator: str, threshold: float) -> bool:
-        """
-        评估RSI条件
+        """评估RSI条件
 
         Args:
             symbol: 股票代码
@@ -308,6 +307,7 @@ class IndicatorFilter:
 
         Returns:
             是否满足条件
+
         """
         if symbol not in self.price_cache or len(self.price_cache[symbol]) < 15:
             return False
@@ -316,8 +316,7 @@ class IndicatorFilter:
         return self._compare(rsi, operator, threshold)
 
     def evaluate_sma(self, symbol: str, period: int, operator: str, threshold: float) -> bool:
-        """
-        评估SMA条件
+        """评估SMA条件
 
         Args:
             symbol: 股票代码
@@ -327,6 +326,7 @@ class IndicatorFilter:
 
         Returns:
             是否满足条件
+
         """
         if symbol not in self.price_cache or len(self.price_cache[symbol]) < period:
             return False
@@ -337,8 +337,7 @@ class IndicatorFilter:
         return self._compare(current_price, operator, sma)
 
     def evaluate_bb(self, symbol: str, period: int, band: str) -> Optional[float]:
-        """
-        获取布林带值
+        """获取布林带值
 
         Args:
             symbol: 股票代码
@@ -347,6 +346,7 @@ class IndicatorFilter:
 
         Returns:
             布林带值或None
+
         """
         if symbol not in self.price_cache or len(self.price_cache[symbol]) < period:
             return None
@@ -359,13 +359,13 @@ class IndicatorFilter:
         """比较操作"""
         if operator == ">":
             return value > threshold
-        elif operator == "<":
+        if operator == "<":
             return value < threshold
-        elif operator == "==":
+        if operator == "==":
             return value == threshold
-        elif operator == ">=":
+        if operator == ">=":
             return value >= threshold
-        elif operator == "<=":
+        if operator == "<=":
             return value <= threshold
         return False
 

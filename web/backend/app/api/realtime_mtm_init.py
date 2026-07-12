@@ -1,5 +1,4 @@
-"""
-Real-time MTM API Initialization
+"""Real-time MTM API Initialization
 实时市值 API 初始化模块
 
 在应用启动时初始化 Phase 12.4 的 DDD 架构适配器。
@@ -16,6 +15,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from src.utils.redis_runtime_config import get_redis_connection_kwargs
+
 
 logger = structlog.get_logger()
 
@@ -45,8 +45,7 @@ def get_database_session() -> Session:
 
 
 def initialize_realtime_mtm():
-    """
-    初始化实时市值系统（在应用启动时调用）
+    """初始化实时市值系统（在应用启动时调用）
 
     这个函数应该放在 FastAPI 应用的 startup 事件中
     """
@@ -79,11 +78,11 @@ def initialize_realtime_mtm():
 
 
 def get_realtime_mtm_adapter():
-    """
-    获取实时市值适配器（便捷方法）
+    """获取实时市值适配器（便捷方法）
 
     Returns:
         RealtimeMTMAdapter: 适配器实例
+
     """
     from web.backend.app.api.realtime_mtm_adapter import get_realtime_mtm_adapter as get_adapter
 
@@ -111,11 +110,11 @@ def shutdown_realtime_mtm():
 
 # FastAPI 生命周期事件处理器
 def register_startup_events(app):
-    """
-    注册 FastAPI 启动事件
+    """注册 FastAPI 启动事件
 
     Args:
         app: FastAPI 应用实例
+
     """
 
     @app.on_event("startup")

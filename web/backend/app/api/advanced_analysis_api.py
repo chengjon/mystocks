@@ -1,5 +1,4 @@
-"""
-高级分析API模块
+"""高级分析API模块
 Advanced Quantitative Analysis API Endpoints
 
 提供12个高级量化分析功能的RESTful API接口：
@@ -26,6 +25,7 @@ from pydantic import BaseModel
 from app.core.responses import UnifiedResponse, ok, server_error
 from app.core.security import User, get_current_user
 from app.services.advanced_analysis_service import AdvancedAnalysisService
+
 
 # 创建路由器
 router = APIRouter(
@@ -68,8 +68,7 @@ async def analyze_fundamental(
     current_user: User = Depends(get_current_user),
     service: AdvancedAnalysisService = Depends(),
 ) -> Dict[str, Any]:
-    """
-    基本面分析API
+    """基本面分析API
 
     执行股票基本面分析，包括财务比率、偿债能力、盈利能力、成长性等指标。
 
@@ -95,7 +94,7 @@ async def analyze_fundamental(
         )
 
     except Exception as e:
-        return server_error(message=f"基本面分析失败: {str(e)}")
+        return server_error(message=f"基本面分析失败: {e!s}")
 
 
 @router.get("/technical", response_model=UnifiedResponse)
@@ -104,8 +103,7 @@ async def analyze_technical(
     current_user: User = Depends(get_current_user),
     service: AdvancedAnalysisService = Depends(),
 ) -> Dict[str, Any]:
-    """
-    技术面分析API
+    """技术面分析API
 
     执行股票技术面分析，包括26个专业技术指标和趋势分析。
 
@@ -133,7 +131,7 @@ async def analyze_technical(
         )
 
     except Exception as e:
-        return server_error(message=f"技术面分析失败: {str(e)}")
+        return server_error(message=f"技术面分析失败: {e!s}")
 
 
 @router.get("/trading-signals", response_model=UnifiedResponse)
@@ -142,8 +140,7 @@ async def analyze_trading_signals(
     current_user: User = Depends(get_current_user),
     service: AdvancedAnalysisService = Depends(),
 ) -> Dict[str, Any]:
-    """
-    交易信号分析API
+    """交易信号分析API
 
     执行交易信号分析，识别买卖点和市场信号。
 
@@ -175,7 +172,7 @@ async def analyze_trading_signals(
         )
 
     except Exception as e:
-        return server_error(message=f"交易信号分析失败: {str(e)}")
+        return server_error(message=f"交易信号分析失败: {e!s}")
 
 
 @router.get("/time-series", response_model=UnifiedResponse)
@@ -184,8 +181,7 @@ async def analyze_time_series(
     current_user: User = Depends(get_current_user),
     service: AdvancedAnalysisService = Depends(),
 ) -> Dict[str, Any]:
-    """
-    时序分析API
+    """时序分析API
 
     执行时序分析，包括拐点检测、趋势分割和预测分析。
 
@@ -213,7 +209,7 @@ async def analyze_time_series(
         )
 
     except Exception as e:
-        return server_error(message=f"时序分析失败: {str(e)}")
+        return server_error(message=f"时序分析失败: {e!s}")
 
 
 @router.get("/market-panorama", response_model=UnifiedResponse)
@@ -222,8 +218,7 @@ async def analyze_market_panorama(
     current_user: User = Depends(get_current_user),
     service: AdvancedAnalysisService = Depends(),
 ) -> Dict[str, Any]:
-    """
-    市场全景分析API
+    """市场全景分析API
 
     执行市场全景分析，包括资金流向、交易活跃度、趋势变化、市值分布、动态估值等。
 
@@ -236,7 +231,7 @@ async def analyze_market_panorama(
     """
     try:
         result = await service.analyze_market_panorama(
-            include_raw_data=request.include_raw_data, user_id=current_user.id
+            include_raw_data=request.include_raw_data, user_id=current_user.id,
         )
 
         return ok(
@@ -247,7 +242,7 @@ async def analyze_market_panorama(
         )
 
     except Exception as e:
-        return server_error(message=f"市场全景分析失败: {str(e)}")
+        return server_error(message=f"市场全景分析失败: {e!s}")
 
 
 @router.get("/capital-flow", response_model=UnifiedResponse)
@@ -256,8 +251,7 @@ async def analyze_capital_flow(
     current_user: User = Depends(get_current_user),
     service: AdvancedAnalysisService = Depends(),
 ) -> Dict[str, Any]:
-    """
-    资金流向分析API
+    """资金流向分析API
 
     执行资金流向分析，包括主力控盘和资金分布。
 
@@ -285,7 +279,7 @@ async def analyze_capital_flow(
         )
 
     except Exception as e:
-        return server_error(message=f"资金流向分析失败: {str(e)}")
+        return server_error(message=f"资金流向分析失败: {e!s}")
 
 
 @router.get("/chip-distribution", response_model=UnifiedResponse)
@@ -294,8 +288,7 @@ async def analyze_chip_distribution(
     current_user: User = Depends(get_current_user),
     service: AdvancedAnalysisService = Depends(),
 ) -> Dict[str, Any]:
-    """
-    筹码分布分析API
+    """筹码分布分析API
 
     执行筹码分布分析，基于成本转换原理。
 
@@ -323,7 +316,7 @@ async def analyze_chip_distribution(
         )
 
     except Exception as e:
-        return server_error(message=f"筹码分布分析失败: {str(e)}")
+        return server_error(message=f"筹码分布分析失败: {e!s}")
 
 
 @router.get("/anomaly-tracking", response_model=UnifiedResponse)
@@ -332,8 +325,7 @@ async def analyze_anomaly_tracking(
     current_user: User = Depends(get_current_user),
     service: AdvancedAnalysisService = Depends(),
 ) -> Dict[str, Any]:
-    """
-    异常追踪分析API
+    """异常追踪分析API
 
     执行异常追踪分析，基于涨跌幅排序等指标。
 
@@ -361,7 +353,7 @@ async def analyze_anomaly_tracking(
         )
 
     except Exception as e:
-        return server_error(message=f"异常追踪分析失败: {str(e)}")
+        return server_error(message=f"异常追踪分析失败: {e!s}")
 
 
 @router.get("/financial-valuation", response_model=UnifiedResponse)
@@ -370,8 +362,7 @@ async def analyze_financial_valuation(
     current_user: User = Depends(get_current_user),
     service: AdvancedAnalysisService = Depends(),
 ) -> Dict[str, Any]:
-    """
-    财务估值分析API
+    """财务估值分析API
 
     执行财务估值分析，包括财务指标、杜邦分析、定价方法等。
 
@@ -399,7 +390,7 @@ async def analyze_financial_valuation(
         )
 
     except Exception as e:
-        return server_error(message=f"财务估值分析失败: {str(e)}")
+        return server_error(message=f"财务估值分析失败: {e!s}")
 
 
 @router.get("/sentiment", response_model=UnifiedResponse)
@@ -408,8 +399,7 @@ async def analyze_sentiment(
     current_user: User = Depends(get_current_user),
     service: AdvancedAnalysisService = Depends(),
 ) -> Dict[str, Any]:
-    """
-    情绪分析API
+    """情绪分析API
 
     执行情绪分析，包括研报、新闻、人气等数据。
 
@@ -437,7 +427,7 @@ async def analyze_sentiment(
         )
 
     except Exception as e:
-        return server_error(message=f"情绪分析失败: {str(e)}")
+        return server_error(message=f"情绪分析失败: {e!s}")
 
 
 @router.get("/decision-models", response_model=UnifiedResponse)
@@ -446,8 +436,7 @@ async def analyze_decision_models(
     current_user: User = Depends(get_current_user),
     service: AdvancedAnalysisService = Depends(),
 ) -> Dict[str, Any]:
-    """
-    决策模型分析API
+    """决策模型分析API
 
     执行决策模型分析，包括巴菲特、欧内尔、林奇模型等。
 
@@ -475,7 +464,7 @@ async def analyze_decision_models(
         )
 
     except Exception as e:
-        return server_error(message=f"决策模型分析失败: {str(e)}")
+        return server_error(message=f"决策模型分析失败: {e!s}")
 
 
 @router.get("/multidimensional-radar", response_model=UnifiedResponse)
@@ -484,8 +473,7 @@ async def analyze_multidimensional_radar(
     current_user: User = Depends(get_current_user),
     service: AdvancedAnalysisService = Depends(),
 ) -> Dict[str, Any]:
-    """
-    多维度雷达分析API
+    """多维度雷达分析API
 
     执行多维度雷达综合分析，整合所有8个分析维度的结果。
 
@@ -521,7 +509,7 @@ async def analyze_multidimensional_radar(
         )
 
     except Exception as e:
-        return server_error(message=f"多维度雷达分析失败: {str(e)}")
+        return server_error(message=f"多维度雷达分析失败: {e!s}")
 
 
 # 批量分析接口
@@ -532,8 +520,7 @@ async def analyze_batch(
     current_user: User = Depends(get_current_user),
     service: AdvancedAnalysisService = Depends(),
 ) -> Dict[str, Any]:
-    """
-    批量高级分析API
+    """批量高级分析API
 
     对多个股票执行批量高级分析。
 
@@ -559,14 +546,13 @@ async def analyze_batch(
         )
 
     except Exception as e:
-        return server_error(message=f"批量分析失败: {str(e)}")
+        return server_error(message=f"批量分析失败: {e!s}")
 
 
 # 健康检查接口
 @router.get("/health", response_model=UnifiedResponse)
 async def health_check(service: AdvancedAnalysisService = Depends()) -> Dict[str, Any]:
-    """
-    高级分析模块健康检查
+    """高级分析模块健康检查
 
     检查所有分析器的可用性和性能状态。
     """
@@ -582,4 +568,4 @@ async def health_check(service: AdvancedAnalysisService = Depends()) -> Dict[str
         )
 
     except Exception as e:
-        return server_error(message=f"健康检查失败: {str(e)}")
+        return server_error(message=f"健康检查失败: {e!s}")

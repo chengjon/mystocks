@@ -1,5 +1,4 @@
-"""
-KDJ Strategy
+"""KDJ Strategy
 
 KDJ随机指标策略 - 超买超卖与金叉死叉结合
 """
@@ -10,8 +9,7 @@ from app.backtest.strategies.base import BaseStrategy, SignalType, StrategySigna
 
 
 class KDJStrategy(BaseStrategy):
-    """
-    KDJ随机指标策略
+    """KDJ随机指标策略
 
     核心逻辑:
     - KDJ指标是随机指标的改进版本
@@ -101,11 +99,11 @@ class KDJStrategy(BaseStrategy):
         ]
 
     def _calculate_kdj(self, history: List[Dict[str, Any]]) -> tuple[Optional[float], Optional[float], Optional[float]]:
-        """
-        计算KDJ指标
+        """计算KDJ指标
 
         Returns:
             (K值, D值, J值)
+
         """
         n_period = self.parameters["n_period"]
 
@@ -189,7 +187,6 @@ class KDJStrategy(BaseStrategy):
         position: Optional[Dict[str, Any]] = None,
     ) -> Optional[StrategySignal]:
         """生成交易信号"""
-
         self.update_history(symbol, current_data)
 
         history = self.price_history.get(symbol, [])

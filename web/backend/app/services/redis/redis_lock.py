@@ -1,5 +1,4 @@
-"""
-Redis Distributed Lock
+"""Redis Distributed Lock
 ======================
 
 分布式锁服务，基于Redis实现。
@@ -22,12 +21,12 @@ from typing import Any, Dict, Optional
 from app.core.config import settings
 from app.core.redis_client import get_redis_client
 
+
 logger = logging.getLogger(__name__)
 
 
 class RedisLockService:
-    """
-    Redis分布式锁服务
+    """Redis分布式锁服务
 
     使用场景:
     - 防止重复计算: 同一指标计算任务互斥
@@ -53,8 +52,7 @@ class RedisLockService:
         blocking: bool = True,
         blocking_timeout: Optional[int] = None,
     ) -> Optional[str]:
-        """
-        获取锁
+        """获取锁
 
         Args:
             resource: 资源标识 (如 "indicator:calc:000001:MACD")
@@ -64,6 +62,7 @@ class RedisLockService:
 
         Returns:
             锁标识符 (token)，获取失败返回None
+
         """
         lock_key = self._make_key(resource)
         timeout = timeout or self.default_timeout
@@ -100,8 +99,7 @@ class RedisLockService:
                 time.sleep(0.1)
 
     def release(self, resource: str, token: str) -> bool:
-        """
-        释放锁
+        """释放锁
 
         Args:
             resource: 资源标识
@@ -109,6 +107,7 @@ class RedisLockService:
 
         Returns:
             bool: 是否释放成功
+
         """
         lock_key = self._make_key(resource)
 
@@ -137,8 +136,7 @@ class RedisLockService:
             return False
 
     def extend(self, resource: str, token: str, additional_time: int = 30) -> bool:
-        """
-        延长锁超时时间
+        """延长锁超时时间
 
         Args:
             resource: 资源标识
@@ -147,6 +145,7 @@ class RedisLockService:
 
         Returns:
             bool: 是否延长成功
+
         """
         lock_key = self._make_key(resource)
 
@@ -182,8 +181,7 @@ class RedisLockService:
         blocking: bool = True,
         blocking_timeout: Optional[int] = None,
     ):
-        """
-        锁上下文管理器
+        """锁上下文管理器
 
         使用示例:
         ```python
@@ -201,6 +199,7 @@ class RedisLockService:
 
         Yields:
             锁标识符
+
         """
         token = None
         try:
@@ -215,27 +214,27 @@ class RedisLockService:
     # ========== 便捷方法 ==========
 
     def is_locked(self, resource: str) -> bool:
-        """
-        检查资源是否被锁定
+        """检查资源是否被锁定
 
         Args:
             resource: 资源标识
 
         Returns:
             bool: 是否被锁定
+
         """
         lock_key = self._make_key(resource)
         return self.redis.exists(lock_key) > 0
 
     def get_lock_info(self, resource: str) -> Optional[Dict[str, Any]]:
-        """
-        获取锁信息
+        """获取锁信息
 
         Args:
             resource: 资源标识
 
         Returns:
             锁信息字典，不存在返回None
+
         """
         lock_key = self._make_key(resource)
         try:
@@ -251,8 +250,7 @@ class RedisLockService:
 
     @contextmanager
     def indicator_calculation_lock(self, stock_code: str, indicator_code: str, params: Optional[Dict] = None):
-        """
-        指标计算锁 (防止重复计算)
+        """指标计算锁 (防止重复计算)
 
         Args:
             stock_code: 股票代码
@@ -261,6 +259,7 @@ class RedisLockService:
 
         Yields:
             锁标识符
+
         """
         import hashlib
         import json
@@ -275,14 +274,14 @@ class RedisLockService:
 
     @contextmanager
     def batch_task_lock(self, task_id: str):
-        """
-        批量任务锁 (防止任务重复执行)
+        """批量任务锁 (防止任务重复执行)
 
         Args:
             task_id: 任务ID
 
         Yields:
             锁标识符
+
         """
         resource = f"task:batch:{task_id}"
 
@@ -291,8 +290,7 @@ class RedisLockService:
 
     @contextmanager
     def resource_update_lock(self, resource_type: str, resource_id: str):
-        """
-        资源更新锁 (防止并发修改)
+        """资源更新锁 (防止并发修改)
 
         Args:
             resource_type: 资源类型 (如 "data_source", "indicator")
@@ -300,6 +298,7 @@ class RedisLockService:
 
         Yields:
             锁标识符
+
         """
         resource = f"resource:update:{resource_type}:{resource_id}"
 

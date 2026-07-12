@@ -1,8 +1,8 @@
-"""
-多数据源API路由
+"""多数据源API路由
 """
 
 from fastapi import APIRouter
+
 
 # Prefix is governed by the central route registry.
 router = APIRouter()
@@ -22,8 +22,7 @@ async def get_status():
 
 @router.post("/analyze")
 async def analyze_data(data: dict):
-    """
-    多数据源AI综合分析
+    """多数据源AI综合分析
 
     整合多个数据源（技术面、基本面、舆情、资金流等）进行AI综合分析，生成全方位
     的投资决策支持。该端点提供最全面的股票分析结果。

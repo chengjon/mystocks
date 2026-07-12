@@ -1,5 +1,4 @@
-"""
-股票策略模块
+"""股票策略模块
 实现10个经典股票策略用于筛选和识别交易机会
 
 策略列表：
@@ -20,6 +19,8 @@ from datetime import datetime
 from typing import Dict, Optional
 
 import pandas as pd
+
+
 try:
     import talib as tl
 except ImportError as exc:
@@ -29,7 +30,7 @@ except ImportError as exc:
         def __getattr__(self, name: str):
             raise RuntimeError(
                 "TA-Lib runtime is unavailable. Install TA-Lib before executing stock strategies "
-                f"that require indicator function '{name}'."
+                f"that require indicator function '{name}'.",
             ) from _TALIB_IMPORT_ERROR
 
     tl = _TalibProxy()
@@ -41,13 +42,13 @@ class BaseStrategy(ABC):
     """策略基类"""
 
     def __init__(self, name: str, name_cn: str, description: str):
-        """
-        初始化策略
+        """初始化策略
 
         Args:
             name: 策略英文名
             name_cn: 策略中文名
             description: 策略描述
+
         """
         self.name = name
         self.name_cn = name_cn
@@ -61,8 +62,7 @@ class BaseStrategy(ABC):
         date: Optional[datetime] = None,
         threshold: int = 60,
     ) -> bool:
-        """
-        检查股票是否符合策略条件
+        """检查股票是否符合策略条件
 
         Args:
             symbol: 股票代码
@@ -72,6 +72,7 @@ class BaseStrategy(ABC):
 
         Returns:
             bool: True表示符合策略条件，False表示不符合
+
         """
 
     def filter_date(self, data: pd.DataFrame, end_date: Optional[str] = None) -> pd.DataFrame:
@@ -83,8 +84,7 @@ class BaseStrategy(ABC):
 
 
 class VolumeSurgeStrategy(BaseStrategy):
-    """
-    策略1: 放量上涨
+    """策略1: 放量上涨
 
     条件：
     1. 当日比前一天上涨小于2%或收盘价小于开盘价
@@ -149,8 +149,7 @@ class VolumeSurgeStrategy(BaseStrategy):
 
 
 class MABullishStrategy(BaseStrategy):
-    """
-    策略2: 均线多头
+    """策略2: 均线多头
 
     条件：
     1. 30日前的30日均线<20日前的30日均线<10日前的30日均线<当日的30日均线
@@ -197,8 +196,7 @@ class MABullishStrategy(BaseStrategy):
 
 
 class TurtleTradingStrategy(BaseStrategy):
-    """
-    策略7: 海龟交易法则
+    """策略7: 海龟交易法则
 
     条件：
     1. 当日收盘价>=最近60日最高收盘价
@@ -235,8 +233,7 @@ class TurtleTradingStrategy(BaseStrategy):
 
 
 class ConsolidationPlatformStrategy(BaseStrategy):
-    """
-    策略3: 停机坪
+    """策略3: 停机坪
 
     条件：
     1. 最近15日有涨幅大于9.5%，且必须是放量上涨
@@ -315,8 +312,7 @@ class ConsolidationPlatformStrategy(BaseStrategy):
 
 
 class MA250PullbackStrategy(BaseStrategy):
-    """
-    策略4: 回踩年线
+    """策略4: 回踩年线
 
     条件：
     1. 前段由年线(250日)以下向上突破
@@ -399,8 +395,7 @@ class MA250PullbackStrategy(BaseStrategy):
 
 
 class BreakthroughPlatformStrategy(BaseStrategy):
-    """
-    策略5: 突破平台
+    """策略5: 突破平台
 
     条件：
     1. 60日内某日收盘价>=60日均线>开盘价
@@ -461,8 +456,7 @@ class BreakthroughPlatformStrategy(BaseStrategy):
 
 
 class LowDrawdownStrategy(BaseStrategy):
-    """
-    策略6: 无大幅回撤
+    """策略6: 无大幅回撤
 
     条件：
     1. 60日涨幅必须大于60%
@@ -535,8 +529,7 @@ class LowDrawdownStrategy(BaseStrategy):
 
 
 class HighTightFlagStrategy(BaseStrategy):
-    """
-    策略8: 高而窄的旗形
+    """策略8: 高而窄的旗形
 
     条件：
     1. 必须至少上市交易60日
@@ -605,8 +598,7 @@ class HighTightFlagStrategy(BaseStrategy):
 
 
 class VolumeLimitDownStrategy(BaseStrategy):
-    """
-    策略9: 放量跌停
+    """策略9: 放量跌停
 
     条件：
     1. 当日跌幅>9.5%

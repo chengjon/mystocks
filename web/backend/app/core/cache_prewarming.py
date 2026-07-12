@@ -1,5 +1,4 @@
-"""
-缓存预热系统 - Cache Prewarming System
+"""缓存预热系统 - Cache Prewarming System
 
 实现基于访问频率的缓存预热和性能监控。
 
@@ -25,6 +24,7 @@ import structlog
 from app.core.cache_eviction import get_eviction_strategy
 from app.core.cache_manager import CacheManager, get_cache_manager
 
+
 logger = structlog.get_logger()
 
 
@@ -42,22 +42,22 @@ class CacheMonitor:
         logger.info("🔧 初始化缓存监控器")
 
     def record_hit(self, latency_ms: float = 0) -> None:
-        """
-        记录缓存命中
+        """记录缓存命中
 
         Args:
             latency_ms: 读取延迟（毫秒）
+
         """
         self.hit_count += 1
         self.total_read_time += latency_ms
         self.read_operations += 1
 
     def record_miss(self, latency_ms: float = 0) -> None:
-        """
-        记录缓存未命中
+        """记录缓存未命中
 
         Args:
             latency_ms: 读取延迟（毫秒）
+
         """
         self.miss_count += 1
         self.total_read_time += latency_ms
@@ -111,12 +111,12 @@ class CachePrewarmingStrategy:
         cache_manager: Optional[CacheManager] = None,
         eviction_strategy: Optional[Any] = None,
     ):
-        """
-        初始化预热策略
+        """初始化预热策略
 
         Args:
             cache_manager: CacheManager实例
             eviction_strategy: 淘汰策略实例（用于获取热点数据）
+
         """
         self.cache_manager = cache_manager or get_cache_manager()
         self.eviction_strategy = eviction_strategy or get_eviction_strategy()
@@ -126,21 +126,20 @@ class CachePrewarmingStrategy:
         logger.info("🔧 初始化缓存预热策略")
 
     def get_hot_data_list(self, top_n: int = 20) -> List[Dict[str, Any]]:
-        """
-        获取热点数据列表
+        """获取热点数据列表
 
         Args:
             top_n: 返回热点数据数量
 
         Returns:
             热点数据列表，包含cache_key和access_count
+
         """
         hot_data = self.eviction_strategy.get_hot_data(top_n=top_n)
         return hot_data
 
     def prewarm_cache(self, data_sources: Optional[Dict[str, Callable]] = None) -> Dict[str, Any]:
-        """
-        执行缓存预热
+        """执行缓存预热
 
         Args:
             data_sources: 数据源字典 {cache_key: fetch_function}
@@ -148,6 +147,7 @@ class CachePrewarmingStrategy:
 
         Returns:
             预热结果统计
+
         """
         try:
             start_time = time.time()
@@ -290,11 +290,11 @@ _prewarming_strategy: Optional[CachePrewarmingStrategy] = None
 
 
 def get_cache_monitor() -> CacheMonitor:
-    """
-    获取缓存监控器单例
+    """获取缓存监控器单例
 
     Returns:
         CacheMonitor实例
+
     """
     global _cache_monitor
 
@@ -305,11 +305,11 @@ def get_cache_monitor() -> CacheMonitor:
 
 
 def get_prewarming_strategy() -> CachePrewarmingStrategy:
-    """
-    获取预热策略单例
+    """获取预热策略单例
 
     Returns:
         CachePrewarmingStrategy实例
+
     """
     global _prewarming_strategy
 

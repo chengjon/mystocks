@@ -1,5 +1,4 @@
-"""
-策略管理后台任务实现。
+"""策略管理后台任务实现。
 """
 
 import os
@@ -10,6 +9,7 @@ from typing import Any, Dict
 import pandas as pd
 import structlog
 
+
 logger = structlog.get_logger(__name__)
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../"))
@@ -18,6 +18,7 @@ if project_root not in sys.path:
 
 from src.core import DataClassification
 from unified_manager import MyStocksUnifiedManager
+
 
 try:
     from src.gpu.acceleration.backtest_engine_gpu import BacktestEngineGPU
@@ -48,8 +49,8 @@ async def train_model_task(model_id: int, config: Dict[str, Any]) -> None:
                     "status": "completed",
                     "model_path": model_path,
                     "training_completed_at": datetime.now(),
-                }
-            ]
+                },
+            ],
         )
 
         manager.save_data_by_classification(
@@ -120,7 +121,7 @@ async def run_backtest_task(backtest_id: int, config: Dict[str, Any]) -> None:
                     "low": prices * (1 - np.random.uniform(0, 0.02, len(dates))),
                     "close": prices,
                     "volume": np.random.randint(1000000, 10000000, len(dates)),
-                }
+                },
             ).set_index("trade_date")
 
         if use_gpu and GPU_BACKTEST_AVAILABLE and BacktestEngineGPU:
@@ -139,7 +140,7 @@ async def run_backtest_task(backtest_id: int, config: Dict[str, Any]) -> None:
                 }
 
                 results = gpu_engine.run_gpu_backtest(
-                    stock_data=stock_data, strategy_config=strategy_config, initial_capital=initial_capital
+                    stock_data=stock_data, strategy_config=strategy_config, initial_capital=initial_capital,
                 )
 
                 results["gpu_accelerated"] = True
@@ -174,8 +175,8 @@ async def run_backtest_task(backtest_id: int, config: Dict[str, Any]) -> None:
                     "status": "completed",
                     "results": results,
                     "completed_at": datetime.now(),
-                }
-            ]
+                },
+            ],
         )
         manager.save_data_by_classification(
             data=completed_data,

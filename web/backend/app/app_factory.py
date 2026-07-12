@@ -48,6 +48,7 @@ from .middleware.response_format import ResponseFormatMiddleware
 # 导入OpenAPI配置
 from .openapi_config import get_openapi_config
 
+
 logger = structlog.get_logger()
 
 
@@ -145,8 +146,7 @@ async def lifespan(app: FastAPI):
 
 
 def create_app() -> FastAPI:
-    """
-    FastAPI 应用工厂函数
+    """FastAPI 应用工厂函数
     封装了 FastAPI 应用的创建、配置和路由挂载逻辑
     """
     # 获取OpenAPI配置
@@ -188,7 +188,7 @@ def create_app() -> FastAPI:
 
     # 配置响应压缩 (性能优化)
     app.add_middleware(
-        GZipMiddleware, minimum_size=1000, compresslevel=5
+        GZipMiddleware, minimum_size=1000, compresslevel=5,
     )  # 仅压缩大于1KB的响应  # 压缩等级1-9, 5为平衡
 
     # SECURITY FIX 1.3: 输入验证中间件 - 防止SQL注入和XSS攻击
@@ -207,8 +207,7 @@ def create_app() -> FastAPI:
     # SECURITY FIX 1.2: CSRF验证中间件
     @app.middleware("http")
     async def csrf_protection_middleware(request: Request, call_next):
-        """
-        CSRF保护中间件 - 验证修改操作的CSRF token
+        """CSRF保护中间件 - 验证修改操作的CSRF token
         SECURITY: 所有POST/PUT/PATCH/DELETE请求都需要有效的CSRF token
         """
         # OPTIONS请求用于CORS预检，跳过CSRF检查
@@ -242,7 +241,7 @@ def create_app() -> FastAPI:
                         code=BusinessCode.FORBIDDEN,
                         message="CSRF token is required for this request",
                         errors=[
-                            ErrorDetail(code=ErrorCodes.FORBIDDEN, message="CSRF token is required for this request")
+                            ErrorDetail(code=ErrorCodes.FORBIDDEN, message="CSRF token is required for this request"),
                         ],
                         request_id=request_id,
                     )
@@ -304,8 +303,7 @@ def create_app() -> FastAPI:
     # 兜底全局异常处理 - 使用统一响应格式 (增强版)
     @app.exception_handler(Exception)
     async def fallback_global_exception_handler(request: Request, exc: Exception):
-        """
-        兜底全局异常处理器 - 捕获所有未被注册处理器处理的异常
+        """兜底全局异常处理器 - 捕获所有未被注册处理器处理的异常
         使用 UnifiedResponse 格式 (success, code, message, data, errors, request_id)
         """
         logger.error("Unhandled exception", exc_info=exc)
@@ -321,8 +319,8 @@ def create_app() -> FastAPI:
             errors=[
                 ErrorDetail(
                     code=ErrorCodes.INTERNAL_SERVER_ERROR,
-                    message=f"{type(exc).__name__}: {str(exc)}",
-                )
+                    message=f"{type(exc).__name__}: {exc!s}",
+                ),
             ],
             request_id=request_id,
         )
@@ -365,8 +363,7 @@ def create_app() -> FastAPI:
     # SECURITY FIX 1.2: CSRF Token 端点
     @app.get("/api/csrf-token")
     async def get_csrf_token(request: Request):
-        """
-        获取CSRF Token端点
+        """获取CSRF Token端点
         SECURITY: 前端应在应用启动时调用此端点获取CSRF token
         返回一个新的CSRF token供后续修改操作使用
         """
@@ -408,8 +405,7 @@ def create_app() -> FastAPI:
     # 自定义 Swagger UI 端点（使用本地静态文件）
     @app.get("/api/docs", include_in_schema=False)
     async def custom_swagger_ui_html():
-        """
-        自定义 Swagger UI 页面 - 使用本地静态文件
+        """自定义 Swagger UI 页面 - 使用本地静态文件
         解决 CDN 被墙问题
         """
         return get_swagger_ui_html(

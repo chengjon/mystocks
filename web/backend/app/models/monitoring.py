@@ -1,5 +1,4 @@
-"""
-监控系统数据模型
+"""监控系统数据模型
 Real-time Monitoring System
 """
 
@@ -23,6 +22,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import declarative_base, relationship
+
 
 Base = declarative_base()
 

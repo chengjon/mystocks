@@ -1,14 +1,15 @@
-"""
-Tests for Rate Limiting Module
+"""Tests for Rate Limiting Module
 
 Tests the rate limiting middleware and rate limiter functionality.
 """
 
+from unittest.mock import MagicMock
+
 import pytest
-from unittest.mock import MagicMock, patch
 from fastapi import FastAPI, Request
 from fastapi.testclient import TestClient
 
+from app.core.exceptions import RateLimitException
 from app.core.rate_limit import (
     InMemoryRateLimiter,
     RateLimitConfig,
@@ -16,7 +17,6 @@ from app.core.rate_limit import (
     get_rate_limiter,
     setup_rate_limiting,
 )
-from app.core.exceptions import RateLimitException
 
 
 class TestInMemoryRateLimiter:

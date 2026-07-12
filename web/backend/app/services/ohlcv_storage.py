@@ -1,5 +1,4 @@
-"""
-OHLCV存储服务 - PostgreSQL TimescaleDB Integration
+"""OHLCV存储服务 - PostgreSQL TimescaleDB Integration
 
 Task 7: 实现实时OHLCV柱线聚合与多时间周期支持
 
@@ -25,6 +24,7 @@ from psycopg2.extras import execute_batch
 
 from app.services.data_aggregation_service import OHLCV, Timeframe
 
+
 logger = structlog.get_logger()
 
 
@@ -39,8 +39,7 @@ class OHLCVStorage:
         password: str = os.getenv("POSTGRESQL_PASSWORD", "password"),
         database: str = os.getenv("POSTGRESQL_DATABASE", "mystocks"),
     ):
-        """
-        初始化OHLCV存储层
+        """初始化OHLCV存储层
 
         Args:
             host: PostgreSQL主机
@@ -48,6 +47,7 @@ class OHLCVStorage:
             user: 用户名
             password: 密码
             database: 数据库名
+
         """
         self.host = host
         self.port = port
@@ -143,7 +143,7 @@ class OHLCVStorage:
                         chunk_time_interval => 604800000,
                         if_not_exists => TRUE
                     );
-                    """
+                    """,
                 )
                 logger.info("✅ Created TimescaleDB hypertable for ohlcv_bars")
             except psycopg2.Error as e:

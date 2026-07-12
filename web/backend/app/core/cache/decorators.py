@@ -1,5 +1,4 @@
-"""
-Cache Decorators and Utilities for API Endpoints
+"""Cache Decorators and Utilities for API Endpoints
 Provides easy caching for high-frequency API endpoints
 """
 
@@ -8,6 +7,7 @@ import logging
 from typing import Callable, Optional
 
 from .multi_level import generate_cache_key, get_cache
+
 
 logger = logging.getLogger(__name__)
 
@@ -50,8 +50,7 @@ def cached(
     key_builder: Optional[Callable] = None,
     unless: Optional[Callable] = None,
 ):
-    """
-    缓存装饰器
+    """缓存装饰器
 
     Args:
         prefix: 缓存键前缀
@@ -60,6 +59,7 @@ def cached(
         cache_level: 缓存级别 ("memory", "redis", "both", "none")
         key_builder: 自定义键构建函数
         unless: 条件函数，返回True时不缓存
+
     """
 
     def decorator(func: Callable):

@@ -1,10 +1,11 @@
-"""
-AkShare Market API Base
+"""AkShare Market API Base
 
 Common instances and models.
 """
-from src.adapters.akshare.market_adapter import AkshareMarketDataAdapter
 from pydantic import BaseModel, Field
+
+from src.adapters.akshare.market_adapter import AkshareMarketDataAdapter
+
 
 # Shared adapter instance
 akshare_market_adapter = AkshareMarketDataAdapter()

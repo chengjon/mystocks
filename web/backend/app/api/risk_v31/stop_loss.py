@@ -1,21 +1,22 @@
+"""止损扩展路由 (V3.1)
 """
-止损扩展路由 (V3.1)
-"""
-import structlog
 from typing import Any, Dict
+
+import structlog
 from fastapi import APIRouter
 
 from app.core.exceptions import BusinessException, NotFoundException
 
+
 # 导入Week 4-5的新增组件
 try:
+    from src.governance.risk_management import get_risk_management_core
     from src.governance.risk_management.services.stop_loss_execution_service import (
         get_stop_loss_execution_service,
     )
     from src.governance.risk_management.services.stop_loss_history_service import (
         get_stop_loss_history_service,
     )
-    from src.governance.risk_management import get_risk_management_core
 
     ENHANCED_RISK_FEATURES_AVAILABLE = True
     RISK_MANAGEMENT_V31_AVAILABLE = True
@@ -110,12 +111,12 @@ async def calculate_stop_loss_v31(request: Dict[str, Any]) -> Dict[str, Any]:
 
         if strategy_type == "volatility_adaptive":
             result = await core.stop_loss_engine.calculate_volatility_stop_loss(
-                symbol=request.get("symbol"), entry_price=request.get("entry_price"), k=request.get("k_factor", 2.0)
+                symbol=request.get("symbol"), entry_price=request.get("entry_price"), k=request.get("k_factor", 2.0),
             )
         else:
             result = await core.stop_loss_engine.calculate_trailing_stop_loss(
                 symbol=request.get("symbol"), highest_price=request.get("entry_price"),
-                trailing_percentage=request.get("trailing_percentage", 0.08)
+                trailing_percentage=request.get("trailing_percentage", 0.08),
             )
         return {"status": "success", "data": result}
     except Exception as e:

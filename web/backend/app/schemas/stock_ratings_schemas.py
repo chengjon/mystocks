@@ -1,5 +1,4 @@
-"""
-股票评级数据API Schema
+"""股票评级数据API Schema
 Sina Finance Stock Ratings API Schemas
 
 定义股票评级相关的请求和响应数据模型。

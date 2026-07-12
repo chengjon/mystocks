@@ -2,6 +2,7 @@
 
 from fastapi import APIRouter
 
+
 router = APIRouter(prefix="/api/mock/strategy", tags=["mock-strategy"])
 
 MOCK_STRATEGIES = [

@@ -1,5 +1,4 @@
-"""
-订阅存储服务测试
+"""订阅存储服务测试
 
 Tests for Subscription Storage
 
@@ -9,17 +8,17 @@ Author: Claude Code
 Date: 2025-11-07
 """
 
-from unittest.mock import MagicMock, patch
 from datetime import datetime, timezone
+from unittest.mock import MagicMock, patch
 
 from app.services.filter_service import (
-    FilterOperator,
+    Alert,
+    AlertDeliveryMethod,
+    AlertPriority,
     FilterCondition,
     FilterExpression,
+    FilterOperator,
     Subscription,
-    Alert,
-    AlertPriority,
-    AlertDeliveryMethod,
 )
 from app.services.subscription_storage import (
     SubscriptionStorage,
@@ -101,7 +100,7 @@ class TestSubscriptionStorageSave:
                     field="price",
                     operator=FilterOperator.GT,
                     value=100.0,
-                )
+                ),
             )
 
             # Create subscription
@@ -514,7 +513,7 @@ class TestSubscriptionStorageIntegration:
                     field="symbol",
                     operator=FilterOperator.IN,
                     value=["600519", "000001"],
-                )
+                ),
             )
 
             sub = Subscription(

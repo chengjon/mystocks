@@ -1,5 +1,4 @@
-"""
-MACD Strategy
+"""MACD Strategy
 
 MACD策略 - 趋势和动量双重确认
 Moving Average Convergence Divergence
@@ -12,8 +11,7 @@ from app.backtest.strategies.base import BaseStrategy, SignalType, StrategySigna
 
 
 class MACDStrategy(BaseStrategy):
-    """
-    MACD策略
+    """MACD策略
 
     核心逻辑:
     - MACD线 = EMA(12) - EMA(26)
@@ -101,11 +99,11 @@ class MACDStrategy(BaseStrategy):
         ]
 
     def _calculate_macd(self, prices: List[float]) -> tuple[Optional[float], Optional[float], Optional[float]]:
-        """
-        计算MACD指标
+        """计算MACD指标
 
         Returns:
             (MACD线, Signal线, Histogram)
+
         """
         fast_period = self.parameters["fast_period"]
         slow_period = self.parameters["slow_period"]
@@ -176,7 +174,6 @@ class MACDStrategy(BaseStrategy):
         position: Optional[Dict[str, Any]] = None,
     ) -> Optional[StrategySignal]:
         """生成交易信号"""
-
         self.update_history(symbol, current_data)
 
         closes = self.get_closes(symbol)

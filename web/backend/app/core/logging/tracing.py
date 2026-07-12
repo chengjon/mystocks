@@ -1,5 +1,4 @@
-"""
-Distributed Tracing Module for MyStocks
+"""Distributed Tracing Module for MyStocks
 Integration with Grafana Tempo for trace collection and analysis
 """
 
@@ -18,6 +17,7 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.sdk.trace.sampling import ParentBasedTraceIdRatioBasedSampler
 from opentelemetry.semconv.resource import ResourceAttributes
 
+
 logger = logging.getLogger(__name__)
 
 trace_id_var: ContextVar[Optional[str]] = ContextVar("trace_id", default=None)
@@ -31,7 +31,7 @@ def setup_telemetry(service_name: str = "mystocks-api") -> trace.Tracer:
             ResourceAttributes.SERVICE_NAME: service_name,
             ResourceAttributes.SERVICE_VERSION: "1.0.0",
             "deployment.environment": "production",
-        }
+        },
     )
 
     # Configure sampling rate (default 10% for production efficiency)

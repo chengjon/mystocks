@@ -1,5 +1,4 @@
-"""
-系统健康检查API
+"""系统健康检查API
 
 提供数据库健康状态和数据分类统计功能
 """
@@ -9,6 +8,7 @@ from typing import List
 
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
+
 
 router = APIRouter(
     prefix="/health",
@@ -43,8 +43,7 @@ class DataClassificationStats(BaseModel):
     summary="Database Health Check",
 )
 async def get_database_health():
-    """
-    检查所有数据库的健康状态
+    """检查所有数据库的健康状态
 
     Returns health metrics for PostgreSQL and TDengine databases including
     connection status, response times, and table counts.
@@ -72,8 +71,7 @@ async def get_database_health():
 
 @router.get("/classification/stats", summary="Data Classification Statistics")
 async def get_data_classification_stats():
-    """
-    获取数据分类统计信息
+    """获取数据分类统计信息
 
     Returns statistics about data distribution across different classifications.
     """

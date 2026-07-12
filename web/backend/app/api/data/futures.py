@@ -1,9 +1,11 @@
-"""
-股指期货数据路由 (Futures)
+"""股指期货数据路由 (Futures)
 """
 from typing import Any, Dict
-from fastapi import APIRouter, Depends, Query, HTTPException
+
+from fastapi import APIRouter, Depends, HTTPException, Query
+
 from app.core.security import User, get_current_user
+
 
 router = APIRouter()
 

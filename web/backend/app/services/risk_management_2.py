@@ -1,17 +1,17 @@
-"""
-风险管理扩展模块
+"""风险管理扩展模块
 
 提供高级风险管理、风险预警、风险组合优化、风险报告生成功能
 """
 
-from typing import Any, Dict, List, Optional
-from datetime import datetime
 from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
+from typing import Any, Dict, List, Optional
 
-from .risk_base import RiskBase, RiskMetrics, RiskLevel, RiskEventType
-from .risk_monitoring import RiskMonitoring
+from .risk_base import RiskBase, RiskEventType, RiskLevel, RiskMetrics
 from .risk_calculator import RiskCalculator
+from .risk_monitoring import RiskMonitoring
+
 
 logger = __import__("logging").getLogger(__name__)
 
@@ -135,8 +135,7 @@ class RiskManagementExtended(RiskBase):
         strategy_type: RiskStrategyType = RiskStrategyType.CONSERVATIVE,
         objective: RiskObjective = RiskObjective.BALANCE,
     ) -> RiskOptimization:
-        """
-        优化风险配置
+        """优化风险配置
 
         Args:
             portfolio_id: 投资组合ID
@@ -145,6 +144,7 @@ class RiskManagementExtended(RiskBase):
 
         Returns:
             RiskOptimization: 优化结果
+
         """
         try:
             import uuid
@@ -219,7 +219,7 @@ class RiskManagementExtended(RiskBase):
             raise
 
     def _apply_risk_strategy(
-        self, current_risk: RiskMetrics, strategy_type: RiskStrategyType, objective: RiskObjective
+        self, current_risk: RiskMetrics, strategy_type: RiskStrategyType, objective: RiskObjective,
     ) -> RiskMetrics:
         """应用风险策略"""
         optimized_risk = RiskMetrics()
@@ -267,14 +267,14 @@ class RiskManagementExtended(RiskBase):
         return optimized_risk
 
     async def check_portfolio_risk(self, portfolio_id: str) -> Dict:
-        """
-        检查投资组合风险
+        """检查投资组合风险
 
         Args:
             portfolio_id: 投资组合ID
 
         Returns:
             Dict: 风险检查结果
+
         """
         try:
             # 获取当前风险指标
@@ -292,7 +292,7 @@ class RiskManagementExtended(RiskBase):
                         "current_value": f"{current_risk.var_95:.2%}",
                         "threshold": f"{self.risk_thresholds['var_95_warning']:.2%}",
                         "severity": "medium",
-                    }
+                    },
                 )
 
                 if current_risk.var_95 > self.risk_thresholds["var_99_warning"]:
@@ -302,7 +302,7 @@ class RiskManagementExtended(RiskBase):
                             "current_value": f"{current_risk.var_99:.2%}",
                             "threshold": f"{self.risk_thresholds['var_99_warning']:.2%}",
                             "severity": "high",
-                        }
+                        },
                     )
 
             # 检查最大回撤
@@ -313,7 +313,7 @@ class RiskManagementExtended(RiskBase):
                         "current_value": f"{current_risk.max_drawdown:.2%}",
                         "threshold": f"{abs(self.risk_thresholds['max_drawdown_warning']):.2%}",
                         "severity": "high",
-                    }
+                    },
                 )
 
             # 检查夏普比率
@@ -324,7 +324,7 @@ class RiskManagementExtended(RiskBase):
                         "current_value": f"{current_risk.sharpe_ratio:.2f}",
                         "threshold": f"{self.risk_thresholds['sharpe_warning']:.2f}",
                         "severity": "medium",
-                    }
+                    },
                 )
 
             # 检查波动率
@@ -335,7 +335,7 @@ class RiskManagementExtended(RiskBase):
                         "current_value": f"{current_risk.volatility:.2%}",
                         "threshold": f"{self.risk_thresholds['volatility_warning']:.2%}",
                         "severity": "medium",
-                    }
+                    },
                 )
 
             # 计算综合风险等级
@@ -373,7 +373,7 @@ class RiskManagementExtended(RiskBase):
             }
 
     def _generate_risk_report(
-        self, portfolio_id: str, current_risk: RiskMetrics, risk_warnings: List[Dict], risk_level: RiskLevel
+        self, portfolio_id: str, current_risk: RiskMetrics, risk_warnings: List[Dict], risk_level: RiskLevel,
     ) -> Dict:
         """生成风险报告"""
         try:
@@ -440,8 +440,7 @@ class RiskManagementExtended(RiskBase):
         return recommendations
 
     async def create_risk_alert(self, portfolio_id: str, risk_level: RiskLevel, message: str) -> RiskEventExtended:
-        """
-        创建风险告警
+        """创建风险告警
 
         Args:
             portfolio_id: 投资组合ID
@@ -450,6 +449,7 @@ class RiskManagementExtended(RiskBase):
 
         Returns:
             RiskEventExtended: 扩展风险事件
+
         """
         try:
             import uuid
@@ -500,8 +500,7 @@ class RiskManagementExtended(RiskBase):
             return []
 
     async def resolve_risk_event(self, event_id: str, action_taken: str, action_effect: Dict[str, Any]) -> bool:
-        """
-        解决风险事件
+        """解决风险事件
 
         Args:
             event_id: 事件ID
@@ -510,6 +509,7 @@ class RiskManagementExtended(RiskBase):
 
         Returns:
             bool: 是否解决成功
+
         """
         try:
             # 查找事件
@@ -533,14 +533,14 @@ class RiskManagementExtended(RiskBase):
             return False
 
     async def get_risk_summary(self, user_id: str) -> Dict:
-        """
-        获取用户风险摘要
+        """获取用户风险摘要
 
         Args:
             user_id: 用户ID
 
         Returns:
             Dict: 风险摘要
+
         """
         try:
             # 获取所有投资组合的风险状态

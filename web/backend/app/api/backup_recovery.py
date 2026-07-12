@@ -1,5 +1,4 @@
-"""
-备份恢复 API 端点 - 安全增强版本
+"""备份恢复 API 端点 - 安全增强版本
 
 提供完整的备份、恢复、状态查询功能，包含：
 - JWT 认证和基于角色的授权
@@ -34,6 +33,7 @@ from app.models.backup_schemas import (
 )
 from src.backup_recovery import BackupManager, BackupScheduler, IntegrityChecker, RecoveryManager
 
+
 # 初始化速率限制器
 limiter = Limiter(key_func=get_remote_address)
 
@@ -61,7 +61,7 @@ _max_backup_operations = 3  # 每5分钟最多3次备份操作
 
 
 def log_security_event(
-    event_type: str, user: User, action: str, details: Optional[Dict[str, Any]] = None, success: bool = True
+    event_type: str, user: User, action: str, details: Optional[Dict[str, Any]] = None, success: bool = True,
 ):
     """记录安全审计日志"""
     log_data = {
@@ -144,10 +144,9 @@ def verify_recovery_permission(user: User) -> None:
 
 @router.post("/backup/tdengine/full")
 async def backup_tdengine_full(
-    request: TDengineFullBackupRequest = Body(...), current_user: User = Depends(get_current_user)
+    request: TDengineFullBackupRequest = Body(...), current_user: User = Depends(get_current_user),
 ):
-    """
-    执行 TDengine 全量备份 [CRITICAL - 需要备份权限]
+    """执行 TDengine 全量备份 [CRITICAL - 需要备份权限]
 
     安全要求：
     - JWT 认证
@@ -163,7 +162,7 @@ async def backup_tdengine_full(
         # 速率限制检查
         if not check_backup_rate_limit(current_user):
             log_security_event(
-                "RATE_LIMIT_EXCEEDED", current_user, "tdengine_full_backup", {"reason": "Too many backup operations"}
+                "RATE_LIMIT_EXCEEDED", current_user, "tdengine_full_backup", {"reason": "Too many backup operations"},
             )
             return error_response(message="备份操作过于频繁，请稍后再试", error_code=ErrorCode.RATE_LIMIT_EXCEEDED)
 
@@ -234,10 +233,9 @@ async def backup_tdengine_full(
 
 @router.post("/backup/tdengine/incremental")
 async def backup_tdengine_incremental(
-    request: TDengineIncrementalBackupRequest = Body(...), current_user: User = Depends(get_current_user)
+    request: TDengineIncrementalBackupRequest = Body(...), current_user: User = Depends(get_current_user),
 ):
-    """
-    执行 TDengine 增量备份 [CRITICAL - 需要备份权限]
+    """执行 TDengine 增量备份 [CRITICAL - 需要备份权限]
 
     安全要求：
     - JWT 认证
@@ -352,7 +350,7 @@ async def backup_postgresql_full():
             "error_message": metadata.error_message,
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Backup failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Backup failed: {e!s}")
 
 
 @router.get("/backups")
@@ -394,7 +392,7 @@ async def list_backups(
             ],
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to list backups: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to list backups: {e!s}")
 
 
 # ==================== 恢复端点 ====================
@@ -421,11 +419,10 @@ async def restore_tdengine_full(
                 "message": message,
                 "dry_run": dry_run,
             }
-        else:
-            raise HTTPException(status_code=500, detail=message)
+        raise HTTPException(status_code=500, detail=message)
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Recovery failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Recovery failed: {e!s}")
 
 
 @router.post("/recovery/tdengine/pitr")
@@ -448,13 +445,12 @@ async def restore_tdengine_pitr(
                 "target_time": target_time,
                 "message": message,
             }
-        else:
-            raise HTTPException(status_code=500, detail=message)
+        raise HTTPException(status_code=500, detail=message)
 
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=f"Invalid target_time format: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Invalid target_time format: {e!s}")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"PITR recovery failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"PITR recovery failed: {e!s}")
 
 
 @router.post("/recovery/postgresql/full")
@@ -478,11 +474,10 @@ async def restore_postgresql_full(
                 "message": message,
                 "dry_run": dry_run,
             }
-        else:
-            raise HTTPException(status_code=500, detail=message)
+        raise HTTPException(status_code=500, detail=message)
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Recovery failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Recovery failed: {e!s}")
 
 
 @router.get("/recovery/objectives")
@@ -501,7 +496,7 @@ async def start_scheduler():
         backup_scheduler.start()
         return {"success": True, "message": "Backup scheduler started"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to start scheduler: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to start scheduler: {e!s}")
 
 
 @router.post("/scheduler/stop")
@@ -511,7 +506,7 @@ async def stop_scheduler():
         backup_scheduler.stop()
         return {"success": True, "message": "Backup scheduler stopped"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to stop scheduler: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to stop scheduler: {e!s}")
 
 
 @router.get("/scheduler/jobs")
@@ -524,7 +519,7 @@ async def get_scheduled_jobs():
             "jobs": jobs,
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get scheduled jobs: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to get scheduled jobs: {e!s}")
 
 
 # ==================== 完整性检查端点 ====================
@@ -570,13 +565,12 @@ async def verify_backup_integrity(backup_id: str):
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Integrity verification failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Integrity verification failed: {e!s}")
 
 
 @router.post("/cleanup/old-backups")
 async def cleanup_old_backups(retention_days: int = Query(30, description="保留天数")):
-    """
-    清理过期备份文件
+    """清理过期备份文件
 
     自动清理超过指定保留期的备份文件，释放存储空间。该端点会扫描所有备份目录，
     删除创建时间早于保留天数的备份文件和元数据。
@@ -641,4 +635,4 @@ async def cleanup_old_backups(retention_days: int = Query(30, description="保�
             "message": f"Old backups (older than {retention_days} days) removed",
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Cleanup failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Cleanup failed: {e!s}")

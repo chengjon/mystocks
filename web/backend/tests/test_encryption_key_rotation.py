@@ -1,5 +1,4 @@
-"""
-Phase 3 Task 20: Comprehensive Unit Tests for Key Rotation
+"""Phase 3 Task 20: Comprehensive Unit Tests for Key Rotation
 Tests for EncryptionManager and SecretManager key rotation functionality
 
 Test Coverage:
@@ -12,10 +11,11 @@ Test Coverage:
 - Error handling and edge cases
 """
 
-import pytest
 import base64
 import os
 from datetime import datetime, timezone
+
+import pytest
 
 from app.core.encryption import EncryptionManager, SecretManager
 

@@ -1,5 +1,4 @@
-"""
-TDX数据API路由
+"""TDX数据API路由
 
 提供RESTful接口:
 - GET /api/tdx/quote/{symbol} - 获取实时行情
@@ -25,6 +24,7 @@ from app.schemas.tdx_schemas import (
 )
 from app.services.tdx_service import TdxService, get_tdx_service
 
+
 router = APIRouter()
 
 
@@ -42,8 +42,7 @@ async def get_stock_quote(
     current_user: User = Depends(get_current_active_user),
     service: TdxService = Depends(get_tdx_service),
 ):
-    """
-    获取股票实时行情
+    """获取股票实时行情
 
     **参数:**
     - symbol: 6位数字股票代码(如: 600519)
@@ -76,7 +75,7 @@ async def get_stock_quote(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"获取实时行情失败: {str(e)}",
+            detail=f"获取实时行情失败: {e!s}",
         )
 
 
@@ -97,8 +96,7 @@ async def get_stock_kline(
     current_user: User = Depends(get_current_active_user),
     service: TdxService = Depends(get_tdx_service),
 ):
-    """
-    获取股票K线数据
+    """获取股票K线数据
 
     **参数:**
     - symbol: 6位数字股票代码(如: 600519)
@@ -164,7 +162,7 @@ async def get_stock_kline(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"获取K线数据失败: {str(e)}",
+            detail=f"获取K线数据失败: {e!s}",
         )
 
 
@@ -182,8 +180,7 @@ async def get_index_quote(
     current_user: User = Depends(get_current_active_user),
     service: TdxService = Depends(get_tdx_service),
 ):
-    """
-    获取指数实时行情
+    """获取指数实时行情
 
     **参数:**
     - symbol: 6位数字指数代码
@@ -219,7 +216,7 @@ async def get_index_quote(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"获取指数行情失败: {str(e)}",
+            detail=f"获取指数行情失败: {e!s}",
         )
 
 
@@ -240,8 +237,7 @@ async def get_index_kline(
     current_user: User = Depends(get_current_active_user),
     service: TdxService = Depends(get_tdx_service),
 ):
-    """
-    获取指数K线数据
+    """获取指数K线数据
 
     **参数:**
     - symbol: 6位数字指数代码
@@ -293,7 +289,7 @@ async def get_index_kline(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"获取指数K线失败: {str(e)}",
+            detail=f"获取指数K线失败: {e!s}",
         )
 
 
@@ -307,8 +303,7 @@ async def get_index_kline(
     description="检查TDX服务器连接状态",
 )
 async def health_check(service: TdxService = Depends(get_tdx_service)):
-    """
-    TDX服务健康检查
+    """TDX服务健康检查
 
     **返回:**
     - 服务状态和TDX连接信息

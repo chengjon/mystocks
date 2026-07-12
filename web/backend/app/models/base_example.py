@@ -1,5 +1,4 @@
-"""
-统一响应模型使用示例
+"""统一响应模型使用示例
 
 展示如何在 FastAPI 路由中使用 base.py 的响应模型
 """
@@ -18,6 +17,7 @@ from app.models.base import (
     success_response,
 )
 
+
 # 创建示例路由
 router = APIRouter()
 
@@ -29,8 +29,7 @@ router = APIRouter()
 
 @router.get("/stock/{symbol}", response_model=BaseResponse[Dict])
 async def get_stock_info(symbol: str):
-    """
-    获取股票信息（使用 BaseResponse 模型）
+    """获取股票信息（使用 BaseResponse 模型）
 
     返回格式:
     {
@@ -62,7 +61,7 @@ async def get_stock_info(symbol: str):
     except Exception as e:
         # 返回错误响应
         return error_response(
-            message=f"查询失败: {str(e)}",
+            message=f"查询失败: {e!s}",
             error_code=ErrorCode.DATABASE_ERROR,
             details={"symbol": symbol, "error": str(e)},
         )
@@ -79,8 +78,7 @@ async def list_stocks(
     page_size: int = Query(20, ge=1, le=100, description="每页数量"),
     market: str = Query("cn", description="市场类型"),
 ):
-    """
-    获取股票列表（使用 PagedResponse 模型）
+    """获取股票列表（使用 PagedResponse 模型）
 
     返回格式:
     {
@@ -129,7 +127,7 @@ async def list_stocks(
 
     except Exception as e:
         return error_response(
-            message=f"查询失败: {str(e)}",
+            message=f"查询失败: {e!s}",
             error_code=ErrorCode.DATABASE_ERROR,
             details={"market": market, "error": str(e)},
         )
@@ -142,8 +140,7 @@ async def list_stocks(
 
 @router.post("/order/create")
 async def create_order(symbol: str, quantity: int, price: float):
-    """
-    创建订单（演示错误响应）
+    """创建订单（演示错误响应）
 
     错误响应格式:
     {
@@ -216,8 +213,7 @@ async def create_order(symbol: str, quantity: int, price: float):
 
 @router.get("/health", response_model=HealthCheckResponse)
 async def health_check():
-    """
-    系统健康检查
+    """系统健康检查
 
     返回格式:
     {
@@ -263,8 +259,7 @@ from fastapi.responses import JSONResponse
 
 
 async def custom_exception_handler(request: Request, exc: Exception):
-    """
-    自定义异常处理器
+    """自定义异常处理器
 
     捕获所有未处理的异常并返回标准错误响应
     """
@@ -292,8 +287,7 @@ async def custom_exception_handler(request: Request, exc: Exception):
 
 @router.get("/typed-response", response_model=BaseResponse[List[Dict]])
 async def typed_response_example():
-    """
-    展示泛型类型提示的好处
+    """展示泛型类型提示的好处
 
     通过指定 BaseResponse[List[Dict]]，IDE 可以提供更好的类型检查和自动补全
     """

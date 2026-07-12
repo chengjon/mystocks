@@ -1,18 +1,17 @@
-"""
-风险管理模块 - 向后兼容接口
+"""风险管理模块 - 向后兼容接口
 
 提供与原risk_management.py相同的接口，但使用新拆分后的风险管理模块
 """
 
-from typing import Any, Dict, List, Optional
 from datetime import datetime
+from typing import Any, Dict, List, Optional
 
-from .risk_management.risk_base import RiskBase, RiskLevel, RiskEventType, RiskProfile
+from .risk_management.risk_alerts import AlertChannel, AlertManager
+from .risk_management.risk_base import RiskBase, RiskEventType, RiskLevel, RiskProfile
+from .risk_management.risk_calculator import CalculationConfig, RiskCalculator
+from .risk_management.risk_dashboard import DashboardChartType, DashboardTimeRange, RiskDashboard
 from .risk_management.risk_monitoring import RiskMonitoring
-from .risk_management.risk_alerts import AlertManager, AlertChannel
 from .risk_management.risk_settings import RiskSettingsManager
-from .risk_management.risk_calculator import RiskCalculator, CalculationConfig
-from .risk_management.risk_dashboard import RiskDashboard, DashboardChartType, DashboardTimeRange
 
 
 logger = __import__("logging").getLogger(__name__)
@@ -32,8 +31,7 @@ class RiskManagementService:
         logger.info("风险管理服务初始化")
 
     def get_risk_metrics(self, returns: List[float], config: Optional[RiskProfile] = None) -> Dict:
-        """
-        计算风险指标
+        """计算风险指标
 
         Args:
             returns: 收益率列表
@@ -41,6 +39,7 @@ class RiskManagementService:
 
         Returns:
             Dict: 风险指标
+
         """
         try:
             calc_config = config or CalculationConfig()
@@ -53,20 +52,19 @@ class RiskManagementService:
             return {}
 
     def calculate_var(self, returns: List[float]) -> float:
-        """
-        计算方差
+        """计算方差
 
         Args:
             returns: 收益率列表
 
         Returns:
             float: 方差值
+
         """
         return self.risk_base.calculate_var(returns)
 
     def calculate_var_with_return(self, returns: List[float], risk_free_rate: float = 0.03) -> float:
-        """
-        计算带风险调整的方差
+        """计算带风险调整的方差
 
         Args:
             returns: 收益率列表
@@ -74,12 +72,12 @@ class RiskManagementService:
 
         Returns:
             float: 调整后方差
+
         """
         return self.risk_base.calculate_var_with_return(returns, risk_free_rate)
 
     def calculate_percentile(self, value: float, distribution: List[float], percentile: float = 95.0) -> float:
-        """
-        计算百分位
+        """计算百分位
 
         Args:
             value: 数值
@@ -88,12 +86,12 @@ class RiskManagementService:
 
         Returns:
             float: 百分位数值
+
         """
         return self.risk_base.calculate_percentile(value, distribution, percentile)
 
     def check_risk_thresholds(self, portfolio_id: str, current_metrics: Any) -> List[Dict]:
-        """
-        检查风险阈值是否被突破
+        """检查风险阈值是否被突破
 
         Args:
             portfolio_id: 投资组合ID
@@ -101,14 +99,14 @@ class RiskManagementService:
 
         Returns:
             List[Dict]: 触发的事件列表
+
         """
         return self.monitoring.check_thresholds(portfolio_id, current_metrics)
 
     async def create_alert_rule(
-        self, rule_name: str, risk_level: RiskLevel, conditions: Dict, channel: AlertChannel = AlertChannel.EMAIL
+        self, rule_name: str, risk_level: RiskLevel, conditions: Dict, channel: AlertChannel = AlertChannel.EMAIL,
     ) -> Dict:
-        """
-        创建告警规则
+        """创建告警规则
 
         Args:
             rule_name: 规则名称
@@ -118,17 +116,18 @@ class RiskManagementService:
 
         Returns:
             Dict: 创建的规则
+
         """
         return await self.alerts.create_alert_rule(rule_name, risk_level, conditions, channel)
 
     async def trigger_alert(self, portfolio_id: str, risk_level: RiskLevel, message: str) -> None:
-        """
-        触发告警
+        """触发告警
 
         Args:
             portfolio_id: 投资组合ID
             risk_level: 风险等级
             message: 告警消息
+
         """
         from .risk_management.risk_base import RiskEvent
 
@@ -144,11 +143,11 @@ class RiskManagementService:
         await self.monitoring.record_event(event)
 
     async def check_health(self) -> Dict:
-        """
-        检查风险管理服务健康状态
+        """检查风险管理服务健康状态
 
         Returns:
             Dict: 健康状态
+
         """
         try:
             health_check = {
@@ -173,22 +172,21 @@ class RiskManagementService:
             return {"status": "error", "message": str(e), "last_check": datetime.now().isoformat()}
 
     async def get_risk_settings(self, user_id: str) -> Optional[Dict]:
-        """
-        获取风险设置
+        """获取风险设置
 
         Args:
             user_id: 用户ID
 
         Returns:
             Dict: 风险设置
+
         """
         return await self.settings.get_settings(user_id)
 
     async def get_dashboard_summary(
-        self, portfolio_id: str, time_range: DashboardTimeRange = DashboardTimeRange.WEEKLY
+        self, portfolio_id: str, time_range: DashboardTimeRange = DashboardTimeRange.WEEKLY,
     ) -> Dict:
-        """
-        获取仪表盘摘要
+        """获取仪表盘摘要
 
         Args:
             portfolio_id: 投资组合ID
@@ -196,6 +194,7 @@ class RiskManagementService:
 
         Returns:
             Dict: 仪表盘摘要
+
         """
         try:
             summary = await self.dashboard.get_dashboard(portfolio_id, time_range)
@@ -212,10 +211,9 @@ class RiskManagementService:
             return {}
 
     async def export_risk_report(
-        self, portfolio_id: str, start_date: Optional[datetime] = None, end_date: Optional[datetime] = None
+        self, portfolio_id: str, start_date: Optional[datetime] = None, end_date: Optional[datetime] = None,
     ) -> str:
-        """
-        导出风险报告
+        """导出风险报告
 
         Args:
             portfolio_id: 投资组合ID
@@ -224,18 +222,19 @@ class RiskManagementService:
 
         Returns:
             str: 报告内容（JSON/CSV格式）
+
         """
         return await self.dashboard.generate_risk_report(portfolio_id, start_date, end_date)
 
     async def calculate_portfolio_risk(self, portfolio_id: str) -> Dict:
-        """
-        计算投资组合风险
+        """计算投资组合风险
 
         Args:
             portfolio_id: 投资组合ID
 
         Returns:
             Dict: 风险指标摘要
+
         """
         try:
             from app.core.database import db_service
@@ -269,28 +268,28 @@ class RiskManagementService:
             return {"status": "error", "message": str(e)}
 
     def get_available_risk_models(self) -> List[str]:
-        """
-        获取可用的风险模型
+        """获取可用的风险模型
 
         Returns:
             List[str]: 模型列表
+
         """
         return self.settings.get_available_models()
 
     def get_available_time_horizons(self) -> List[str]:
-        """
-        获取可用的时间周期
+        """获取可用的时间周期
 
         Returns:
             List[str]: 时间周期列表
+
         """
         return self.settings.get_available_time_horizons()
 
     def get_available_chart_types(self) -> List[str]:
-        """
-        获取可用的图表类型
+        """获取可用的图表类型
 
         Returns:
             List[str]: 图表类型列表
+
         """
         return [chart_type.value for chart_type in DashboardChartType]

@@ -1,9 +1,9 @@
-"""
-契约差异检测引擎
+"""契约差异检测引擎
 使用语义化对比检测OpenAPI规范的差异
 """
 
 from typing import Any, Dict, List, Optional
+
 
 try:
     from deepdiff import DeepDiff
@@ -47,10 +47,9 @@ class DiffEngine:
 
     @staticmethod
     def compare_versions(
-        from_spec: Dict[str, Any], to_spec: Dict[str, Any], from_version: str, to_version: str
+        from_spec: Dict[str, Any], to_spec: Dict[str, Any], from_version: str, to_version: str,
     ) -> ContractDiffResponse:
-        """
-        对比两个契约版本
+        """对比两个契约版本
 
         Args:
             from_spec: 源版本OpenAPI规范
@@ -60,6 +59,7 @@ class DiffEngine:
 
         Returns:
             契约差异响应
+
         """
         if not DEEPDIFF_AVAILABLE:
             return DiffEngine._simple_diff(from_spec, to_spec, from_version, to_version)
@@ -109,8 +109,7 @@ class DiffEngine:
 
     @staticmethod
     def _parse_change(change_type: str, change: Any) -> Optional[DiffResult]:
-        """
-        解析单个变更
+        """解析单个变更
 
         Args:
             change_type: 变更类型
@@ -118,6 +117,7 @@ class DiffEngine:
 
         Returns:
             差异结果
+
         """
         if not DEEPDIFF_AVAILABLE:
             return None
@@ -157,8 +157,7 @@ class DiffEngine:
 
     @staticmethod
     def _is_breaking_change(path: str, change_type: str) -> bool:
-        """
-        判断是否为破坏性变更
+        """判断是否为破坏性变更
 
         Args:
             path: 变更路径
@@ -166,6 +165,7 @@ class DiffEngine:
 
         Returns:
             是否为破坏性变更
+
         """
         # 删除操作通常是破坏性的
         if "removed" in change_type:
@@ -184,8 +184,7 @@ class DiffEngine:
 
     @staticmethod
     def _match_pattern(pattern: List[str], path: List[str]) -> bool:
-        """
-        匹配路径模式
+        """匹配路径模式
 
         Args:
             pattern: 模式列表
@@ -193,6 +192,7 @@ class DiffEngine:
 
         Returns:
             是否匹配
+
         """
         for i, part in enumerate(pattern):
             if part == "*":
@@ -206,8 +206,7 @@ class DiffEngine:
 
     @staticmethod
     def _generate_summary(diffs: List[DiffResult], breaking_count: int, non_breaking_count: int) -> str:
-        """
-        生成差异摘要
+        """生成差异摘要
 
         Args:
             diffs: 差异列表
@@ -216,6 +215,7 @@ class DiffEngine:
 
         Returns:
             摘要文本
+
         """
         lines = [
             f"总变更数: {len(diffs)}",
@@ -236,10 +236,9 @@ class DiffEngine:
 
     @staticmethod
     def _simple_diff(
-        from_spec: Dict[str, Any], to_spec: Dict[str, Any], from_version: str, to_version: str
+        from_spec: Dict[str, Any], to_spec: Dict[str, Any], from_version: str, to_version: str,
     ) -> ContractDiffResponse:
-        """
-        简单差异对比（当deepdiff不可用时）
+        """简单差异对比（当deepdiff不可用时）
 
         Args:
             from_spec: 源版本OpenAPI规范
@@ -249,6 +248,7 @@ class DiffEngine:
 
         Returns:
             契约差异响应
+
         """
         diffs = []
 
@@ -267,7 +267,7 @@ class DiffEngine:
                         new_value=to_paths[path],
                         is_breaking=False,
                         description=f"新增API端点: {path}",
-                    )
+                    ),
                 )
             elif path not in to_paths:
                 diffs.append(
@@ -277,7 +277,7 @@ class DiffEngine:
                         old_value=from_paths[path],
                         is_breaking=True,
                         description=f"删除API端点: {path}",
-                    )
+                    ),
                 )
 
         # 对比schemas
@@ -295,7 +295,7 @@ class DiffEngine:
                         new_value=to_schemas[schema],
                         is_breaking=False,
                         description=f"新增Schema: {schema}",
-                    )
+                    ),
                 )
             elif schema not in to_schemas:
                 diffs.append(
@@ -305,7 +305,7 @@ class DiffEngine:
                         old_value=from_schemas[schema],
                         is_breaking=True,
                         description=f"删除Schema: {schema}",
-                    )
+                    ),
                 )
 
         breaking_count = sum(1 for d in diffs if d.is_breaking)

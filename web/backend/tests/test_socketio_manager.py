@@ -1,5 +1,4 @@
-"""
-Socket.IO服务器管理器单元测试
+"""Socket.IO服务器管理器单元测试
 
 Test Socket.IO Manager - WebSocket connection and event handling
 
@@ -9,8 +8,9 @@ Author: Claude Code
 Date: 2025-11-06
 """
 
-import pytest
 import asyncio
+
+import pytest
 
 from app.core.socketio_manager import (
     ConnectionManager,
@@ -18,9 +18,9 @@ from app.core.socketio_manager import (
     reset_socketio_manager,
 )
 from app.models.websocket_message import (
+    create_error_message,
     create_request_message,
     create_response_message,
-    create_error_message,
 )
 
 

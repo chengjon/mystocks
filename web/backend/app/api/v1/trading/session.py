@@ -1,5 +1,4 @@
-"""
-交易会话API
+"""交易会话API
 
 提供实时交易会话管理功能
 """
@@ -9,6 +8,7 @@ from typing import Any, Dict, Optional
 
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
+
 
 router = APIRouter(
     prefix="/trading/sessions",
@@ -53,8 +53,7 @@ async def list_trading_sessions(
     symbol: Optional[str] = None,
     status: Optional[str] = None,
 ):
-    """
-    获取交易会话列表
+    """获取交易会话列表
 
     Returns list of active trading sessions.
     """
@@ -87,8 +86,7 @@ async def list_trading_sessions(
     summary="Get Trading Session",
 )
 async def get_trading_session(session_id: str):
-    """
-    获取单个交易会话详情
+    """获取单个交易会话详情
 
     Returns details of a specific trading session.
     """
@@ -108,8 +106,7 @@ async def get_trading_session(session_id: str):
 
 @router.post("", response_model=TradingSessionResponse, summary="Create Trading Session")
 async def create_trading_session(request: TradingSessionCreate):
-    """
-    创建新的交易会话
+    """创建新的交易会话
 
     Creates a new trading session with specified parameters.
     """
@@ -134,8 +131,7 @@ async def create_trading_session(request: TradingSessionCreate):
     summary="Update Trading Session",
 )
 async def update_trading_session(session_id: str, request: TradingSessionUpdate):
-    """
-    更新交易会话状态
+    """更新交易会话状态
 
     Updates the status of a trading session (start, pause, stop).
     """
@@ -155,8 +151,7 @@ async def update_trading_session(session_id: str, request: TradingSessionUpdate)
 
 @router.delete("/{session_id}", summary="Delete Trading Session")
 async def delete_trading_session(session_id: str):
-    """
-    删除交易会话
+    """删除交易会话
 
     Deletes a completed or cancelled trading session.
     """

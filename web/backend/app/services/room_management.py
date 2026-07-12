@@ -1,5 +1,4 @@
-"""
-房间管理服务 - Room Management Service
+"""房间管理服务 - Room Management Service
 
 Task 9: 多房间订阅扩展
 
@@ -20,6 +19,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, Set
 
 import structlog
+
 
 logger = structlog.get_logger()
 

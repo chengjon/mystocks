@@ -1,5 +1,4 @@
-"""
-Cache Integration Tests - 缓存集成测试
+"""Cache Integration Tests - 缓存集成测试
 
 测试CacheIntegration与现有数据服务的集成情况。
 
@@ -12,17 +11,18 @@ Test Coverage:
 - 性能优化验证
 """
 
-import pytest
-from typing import Dict, Any
+from typing import Any, Dict
 
-from app.core.cache_manager import get_cache_manager, reset_cache_manager
+import pytest
+
 from app.core.cache_integration import (
-    get_cache_integration,
-    reset_cache_integration,
+    cache_invalidate_on_write,
     cache_read_wrapper,
     cache_write_wrapper,
-    cache_invalidate_on_write,
+    get_cache_integration,
+    reset_cache_integration,
 )
+from app.core.cache_manager import get_cache_manager, reset_cache_manager
 
 
 class TestCacheReadPatternIntegration:
@@ -375,7 +375,6 @@ class TestCacheDecoratorIntegration:
 
     def test_cache_read_wrapper(self):
         """测试读缓存装饰器"""
-
         call_count = 0
 
         @cache_read_wrapper("test_type")

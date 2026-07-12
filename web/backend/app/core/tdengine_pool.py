@@ -1,5 +1,4 @@
-"""
-TDengine连接池管理器 - Phase 3优化
+"""TDengine连接池管理器 - Phase 3优化
 Task 19: 数据库连接池优化
 
 实现TDengine连接池，支持连接复用、超时处理和监控。
@@ -12,14 +11,16 @@ Features:
 - 连接池状态监控
 """
 
+import os
 import queue
 import threading
 import time
-import os
 from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
 import structlog
+
+
 try:
     from taos import TaosConnection, connect
 
@@ -35,8 +36,7 @@ logger = structlog.get_logger()
 
 
 class TDengineConnectionPool:
-    """
-    TDengine连接池管理器
+    """TDengine连接池管理器
 
     实现连接池模式，支持：
     - 连接复用（避免频繁创建/销毁连接）
@@ -80,8 +80,7 @@ class TDengineConnectionPool:
         max_idle_time: int = 600,  # 最大空闲时间（秒）
         health_check_interval: int = 60,  # 健康检查间隔（秒）
     ):
-        """
-        初始化TDengine连接池
+        """初始化TDengine连接池
 
         Args:
             host: TDengine服务器地址
@@ -93,6 +92,7 @@ class TDengineConnectionPool:
             max_size: 最大连接数
             max_idle_time: 最大空闲时间（秒）
             health_check_interval: 健康检查间隔（秒）
+
         """
         if not TDENGINE_RUNTIME_AVAILABLE or connect is None:
             raise RuntimeError("TDengine runtime is unavailable for connection pool initialization") from TDENGINE_IMPORT_ERROR
@@ -146,11 +146,11 @@ class TDengineConnectionPool:
                 logger.error("初始化连接失败", error=str(e))
 
     def _create_connection(self) -> TaosConnection:
-        """
-        创建新的TDengine连接
+        """创建新的TDengine连接
 
         Returns:
             TaosConnection实例
+
         """
         try:
             conn = connect(
@@ -185,14 +185,14 @@ class TDengineConnectionPool:
             raise
 
     def get_connection(self, timeout: int = 30) -> Optional[TaosConnection]:
-        """
-        从连接池获取连接
+        """从连接池获取连接
 
         Args:
             timeout: 超时时间（秒）
 
         Returns:
             TaosConnection实例，如果超时则返回None
+
         """
         self._stats["connection_requests"] += 1
 
@@ -244,11 +244,11 @@ class TDengineConnectionPool:
                     return None
 
     def release_connection(self, conn: TaosConnection):
-        """
-        归还连接到连接池
+        """归还连接到连接池
 
         Args:
             conn: 要归还的连接
+
         """
         if conn is None:
             return
@@ -277,14 +277,14 @@ class TDengineConnectionPool:
             self._close_connection(conn)
 
     def _is_connection_healthy(self, conn: TaosConnection) -> bool:
-        """
-        检查连接是否健康
+        """检查连接是否健康
 
         Args:
             conn: 要检查的连接
 
         Returns:
             True如果连接健康，否则False
+
         """
         try:
             # 执行简单查询测试连接
@@ -350,23 +350,23 @@ class TDengineConnectionPool:
             )
 
     def get_connection_context(self, timeout: int = 30):
-        """
-        获取连接上下文管理器
+        """获取连接上下文管理器
 
         Args:
             timeout: 超时时间（秒）
 
         Returns:
             ConnectionContext实例
+
         """
         return ConnectionContext(self, timeout)
 
     def get_stats(self) -> Dict[str, Any]:
-        """
-        获取连接池统计信息
+        """获取连接池统计信息
 
         Returns:
             统计信息字典
+
         """
         return {
             **self._stats,
@@ -397,12 +397,12 @@ class ConnectionContext:
     """连接上下文管理器"""
 
     def __init__(self, pool: TDengineConnectionPool, timeout: int = 30):
-        """
-        初始化上下文管理器
+        """初始化上下文管理器
 
         Args:
             pool: 连接池实例
             timeout: 获取连接超时时间
+
         """
         self.pool = pool
         self.timeout = timeout

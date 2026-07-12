@@ -1,5 +1,4 @@
-"""
-订阅存储服务 - Subscription Storage
+"""订阅存储服务 - Subscription Storage
 
 Task 8: 实现灵活的用户订阅过滤系统
 
@@ -25,6 +24,7 @@ from app.services.filter_service import (
     Alert,
     Subscription,
 )
+
 
 logger = structlog.get_logger()
 
@@ -485,12 +485,11 @@ def _serialize_value(value: Any) -> Any:
     """序列化值为JSON兼容格式"""
     if isinstance(value, list):
         return [_serialize_value(v) for v in value]
-    elif isinstance(value, Decimal):
+    if isinstance(value, Decimal):
         return float(value)
-    elif isinstance(value, (int, float, str, bool)):
+    if isinstance(value, (int, float, str, bool)):
         return value
-    else:
-        return str(value)
+    return str(value)
 
 
 # 全局单例

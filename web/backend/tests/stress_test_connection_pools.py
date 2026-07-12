@@ -1,21 +1,22 @@
-"""
-连接池压力测试 - Phase 3 Task 19
+"""连接池压力测试 - Phase 3 Task 19
 验证PostgreSQL和TDengine连接池在1000并发场景下的性能和稳定性
 
 运行方式:
     python tests/stress_test_connection_pools.py
 """
 
-import time
-import threading
 import statistics
+import threading
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import List, Dict, Any
+from typing import Any, Dict, List
+
 import structlog
+from sqlalchemy import text
 
 from app.core.database import get_postgresql_engine
 from app.core.tdengine_manager import get_tdengine_manager
-from sqlalchemy import text
+
 
 logger = structlog.get_logger()
 
@@ -83,7 +84,7 @@ class StressTestResults:
                         if len(self.response_times) >= 100
                         else 0
                     ),
-                }
+                },
             )
 
         if self.errors:
@@ -119,7 +120,7 @@ class StressTestResults:
             if summary.get("p99_response_time_ms"):
                 print(f"  P99: {summary['p99_response_time_ms']}")
 
-        if "top_errors" in summary and summary["top_errors"]:
+        if summary.get("top_errors"):
             print("\n错误统计 (前10个):")
             for error, count in summary["top_errors"].items():
                 print(f"  {error}: {count} 次")
@@ -152,17 +153,15 @@ def tdengine_connection_test():
         if tdengine_mgr.health_check():
             response_time = time.time() - start_time
             return True, response_time, None
-        else:
-            response_time = time.time() - start_time
-            return False, response_time, "Health check failed"
+        response_time = time.time() - start_time
+        return False, response_time, "Health check failed"
     except Exception as e:
         response_time = time.time() - start_time
         return False, response_time, str(e)
 
 
 def run_concurrent_test(test_func, num_requests: int, max_workers: int, test_name: str) -> StressTestResults:
-    """
-    运行并发测试
+    """运行并发测试
 
     Args:
         test_func: 测试函数
@@ -172,6 +171,7 @@ def run_concurrent_test(test_func, num_requests: int, max_workers: int, test_nam
 
     Returns:
         StressTestResults: 测试结果
+
     """
     results = StressTestResults(test_name)
     results.total_requests = num_requests
@@ -198,19 +198,19 @@ def run_concurrent_test(test_func, num_requests: int, max_workers: int, test_nam
                 else:
                     results.add_failure(error or "Unknown error")
             except Exception as e:
-                results.add_failure(f"Future exception: {str(e)}")
+                results.add_failure(f"Future exception: {e!s}")
 
     results.end_time = time.time()
     return results
 
 
 def test_postgresql_stress(num_requests: int = 1000, max_workers: int = 100):
-    """
-    PostgreSQL压力测试
+    """PostgreSQL压力测试
 
     Args:
         num_requests: 总请求数
         max_workers: 最大并发线程数
+
     """
     return run_concurrent_test(
         postgresql_connection_test,
@@ -221,12 +221,12 @@ def test_postgresql_stress(num_requests: int = 1000, max_workers: int = 100):
 
 
 def test_tdengine_stress(num_requests: int = 1000, max_workers: int = 100):
-    """
-    TDengine压力测试
+    """TDengine压力测试
 
     Args:
         num_requests: 总请求数
         max_workers: 最大并发线程数
+
     """
     return run_concurrent_test(
         tdengine_connection_test,
@@ -237,20 +237,19 @@ def test_tdengine_stress(num_requests: int = 1000, max_workers: int = 100):
 
 
 def test_mixed_workload(num_requests: int = 1000, max_workers: int = 100):
-    """
-    混合负载测试（PostgreSQL + TDengine）
+    """混合负载测试（PostgreSQL + TDengine）
 
     Args:
         num_requests: 总请求数
         max_workers: 最大并发线程数
+
     """
 
     def mixed_test():
         # 50%概率选择PostgreSQL，50%选择TDengine
         if threading.current_thread().ident % 2 == 0:
             return postgresql_connection_test()
-        else:
-            return tdengine_connection_test()
+        return tdengine_connection_test()
 
     return run_concurrent_test(
         mixed_test,

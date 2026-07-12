@@ -1,5 +1,4 @@
-"""
-备份恢复安全辅助函数
+"""备份恢复安全辅助函数
 """
 
 import logging
@@ -11,6 +10,7 @@ from fastapi import HTTPException, status
 
 from app.core.security import User
 from app.models.backup_schemas import require_admin_role, require_backup_permission, require_recovery_permission
+
 
 security_logger = logging.getLogger("backup_security")
 security_logger.setLevel(logging.INFO)

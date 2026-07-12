@@ -1,16 +1,15 @@
-"""
-风险管理仪表盘模块
+"""风险管理仪表盘模块
 
 提供风险仪表盘数据汇总、图表数据、报告生成、实时风险监控UI功能
 """
 
-from typing import Dict, List, Optional
-from datetime import datetime, timedelta
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 from enum import Enum
+from typing import Dict, List, Optional
 
-from .risk_base import RiskMetrics, RiskLevel
-from .risk_base import RiskBase
+from .risk_base import RiskBase, RiskLevel, RiskMetrics
+
 
 logger = __import__("logging").getLogger(__name__)
 
@@ -114,14 +113,14 @@ class RiskDashboard(RiskBase):
         logger.info("风险仪表盘模块初始化")
 
     async def get_risk_dashboard_summary(self, portfolio_ids: Optional[List[str]] = None) -> Dict:
-        """
-        获取风险仪表盘摘要
+        """获取风险仪表盘摘要
 
         Args:
             portfolio_ids: 投资组合ID列表
 
         Returns:
             Dict: 仪表盘摘要
+
         """
         try:
             self._log_request_start("get_risk_dashboard_summary", {"portfolio_ids": portfolio_ids})
@@ -238,16 +237,15 @@ class RiskDashboard(RiskBase):
 
             if chart_type == DashboardChartType.VAR_TREND:
                 return await self._calculate_var_trend(portfolio_ids, days)
-            elif chart_type == DashboardChartType.DRAWDOWN:
+            if chart_type == DashboardChartType.DRAWDOWN:
                 return await self._calculate_drawdown(portfolio_ids, days)
-            elif chart_type == DashboardChartType.SARPE_RATIO:
+            if chart_type == DashboardChartType.SARPE_RATIO:
                 return await self._calculate_sharpe_ratio(portfolio_ids, days)
-            elif chart_type == DashboardChartType.BETA:
+            if chart_type == DashboardChartType.BETA:
                 return await self._calculate_beta(portfolio_ids, days)
-            elif chart_type == DashboardChartType.VOLATILITY:
+            if chart_type == DashboardChartType.VOLATILITY:
                 return await self._calculate_volatility(portfolio_ids, days)
-            else:
-                return []
+            return []
 
         except Exception as e:
             self.logger.error(f"计算{chart_type.value}图表数据失败: {e}")
@@ -574,17 +572,16 @@ class RiskDashboard(RiskBase):
 
             if current_metrics.var_95 < one_week_ago.var_95:
                 return "decreasing"
-            elif current_metrics.var_95 > one_week_ago.var_95:
+            if current_metrics.var_95 > one_week_ago.var_95:
                 return "increasing"
-            else:
-                return "stable"
+            return "stable"
 
         except Exception as e:
             self.logger.error(f"计算风险趋势失败: {e}")
             return "unknown"
 
     async def generate_risk_report(
-        self, portfolio_id: str, start_date: Optional[datetime] = None, end_date: Optional[datetime] = None
+        self, portfolio_id: str, start_date: Optional[datetime] = None, end_date: Optional[datetime] = None,
     ) -> Dict:
         """生成风险报告"""
         try:

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-智能分析 API
+"""智能分析 API
 提供股票健康度评分计算和分析功能
 
 API 端点:
@@ -23,6 +22,7 @@ from pydantic import BaseModel, Field
 from app.api._monitoring_portfolio_router import router as monitoring_portfolio_router
 from app.core.exception_handlers import handle_exceptions
 from app.core.responses import UnifiedResponse
+
 
 logger = logging.getLogger(__name__)
 
@@ -119,8 +119,7 @@ async def calculate_health_score(
     request: CalculateHealthRequest,
     use_gpu: bool = Query(False, description="是否使用GPU计算"),
 ) -> UnifiedResponse[HealthScoreWithRiskResponse]:
-    """
-    计算单只股票的健康度评分
+    """计算单只股票的健康度评分
 
     - **stock_code**: 股票代码
     - **close**: 收盘价
@@ -166,7 +165,7 @@ async def calculate_health_score(
         raise
     except Exception as e:
         logger.error("计算健康度失败: %(e)s")
-        raise HTTPException(status_code=500, detail=f"计算失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"计算失败: {e!s}")
 
 
 @router.post("/calculate/batch", response_model=UnifiedResponse[List[HealthScoreWithRiskResponse]])
@@ -175,8 +174,7 @@ async def batch_calculate_health_scores(
     request: BatchCalculateHealthRequest,
     use_gpu: bool = Query(False, description="是否使用GPU计算"),
 ) -> UnifiedResponse[List[HealthScoreWithRiskResponse]]:
-    """
-    批量计算健康度评分
+    """批量计算健康度评分
 
     - **stocks**: 股票列表 (最多1000只)
     - **include_risk_metrics**: 是否包含高级风险指标
@@ -224,7 +222,7 @@ async def batch_calculate_health_scores(
                     downside_deviation=(
                         data.get("risk_metrics", {}).get("downside_deviation") if request.include_risk_metrics else None
                     ),
-                )
+                ),
             )
 
         return UnifiedResponse(
@@ -236,7 +234,7 @@ async def batch_calculate_health_scores(
         raise
     except Exception as e:
         logger.error("批量计算健康度失败: %(e)s")
-        raise HTTPException(status_code=500, detail=f"计算失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"计算失败: {e!s}")
 
 
 @router.get("/results/{stock_code}", response_model=UnifiedResponse[List[HealthScoreResponse]])
@@ -245,8 +243,7 @@ async def get_health_score_history(
     stock_code: str = Path(..., description="股票代码"),
     days: int = Query(30, description="查询天数", ge=1, le=365),
 ) -> UnifiedResponse[List[HealthScoreResponse]]:
-    """
-    获取股票健康度历史评分
+    """获取股票健康度历史评分
     """
     try:
         from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
@@ -283,7 +280,7 @@ async def get_health_score_history(
                     market_regime=h.get("market_regime", "choppy"),
                     calculation_time_ms=0,
                     calculation_mode="CPU",
-                )
+                ),
             )
 
         return UnifiedResponse(data=results, message="获取历史评分成功")
@@ -292,7 +289,7 @@ async def get_health_score_history(
         raise
     except Exception as e:
         logger.error("获取健康度历史失败: %(e)s")
-        raise HTTPException(status_code=500, detail=f"获取失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取失败: {e!s}")
 
 
 @router.get("/portfolio/{watchlist_id}", response_model=UnifiedResponse[PortfolioAnalysisResponse])
@@ -302,8 +299,7 @@ async def analyze_portfolio(
     user_id: int = Query(1, description="用户ID"),
     include_risk_metrics: bool = Query(False, description="是否包含高级风险指标"),
 ) -> UnifiedResponse[PortfolioAnalysisResponse]:
-    """
-    分析投资组合健康度
+    """分析投资组合健康度
     """
     try:
         from src.monitoring.domain.calculator_factory import get_calculator_factory
@@ -333,7 +329,7 @@ async def analyze_portfolio(
                     "stock_code": s["stock_code"],
                     "close": s.get("entry_price", 100),
                     "market_regime": "choppy",
-                }
+                },
             )
 
         result = factory.calculate_health_scores(
@@ -411,7 +407,7 @@ async def analyze_portfolio(
         raise
     except Exception as e:
         logger.error("组合分析失败: %(e)s")
-        raise HTTPException(status_code=500, detail=f"分析失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"分析失败: {e!s}")
 
 
 @router.get("/market-regime", response_model=UnifiedResponse[MarketRegimeResponse])
@@ -419,8 +415,7 @@ async def analyze_portfolio(
 async def identify_market_regime(
     index_code: str = Query("000001.SH", description="指数代码"),
 ) -> UnifiedResponse[MarketRegimeResponse]:
-    """
-    识别当前市场体制
+    """识别当前市场体制
 
     - **index_code**: 指数代码 (000001.SH: 上证指数, 399001.SZ: 深证成指)
     """
@@ -453,14 +448,13 @@ async def identify_market_regime(
 
     except Exception as e:
         logger.error("市场体制识别失败: %(e)s")
-        raise HTTPException(status_code=500, detail=f"识别失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"识别失败: {e!s}")
 
 
 @router.get("/engine/status", response_model=UnifiedResponse[Dict[str, Any]])
 @handle_exceptions
 async def get_engine_status() -> UnifiedResponse[Dict[str, Any]]:
-    """
-    获取计算引擎状态
+    """获取计算引擎状态
     """
     try:
         from src.monitoring.domain.calculator_factory import get_calculator_factory
@@ -472,4 +466,4 @@ async def get_engine_status() -> UnifiedResponse[Dict[str, Any]]:
 
     except Exception as e:
         logger.error("获取引擎状态失败: %(e)s")
-        raise HTTPException(status_code=500, detail=f"获取失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取失败: {e!s}")

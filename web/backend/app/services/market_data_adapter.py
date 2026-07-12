@@ -1,5 +1,4 @@
-"""
-市场数据源适配器
+"""市场数据源适配器
 将现有的 MarketDataService 集成到数据源工厂模式中
 """
 
@@ -13,6 +12,7 @@ from app.services.data_source_interface import (
     HealthStatusEnum,
     IDataSource,
 )
+
 
 logger = __import__("logging").getLogger(__name__)
 
@@ -82,8 +82,7 @@ class MarketDataSourceAdapter(IDataSource):
         return self._mock_manager
 
     async def get_data(self, endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
-        """
-        获取市场数据
+        """获取市场数据
 
         Args:
             endpoint: 数据端点 (fund-flow, etf/list, lhb, quotes, etc.)
@@ -91,6 +90,7 @@ class MarketDataSourceAdapter(IDataSource):
 
         Returns:
             格式化的市场数据响应
+
         """
         start_time = time.time()
         self.total_requests += 1
@@ -126,7 +126,7 @@ class MarketDataSourceAdapter(IDataSource):
             # 返回错误响应格式
             return {
                 "status": "error",
-                "message": f"Failed to fetch market data: {str(e)}",
+                "message": f"Failed to fetch market data: {e!s}",
                 "data": None,
                 "timestamp": datetime.now().isoformat(),
                 "source": self.source_type,
@@ -134,25 +134,22 @@ class MarketDataSourceAdapter(IDataSource):
             }
 
     async def _fetch_data(self, endpoint: str, params: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        实际的数据获取逻辑
+        """实际的数据获取逻辑
         """
         if self.mode == "mock":
             return await self._fetch_mock_data(endpoint, params)
-        else:
-            # 根据端点类型调用相应的 MarketDataService 方法
-            if endpoint == "fund-flow":
-                return await self._fetch_fund_flow(params)
-            elif endpoint == "etf/list":
-                return await self._fetch_etf_list(params)
-            elif endpoint == "lhb":
-                return await self._fetch_long_hu_bang(params)
-            elif endpoint == "quotes":
-                return await self._fetch_quotes(params)
-            elif endpoint == "chip-race":
-                return await self._fetch_chip_race(params)
-            else:
-                raise ValueError(f"Unsupported market endpoint: {endpoint}")
+        # 根据端点类型调用相应的 MarketDataService 方法
+        if endpoint == "fund-flow":
+            return await self._fetch_fund_flow(params)
+        if endpoint == "etf/list":
+            return await self._fetch_etf_list(params)
+        if endpoint == "lhb":
+            return await self._fetch_long_hu_bang(params)
+        if endpoint == "quotes":
+            return await self._fetch_quotes(params)
+        if endpoint == "chip-race":
+            return await self._fetch_chip_race(params)
+        raise ValueError(f"Unsupported market endpoint: {endpoint}")
 
     async def _fetch_mock_data(self, endpoint: str, params: Dict[str, Any]) -> Dict[str, Any]:
         """获取mock数据"""
@@ -175,7 +172,7 @@ class MarketDataSourceAdapter(IDataSource):
             logger.error("Mock data fetch failed for %(endpoint)s: {str(e)}")
             return {
                 "status": "error",
-                "message": f"Failed to fetch mock data: {str(e)}",
+                "message": f"Failed to fetch mock data: {e!s}",
                 "data": None,
                 "timestamp": datetime.now().isoformat(),
                 "source": self.source_type,
@@ -207,7 +204,7 @@ class MarketDataSourceAdapter(IDataSource):
                 },
             }
         except Exception as e:
-            raise RuntimeError(f"Failed to fetch fund flow data: {str(e)}")
+            raise RuntimeError(f"Failed to fetch fund flow data: {e!s}")
 
     async def _fetch_etf_list(self, params: Dict[str, Any]) -> Dict[str, Any]:
         """获取ETF列表数据"""
@@ -228,7 +225,7 @@ class MarketDataSourceAdapter(IDataSource):
                 "parameters": {"symbol": symbol, "keyword": keyword, "limit": limit},
             }
         except Exception as e:
-            raise RuntimeError(f"Failed to fetch ETF data: {str(e)}")
+            raise RuntimeError(f"Failed to fetch ETF data: {e!s}")
 
     async def _fetch_long_hu_bang(self, params: Dict[str, Any]) -> Dict[str, Any]:
         """获取龙虎榜数据"""
@@ -251,7 +248,7 @@ class MarketDataSourceAdapter(IDataSource):
                 },
             }
         except Exception as e:
-            raise RuntimeError(f"Failed to fetch LongHuBang data: {str(e)}")
+            raise RuntimeError(f"Failed to fetch LongHuBang data: {e!s}")
 
     async def _fetch_quotes(self, params: Dict[str, Any]) -> Dict[str, Any]:
         """获取实时行情数据 (暂时实现为模拟数据)"""
@@ -278,7 +275,7 @@ class MarketDataSourceAdapter(IDataSource):
                         "volume": random.randint(1000000, 50000000),
                         "amount": random.randint(10000000, 500000000),
                         "update_time": datetime.now().isoformat(),
-                    }
+                    },
                 )
 
             return {
@@ -291,7 +288,7 @@ class MarketDataSourceAdapter(IDataSource):
                 "note": "Currently using simulated data - real-time quotes integration needed",
             }
         except Exception as e:
-            raise RuntimeError(f"Failed to fetch quotes data: {str(e)}")
+            raise RuntimeError(f"Failed to fetch quotes data: {e!s}")
 
     async def _fetch_chip_race(self, params: Dict[str, Any]) -> Dict[str, Any]:
         """获取竞价抢筹数据"""
@@ -314,7 +311,7 @@ class MarketDataSourceAdapter(IDataSource):
                 },
             }
         except Exception as e:
-            raise RuntimeError(f"Failed to fetch chip race data: {str(e)}")
+            raise RuntimeError(f"Failed to fetch chip race data: {e!s}")
 
     async def _trigger_quality_monitoring(
         self,
@@ -339,79 +336,75 @@ class MarketDataSourceAdapter(IDataSource):
         """序列化资金流向数据"""
         if hasattr(fund_flow, "to_dict"):
             return fund_flow.to_dict()
-        elif hasattr(fund_flow, "__dict__"):
+        if hasattr(fund_flow, "__dict__"):
             return fund_flow.__dict__
-        else:
-            return {
-                "symbol": getattr(fund_flow, "symbol", ""),
-                "net_inflow": getattr(fund_flow, "net_inflow", 0),
-                "main_inflow": getattr(fund_flow, "main_inflow", 0),
-                "retail_inflow": getattr(fund_flow, "retail_inflow", 0),
-                "super_large_inflow": getattr(fund_flow, "super_large_inflow", 0),
-                "large_inflow": getattr(fund_flow, "large_inflow", 0),
-                "medium_inflow": getattr(fund_flow, "medium_inflow", 0),
-                "small_inflow": getattr(fund_flow, "small_inflow", 0),
-                "date": getattr(fund_flow, "date", ""),
-                "update_time": getattr(fund_flow, "update_time", datetime.now()),
-            }
+        return {
+            "symbol": getattr(fund_flow, "symbol", ""),
+            "net_inflow": getattr(fund_flow, "net_inflow", 0),
+            "main_inflow": getattr(fund_flow, "main_inflow", 0),
+            "retail_inflow": getattr(fund_flow, "retail_inflow", 0),
+            "super_large_inflow": getattr(fund_flow, "super_large_inflow", 0),
+            "large_inflow": getattr(fund_flow, "large_inflow", 0),
+            "medium_inflow": getattr(fund_flow, "medium_inflow", 0),
+            "small_inflow": getattr(fund_flow, "small_inflow", 0),
+            "date": getattr(fund_flow, "date", ""),
+            "update_time": getattr(fund_flow, "update_time", datetime.now()),
+        }
 
     def _serialize_etf_data(self, etf_data) -> Dict[str, Any]:
         """序列化ETF数据"""
         if hasattr(etf_data, "to_dict"):
             return etf_data.to_dict()
-        elif hasattr(etf_data, "__dict__"):
+        if hasattr(etf_data, "__dict__"):
             return etf_data.__dict__
-        else:
-            return {
-                "symbol": getattr(etf_data, "symbol", ""),
-                "name": getattr(etf_data, "name", ""),
-                "price": getattr(etf_data, "price", 0),
-                "change": getattr(etf_data, "change", 0),
-                "change_percent": getattr(etf_data, "change_percent", 0),
-                "volume": getattr(etf_data, "volume", 0),
-                "amount": getattr(etf_data, "amount", 0),
-                "update_time": getattr(etf_data, "update_time", datetime.now()),
-            }
+        return {
+            "symbol": getattr(etf_data, "symbol", ""),
+            "name": getattr(etf_data, "name", ""),
+            "price": getattr(etf_data, "price", 0),
+            "change": getattr(etf_data, "change", 0),
+            "change_percent": getattr(etf_data, "change_percent", 0),
+            "volume": getattr(etf_data, "volume", 0),
+            "amount": getattr(etf_data, "amount", 0),
+            "update_time": getattr(etf_data, "update_time", datetime.now()),
+        }
 
     def _serialize_long_hu_bang(self, lhb_data) -> Dict[str, Any]:
         """序列化龙虎榜数据"""
         if hasattr(lhb_data, "to_dict"):
             return lhb_data.to_dict()
-        elif hasattr(lhb_data, "__dict__"):
+        if hasattr(lhb_data, "__dict__"):
             return lhb_data.__dict__
-        else:
-            return {
-                "symbol": getattr(lhb_data, "symbol", ""),
-                "name": getattr(lhb_data, "name", ""),
-                "close_price": getattr(lhb_data, "close_price", 0),
-                "change_percent": getattr(lhb_data, "change_percent", 0),
-                "buy_amount": getattr(lhb_data, "buy_amount", 0),
-                "sell_amount": getattr(lhb_data, "sell_amount", 0),
-                "net_amount": getattr(lhb_data, "net_amount", 0),
-                "trade_date": getattr(lhb_data, "trade_date", ""),
-                "reason": getattr(lhb_data, "reason", ""),
-                "update_time": getattr(lhb_data, "update_time", datetime.now()),
-            }
+        return {
+            "symbol": getattr(lhb_data, "symbol", ""),
+            "name": getattr(lhb_data, "name", ""),
+            "close_price": getattr(lhb_data, "close_price", 0),
+            "change_percent": getattr(lhb_data, "change_percent", 0),
+            "buy_amount": getattr(lhb_data, "buy_amount", 0),
+            "sell_amount": getattr(lhb_data, "sell_amount", 0),
+            "net_amount": getattr(lhb_data, "net_amount", 0),
+            "trade_date": getattr(lhb_data, "trade_date", ""),
+            "reason": getattr(lhb_data, "reason", ""),
+            "update_time": getattr(lhb_data, "update_time", datetime.now()),
+        }
 
     def _serialize_chip_race(self, chip_data) -> Dict[str, Any]:
         """序列化竞价抢筹数据"""
         if hasattr(chip_data, "to_dict"):
             return chip_data.to_dict()
-        elif hasattr(chip_data, "__dict__"):
+        if hasattr(chip_data, "__dict__"):
             return chip_data.__dict__
-        else:
-            return {
-                "symbol": getattr(chip_data, "symbol", ""),
-                "name": getattr(chip_data, "name", ""),
-                "open_price": getattr(chip_data, "open_price", 0),
-                "close_price": getattr(chip_data, "close_price", 0),
-                "change_percent": getattr(chip_data, "change_percent", 0),
-                "volume": getattr(chip_data, "volume", 0),
-                "amount": getattr(chip_data, "amount", 0),
-                "chip_ratio": getattr(chip_data, "chip_ratio", 0),
-                "trade_date": getattr(chip_data, "trade_date", ""),
-                "update_time": getattr(chip_data, "update_time", datetime.now()),
-            }
+        return {
+            "symbol": getattr(chip_data, "symbol", ""),
+            "name": getattr(chip_data, "name", ""),
+            "open_price": getattr(chip_data, "open_price", 0),
+            "close_price": getattr(chip_data, "close_price", 0),
+            "change_percent": getattr(chip_data, "change_percent", 0),
+            "volume": getattr(chip_data, "volume", 0),
+            "amount": getattr(chip_data, "amount", 0),
+            "chip_ratio": getattr(chip_data, "chip_ratio", 0),
+            "trade_date": getattr(chip_data, "trade_date", ""),
+            "update_time": getattr(chip_data, "update_time", datetime.now()),
+        }
 
     async def health_check(self) -> HealthStatus:
         """健康检查"""
@@ -435,7 +428,7 @@ class MarketDataSourceAdapter(IDataSource):
             return HealthStatus(
                 status=HealthStatusEnum.FAILED,
                 response_time=response_time * 1000,
-                message=f"Market data source health check failed: {str(e)}",
+                message=f"Market data source health check failed: {e!s}",
                 timestamp=datetime.now(),
             )
 

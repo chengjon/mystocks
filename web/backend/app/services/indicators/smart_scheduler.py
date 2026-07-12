@@ -1,5 +1,4 @@
-"""
-Smart Scheduler System
+"""Smart Scheduler System
 ======================
 
 智能调度器，提供：
@@ -23,12 +22,12 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional
 
-from app.services.indicators._smart_scheduler_factory import create_scheduler
 from .dependency_graph import (
     IncrementalCalculator,
     IndicatorDependencyGraph,
 )
 from .indicator_interface import CalculationStatus, IndicatorResult, OHLCVData
+
 
 logger = logging.getLogger(__name__)
 
@@ -148,8 +147,7 @@ class PerformanceMonitor:
 
 
 class SmartScheduler:
-    """
-    智能调度器
+    """智能调度器
 
     功能:
     - 根据依赖关系优化计算顺序
@@ -188,19 +186,18 @@ class SmartScheduler:
             logger.info("SmartScheduler initialized without distributed locking")
 
     def set_calculation_function(self, func: Callable):
-        """
-        设置指标计算函数
+        """设置指标计算函数
 
         Args:
             func: 计算函数，签名 (abbreviation: str, ohlcv: OHLCVData, params: Dict) -> IndicatorResult
+
         """
         self._calculation_func = func
 
     def calculate(
-        self, indicators: List[Dict[str, Any]], ohlcv_data: OHLCVData, use_cache: bool = None
+        self, indicators: List[Dict[str, Any]], ohlcv_data: OHLCVData, use_cache: bool = None,
     ) -> List[ScheduleResult]:
-        """
-        批量计算指标
+        """批量计算指标
 
         Args:
             indicators: 指标配置列表
@@ -213,6 +210,7 @@ class SmartScheduler:
 
         Returns:
             计算结果列表
+
         """
         use_cache = use_cache if use_cache is not None else self.enable_cache
 
@@ -243,7 +241,7 @@ class SmartScheduler:
         logger.info(
             f"批量计算完成: {len(results)} 个指标, "
             f"总耗时: {total_duration:.2f}ms, "
-            f"缓存命中: {sum(1 for r in results if r.from_cache)}"
+            f"缓存命中: {sum(1 for r in results if r.from_cache)}",
         )
 
         return results
@@ -269,7 +267,7 @@ class SmartScheduler:
                     from_cache=getattr(result, "from_cache", False),
                     success=getattr(result, "success", True),
                     error=getattr(result, "error", None),
-                )
+                ),
             )
 
             # 更新依赖图状态
@@ -313,7 +311,7 @@ class SmartScheduler:
                                     duration_ms=0,
                                     from_cache=True,
                                     success=True,
-                                )
+                                ),
                             )
                             completed_nodes.add(node_id)
                             continue
@@ -345,14 +343,14 @@ class SmartScheduler:
                                 from_cache=getattr(result, "from_cache", False),
                                 success=success,
                                 error=error,
-                            )
+                            ),
                         )
 
                         # 更新缓存和依赖图
                         if success:
                             self._incremental_calculator.set_cache(node_id, result)
                             self._dependency_graph.mark_computed(
-                                node_id, result, duration, getattr(result, "from_cache", False)
+                                node_id, result, duration, getattr(result, "from_cache", False),
                             )
                         else:
                             self._dependency_graph.mark_failed(node_id, error)
@@ -367,7 +365,7 @@ class SmartScheduler:
                                 duration_ms=0,
                                 success=False,
                                 error=str(e),
-                            )
+                            ),
                         )
 
         # 按原始顺序排序结果
@@ -425,8 +423,7 @@ class SmartScheduler:
         return result
 
     def _calculate_single_with_lock(self, ind: Dict, ohlcv: OHLCVData, use_cache: bool) -> IndicatorResult:
-        """
-        使用分布式锁计算单个指标 (CLCC模式: Check-Lock-Check-Compute)
+        """使用分布式锁计算单个指标 (CLCC模式: Check-Lock-Check-Compute)
 
         Args:
             ind: 指标配置
@@ -435,6 +432,7 @@ class SmartScheduler:
 
         Returns:
             IndicatorResult
+
         """
         abbr = ind["abbreviation"]
         params = ind.get("params", {})
@@ -469,7 +467,7 @@ class SmartScheduler:
             if self.enable_distributed_lock and REDIS_LOCK_AVAILABLE:
                 # 尝试获取锁，非阻塞模式
                 lock_token = redis_lock.acquire(
-                    resource=lock_resource, timeout=300, blocking=False  # 5分钟超时  # 非阻塞
+                    resource=lock_resource, timeout=300, blocking=False,  # 5分钟超时  # 非阻塞
                 )
                 lock_acquired = lock_token is not None
 
@@ -511,41 +509,39 @@ class SmartScheduler:
                     # 释放锁
                     redis_lock.release(lock_resource, lock_token)
                     return result
-                else:
-                    # 获取锁失败: 等待并尝试读取缓存
-                    logger.debug("Lock busy for %(node_id)s, waiting for calculation result...")
-                    time.sleep(0.5)  # 短暂等待
+                # 获取锁失败: 等待并尝试读取缓存
+                logger.debug("Lock busy for %(node_id)s, waiting for calculation result...")
+                time.sleep(0.5)  # 短暂等待
 
-                    # 重试读取缓存 (最多3次)
-                    for attempt in range(3):
-                        cached_result = self._check_local_cache(node_id, use_cache)
-                        if cached_result is not None:
-                            logger.debug("Found cached result for %(node_id)s after lock wait (attempt {attempt + 1})")
-                            return cached_result
+                # 重试读取缓存 (最多3次)
+                for attempt in range(3):
+                    cached_result = self._check_local_cache(node_id, use_cache)
+                    if cached_result is not None:
+                        logger.debug("Found cached result for %(node_id)s after lock wait (attempt {attempt + 1})")
+                        return cached_result
 
-                        if REDIS_LOCK_AVAILABLE:
-                            from app.services.redis import redis_cache
+                    if REDIS_LOCK_AVAILABLE:
+                        from app.services.redis import redis_cache
 
-                            redis_cached = redis_cache.get_cached_indicator_result(
-                                stock_code=ohlcv.timestamps[0].strftime("%Y%m%d") if ohlcv.timestamps else "unknown",
-                                indicator_code=abbr,
-                                params=params,
+                        redis_cached = redis_cache.get_cached_indicator_result(
+                            stock_code=ohlcv.timestamps[0].strftime("%Y%m%d") if ohlcv.timestamps else "unknown",
+                            indicator_code=abbr,
+                            params=params,
+                        )
+                        if redis_cached is not None:
+                            self._update_local_cache(node_id, redis_cached)
+                            logger.debug(
+                                f"Found Redis cached result for {node_id} after lock wait (attempt {attempt + 1})",
                             )
-                            if redis_cached is not None:
-                                self._update_local_cache(node_id, redis_cached)
-                                logger.debug(
-                                    f"Found Redis cached result for {node_id} after lock wait (attempt {attempt + 1})"
-                                )
-                                return redis_cached
+                            return redis_cached
 
-                        time.sleep(0.5)
+                    time.sleep(0.5)
 
-                    # 仍未找到缓存，回退到直接计算
-                    logger.warning("Lock wait timeout for %(node_id)s, falling back to direct calculation")
-                    return self._perform_calculation(ind, ohlcv, use_cache)
-            else:
-                # 分布式锁未启用，直接计算
+                # 仍未找到缓存，回退到直接计算
+                logger.warning("Lock wait timeout for %(node_id)s, falling back to direct calculation")
                 return self._perform_calculation(ind, ohlcv, use_cache)
+            # 分布式锁未启用，直接计算
+            return self._perform_calculation(ind, ohlcv, use_cache)
 
         except Exception:
             logger.error("Error in _calculate_single_with_lock for %(node_id)s: %(e)s")
@@ -590,8 +586,7 @@ class SmartScheduler:
             self._cache_timestamps[node_id] = time.time()
 
     def _perform_calculation(self, ind: Dict, ohlcv: OHLCVData, use_cache: bool) -> IndicatorResult:
-        """
-        执行实际的指标计算 (原有 _calculate_single 逻辑)
+        """执行实际的指标计算 (原有 _calculate_single 逻辑)
 
         Args:
             ind: 指标配置
@@ -600,6 +595,7 @@ class SmartScheduler:
 
         Returns:
             IndicatorResult
+
         """
         abbr = ind["abbreviation"]
         params = ind.get("params", {})

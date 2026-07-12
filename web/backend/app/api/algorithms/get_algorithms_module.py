@@ -1,5 +1,4 @@
-"""
-量化交易算法 API 端点
+"""量化交易算法 API 端点
 
 提供完整的量化交易算法API接口，基于现有的11种算法实现：
 - 分类算法: SVM, 决策树, 朴素贝叶斯
@@ -13,7 +12,7 @@
 """
 
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Optional
 
 import structlog
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -39,6 +38,7 @@ from app.schemas.algorithm_schemas import (
     DecisionTreeTrainRequest,
 )
 from app.services.algorithm_service import algorithm_service
+
 
 # 延迟导入算法模块，避免循环依赖
 algorithms = None
@@ -72,8 +72,7 @@ def get_algorithms_module():
 async def health_check(
     current_user: User = Depends(get_current_user),
 ) -> UnifiedResponse:
-    """
-    算法API健康检查
+    """算法API健康检查
 
     检查算法服务的整体健康状态，包括：
     - 算法模块导入状态
@@ -114,8 +113,7 @@ async def health_check(
 async def list_algorithms(
     current_user: User = Depends(get_current_user),
 ) -> UnifiedResponse:
-    """
-    获取所有可用算法列表
+    """获取所有可用算法列表
 
     返回系统中支持的所有量化交易算法，按类别分组。
     """
@@ -137,14 +135,14 @@ async def list_algorithms(
 
 @router.get("/{algorithm_type}/info", response_model=UnifiedResponse)
 async def get_algorithm_info(algorithm_type: str, current_user: User = Depends(get_current_user)) -> UnifiedResponse:
-    """
-    获取算法详细信息
+    """获取算法详细信息
 
     Args:
         algorithm_type: 算法类型 (svm, decision_tree, hmm, etc.)
 
     Returns:
         算法的详细信息，包括用途、参数要求、性能特征等
+
     """
     try:
         alg_module, alg_type = get_algorithms_module()
@@ -174,10 +172,9 @@ async def get_algorithm_info(algorithm_type: str, current_user: User = Depends(g
 
 @router.post("/train", response_model=UnifiedResponse)
 async def train_algorithm(
-    request: AlgorithmTrainRequest, current_user: User = Depends(get_current_user)
+    request: AlgorithmTrainRequest, current_user: User = Depends(get_current_user),
 ) -> UnifiedResponse:
-    """
-    训练量化交易算法
+    """训练量化交易算法
 
     使用指定的算法类型和训练数据训练模型。
 
@@ -186,6 +183,7 @@ async def train_algorithm(
 
     Returns:
         训练结果，包括模型ID、训练指标等
+
     """
     try:
         logger.info(
@@ -215,16 +213,16 @@ async def train_algorithm(
 
 @router.post("/predict", response_model=UnifiedResponse)
 async def predict_with_algorithm(
-    request: AlgorithmPredictRequest, current_user: User = Depends(get_current_user)
+    request: AlgorithmPredictRequest, current_user: User = Depends(get_current_user),
 ) -> UnifiedResponse:
-    """
-    使用训练好的算法进行预测
+    """使用训练好的算法进行预测
 
     Args:
         request: 预测请求，包含模型ID和预测数据
 
     Returns:
         预测结果，包括预测值和置信度
+
     """
     try:
         logger.info("收到算法预测请求", user=current_user.username, model_id=request.model_id)
@@ -248,11 +246,11 @@ async def predict_with_algorithm(
 async def list_active_models(
     current_user: User = Depends(get_current_user),
 ) -> UnifiedResponse:
-    """
-    获取当前活跃的算法模型列表
+    """获取当前活跃的算法模型列表
 
     Returns:
         当前加载的模型列表
+
     """
     try:
         logger.info("获取活跃模型列表", user=current_user.username)
@@ -271,14 +269,14 @@ async def list_active_models(
 
 @router.delete("/models/{model_id}", response_model=UnifiedResponse)
 async def unload_model(model_id: str, current_user: User = Depends(get_current_user)) -> UnifiedResponse:
-    """
-    卸载指定的算法模型
+    """卸载指定的算法模型
 
     Args:
         model_id: 要卸载的模型ID
 
     Returns:
         卸载结果
+
     """
     try:
         logger.info("卸载模型", user=current_user.username, model_id=model_id)
@@ -302,8 +300,7 @@ async def get_training_history(
     limit: int = 50,
     current_user: User = Depends(get_current_user),
 ) -> UnifiedResponse:
-    """
-    获取算法训练历史记录 (Phase 1.4)
+    """获取算法训练历史记录 (Phase 1.4)
 
     Args:
         model_id: 模型ID过滤 (可选)
@@ -312,6 +309,7 @@ async def get_training_history(
 
     Returns:
         训练历史记录列表
+
     """
     try:
         logger.info(
@@ -329,7 +327,7 @@ async def get_training_history(
 
         # 获取训练历史
         history = await algorithm_service.get_training_history(
-            model_id=model_id, algorithm_type=algorithm_type, limit=limit
+            model_id=model_id, algorithm_type=algorithm_type, limit=limit,
         )
 
         return ok(
@@ -349,8 +347,7 @@ async def get_prediction_history(
     limit: int = 100,
     current_user: User = Depends(get_current_user),
 ) -> UnifiedResponse:
-    """
-    获取算法预测历史记录 (Phase 1.4)
+    """获取算法预测历史记录 (Phase 1.4)
 
     Args:
         model_id: 模型ID过滤 (可选)
@@ -359,6 +356,7 @@ async def get_prediction_history(
 
     Returns:
         预测历史记录列表
+
     """
     try:
         logger.info(
@@ -376,7 +374,7 @@ async def get_prediction_history(
 
         # 获取预测历史
         history = await algorithm_service.get_prediction_history(
-            model_id=model_id, algorithm_type=algorithm_type, limit=limit
+            model_id=model_id, algorithm_type=algorithm_type, limit=limit,
         )
 
         return ok(
@@ -396,8 +394,7 @@ async def get_model_history(
     limit: int = 50,
     current_user: User = Depends(get_current_user),
 ) -> UnifiedResponse:
-    """
-    获取指定模型的完整历史记录 (Phase 1.4)
+    """获取指定模型的完整历史记录 (Phase 1.4)
 
     Args:
         model_id: 模型ID
@@ -406,6 +403,7 @@ async def get_model_history(
 
     Returns:
         模型的历史记录
+
     """
     try:
         logger.info(
@@ -447,11 +445,11 @@ async def get_model_history(
 async def get_algorithm_statistics(
     current_user: User = Depends(get_current_user),
 ) -> UnifiedResponse:
-    """
-    获取算法系统的统计信息 (Phase 1.4)
+    """获取算法系统的统计信息 (Phase 1.4)
 
     Returns:
         系统统计数据
+
     """
     try:
         logger.info("获取算法统计", user=current_user.username)
@@ -468,14 +466,14 @@ async def get_algorithm_statistics(
 
 @router.get("/models/{model_id}", response_model=UnifiedResponse)
 async def get_model_details(model_id: str, current_user: User = Depends(get_current_user)) -> UnifiedResponse:
-    """
-    获取指定模型的详细信息 (Phase 1.4)
+    """获取指定模型的详细信息 (Phase 1.4)
 
     Args:
         model_id: 模型ID
 
     Returns:
         模型详细信息
+
     """
     try:
         logger.info("获取模型详情", user=current_user.username, model_id=model_id)
@@ -486,10 +484,8 @@ async def get_model_details(model_id: str, current_user: User = Depends(get_curr
             model_data = await algorithm_service.repository.get_model(model_id)
             if model_data:
                 return ok(data=model_data, message="获取模型详情成功")
-            else:
-                return not_found(message="模型不存在")
-        else:
-            return server_error(message="数据库服务不可用")
+            return not_found(message="模型不存在")
+        return server_error(message="数据库服务不可用")
 
     except Exception as e:
         logger.error("获取模型详情失败", model_id=model_id, error=str(e))
@@ -498,10 +494,9 @@ async def get_model_details(model_id: str, current_user: User = Depends(get_curr
 
 @router.post("/classification/decision-tree/train", response_model=UnifiedResponse)
 async def train_decision_tree_algorithm(
-    request: DecisionTreeTrainRequest, current_user: User = Depends(get_current_user)
+    request: DecisionTreeTrainRequest, current_user: User = Depends(get_current_user),
 ) -> UnifiedResponse:
-    """
-    训练决策树分类算法
+    """训练决策树分类算法
 
     使用决策树算法对量化交易数据进行分类训练，支持Random Forest扩展。
 
@@ -510,6 +505,7 @@ async def train_decision_tree_algorithm(
 
     Returns:
         训练结果，包括模型ID、准确率、特征重要性等指标
+
     """
     try:
         logger.info(
@@ -559,16 +555,16 @@ async def train_decision_tree_algorithm(
 
 @router.post("/classification/decision-tree/predict", response_model=UnifiedResponse)
 async def predict_decision_tree_algorithm(
-    request: AlgorithmPredictRequest, current_user: User = Depends(get_current_user)
+    request: AlgorithmPredictRequest, current_user: User = Depends(get_current_user),
 ) -> UnifiedResponse:
-    """
-    使用训练好的决策树模型进行预测
+    """使用训练好的决策树模型进行预测
 
     Args:
         request: 预测请求，包含模型ID和输入数据
 
     Returns:
         决策树预测结果，包括分类标签、置信度和特征重要性
+
     """
     try:
         logger.info("收到决策树预测请求", user=current_user.username, model_id=request.model_id)
@@ -593,16 +589,16 @@ async def predict_decision_tree_algorithm(
 
 
 async def get_decision_tree_feature_importance(
-    model_id: str, current_user: User = Depends(get_current_user)
+    model_id: str, current_user: User = Depends(get_current_user),
 ) -> UnifiedResponse:
-    """
-    获取决策树模型的特征重要性
+    """获取决策树模型的特征重要性
 
     Args:
         model_id: 模型ID
 
     Returns:
         特征重要性分析结果
+
     """
     try:
         logger.info("获取决策树特征重要性", user=current_user.username, model_id=model_id)

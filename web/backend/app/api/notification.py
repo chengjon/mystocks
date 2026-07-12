@@ -1,5 +1,4 @@
-"""
-通知管理 API
+"""通知管理 API
 支持邮件发送、价格提醒、实时通知等功能
 
 Phase 4C Enhanced - 企业级通知服务
@@ -30,12 +29,11 @@ from app.api.notification_models import (
 )
 from app.api.notification_support import (
     connection_manager,
-    is_in_quiet_hours,
     rate_limit,
-    validate_notification_preferences,
 )
 from app.core.responses import create_success_response
 from app.services.email_service import get_email_service
+
 
 logger = structlog.get_logger()
 router = APIRouter()
@@ -47,8 +45,7 @@ router = APIRouter()
 @router.get("/status")
 @rate_limit(limit=10, window=60)  # 每分钟最多10次请求
 async def get_email_service_status(current_user: User = Depends(get_current_user)) -> Dict:
-    """
-    获取邮件服务状态 - Phase 4C Enhanced
+    """获取邮件服务状态 - Phase 4C Enhanced
 
     返回邮件服务的详细配置状态和统计信息
     """
@@ -85,7 +82,7 @@ async def get_email_service_status(current_user: User = Depends(get_current_user
 
     except Exception as e:
         logger.error("邮件服务状态查询失败", user_id=current_user.id, error=str(e), exc_info=True)
-        raise HTTPException(status_code=500, detail=f"获取邮件服务状态失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取邮件服务状态失败: {e!s}")
 
 
 @router.post("/email/send")
@@ -95,8 +92,7 @@ async def send_email(
     background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
 ) -> Dict:
-    """
-    发送邮件 - Phase 4C Enhanced（需要管理员权限）
+    """发送邮件 - Phase 4C Enhanced（需要管理员权限）
 
     支持定时发送、优先级设置等高级功能
     """
@@ -198,17 +194,17 @@ async def send_email(
         raise
     except Exception as e:
         logger.error("邮件发送请求处理失败", user_id=current_user.id, error=str(e), exc_info=True)
-        raise HTTPException(status_code=500, detail=f"处理邮件发送请求时发生错误: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"处理邮件发送请求时发生错误: {e!s}")
 
 
 @router.websocket("/ws/notifications")
 async def websocket_notifications(websocket: WebSocket, token: str = None):
-    """
-    WebSocket实时通知连接
+    """WebSocket实时通知连接
 
     Args:
         websocket: WebSocket连接对象
         token: JWT认证token，通过查询参数传递
+
     """
     try:
         # 验证token
@@ -238,7 +234,7 @@ async def websocket_notifications(websocket: WebSocket, token: str = None):
                 "message": "实时通知连接已建立",
                 "user_id": user.id,
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-            }
+            },
         )
 
         # 保持连接活跃
@@ -282,8 +278,7 @@ async def send_welcome_email(
     background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
 ) -> Dict:
-    """
-    发送欢迎邮件 - Phase 4C Enhanced
+    """发送欢迎邮件 - Phase 4C Enhanced
 
     支持多语言和个性化欢迎信息
     """
@@ -325,7 +320,7 @@ async def send_welcome_email(
                     await connection_manager.send_personal_notification(notification)
                 else:
                     logger.error(
-                        "欢迎邮件发送失败", user_id=current_user.id, error=result.get("message", "Unknown error")
+                        "欢迎邮件发送失败", user_id=current_user.id, error=result.get("message", "Unknown error"),
                     )
 
             except Exception as e:
@@ -347,7 +342,7 @@ async def send_welcome_email(
         raise
     except Exception as e:
         logger.error("欢迎邮件发送请求处理失败", user_id=current_user.id, error=str(e), exc_info=True)
-        raise HTTPException(status_code=500, detail=f"处理欢迎邮件发送请求时发生错误: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"处理欢迎邮件发送请求时发生错误: {e!s}")
 
 
 @router.post("/email/newsletter")
@@ -356,8 +351,7 @@ async def send_daily_newsletter(
     background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
 ) -> Dict:
-    """
-    发送每日新闻简报
+    """发送每日新闻简报
     """
     email_service = get_email_service()
 
@@ -393,8 +387,7 @@ async def send_price_alert(
     background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
 ) -> Dict:
-    """
-    发送价格提醒邮件
+    """发送价格提醒邮件
     """
     email_service = get_email_service()
 
@@ -430,8 +423,7 @@ async def send_price_alert(
 
 @router.post("/test-email")
 async def send_test_email(current_user: User = Depends(get_current_user)) -> Dict:
-    """
-    发送测试邮件到当前用户邮箱
+    """发送测试邮件到当前用户邮箱
 
     向已登录用户的注册邮箱发送测试邮件，用于验证邮件服务配置是否正确。该端点会
     立即发送邮件，并返回发送结果。
@@ -536,15 +528,13 @@ async def send_test_email(current_user: User = Depends(get_current_user)) -> Dic
             "message": f"测试邮件已发送至 {user_email}",
             "recipient": user_email,
         }
-    else:
-        logger.error("测试邮件发送失败", user_id=current_user.id, error=result["message"])
-        raise HTTPException(status_code=500, detail=f"测试邮件发送失败: {result['message']}")
+    logger.error("测试邮件发送失败", user_id=current_user.id, error=result["message"])
+    raise HTTPException(status_code=500, detail=f"测试邮件发送失败: {result['message']}")
 
 
 @router.get("/preferences")
 async def get_notification_preferences(current_user: User = Depends(get_current_active_user)) -> Dict:
-    """
-    获取用户通知偏好设置
+    """获取用户通知偏好设置
     """
     try:
         # 这里应该从数据库获取用户偏好设置
@@ -572,16 +562,15 @@ async def get_notification_preferences(current_user: User = Depends(get_current_
 
     except Exception as e:
         logger.error("获取通知偏好设置失败", user_id=current_user.id, error=str(e), exc_info=True)
-        raise HTTPException(status_code=500, detail=f"获取通知偏好设置失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取通知偏好设置失败: {e!s}")
 
 
 @router.post("/preferences")
 @rate_limit(limit=5, window=60)  # 每分钟最多5次设置更新
 async def update_notification_preferences(
-    preferences: NotificationPreferences, current_user: User = Depends(get_current_active_user)
+    preferences: NotificationPreferences, current_user: User = Depends(get_current_active_user),
 ) -> Dict:
-    """
-    更新用户通知偏好设置
+    """更新用户通知偏好设置
     """
     try:
         # 这里应该保存到数据库
@@ -592,4 +581,4 @@ async def update_notification_preferences(
 
     except Exception as e:
         logger.error("更新通知偏好设置失败", user_id=current_user.id, error=str(e), exc_info=True)
-        raise HTTPException(status_code=500, detail=f"更新通知偏好设置失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"更新通知偏好设置失败: {e!s}")

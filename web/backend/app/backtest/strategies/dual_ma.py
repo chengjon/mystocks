@@ -1,5 +1,4 @@
-"""
-Dual Moving Average Strategy
+"""Dual Moving Average Strategy
 
 双均线策略 - 经典的趋势跟踪策略
 """
@@ -10,8 +9,7 @@ from app.backtest.strategies.base import BaseStrategy, SignalType, StrategySigna
 
 
 class DualMAStrategy(BaseStrategy):
-    """
-    双均线策略
+    """双均线策略
 
     核心逻辑：
     - 短期均线上穿长期均线时买入（金叉）
@@ -85,8 +83,7 @@ class DualMAStrategy(BaseStrategy):
         ma_type = self.parameters.get("ma_type", "sma")
         if ma_type == "ema":
             return self.ema(prices, period)
-        else:
-            return self.sma(prices, period)
+        return self.sma(prices, period)
 
     def generate_signal(
         self,
@@ -95,7 +92,6 @@ class DualMAStrategy(BaseStrategy):
         position: Optional[Dict[str, Any]] = None,
     ) -> Optional[StrategySignal]:
         """生成交易信号"""
-
         self.update_history(symbol, current_data)
 
         short_period = self.parameters["short_period"]

@@ -1,5 +1,4 @@
-"""
-数据血缘追踪 API 端点
+"""数据血缘追踪 API 端点
 
 提供数据血缘关系的记录、查询和影响分析功能。
 
@@ -29,6 +28,7 @@ from app.core.responses import (
     create_unified_error_response,
     create_unified_success_response,
 )
+
 
 logger = logging.getLogger(__name__)
 
@@ -145,8 +145,7 @@ class ImpactAnalysisResponse(BaseModel):
 
 
 def handle_lineage_error(error: str, request_id: Optional[str] = None) -> UnifiedResponse:
-    """
-    处理血缘错误并返回统一响应
+    """处理血缘错误并返回统一响应
 
     Args:
         error: 错误消息
@@ -154,6 +153,7 @@ def handle_lineage_error(error: str, request_id: Optional[str] = None) -> Unifie
 
     Returns:
         UnifiedResponse: 错误响应
+
     """
     if "not found" in error.lower() or "does not exist" in error.lower():
         return create_unified_error_response(
@@ -162,28 +162,27 @@ def handle_lineage_error(error: str, request_id: Optional[str] = None) -> Unifie
             error_code="NODE_NOT_FOUND",
             request_id=request_id,
         )
-    elif "invalid" in error.lower():
+    if "invalid" in error.lower():
         return create_unified_error_response(
             code=BusinessCode.VALIDATION_ERROR,
             message="请求参数无效",
             error_code="INVALID_PARAMETER",
             request_id=request_id,
         )
-    else:
-        return create_unified_error_response(
-            code=BusinessCode.INTERNAL_ERROR,
-            message=error,
-            error_code="LINEAGE_ERROR",
-            request_id=request_id,
-        )
+    return create_unified_error_response(
+        code=BusinessCode.INTERNAL_ERROR,
+        message=error,
+        error_code="LINEAGE_ERROR",
+        request_id=request_id,
+    )
 
 
 async def get_lineage_tracker():
-    """
-    获取LineageTracker实例
+    """获取LineageTracker实例
 
     Returns:
         LineageTracker实例
+
     """
     # TODO: 从依赖注入容器获取LineageTracker实例
     # 这里先创建一个简单的占位符实现
@@ -206,7 +205,7 @@ async def get_lineage_tracker():
         logger.error("Failed to create lineage tracker: {str(e)}")
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to initialize lineage tracker: {str(e)}",
+            detail=f"Failed to initialize lineage tracker: {e!s}",
         )
 
 
@@ -220,8 +219,7 @@ async def record_lineage(
     request: LineageRecordRequest,
     http_request: Request,
 ):
-    """
-    记录血缘关系
+    """记录血缘关系
 
     记录两个节点之间的数据流转关系（边），自动创建不存在的节点。
 
@@ -231,6 +229,7 @@ async def record_lineage(
 
     Returns:
         UnifiedResponse: 包含记录结果的统一响应
+
     """
     request_id = getattr(http_request.state, "request_id", None)
     logger.info("Recording lineage: {request.from_node} -> {request.to_node}", extra={"request_id": request_id})
@@ -271,7 +270,7 @@ async def record_lineage(
         await conn.close()
 
         logger.info(
-            f"Successfully recorded lineage: {request.from_node} -> {request.to_node}", extra={"request_id": request_id}
+            f"Successfully recorded lineage: {request.from_node} -> {request.to_node}", extra={"request_id": request_id},
         )
 
         return create_unified_success_response(
@@ -296,8 +295,7 @@ async def get_upstream_lineage(
     max_depth: int = 3,
     http_request: Request = None,
 ):
-    """
-    查询上游血缘
+    """查询上游血缘
 
     查询指定节点的所有上游数据源和变换操作。
 
@@ -308,6 +306,7 @@ async def get_upstream_lineage(
 
     Returns:
         UnifiedResponse: 包含上游血缘的统一响应
+
     """
     request_id = getattr(http_request.state, "request_id", None) if http_request else None
     logger.info("Querying upstream lineage for node: {node_id}", extra={"request_id": request_id})
@@ -406,8 +405,7 @@ async def get_downstream_lineage(
     max_depth: int = 3,
     http_request: Request = None,
 ):
-    """
-    查询下游血缘
+    """查询下游血缘
 
     查询指定节点的所有下游依赖和影响范围。
 
@@ -418,6 +416,7 @@ async def get_downstream_lineage(
 
     Returns:
         UnifiedResponse: 包含下游血缘的统一响应
+
     """
     request_id = getattr(http_request.state, "request_id", None) if http_request else None
     logger.info("Querying downstream lineage for node: {node_id}", extra={"request_id": request_id})
@@ -492,8 +491,7 @@ async def get_lineage_graph(
     request: LineageGraphRequest,
     http_request: Request,
 ):
-    """
-    查询完整血缘图
+    """查询完整血缘图
 
     查询指定节点的完整血缘关系图（包括上游和下游）。
 
@@ -503,6 +501,7 @@ async def get_lineage_graph(
 
     Returns:
         UnifiedResponse: 包含完整血缘图的统一响应
+
     """
     request_id = getattr(http_request.state, "request_id", None)
     logger.info(
@@ -608,8 +607,7 @@ async def analyze_impact(
     request: ImpactAnalysisRequest,
     http_request_obj: Request,
 ):
-    """
-    影响分析
+    """影响分析
 
     分析指定节点变更后对所有下游节点的影响范围。
 
@@ -619,6 +617,7 @@ async def analyze_impact(
 
     Returns:
         UnifiedResponse: 包含影响分析结果的统一响应
+
     """
     request_id = getattr(http_request_obj.state, "request_id", None)
     logger.info(

@@ -1,20 +1,21 @@
-"""
-技术分析模块
+"""技术分析模块
 
 提供股票技术指标计算、图表生成、信号识别、趋势分析功能
 """
 
 import logging
-from typing import Dict, List, Optional
-from datetime import datetime, timedelta
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 from enum import Enum
+from typing import Dict, List, Optional
+
 
 logger = __import__("logging").getLogger(__name__)
 
 
 class IndicatorType(Enum):
     """指标类型"""
+
     MA = "moving_average"
     EMA = "exponential_moving_average"
     MACD = "macd"
@@ -28,6 +29,7 @@ class IndicatorType(Enum):
 
 class SignalType(Enum):
     """信号类型"""
+
     BUY = "buy"
     SELL = "sell"
     HOLD = "hold"
@@ -37,6 +39,7 @@ class SignalType(Enum):
 
 class TrendType(Enum):
     """趋势类型"""
+
     UPTREND = "uptrend"
     DOWNTREND = "downtrend"
     SIDEWAYS = "sideways"
@@ -46,6 +49,7 @@ class TrendType(Enum):
 @dataclass
 class TechnicalIndicator:
     """技术指标数据类"""
+
     indicator_type: IndicatorType = IndicatorType.MA
     symbol: str = ""
     time_period: str = "daily"
@@ -55,18 +59,19 @@ class TechnicalIndicator:
 
     def to_dict(self) -> Dict:
         return {
-            'indicator_type': self.indicator_type.value,
-            'symbol': self.symbol,
-            'time_period': self.time_period,
-            'period': self.period,
-            'values': self.values,
-            'calculated_at': self.calculated_at.isoformat() if self.calculated_at else None
+            "indicator_type": self.indicator_type.value,
+            "symbol": self.symbol,
+            "time_period": self.time_period,
+            "period": self.period,
+            "values": self.values,
+            "calculated_at": self.calculated_at.isoformat() if self.calculated_at else None,
         }
 
 
 @dataclass
 class TradingSignal:
     """交易信号数据类"""
+
     signal_id: str = ""
     symbol: str = ""
     signal_type: SignalType = SignalType.HOLD
@@ -77,18 +82,19 @@ class TradingSignal:
 
     def to_dict(self) -> Dict:
         return {
-            'signal_id': self.signal_id,
-            'symbol': self.symbol,
-            'signal_type': self.signal_type.value,
-            'strength': self.strength,
-            'price': self.price,
-            'signal_time': self.signal_time.isoformat() if self.signal_time else None,
-            'confidence': f"{self.confidence:.2f}"
+            "signal_id": self.signal_id,
+            "symbol": self.symbol,
+            "signal_type": self.signal_type.value,
+            "strength": self.strength,
+            "price": self.price,
+            "signal_time": self.signal_time.isoformat() if self.signal_time else None,
+            "confidence": f"{self.confidence:.2f}",
         }
 
 
 class TrendAnalysis:
     """趋势分析类"""
+
     trend_type: TrendType = TrendType.UNKNOWN
     strength: float = 0.0
     duration_days: int = 0
@@ -98,12 +104,12 @@ class TrendAnalysis:
 
     def to_dict(self) -> Dict:
         return {
-            'trend_type': self.trend_type.value,
-            'strength': self.strength,
-            'duration_days': self.duration_days,
-            'start_date': self.start_date.isoformat() if self.start_date else None,
-            'end_date': self.end_date.isoformat() if self.end_date else None,
-            'price_change_percent': f"{self.price_change_percent:.2f}%",
+            "trend_type": self.trend_type.value,
+            "strength": self.strength,
+            "duration_days": self.duration_days,
+            "start_date": self.start_date.isoformat() if self.start_date else None,
+            "end_date": self.end_date.isoformat() if self.end_date else None,
+            "price_change_percent": f"{self.price_change_percent:.2f}%",
         }
 
 
@@ -119,8 +125,7 @@ class TechnicalAnalysis:
         logger.info("技术分析模块初始化")
 
     async def calculate_indicator(self, symbol: str, indicator_type: IndicatorType, period: int = 20) -> TechnicalIndicator:
-        """
-        计算技术指标
+        """计算技术指标
         
         Args:
             symbol: 股票代码
@@ -129,9 +134,10 @@ class TechnicalAnalysis:
         
         Returns:
             TechnicalIndicator: 技术指标数据
+
         """
         try:
-            self._log_request_start('calculate_indicator', {'symbol': symbol, 'indicator_type': indicator_type.value})
+            self._log_request_start("calculate_indicator", {"symbol": symbol, "indicator_type": indicator_type.value})
 
             if indicator_type == IndicatorType.MA:
                 values = await self._calculate_ma(symbol, period)
@@ -139,15 +145,15 @@ class TechnicalAnalysis:
                 values = await self._calculate_ema(symbol, period)
             elif indicator_type == IndicatorType.MACD:
                 result = await self._calculate_macd(symbol, 12, 26, 9, 2)
-                values = [result['macd_line'], result['signal_line'], result['histogram']]
+                values = [result["macd_line"], result["signal_line"], result["histogram"]]
             elif indicator_type == IndicatorType.RSI:
                 values = await self._calculate_rsi(symbol, period)
             elif indicator_type == IndicatorType.BOLLINGER_BANDS:
                 result = await self._calculate_bollinger_bands(symbol, period, 2.0)
-                values = [result['middle_band'], result['upper_band'], result['lower_band']]
+                values = [result["middle_band"], result["upper_band"], result["lower_band"]]
             elif indicator_type == IndicatorType.KDJ:
                 result = await self._calculate_kdj(symbol, 9, 3, 3)
-                values = [result['k'], result['d'], result['j']]
+                values = [result["k"], result["d"], result["j"]]
             elif indicator_type == IndicatorType.VOLATILITY:
                 values = await self._calculate_volatility(symbol, period)
             elif indicator_type == IndicatorType.VOLUME:
@@ -164,14 +170,14 @@ class TechnicalAnalysis:
                 time_period="daily",
                 period=period,
                 values=values,
-                calculated_at=datetime.now()
+                calculated_at=datetime.now(),
             )
 
-            self._log_request_success('calculate_indicator', indicator_data.to_dict())
+            self._log_request_success("calculate_indicator", indicator_data.to_dict())
             return indicator_data
 
         except Exception as e:
-            self._log_request_error('calculate_indicator', e)
+            self._log_request_error("calculate_indicator", e)
             return TechnicalIndicator()
 
     async def _calculate_ma(self, symbol: str, period: int) -> List[float]:
@@ -192,7 +198,7 @@ class TechnicalAnalysis:
             if not results or len(results) < period:
                 return []
 
-            prices = [r['close_price'] for r in reversed(results)]
+            prices = [r["close_price"] for r in reversed(results)]
             ma_values = []
 
             for i in range(period, len(prices)):
@@ -253,13 +259,13 @@ class TechnicalAnalysis:
                 histogram.append(macd_histogram)
 
             return {
-                'macd_line': macd_line,
-                'signal_line': signal_line,
-                'histogram': histogram,
-                'fast_period': fast_period,
-                'slow_period': slow_period,
-                'signal_period': signal_period,
-                'ema_period': ema_period
+                "macd_line": macd_line,
+                "signal_line": signal_line,
+                "histogram": histogram,
+                "fast_period": fast_period,
+                "slow_period": slow_period,
+                "signal_period": signal_period,
+                "ema_period": ema_period,
             }
 
         except Exception as e:
@@ -284,7 +290,7 @@ class TechnicalAnalysis:
             if not results or len(results) < period + 1:
                 return []
 
-            prices = [r['close_price'] for r in reversed(results)][1:]
+            prices = [r["close_price"] for r in reversed(results)][1:]
 
             rsi_values = []
 
@@ -338,11 +344,11 @@ class TechnicalAnalysis:
                 lower_band.append(lower)
 
             return {
-                'middle_band': ma_values,
-                'upper_band': upper_band,
-                'lower_band': lower_band,
-                'multiplier': multiplier,
-                'period': period
+                "middle_band": ma_values,
+                "upper_band": upper_band,
+                "lower_band": lower_band,
+                "multiplier": multiplier,
+                "period": period,
             }
 
         except Exception as e:
@@ -375,9 +381,9 @@ class TechnicalAnalysis:
             for i in range(n, len(results)):
                 window = results[i-n:i+1:i+1] if i >= n+1 else results[:i+1]
 
-                high = max(r['high_price'] for r in window)
-                low = min(r['low_price'] for r in window)
-                close = window[n]['close_price']
+                high = max(r["high_price"] for r in window)
+                low = min(r["low_price"] for r in window)
+                close = window[n]["close_price"]
 
                 if i < n:
                     k_value = (close - low) / (high - low) if high != low else 0
@@ -402,12 +408,12 @@ class TechnicalAnalysis:
                 j_values.append(j_value)
 
             return {
-                'k': k_values[-1],
-                'd': d_values[-1],
-                'j': j_values[-1],
-                'n': n,
-                'm1': m1,
-                'm2': m2
+                "k": k_values[-1],
+                "d": d_values[-1],
+                "j": j_values[-1],
+                "n": n,
+                "m1": m1,
+                "m2": m2,
             }
 
         except Exception as e:
@@ -432,7 +438,7 @@ class TechnicalAnalysis:
             if not results or len(results) < period:
                 return []
 
-            returns = [r['close_price'] for r in results]
+            returns = [r["close_price"] for r in results]
 
             log_returns = [math.log(returns[i] / returns[i-1]) for i in range(1, len(returns))]
 
@@ -470,7 +476,7 @@ class TechnicalAnalysis:
             if not results or len(results) < period:
                 return []
 
-            volumes = [r['volume'] for r in results]
+            volumes = [r["volume"] for r in results]
 
             vol_ma = await self._calculate_volume_ma(volumes)
 
@@ -506,8 +512,8 @@ class TechnicalAnalysis:
             if not results or len(results) < 2:
                 return []
 
-            amounts = [r['amount'] for r in results]
-            volumes = [r['volume'] for r in results]
+            amounts = [r["amount"] for r in results]
+            volumes = [r["volume"] for r in results]
 
             turnover_values = []
 
@@ -522,8 +528,7 @@ class TechnicalAnalysis:
             return []
 
     async def generate_trading_signal(self, symbol: str, strategy: str = "default") -> TradingSignal:
-        """
-        生成交易信号
+        """生成交易信号
         
         Args:
             symbol: 股票代码
@@ -531,9 +536,10 @@ class TechnicalAnalysis:
         
         Returns:
             TradingSignal: 交易信号
+
         """
         try:
-            self._log_request_start('generate_trading_signal', {'symbol': symbol, 'strategy': strategy})
+            self._log_request_start("generate_trading_signal", {"symbol": symbol, "strategy": strategy})
 
             import uuid
 
@@ -567,19 +573,18 @@ class TechnicalAnalysis:
                 strength=strength,
                 price=price,
                 signal_time=datetime.now(),
-                confidence=confidence
+                confidence=confidence,
             )
 
-            self._log_request_success('generate_trading_signal', signal.to_dict())
+            self._log_request_success("generate_trading_signal", signal.to_dict())
             return signal
 
         except Exception as e:
-            self._log_request_error('generate_trading_signal', e)
+            self._log_request_error("generate_trading_signal", e)
             return TradingSignal()
 
     async def analyze_trend(self, symbol: str, period: int = 30) -> TrendAnalysis:
-        """
-        分析趋势
+        """分析趋势
         
         Args:
             symbol: 股票代码
@@ -587,9 +592,10 @@ class TechnicalAnalysis:
         
         Returns:
             TrendAnalysis: 趋势分析结果
+
         """
         try:
-            self._log_request_start('analyze_trend', {'symbol': symbol, 'period': period})
+            self._log_request_start("analyze_trend", {"symbol": symbol, "period": period})
 
             from app.core.database import db_service
 
@@ -606,8 +612,8 @@ class TechnicalAnalysis:
             if not results or len(results) < 2:
                 return TrendAnalysis()
 
-            start_price = results[-1]['close_price']
-            end_price = results[0]['close_price']
+            start_price = results[-1]["close_price"]
+            end_price = results[0]["close_price"]
             price_change_percent = ((end_price - start_price) / start_price) * 100 if start_price > 0 else 0
 
             # 判断趋势
@@ -630,14 +636,14 @@ class TechnicalAnalysis:
                 duration_days=period,
                 start_date=datetime.now() - timedelta(days=period),
                 end_date=datetime.now(),
-                price_change_percent=price_change_percent
+                price_change_percent=price_change_percent,
             )
 
-            self._log_request_success('analyze_trend', analysis.to_dict())
+            self._log_request_success("analyze_trend", analysis.to_dict())
             return analysis
 
         except Exception as e:
-            self._log_request_error('analyze_trend', e)
+            self._log_request_error("analyze_trend", e)
             return TrendAnalysis()
 
     def _log_request_start(self, method: str, params: Dict):

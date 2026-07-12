@@ -1,17 +1,15 @@
 """缓存管理器子模块"""
 
+import asyncio
 import logging
 import time
-import asyncio
-from collections import OrderedDict, defaultdict
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, TYPE_CHECKING
 from asyncio import Lock
+from collections import defaultdict
+from datetime import datetime, timezone
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
-import pandas as pd
 
 if TYPE_CHECKING:
-    from app.core.tdengine_manager import TDengineManager
     from app.core.cache.multi_level import MultiLevelCache
 
 # Mock/Fallback constants if not imported
@@ -26,19 +24,18 @@ class CacheCoreInit:
     """缓存管理器核心：初始化与内部工具方法"""
 
 class CacheManager:
-    """
-    统一缓存管理器 - 三级缓存架构
+    """统一缓存管理器 - 三级缓存架构
     """
 
     def __init__(
-        self, tdengine_manager: Optional[Any] = None, redis_cache: Optional[Any] = None
+        self, tdengine_manager: Optional[Any] = None, redis_cache: Optional[Any] = None,
     ):
-        """
-        初始化缓存管理器
+        """初始化缓存管理器
 
         Args:
             tdengine_manager: TDengineManager 实例
             redis_cache: Redis多级缓存服务实例
+
         """
         self.tdengine = tdengine_manager or get_tdengine_manager()
         self._tdengine_available = self.tdengine is not None
@@ -83,14 +80,14 @@ class CacheManager:
         }
 
     def _with_tdengine(self, fallback_value=None):
-        """
-        安全地执行需要 tdengine 的操作
+        """安全地执行需要 tdengine 的操作
 
         Args:
             fallback_value: 如果 tdengine 不可用时的返回值
 
         Returns:
             上下文管理器，确保 tdengine 可用
+
         """
         if self.tdengine is None:
             return fallback_value
@@ -105,8 +102,7 @@ class CacheManager:
         timeframe: Optional[str] = None,
         days: int = 1,
     ) -> Optional[Dict[str, Any]]:
-        """
-        从三级缓存读取数据 (L1 -> L2 -> L3)
+        """从三级缓存读取数据 (L1 -> L2 -> L3)
 
         采用三级缓存策略：L1(内存) -> L2(Redis) -> L3(TDengine)
 
@@ -118,6 +114,7 @@ class CacheManager:
 
         Returns:
             缓存数据字典，或 None 如果未找到
+
         """
         start_time = time.time()
         self._cache_stats["reads"] += 1
@@ -194,7 +191,7 @@ class CacheManager:
                 # 异步回填到Redis (不阻塞响应)
                 if self._redis_available and self.redis_cache:
                     asyncio.create_task(
-                        self.redis_cache.set(cache_key, enriched_data, ttl=self._get_tiered_ttl(data_type))
+                        self.redis_cache.set(cache_key, enriched_data, ttl=self._get_tiered_ttl(data_type)),
                     )
 
                 logger.debug(

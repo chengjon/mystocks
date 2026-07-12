@@ -1,5 +1,4 @@
-"""
-房间管理测试
+"""房间管理测试
 
 Tests for Room Management
 
@@ -10,11 +9,11 @@ Date: 2025-11-07
 """
 
 from app.services.room_management import (
-    RoomType,
-    RoomStatus,
-    RoomMember,
     Room,
     RoomManager,
+    RoomMember,
+    RoomStatus,
+    RoomType,
     get_room_manager,
     reset_room_manager,
 )

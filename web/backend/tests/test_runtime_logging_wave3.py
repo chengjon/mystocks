@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 
+
 SOURCE_FILES = [
     "web/backend/app/core/data_source_manager.py",
     "web/backend/app/core/incremental_snapshot.py",

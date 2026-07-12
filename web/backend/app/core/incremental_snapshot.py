@@ -1,5 +1,4 @@
-"""
-数据快照优化系统
+"""数据快照优化系统
 集成测试使用增量数据而非全量导入，提升测试效率和稳定性
 """
 
@@ -12,6 +11,7 @@ from typing import Any, Dict, List, Optional, Set
 
 import pandas as pd
 from prometheus_client import Counter, Gauge, Histogram
+
 
 logger = logging.getLogger(__name__)
 
@@ -108,7 +108,7 @@ class IncrementalDataManager:
             SNAPSHOT_OPERATION_COUNT.labels(operation_type="create_base", result="success").inc()
             SNAPSHOT_SIZE_BYTES.labels(snapshot_type=snapshot_type).set(metadata.size_bytes)
             SNAPSHOT_OPERATION_TIME.labels(operation_type="create_base").observe(
-                (datetime.now() - start_time).total_seconds()
+                (datetime.now() - start_time).total_seconds(),
             )
 
             return True
@@ -157,17 +157,16 @@ class IncrementalDataManager:
                 # 去重（保留最新的）
                 updated_data = updated_data[~updated_data.index.duplicated(keep="last")]
 
+            # 简单的数据合并（适用于列表或字典）
+            elif isinstance(new_data, list) and isinstance(existing_data, list):
+                # 合并列表，保留新数据
+                updated_data = existing_data + [item for item in new_data if item not in existing_data]
+                new_records = [item for item in new_data if item not in existing_data]
             else:
-                # 简单的数据合并（适用于列表或字典）
-                if isinstance(new_data, list) and isinstance(existing_data, list):
-                    # 合并列表，保留新数据
-                    updated_data = existing_data + [item for item in new_data if item not in existing_data]
-                    new_records = [item for item in new_data if item not in existing_data]
-                else:
-                    # 字典更新
-                    updated_data = {**existing_data, **new_data}
-                    new_records = list(new_data.keys())
-                    updated_records = [k for k in new_data.keys() if k in existing_data]
+                # 字典更新
+                updated_data = {**existing_data, **new_data}
+                new_records = list(new_data.keys())
+                updated_records = [k for k in new_data.keys() if k in existing_data]
 
             # 更新快照
             self.snapshots[snapshot_type] = updated_data
@@ -205,7 +204,7 @@ class IncrementalDataManager:
             INCREMENTAL_UPDATE_COUNT.labels(data_type=snapshot_type).inc()
             SNAPSHOT_OPERATION_COUNT.labels(operation_type="incremental_update", result="success").inc()
             SNAPSHOT_OPERATION_TIME.labels(operation_type="incremental_update").observe(
-                (datetime.now() - start_time).total_seconds()
+                (datetime.now() - start_time).total_seconds(),
             )
 
             return {
@@ -277,7 +276,7 @@ class IncrementalDataManager:
                         "record_count": metadata.record_count,
                         "size_bytes": metadata.size_bytes,
                         "data_hash": metadata.data_hash,
-                    }
+                    },
                 )
 
         return snapshots

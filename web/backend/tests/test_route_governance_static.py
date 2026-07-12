@@ -9,6 +9,7 @@ from pathlib import Path
 
 from fastapi import FastAPI
 
+
 os.environ.setdefault("POSTGRESQL_HOST", "localhost")
 os.environ.setdefault("POSTGRESQL_USER", "tester")
 os.environ.setdefault("POSTGRESQL_PASSWORD", "tester")
@@ -99,7 +100,7 @@ def test_register_all_routers_delegates_to_central_registry(monkeypatch):
                 "app": app,
                 "use_mock_apis": use_mock_apis,
                 "logger": logger,
-            }
+            },
         )
 
     monkeypatch.setattr(register_routers, "register_api_routes", _fake_register_api_routes)

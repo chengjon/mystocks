@@ -1,5 +1,4 @@
-"""
-Indicator Repository
+"""Indicator Repository
 ====================
 
 Data access layer for Indicator System.
@@ -21,8 +20,7 @@ from app.services.indicators.indicator_interface import IndicatorResult
 
 
 class IndicatorRepository:
-    """
-    指标数据仓库
+    """指标数据仓库
 
     负责指标数据和任务状态的持久化。
     """
@@ -37,15 +35,15 @@ class IndicatorRepository:
         return get_postgresql_session()
 
     def save_results(
-        self, stock_code: str, timestamps: Union[List[datetime], np.ndarray], results: List[IndicatorResult]
+        self, stock_code: str, timestamps: Union[List[datetime], np.ndarray], results: List[IndicatorResult],
     ):
-        """
-        批量保存指标计算结果
+        """批量保存指标计算结果
 
         Args:
             stock_code: 股票代码
             timestamps: 时间戳列表 (必须与结果数据的长度一致)
             results: 指标计算结果列表
+
         """
         if not results:
             return

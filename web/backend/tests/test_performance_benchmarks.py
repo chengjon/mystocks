@@ -1,5 +1,4 @@
-"""
-性能基准测试
+"""性能基准测试
 
 测试覆盖:
 - 缓存性能 (LRU cache hit/miss)
@@ -13,10 +12,11 @@
 Phase: 4.1 - Comprehensive Testing
 """
 
-import pytest
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from unittest.mock import Mock, patch
+
+import pytest
 from fastapi.testclient import TestClient
 
 
@@ -33,8 +33,7 @@ class TestCachePerformance:
 
     @patch("app.api.market.get_market_data_service")
     def test_lru_cache_hit_rate(self, mock_service, client):
-        """
-        测试LRU缓存命中率
+        """测试LRU缓存命中率
 
         验证:
         - 第一次请求: cache miss
@@ -118,13 +117,11 @@ class TestCachePerformance:
     def test_cache_memory_usage(self):
         """测试缓存内存使用（跳过：缓存是前端功能）"""
         # 前端缓存测试应在 web/frontend/tests/ 中进行
-        pass
 
     @pytest.mark.skip("缓存是前端代码，不在后端测试范围内")
     def test_cache_performance_under_load(self):
         """测试高负载下缓存性能（跳过：缓存是前端功能）"""
         # 前端缓存测试应在 web/frontend/tests/ 中进行
-        pass
 
 
 class TestAPIResponseTime:
@@ -212,7 +209,6 @@ class TestDatabasePerformance:
         # 测试连接池复用
         # 测试连接池扩容
         # 测试连接池收缩
-        pass
 
     @pytest.mark.skipif(not True, reason="需要实际数据库查询")
     def test_query_performance_benchmarks(self):
@@ -220,7 +216,6 @@ class TestDatabasePerformance:
         # 测试不同数据量下的查询性能
         # 测试索引效率
         # 测试复杂查询性能
-        pass
 
 
 class TestMemoryEfficiency:

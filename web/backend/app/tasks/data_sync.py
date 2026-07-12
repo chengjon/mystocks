@@ -1,5 +1,4 @@
-"""
-数据同步任务
+"""数据同步任务
 实现各类数据同步功能
 """
 
@@ -12,6 +11,7 @@ from src.adapters.baostock_adapter import BaostockDataSource
 from src.adapters.financial_adapter import FinancialDataSource
 from src.core.data_classification import DataClassification
 from src.core.unified_manager import MyStocksUnifiedManager
+
 
 logger = logging.getLogger(__name__)
 
@@ -46,8 +46,7 @@ def _get_data_source(source_name: str):
 
 
 def sync_daily_stock_data(params: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    同步每日股票数据
+    """同步每日股票数据
 
     Args:
         params: 任务参数
@@ -60,6 +59,7 @@ def sync_daily_stock_data(params: Dict[str, Any]) -> Dict[str, Any]:
 
     Returns:
         执行结果字典
+
     """
     logger.info("Starting daily stock data sync with params: %(params)s")
 
@@ -94,7 +94,7 @@ def sync_daily_stock_data(params: Dict[str, Any]) -> Dict[str, Any]:
                 logger.info("Found {len(symbols)} stocks to sync")
             except Exception as e:
                 logger.error("Failed to fetch stock list: %(e)s")
-                result["errors"].append(f"Stock list fetch error: {str(e)}")
+                result["errors"].append(f"Stock list fetch error: {e!s}")
                 symbols = []
 
         # 同步基础数据
@@ -115,10 +115,10 @@ def sync_daily_stock_data(params: Dict[str, Any]) -> Dict[str, Any]:
                             result["records_synced"] += len(basic_info)
                     except Exception as e:
                         logger.warning("Failed to sync basic info for %(symbol)s: %(e)s")
-                        result["errors"].append(f"{symbol} basic: {str(e)}")
+                        result["errors"].append(f"{symbol} basic: {e!s}")
             except Exception as e:
                 logger.error("Basic data sync error: %(e)s")
-                result["errors"].append(f"Basic sync error: {str(e)}")
+                result["errors"].append(f"Basic sync error: {e!s}")
 
         # 同步K线数据
         if include_kline and symbols:
@@ -138,10 +138,10 @@ def sync_daily_stock_data(params: Dict[str, Any]) -> Dict[str, Any]:
                             result["records_synced"] += len(kline_df)
                     except Exception as e:
                         logger.warning("Failed to sync K-line for %(symbol)s: %(e)s")
-                        result["errors"].append(f"{symbol} kline: {str(e)}")
+                        result["errors"].append(f"{symbol} kline: {e!s}")
             except Exception as e:
                 logger.error("K-line data sync error: %(e)s")
-                result["errors"].append(f"K-line sync error: {str(e)}")
+                result["errors"].append(f"K-line sync error: {e!s}")
 
         logger.info("Daily stock data sync completed: {result['records_synced']} records")
 
@@ -164,8 +164,7 @@ def sync_daily_stock_data(params: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def sync_basic_stock_info(params: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    同步股票基础信息（股票列表、名称、代码等）
+    """同步股票基础信息（股票列表、名称、代码等）
 
     Args:
         params: 任务参数
@@ -175,6 +174,7 @@ def sync_basic_stock_info(params: Dict[str, Any]) -> Dict[str, Any]:
 
     Returns:
         执行结果字典
+
     """
     logger.info("Starting basic stock info sync with params: %(params)s")
 
@@ -232,7 +232,7 @@ def sync_basic_stock_info(params: Dict[str, Any]) -> Dict[str, Any]:
                             )
                     except Exception as e:
                         logger.warning("Failed to sync detailed info for %(symbol)s: %(e)s")
-                        result["errors"].append(f"{symbol}: {str(e)}")
+                        result["errors"].append(f"{symbol}: {e!s}")
 
             else:
                 logger.warning("Stock list is empty")
@@ -242,7 +242,7 @@ def sync_basic_stock_info(params: Dict[str, Any]) -> Dict[str, Any]:
         except Exception as e:
             logger.error("Failed to fetch stock list: {e}", exc_info=True)
             result["status"] = "failed"
-            result["errors"].append(f"Stock list error: {str(e)}")
+            result["errors"].append(f"Stock list error: {e!s}")
 
         logger.info("Basic stock info sync completed: %(result)s")
 
@@ -263,8 +263,7 @@ def sync_basic_stock_info(params: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def sync_financial_statements(params: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    同步财务报表数据（利润表、资产负债表、现金流量表等）
+    """同步财务报表数据（利润表、资产负债表、现金流量表等）
 
     Args:
         params: 任务参数
@@ -275,6 +274,7 @@ def sync_financial_statements(params: Dict[str, Any]) -> Dict[str, Any]:
 
     Returns:
         执行结果字典
+
     """
     logger.info("Starting financial statements sync with params: %(params)s")
 
@@ -282,7 +282,7 @@ def sync_financial_statements(params: Dict[str, Any]) -> Dict[str, Any]:
         data_source_name = params.get("data_source", "financial")
         report_types = params.get("report_types", ["income", "balance", "cashflow"])
         symbols = params.get("symbols", [])
-        report_date = params.get("report_date", None)
+        report_date = params.get("report_date")
 
         # 获取数据源和管理器
         data_source = _get_data_source(data_source_name)
@@ -308,7 +308,7 @@ def sync_financial_statements(params: Dict[str, Any]) -> Dict[str, Any]:
                 logger.info("Found {len(symbols)} stocks for financial sync")
             except Exception as e:
                 logger.error("Failed to fetch stock list: %(e)s")
-                result["errors"].append(f"Stock list error: {str(e)}")
+                result["errors"].append(f"Stock list error: {e!s}")
                 symbols = []
 
         # 同步各类财务报表
@@ -352,7 +352,7 @@ def sync_financial_statements(params: Dict[str, Any]) -> Dict[str, Any]:
                     result["errors"].append(f"{symbol} {report_type}: method not implemented")
                 except Exception as e:
                     logger.warning("Failed to sync %(report_type)s for %(symbol)s: %(e)s")
-                    result["errors"].append(f"{symbol} {report_type}: {str(e)}")
+                    result["errors"].append(f"{symbol} {report_type}: {e!s}")
 
         logger.info("Financial statements sync completed: {result['records_synced']} records")
 

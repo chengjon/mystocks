@@ -1,5 +1,4 @@
-"""
-止损管理 API - V3.1
+"""止损管理 API - V3.1
 
 提供智能止损功能:
 - 止损监控持仓管理
@@ -19,6 +18,7 @@ from typing import Any, Dict, Optional
 
 import structlog
 from fastapi import APIRouter, HTTPException
+
 
 logger = structlog.get_logger(__name__)
 
@@ -72,7 +72,7 @@ async def add_stop_loss_position(request: Dict[str, Any]) -> Dict[str, Any]:
         raise
     except Exception as e:
         logger.error("添加止损监控失败: %(e)s")
-        raise HTTPException(status_code=500, detail=f"添加止损监控失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"添加止损监控失败: {e!s}")
 
 
 @router.post("/update-price", response_model=Dict[str, Any])
@@ -97,7 +97,7 @@ async def update_stop_loss_price(request: Dict[str, Any]) -> Dict[str, Any]:
         raise
     except Exception as e:
         logger.error("更新止损价格失败: %(e)s")
-        raise HTTPException(status_code=500, detail=f"更新止损价格失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"更新止损价格失败: {e!s}")
 
 
 @router.delete("/remove-position/{position_id}", response_model=Dict[str, Any])
@@ -126,7 +126,7 @@ async def remove_stop_loss_position(position_id: str) -> Dict[str, Any]:
         raise
     except Exception as e:
         logger.error("移除止损监控失败: %(e)s")
-        raise HTTPException(status_code=500, detail=f"移除止损监控失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"移除止损监控失败: {e!s}")
 
 
 @router.get("/status/{position_id}", response_model=Dict[str, Any])
@@ -151,7 +151,7 @@ async def get_stop_loss_status(position_id: str) -> Dict[str, Any]:
         raise
     except Exception as e:
         logger.error("获取止损状态失败: %(e)s")
-        raise HTTPException(status_code=500, detail=f"获取止损状态失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取止损状态失败: {e!s}")
 
 
 @router.get("/overview", response_model=Dict[str, Any])
@@ -172,7 +172,7 @@ async def get_stop_loss_overview() -> Dict[str, Any]:
         raise
     except Exception as e:
         logger.error("获取止损总览失败: %(e)s")
-        raise HTTPException(status_code=500, detail=f"获取止损总览失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取止损总览失败: {e!s}")
 
 
 @router.post("/batch-update", response_model=Dict[str, Any])
@@ -197,12 +197,12 @@ async def batch_update_stop_loss_prices(request: Dict[str, Any]) -> Dict[str, An
         raise
     except Exception as e:
         logger.error("批量更新止损价格失败: %(e)s")
-        raise HTTPException(status_code=500, detail=f"批量更新止损价格失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"批量更新止损价格失败: {e!s}")
 
 
 @router.get("/history/performance", response_model=Dict[str, Any])
 async def get_stop_loss_performance(
-    strategy_type: Optional[str] = None, symbol: Optional[str] = None, days: int = 30
+    strategy_type: Optional[str] = None, symbol: Optional[str] = None, days: int = 30,
 ) -> Dict[str, Any]:
     """获取止损策略历史表现"""
     try:
@@ -227,7 +227,7 @@ async def get_stop_loss_performance(
         raise
     except Exception as e:
         logger.error("获取止损表现失败: %(e)s")
-        raise HTTPException(status_code=500, detail=f"获取止损表现失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取止损表现失败: {e!s}")
 
 
 @router.get("/history/recommendations", response_model=Dict[str, Any])
@@ -248,4 +248,4 @@ async def get_stop_loss_recommendations(strategy_type: str, symbol: Optional[str
         raise
     except Exception as e:
         logger.error("获取止损建议失败: %(e)s")
-        raise HTTPException(status_code=500, detail=f"获取止损建议失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取止损建议失败: {e!s}")

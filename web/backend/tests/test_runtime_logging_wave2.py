@@ -8,6 +8,7 @@ from types import ModuleType, SimpleNamespace
 
 import pytest
 
+
 SOURCE_FILES = [
     "web/backend/app/db/user_repository.py",
     "web/backend/app/services/email_service.py",

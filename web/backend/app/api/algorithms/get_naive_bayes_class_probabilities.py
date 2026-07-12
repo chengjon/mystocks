@@ -1,5 +1,4 @@
-"""
-量化交易算法 API 端点
+"""量化交易算法 API 端点
 
 提供完整的量化交易算法API接口，基于现有的11种算法实现：
 - 分类算法: SVM, 决策树, 朴素贝叶斯
@@ -12,26 +11,18 @@
 版本: 1.0.0
 """
 
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
 
 import structlog
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 
 from app.core.responses import (
     UnifiedResponse,
-    bad_request,
-    not_found,
     ok,
     server_error,
 )
 from app.core.security import User, get_current_user
-from app.schemas.algorithm_schemas import (
-    AlgorithmPredictRequest,
-    AlgorithmTrainRequest,
-    DecisionTreeTrainRequest,
-)
 from app.services.algorithm_service import algorithm_service
+
 
 # 延迟导入算法模块，避免循环依赖
 algorithms = None
@@ -42,16 +33,16 @@ logger = structlog.get_logger(__name__)
 router = APIRouter(prefix="/api/v1/algorithms", tags=["量化交易算法"])
 
 async def get_naive_bayes_class_probabilities(
-    model_id: str, current_user: User = Depends(get_current_user)
+    model_id: str, current_user: User = Depends(get_current_user),
 ) -> UnifiedResponse:
-    """
-    获取朴素贝叶斯模型的类别概率分布
+    """获取朴素贝叶斯模型的类别概率分布
 
     Args:
         model_id: 模型ID
 
     Returns:
         各类别的先验概率和条件概率信息
+
     """
     try:
         logger.info("获取朴素贝叶斯类别概率", user=current_user.username, model_id=model_id)

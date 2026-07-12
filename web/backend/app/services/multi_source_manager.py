@@ -1,5 +1,4 @@
-"""
-Multi-source Data Manager
+"""Multi-source Data Manager
 Multi-data Source Support
 
 多数据源管理器：
@@ -27,12 +26,12 @@ from app.adapters.eastmoney_enhanced import (
     get_eastmoney_enhanced_adapter,
 )
 
+
 logger = logging.getLogger(__name__)
 
 
 class MultiSourceManager:
-    """
-    多数据源管理器
+    """多数据源管理器
 
     负责协调多个数据源，提供统一的数据访问接口
     支持优先级路由和自动故障转移
@@ -74,8 +73,7 @@ class MultiSourceManager:
             logger.error("Failed to initialize Cninfo adapter: %(e)s")
 
     def _build_category_mapping(self):
-        """
-        构建数据类别到数据源的映射
+        """构建数据类别到数据源的映射
 
         根据各数据源支持的类别和优先级构建映射表
         """
@@ -97,35 +95,35 @@ class MultiSourceManager:
         logger.info("Built category mapping: {len(self._category_sources)} categories")
 
     def get_adapter(self, source_type: DataSourceType) -> Optional[BaseDataSourceAdapter]:
-        """
-        获取指定类型的适配器
+        """获取指定类型的适配器
 
         Args:
             source_type: 数据源类型
 
         Returns:
             Optional[BaseDataSourceAdapter]: 适配器实例
+
         """
         return self._adapters.get(source_type)
 
     def get_available_adapters(self) -> List[BaseDataSourceAdapter]:
-        """
-        获取所有可用的适配器
+        """获取所有可用的适配器
 
         Returns:
             List[BaseDataSourceAdapter]: 可用适配器列表
+
         """
         return [adapter for adapter in self._adapters.values() if adapter.is_available()]
 
     def get_sources_for_category(self, category: DataCategory) -> List[DataSourceType]:
-        """
-        获取支持指定数据类别的数据源（按优先级排序）
+        """获取支持指定数据类别的数据源（按优先级排序）
 
         Args:
             category: 数据类别
 
         Returns:
             List[DataSourceType]: 数据源列表
+
         """
         return self._category_sources.get(category, [])
 
@@ -135,8 +133,7 @@ class MultiSourceManager:
         fetch_func: Callable[[BaseDataSourceAdapter], pd.DataFrame],
         cache_key: Optional[str] = None,
     ) -> Dict[str, Any]:
-        """
-        使用故障转移机制获取数据
+        """使用故障转移机制获取数据
 
         Args:
             category: 数据类别
@@ -145,6 +142,7 @@ class MultiSourceManager:
 
         Returns:
             Dict: 包含数据和元信息的字典
+
         """
         # 检查缓存
         if cache_key and cache_key in self._cache:
@@ -203,17 +201,16 @@ class MultiSourceManager:
                         self._cache[cache_key] = (data, time.time())
 
                     logger.info(
-                        f"Successfully fetched from {source_type.value} " f"({len(data)} rows in {response_time:.3f}s)"
+                        f"Successfully fetched from {source_type.value} ({len(data)} rows in {response_time:.3f}s)",
                     )
 
                     return result
 
-                else:
-                    logger.warning("{source_type.value} returned empty data")
-                    errors.append(f"{source_type.value}: empty data")
+                logger.warning("{source_type.value} returned empty data")
+                errors.append(f"{source_type.value}: empty data")
 
             except Exception as e:
-                error_msg = f"{source_type.value}: {str(e)}"
+                error_msg = f"{source_type.value}: {e!s}"
                 logger.error("Failed to fetch from {source_type.value}: %(e)s")
                 errors.append(error_msg)
 
@@ -230,8 +227,7 @@ class MultiSourceManager:
         symbols: Optional[List[str]] = None,
         source: Optional[DataSourceType] = None,
     ) -> Dict[str, Any]:
-        """
-        获取实时行情
+        """获取实时行情
 
         Args:
             symbols: 股票代码列表
@@ -239,6 +235,7 @@ class MultiSourceManager:
 
         Returns:
             Dict: 行情数据和元信息
+
         """
         # 如果指定了数据源，直接使用
         if source:
@@ -269,8 +266,7 @@ class MultiSourceManager:
         timeframe: str = "今日",
         source: Optional[DataSourceType] = None,
     ) -> Dict[str, Any]:
-        """
-        获取资金流向
+        """获取资金流向
 
         Args:
             symbol: 股票代码
@@ -279,6 +275,7 @@ class MultiSourceManager:
 
         Returns:
             Dict: 资金流向数据和元信息
+
         """
         cache_key = f"fund_flow:{symbol}:{timeframe}"
 
@@ -305,8 +302,7 @@ class MultiSourceManager:
         )
 
     def fetch_dragon_tiger(self, date_str: str, source: Optional[DataSourceType] = None) -> Dict[str, Any]:
-        """
-        获取龙虎榜
+        """获取龙虎榜
 
         Args:
             date_str: 日期
@@ -314,6 +310,7 @@ class MultiSourceManager:
 
         Returns:
             Dict: 龙虎榜数据和元信息
+
         """
         cache_key = f"dragon_tiger:{date_str}"
 
@@ -333,8 +330,7 @@ class MultiSourceManager:
         category: Optional[str] = None,
         source: Optional[DataSourceType] = None,
     ) -> Dict[str, Any]:
-        """
-        获取公告
+        """获取公告
 
         Args:
             symbol: 股票代码
@@ -345,6 +341,7 @@ class MultiSourceManager:
 
         Returns:
             Dict: 公告数据和元信息
+
         """
         # 公告主要来自Cninfo
         if source is None:
@@ -374,23 +371,22 @@ class MultiSourceManager:
                     "source": source.value,
                     "count": len(data) if not data.empty else 0,
                 }
-            else:
-                return {
-                    "success": False,
-                    "error": "fetch_announcements not supported",
-                    "source": source.value,
-                }
+            return {
+                "success": False,
+                "error": "fetch_announcements not supported",
+                "source": source.value,
+            }
 
         except Exception as e:
             logger.error("Failed to fetch announcements: %(e)s")
             return {"success": False, "error": str(e), "source": source.value}
 
     def get_all_health_status(self) -> List[Dict[str, Any]]:
-        """
-        获取所有数据源的健康状态
+        """获取所有数据源的健康状态
 
         Returns:
             List[Dict]: 健康状态列表
+
         """
         statuses = []
 
@@ -411,7 +407,7 @@ class MultiSourceManager:
                         "last_check": health.last_check.isoformat(),
                         "supported_categories": [cat.value for cat in health.supported_categories],
                         **stats,
-                    }
+                    },
                 )
 
             except Exception:

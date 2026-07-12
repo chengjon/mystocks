@@ -6,6 +6,7 @@ from typing import Any, Dict, Optional
 
 from app.services.data_quality_monitor import DataQualityMonitor
 
+
 _global_monitor: Optional[DataQualityMonitor] = None
 
 
@@ -18,7 +19,7 @@ def get_data_quality_monitor() -> DataQualityMonitor:
 
 
 async def monitor_data_quality(
-    data: Any, source: str, response_time: Optional[float] = None, success: bool = True
+    data: Any, source: str, response_time: Optional[float] = None, success: bool = True,
 ) -> Dict[str, Any]:
     """便捷函数：监控数据质量"""
     monitor = get_data_quality_monitor()

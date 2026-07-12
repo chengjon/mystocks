@@ -1,5 +1,4 @@
-"""
-SSE API Endpoints for Real-time Updates
+"""SSE API Endpoints for Real-time Updates
 Week 2 Day 3 - SSE Real-time Push Implementation
 
 Provides Server-Sent Events endpoints for streaming real-time updates to frontend:
@@ -24,6 +23,7 @@ from sse_starlette.sse import EventSourceResponse
 
 from app.core.sse_manager import get_sse_manager, sse_event_generator
 
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/sse", tags=["SSE实时推送"])
@@ -34,8 +34,7 @@ async def sse_training_stream(
     request: Request,
     client_id: Optional[str] = Query(None, description="客户端ID（可选，自动生成）"),
 ):
-    """
-    SSE endpoint for model training progress updates
+    """SSE endpoint for model training progress updates
 
     **Event Types:**
     - `connected`: Initial connection confirmation
@@ -90,8 +89,7 @@ async def sse_backtest_stream(
     request: Request,
     client_id: Optional[str] = Query(None, description="客户端ID（可选，自动生成）"),
 ):
-    """
-    SSE endpoint for backtest execution progress updates
+    """SSE endpoint for backtest execution progress updates
 
     **Event Types:**
     - `connected`: Initial connection confirmation
@@ -143,8 +141,7 @@ async def sse_alerts_stream(
     request: Request,
     client_id: Optional[str] = Query(None, description="客户端ID（可选，自动生成）"),
 ):
-    """
-    SSE endpoint for risk alert notifications
+    """SSE endpoint for risk alert notifications
 
     **Event Types:**
     - `connected`: Initial connection confirmation
@@ -200,8 +197,7 @@ async def sse_dashboard_stream(
     request: Request,
     client_id: Optional[str] = Query(None, description="客户端ID（可选，自动生成）"),
 ):
-    """
-    SSE endpoint for real-time dashboard updates
+    """SSE endpoint for real-time dashboard updates
 
     **Event Types:**
     - `connected`: Initial connection confirmation
@@ -259,11 +255,11 @@ async def sse_dashboard_stream(
 
 @router.get("/status")
 async def sse_status():
-    """
-    Get SSE server status
+    """Get SSE server status
 
     Returns:
         Connection statistics for all channels
+
     """
     manager = get_sse_manager()
 

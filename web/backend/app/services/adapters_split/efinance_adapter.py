@@ -1,14 +1,15 @@
-"""
-Efinance数据源适配器
+"""Efinance数据源适配器
 
 提供Efinance中国金融数据获取功能，支持基础数据、日线数据、分红数据、实时行情等
 """
 
 from typing import Dict, List, Optional
 
-from .base_adapter import BaseAdapter
 from app.core.database import db_service
 from app.services.data_quality_monitor import get_data_quality_monitor
+
+from .base_adapter import BaseAdapter
+
 
 logger = __import__("logging").getLogger(__name__)
 
@@ -24,14 +25,14 @@ class EfinanceAdapter(BaseAdapter):
         logger.info(f"初始化{self.name}适配器")
 
     async def get_stock_basic(self, stock_code: str) -> Optional[Dict]:
-        """
-        获取股票基本信息
+        """获取股票基本信息
 
         Args:
             stock_code: 股票代码
 
         Returns:
             Dict: 股票基本信息，失败返回None
+
         """
         try:
             self._log_request_start("get_stock_basic", {"stock_code": stock_code})
@@ -64,8 +65,7 @@ class EfinanceAdapter(BaseAdapter):
             return None
 
     async def get_stock_daily(self, stock_code: str, start_date: str, end_date: str) -> Optional[List[Dict]]:
-        """
-        获取股票日线数据
+        """获取股票日线数据
 
         Args:
             stock_code: 股票代码
@@ -74,10 +74,11 @@ class EfinanceAdapter(BaseAdapter):
 
         Returns:
             List[Dict]: 日线数据列表，失败返回空列表
+
         """
         try:
             self._log_request_start(
-                "get_stock_daily", {"stock_code": stock_code, "start_date": start_date, "end_date": end_date}
+                "get_stock_daily", {"stock_code": stock_code, "start_date": start_date, "end_date": end_date},
             )
 
             from efinance import stock_zh_a_hist as ef
@@ -100,7 +101,7 @@ class EfinanceAdapter(BaseAdapter):
                         "close": row["收盘"] if "收盘" in row else 0,
                         "volume": row["成交量"] if "成交量" in row else 0,
                         "amount": row["成交额"] if "成交额" in row else 0,
-                    }
+                    },
                 )
 
             self._log_request_success("get_stock_daily", f"返回{len(daily_data)}条日线数据")
@@ -113,8 +114,7 @@ class EfinanceAdapter(BaseAdapter):
             return []
 
     async def get_fund_data(self, stock_code: str, year: str = "2024") -> Optional[Dict]:
-        """
-        获取基金数据
+        """获取基金数据
 
         Args:
             stock_code: 股票代码
@@ -122,6 +122,7 @@ class EfinanceAdapter(BaseAdapter):
 
         Returns:
             Dict: 基金数据，失败返回None
+
         """
         try:
             self._log_request_start("get_fund_data", {"stock_code": stock_code, "year": year})
@@ -157,8 +158,7 @@ class EfinanceAdapter(BaseAdapter):
             return None
 
     async def get_dividend_data(self, stock_code: str, year: str = "2024") -> Optional[List[Dict]]:
-        """
-        获取分红数据
+        """获取分红数据
 
         Args:
             stock_code: 股票代码
@@ -166,6 +166,7 @@ class EfinanceAdapter(BaseAdapter):
 
         Returns:
             List[Dict]: 分红数据列表，失败返回空列表
+
         """
         try:
             self._log_request_start("get_dividend_data", {"stock_code": stock_code, "year": year})
@@ -187,7 +188,7 @@ class EfinanceAdapter(BaseAdapter):
                         "dividend_per_share": row["每10股分红"] if "每10股分红" in row else 0,
                         "dividend_yield": row["股息率%"] if "股息率%" in row else 0,
                         "ex_dividend_date": row["除权日期"] if "除权日期" in row else "",
-                    }
+                    },
                 )
 
             self._log_request_success("get_dividend_data", f"返回{len(dividend_data)}条分红数据")
@@ -200,14 +201,14 @@ class EfinanceAdapter(BaseAdapter):
             return []
 
     async def get_realtime_quotes(self, stock_codes: List[str]) -> Optional[List[Dict]]:
-        """
-        获取实时行情
+        """获取实时行情
 
         Args:
             stock_codes: 股票代码列表
 
         Returns:
             List[Dict]: 实时行情数据列表，失败返回空列表
+
         """
         try:
             self._log_request_start("get_realtime_quotes", {"stock_codes": stock_codes})
@@ -231,7 +232,7 @@ class EfinanceAdapter(BaseAdapter):
                                 "change_percent": latest["涨跌幅%"] if "涨跌幅%" in latest else 0,
                                 "volume": latest["成交量(手)"] if "成交量(手)" in latest else 0,
                                 "turnover": latest["换手率"] if "换手率" in latest else 0,
-                            }
+                            },
                         )
                 except Exception as stock_error:
                     logger.warning(f"获取{stock_code}实时行情失败: {stock_error}")
@@ -246,11 +247,11 @@ class EfinanceAdapter(BaseAdapter):
             return []
 
     async def check_health(self) -> Optional[str]:
-        """
-        检查数据源健康状态
+        """检查数据源健康状态
 
         Returns:
             str: 健康状态（healthy/unhealthy/error），失败返回None
+
         """
         try:
             self._log_request_start("check_health", {})

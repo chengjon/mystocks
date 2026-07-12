@@ -1,14 +1,15 @@
-"""
-TDX通达信数据源适配器
+"""TDX通达信数据源适配器
 
 提供TDX通达信协议的数据获取功能，支持股票行情、板块数据、技术指标等
 """
 
 from typing import Dict, List, Optional
 
-from .base_adapter import BaseAdapter
 from app.core.database import db_service
 from app.services.data_quality_monitor import get_data_quality_monitor
+
+from .base_adapter import BaseAdapter
+
 
 logger = __import__("logging").getLogger(__name__)
 
@@ -57,9 +58,8 @@ class TDXAdapter(BaseAdapter):
                 }
                 self._log_data_quality(stock_info, "get_stock_basic")
                 return stock_info
-            else:
-                self._log_request_error("get_stock_basic", Exception("股票不存在"))
-                return None
+            self._log_request_error("get_stock_basic", Exception("股票不存在"))
+            return None
 
         except Exception as e:
             self._log_request_error("get_stock_basic", e)
@@ -69,7 +69,7 @@ class TDXAdapter(BaseAdapter):
         """获取日线数据"""
         try:
             self._log_request_start(
-                "get_stock_daily", {"stock_code": stock_code, "start_date": start_date, "end_date": end_date}
+                "get_stock_daily", {"stock_code": stock_code, "start_date": start_date, "end_date": end_date},
             )
 
             sql = f"""
@@ -104,13 +104,12 @@ class TDXAdapter(BaseAdapter):
                             "close": result["close"],
                             "volume": result["volume"],
                             "amount": result["amount"],
-                        }
+                        },
                     )
                 self._log_data_quality(daily_data, "get_stock_daily")
                 return daily_data
-            else:
-                self._log_request_error("get_stock_daily", Exception("未返回数据"))
-                return []
+            self._log_request_error("get_stock_daily", Exception("未返回数据"))
+            return []
 
         except Exception as e:
             self._log_request_error("get_stock_daily", e)
@@ -150,7 +149,7 @@ class TDXAdapter(BaseAdapter):
                             "volume": result["volume"],
                             "amount": result["amount"],
                             "quote_time": result["quote_time"].isoformat() if result["quote_time"] else "",
-                        }
+                        },
                     )
 
             self._log_request_success("get_realtime_quotes", f"返回{len(quotes)}条实时行情")
@@ -200,13 +199,12 @@ class TDXAdapter(BaseAdapter):
                             "main_sell": result["main_sell"],
                             "retail_buy": result["retail_buy"],
                             "retail_sell": result["retail_sell"],
-                        }
+                        },
                     )
                 self._log_data_quality(board_data, "get_board_data")
                 return board_data
-            else:
-                self._log_request_error("get_board_data", Exception("未返回数据"))
-                return []
+            self._log_request_error("get_board_data", Exception("未返回数据"))
+            return []
 
         except Exception as e:
             self._log_request_error("get_board_data", e)
@@ -227,9 +225,8 @@ class TDXAdapter(BaseAdapter):
             if result and result["count"] > 0:
                 self._log_request_success("check_health", "TDX数据源健康")
                 return "healthy"
-            else:
-                self._log_request_error("check_health", Exception("TDX数据源不可用"))
-                return "unhealthy"
+            self._log_request_error("check_health", Exception("TDX数据源不可用"))
+            return "unhealthy"
 
         except Exception as e:
             self._log_request_error("check_health", e)

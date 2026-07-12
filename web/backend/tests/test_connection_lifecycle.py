@@ -1,5 +1,4 @@
-"""
-连接生命周期管理单元测试
+"""连接生命周期管理单元测试
 
 Test Connection Lifecycle Manager - Connection state and heartbeat monitoring
 
@@ -9,15 +8,16 @@ Author: Claude Code
 Date: 2025-11-06
 """
 
-import pytest
 import asyncio
 import time
 
+import pytest
+
 from app.core.connection_lifecycle import (
+    ConnectionHealthMonitor,
     ConnectionLifecycleManager,
     ConnectionState,
     HeartbeatConfig,
-    ConnectionHealthMonitor,
     get_connection_lifecycle_manager,
     reset_connection_lifecycle_manager,
 )

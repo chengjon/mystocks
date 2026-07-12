@@ -1,16 +1,14 @@
-"""
-系统管理API端点
+"""系统管理API端点
 提供系统设置、数据库连接测试、运行日志查询等功能
 """
 
 import logging
 import os
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from datetime import datetime
+from typing import Any
 
-import psycopg2
-from fastapi import APIRouter, HTTPException, Query
-from pydantic import BaseModel
+from fastapi import APIRouter, HTTPException
+
 
 # Mock数据支持
 use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
@@ -31,8 +29,7 @@ def _close_resource_quietly(resource_name: str, resource: Any) -> None:
 
 @router.get("/architecture")
 async def get_system_architecture():
-    """
-    获取系统架构信息 (Week 3简化后 - 双数据库架构)
+    """获取系统架构信息 (Week 3简化后 - 双数据库架构)
 
     返回完整的系统架构信息，包括:
     - 数据库架构 (TDengine + PostgreSQL)
@@ -140,7 +137,7 @@ async def get_system_architecture():
                                 "data_type": "股票信息、成分股信息、交易日历",
                                 "database": "PostgreSQL",
                                 "reason": "ACID保证和关系查询 (从MySQL迁移)",
-                            }
+                            },
                         ],
                     },
                     {
@@ -151,7 +148,7 @@ async def get_system_architecture():
                                 "data_type": "技术指标、量化因子、模型输出、交易信号",
                                 "database": "PostgreSQL + TimescaleDB",
                                 "reason": "自动分区和复杂计算支持",
-                            }
+                            },
                         ],
                     },
                     {
@@ -162,7 +159,7 @@ async def get_system_architecture():
                                 "data_type": "订单记录、成交记录、持仓记录、账户状态",
                                 "database": "PostgreSQL",
                                 "reason": "强一致性和事务保证",
-                            }
+                            },
                         ],
                     },
                     {
@@ -173,7 +170,7 @@ async def get_system_architecture():
                                 "data_type": "数据源状态、任务调度、策略参数、系统配置",
                                 "database": "PostgreSQL",
                                 "reason": "集中管理和JSON支持 (从MySQL迁移)",
-                            }
+                            },
                         ],
                     },
                 ],
@@ -264,13 +261,12 @@ async def get_system_architecture():
         }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取系统架构信息失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取系统架构信息失败: {e!s}")
 
 
 @router.get("/database/health")
 async def database_health():
-    """
-    数据库健康检查 (US2 - 双数据库架构)
+    """数据库健康检查 (US2 - 双数据库架构)
 
     检查TDengine和PostgreSQL的连接状态和基本健康指标
 
@@ -284,6 +280,7 @@ async def database_health():
                 "summary": {...}
             }
         }
+
     """
     import os
     from datetime import datetime
@@ -326,7 +323,7 @@ async def database_health():
     except Exception as e:
         health_data["tdengine"] = {
             "status": "unhealthy",
-            "message": f"连接失败: {str(e)}",
+            "message": f"连接失败: {e!s}",
             "host": os.getenv("TDENGINE_HOST"),
             "port": int(os.getenv("TDENGINE_PORT", "6030")),
         }
@@ -364,7 +361,7 @@ async def database_health():
     except Exception as e:
         health_data["postgresql"] = {
             "status": "unhealthy",
-            "message": f"连接失败: {str(e)}",
+            "message": f"连接失败: {e!s}",
             "host": os.getenv("POSTGRESQL_HOST"),
             "port": int(os.getenv("POSTGRESQL_PORT", "5438")),
         }
@@ -384,7 +381,7 @@ async def database_health():
                 "host": health_data["tdengine"].get("host"),
                 "port": health_data["tdengine"].get("port"),
                 "database": health_data["tdengine"].get("database"),
-            }
+            },
         )
 
     if health_data["postgresql"]["status"] == "healthy":
@@ -395,7 +392,7 @@ async def database_health():
                 "host": health_data["postgresql"].get("host"),
                 "port": health_data["postgresql"].get("port"),
                 "database": health_data["postgresql"].get("database"),
-            }
+            },
         )
 
     # Add databases array to response for E2E tests
@@ -406,8 +403,7 @@ async def database_health():
 
 @router.get("/database/stats")
 async def database_stats():
-    """
-    数据库统计信息 (US2 - 双数据库架构)
+    """数据库统计信息 (US2 - 双数据库架构)
 
     Returns:
         {
@@ -420,6 +416,7 @@ async def database_stats():
                 "features": {...}
             }
         }
+
     """
     from datetime import datetime
 

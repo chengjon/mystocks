@@ -1,5 +1,4 @@
-"""
-备份和恢复数据模型
+"""备份和恢复数据模型
 
 提供安全的 Pydantic 模型用于备份和恢复操作的请求验证
 包含输入验证、路径安全检查和权限控制
@@ -13,6 +12,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Literal, Optional
 
 from pydantic import BaseModel, Field, validator
+
 
 # 安全正则表达式模式
 SAFE_BACKUP_ID_PATTERN = re.compile(r"^[a-zA-Z0-9_-]+$")

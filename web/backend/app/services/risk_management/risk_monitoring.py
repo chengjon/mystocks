@@ -1,15 +1,15 @@
-"""
-风险管理监控模块
+"""风险管理监控模块
 
 提供实时风险监控、阈值检查、事件记录和指标统计功能
 """
 
 import logging
-from typing import Dict, List, Optional
-from datetime import datetime, timedelta
 from dataclasses import dataclass
+from datetime import datetime, timedelta
+from typing import Dict, List, Optional
 
-from .risk_base import RiskLevel, RiskEventType, RiskMetrics
+from .risk_base import RiskEventType, RiskLevel, RiskMetrics
+
 
 logger = __import__("logging").getLogger(__name__)
 
@@ -82,8 +82,7 @@ class RiskMonitoring:
         logger.info("风险管理监控模块初始化")
 
     async def check_thresholds(self, portfolio_id: str, current_metrics: RiskMetrics) -> List[MonitoringEvent]:
-        """
-        检查风险阈值是否被突破
+        """检查风险阈值是否被突破
 
         Args:
             portfolio_id: 投资组合ID
@@ -91,6 +90,7 @@ class RiskMonitoring:
 
         Returns:
             List[MonitoringEvent]: 触发的事件列表
+
         """
         events = []
 
@@ -178,12 +178,12 @@ class RiskMonitoring:
         return events
 
     async def record_event(self, event: MonitoringEvent, notify: bool = False) -> None:
-        """
-        记录风险事件
+        """记录风险事件
 
         Args:
             event: 监控事件
             notify: 是否发送通知
+
         """
         try:
             event.timestamp = datetime.now()
@@ -202,8 +202,7 @@ class RiskMonitoring:
             self.logger.error(f"记录事件失败: {e}")
 
     async def _send_alert_notification(self, event: MonitoringEvent):
-        """
-        发送告警通知（邮件、Webhook、短信等）
+        """发送告警通知（邮件、Webhook、短信等）
         """
         try:
             if event.risk_level in [RiskLevel.CRITICAL, RiskLevel.HIGH]:
@@ -225,8 +224,8 @@ class RiskMonitoring:
             
             时间: {event.timestamp}
             风险等级: {event.risk_level.value}
-            组合ID: {event.portfolio_id if event.portfolio_id else "N/A"}
-            股票代码: {event.stock_code if event.stock_code else "N/A"}
+            组合ID: {event.portfolio_id or "N/A"}
+            股票代码: {event.stock_code or "N/A"}
             
             当前指标:
             {event.metrics_snapshot}
@@ -252,8 +251,8 @@ class RiskMonitoring:
                 "risk_level": event.risk_level.value,
                 "message": event.message,
                 "timestamp": event.timestamp.isoformat(),
-                "portfolio_id": event.portfolio_id if event.portfolio_id else None,
-                "stock_code": event.stock_code if event.stock_code else None,
+                "portfolio_id": event.portfolio_id or None,
+                "stock_code": event.stock_code or None,
                 "metrics": event.metrics_snapshot,
             }
 
@@ -309,10 +308,10 @@ class RiskMonitoring:
     async def _send_email(self, subject: str, body: str):
         """发送邮件（内部方法）"""
         try:
-            import smtplib
-            from email.mime.text import MIMEText
-            from email.mime.multipart import MIMEMultipart
             import os
+            import smtplib
+            from email.mime.multipart import MIMEMultipart
+            from email.mime.text import MIMEText
 
             smtp_server = os.getenv("SMTP_SERVER", "smtp.gmail.com")
             smtp_port = int(os.getenv("SMTP_PORT", "587"))
@@ -366,11 +365,11 @@ class RiskMonitoring:
         return self.statistics.to_dict()
 
     async def start_monitoring(self, portfolio_ids: List[str]) -> None:
-        """
-        开始监控指定投资组合
+        """开始监控指定投资组合
 
         Args:
             portfolio_ids: 投资组合ID列表
+
         """
         try:
             self.is_monitoring = True

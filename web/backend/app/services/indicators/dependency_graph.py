@@ -1,5 +1,4 @@
-"""
-Indicator Dependency Graph System
+"""Indicator Dependency Graph System
 =================================
 
 指标依赖关系图管理，用于：
@@ -27,6 +26,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import networkx as nx
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -41,8 +41,7 @@ class NodeState(str, Enum):
 
 @dataclass
 class DependencyNode:
-    """
-    依赖图节点
+    """依赖图节点
 
     表示一个需要计算的指标及其参数配置
     """
@@ -86,8 +85,7 @@ class DependencyEdge:
 
 
 class IndicatorDependencyGraph:
-    """
-    指标依赖关系图
+    """指标依赖关系图
 
     功能:
     - 使用有向无环图(DAG)表示指标间依赖关系
@@ -111,8 +109,7 @@ class IndicatorDependencyGraph:
         dependencies: List[str] = None,
         data_requirements: List[str] = None,
     ) -> str:
-        """
-        添加指标到依赖图
+        """添加指标到依赖图
 
         Args:
             abbreviation: 指标缩写
@@ -122,6 +119,7 @@ class IndicatorDependencyGraph:
 
         Returns:
             节点ID
+
         """
         params = params or {}
         dependencies = dependencies or []
@@ -172,8 +170,7 @@ class IndicatorDependencyGraph:
         return f"{abbreviation}[{param_str}]"
 
     def add_dependency_edge(self, from_node: str, to_node: str, edge_type: str = "data") -> bool:
-        """
-        添加依赖边
+        """添加依赖边
 
         Args:
             from_node: 依赖方节点ID（先计算）
@@ -182,6 +179,7 @@ class IndicatorDependencyGraph:
 
         Returns:
             是否添加成功
+
         """
         if from_node == to_node:
             logger.warning("不能添加自环依赖: %(from_node)s")
@@ -207,11 +205,11 @@ class IndicatorDependencyGraph:
         return True
 
     def detect_cycles(self) -> Optional[List[List[str]]]:
-        """
-        检测循环依赖
+        """检测循环依赖
 
         Returns:
             如果存在循环，返回循环路径列表；否则返回None
+
         """
         try:
             cycles = list(nx.simple_cycles(self._graph))
@@ -239,11 +237,11 @@ class IndicatorDependencyGraph:
         return self._graph.out_degree(node_id)
 
     def get_ready_nodes(self) -> List[str]:
-        """
-        获取所有无依赖的节点（可以立即计算的）
+        """获取所有无依赖的节点（可以立即计算的）
 
         Returns:
             可立即计算的节点ID列表
+
         """
         ready = []
         for node_id in self._graph.nodes():
@@ -271,11 +269,11 @@ class IndicatorDependencyGraph:
         return f"{abbr_upper}[{param_str}]"
 
     def topological_sort_kahn(self) -> Optional[List[str]]:
-        """
-        拓扑排序 - Kahn算法
+        """拓扑排序 - Kahn算法
 
         Returns:
             计算顺序列表（从无依赖到有依赖）
+
         """
         # 检测循环
         if self.has_cycle():
@@ -307,11 +305,11 @@ class IndicatorDependencyGraph:
         return result
 
     def topological_sort_dfs(self) -> Optional[List[str]]:
-        """
-        拓扑排序 - DFS算法
+        """拓扑排序 - DFS算法
 
         Returns:
             计算顺序列表
+
         """
         visited = set()
         stack = set()
@@ -341,14 +339,14 @@ class IndicatorDependencyGraph:
         return result if len(result) == len(self._graph.nodes()) else None
 
     def get_calculation_order(self, indicators: List[Dict]) -> List[Dict]:
-        """
-        获取最优计算顺序
+        """获取最优计算顺序
 
         Args:
             indicators: 指标列表 [{"abbreviation": "SMA", "params": {...}}, ...]
 
         Returns:
             按依赖排序的指标列表
+
         """
         # 清空图
         self._graph.clear()
@@ -386,7 +384,7 @@ class IndicatorDependencyGraph:
                         "node_id": node_id,
                         "dependencies": node.dependencies.copy(),
                         "dependents": node.dependents.copy(),
-                    }
+                    },
                 )
         return result
 
@@ -541,14 +539,14 @@ class DependencyValidator:
 
     @classmethod
     def validate_dependency_graph(cls, graph: IndicatorDependencyGraph) -> Tuple[bool, List[str]]:
-        """
-        验证整个依赖图
+        """验证整个依赖图
 
         Args:
             graph: 依赖图
 
         Returns:
             (是否有效, 错误列表)
+
         """
         errors = []
 
@@ -566,8 +564,7 @@ class DependencyValidator:
 
 
 class IncrementalCalculator:
-    """
-    增量计算器
+    """增量计算器
 
     功能:
     - 检测数据是否新增
@@ -598,11 +595,11 @@ class IncrementalCalculator:
             return hashlib.md5(str(id(data)).encode()).hexdigest()
 
     def validate_cache(self, node_id: str, new_data: Any) -> Tuple[bool, bool]:
-        """
-        验证缓存是否有效
+        """验证缓存是否有效
 
         Returns:
             (是否有效, 是否需要增量更新)
+
         """
         if node_id not in self._cache:
             return False, False

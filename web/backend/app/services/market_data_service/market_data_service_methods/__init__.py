@@ -10,7 +10,7 @@ class MarketDataService(
     MarketDataServiceChipRaceQueryMixin,
 ):
     """MarketDataService - 组合所有方法集"""
-    pass
+
 
 
 __all__ = ["MarketDataService"]

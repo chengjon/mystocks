@@ -1,5 +1,4 @@
-"""
-股票评级数据API路由
+"""股票评级数据API路由
 Stock Ratings API Router
 
 提供新浪财经股票评级数据的REST API接口。
@@ -21,6 +20,7 @@ from app.schemas.stock_ratings_schemas import (
 )
 from src.adapters.sina_finance_adapter import SinaFinanceAdapter
 
+
 logger = logging.getLogger(__name__)
 
 # 创建路由器
@@ -35,8 +35,7 @@ async def get_stock_ratings(
     max_pages: int = Query(5, description="最大爬取页数", ge=1, le=10),
     current_user: User = Depends(get_current_user),
 ) -> Dict[str, Any]:
-    """
-    获取新浪财经股票评级数据
+    """获取新浪财经股票评级数据
 
     从新浪财经网站爬取最新的股票评级信息，包括目标价、最新评级、评级机构、分析师等。
 
@@ -78,15 +77,14 @@ async def get_stock_ratings(
         raise
     except Exception as e:
         logger.error("获取股票评级数据API异常: {str(e)}", exc_info=True)
-        return server_error(message=f"获取股票评级数据失败: {str(e)}")
+        return server_error(message=f"获取股票评级数据失败: {e!s}")
 
 
 @router.get("/ratings/summary", response_model=UnifiedResponse)
 async def get_ratings_summary(
     current_user: User = Depends(get_current_user),
 ) -> Dict[str, Any]:
-    """
-    获取股票评级数据汇总统计
+    """获取股票评级数据汇总统计
 
     提供评级数据的统计信息，包括总评级数量、机构数量、行业分布等。
     """
@@ -110,13 +108,12 @@ async def get_ratings_summary(
 
     except Exception as e:
         logger.error("获取评级汇总API异常: {str(e)}", exc_info=True)
-        return server_error(message=f"获取评级汇总失败: {str(e)}")
+        return server_error(message=f"获取评级汇总失败: {e!s}")
 
 
 @router.get("/health", response_model=UnifiedResponse)
 async def health_check() -> Dict[str, Any]:
-    """
-    股票评级API健康检查
+    """股票评级API健康检查
 
     检查新浪财经数据源的可用性和响应时间。
     """
@@ -136,12 +133,11 @@ async def health_check() -> Dict[str, Any]:
                 message="股票评级服务运行正常",
                 timestamp=datetime.now().isoformat(),
             )
-        else:
-            return server_error(message="股票评级服务异常", details=health_response.dict())
+        return server_error(message="股票评级服务异常", details=health_response.dict())
 
     except Exception as e:
         logger.error("健康检查API异常: {str(e)}", exc_info=True)
-        return server_error(message=f"健康检查失败: {str(e)}")
+        return server_error(message=f"健康检查失败: {e!s}")
 
 
 @router.post("/ratings/refresh", response_model=UnifiedResponse)
@@ -149,8 +145,7 @@ async def refresh_ratings_cache(
     request: StockRatingsRequest = StockRatingsRequest(),
     current_user: User = Depends(get_current_user),
 ) -> Dict[str, Any]:
-    """
-    刷新股票评级数据缓存
+    """刷新股票评级数据缓存
 
     强制重新爬取最新的股票评级数据并更新缓存。
 
@@ -181,4 +176,4 @@ async def refresh_ratings_cache(
 
     except Exception as e:
         logger.error("刷新评级缓存API异常: {str(e)}", exc_info=True)
-        return server_error(message=f"刷新评级缓存失败: {str(e)}")
+        return server_error(message=f"刷新评级缓存失败: {e!s}")

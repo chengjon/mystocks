@@ -1,5 +1,4 @@
-"""
-AkShare Market Data API (Facade)
+"""AkShare Market Data API (Facade)
 
 Modularized into:
 - sse, szse, stock_info, fund_flow, boards, analysis
@@ -7,6 +6,7 @@ Modularized into:
 import logging
 
 from fastapi import APIRouter
+
 
 logger = logging.getLogger(__name__)
 

@@ -1,5 +1,4 @@
-"""
-实时流媒体服务单元测试
+"""实时流媒体服务单元测试
 
 Test Real-Time Streaming Service - Market data streaming via WebSocket
 
@@ -10,12 +9,12 @@ Date: 2025-11-06
 """
 
 from app.services.realtime_streaming_service import (
-    RealtimeStreamingService,
     MarketDataStream,
-    StreamSubscriber,
+    RealtimeStreamingService,
     StreamData,
-    StreamStatus,
     StreamEventType,
+    StreamStatus,
+    StreamSubscriber,
     get_streaming_service,
     reset_streaming_service,
 )

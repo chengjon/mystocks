@@ -1,5 +1,4 @@
-"""
-Unified Email Service - Consolidate email_service.py and email_notification_service.py
+"""Unified Email Service - Consolidate email_service.py and email_notification_service.py
 Task 1.4 Phase 2: Remove Duplicate Code - Service Consolidation
 
 Consolidates 150+ LOC of duplicate email service implementations.
@@ -40,6 +39,7 @@ from typing import Any, Dict, List, Optional, Union
 
 import structlog
 
+
 logger = structlog.get_logger()
 
 
@@ -48,8 +48,7 @@ class EmailServiceError(Exception):
 
 
 class UnifiedEmailService:
-    """
-    Unified email service consolidating EmailService and EmailNotificationService.
+    """Unified email service consolidating EmailService and EmailNotificationService.
 
     Supports both simple and advanced email sending with attachments,
     configurable templates, and comprehensive error handling.
@@ -90,8 +89,7 @@ class UnifiedEmailService:
         from_name: str = "MyStocks",
         timeout: int = 30,
     ):
-        """
-        Initialize email service
+        """Initialize email service
 
         Args:
             smtp_host: SMTP server host (default: environment variable)
@@ -101,6 +99,7 @@ class UnifiedEmailService:
             use_tls: Whether to use TLS encryption (default: True)
             from_name: Sender name in email header (default: "MyStocks")
             timeout: Connection timeout in seconds (default: 30)
+
         """
         self.smtp_host = smtp_host or os.getenv("SMTP_HOST", "smtp.gmail.com")
         self.smtp_port = smtp_port or int(os.getenv("SMTP_PORT", "587"))
@@ -114,15 +113,15 @@ class UnifiedEmailService:
         self._is_configured = bool(self.username and self.password)
         if not self._is_configured:
             logger.warning(
-                "⚠️  Email service not configured: " "Set SMTP_USERNAME and SMTP_PASSWORD environment variables"
+                "⚠️  Email service not configured: Set SMTP_USERNAME and SMTP_PASSWORD environment variables",
             )
 
     def is_configured(self) -> bool:
-        """
-        Check if email service is properly configured
+        """Check if email service is properly configured
 
         Returns:
             True if SMTP credentials are available
+
         """
         return self._is_configured
 
@@ -136,8 +135,7 @@ class UnifiedEmailService:
         cc_addresses: Optional[List[str]] = None,
         bcc_addresses: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
-        """
-        Send simple email
+        """Send simple email
 
         Args:
             to_addresses: Recipient email address(es)
@@ -153,6 +151,7 @@ class UnifiedEmailService:
                 - success (bool): Whether send was successful
                 - message (str): Status message
                 - error (str, optional): Error details if failed
+
         """
         if not self.is_configured():
             return {
@@ -212,8 +211,7 @@ class UnifiedEmailService:
         cc_addresses: Optional[List[str]] = None,
         bcc_addresses: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
-        """
-        Send email with advanced features (attachments, CC, BCC)
+        """Send email with advanced features (attachments, CC, BCC)
 
         Args:
             to_addresses: Recipient email address(es)
@@ -227,6 +225,7 @@ class UnifiedEmailService:
 
         Returns:
             Dict with send result
+
         """
         if not self.is_configured():
             return {

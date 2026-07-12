@@ -5,6 +5,7 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
+
 os.environ.setdefault("POSTGRESQL_HOST", "localhost")
 os.environ.setdefault("POSTGRESQL_USER", "tester")
 os.environ.setdefault("POSTGRESQL_PASSWORD", "tester")
@@ -97,7 +98,7 @@ async def test_create_strategy_uses_runtime_fallback_when_db_unavailable_in_test
             "description": "Fallback test",
             "strategy_type": "trend_following",
             "parameters": {"custom": {"window": 20}},
-        }
+        },
     )
     payload = _payload(result)
 
@@ -118,7 +119,7 @@ async def test_list_strategies_returns_runtime_fallback_after_create(monkeypatch
             "name": "Beta",
             "description": "Persist fallback row",
             "strategy_type": "mean_reversion",
-        }
+        },
     )
     create_payload = _payload(create_result)
 
@@ -142,7 +143,7 @@ async def test_create_strategy_uses_runtime_fallback_when_manager_returns_false(
             "name": "Gamma",
             "description": "False result fallback",
             "strategy_type": "breakout",
-        }
+        },
     )
     payload = _payload(result)
 
@@ -162,7 +163,7 @@ async def test_list_strategies_prefers_runtime_store_when_database_returns_empty
             "name": "Delta",
             "description": "Runtime store list fallback",
             "strategy_type": "grid",
-        }
+        },
     )
 
     result = await strategy_api.list_strategies(status=None, page=1, page_size=20)

@@ -1,5 +1,4 @@
-"""
-Breakout Strategy
+"""Breakout Strategy
 
 突破策略模板 - 突破关键价位
 """
@@ -11,8 +10,7 @@ from app.backtest.strategies.base import BaseStrategy, SignalType, StrategySigna
 
 
 class BreakoutStrategy(BaseStrategy):
-    """
-    突破策略
+    """突破策略
 
     核心逻辑：
     - 价格突破N日最高价时买入
@@ -85,7 +83,6 @@ class BreakoutStrategy(BaseStrategy):
         position: Optional[Dict[str, Any]] = None,
     ) -> Optional[StrategySignal]:
         """生成交易信号"""
-
         self.update_history(symbol, current_data)
 
         lookback = self.parameters["lookback_period"]

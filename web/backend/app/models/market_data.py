@@ -1,5 +1,4 @@
-"""
-市场数据模型 (SQLAlchemy ORM)
+"""市场数据模型 (SQLAlchemy ORM)
 
 包含7个核心实体:
 - FundFlow: 个股资金流向
@@ -23,6 +22,7 @@ from sqlalchemy import (
     String,
 )
 from sqlalchemy.orm import declarative_base
+
 
 Base = declarative_base()
 

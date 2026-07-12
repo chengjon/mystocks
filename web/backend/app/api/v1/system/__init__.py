@@ -1,5 +1,4 @@
-"""
-系统管理API模块
+"""系统管理API模块
 
 提供系统健康检查和数据路由功能
 
@@ -10,5 +9,6 @@
 
 from .health import router as health_router
 from .routing import router as routing_router
+
 
 __all__ = ["health_router", "routing_router"]

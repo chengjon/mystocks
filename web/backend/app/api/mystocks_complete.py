@@ -1,5 +1,4 @@
-"""
-MyStocks Phase 1-5 API - Compatibility Shim
+"""MyStocks Phase 1-5 API - Compatibility Shim
 
 Split into domain-specific modules under api/v1/:
   v1/system/   | v1/strategy/ | v1/trading/
@@ -11,7 +10,8 @@ Remove this shim after deprecation period (4-8 weeks).
 
 import warnings
 
-from app.api.v1.router import api_v1_router as router  # noqa: F401
+from app.api.v1.router import api_v1_router as router
+
 
 warnings.warn(
     "app.api.mystocks_complete is deprecated. "

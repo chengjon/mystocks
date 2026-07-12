@@ -1,5 +1,4 @@
-"""
-契约版本管理服务
+"""契约版本管理服务
 负责契约的创建、查询、更新和同步
 """
 
@@ -21,6 +20,7 @@ from app.api.contract.schemas import (
 
 from .openapi_generator import OpenAPIGenerator
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -29,8 +29,7 @@ class VersionManager:
 
     @staticmethod
     def create_version(db: Session, version_data: ContractVersionCreate) -> ContractVersionResponse:
-        """
-        创建新的契约版本
+        """创建新的契约版本
 
         Args:
             db: 数据库会话
@@ -38,6 +37,7 @@ class VersionManager:
 
         Returns:
             契约版本响应
+
         """
         # 如果是同名契约的第一个版本，自动激活
         existing_count = db.query(ContractVersion).filter(ContractVersion.name == version_data.name).count()
@@ -63,8 +63,7 @@ class VersionManager:
 
     @staticmethod
     def get_version(db: Session, version_id: int) -> Optional[ContractVersionResponse]:
-        """
-        获取指定版本
+        """获取指定版本
 
         Args:
             db: 数据库会话
@@ -72,6 +71,7 @@ class VersionManager:
 
         Returns:
             契约版本响应
+
         """
         db_version = db.query(ContractVersion).filter(ContractVersion.id == version_id).first()
 
@@ -82,8 +82,7 @@ class VersionManager:
 
     @staticmethod
     def get_active_version(db: Session, name: str) -> Optional[ContractVersionResponse]:
-        """
-        获取契约的当前激活版本
+        """获取契约的当前激活版本
 
         Args:
             db: 数据库会话
@@ -91,6 +90,7 @@ class VersionManager:
 
         Returns:
             契约版本响应
+
         """
         db_version = db.query(ContractVersion).filter(ContractVersion.name == name, ContractVersion.is_active).first()
 
@@ -101,10 +101,9 @@ class VersionManager:
 
     @staticmethod
     def list_versions(
-        db: Session, name: Optional[str] = None, limit: int = 50, offset: int = 0
+        db: Session, name: Optional[str] = None, limit: int = 50, offset: int = 0,
     ) -> List[ContractVersionResponse]:
-        """
-        列出版本
+        """列出版本
 
         Args:
             db: 数据库会话
@@ -114,6 +113,7 @@ class VersionManager:
 
         Returns:
             契约版本响应列表
+
         """
         query = db.query(ContractVersion)
 
@@ -126,10 +126,9 @@ class VersionManager:
 
     @staticmethod
     def update_version(
-        db: Session, version_id: int, update_data: ContractVersionUpdate
+        db: Session, version_id: int, update_data: ContractVersionUpdate,
     ) -> Optional[ContractVersionResponse]:
-        """
-        更新契约版本
+        """更新契约版本
 
         Args:
             db: 数据库会话
@@ -138,6 +137,7 @@ class VersionManager:
 
         Returns:
             更新后的契约版本响应
+
         """
         db_version = db.query(ContractVersion).filter(ContractVersion.id == version_id).first()
 
@@ -157,8 +157,7 @@ class VersionManager:
 
     @staticmethod
     def activate_version(db: Session, version_id: int) -> bool:
-        """
-        激活指定版本（会停用同名的其他版本）
+        """激活指定版本（会停用同名的其他版本）
 
         Args:
             db: 数据库会话
@@ -166,6 +165,7 @@ class VersionManager:
 
         Returns:
             是否成功
+
         """
         db_version = db.query(ContractVersion).filter(ContractVersion.id == version_id).first()
 
@@ -183,8 +183,7 @@ class VersionManager:
 
     @staticmethod
     def delete_version(db: Session, version_id: int) -> bool:
-        """
-        删除契约版本
+        """删除契约版本
 
         Args:
             db: 数据库会话
@@ -192,6 +191,7 @@ class VersionManager:
 
         Returns:
             是否成功
+
         """
         db_version = db.query(ContractVersion).filter(ContractVersion.id == version_id).first()
 
@@ -205,14 +205,14 @@ class VersionManager:
 
     @staticmethod
     def list_contracts(db: Session) -> List[ContractMetadata]:
-        """
-        列出所有契约及其元数据
+        """列出所有契约及其元数据
 
         Args:
             db: 数据库会话
 
         Returns:
             契约元数据列表
+
         """
         # 获取每个契约的最新版本
         from sqlalchemy import func
@@ -244,7 +244,7 @@ class VersionManager:
                     last_updated=last_updated,
                     description=latest.description if latest else None,
                     tags=latest.tags if latest else [],
-                )
+                ),
             )
 
         return contracts
@@ -274,8 +274,7 @@ class VersionManager:
         author: Optional[str] = None,
         description: Optional[str] = None,
     ) -> SyncResult:
-        """
-        同步契约规格（Code-to-DB 或 DB-to-Code）
+        """同步契约规格（Code-to-DB 或 DB-to-Code）
 
         Args:
             db: 数据库会话
@@ -290,13 +289,13 @@ class VersionManager:
 
         Raises:
             ValueError: 无效的同步方向
+
         """
         if direction == "code_to_db":
             return VersionManager._sync_code_to_db(db, contract_name, commit_hash, author, description)
-        elif direction == "db_to_code":
+        if direction == "db_to_code":
             return VersionManager._sync_db_to_code(db, contract_name)
-        else:
-            raise ValueError(f"Invalid sync direction: {direction}")
+        raise ValueError(f"Invalid sync direction: {direction}")
 
     @staticmethod
     def _sync_code_to_db(
@@ -306,8 +305,7 @@ class VersionManager:
         author: Optional[str] = None,
         description: Optional[str] = None,
     ) -> SyncResult:
-        """
-        Code-to-DB: 从 FastAPI 路由生成 OpenAPI Spec 并保存到数据库
+        """Code-to-DB: 从 FastAPI 路由生成 OpenAPI Spec 并保存到数据库
 
         Args:
             db: 数据库会话
@@ -318,6 +316,7 @@ class VersionManager:
 
         Returns:
             SyncResult 同步结果
+
         """
         from app.main import app as fastapi_app
 
@@ -379,12 +378,11 @@ class VersionManager:
 
         except Exception as e:
             logger.error("Code-to-DB sync failed: %(e)s")
-            return SyncResult(success=False, direction="code_to_db", changes={}, message=f"Sync failed: {str(e)}")
+            return SyncResult(success=False, direction="code_to_db", changes={}, message=f"Sync failed: {e!s}")
 
     @staticmethod
     def _sync_db_to_code(db: Session, contract_name: str) -> SyncResult:
-        """
-        DB-to-Code: 从数据库生成 OpenAPI Spec 文件
+        """DB-to-Code: 从数据库生成 OpenAPI Spec 文件
 
         Args:
             db: 数据库会话
@@ -392,6 +390,7 @@ class VersionManager:
 
         Returns:
             SyncResult 同步结果
+
         """
         import yaml
 
@@ -422,7 +421,7 @@ class VersionManager:
                         yaml.dump(spec_data, f, allow_unicode=True, sort_keys=False)
                     saved_path = output_path
                     break
-                except IOError:
+                except OSError:
                     continue
 
             if saved_path:
@@ -447,19 +446,17 @@ class VersionManager:
                     changes=changes,
                     message=f"Successfully exported {paths_count} endpoints to {saved_path}",
                 )
-            else:
-                return SyncResult(
-                    success=False, direction="db_to_code", changes={}, message="Failed to write output file"
-                )
+            return SyncResult(
+                success=False, direction="db_to_code", changes={}, message="Failed to write output file",
+            )
 
         except Exception as e:
             logger.error("DB-to-Code sync failed: %(e)s")
-            return SyncResult(success=False, direction="db_to_code", changes={}, message=f"Sync failed: {str(e)}")
+            return SyncResult(success=False, direction="db_to_code", changes={}, message=f"Sync failed: {e!s}")
 
     @staticmethod
     def validate_version(db: Session, version_id: int) -> Dict[str, Any]:
-        """
-        验证契约版本的合规性
+        """验证契约版本的合规性
 
         Args:
             db: 数据库会话
@@ -467,6 +464,7 @@ class VersionManager:
 
         Returns:
             验证结果字典
+
         """
         from .contract_validator import create_validator_from_dict
 
@@ -513,8 +511,7 @@ class VersionManager:
 
     @staticmethod
     def compare_versions(db: Session, version_id_1: int, version_id_2: int) -> Dict[str, Any]:
-        """
-        比较两个契约版本的差异
+        """比较两个契约版本的差异
 
         Args:
             db: 数据库会话
@@ -523,6 +520,7 @@ class VersionManager:
 
         Returns:
             差异比较结果
+
         """
         from .diff_engine import ContractDiffEngine
 

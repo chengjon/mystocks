@@ -1,5 +1,4 @@
-"""
-WebSocket消息批处理
+"""WebSocket消息批处理
 WebSocket Message Batching - Batch Processing and Optimization
 
 Task 14.2: WebSocket性能优化
@@ -18,12 +17,14 @@ Date: 2025-11-12
 
 import asyncio
 from collections import defaultdict
+from collections.abc import Coroutine
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Callable, Coroutine, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 import structlog
+
 
 logger = structlog.get_logger()
 
@@ -111,14 +112,14 @@ class WebSocketMessageBatcher:
         max_batch_bytes: int = 1024 * 64,
         enable_compression: bool = True,
     ):
-        """
-        初始化消息批处理器
+        """初始化消息批处理器
 
         Args:
             batch_size: 最大批处理消息数
             batch_timeout_ms: 批处理超时（毫秒）
             max_batch_bytes: 最大批处理大小（字节）
             enable_compression: 是否启用压缩
+
         """
         self.batch_size = batch_size
         self.batch_timeout_ms = batch_timeout_ms
@@ -148,22 +149,22 @@ class WebSocketMessageBatcher:
         )
 
     def register_send_callback(self, callback: Callable[[str, str, Any], Coroutine]) -> None:
-        """
-        注册发送回调
+        """注册发送回调
 
         Args:
             callback: 发送函数(sid, event, data)
+
         """
         self.send_callback = callback
         logger.info("✅ Send callback registered")
 
     async def queue_message(self, message: BatchMessage, send_immediately: bool = False) -> None:
-        """
-        将消息加入处理队列
+        """将消息加入处理队列
 
         Args:
             message: 批处理消息
             send_immediately: 是否立即发送
+
         """
         # 关键消息立即发送
         if message.message_type == BatchMessageType.CRITICAL or send_immediately:
@@ -190,11 +191,11 @@ class WebSocketMessageBatcher:
             self.batch_tasks[message.sid] = asyncio.create_task(self._batch_timeout_handler(message.sid))
 
     async def _batch_timeout_handler(self, sid: str) -> None:
-        """
-        批处理超时处理器
+        """批处理超时处理器
 
         Args:
             sid: 连接ID
+
         """
         try:
             await asyncio.sleep(self.batch_timeout_ms / 1000.0)
@@ -207,11 +208,11 @@ class WebSocketMessageBatcher:
             logger.error("❌ Error in batch timeout handler", sid=sid, error=str(e))
 
     async def _flush_buffer(self, sid: str) -> None:
-        """
-        冲刷缓冲区，发送批处理消息
+        """冲刷缓冲区，发送批处理消息
 
         Args:
             sid: 连接ID
+
         """
         buffer = self.buffers.get(sid)
         if not buffer or len(buffer.messages) == 0:
@@ -259,13 +260,13 @@ class WebSocketMessageBatcher:
             )
 
     async def _send_message(self, sid: str, event: str, data: Any) -> None:
-        """
-        发送单个消息
+        """发送单个消息
 
         Args:
             sid: 连接ID
             event: 事件名称
             data: 消息数据
+
         """
         if not self.send_callback:
             logger.warning("⚠️ Send callback not registered")

@@ -1,5 +1,4 @@
-"""
-Mean Reversion Strategy
+"""Mean Reversion Strategy
 
 均值回归策略模板 - 低买高卖
 """
@@ -11,8 +10,7 @@ from app.backtest.strategies.base import BaseStrategy, SignalType, StrategySigna
 
 
 class MeanReversionStrategy(BaseStrategy):
-    """
-    均值回归策略
+    """均值回归策略
 
     核心逻辑：
     - 价格偏离均值过多时买入（超卖）
@@ -82,7 +80,6 @@ class MeanReversionStrategy(BaseStrategy):
         position: Optional[Dict[str, Any]] = None,
     ) -> Optional[StrategySignal]:
         """生成交易信号"""
-
         self.update_history(symbol, current_data)
 
         bb_period = self.parameters["bb_period"]

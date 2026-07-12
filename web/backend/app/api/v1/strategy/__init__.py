@@ -1,5 +1,4 @@
-"""
-策略模块API
+"""策略模块API
 
 提供机器学习策略和技术指标功能
 
@@ -11,4 +10,5 @@
 from .indicators import router as indicators_router
 from .machine_learning import router as ml_router
 
-__all__ = ["ml_router", "indicators_router"]
+
+__all__ = ["indicators_router", "ml_router"]

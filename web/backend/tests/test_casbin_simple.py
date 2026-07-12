@@ -1,5 +1,4 @@
-"""
-Casbin 简化版集成测试 (单用户系统)
+"""Casbin 简化版集成测试 (单用户系统)
 
 Simplified Casbin Integration Tests for Single-User System
 
@@ -10,7 +9,7 @@ Date: 2025-11-07
 """
 
 import pytest
-from fastapi import FastAPI, Depends
+from fastapi import Depends, FastAPI
 from fastapi.testclient import TestClient
 
 from app.core.casbin_manager import (
@@ -18,9 +17,9 @@ from app.core.casbin_manager import (
     reset_casbin_manager,
 )
 from app.core.casbin_middleware import (
-    require_permission,
     check_permission,
     get_current_role,
+    require_permission,
 )
 
 

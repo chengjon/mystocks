@@ -1,8 +1,7 @@
+"""策略管理数据源适配器
 """
-策略管理数据源适配器
-"""
-import time
 import logging
+import time
 from datetime import datetime
 from typing import Any, Dict
 
@@ -11,7 +10,9 @@ from app.services.data_source_interface import (
     HealthStatusEnum,
     IDataSource,
 )
+
 from .base import DataSourceMetrics
+
 
 logger = logging.getLogger(__name__)
 
@@ -68,8 +69,7 @@ class StrategyDataSourceAdapter(IDataSource):
                 if time.time() - cached_item["timestamp"] < self._cache_ttl:
                     self.metrics.record_success(time.time() - start_time)
                     return cached_item["data"]
-                else:
-                    del self._cache[cache_key]
+                del self._cache[cache_key]
 
             # 获取数据
             data = await self._fetch_strategy_data(endpoint, params)
@@ -110,7 +110,7 @@ class StrategyDataSourceAdapter(IDataSource):
                     "message": "获取策略定义成功",
                 }
 
-            elif endpoint.startswith("run/"):
+            if endpoint.startswith("run/"):
                 # 策略执行相关
                 if len(path_parts) >= 3 and path_parts[1] == "single":
                     # 单股策略执行 run/single/{strategy_code}/{symbol}
@@ -136,7 +136,7 @@ class StrategyDataSourceAdapter(IDataSource):
                         for symbol in symbols:
                             try:
                                 result = self._get_strategy_service().run_strategy_for_stock(
-                                    strategy_code=strategy_code, symbol=symbol
+                                    strategy_code=strategy_code, symbol=symbol,
                                 )
                                 results.append({"symbol": symbol, "success": True, "data": result})
                             except Exception as e:
@@ -145,7 +145,7 @@ class StrategyDataSourceAdapter(IDataSource):
                                         "symbol": symbol,
                                         "success": False,
                                         "error": str(e),
-                                    }
+                                    },
                                 )
 
                         return {
@@ -166,7 +166,7 @@ class StrategyDataSourceAdapter(IDataSource):
                     limit = params.get("limit", 50)
 
                     results = self._get_strategy_service().get_strategy_results(
-                        strategy_code=strategy_code, symbol=symbol, limit=limit
+                        strategy_code=strategy_code, symbol=symbol, limit=limit,
                     )
                     return {
                         "success": True,
@@ -234,7 +234,7 @@ class StrategyDataSourceAdapter(IDataSource):
                 }
 
             # Mock策略执行结果
-            elif endpoint.startswith("run/"):
+            if endpoint.startswith("run/"):
                 strategy_code = params.get("strategy_code", "volume_surge")
                 symbol = params.get("symbol", "000001")
 
@@ -269,7 +269,7 @@ class StrategyDataSourceAdapter(IDataSource):
                 return mock_result
 
             # Mock策略结果列表
-            elif endpoint.startswith("results/"):
+            if endpoint.startswith("results/"):
                 strategy_code = params.get("strategy_code", "volume_surge")
 
                 # 生成多个Mock结果
@@ -286,7 +286,7 @@ class StrategyDataSourceAdapter(IDataSource):
                             "confidence": round(random.uniform(0.6, 0.95), 2),
                             "price": round(random.uniform(10, 200), 2),
                             "change_percent": round(random.uniform(-5, 10), 2),
-                        }
+                        },
                     )
 
                 return {
@@ -345,7 +345,7 @@ class StrategyDataSourceAdapter(IDataSource):
             return HealthStatus(
                 status=HealthStatusEnum.FAILED,
                 response_time=0.0,
-                message=f"Strategy health check failed: {str(e)}",
+                message=f"Strategy health check failed: {e!s}",
                 timestamp=datetime.now(),
             )
 
@@ -355,4 +355,3 @@ class StrategyDataSourceAdapter(IDataSource):
 
     async def close(self):
         """关闭连接和清理资源"""
-        pass

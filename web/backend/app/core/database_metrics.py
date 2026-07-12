@@ -1,5 +1,4 @@
-"""
-Database Performance Metrics and Monitoring
+"""Database Performance Metrics and Monitoring
 Provides Prometheus metrics for database operations and query performance
 """
 
@@ -12,6 +11,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from prometheus_client import Counter, Gauge, Histogram, Summary
+
 
 logger = logging.getLogger(__name__)
 
@@ -153,7 +153,7 @@ class DatabaseMetricsCollector:
         DB_QUERY_DURATION.labels(database=self.database, query_type=query_type).observe(duration)
 
         DB_QUERY_COUNT.labels(
-            database=self.database, query_type=query_type, status="success" if success else "error"
+            database=self.database, query_type=query_type, status="success" if success else "error",
         ).inc()
 
         if rows >= 0:
@@ -233,7 +233,7 @@ class DatabaseMetricsCollector:
                         "avg_duration": metrics.avg_duration,
                         "max_duration": metrics.max_duration,
                         "p95_duration": metrics.p95_duration,
-                    }
+                    },
                 )
 
         return sorted(slow_queries, key=lambda x: x["avg_duration"], reverse=True)[:limit]
@@ -297,7 +297,7 @@ class QueryPerformanceLogger:
                         "type": query_type,
                         "timestamp": datetime.now().isoformat(),
                         "params": str(params) if params else None,
-                    }
+                    },
                 )
 
                 if len(self._slow_queries) > self._max_queries:

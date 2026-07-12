@@ -1,5 +1,4 @@
-"""
-API监控和指标收集模块
+"""API监控和指标收集模块
 支持请求追踪、性能监控、错误统计和数据质量指标
 """
 
@@ -9,6 +8,7 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
 import structlog
+
 
 logger = structlog.get_logger()
 
@@ -52,6 +52,7 @@ class APIMonitor:
 
         Args:
             history_limit: 保存的历史指标数量限制
+
         """
         self.history_limit = history_limit
         self.metrics: List[APIMetric] = []

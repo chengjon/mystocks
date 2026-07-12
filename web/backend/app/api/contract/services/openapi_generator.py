@@ -1,5 +1,4 @@
-"""
-OpenAPI Specification Generator
+"""OpenAPI Specification Generator
 
 Generates OpenAPI specification from FastAPI application routes.
 Enables Code-to-DB: Auto-generate OpenAPI spec from code routes.
@@ -13,6 +12,7 @@ from typing import Any, Dict, List, Optional, Type
 from fastapi import FastAPI
 from pydantic import BaseModel
 from starlette.routing import Route
+
 
 logger = logging.getLogger(__name__)
 
@@ -36,30 +36,29 @@ class EndpointInfo:
 
 
 class OpenAPIGenerator:
-    """
-    Generates OpenAPI specification from FastAPI application.
+    """Generates OpenAPI specification from FastAPI application.
 
     Performs Code-to-DB: Extracts API structure from code and generates OpenAPI spec.
     """
 
     def __init__(self, title: str = "MyStocks API", version: str = "1.0.0"):
-        """
-        Initialize OpenAPI generator.
+        """Initialize OpenAPI generator.
 
         Args:
             title: API title
             version: API version
+
         """
         self.title = title
         self.version = version
         self.endpoints: List[EndpointInfo] = []
 
     def scan_app(self, app: FastAPI) -> None:
-        """
-        Scan FastAPI application and extract endpoint information.
+        """Scan FastAPI application and extract endpoint information.
 
         Args:
             app: FastAPI application instance
+
         """
         self.endpoints = []
 
@@ -132,7 +131,7 @@ class OpenAPIGenerator:
                     "required": True,
                     "schema": {"type": type_map.get(param_type, "string")},
                     "description": f"Path parameter: {param_name}",
-                }
+                },
             )
 
         return params
@@ -163,11 +162,11 @@ class OpenAPIGenerator:
         return None
 
     def generate_spec(self) -> Dict[str, Any]:
-        """
-        Generate complete OpenAPI specification.
+        """Generate complete OpenAPI specification.
 
         Returns:
             OpenAPI specification dictionary
+
         """
         spec = {
             "openapi": "3.1.0",
@@ -198,7 +197,7 @@ class OpenAPIGenerator:
             if endpoint.method in ["POST", "PUT", "PATCH"] and endpoint.request_model:
                 request_schema = self._model_to_schema(endpoint.request_model)
                 spec["paths"][endpoint.path][endpoint.method.lower()].setdefault(
-                    "requestBody", {"required": True, "content": {"application/json": {"schema": request_schema}}}
+                    "requestBody", {"required": True, "content": {"application/json": {"schema": request_schema}}},
                 )
 
             # Add response schema
@@ -206,18 +205,18 @@ class OpenAPIGenerator:
                 response_schema = self._model_to_schema(endpoint.response_model)
                 if "200" in spec["paths"][endpoint.path][endpoint.method.lower()]["responses"]:
                     spec["paths"][endpoint.path][endpoint.method.lower()]["responses"]["200"]["content"] = {
-                        "application/json": {"schema": response_schema}
+                        "application/json": {"schema": response_schema},
                     }
 
         # Generate schemas
         for endpoint in self.endpoints:
             if endpoint.request_model:
                 spec["components"]["schemas"][endpoint.request_model.__name__] = self._model_to_schema(
-                    endpoint.request_model
+                    endpoint.request_model,
                 )
             if endpoint.response_model:
                 spec["components"]["schemas"][endpoint.response_model.__name__] = self._model_to_schema(
-                    endpoint.response_model
+                    endpoint.response_model,
                 )
 
         # Generate tags from endpoint tags
@@ -258,18 +257,18 @@ class OpenAPIGenerator:
         """Convert Python type to OpenAPI type string"""
         if typ is str:
             return "string"
-        elif typ is int:
+        if typ is int:
             return "integer"
-        elif typ is float:
+        if typ is float:
             return "number"
-        elif typ is bool:
+        if typ is bool:
             return "boolean"
-        elif hasattr(typ, "__origin__"):
+        if hasattr(typ, "__origin__"):
             # Generic types like List[str], Optional[str]
             origin = typ.__origin__
             if origin is list:
                 return "array"
-            elif origin is dict:
+            if origin is dict:
                 return "object"
         elif hasattr(typ, "__args__"):
             # Other generic types
@@ -300,12 +299,12 @@ Total endpoints: {len(self.endpoints)}
         """.strip()
 
     def save_spec(self, path: str, format: str = "yaml") -> None:
-        """
-        Save generated specification to file.
+        """Save generated specification to file.
 
         Args:
             path: Output file path
             format: Output format ('yaml' or 'json')
+
         """
         spec = self.generate_spec()
 
@@ -321,11 +320,11 @@ Total endpoints: {len(self.endpoints)}
         logger.info("Saved OpenAPI spec to %(path)s")
 
     def get_sync_report(self) -> Dict[str, Any]:
-        """
-        Get report of what would be synced.
+        """Get report of what would be synced.
 
         Returns:
             Sync report dictionary
+
         """
         return {
             "total_endpoints": len(self.endpoints),
@@ -350,8 +349,7 @@ Total endpoints: {len(self.endpoints)}
 
 
 def generate_openapi_from_app(app: FastAPI, title: str = "MyStocks API", version: str = "1.0.0") -> Dict[str, Any]:
-    """
-    Convenience function to generate OpenAPI spec from FastAPI app.
+    """Convenience function to generate OpenAPI spec from FastAPI app.
 
     Args:
         app: FastAPI application instance
@@ -360,6 +358,7 @@ def generate_openapi_from_app(app: FastAPI, title: str = "MyStocks API", version
 
     Returns:
         OpenAPI specification dictionary
+
     """
     generator = OpenAPIGenerator(title=title, version=version)
     generator.scan_app(app)

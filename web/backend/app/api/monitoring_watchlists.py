@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-监控清单管理 API
+"""监控清单管理 API
 提供投资组合/观察列表的 CRUD 操作
 
 API 端点:
@@ -28,6 +27,7 @@ from pydantic import BaseModel, Field, field_validator
 from app.core.exception_handlers import handle_exceptions
 from app.core.exceptions import BusinessException, NotFoundException
 from app.core.responses import UnifiedResponse
+
 
 logger = logging.getLogger(__name__)
 
@@ -176,7 +176,7 @@ def _build_runtime_watchlist_stocks() -> Dict[int, List[WatchlistStockResponse]]
                 target_price=228.00,
                 weight=1.00,
                 is_active=True,
-            )
+            ),
         ],
     }
 
@@ -381,8 +381,7 @@ async def create_watchlist(
     request: CreateWatchlistRequest,
     user_id: int = Query(1, description="用户ID"),
 ) -> UnifiedResponse[WatchlistResponse]:
-    """
-    创建监控清单
+    """创建监控清单
 
     - **name**: 清单名称
     - **watchlist_type**: 清单类型 (manual/strategy/benchmark)
@@ -431,7 +430,7 @@ async def create_watchlist(
             logger.warning("创建监控清单降级到 runtime fallback: %s", str(e))
             return UnifiedResponse(data=_create_runtime_watchlist(request, user_id), message="创建清单成功")
         logger.error("创建监控清单失败: %(e)s")
-        raise BusinessException(detail=f"创建失败: {str(e)}", status_code=500, error_code="WATCHLIST_CREATION_FAILED")
+        raise BusinessException(detail=f"创建失败: {e!s}", status_code=500, error_code="WATCHLIST_CREATION_FAILED")
 
 
 @router.get("", response_model=UnifiedResponse[List[WatchlistResponse]])
@@ -439,8 +438,7 @@ async def create_watchlist(
 async def list_watchlists(
     user_id: int = Query(1, description="用户ID"),
 ) -> UnifiedResponse[List[WatchlistResponse]]:
-    """
-    获取用户的所有监控清单
+    """获取用户的所有监控清单
     """
     try:
         from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
@@ -471,7 +469,7 @@ async def list_watchlists(
                     created_at=w["created_at"],
                     updated_at=w["updated_at"],
                     stocks_count=len(stocks),
-                )
+                ),
             )
 
         return UnifiedResponse(data=results, message="获取清单列表成功")
@@ -483,7 +481,7 @@ async def list_watchlists(
             logger.warning("获取监控清单列表降级到 runtime fallback: %s", str(e))
             return UnifiedResponse(data=_get_runtime_watchlists(user_id), message="获取清单列表成功")
         logger.error("获取监控清单列表失败: %(e)s")
-        raise BusinessException(detail=f"获取失败: {str(e)}", status_code=500, error_code="WATCHLIST_RETRIEVAL_FAILED")
+        raise BusinessException(detail=f"获取失败: {e!s}", status_code=500, error_code="WATCHLIST_RETRIEVAL_FAILED")
 
 
 @router.get("/{watchlist_id}", response_model=UnifiedResponse[WatchlistResponse])
@@ -492,8 +490,7 @@ async def get_watchlist(
     watchlist_id: int = Path(..., description="清单ID"),
     user_id: int = Query(1, description="用户ID"),
 ) -> UnifiedResponse[WatchlistResponse]:
-    """
-    获取单个监控清单详情
+    """获取单个监控清单详情
     """
     try:
         from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
@@ -533,7 +530,7 @@ async def get_watchlist(
         raise
     except Exception as e:
         logger.error("获取监控清单失败: %(e)s")
-        raise BusinessException(detail=f"获取失败: {str(e)}", status_code=500, error_code="WATCHLIST_RETRIEVAL_FAILED")
+        raise BusinessException(detail=f"获取失败: {e!s}", status_code=500, error_code="WATCHLIST_RETRIEVAL_FAILED")
 
 
 @router.put("/{watchlist_id}", response_model=UnifiedResponse[WatchlistResponse])
@@ -543,8 +540,7 @@ async def update_watchlist(
     request: UpdateWatchlistRequest = Body(...),
     user_id: int = Query(1, description="用户ID"),
 ) -> UnifiedResponse[WatchlistResponse]:
-    """
-    更新监控清单
+    """更新监控清单
     """
     try:
         from src.monitoring.infrastructure.postgresql_async_v3 import WatchlistUpdate, get_postgres_async
@@ -608,7 +604,7 @@ async def update_watchlist(
             if fallback_watchlist is not None:
                 return UnifiedResponse(data=fallback_watchlist, message="更新清单成功")
         logger.error("更新监控清单失败: %(e)s")
-        raise BusinessException(detail=f"更新失败: {str(e)}", status_code=500, error_code="WATCHLIST_UPDATE_FAILED")
+        raise BusinessException(detail=f"更新失败: {e!s}", status_code=500, error_code="WATCHLIST_UPDATE_FAILED")
 
 
 @router.delete("/{watchlist_id}", response_model=UnifiedResponse[None])
@@ -617,8 +613,7 @@ async def delete_watchlist(
     watchlist_id: int = Path(..., description="清单ID"),
     user_id: int = Query(1, description="用户ID"),
 ) -> UnifiedResponse[None]:
-    """
-    删除监控清单（级联删除成员）
+    """删除监控清单（级联删除成员）
     """
     try:
         from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
@@ -649,7 +644,7 @@ async def delete_watchlist(
         raise
     except Exception as e:
         logger.error("删除监控清单失败: %(e)s")
-        raise BusinessException(detail=f"删除失败: {str(e)}", status_code=500, error_code="WATCHLIST_DELETION_FAILED")
+        raise BusinessException(detail=f"删除失败: {e!s}", status_code=500, error_code="WATCHLIST_DELETION_FAILED")
 
 
 @router.post("/{watchlist_id}/stocks", response_model=UnifiedResponse[WatchlistStockResponse])
@@ -659,8 +654,7 @@ async def add_stock_to_watchlist(
     request: AddStockRequest = None,
     user_id: int = Query(1, description="用户ID"),
 ) -> UnifiedResponse[WatchlistStockResponse]:
-    """
-    添加股票到清单
+    """添加股票到清单
     """
     try:
         from src.monitoring.infrastructure.postgresql_async_v3 import StockToAdd, get_postgres_async
@@ -693,7 +687,7 @@ async def add_stock_to_watchlist(
                 stop_loss_price=request.stop_loss_price,
                 target_price=request.target_price,
                 weight=request.weight or 0.0,
-            )
+            ),
         )
 
         stocks = await postgres_async.get_watchlist_stocks(watchlist_id)
@@ -725,7 +719,7 @@ async def add_stock_to_watchlist(
                 logger.warning("添加股票降级到 runtime fallback: %s", str(e))
                 return UnifiedResponse(data=fallback_stock, message="添加股票成功")
         logger.error("添加股票到清单失败: %(e)s")
-        raise BusinessException(detail=f"添加失败: {str(e)}", status_code=500, error_code="STOCK_ADDITION_FAILED")
+        raise BusinessException(detail=f"添加失败: {e!s}", status_code=500, error_code="STOCK_ADDITION_FAILED")
 
 
 @router.get("/{watchlist_id}/stocks", response_model=UnifiedResponse[List[WatchlistStockResponse]])
@@ -734,8 +728,7 @@ async def list_watchlist_stocks(
     watchlist_id: int = Path(..., description="清单ID"),
     user_id: int = Query(1, description="用户ID"),
 ) -> UnifiedResponse[List[WatchlistStockResponse]]:
-    """
-    获取清单中的所有股票
+    """获取清单中的所有股票
     """
     try:
         from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
@@ -776,7 +769,7 @@ async def list_watchlist_stocks(
                     target_price=s["target_price"],
                     weight=s["weight"],
                     is_active=s["is_active"],
-                )
+                ),
             )
 
         return UnifiedResponse(data=results, message="获取股票列表成功")
@@ -790,7 +783,7 @@ async def list_watchlist_stocks(
                 logger.warning("获取清单股票列表降级到 runtime fallback: %s", str(e))
                 return UnifiedResponse(data=fallback_rows, message="获取股票列表成功")
         logger.error("获取清单股票列表失败: %(e)s")
-        raise BusinessException(detail=f"获取失败: {str(e)}", status_code=500, error_code="WATCHLIST_RETRIEVAL_FAILED")
+        raise BusinessException(detail=f"获取失败: {e!s}", status_code=500, error_code="WATCHLIST_RETRIEVAL_FAILED")
 
 
 @router.delete("/{watchlist_id}/stocks/{stock_code}", response_model=UnifiedResponse[None])
@@ -800,8 +793,7 @@ async def remove_stock_from_watchlist(
     stock_code: str = Path(..., description="股票代码"),
     user_id: int = Query(1, description="用户ID"),
 ) -> UnifiedResponse[None]:
-    """
-    从清单中移除股票
+    """从清单中移除股票
     """
     try:
         from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
@@ -823,4 +815,4 @@ async def remove_stock_from_watchlist(
             logger.warning("移除股票降级到 runtime fallback: %s", str(e))
             return UnifiedResponse(message="移除股票成功")
         logger.error("从清单移除股票失败: %(e)s")
-        raise BusinessException(detail=f"移除失败: {str(e)}", status_code=500, error_code="STOCK_REMOVAL_FAILED")
+        raise BusinessException(detail=f"移除失败: {e!s}", status_code=500, error_code="STOCK_REMOVAL_FAILED")

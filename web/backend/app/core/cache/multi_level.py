@@ -1,5 +1,4 @@
-"""
-Multi-Level Cache Manager for MyStocks
+"""Multi-Level Cache Manager for MyStocks
 Implements L1 (memory) and L2 (Redis) caching with circuit breaker protection
 """
 
@@ -13,7 +12,9 @@ from typing import Any, Callable, Optional
 
 import redis.asyncio as redis
 from prometheus_client import Counter, Gauge, Histogram
+
 from src.utils.redis_runtime_config import get_redis_url_for_role
+
 
 logger = logging.getLogger(__name__)
 
@@ -254,8 +255,7 @@ class MultiLevelCache:
                 self._redis_connected = False
 
     async def get(self, key: str) -> tuple[Optional[Any], bool, str]:
-        """
-        获取缓存值
+        """获取缓存值
         Returns: (value, found, cache_level)
         """
         start_time = time.perf_counter()
@@ -264,7 +264,7 @@ class MultiLevelCache:
             memory_result = await self._memory_cache.get(key)
             if memory_result is not None:
                 CACHE_OPERATION_LATENCY.labels(operation="get", level="memory").observe(
-                    time.perf_counter() - start_time
+                    time.perf_counter() - start_time,
                 )
                 return memory_result, True, "memory"
 

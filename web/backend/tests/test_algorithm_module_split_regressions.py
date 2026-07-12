@@ -5,14 +5,15 @@ import sys
 from pathlib import Path
 from types import ModuleType
 
-from pydantic import BaseModel
 from fastapi import APIRouter
+from pydantic import BaseModel
+
 
 LINE_LIMIT = 850
 
 
 def _line_count(path: str) -> int:
-    with open(path, "r", encoding="utf-8") as file:
+    with open(path, encoding="utf-8") as file:
         return sum(1 for _ in file)
 
 

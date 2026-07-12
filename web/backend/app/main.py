@@ -1,16 +1,14 @@
-"""
-FastAPI 主应用入口
+"""FastAPI 主应用入口
 MyStocks Web 管理界面后端服务 - Week 3 简化版 (PostgreSQL-only)
 """
 
+import asyncio
 import logging
 import os
 import secrets
 import time
-import asyncio
 from contextlib import asynccontextmanager
 
-import structlog
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
@@ -26,13 +24,13 @@ from .core.config import settings, validate_required_settings
 
 # 导入数据库连接管理
 from .core.database import close_all_connections, get_postgresql_engine
-from .core.readiness import collect_readiness_checks
 
 # 导入全局异常处理器 (Phase 3 - API契约标准化)
 from .core.exception_handler import register_exception_handlers
 
 # 导入性能监控中间件 (Phase 5)
 from .core.middleware.performance import PerformanceMiddleware, metrics_endpoint
+from .core.readiness import collect_readiness_checks
 
 # 导入Socket.IO服务器管理器
 from .core.socketio_manager import get_socketio_manager
@@ -43,6 +41,7 @@ from .middleware.response_format import ResponseFormatMiddleware
 # 导入OpenAPI配置
 from .openapi_config import get_openapi_config
 from .router_registry import register_api_routes
+
 
 # 导入缓存淘汰调度器
 # from .core.cache_eviction import get_eviction_scheduler, reset_eviction_scheduler  # 临时禁用
@@ -333,6 +332,7 @@ app = FastAPI(
 # 挂载 Swagger UI 静态文件（来自 swagger-ui-py 包）
 import swagger_ui
 
+
 swagger_ui_path = os.path.join(os.path.dirname(swagger_ui.__file__), "static")
 app.mount(
     "/swagger-ui-static",
@@ -375,15 +375,16 @@ app.add_middleware(PerformanceMiddleware)
 
 # 配置统一响应格式中间件 (API标准化)
 # 负责自动包装 UnifiedResponse
-from .middleware.response_format import ResponseFormatMiddleware
 app.add_middleware(ResponseFormatMiddleware)
 
 # Phase Security: 配置速率限制中间件 (防止暴力破解)
 # 【设计边界】本地部署默认禁用，仅公网暴露时通过 RATE_LIMIT_ENABLED=true 启用
 import os as _os
 
+
 _rate_limit_enabled = _os.getenv("RATE_LIMIT_ENABLED", "false").lower() == "true"
 from .core.rate_limit import RateLimitConfig, setup_rate_limiting
+
 
 rate_limit_config = RateLimitConfig(
     enabled=_rate_limit_enabled,  # 默认禁用，本地部署不需要
@@ -414,14 +415,14 @@ logger.info("✅ Socket.IO服务器已挂载")
 # SECURITY FIX 1.2: CSRF验证中间件
 @app.middleware("http")
 async def csrf_protection_middleware(request: Request, call_next):
-    """
-    CSRF保护中间件 - 验证修改操作的CSRF token
+    """CSRF保护中间件 - 验证修改操作的CSRF token
     SECURITY: 所有POST/PUT/PATCH/DELETE请求都需要有效的CSRF token
 
-    NOTE:
+    Note:
     - 在测试环境（testing=True）中自动禁用CSRF保护
     - 可通过csrf_enabled配置显式控制（默认True）
     - 测试环境会记录调试日志但不阻止请求
+
     """
     from app.core.config import settings
 
@@ -492,7 +493,7 @@ async def log_requests(request: Request, call_next):
 
     # 记录请求信息
     logger.info(
-        f"HTTP request started: method={request.method} url={str(request.url)} client_host={request.client.host}"
+        f"HTTP request started: method={request.method} url={request.url!s} client_host={request.client.host}",
     )
 
     response = await call_next(request)
@@ -500,7 +501,7 @@ async def log_requests(request: Request, call_next):
     # 记录响应信息
     process_time = time.time() - start_time
     logger.info(
-        f"HTTP request completed: method={request.method} url={str(request.url)} status_code={response.status_code} process_time={round(process_time, 3)}"
+        f"HTTP request completed: method={request.method} url={request.url!s} status_code={response.status_code} process_time={round(process_time, 3)}",
     )
 
     return response
@@ -584,8 +585,7 @@ async def socketio_status():
 # SECURITY FIX 1.2: CSRF Token 端点
 @app.get("/api/csrf-token")
 async def get_csrf_token(request: Request):
-    """
-    获取CSRF Token端点
+    """获取CSRF Token端点
     SECURITY: 前端应在应用启动时调用此端点获取CSRF token
     返回一个新的CSRF token供后续修改操作使用
     """
@@ -636,8 +636,7 @@ async def root(request: Request):
 # 自定义 Swagger UI 端点（使用本地静态文件）
 @app.get("/api/docs", include_in_schema=False)
 async def custom_swagger_ui_html():
-    """
-    自定义 Swagger UI 页面 - 使用本地静态文件
+    """自定义 Swagger UI 页面 - 使用本地静态文件
     解决 CDN 被墙问题
     """
     return get_swagger_ui_html(
@@ -652,8 +651,7 @@ async def custom_swagger_ui_html():
 # 自定义 ReDoc 端点（多 CDN 回退 + 本地支持）
 @app.get("/api/redoc", include_in_schema=False)
 async def custom_redoc_html():
-    """
-    自定义 ReDoc 页面 - 支持多 CDN 回退机制
+    """自定义 ReDoc 页面 - 支持多 CDN 回退机制
     CDN 源顺序：jsDelivr → unpkg → Redocly → 本地
     如果所有 CDN 失败，提供替代方案指引
     """
@@ -667,7 +665,7 @@ async def custom_redoc_html():
 
     # 渲染模板变量
     html_content = template_content.replace("{{title}}", openapi_config["title"]).replace(
-        "{{openapi_url}}", "/openapi.json"
+        "{{openapi_url}}", "/openapi.json",
     )
 
     return HTMLResponse(content=html_content)

@@ -5,8 +5,8 @@ from typing import Any
 
 from sqlalchemy import text
 
-from app.core.database import get_postgresql_engine
 from app.core.config import settings
+from app.core.database import get_postgresql_engine
 
 
 def check_postgresql_readiness() -> dict[str, Any]:

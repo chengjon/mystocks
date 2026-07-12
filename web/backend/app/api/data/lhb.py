@@ -1,10 +1,12 @@
-"""
-龙虎榜数据路由 (Dragon Tiger)
+"""龙虎榜数据路由 (Dragon Tiger)
 """
 from typing import Any, Dict
-from fastapi import APIRouter, Depends, Query, HTTPException
-from app.core.security import User, get_current_user
+
+from fastapi import APIRouter, Depends, HTTPException, Query
+
 from app.core.responses import UnifiedResponse, ok, server_error
+from app.core.security import User, get_current_user
+
 
 router = APIRouter()
 

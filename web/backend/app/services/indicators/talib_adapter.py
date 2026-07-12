@@ -1,5 +1,4 @@
-"""
-TA-Lib Indicator Adapter
+"""TA-Lib Indicator Adapter
 ========================
 
 Generic adapter for TA-Lib indicators to work with the V2 Indicator System.
@@ -23,12 +22,12 @@ from .indicator_interface import (
 )
 from .indicator_registry import get_indicator_registry
 
+
 logger = logging.getLogger(__name__)
 
 
 class TalibGenericIndicator(IndicatorInterface):
-    """
-    通用TA-Lib指标适配器
+    """通用TA-Lib指标适配器
 
     根据Registry中的元数据，动态适配TA-Lib函数调用。
     """
@@ -47,8 +46,7 @@ class TalibGenericIndicator(IndicatorInterface):
         self.CHINESE_NAME = self._meta.chinese_name
 
     def calculate(self, data: OHLCVData, parameters: Dict[str, Any]) -> IndicatorResult:
-        """
-        计算指标
+        """计算指标
 
         Args:
             data: OHLCV数据
@@ -56,6 +54,7 @@ class TalibGenericIndicator(IndicatorInterface):
 
         Returns:
             IndicatorResult: 计算结果
+
         """
         # 1. 验证参数
         try:
@@ -97,11 +96,10 @@ class TalibGenericIndicator(IndicatorInterface):
             return self._create_success_result(parameters, values)
         except Exception as e:
             logger.error(f"Calculation failed for {self.ABBREVIATION}: {e}")
-            return self._create_error_result(parameters, f"TA-Lib calculation failed: {str(e)}")
+            return self._create_error_result(parameters, f"TA-Lib calculation failed: {e!s}")
 
     def _call_talib(self, data: OHLCVData, parameters: Dict[str, Any]) -> Dict[str, np.ndarray]:
         """调用底层的TA-Lib函数 (逻辑复用自V1 Calculator)"""
-
         # 准备数据
         # 注意: TA-Lib需要double类型
         close = data.close.astype(np.double)
@@ -116,13 +114,13 @@ class TalibGenericIndicator(IndicatorInterface):
         if abbr == "SMA":
             return {"sma": talib.SMA(close, timeperiod=parameters.get("timeperiod", 20))}
 
-        elif abbr == "EMA":
+        if abbr == "EMA":
             return {"ema": talib.EMA(close, timeperiod=parameters.get("timeperiod", 20))}
 
-        elif abbr == "WMA":
+        if abbr == "WMA":
             return {"wma": talib.WMA(close, timeperiod=parameters.get("timeperiod", 20))}
 
-        elif abbr == "MACD":
+        if abbr == "MACD":
             macd, signal, hist = talib.MACD(
                 close,
                 fastperiod=parameters.get("fastperiod", 12),
@@ -131,7 +129,7 @@ class TalibGenericIndicator(IndicatorInterface):
             )
             return {"macd": macd, "signal": signal, "hist": hist}
 
-        elif abbr == "BBANDS":
+        if abbr == "BBANDS":
             upper, middle, lower = talib.BBANDS(
                 close,
                 timeperiod=parameters.get("timeperiod", 20),
@@ -140,21 +138,21 @@ class TalibGenericIndicator(IndicatorInterface):
             )
             return {"upperband": upper, "middleband": middle, "lowerband": lower}
 
-        elif abbr == "SAR":
+        if abbr == "SAR":
             return {
                 "sar": talib.SAR(
-                    high, low, acceleration=parameters.get("acceleration", 0.02), maximum=parameters.get("maximum", 0.2)
-                )
+                    high, low, acceleration=parameters.get("acceleration", 0.02), maximum=parameters.get("maximum", 0.2),
+                ),
             }
 
-        elif abbr == "ADX":
+        if abbr == "ADX":
             return {"adx": talib.ADX(high, low, close, timeperiod=parameters.get("timeperiod", 14))}
 
         # --- 动量指标 ---
-        elif abbr == "RSI":
+        if abbr == "RSI":
             return {"rsi": talib.RSI(close, timeperiod=parameters.get("timeperiod", 14))}
 
-        elif abbr == "STOCH":
+        if abbr == "STOCH":
             slowk, slowd = talib.STOCH(
                 high,
                 low,
@@ -165,39 +163,39 @@ class TalibGenericIndicator(IndicatorInterface):
             )
             return {"slowk": slowk, "slowd": slowd}
 
-        elif abbr == "CCI":
+        if abbr == "CCI":
             return {"cci": talib.CCI(high, low, close, timeperiod=parameters.get("timeperiod", 14))}
 
-        elif abbr == "MFI":
+        if abbr == "MFI":
             return {"mfi": talib.MFI(high, low, close, volume, timeperiod=parameters.get("timeperiod", 14))}
 
-        elif abbr == "WILLR":
+        if abbr == "WILLR":
             return {"willr": talib.WILLR(high, low, close, timeperiod=parameters.get("timeperiod", 14))}
 
-        elif abbr == "ROC":
+        if abbr == "ROC":
             return {"roc": talib.ROC(close, timeperiod=parameters.get("timeperiod", 10))}
 
-        elif abbr == "MOM":
+        if abbr == "MOM":
             return {"mom": talib.MOM(close, timeperiod=parameters.get("timeperiod", 10))}
 
         # --- 波动率指标 ---
-        elif abbr == "ATR":
+        if abbr == "ATR":
             return {"atr": talib.ATR(high, low, close, timeperiod=parameters.get("timeperiod", 14))}
 
-        elif abbr == "NATR":
+        if abbr == "NATR":
             return {"natr": talib.NATR(high, low, close, timeperiod=parameters.get("timeperiod", 14))}
 
-        elif abbr == "TRANGE":
+        if abbr == "TRANGE":
             return {"trange": talib.TRANGE(high, low, close)}
 
         # --- 成交量指标 ---
-        elif abbr == "OBV":
+        if abbr == "OBV":
             return {"obv": talib.OBV(close, volume)}
 
-        elif abbr == "AD":
+        if abbr == "AD":
             return {"ad": talib.AD(high, low, close, volume)}
 
-        elif abbr == "ADOSC":
+        if abbr == "ADOSC":
             return {
                 "adosc": talib.ADOSC(
                     high,
@@ -206,21 +204,20 @@ class TalibGenericIndicator(IndicatorInterface):
                     volume,
                     fastperiod=parameters.get("fastperiod", 3),
                     slowperiod=parameters.get("slowperiod", 10),
-                )
+                ),
             }
 
         # --- K线形态 ---
-        elif abbr == "CDLDOJI":
+        if abbr == "CDLDOJI":
             return {"pattern": talib.CDLDOJI(open_price, high, low, close)}
 
-        elif abbr == "CDLHAMMER":
+        if abbr == "CDLHAMMER":
             return {"pattern": talib.CDLHAMMER(open_price, high, low, close)}
 
-        elif abbr == "CDLENGULFING":
+        if abbr == "CDLENGULFING":
             return {"pattern": talib.CDLENGULFING(open_price, high, low, close)}
 
-        else:
-            raise NotImplementedError(f"Logic for {abbr} not implemented in adapter")
+        raise NotImplementedError(f"Logic for {abbr} not implemented in adapter")
 
     def get_parameter_defaults(self) -> Dict[str, Any]:
         """获取参数默认值"""
@@ -231,8 +228,7 @@ class TalibGenericIndicator(IndicatorInterface):
 
 
 def register_all_talib_indicators():
-    """
-    注册所有支持的TA-Lib指标到Factory
+    """注册所有支持的TA-Lib指标到Factory
     """
     registry = get_indicator_registry()
     supported_indicators = [

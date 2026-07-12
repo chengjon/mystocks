@@ -1,5 +1,4 @@
-"""
-技术指标API Schemas (Pydantic模型)
+"""技术指标API Schemas (Pydantic模型)
 
 用于FastAPI请求验证和响应序列化:
 - OverlayIndicator: 主图叠加指标 (MA/EMA/BOLL)
@@ -12,6 +11,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field, field_validator
+
 
 # ==================== Overlay Indicators (主图叠加指标) ====================
 
@@ -86,7 +86,7 @@ class OverlayIndicatorResponse(BaseModel):
                 "indicator_name": "MA20",
                 "values": [{"timestamp": 1640995200000, "value": 10.5}],
                 "params": {"period": 20, "price_type": "close"},
-            }
+            },
         }
 
 

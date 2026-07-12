@@ -1,5 +1,4 @@
-"""
-连接池监控API - Phase 3 Task 19
+"""连接池监控API - Phase 3 Task 19
 提供PostgreSQL和TDengine连接池状态监控端点
 
 Features:
@@ -18,14 +17,14 @@ from fastapi import APIRouter, HTTPException
 from app.core.database import get_postgresql_engine
 from app.core.tdengine_manager import get_tdengine_manager
 
+
 router = APIRouter(prefix="/pool-monitoring", tags=["Connection Pool Monitoring"])
 logger = structlog.get_logger()
 
 
 @router.get("/postgresql/stats", summary="PostgreSQL连接池统计")
 async def get_postgresql_pool_stats() -> Dict[str, Any]:
-    """
-    获取PostgreSQL连接池统计信息
+    """获取PostgreSQL连接池统计信息
 
     Returns:
         - pool_size: 当前连接池大小
@@ -34,6 +33,7 @@ async def get_postgresql_pool_stats() -> Dict[str, Any]:
         - overflow: 溢出连接数
         - pool_status: 连接池状态描述
         - timestamp: 查询时间戳
+
     """
     try:
         engine = get_postgresql_engine()
@@ -68,13 +68,12 @@ async def get_postgresql_pool_stats() -> Dict[str, Any]:
 
     except Exception as e:
         logger.error("获取PostgreSQL连接池统计失败", error=str(e))
-        raise HTTPException(status_code=500, detail=f"获取统计信息失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取统计信息失败: {e!s}")
 
 
 @router.get("/tdengine/stats", summary="TDengine连接池统计")
 async def get_tdengine_pool_stats() -> Dict[str, Any]:
-    """
-    获取TDengine连接池统计信息
+    """获取TDengine连接池统计信息
 
     Returns:
         - total_created: 总创建连接数
@@ -86,6 +85,7 @@ async def get_tdengine_pool_stats() -> Dict[str, Any]:
         - connection_errors: 连接错误次数
         - pool_size: 当前连接池大小
         - timestamp: 查询时间戳
+
     """
     try:
         tdengine_mgr = get_tdengine_manager()
@@ -135,19 +135,19 @@ async def get_tdengine_pool_stats() -> Dict[str, Any]:
         raise
     except Exception as e:
         logger.error("获取TDengine连接池统计失败", error=str(e))
-        raise HTTPException(status_code=500, detail=f"获取统计信息失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取统计信息失败: {e!s}")
 
 
 @router.get("/health", summary="连接池综合健康检查")
 async def connection_pools_health_check() -> Dict[str, Any]:
-    """
-    检查所有连接池的健康状态
+    """检查所有连接池的健康状态
 
     Returns:
         - postgresql: PostgreSQL连接池健康状态
         - tdengine: TDengine连接池健康状态
         - overall_status: 总体健康状态
         - timestamp: 检查时间戳
+
     """
     result = {
         "postgresql": {"status": "unknown", "details": {}},
@@ -208,8 +208,7 @@ async def connection_pools_health_check() -> Dict[str, Any]:
 
 @router.get("/alerts", summary="连接池告警检测")
 async def check_connection_pool_alerts() -> Dict[str, Any]:
-    """
-    检测连接池是否存在需要告警的情况
+    """检测连接池是否存在需要告警的情况
 
     告警条件:
     - 连接池使用率 > 80%
@@ -220,6 +219,7 @@ async def check_connection_pool_alerts() -> Dict[str, Any]:
         - has_alerts: 是否存在告警
         - alerts: 告警列表
         - timestamp: 检查时间戳
+
     """
     alerts = []
     timestamp = datetime.now(timezone.utc).isoformat()
@@ -236,7 +236,7 @@ async def check_connection_pool_alerts() -> Dict[str, Any]:
                     "value": pg_stats["usage_percentage"],
                     "threshold": 80,
                     "message": f"PostgreSQL连接池使用率高达{pg_stats['usage_percentage']}%",
-                }
+                },
             )
     except Exception as e:
         alerts.append(
@@ -244,8 +244,8 @@ async def check_connection_pool_alerts() -> Dict[str, Any]:
                 "level": "error",
                 "component": "postgresql",
                 "metric": "availability",
-                "message": f"PostgreSQL连接池不可用: {str(e)}",
-            }
+                "message": f"PostgreSQL连接池不可用: {e!s}",
+            },
         )
 
     # 检查TDengine连接池
@@ -263,7 +263,7 @@ async def check_connection_pool_alerts() -> Dict[str, Any]:
                     "value": usage,
                     "threshold": 80,
                     "message": f"TDengine连接池使用率高达{usage}%",
-                }
+                },
             )
 
         # 错误率告警
@@ -277,7 +277,7 @@ async def check_connection_pool_alerts() -> Dict[str, Any]:
                     "value": error_rate,
                     "threshold": 5,
                     "message": f"TDengine连接错误率高达{error_rate}%",
-                }
+                },
             )
 
         # 超时率告警
@@ -291,7 +291,7 @@ async def check_connection_pool_alerts() -> Dict[str, Any]:
                     "value": timeout_rate,
                     "threshold": 2,
                     "message": f"TDengine连接超时率高达{timeout_rate}%",
-                }
+                },
             )
 
     except HTTPException:
@@ -303,8 +303,8 @@ async def check_connection_pool_alerts() -> Dict[str, Any]:
                 "level": "error",
                 "component": "tdengine",
                 "metric": "availability",
-                "message": f"TDengine连接池不可用: {str(e)}",
-            }
+                "message": f"TDengine连接池不可用: {e!s}",
+            },
         )
 
     return {

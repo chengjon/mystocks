@@ -3,12 +3,12 @@
 import logging
 import os
 import random
-import time
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 from ._watchlist_data import get_watchlist_mock_data
+
 
 logger = logging.getLogger(__name__)
 
@@ -21,11 +21,11 @@ class UnifiedMockDataManager:
     """统一Mock数据管理器"""
 
     def __init__(self, use_mock_data: bool = None):
-        """
-        初始化Mock数据管理器
+        """初始化Mock数据管理器
 
         Args:
             use_mock_data: 是否使用Mock数据，如果为None则从环境变量读取
+
         """
         # 从环境变量获取数据源配置
         self.use_mock_data = use_mock_data or os.getenv("USE_MOCK_DATA", "false").lower() == "true"
@@ -41,8 +41,7 @@ class UnifiedMockDataManager:
         logger.info("初始化Mock数据管理器，使用Mock数据: {self.use_mock_data}")
 
     def get_data(self, data_type: str, **kwargs) -> Dict[str, Any]:
-        """
-        获取统一数据接口
+        """获取统一数据接口
 
         Args:
             data_type: 数据类型 (dashboard, stocks, technical, wencai, strategy, monitoring)
@@ -50,8 +49,9 @@ class UnifiedMockDataManager:
 
         Returns:
             数据响应
+
         """
-        cache_key = f"{data_type}:{str(kwargs)}"
+        cache_key = f"{data_type}:{kwargs!s}"
 
         # 检查缓存
         if self._is_cache_valid(cache_key):
@@ -77,8 +77,7 @@ class UnifiedMockDataManager:
             if not self.use_mock_data:
                 logger.warning("降级到Mock数据: %(data_type)s")
                 return self._get_mock_data(data_type, **kwargs)
-            else:
-                raise
+            raise
 
     def _get_mock_data(self, data_type: str, **kwargs) -> Dict[str, Any]:
         """获取Mock数据"""
@@ -105,7 +104,7 @@ class UnifiedMockDataManager:
                     "timestamp": datetime.now().isoformat(),
                 }
 
-            elif data_type == "stocks":
+            if data_type == "stocks":
                 from src.mock.mock_Stocks import get_stock_list
 
                 page = kwargs.get("page", 1)
@@ -122,7 +121,7 @@ class UnifiedMockDataManager:
                     "timestamp": datetime.now().isoformat(),
                 }
 
-            elif data_type == "technical":
+            if data_type == "technical":
                 try:
                     import sys
 
@@ -188,7 +187,7 @@ class UnifiedMockDataManager:
                     "timestamp": datetime.now().isoformat(),
                 }
 
-            elif data_type == "wencai":
+            if data_type == "wencai":
                 from src.mock.mock_Wencai import get_query_results, get_wencai_queries
 
                 query_name = kwargs.get("query_name", "qs_1")
@@ -199,14 +198,13 @@ class UnifiedMockDataManager:
                         "queries": queries.get("queries", []),
                         "timestamp": datetime.now().isoformat(),
                     }
-                else:
-                    query_result = get_query_results(query_name=query_name, limit=20, offset=0)
-                    return {
-                        "query_result": query_result,
-                        "timestamp": datetime.now().isoformat(),
-                    }
+                query_result = get_query_results(query_name=query_name, limit=20, offset=0)
+                return {
+                    "query_result": query_result,
+                    "timestamp": datetime.now().isoformat(),
+                }
 
-            elif data_type == "strategy":
+            if data_type == "strategy":
                 from src.mock.mock_StrategyManagement import (
                     get_strategy_definitions,
                     get_strategy_results,
@@ -222,13 +220,13 @@ class UnifiedMockDataManager:
                         "total": len(strategies.get("strategies", [])),
                         "timestamp": datetime.now().isoformat(),
                     }
-                elif action == "list":
+                if action == "list":
                     strategies = get_strategy_definitions()
                     return {
                         "strategies": strategies.get("strategies", []),
                         "timestamp": datetime.now().isoformat(),
                     }
-                elif action == "run":
+                if action == "run":
                     strategy_name = kwargs.get("strategy_name")
                     symbols = kwargs.get("symbols", [])
 
@@ -238,7 +236,7 @@ class UnifiedMockDataManager:
                             "symbols": symbols,
                             "start_date": kwargs.get("start_date"),
                             "end_date": kwargs.get("end_date"),
-                        }
+                        },
                     )
                     return {
                         "strategy_result": result,
@@ -338,7 +336,7 @@ class UnifiedMockDataManager:
                                 "name": "平安银行",
                                 "current": 15.32,
                                 "change": 0.45,
-                            }
+                            },
                         ],
                         "total": 1,
                         "timestamp": datetime.now().isoformat(),

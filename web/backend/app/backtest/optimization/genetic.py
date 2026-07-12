@@ -1,5 +1,4 @@
-"""
-Genetic Algorithm Optimizer
+"""Genetic Algorithm Optimizer
 
 遗传算法优化器 - 模拟生物进化的优化方法
 """
@@ -16,6 +15,7 @@ from app.backtest.optimization.base import (
     ParameterSpace,
 )
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -23,9 +23,9 @@ class Individual:
     """个体 (代表一个参数组合)"""
 
     def __init__(self, genes: Dict[str, Any]):
-        """
-        Args:
-            genes: 基因 (参数字典)
+        """Args:
+        genes: 基因 (参数字典)
+
         """
         self.genes = genes
         self.fitness: float = 0.0
@@ -36,8 +36,7 @@ class Individual:
 
 
 class GeneticOptimizer(BaseOptimizer):
-    """
-    遗传算法优化器
+    """遗传算法优化器
 
     核心概念:
     - 种群 (Population): 一组参数组合
@@ -69,8 +68,7 @@ class GeneticOptimizer(BaseOptimizer):
         tournament_size: int = 3,
         random_seed: Optional[int] = None,
     ):
-        """
-        初始化遗传算法优化器
+        """初始化遗传算法优化器
 
         Args:
             strategy_type: 策略类型
@@ -84,6 +82,7 @@ class GeneticOptimizer(BaseOptimizer):
             elite_size: 精英保留数量
             tournament_size: 锦标赛选择大小
             random_seed: 随机种子
+
         """
         super().__init__(strategy_type, parameter_spaces, objective, maximize)
 
@@ -104,7 +103,7 @@ class GeneticOptimizer(BaseOptimizer):
         logger.info(
             f"遗传算法优化器初始化: "
             f"种群={population_size}, 代数={n_generations}, "
-            f"交叉率={crossover_rate}, 变异率={mutation_rate}"
+            f"交叉率={crossover_rate}, 变异率={mutation_rate}",
         )
 
     def _create_random_individual(self) -> Individual:
@@ -123,8 +122,7 @@ class GeneticOptimizer(BaseOptimizer):
         return population
 
     def _evaluate_individual(self, individual: Individual, market_data: Dict[str, Any]) -> float:
-        """
-        评估个体适应度
+        """评估个体适应度
 
         Args:
             individual: 待评估个体
@@ -132,6 +130,7 @@ class GeneticOptimizer(BaseOptimizer):
 
         Returns:
             适应度值
+
         """
         result = self._run_single_backtest(individual.genes, market_data)
         individual.result = result
@@ -148,14 +147,14 @@ class GeneticOptimizer(BaseOptimizer):
                 self._evaluate_individual(individual, market_data)
 
     def _tournament_selection(self, population: List[Individual]) -> Individual:
-        """
-        锦标赛选择
+        """锦标赛选择
 
         Args:
             population: 种群
 
         Returns:
             获胜个体
+
         """
         tournament = self.rng.sample(population, min(self.tournament_size, len(population)))
 
@@ -167,14 +166,14 @@ class GeneticOptimizer(BaseOptimizer):
         return winner
 
     def _roulette_selection(self, population: List[Individual]) -> Individual:
-        """
-        轮盘赌选择
+        """轮盘赌选择
 
         Args:
             population: 种群
 
         Returns:
             选中个体
+
         """
         # 计算适应度总和 (处理负值)
         min_fitness = min(ind.fitness for ind in population)
@@ -193,8 +192,7 @@ class GeneticOptimizer(BaseOptimizer):
         return population[-1]
 
     def _crossover(self, parent1: Individual, parent2: Individual) -> Tuple[Individual, Individual]:
-        """
-        交叉操作 (均匀交叉)
+        """交叉操作 (均匀交叉)
 
         Args:
             parent1: 父本1
@@ -202,6 +200,7 @@ class GeneticOptimizer(BaseOptimizer):
 
         Returns:
             两个子代
+
         """
         if self.rng.random() > self.crossover_rate:
             # 不交叉，直接复制
@@ -227,10 +226,9 @@ class GeneticOptimizer(BaseOptimizer):
         return Individual(child1_genes), Individual(child2_genes)
 
     def _blend_crossover(
-        self, parent1: Individual, parent2: Individual, alpha: float = 0.5
+        self, parent1: Individual, parent2: Individual, alpha: float = 0.5,
     ) -> Tuple[Individual, Individual]:
-        """
-        混合交叉 (BLX-α)
+        """混合交叉 (BLX-α)
 
         适用于连续参数
 
@@ -240,6 +238,7 @@ class GeneticOptimizer(BaseOptimizer):
 
         Returns:
             两个子代
+
         """
         if self.rng.random() > self.crossover_rate:
             return (
@@ -288,11 +287,11 @@ class GeneticOptimizer(BaseOptimizer):
         return Individual(child1_genes), Individual(child2_genes)
 
     def _mutate(self, individual: Individual):
-        """
-        变异操作
+        """变异操作
 
         Args:
             individual: 待变异个体 (原地修改)
+
         """
         for space in self.parameter_spaces:
             if self.rng.random() < self.mutation_rate:
@@ -300,12 +299,12 @@ class GeneticOptimizer(BaseOptimizer):
                 individual.genes[space.name] = space.get_random_value(self.rng)
 
     def _gaussian_mutate(self, individual: Individual, sigma: float = 0.1):
-        """
-        高斯变异
+        """高斯变异
 
         Args:
             individual: 待变异个体
             sigma: 变异强度
+
         """
         for space in self.parameter_spaces:
             if self.rng.random() < self.mutation_rate:
@@ -314,30 +313,29 @@ class GeneticOptimizer(BaseOptimizer):
                 if space.param_type == "choice":
                     # 离散参数: 随机选择
                     individual.genes[space.name] = space.get_random_value(self.rng)
-                else:
-                    # 连续参数: 高斯扰动
-                    if space.min_value is not None and space.max_value is not None:
-                        range_v = space.max_value - space.min_value
-                        noise = self.rng.gauss(0, sigma * range_v)
-                        new_value = current + noise
+                # 连续参数: 高斯扰动
+                elif space.min_value is not None and space.max_value is not None:
+                    range_v = space.max_value - space.min_value
+                    noise = self.rng.gauss(0, sigma * range_v)
+                    new_value = current + noise
 
-                        # 限制范围
-                        new_value = max(space.min_value, min(space.max_value, new_value))
+                    # 限制范围
+                    new_value = max(space.min_value, min(space.max_value, new_value))
 
-                        if space.param_type == "int":
-                            new_value = int(round(new_value))
+                    if space.param_type == "int":
+                        new_value = int(round(new_value))
 
-                        individual.genes[space.name] = new_value
+                    individual.genes[space.name] = new_value
 
     def _select_elites(self, population: List[Individual]) -> List[Individual]:
-        """
-        选择精英个体
+        """选择精英个体
 
         Args:
             population: 种群
 
         Returns:
             精英个体列表
+
         """
         sorted_pop = sorted(population, key=lambda ind: ind.fitness, reverse=self.maximize)
         return [Individual(copy.deepcopy(ind.genes)) for ind in sorted_pop[: self.elite_size]]
@@ -352,8 +350,7 @@ class GeneticOptimizer(BaseOptimizer):
         patience: int = 5,
         **kwargs,
     ) -> List[OptimizationResult]:
-        """
-        执行遗传算法优化
+        """执行遗传算法优化
 
         Args:
             market_data: 市场数据
@@ -365,12 +362,13 @@ class GeneticOptimizer(BaseOptimizer):
 
         Returns:
             所有优化结果
+
         """
         logger.info(
             f"开始遗传算法优化: "
             f"策略={self.strategy_type}, "
             f"种群={self.population_size}, "
-            f"代数={self.n_generations}"
+            f"代数={self.n_generations}",
         )
 
         start_time = time.time()
@@ -407,7 +405,7 @@ class GeneticOptimizer(BaseOptimizer):
                 "best_fitness": best_ind.fitness,
                 "avg_fitness": avg_fitness,
                 "best_genes": copy.deepcopy(best_ind.genes),
-            }
+            },
         )
 
         logger.info("第0代: 最佳={best_ind.fitness:.4f}, 平均={avg_fitness:.4f}")
@@ -469,7 +467,7 @@ class GeneticOptimizer(BaseOptimizer):
                     "best_fitness": best_ind.fitness,
                     "avg_fitness": avg_fitness,
                     "best_genes": copy.deepcopy(best_ind.genes),
-                }
+                },
             )
 
             # 进度回调
@@ -499,17 +497,17 @@ class GeneticOptimizer(BaseOptimizer):
             f"耗时={total_time:.2f}秒 "
             f"代数={len(self.generation_history)} "
             f"评估={len(self.results)}组合 "
-            f"最佳{self.objective}={self.best_result.get_score(self.objective):.4f}"
+            f"最佳{self.objective}={self.best_result.get_score(self.objective):.4f}",
         )
 
         return self.results
 
     def get_evolution_curve(self) -> Dict[str, List[float]]:
-        """
-        获取进化曲线
+        """获取进化曲线
 
         Returns:
             {'generations': [...], 'best': [...], 'avg': [...]}
+
         """
         return {
             "generations": [h["generation"] for h in self.generation_history],
@@ -518,14 +516,14 @@ class GeneticOptimizer(BaseOptimizer):
         }
 
     def get_diversity_metrics(self, population: List[Individual]) -> Dict[str, float]:
-        """
-        计算种群多样性指标
+        """计算种群多样性指标
 
         Args:
             population: 种群
 
         Returns:
             多样性指标
+
         """
         if not population:
             return {}

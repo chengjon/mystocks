@@ -1,5 +1,4 @@
-"""
-统一错误码体系 (Unified Error Code System)
+"""统一错误码体系 (Unified Error Code System)
 
 提供统一的错误码定义、HTTP状态码映射和错误分类
 与validation_messages.py集成,实现完整的错误处理体系
@@ -14,6 +13,7 @@ from app.core.validation_messages import (
     TechnicalMessages,
     TradeMessages,
 )
+
 
 # ==================== 错误码枚举定义 ====================
 
@@ -447,40 +447,40 @@ ERROR_CODE_CATEGORY_MAP: Dict[ErrorCode, ErrorCategory] = {
 
 
 def get_http_status(error_code: ErrorCode) -> int:
-    """
-    获取错误码对应的HTTP状态码
+    """获取错误码对应的HTTP状态码
 
     Args:
         error_code: 错误码
 
     Returns:
         HTTP状态码
+
     """
     return ERROR_CODE_HTTP_MAP.get(error_code, HTTPStatus.INTERNAL_SERVER_ERROR)
 
 
 def get_error_message(error_code: ErrorCode) -> str:
-    """
-    获取错误码对应的中文消息
+    """获取错误码对应的中文消息
 
     Args:
         error_code: 错误码
 
     Returns:
         中文错误消息
+
     """
     return ERROR_CODE_MESSAGE_MAP.get(error_code, "未知错误")
 
 
 def get_error_category(error_code: ErrorCode) -> ErrorCategory:
-    """
-    获取错误码的类别
+    """获取错误码的类别
 
     Args:
         error_code: 错误码
 
     Returns:
         错误类别
+
     """
     return ERROR_CODE_CATEGORY_MAP.get(error_code, ErrorCategory.SERVER_ERROR)
 
@@ -506,16 +506,16 @@ def is_server_error(error_code: ErrorCode) -> bool:
 
 
 __all__ = [
-    "ErrorCode",
-    "HTTPStatus",
-    "ErrorCategory",
-    "get_http_status",
-    "get_error_message",
-    "get_error_category",
-    "is_success",
-    "is_client_error",
-    "is_server_error",
+    "ERROR_CODE_CATEGORY_MAP",
     "ERROR_CODE_HTTP_MAP",
     "ERROR_CODE_MESSAGE_MAP",
-    "ERROR_CODE_CATEGORY_MAP",
+    "ErrorCategory",
+    "ErrorCode",
+    "HTTPStatus",
+    "get_error_category",
+    "get_error_message",
+    "get_http_status",
+    "is_client_error",
+    "is_server_error",
+    "is_success",
 ]

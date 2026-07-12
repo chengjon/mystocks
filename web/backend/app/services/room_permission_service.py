@@ -1,5 +1,4 @@
-"""
-房间权限控制服务 - Room Permission Control Service
+"""房间权限控制服务 - Room Permission Control Service
 
 Task 9: 多房间订阅扩展
 
@@ -18,6 +17,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, Set
 
 import structlog
+
 
 try:
     import casbin
@@ -81,6 +81,7 @@ class RoomPermissionManager:
 
         Args:
             use_casbin: 是否使用Casbin，如果为False则使用内置权限映射
+
         """
         self.use_casbin = use_casbin and casbin is not None
         self.enforcer = None
@@ -213,6 +214,7 @@ m = g(r.sub, p.sub, r.dom) && r.dom == p.dom && r.obj == p.obj && r.act == p.act
 
         Returns:
             是否有权限
+
         """
         # 检查缓存
         cache_key = f"{user_id}:{room_id}:{permission.value}"
@@ -253,6 +255,7 @@ m = g(r.sub, p.sub, r.dom) && r.dom == p.dom && r.obj == p.obj && r.act == p.act
 
         Returns:
             是否成功添加
+
         """
         if role not in self.role_permissions:
             self.role_permissions[role] = set()
@@ -272,6 +275,7 @@ m = g(r.sub, p.sub, r.dom) && r.dom == p.dom && r.obj == p.obj && r.act == p.act
 
         Returns:
             是否成功移除
+
         """
         if role not in self.role_permissions:
             return False
@@ -290,6 +294,7 @@ m = g(r.sub, p.sub, r.dom) && r.dom == p.dom && r.obj == p.obj && r.act == p.act
 
         Returns:
             权限集合
+
         """
         return self.role_permissions.get(role, set()).copy()
 
@@ -315,6 +320,7 @@ class RoomAccessControl:
 
         Args:
             permission_manager: 权限管理器
+
         """
         self.permission_manager = permission_manager
         self.access_log: List[Dict[str, Any]] = []
@@ -330,6 +336,7 @@ class RoomAccessControl:
 
         Returns:
             是否可以加入
+
         """
         has_permission = self.permission_manager.check_permission(user_id, room_id, RoomPermission.JOIN, user_role)
 
@@ -350,9 +357,10 @@ class RoomAccessControl:
 
         Returns:
             是否可以发送
+
         """
         has_permission = self.permission_manager.check_permission(
-            user_id, room_id, RoomPermission.SEND_MESSAGE, user_role
+            user_id, room_id, RoomPermission.SEND_MESSAGE, user_role,
         )
         self._log_access("send_message", user_id, room_id, has_permission)
         return has_permission
@@ -368,6 +376,7 @@ class RoomAccessControl:
 
         Returns:
             是否可以删除
+
         """
         # 消息所有者或有DELETE_MESSAGE权限
         if user_id == message_owner:
@@ -386,6 +395,7 @@ class RoomAccessControl:
 
         Returns:
             是否可以踢出
+
         """
         # 不能踢出自己
         if user_id == target_user_id:
@@ -393,7 +403,7 @@ class RoomAccessControl:
             return False
 
         has_permission = self.permission_manager.check_permission(
-            user_id, room_id, RoomPermission.KICK_MEMBER, user_role
+            user_id, room_id, RoomPermission.KICK_MEMBER, user_role,
         )
         self._log_access("kick_member", user_id, room_id, has_permission)
         return has_permission
@@ -408,6 +418,7 @@ class RoomAccessControl:
 
         Returns:
             是否可以更改
+
         """
         return self.permission_manager.check_permission(user_id, room_id, RoomPermission.CHANGE_MEMBER_ROLE, user_role)
 
@@ -421,6 +432,7 @@ class RoomAccessControl:
 
         Returns:
             是否可以删除
+
         """
         return self.permission_manager.check_permission(user_id, room_id, RoomPermission.DELETE_ROOM, user_role)
 
@@ -432,7 +444,7 @@ class RoomAccessControl:
                 "user_id": user_id,
                 "room_id": room_id,
                 "success": success,
-            }
+            },
         )
 
     def get_access_log(self, limit: int = 100) -> List[Dict[str, Any]]:
@@ -443,6 +455,7 @@ class RoomAccessControl:
 
         Returns:
             访问日志列表
+
         """
         return self.access_log[-limit:]
 
@@ -467,6 +480,7 @@ def get_permission_manager(use_casbin: bool = False) -> RoomPermissionManager:
 
     Returns:
         权限管理器实例
+
     """
     global _permission_manager
     if _permission_manager is None:
@@ -479,6 +493,7 @@ def get_access_control() -> RoomAccessControl:
 
     Returns:
         访问控制实例
+
     """
     global _access_control
     if _access_control is None:

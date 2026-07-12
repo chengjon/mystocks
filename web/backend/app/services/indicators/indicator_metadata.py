@@ -1,5 +1,4 @@
-"""
-Indicator Metadata System
+"""Indicator Metadata System
 =========================
 
 标准化指标元数据定义，包含：
@@ -111,7 +110,7 @@ class IndicatorParameter(BaseModel):
                 "max_value": v.max_value,
                 "allowed_values": v.allowed_values,
                 "step": v.step,
-            }
+            },
         }
 
 
@@ -142,7 +141,7 @@ class IndicatorMetadata(BaseModel):
     dependencies: List[str] = Field(default_factory=list, description="依赖的其他指标缩写")
 
     data_requirements: List[DataField] = Field(
-        default_factory=lambda: [DataField.CLOSE], description="需要的基础数据字段"
+        default_factory=lambda: [DataField.CLOSE], description="需要的基础数据字段",
     )
 
     panel_type: PanelType = Field(PanelType.OVERLAY, description="显示面板类型")

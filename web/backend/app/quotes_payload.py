@@ -29,7 +29,7 @@ def _build_fallback_quotes(symbols: list[str]) -> list[dict[str, Any]]:
                 "change_percent": change_percent,
                 "volume": 1_000_000 + index * 250_000,
                 "amount": 120_000_000 + index * 35_000_000,
-            }
+            },
         )
     return rows
 

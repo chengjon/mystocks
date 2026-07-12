@@ -1,18 +1,19 @@
-"""
-数据查询 API (Facade)
+"""数据查询 API (Facade)
 
 Refactored to modular domain routers.
 """
 from fastapi import APIRouter
 
+from .financial import router as financial_router
+from .futures import router as futures_router
+from .kline import router as kline_router
+from .lhb import router as lhb_router
+from .margin import router as margin_router
+from .market import router as market_router
+
 # Import sub-routers
 from .stocks import router as stocks_router
-from .market import router as market_router
-from .kline import router as kline_router
-from .margin import router as margin_router
-from .lhb import router as lhb_router
-from .futures import router as futures_router
-from .financial import router as financial_router
+
 
 router = APIRouter(tags=["Data Service"])
 

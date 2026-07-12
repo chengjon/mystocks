@@ -1,5 +1,4 @@
-"""
-聚合流媒体桥接服务 - Aggregation Streaming Bridge
+"""聚合流媒体桥接服务 - Aggregation Streaming Bridge
 
 Task 7: 实现实时OHLCV柱线聚合与多时间周期支持
 
@@ -31,6 +30,7 @@ from app.services.realtime_streaming_service import (
     get_streaming_service,
 )
 
+
 logger = structlog.get_logger()
 
 
@@ -53,8 +53,7 @@ class AggregationStreamingBridge:
         publish_mode: BarPublishMode = BarPublishMode.COMPLETED,
         enable_persistence: bool = True,
     ):
-        """
-        初始化聚合流媒体桥接
+        """初始化聚合流媒体桥接
 
         Args:
             aggregation_engine: 聚合引擎实例
@@ -62,6 +61,7 @@ class AggregationStreamingBridge:
             ohlcv_storage: OHLCV存储实例
             publish_mode: 发布模式
             enable_persistence: 是否启用数据持久化
+
         """
         self.engine = aggregation_engine or get_aggregation_engine()
         self.streaming = streaming_service or get_streaming_service()
@@ -87,11 +87,11 @@ class AggregationStreamingBridge:
         logger.info("✅ Aggregation Streaming Bridge initialized")
 
     def process_completed_bars(self, completed_bars: List[OHLCV]) -> None:
-        """
-        处理完成的柱线
+        """处理完成的柱线
 
         Args:
             completed_bars: 完成的OHLCV柱线列表
+
         """
         if not completed_bars:
             return

@@ -1,5 +1,4 @@
-"""
-通用自定义验证器 (Pydantic v2)
+"""通用自定义验证器 (Pydantic v2)
 
 提供可重用的业务逻辑验证器，确保数据一致性和业务规则
 """
@@ -14,6 +13,7 @@ from app.core.validation_messages import (
     TechnicalMessages,
 )
 
+
 # ==================== 股票代码验证器 ====================
 
 
@@ -22,8 +22,7 @@ class StockSymbolValidator:
 
     @staticmethod
     def validate_format(symbol: str) -> str:
-        """
-        验证股票代码格式
+        """验证股票代码格式
 
         支持格式:
         - 6位数字 (如: 600519)
@@ -37,6 +36,7 @@ class StockSymbolValidator:
 
         Raises:
             ValueError: 格式不正确时抛出
+
         """
         if not symbol:
             raise ValueError(CommonMessages.SYMBOL_REQUIRED)
@@ -63,9 +63,8 @@ class StockSymbolValidator:
 
             if exchange_part not in ["SH", "SZ"]:
                 raise ValueError("交易所后缀必须是SH或SZ")
-        else:
-            if not symbol.isdigit() or len(symbol) != 6:
-                raise ValueError(CommonMessages.SYMBOL_INVALID_FORMAT)
+        elif not symbol.isdigit() or len(symbol) != 6:
+            raise ValueError(CommonMessages.SYMBOL_INVALID_FORMAT)
 
         return symbol
 
@@ -91,8 +90,7 @@ class DateRangeValidator:
 
     @staticmethod
     def validate_date_format(date_str: Optional[str]) -> Optional[str]:
-        """
-        验证日期格式 (YYYY-MM-DD)
+        """验证日期格式 (YYYY-MM-DD)
 
         Args:
             date_str: 日期字符串
@@ -102,6 +100,7 @@ class DateRangeValidator:
 
         Raises:
             ValueError: 格式不正确时抛出
+
         """
         if not date_str:
             return None
@@ -123,8 +122,7 @@ class DateRangeValidator:
 
     @staticmethod
     def validate_date_range(start_date: Optional[date], end_date: Optional[date], max_days: int = 365) -> tuple:
-        """
-        验证日期范围
+        """验证日期范围
 
         Args:
             start_date: 开始日期
@@ -136,6 +134,7 @@ class DateRangeValidator:
 
         Raises:
             ValueError: 范围不正确时抛出
+
         """
         if start_date is None or end_date is None:
             return start_date, end_date
@@ -181,10 +180,9 @@ class NumericValidator:
 
     @staticmethod
     def validate_range(
-        value: Any, min_value: Optional[float] = None, max_value: Optional[float] = None, field_name: str = "数值"
+        value: Any, min_value: Optional[float] = None, max_value: Optional[float] = None, field_name: str = "数值",
     ) -> Any:
-        """
-        验证数值范围
+        """验证数值范围
 
         Args:
             value: 待验证值
@@ -197,6 +195,7 @@ class NumericValidator:
 
         Raises:
             ValueError: 超出范围时抛出
+
         """
         try:
             num_value = float(value)
@@ -220,8 +219,7 @@ class TradingValidator:
 
     @staticmethod
     def validate_quantity(quantity: int) -> int:
-        """
-        验证委托数量 (A股规则)
+        """验证委托数量 (A股规则)
 
         A股交易规则:
         - 数量必须是100的整数倍
@@ -235,6 +233,7 @@ class TradingValidator:
 
         Raises:
             ValueError: 不符合规则时抛出
+
         """
         if quantity <= 0:
             raise ValueError(CommonMessages.QUANTITY_MUST_BE_POSITIVE)
@@ -246,8 +245,7 @@ class TradingValidator:
 
     @staticmethod
     def validate_direction(direction: str) -> str:
-        """
-        验证交易方向
+        """验证交易方向
 
         Args:
             direction: 交易方向
@@ -257,6 +255,7 @@ class TradingValidator:
 
         Raises:
             ValueError: 方向不正确时抛出
+
         """
         direction = direction.lower().strip()
         if direction not in ["buy", "sell"]:
@@ -265,8 +264,7 @@ class TradingValidator:
 
     @staticmethod
     def validate_order_type(order_type: str) -> str:
-        """
-        验证订单类型
+        """验证订单类型
 
         Args:
             order_type: 订单类型
@@ -276,6 +274,7 @@ class TradingValidator:
 
         Raises:
             ValueError: 类型不正确时抛出
+
         """
         order_type = order_type.lower().strip()
         if order_type not in ["limit", "market"]:
@@ -284,8 +283,7 @@ class TradingValidator:
 
     @staticmethod
     def validate_limit_order_price(order_type: str, price: Optional[Decimal]) -> Optional[Decimal]:
-        """
-        验证限价单价格
+        """验证限价单价格
 
         限价单必须指定价格，且价格必须大于0
 
@@ -298,6 +296,7 @@ class TradingValidator:
 
         Raises:
             ValueError: 价格不正确时抛出
+
         """
         if order_type == "limit":
             if price is None:
@@ -318,8 +317,7 @@ class KLineValidator:
 
     @staticmethod
     def validate_interval(interval: str) -> str:
-        """
-        验证K线周期
+        """验证K线周期
 
         Args:
             interval: K线周期
@@ -329,6 +327,7 @@ class KLineValidator:
 
         Raises:
             ValueError: 周期不正确时抛出
+
         """
         interval = interval.lower().strip()
         if interval not in KLineValidator.VALID_INTERVALS:
@@ -337,8 +336,7 @@ class KLineValidator:
 
     @staticmethod
     def validate_adjust(adjust: str) -> str:
-        """
-        验证复权类型
+        """验证复权类型
 
         Args:
             adjust: 复权类型
@@ -348,6 +346,7 @@ class KLineValidator:
 
         Raises:
             ValueError: 类型不正确时抛出
+
         """
         adjust = adjust.lower().strip() if adjust else "none"
         if adjust not in KLineValidator.VALID_ADJUST_TYPES:
@@ -356,8 +355,7 @@ class KLineValidator:
 
     @staticmethod
     def validate_limit(limit: int, max_limit: int = 1000) -> int:
-        """
-        验证数据量限制
+        """验证数据量限制
 
         Args:
             limit: 请求数量
@@ -368,6 +366,7 @@ class KLineValidator:
 
         Raises:
             ValueError: 超出限制时抛出
+
         """
         if limit <= 0:
             raise ValueError("请求数量必须大于0")
@@ -392,8 +391,7 @@ class IndicatorValidator:
 
     @staticmethod
     def validate_indicator_type(indicator_type: str, category: str = "overlay") -> str:
-        """
-        验证指标类型
+        """验证指标类型
 
         Args:
             indicator_type: 指标类型
@@ -404,6 +402,7 @@ class IndicatorValidator:
 
         Raises:
             ValueError: 类型不正确时抛出
+
         """
         indicator_type = indicator_type.upper().strip()
 
@@ -427,8 +426,7 @@ class IndicatorValidator:
 
     @staticmethod
     def validate_ma_periods(periods: List[int]) -> List[int]:
-        """
-        验证多个移动平均线周期
+        """验证多个移动平均线周期
 
         Args:
             periods: 周期列表
@@ -438,6 +436,7 @@ class IndicatorValidator:
 
         Raises:
             ValueError: 不正确时抛出
+
         """
         if len(periods) > 10:
             raise ValueError(TechnicalMessages.MA_PERIOD_TOO_MANY)
@@ -452,10 +451,10 @@ class IndicatorValidator:
 
 
 __all__ = [
-    "StockSymbolValidator",
     "DateRangeValidator",
-    "NumericValidator",
-    "TradingValidator",
-    "KLineValidator",
     "IndicatorValidator",
+    "KLineValidator",
+    "NumericValidator",
+    "StockSymbolValidator",
+    "TradingValidator",
 ]

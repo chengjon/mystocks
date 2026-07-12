@@ -1,22 +1,23 @@
-"""
-分析数据API模块
+"""分析数据API模块
 
 提供技术指标计算、基本面分析、报告生成、数据验证功能
 """
 
 import logging
-from typing import Any, Dict, List, Optional
-from datetime import datetime
 from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
+from typing import Any, Dict, List, Optional
 
 from app.api.data._analysis_api_tail import AnalysisDataServiceTailMixin
+
 
 logger = __import__("logging").getLogger(__name__)
 
 
 class IndicatorType(Enum):
     """指标类型"""
+
     MA = "moving_average"
     EMA = "exponential_moving_average"
     MACD = "macd"
@@ -28,6 +29,7 @@ class IndicatorType(Enum):
 
 class TimePeriod(Enum):
     """时间周期"""
+
     DAILY = "daily"
     WEEKLY = "weekly"
     MONTHLY = "monthly"
@@ -35,6 +37,7 @@ class TimePeriod(Enum):
 
 class AnalysisType(Enum):
     """分析类型"""
+
     TECHNICAL = "technical"
     FUNDAMENTAL = "fundamental"
     COMPREHENSIVE = "comprehensive"
@@ -43,6 +46,7 @@ class AnalysisType(Enum):
 @dataclass
 class IndicatorData:
     """指标数据类"""
+
     indicator_type: IndicatorType = IndicatorType.MA
     symbol: str = ""
     time_period: TimePeriod = TimePeriod.DAILY
@@ -52,18 +56,19 @@ class IndicatorData:
 
     def to_dict(self) -> Dict:
         return {
-            'indicator_type': self.indicator_type.value,
-            'symbol': self.symbol,
-            'time_period': self.time_period.value,
-            'period': self.period,
-            'values': self.values,
-            'calculated_at': self.calculated_at.isoformat() if self.calculated_at else None
+            "indicator_type": self.indicator_type.value,
+            "symbol": self.symbol,
+            "time_period": self.time_period.value,
+            "period": self.period,
+            "values": self.values,
+            "calculated_at": self.calculated_at.isoformat() if self.calculated_at else None,
         }
 
 
 @dataclass
 class FundamentalData:
     """基本面数据类"""
+
     symbol: str = ""
     name: str = ""
     industry: str = ""
@@ -78,23 +83,24 @@ class FundamentalData:
 
     def to_dict(self) -> Dict:
         return {
-            'symbol': self.symbol,
-            'name': self.name,
-            'industry': self.industry,
-            'market_cap': self.market_cap,
-            'pe_ratio': self.pe_ratio,
-            'pb_ratio': self.pb_ratio,
-            'ps_ratio': self.ps_ratio,
-            'roe': self.roe,
-            'revenue_growth': self.revenue_growth,
-            'profit_growth': self.profit_growth,
-            'calculated_at': self.calculated_at.isoformat() if self.calculated_at else None
+            "symbol": self.symbol,
+            "name": self.name,
+            "industry": self.industry,
+            "market_cap": self.market_cap,
+            "pe_ratio": self.pe_ratio,
+            "pb_ratio": self.pb_ratio,
+            "ps_ratio": self.ps_ratio,
+            "roe": self.roe,
+            "revenue_growth": self.revenue_growth,
+            "profit_growth": self.profit_growth,
+            "calculated_at": self.calculated_at.isoformat() if self.calculated_at else None,
         }
 
 
 @dataclass
 class AnalysisResult:
     """分析结果数据类"""
+
     analysis_id: str = ""
     analysis_type: AnalysisType = AnalysisType.TECHNICAL
     symbol: str = ""
@@ -105,13 +111,13 @@ class AnalysisResult:
 
     def to_dict(self) -> Dict:
         return {
-            'analysis_id': self.analysis_id,
-            'analysis_type': self.analysis_type.value,
-            'symbol': self.symbol,
-            'indicators': [ind.to_dict() for ind in self.indicators] if self.indicators else [],
-            'fundamental': self.fundamental.to_dict() if self.fundamental else None,
-            'summary': self.summary,
-            'generated_at': self.generated_at.isoformat() if self.generated_at else None
+            "analysis_id": self.analysis_id,
+            "analysis_type": self.analysis_type.value,
+            "symbol": self.symbol,
+            "indicators": [ind.to_dict() for ind in self.indicators] if self.indicators else [],
+            "fundamental": self.fundamental.to_dict() if self.fundamental else None,
+            "summary": self.summary,
+            "generated_at": self.generated_at.isoformat() if self.generated_at else None,
         }
 
 
@@ -126,8 +132,7 @@ class AnalysisDataService(AnalysisDataServiceTailMixin):
         logger.info("分析数据API模块初始化")
 
     async def calculate_technical_indicator(self, symbol: str, indicator_type: IndicatorType, period: int = 20) -> IndicatorData:
-        """
-        计算技术指标
+        """计算技术指标
         
         Args:
             symbol: 股票代码
@@ -136,9 +141,10 @@ class AnalysisDataService(AnalysisDataServiceTailMixin):
         
         Returns:
             IndicatorData: 指标数据
+
         """
         try:
-            self._log_request_start('calculate_technical_indicator', {'symbol': symbol, 'indicator_type': indicator_type.value})
+            self._log_request_start("calculate_technical_indicator", {"symbol": symbol, "indicator_type": indicator_type.value})
 
             if indicator_type == IndicatorType.MA:
                 values = await self._calculate_ma(symbol, period)
@@ -164,14 +170,14 @@ class AnalysisDataService(AnalysisDataServiceTailMixin):
                 time_period=TimePeriod.DAILY,
                 period=period,
                 values=values,
-                calculated_at=datetime.now()
+                calculated_at=datetime.now(),
             )
 
-            self._log_request_success('calculate_technical_indicator', indicator_data.to_dict())
+            self._log_request_success("calculate_technical_indicator", indicator_data.to_dict())
             return indicator_data
 
         except Exception as e:
-            self._log_request_error('calculate_technical_indicator', e)
+            self._log_request_error("calculate_technical_indicator", e)
             return IndicatorData()
 
     async def _calculate_ma(self, symbol: str, period: int) -> List[float]:
@@ -192,7 +198,7 @@ class AnalysisDataService(AnalysisDataServiceTailMixin):
             if not results or len(results) < period:
                 return []
 
-            prices = [r['close_price'] for r in results]
+            prices = [r["close_price"] for r in results]
 
             ma_values = []
             for i in range(period, len(prices)):
@@ -245,11 +251,11 @@ class AnalysisDataService(AnalysisDataServiceTailMixin):
             histogram = [abs(macd_line[i]) for i in range(len(macd_line))]
 
             return {
-                'macd_line': macd_line,
-                'signal_line': signal_line,
-                'histogram': histogram,
-                'fast_period': fast_period,
-                'slow_period': slow_period
+                "macd_line": macd_line,
+                "signal_line": signal_line,
+                "histogram": histogram,
+                "fast_period": fast_period,
+                "slow_period": slow_period,
             }
 
         except Exception as e:
@@ -274,7 +280,7 @@ class AnalysisDataService(AnalysisDataServiceTailMixin):
             if not results or len(results) < period + 1:
                 return []
 
-            prices = [r['close_price'] for r in results]
+            prices = [r["close_price"] for r in results]
 
             rsi_values = []
 
@@ -325,11 +331,11 @@ class AnalysisDataService(AnalysisDataServiceTailMixin):
                 lower_band.append(lower)
 
             return {
-                'middle_band': ma_values,
-                'upper_band': upper_band,
-                'lower_band': lower_band,
-                'multiplier': multiplier,
-                'period': period
+                "middle_band": ma_values,
+                "upper_band": upper_band,
+                "lower_band": lower_band,
+                "multiplier": multiplier,
+                "period": period,
             }
 
         except Exception as e:
@@ -355,9 +361,9 @@ class AnalysisDataService(AnalysisDataServiceTailMixin):
             if not results or len(results) < period:
                 return {}
 
-            highs = [r['high_price'] for r in results]
-            lows = [r['low_price'] for r in results]
-            closes = [r['close_price'] for r in results]
+            highs = [r["high_price"] for r in results]
+            lows = [r["low_price"] for r in results]
+            closes = [r["close_price"] for r in results]
 
             low_values = []
 
@@ -416,15 +422,15 @@ class AnalysisDataService(AnalysisDataServiceTailMixin):
                 d_values.append(d)
 
             return {
-                'k': k_values[-1],
-                'd': d_values[-1],
-                'j': j_values[-1],
-                'rsv': rsv_values[-1],
-                'k_value': k_values[-1],
-                'd_value': d_values[-1],
-                'period': period,
-                'k_param': k,
-                'd_param': d
+                "k": k_values[-1],
+                "d": d_values[-1],
+                "j": j_values[-1],
+                "rsv": rsv_values[-1],
+                "k_value": k_values[-1],
+                "d_value": d_values[-1],
+                "period": period,
+                "k_param": k,
+                "d_param": d,
             }
 
         except Exception as e:
@@ -449,7 +455,7 @@ class AnalysisDataService(AnalysisDataServiceTailMixin):
             if not results or len(results) < 2:
                 return []
 
-            returns = [r['close_price'] for r in results]
+            returns = [r["close_price"] for r in results]
 
             log_returns = [math.log(r[i] / r[i-1]) for i in range(1, len(returns))]
 
@@ -469,17 +475,17 @@ class AnalysisDataService(AnalysisDataServiceTailMixin):
             return []
 
     async def get_fundamental_data(self, symbol: str) -> FundamentalData:
-        """
-        获取基本面数据
+        """获取基本面数据
         
         Args:
             symbol: 股票代码
         
         Returns:
             FundamentalData: 基本面数据
+
         """
         try:
-            self._log_request_start('get_fundamental_data', {'symbol': symbol})
+            self._log_request_start("get_fundamental_data", {"symbol": symbol})
 
             from app.core.database import db_service
 
@@ -497,37 +503,37 @@ class AnalysisDataService(AnalysisDataServiceTailMixin):
 
             if result:
                 fundamental_data = FundamentalData(
-                    symbol=result['symbol'],
-                    name=result['name'],
-                    industry=result['industry'],
-                    market_cap=result['market_cap'],
-                    pe_ratio=result['pe_ratio'],
-                    pb_ratio=result['pb_ratio'],
-                    ps_ratio=result['ps_ratio'],
-                    roe=result['roe'],
-                    revenue_growth=result['revenue_growth'],
-                    profit_growth=result['profit_growth'],
-                    calculated_at=datetime.now()
+                    symbol=result["symbol"],
+                    name=result["name"],
+                    industry=result["industry"],
+                    market_cap=result["market_cap"],
+                    pe_ratio=result["pe_ratio"],
+                    pb_ratio=result["pb_ratio"],
+                    ps_ratio=result["ps_ratio"],
+                    roe=result["roe"],
+                    revenue_growth=result["revenue_growth"],
+                    profit_growth=result["profit_growth"],
+                    calculated_at=datetime.now(),
                 )
 
-                self._log_request_success('get_fundamental_data', fundamental_data.to_dict())
+                self._log_request_success("get_fundamental_data", fundamental_data.to_dict())
                 return fundamental_data
 
             return FundamentalData()
 
         except Exception as e:
-            self._log_request_error('get_fundamental_data', e)
+            self._log_request_error("get_fundamental_data", e)
             return FundamentalData()
 
     async def run_comprehensive_analysis(self, symbol: str) -> AnalysisResult:
-        """
-        运行综合分析
+        """运行综合分析
         
         Args:
             symbol: 股票代码
         
         Returns:
             AnalysisResult: 综合分析结果
+
         """
         try:
             analysis_id = f"analysis_{symbol}_{datetime.now().isoformat()}"
@@ -541,14 +547,14 @@ class AnalysisDataService(AnalysisDataServiceTailMixin):
 
             # 综合判断
             summary = {
-                'symbol': symbol,
-                'technical_indicators': {
-                    'ma_20': ma_20,
-                    'ma_5': ma_5
+                "symbol": symbol,
+                "technical_indicators": {
+                    "ma_20": ma_20,
+                    "ma_5": ma_5,
                 },
-                'fundamental': fundamental.to_dict(),
-                'overall_rating': self._calculate_overall_rating(fundamental, ma_20),
-                'recommendation': self._generate_recommendation(fundamental, ma_20)
+                "fundamental": fundamental.to_dict(),
+                "overall_rating": self._calculate_overall_rating(fundamental, ma_20),
+                "recommendation": self._generate_recommendation(fundamental, ma_20),
             }
 
             result = AnalysisResult(
@@ -558,14 +564,14 @@ class AnalysisDataService(AnalysisDataServiceTailMixin):
                 indicators=[ma_20, ma_5],
                 fundamental=fundamental,
                 summary=summary,
-                generated_at=datetime.now()
+                generated_at=datetime.now(),
             )
 
-            self._log_request_success('run_comprehensive_analysis', result.to_dict())
+            self._log_request_success("run_comprehensive_analysis", result.to_dict())
             return result
 
         except Exception as e:
-            self._log_request_error('run_comprehensive_analysis', e)
+            self._log_request_error("run_comprehensive_analysis", e)
             return AnalysisResult()
 
     def _calculate_overall_rating(self, fundamental: FundamentalData, ma_20: IndicatorData) -> str:
@@ -630,14 +636,13 @@ class AnalysisDataService(AnalysisDataServiceTailMixin):
 
             if overall_score >= 80:
                 return "A"
-            elif overall_score >= 60:
+            if overall_score >= 60:
                 return "B"
-            elif overall_score >= 40:
+            if overall_score >= 40:
                 return "C"
-            elif overall_score >= 20:
+            if overall_score >= 20:
                 return "D"
-            else:
-                return "E"
+            return "E"
 
         except Exception as e:
             self.logger.error(f"计算综合评级失败: {e}")

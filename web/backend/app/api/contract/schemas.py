@@ -1,5 +1,4 @@
-"""
-API契约管理 Pydantic模型
+"""API契约管理 Pydantic模型
 用于契约版本管理、差异检测和同步
 """
 
@@ -7,6 +6,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
+
 
 # ==================== 契约版本管理 ====================
 

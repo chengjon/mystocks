@@ -1,5 +1,4 @@
-"""
-任务管理API路由
+"""任务管理API路由
 提供RESTful API接口用于任务管理
 
 安全级别：分级别访问控制
@@ -15,18 +14,18 @@ from typing import Any, Dict, List, Optional
 import structlog
 from fastapi import APIRouter, Body, Depends, Path, Query
 
+from app.api.auth import User, get_current_user
 from app.api.task_security_support import (
     check_admin_privileges,
     check_task_rate_limit,
     log_task_operation,
     task_audit_log,
 )
-from app.api.tasks_schemas import TaskExecutionRequest, TaskQueryParams, TaskRegistrationRequest
-from app.api.auth import User, get_current_user
 from app.core.exceptions import BusinessException, ForbiddenException, NotFoundException
 from app.core.responses import APIResponse
 from app.models.task import TaskConfig, TaskExecution, TaskResponse, TaskStatistics
 from app.services.task_manager import task_manager
+
 
 # Mock数据支持
 use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
@@ -37,8 +36,7 @@ router = APIRouter(prefix="/api/tasks", tags=["tasks"])
 
 @router.post("/register", response_model=TaskResponse)
 async def register_task(task_config: TaskConfig, current_user: User = Depends(get_current_user)):
-    """
-    注册新任务
+    """注册新任务
 
     Security:
         - 需要用户认证
@@ -50,7 +48,7 @@ async def register_task(task_config: TaskConfig, current_user: User = Depends(ge
         # 检查操作频率限制
         if not check_task_rate_limit(current_user.id, max_operations_per_minute=5):
             raise BusinessException(
-                detail="任务注册频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED"
+                detail="任务注册频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED",
             )
 
         # 记录操作审计
@@ -94,8 +92,7 @@ async def unregister_task(
     task_id: str = Path(..., description="任务ID", min_length=1, max_length=50, pattern=r"^[a-zA-Z0-9_-]+$"),
     current_user: User = Depends(get_current_user),
 ):
-    """
-    注销任务
+    """注销任务
 
     Security:
         - 需要用户认证
@@ -107,7 +104,7 @@ async def unregister_task(
         # 检查操作频率限制
         if not check_task_rate_limit(current_user.id, max_operations_per_minute=5):
             raise BusinessException(
-                detail="任务操作频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED"
+                detail="任务操作频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED",
             )
 
         # 记录操作审计
@@ -136,15 +133,14 @@ async def list_tasks(
     ),
     tags: Optional[str] = Query(None, description="逗号分隔的任务标签", max_length=200),
     status: Optional[str] = Query(
-        None, description="任务状态", pattern=r"^(PENDING|RUNNING|SUCCESS|FAILED|CANCELLED)$"
+        None, description="任务状态", pattern=r"^(PENDING|RUNNING|SUCCESS|FAILED|CANCELLED)$",
     ),
     enabled: Optional[bool] = Query(None, description="是否启用"),
     limit: int = Query(50, description="返回数量", ge=1, le=200),
     offset: int = Query(0, description="偏移量", ge=0, le=10000),
     current_user: User = Depends(get_current_user),
 ):
-    """
-    列出所有任务
+    """列出所有任务
 
     Security:
         - 需要用户认证
@@ -155,7 +151,7 @@ async def list_tasks(
         # 检查操作频率限制（读取操作限制较宽松）
         if not check_task_rate_limit(current_user.id, max_operations_per_minute=30):
             raise BusinessException(
-                detail="查询频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED"
+                detail="查询频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED",
             )
 
         # 记录操作审计
@@ -323,16 +319,16 @@ async def get_task_statistics():
 
         stats = {
             "total_tasks": TaskStatistics(
-                count=25, success_count=20, failed_count=3, running_count=2, avg_execution_time=45.5, success_rate=80.0
+                count=25, success_count=20, failed_count=3, running_count=2, avg_execution_time=45.5, success_rate=80.0,
             ),
             "data_processing": TaskStatistics(
-                count=15, success_count=12, failed_count=2, running_count=1, avg_execution_time=30.2, success_rate=80.0
+                count=15, success_count=12, failed_count=2, running_count=1, avg_execution_time=30.2, success_rate=80.0,
             ),
             "backtest": TaskStatistics(
-                count=8, success_count=6, failed_count=1, running_count=1, avg_execution_time=120.8, success_rate=75.0
+                count=8, success_count=6, failed_count=1, running_count=1, avg_execution_time=120.8, success_rate=75.0,
             ),
             "alert": TaskStatistics(
-                count=2, success_count=2, failed_count=0, running_count=0, avg_execution_time=5.3, success_rate=100.0
+                count=2, success_count=2, failed_count=0, running_count=0, avg_execution_time=5.3, success_rate=100.0,
             ),
         }
         return stats
@@ -392,8 +388,7 @@ async def cleanup_executions(days: int = Query(7, ge=1, le=90)):
 
 @router.get("/health", summary="任务管理健康检查", description="检查后台任务系统的运行状态", tags=["health"])
 async def tasks_health():
-    """
-    公共健康检查端点（无需认证）
+    """公共健康检查端点（无需认证）
 
     **功能说明**:
     - 验证任务管理服务的运行状态
@@ -425,6 +420,7 @@ async def tasks_health():
         - running_tasks 过多可能表示任务堆积，需要关注
         - mock_mode=true 表示当前使用测试数据
         - 建议监控系统每 60 秒调用一次以进行持续监控
+
     """
     if use_mock:
         # Mock数据：返回模拟健康状态
@@ -470,8 +466,7 @@ async def get_audit_logs(
     username: Optional[str] = Query(None, description="用户名过滤"),
     current_user: User = Depends(get_current_user),
 ):
-    """
-    获取任务操作审计日志
+    """获取任务操作审计日志
 
     Security:
         - 仅管理员可访问
@@ -527,8 +522,7 @@ async def cleanup_audit_logs(
     days: int = Query(30, description="保留最近几天的日志", ge=1, le=365),
     current_user: User = Depends(get_current_user),
 ):
-    """
-    清理旧的审计日志
+    """清理旧的审计日志
 
     Security:
         - 仅管理员可访问

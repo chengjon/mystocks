@@ -1,17 +1,17 @@
-"""
-风险计算器模块
+"""风险计算器模块
 
 提供所有风险指标的计算功能：VaR、CVaR、Sharpe Ratio、最大回撤、Beta系数、波动率等
 """
 
-from typing import Dict, List, Optional
-from datetime import datetime
 from dataclasses import dataclass
+from datetime import datetime
+from typing import Dict, List, Optional
+
 import numpy as np
 import pandas as pd
 
-from .risk_base import RiskMetrics, RiskProfile
-from .risk_base import RiskBase
+from .risk_base import RiskBase, RiskMetrics, RiskProfile
+
 
 logger = __import__("logging").getLogger(__name__)
 
@@ -51,7 +51,7 @@ class CalculationResult:
             "calculated_at": self.calculated_at.isoformat() if self.calculated_at else None,
             "calculation_time_ms": self.calculation_time_ms,
             "data_points": self.data_points,
-            "warnings": self.warnings if self.warnings else [],
+            "warnings": self.warnings or [],
         }
 
 
@@ -221,13 +221,11 @@ class RiskCalculator(RiskBase):
             cumulative += r
             cumulative_returns.append(cumulative)
 
-            if cumulative > peak:
-                peak = cumulative
+            peak = max(peak, cumulative)
 
             drawdown = (peak - cumulative) / peak if peak > 0 else 0.0
 
-            if drawdown < max_drawdown:
-                max_drawdown = drawdown
+            max_drawdown = min(max_drawdown, drawdown)
 
         return abs(max_drawdown)
 
@@ -402,7 +400,7 @@ class RiskCalculator(RiskBase):
         """计算CVaR（条件在险价值）"""
         try:
             self._log_request_start(
-                "calculate_conditional_value_at_risk", {"alpha": alpha, "data_points": len(returns)}
+                "calculate_conditional_value_at_risk", {"alpha": alpha, "data_points": len(returns)},
             )
 
             cvar = self._calculate_cvar(returns, alpha)

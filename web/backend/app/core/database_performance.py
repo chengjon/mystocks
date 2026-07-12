@@ -1,5 +1,4 @@
-"""
-数据库性能优化集成管理
+"""数据库性能优化集成管理
 Database Performance Optimization Integration - Unified performance management
 
 Task 14.3: 数据库性能优化 - Performance Optimization Integration
@@ -28,6 +27,7 @@ from app.core.database_performance_monitor import (
 from app.core.database_query_batch import (
     get_query_batcher,
 )
+
 
 logger = structlog.get_logger()
 
@@ -71,8 +71,7 @@ class DatabasePerformanceManager:
         slow_query_threshold_ms: float = 1000,
         critical_query_threshold_ms: float = 5000,
     ):
-        """
-        初始化数据库性能管理器
+        """初始化数据库性能管理器
 
         Args:
             pool_min_size: 连接池最小大小
@@ -86,6 +85,7 @@ class DatabasePerformanceManager:
             batch_timeout_ms: 批处理超时
             slow_query_threshold_ms: 慢查询阈值
             critical_query_threshold_ms: 严重查询阈值
+
         """
         # 初始化所有优化模块
         self.pool_optimizer = get_pool_optimizer(
@@ -191,7 +191,7 @@ class DatabasePerformanceManager:
     ):
         """记录查询性能"""
         return self.performance_monitor.record_query(
-            sql, table_name, operation, duration_ms, rows_affected, rows_scanned, error
+            sql, table_name, operation, duration_ms, rows_affected, rows_scanned, error,
         )
 
     async def collect_metrics(self) -> DatabasePerformanceMetrics:

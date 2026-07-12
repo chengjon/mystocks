@@ -1,5 +1,4 @@
-"""
-Compatibility shim for risk_management.py (was 2,112 lines).
+"""Compatibility shim for risk_management.py (was 2,112 lines).
 
 Split into:
   risk/metrics.py   - VaR/CVaR, Beta, Dashboard, calculation
@@ -14,6 +13,7 @@ import logging
 import warnings
 
 from fastapi import APIRouter
+
 
 logger = logging.getLogger(__name__)
 

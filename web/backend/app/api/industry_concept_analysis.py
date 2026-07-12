@@ -1,5 +1,4 @@
-"""
-行业概念分析API模块
+"""行业概念分析API模块
 
 提供行业/概念分类数据的查询接口，包括：
 - 获取行业列表
@@ -24,16 +23,17 @@ from app.models.schemas import (
 )
 from app.services.unified_data_service import UnifiedDataService
 
+
 router = APIRouter(prefix="/api/analysis", tags=["industry-concept-analysis"])
 
 
 @router.get("/industry/list", response_model=IndustryListResponse)
 async def get_industry_list():
-    """
-    获取所有行业分类列表
+    """获取所有行业分类列表
 
     Returns:
         IndustryListResponse: 行业列表
+
     """
     try:
         # 使用统一数据服务获取行业数据
@@ -71,16 +71,16 @@ async def get_industry_list():
             timestamp=datetime.now().isoformat(),
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取行业列表失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取行业列表失败: {e!s}")
 
 
 @router.get("/concept/list", response_model=ConceptListResponse)
 async def get_concept_list():
-    """
-    获取所有概念分类列表
+    """获取所有概念分类列表
 
     Returns:
         ConceptListResponse: 概念列表
+
     """
     try:
         # 使用统一数据服务获取概念数据
@@ -118,7 +118,7 @@ async def get_concept_list():
             timestamp=datetime.now().isoformat(),
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取概念列表失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取概念列表失败: {e!s}")
 
 
 @router.get("/industry/stocks", response_model=StockListResponse)
@@ -126,8 +126,7 @@ async def get_industry_stocks(
     industry_code: str = Query(..., description="行业代码"),
     limit: Optional[int] = Query(None, ge=1, le=1000, description="限制返回数量"),
 ):
-    """
-    获取指定行业的成分股列表
+    """获取指定行业的成分股列表
 
     Args:
         industry_code: 行业代码
@@ -135,6 +134,7 @@ async def get_industry_stocks(
 
     Returns:
         StockListResponse: 成分股列表
+
     """
     try:
         # 从关联表查询该行业的股票
@@ -171,7 +171,7 @@ async def get_industry_stocks(
             timestamp=datetime.now().isoformat(),
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取行业成分股失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取行业成分股失败: {e!s}")
 
 
 @router.get("/concept/stocks", response_model=StockListResponse)
@@ -179,8 +179,7 @@ async def get_concept_stocks(
     concept_code: str = Query(..., description="概念代码"),
     limit: Optional[int] = Query(None, ge=1, le=1000, description="限制返回数量"),
 ):
-    """
-    获取指定概念的成分股列表
+    """获取指定概念的成分股列表
 
     Args:
         concept_code: 概念代码
@@ -188,6 +187,7 @@ async def get_concept_stocks(
 
     Returns:
         StockListResponse: 成分股列表
+
     """
     try:
         # 从关联表查询该概念的股票
@@ -224,19 +224,19 @@ async def get_concept_stocks(
             timestamp=datetime.now().isoformat(),
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取概念成分股失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取概念成分股失败: {e!s}")
 
 
 @router.get("/industry/performance", response_model=IndustryPerformanceResponse)
 async def get_industry_performance(industry_code: str = Query(..., description="行业代码")):
-    """
-    获取行业整体表现数据
+    """获取行业整体表现数据
 
     Args:
         industry_code: 行业代码
 
     Returns:
         IndustryPerformanceResponse: 行业表现数据
+
     """
     try:
         # 查询行业整体表现数据
@@ -316,13 +316,12 @@ async def get_industry_performance(industry_code: str = Query(..., description="
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取行业表现数据失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取行业表现数据失败: {e!s}")
 
 
 # 为API注册器添加一个函数来获取所有行业概念相关的端点
 def get_industry_concept_endpoints():
-    """
-    获取所有行业概念分析端点信息
+    """获取所有行业概念分析端点信息
     """
     endpoints = [
         {"path": "/api/analysis/industry/list", "method": "GET", "description": "获取所有行业分类列表"},

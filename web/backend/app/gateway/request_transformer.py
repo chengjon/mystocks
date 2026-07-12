@@ -1,5 +1,4 @@
-"""
-Request/Response Transformer - Request and response transformation middleware
+"""Request/Response Transformer - Request and response transformation middleware
 
 Handles request validation, transformation, and response formatting.
 
@@ -13,6 +12,7 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 import structlog
+
 
 logger = structlog.get_logger()
 
@@ -54,6 +54,7 @@ class RequestTransformer:
 
         Returns:
             Transformed request dictionary
+
         """
         # Extract version from path
         version = self._extract_version(path)
@@ -105,6 +106,7 @@ class RequestTransformer:
 
         Returns:
             Version string (e.g., "v1")
+
         """
         # Extract version like /api/v1/... or /api/v2/...
         parts = path.split("/")
@@ -122,6 +124,7 @@ class RequestTransformer:
 
         Returns:
             Normalized path
+
         """
         # Remove trailing slash
         if path.endswith("/") and len(path) > 1:
@@ -141,6 +144,7 @@ class RequestTransformer:
 
         Returns:
             Validated body
+
         """
         if not isinstance(body, dict):
             logger.warning("⚠️ Request body is not a dictionary")
@@ -157,6 +161,7 @@ class RequestTransformer:
 
         Returns:
             Validated parameters
+
         """
         if not isinstance(params, dict):
             return {}
@@ -169,6 +174,7 @@ class RequestTransformer:
 
         Returns:
             Correlation ID
+
         """
         from uuid import uuid4
 
@@ -199,6 +205,7 @@ class ResponseTransformer:
 
         Returns:
             Transformed response dictionary
+
         """
         response = {
             "success": 200 <= status_code < 300,
@@ -234,6 +241,7 @@ class ResponseTransformer:
 
         Returns:
             Error response dictionary
+
         """
         response = {
             "success": False,
@@ -270,6 +278,7 @@ class ResponseTransformer:
 
         Returns:
             Paginated response dictionary
+
         """
         total_pages = (total + page_size - 1) // page_size
 
@@ -301,6 +310,7 @@ class RequestValidationError(Exception):
         Args:
             message: Error message
             field: Field that failed validation
+
         """
         self.message = message
         self.field = field
@@ -320,6 +330,7 @@ class RequestValidator:
 
         Raises:
             RequestValidationError: If required fields are missing
+
         """
         missing = [field for field in required_fields if field not in data]
         if missing:
@@ -336,6 +347,7 @@ class RequestValidator:
 
         Raises:
             RequestValidationError: If type doesn't match
+
         """
         if field not in data:
             return
@@ -363,6 +375,7 @@ class RequestValidator:
 
         Raises:
             RequestValidationError: If value is out of range
+
         """
         if field not in data:
             return
@@ -384,6 +397,7 @@ class RequestValidator:
 
         Raises:
             RequestValidationError: If value is not in choices
+
         """
         if field not in data:
             return

@@ -1,5 +1,4 @@
-"""
-持仓风险评估 API - V3.1
+"""持仓风险评估 API - V3.1
 
 提供持仓风险评估功能:
 - 仓位风险评估
@@ -20,6 +19,7 @@ from typing import Any, Dict
 import structlog
 from fastapi import APIRouter, HTTPException
 
+
 logger = structlog.get_logger(__name__)
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../"))
@@ -31,8 +31,7 @@ router = APIRouter(prefix="/api/v1/risk/position", tags=["持仓风险评估"])
 
 @router.post("/assess")
 async def assess_position_risk(request: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    评估仓位风险
+    """评估仓位风险
 
     请求示例:
     ```json
@@ -77,7 +76,7 @@ async def assess_position_risk(request: Dict[str, Any]) -> Dict[str, Any]:
                     "symbol": symbol,
                     "concentration": concentration,
                     "exceeds_limit": exceeds_limit,
-                }
+                },
             )
 
             if exceeds_limit:
@@ -118,13 +117,12 @@ async def assess_position_risk(request: Dict[str, Any]) -> Dict[str, Any]:
 
     except Exception as e:
         logger.error("评估仓位风险失败: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"评估仓位风险失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"评估仓位风险失败: {e!s}")
 
 
 @router.post("/alerts/generate")
 async def generate_risk_alerts(request: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    生成风险告警
+    """生成风险告警
 
     请求示例:
     ```json
@@ -161,7 +159,7 @@ async def generate_risk_alerts(request: Dict[str, Any]) -> Dict[str, Any]:
                     ),
                     "timestamp": alert_time,
                     "suggestion": "立即减仓或平仓，控制风险敞口",
-                }
+                },
             )
 
         daily_loss_pct = daily_pnl / total_capital if total_capital > 0 else 0
@@ -173,7 +171,7 @@ async def generate_risk_alerts(request: Dict[str, Any]) -> Dict[str, Any]:
                     "message": (f"单日亏损超限: {daily_loss_pct * 100:.2f}% < {-daily_loss_limit * 100:.2f}%"),
                     "timestamp": alert_time,
                     "suggestion": "暂停开仓，检查策略执行情况",
-                }
+                },
             )
 
         return {
@@ -184,4 +182,4 @@ async def generate_risk_alerts(request: Dict[str, Any]) -> Dict[str, Any]:
 
     except Exception as e:
         logger.error("生成风险告警失败: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"生成风险告警失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"生成风险告警失败: {e!s}")

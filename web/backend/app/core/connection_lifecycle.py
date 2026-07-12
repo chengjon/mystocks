@@ -1,5 +1,4 @@
-"""
-WebSocket连接生命周期管理
+"""WebSocket连接生命周期管理
 
 Connection Lifecycle Management - Handle connect/disconnect/timeout events
 
@@ -22,6 +21,7 @@ from enum import Enum
 from typing import Any, Callable, Dict, Optional
 
 import structlog
+
 
 logger = structlog.get_logger()
 
@@ -46,13 +46,13 @@ class HeartbeatConfig:
         timeout: float = 60.0,
         max_retries: int = 3,
     ):
-        """
-        初始化心跳配置
+        """初始化心跳配置
 
         Args:
             interval: 心跳间隔（秒）
             timeout: 心跳超时时间（秒）
             max_retries: 最大重试次数
+
         """
         self.interval = interval
         self.timeout = timeout
@@ -256,12 +256,12 @@ class ConnectionHealthMonitor:
         lifecycle_manager: ConnectionLifecycleManager,
         check_interval: float = 10.0,
     ):
-        """
-        初始化连接健康监控器
+        """初始化连接健康监控器
 
         Args:
             lifecycle_manager: 连接生命周期管理器
             check_interval: 检查间隔（秒）
+
         """
         self.lifecycle_manager = lifecycle_manager
         self.check_interval = check_interval

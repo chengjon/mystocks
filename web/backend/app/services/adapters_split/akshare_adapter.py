@@ -1,14 +1,15 @@
-"""
-Akshare数据源适配器
+"""Akshare数据源适配器
 
 提供Akshare中国市场数据获取功能，支持股票、基金、指数、期货等
 """
 
 from typing import Dict, List, Optional
 
-from .base_adapter import BaseAdapter
 from app.core.database import db_service
 from app.services.data_quality_monitor import get_data_quality_monitor
+
+from .base_adapter import BaseAdapter
+
 
 logger = __import__("logging").getLogger(__name__)
 
@@ -24,14 +25,14 @@ class AkshareAdapter(BaseAdapter):
         logger.info(f"初始化{self.name}适配器")
 
     async def get_stock_basic(self, stock_code: str) -> Optional[Dict]:
-        """
-        获取股票基本信息
+        """获取股票基本信息
 
         Args:
             stock_code: 股票代码
 
         Returns:
             Dict: 股票基本信息，失败返回None
+
         """
         try:
             self._log_request_start("get_stock_basic", {"stock_code": stock_code})
@@ -63,8 +64,7 @@ class AkshareAdapter(BaseAdapter):
             return None
 
     async def get_stock_daily(self, stock_code: str, start_date: str, end_date: str) -> Optional[List[Dict]]:
-        """
-        获取股票日线数据
+        """获取股票日线数据
 
         Args:
             stock_code: 股票代码
@@ -73,10 +73,11 @@ class AkshareAdapter(BaseAdapter):
 
         Returns:
             List[Dict]: 日线数据列表，失败返回空列表
+
         """
         try:
             self._log_request_start(
-                "get_stock_daily", {"stock_code": stock_code, "start_date": start_date, "end_date": end_date}
+                "get_stock_daily", {"stock_code": stock_code, "start_date": start_date, "end_date": end_date},
             )
 
             from akshare import stock_zh_a_hist as ak
@@ -99,7 +100,7 @@ class AkshareAdapter(BaseAdapter):
                         "close": row["收盘"] if "收盘" in row else 0,
                         "volume": row["成交量"] if "成交量" in row else 0,
                         "amount": row["成交额"] if "成交额" in row else 0,
-                    }
+                    },
                 )
 
             self._log_request_success("get_stock_daily", f"返回{len(daily_data)}条日线数据")
@@ -112,14 +113,14 @@ class AkshareAdapter(BaseAdapter):
             return []
 
     async def get_realtime_quotes(self, stock_codes: List[str]) -> Optional[List[Dict]]:
-        """
-        获取实时行情
+        """获取实时行情
 
         Args:
             stock_codes: 股票代码列表
 
         Returns:
             List[Dict]: 实时行情数据列表，失败返回空列表
+
         """
         try:
             self._log_request_start("get_realtime_quotes", {"stock_codes": stock_codes})
@@ -142,7 +143,7 @@ class AkshareAdapter(BaseAdapter):
                                 "change_percent": latest["涨跌幅%"] if "涨跌幅%" in df.columns else 0,
                                 "volume": latest["成交量(手)"] if "成交量(手)" in df.columns else 0,
                                 "turnover": latest["换手率"] if "换手率" in df.columns else 0,
-                            }
+                            },
                         )
                 except Exception as stock_error:
                     logger.warning(f"获取{stock_code}实时行情失败: {stock_error}")
@@ -157,8 +158,7 @@ class AkshareAdapter(BaseAdapter):
             return []
 
     async def get_fund_flow(self, stock_code: str, days: int = 5) -> Optional[Dict]:
-        """
-        获取资金流向
+        """获取资金流向
 
         Args:
             stock_code: 股票代码
@@ -166,6 +166,7 @@ class AkshareAdapter(BaseAdapter):
 
         Returns:
             Dict: 资金流向数据，失败返回None
+
         """
         try:
             self._log_request_start("get_fund_flow", {"stock_code": stock_code, "days": days})
@@ -198,14 +199,14 @@ class AkshareAdapter(BaseAdapter):
             return None
 
     async def get_board_data(self, stock_code: str) -> Optional[Dict]:
-        """
-        获取龙虎榜数据
+        """获取龙虎榜数据
 
         Args:
             stock_code: 股票代码
 
         Returns:
             Dict: 龙虎榜数据，失败返回None
+
         """
         try:
             self._log_request_start("get_board_data", {"stock_code": stock_code})
@@ -229,9 +230,8 @@ class AkshareAdapter(BaseAdapter):
                 }
                 self._log_request_success("get_board_data", board_data)
                 return board_data
-            else:
-                self._log_request_error("get_board_data", Exception("未上榜"))
-                return None
+            self._log_request_error("get_board_data", Exception("未上榜"))
+            return None
 
         except Exception as e:
             self._log_request_error("get_board_data", e)

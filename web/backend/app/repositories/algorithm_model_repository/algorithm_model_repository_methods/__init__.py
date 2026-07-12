@@ -10,7 +10,7 @@ class AlgorithmModelRepository(
     AlgorithmModelRepositoryMaintenanceMixin,
 ):
     """AlgorithmModelRepository - 组合所有方法集"""
-    pass
+
 
 
 __all__ = ["AlgorithmModelRepository"]

@@ -1,5 +1,4 @@
-"""
-Unit Tests for Indicator Registry and Metadata
+"""Unit Tests for Indicator Registry and Metadata
 ===============================================
 
 测试指标注册表和元数据模块的功能。
@@ -14,22 +13,23 @@ Coverage:
 Author: MyStocks Project
 """
 
-import pytest
-import numpy as np
 from pathlib import Path
 
+import numpy as np
+import pytest
+
 from app.services.indicators import (
-    IndicatorCategory,
+    CalculationStatus,
     ComplexityLevel,
-    ParameterType,
-    ParameterConstraint,
-    IndicatorParameter,
+    IndicatorCategory,
     IndicatorMetadata,
+    IndicatorParameter,
+    IndicatorResult,
+    OHLCVData,
+    ParameterConstraint,
+    ParameterType,
     get_indicator_registry,
     reset_indicator_registry,
-    OHLCVData,
-    IndicatorResult,
-    CalculationStatus,
 )
 
 
@@ -269,7 +269,7 @@ class TestIndicatorRegistry:
                 chinese_name="简单移动平均线",
                 category=IndicatorCategory.TREND,
                 description="",
-            )
+            ),
         )
         registry.register(
             IndicatorMetadata(
@@ -278,7 +278,7 @@ class TestIndicatorRegistry:
                 chinese_name="相对强弱指数",
                 category=IndicatorCategory.MOMENTUM,
                 description="",
-            )
+            ),
         )
         registry.register(
             IndicatorMetadata(
@@ -287,7 +287,7 @@ class TestIndicatorRegistry:
                 chinese_name="真实波幅均值",
                 category=IndicatorCategory.VOLATILITY,
                 description="",
-            )
+            ),
         )
 
         trend_indicators = registry.get_by_category(IndicatorCategory.TREND)
@@ -307,7 +307,7 @@ class TestIndicatorRegistry:
                 chinese_name="简单移动平均线",
                 category=IndicatorCategory.TREND,
                 description="",
-            )
+            ),
         )
         registry.register(
             IndicatorMetadata(
@@ -316,7 +316,7 @@ class TestIndicatorRegistry:
                 chinese_name="相对强弱指数",
                 category=IndicatorCategory.MOMENTUM,
                 description="",
-            )
+            ),
         )
 
         all_indicators = registry.get_all()
@@ -334,7 +334,7 @@ class TestIndicatorRegistry:
                 chinese_name="简单移动平均线",
                 category=IndicatorCategory.TREND,
                 description="Simple moving average for price smoothing",
-            )
+            ),
         )
         registry.register(
             IndicatorMetadata(
@@ -343,7 +343,7 @@ class TestIndicatorRegistry:
                 chinese_name="相对强弱指数",
                 category=IndicatorCategory.MOMENTUM,
                 description="Measures overbought and oversold levels",
-            )
+            ),
         )
 
         # 搜索 "simple" - 应该在 full_name 中
@@ -384,7 +384,7 @@ class TestIndicatorRegistry:
                 category=IndicatorCategory.MOMENTUM,
                 description="",
                 parameters=[param],
-            )
+            ),
         )
 
         is_valid, _ = registry.validate_indicator("RSI", {"timeperiod": 14})
@@ -408,7 +408,7 @@ class TestIndicatorRegistry:
                 category=IndicatorCategory.MOMENTUM,
                 description="",
                 parameters=[param],
-            )
+            ),
         )
 
         is_valid, error = registry.validate_indicator("RSI", {"timeperiod": 1})
@@ -434,7 +434,7 @@ class TestIndicatorRegistry:
                 category=IndicatorCategory.TREND,
                 description="",
                 complexity=ComplexityLevel.LOW,
-            )
+            ),
         )
         registry.register(
             IndicatorMetadata(
@@ -444,7 +444,7 @@ class TestIndicatorRegistry:
                 category=IndicatorCategory.MOMENTUM,
                 description="",
                 complexity=ComplexityLevel.MEDIUM,
-            )
+            ),
         )
 
         stats = registry.get_stats()
@@ -514,7 +514,7 @@ class TestOHLCVData:
         """测试OHLCV切片"""
         n = 100
         data = OHLCVData(
-            open=np.arange(n), high=np.arange(n), low=np.arange(n), close=np.arange(n), volume=np.arange(n)
+            open=np.arange(n), high=np.arange(n), low=np.arange(n), close=np.arange(n), volume=np.arange(n),
         )
 
         sliced = data.slice(10, 20)

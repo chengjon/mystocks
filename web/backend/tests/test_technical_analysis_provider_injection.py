@@ -3,6 +3,7 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
+
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 TECHNICAL_ANALYSIS_PATH = PROJECT_ROOT / "web/backend/app/api/technical_analysis.py"
 PROVIDER_NAME = "get_technical_analysis_data_source"

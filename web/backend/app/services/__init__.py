@@ -1,21 +1,20 @@
-"""
-综合服务模块入口
+"""综合服务模块入口
 
 整合所有已创建的服务模块：风险管理、市场数据、交易数据、分析数据、数据适配等
 """
 
 from __future__ import annotations
 
-from datetime import datetime
 import logging
+from datetime import datetime
 from typing import Any, Dict, List, Optional
+
 
 logger = __import__("logging").getLogger(__name__)
 
 
 class IntegratedServices:
-    """
-    综合服务管理器
+    """综合服务管理器
 
     整合所有已创建的服务模块，提供统一的服务入口点
     """
@@ -63,11 +62,11 @@ class IntegratedServices:
         logger.info("综合服务管理器初始化完成")
 
     async def initialize_all_services(self) -> bool:
-        """
-        初始化所有服务
+        """初始化所有服务
 
         Returns:
             bool: 是否全部初始化成功
+
         """
         try:
             self.logger.info("开始初始化所有服务...")
@@ -126,7 +125,7 @@ class IntegratedServices:
         return self.market_data_service.get_stock_quote(source_type, stock_code)
 
     def get_technical_indicator(
-        self, source_type: str, symbol: str, indicator_type: str, period: int = 20
+        self, source_type: str, symbol: str, indicator_type: str, period: int = 20,
     ) -> Optional[Dict]:
         """获取技术指标（路由到分析数据服务）"""
         return self.analysis_data_service.calculate_technical_indicator(source_type, symbol, indicator_type, period)
@@ -225,11 +224,11 @@ class IntegratedServices:
 
 
 def get_integrated_services() -> IntegratedServices:
-    """
-    获取综合服务实例（单例模式）
+    """获取综合服务实例（单例模式）
 
     Returns:
         IntegratedServices: 综合服务实例
+
     """
     try:
         if not hasattr(get_integrated_services, "_instance"):
@@ -241,11 +240,11 @@ def get_integrated_services() -> IntegratedServices:
 
 
 async def initialize_all_services() -> bool:
-    """
-    初始化所有服务（便捷函数）
+    """初始化所有服务（便捷函数）
 
     Returns:
         bool: 是否全部初始化成功
+
     """
     integrated_services = get_integrated_services()
     return await integrated_services.initialize_all_services()

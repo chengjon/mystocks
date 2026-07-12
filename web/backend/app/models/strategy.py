@@ -1,5 +1,4 @@
-"""
-股票策略模型 (SQLAlchemy ORM)
+"""股票策略模型 (SQLAlchemy ORM)
 
 包含2个核心实体:
 - StrategyDefinition: 策略定义和元数据
@@ -21,6 +20,7 @@ from sqlalchemy import (
     Text,
 )
 from sqlalchemy.orm import declarative_base
+
 
 Base = declarative_base()
 

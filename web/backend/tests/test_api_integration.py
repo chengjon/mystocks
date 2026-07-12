@@ -1,5 +1,4 @@
-"""
-P1改进 API集成测试框架
+"""P1改进 API集成测试框架
 
 测试FastAPI核心端点的集成功能，包括:
 - 健康检查和系统状态
@@ -10,12 +9,14 @@ P1改进 API集成测试框架
 遵循项目测试规范和API设计标准
 """
 
-import pytest
 import os
+
+import pytest
 from fastapi.testclient import TestClient
 
 # 导入应用
 from app.main import app
+
 
 FRONTEND_PORT = os.getenv("FRONTEND_PORT", "3020")
 FRONTEND_ORIGIN = f"http://localhost:{FRONTEND_PORT}"

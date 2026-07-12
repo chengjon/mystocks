@@ -1,5 +1,4 @@
-"""
-Cninfo (巨潮资讯) Adapter
+"""Cninfo (巨潮资讯) Adapter
 Multi-data Source Support
 
 巨潮资讯网是中国证监会指定的上市公司信息披露网站
@@ -28,12 +27,12 @@ from app.adapters.base import (
     DataSourceType,
 )
 
+
 logger = logging.getLogger(__name__)
 
 
 class CninfoAdapter(BaseDataSourceAdapter):
-    """
-    巨潮资讯适配器
+    """巨潮资讯适配器
 
     官方公告数据源，提供最权威的上市公司信息披露
     """
@@ -69,11 +68,11 @@ class CninfoAdapter(BaseDataSourceAdapter):
     }
 
     def __init__(self, config: Optional[DataSourceConfig] = None):
-        """
-        初始化巨潮资讯适配器
+        """初始化巨潮资讯适配器
 
         Args:
             config: 数据源配置
+
         """
         if config is None:
             config = DataSourceConfig(
@@ -94,17 +93,17 @@ class CninfoAdapter(BaseDataSourceAdapter):
                 "Accept": "application/json, text/javascript, */*",
                 "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
                 "X-Requested-With": "XMLHttpRequest",
-            }
+            },
         )
 
         logger.info("CninfoAdapter initialized")
 
     def get_supported_categories(self) -> List[DataCategory]:
-        """
-        获取支持的数据类别
+        """获取支持的数据类别
 
         Returns:
             List[DataCategory]: 支持的数据类别
+
         """
         return [DataCategory.ANNOUNCEMENT, DataCategory.FINANCIAL_REPORT]
 
@@ -117,8 +116,7 @@ class CninfoAdapter(BaseDataSourceAdapter):
         page: int = 1,
         page_size: int = 30,
     ) -> pd.DataFrame:
-        """
-        获取公告列表
+        """获取公告列表
 
         Args:
             symbol: 股票代码 (可选，不传则获取所有)
@@ -130,6 +128,7 @@ class CninfoAdapter(BaseDataSourceAdapter):
 
         Returns:
             pd.DataFrame: 公告列表
+
         """
         start_time = time.time()
         success = False
@@ -240,8 +239,7 @@ class CninfoAdapter(BaseDataSourceAdapter):
         page: int = 1,
         page_size: int = 30,
     ) -> pd.DataFrame:
-        """
-        搜索公告（全文检索）
+        """搜索公告（全文检索）
 
         Args:
             keywords: 关键词
@@ -252,6 +250,7 @@ class CninfoAdapter(BaseDataSourceAdapter):
 
         Returns:
             pd.DataFrame: 搜索结果
+
         """
         start_time = time.time()
         success = False
@@ -307,14 +306,14 @@ class CninfoAdapter(BaseDataSourceAdapter):
         return data
 
     def fetch_announcement_detail(self, announcement_id: str) -> Dict[str, Any]:
-        """
-        获取公告详情（包括内容）
+        """获取公告详情（包括内容）
 
         Args:
             announcement_id: 公告ID
 
         Returns:
             Dict: 公告详情
+
         """
         # 注意：Cninfo的公告内容主要以PDF形式提供
         # 如需提取PDF文本内容，需要额外的PDF解析库
@@ -327,20 +326,20 @@ class CninfoAdapter(BaseDataSourceAdapter):
         }
 
     def get_announcement_types(self) -> Dict[str, tuple]:
-        """
-        获取支持的公告类型
+        """获取支持的公告类型
 
         Returns:
             Dict: 公告类型映射
+
         """
         return self.ANNOUNCEMENT_TYPES.copy()
 
     def fetch_realtime_quote(self, symbols: Optional[List[str]] = None) -> pd.DataFrame:
-        """
-        Cninfo不支持实时行情
+        """Cninfo不支持实时行情
 
         Returns:
             pd.DataFrame: 空DataFrame
+
         """
         logger.warning("Cninfo does not support realtime_quote")
         return pd.DataFrame()
@@ -352,11 +351,11 @@ class CninfoAdapter(BaseDataSourceAdapter):
         end_date: Optional[date] = None,
         period: str = "daily",
     ) -> pd.DataFrame:
-        """
-        Cninfo不支持历史行情
+        """Cninfo不支持历史行情
 
         Returns:
             pd.DataFrame: 空DataFrame
+
         """
         logger.warning("Cninfo does not support historical_quote")
         return pd.DataFrame()

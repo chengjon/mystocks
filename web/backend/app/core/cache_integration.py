@@ -1,5 +1,4 @@
-"""
-Cache Integration Module - 缓存集成工具
+"""Cache Integration Module - 缓存集成工具
 
 提供与数据服务集成的缓存工具函数，实现Cache-Aside模式。
 
@@ -35,6 +34,7 @@ import structlog
 
 from app.core.cache_manager import CacheManager, get_cache_manager
 
+
 logger = structlog.get_logger()
 
 T = TypeVar("T")
@@ -44,11 +44,11 @@ class CacheIntegration:
     """缓存集成工具类"""
 
     def __init__(self, cache_manager: Optional[CacheManager] = None):
-        """
-        初始化缓存集成
+        """初始化缓存集成
 
         Args:
             cache_manager: CacheManager实例 (如果不提供，使用单例)
+
         """
         self.cache_manager = cache_manager or get_cache_manager()
         logger.info("🔧 初始化缓存集成工具")
@@ -64,8 +64,7 @@ class CacheIntegration:
         use_cache: bool = True,
         ttl_days: int = 7,
     ) -> Dict[str, Any]:
-        """
-        缓存读取模式 (Cache-Aside)
+        """缓存读取模式 (Cache-Aside)
 
         执行流程:
         1. 尝试从缓存读取
@@ -90,6 +89,7 @@ class CacheIntegration:
                 "timestamp": "2025-11-06T...",
                 "cached_at": "2025-11-06T..." (仅当source=cache时)
             }
+
         """
         timeframe = timeframe or "1d"
 
@@ -171,8 +171,7 @@ class CacheIntegration:
         use_cache: bool = True,
         ttl_days: int = 7,
     ) -> Dict[str, Dict[str, Any]]:
-        """
-        批量缓存读取
+        """批量缓存读取
 
         Args:
             queries: 查询列表，每个元素:
@@ -191,6 +190,7 @@ class CacheIntegration:
                 "000858:etf": {...},
                 ...
             }
+
         """
         results = {}
 
@@ -243,8 +243,7 @@ class CacheIntegration:
         use_cache: bool = True,
         ttl_days: int = 7,
     ) -> bool:
-        """
-        缓存写入模式 (Cache-Aside Write)
+        """缓存写入模式 (Cache-Aside Write)
 
         执行流程:
         1. 调用save_fn保存到源
@@ -262,6 +261,7 @@ class CacheIntegration:
 
         Returns:
             bool: 是否成功保存
+
         """
         timeframe = timeframe or "1d"
 
@@ -331,8 +331,7 @@ class CacheIntegration:
         use_cache: bool = True,
         ttl_days: int = 7,
     ) -> int:
-        """
-        批量缓存写入
+        """批量缓存写入
 
         Args:
             records: 记录列表，每个元素:
@@ -348,6 +347,7 @@ class CacheIntegration:
 
         Returns:
             成功保存的记录数
+
         """
         try:
             # 1. 批量保存到源
@@ -372,7 +372,7 @@ class CacheIntegration:
                                 "data_type": data_type,
                                 "timeframe": timeframe,
                                 "data": data,
-                            }
+                            },
                         )
 
                 if cache_records:
@@ -406,8 +406,7 @@ class CacheIntegration:
         symbol: Optional[str] = None,
         data_type: Optional[str] = None,
     ) -> int:
-        """
-        清除缓存
+        """清除缓存
 
         Args:
             symbol: 股票代码 (可选)
@@ -415,6 +414,7 @@ class CacheIntegration:
 
         Returns:
             清除的记录数
+
         """
         return self.cache_manager.invalidate_cache(symbol=symbol, data_type=data_type)
 
@@ -424,8 +424,7 @@ class CacheIntegration:
         data_type: str,
         max_age_days: int = 7,
     ) -> bool:
-        """
-        检查缓存是否新鲜
+        """检查缓存是否新鲜
 
         Args:
             symbol: 股票代码
@@ -434,6 +433,7 @@ class CacheIntegration:
 
         Returns:
             bool: 缓存是否有效且未过期
+
         """
         return self.cache_manager.is_cache_valid(
             symbol=symbol,
@@ -454,14 +454,14 @@ _cache_integration: Optional[CacheIntegration] = None
 def get_cache_integration(
     cache_manager: Optional[CacheManager] = None,
 ) -> CacheIntegration:
-    """
-    获取缓存集成工具单例
+    """获取缓存集成工具单例
 
     Args:
         cache_manager: CacheManager实例 (可选)
 
     Returns:
         CacheIntegration实例
+
     """
     global _cache_integration
 
@@ -481,8 +481,7 @@ def reset_cache_integration() -> None:
 
 
 def cache_read_wrapper(data_type: str, ttl_days: int = 7):
-    """
-    装饰器: 为读取方法添加缓存
+    """装饰器: 为读取方法添加缓存
 
     Usage:
         ```python
@@ -515,8 +514,7 @@ def cache_read_wrapper(data_type: str, ttl_days: int = 7):
 
 
 def cache_write_wrapper(data_type: str, ttl_days: int = 7):
-    """
-    装饰器: 为写入方法添加缓存
+    """装饰器: 为写入方法添加缓存
 
     Usage:
         ```python
@@ -550,8 +548,7 @@ def cache_write_wrapper(data_type: str, ttl_days: int = 7):
 
 
 def cache_invalidate_on_write(data_type: Optional[str] = None):
-    """
-    装饰器: 在写入时自动清除缓存
+    """装饰器: 在写入时自动清除缓存
 
     Usage:
         ```python

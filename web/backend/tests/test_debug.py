@@ -4,6 +4,7 @@
 import os
 import sys
 
+
 # Set environment variables
 os.environ["POSTGRESQL_HOST"] = "localhost"
 os.environ["POSTGRESQL_PORT"] = "5438"
@@ -30,7 +31,9 @@ sys.path.insert(0, "/opt/claude/mystocks_spec")
 sys.path.insert(0, "/opt/claude/mystocks_spec/web/backend")
 
 from fastapi.testclient import TestClient
+
 from app.main import app
+
 
 client = TestClient(app, raise_server_exceptions=True)
 

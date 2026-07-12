@@ -1,5 +1,4 @@
-"""
-股票策略API端点
+"""股票策略API端点
 提供策略执行、查询、管理等RESTful接口
 """
 
@@ -14,6 +13,7 @@ from pydantic import BaseModel, Field, field_validator
 from app.core.responses import ErrorCodes, ResponseMessages, create_error_response, create_success_response
 from app.services.data_source_factory import DataSourceFactory
 from app.services.strategy_service import get_strategy_service
+
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ class StrategyRunRequest(BaseModel):
 
     strategy_code: str = Field(..., description="策略代码", min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$")
     symbol: Optional[str] = Field(
-        None, description="单个股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$"
+        None, description="单个股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$",
     )
     symbols: Optional[List[str]] = Field(None, description="多个股票代码列表")
     check_date: Optional[str] = Field(None, description="检查日期 YYYY-MM-DD", pattern=r"^\d{4}-\d{2}-\d{2}$")
@@ -144,7 +144,7 @@ class StrategyQueryParams(BaseModel):
     """策略查询参数"""
 
     strategy_code: Optional[str] = Field(
-        None, description="策略代码", min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$"
+        None, description="策略代码", min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$",
     )
     symbol: Optional[str] = Field(None, description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$")
     check_date: Optional[str] = Field(None, description="检查日期 YYYY-MM-DD", pattern=r"^\d{4}-\d{2}-\d{2}$")
@@ -188,11 +188,11 @@ async def get_strategy_definitions(
     *,
     strategy_adapter: Any = Depends(get_strategy_data_source),
 ):
-    """
-    获取所有策略定义
+    """获取所有策略定义
 
     Returns:
         所有可用策略的定义列表
+
     """
     try:
         result = await strategy_adapter.get_data("definitions")
@@ -206,7 +206,7 @@ async def get_strategy_definitions(
         definitions_data = result.get("data", [])
 
         return create_success_response(
-            data={"definitions": definitions_data, "total": len(definitions_data)}, message=ResponseMessages.SUCCESS
+            data={"definitions": definitions_data, "total": len(definitions_data)}, message=ResponseMessages.SUCCESS,
         )
 
     except HTTPException:
@@ -228,8 +228,7 @@ async def run_strategy_single(
     *,
     strategy_adapter: Any = Depends(get_strategy_data_source),
 ):
-    """
-    对单只股票运行策略
+    """对单只股票运行策略
 
     Args:
         strategy_code: 策略代码 (如: volume_surge)
@@ -239,6 +238,7 @@ async def run_strategy_single(
 
     Returns:
         策略执行结果
+
     """
     try:
         params = {"strategy_code": strategy_code, "symbol": symbol, "stock_name": stock_name, "check_date": check_date}
@@ -267,7 +267,7 @@ async def run_strategy_single(
         logger.error("运行单只股票策略失败: %(e)s")
         raise HTTPException(
             status_code=500,
-            detail=create_error_response(ErrorCodes.INTERNAL_SERVER_ERROR, f"运行策略失败: {str(e)}").model_dump(),
+            detail=create_error_response(ErrorCodes.INTERNAL_SERVER_ERROR, f"运行策略失败: {e!s}").model_dump(),
         )
 
 
@@ -275,7 +275,7 @@ async def run_strategy_single(
 async def run_strategy_batch(
     strategy_code: str = Query(..., description="策略代码", min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$"),
     symbols: Optional[str] = Query(
-        None, description="股票代码列表，逗号分隔", max_length=20000  # 1000个股票代码 * 20字符 + 999个逗号
+        None, description="股票代码列表，逗号分隔", max_length=20000,  # 1000个股票代码 * 20字符 + 999个逗号
     ),
     market: Optional[str] = Query("A", description="市场类型 (A/SH/SZ/CYB/KCB)", pattern=r"^(A|SH|SZ|CYB|KCB)$"),
     limit: Optional[int] = Query(None, description="限制处理数量", ge=1, le=5000),
@@ -283,8 +283,7 @@ async def run_strategy_batch(
     *,
     strategy_adapter: Any = Depends(get_strategy_data_source),
 ):
-    """
-    批量运行策略
+    """批量运行策略
 
     Args:
         strategy_code: 策略代码
@@ -295,6 +294,7 @@ async def run_strategy_batch(
 
     Returns:
         批量执行结果统计
+
     """
     try:
         params = {
@@ -330,7 +330,7 @@ async def run_strategy_batch(
         logger.error("批量运行策略失败: %(e)s")
         raise HTTPException(
             status_code=500,
-            detail=create_error_response(ErrorCodes.INTERNAL_SERVER_ERROR, f"批量运行策略失败: {str(e)}").model_dump(),
+            detail=create_error_response(ErrorCodes.INTERNAL_SERVER_ERROR, f"批量运行策略失败: {e!s}").model_dump(),
         )
 
 
@@ -340,7 +340,7 @@ async def run_strategy_batch(
 @router.get("/results", tags=["strategy"])
 async def query_strategy_results(
     strategy_code: Optional[str] = Query(
-        None, description="策略代码", min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$"
+        None, description="策略代码", min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$",
     ),
     symbol: Optional[str] = Query(None, description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$"),
     check_date: Optional[str] = Query(None, description="检查日期 YYYY-MM-DD", pattern=r"^\d{4}-\d{2}-\d{2}$"),
@@ -348,8 +348,7 @@ async def query_strategy_results(
     limit: int = Query(100, description="返回数量", ge=1, le=1000),
     offset: int = Query(0, description="偏移量", ge=0, le=10000),
 ):
-    """
-    查询策略结果
+    """查询策略结果
 
     Args:
         strategy_code: 策略代码 (可选)
@@ -361,6 +360,7 @@ async def query_strategy_results(
 
     Returns:
         策略结果列表
+
     """
     try:
         service = get_strategy_service()
@@ -397,7 +397,7 @@ async def query_strategy_results(
         logger.error("查询策略结果失败: %(e)s")
         raise HTTPException(
             status_code=500,
-            detail=create_error_response(ErrorCodes.DATABASE_ERROR, f"查询策略结果失败: {str(e)}").model_dump(),
+            detail=create_error_response(ErrorCodes.DATABASE_ERROR, f"查询策略结果失败: {e!s}").model_dump(),
         )
 
 
@@ -407,8 +407,7 @@ async def get_matched_stocks(
     check_date: Optional[str] = Query(None, description="检查日期 YYYY-MM-DD", pattern=r"^\d{4}-\d{2}-\d{2}$"),
     limit: int = Query(100, description="返回数量", ge=1, le=1000),
 ):
-    """
-    获取匹配指定策略的股票列表
+    """获取匹配指定策略的股票列表
 
     Args:
         strategy_code: 策略代码
@@ -417,6 +416,7 @@ async def get_matched_stocks(
 
     Returns:
         匹配的股票列表
+
     """
     try:
         service = get_strategy_service()
@@ -445,16 +445,16 @@ async def get_matched_stocks(
 
 @router.get("/stats/summary", tags=["strategy"])
 async def get_strategy_summary(
-    check_date: Optional[str] = Query(None, description="检查日期 YYYY-MM-DD", pattern=r"^\d{4}-\d{2}-\d{2}$")
+    check_date: Optional[str] = Query(None, description="检查日期 YYYY-MM-DD", pattern=r"^\d{4}-\d{2}-\d{2}$"),
 ):
-    """
-    获取策略统计摘要
+    """获取策略统计摘要
 
     Args:
         check_date: 检查日期 (可选，默认今天)
 
     Returns:
         各策略的匹配数量统计
+
     """
     try:
         service = get_strategy_service()
@@ -485,7 +485,7 @@ async def get_strategy_summary(
                     "strategy_name_en": strategy["strategy_name_en"],
                     "matched_count": len(matched_stocks),
                     "check_date": check_date or datetime.now().strftime("%Y-%m-%d"),
-                }
+                },
             )
 
         return create_success_response(
@@ -502,5 +502,5 @@ async def get_strategy_summary(
         logger.error("获取策略统计失败: %(e)s")
         raise HTTPException(
             status_code=500,
-            detail=create_error_response(ErrorCodes.DATABASE_ERROR, f"获取策略统计失败: {str(e)}").model_dump(),
+            detail=create_error_response(ErrorCodes.DATABASE_ERROR, f"获取策略统计失败: {e!s}").model_dump(),
         )

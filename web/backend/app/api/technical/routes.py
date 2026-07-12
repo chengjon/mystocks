@@ -1,8 +1,8 @@
-"""
-技术分析API路由
+"""技术分析API路由
 """
 
 from fastapi import APIRouter
+
 
 # Prefix is governed by the central route registry.
 router = APIRouter()
@@ -22,8 +22,7 @@ async def get_status():
 
 @router.post("/analyze")
 async def analyze_data(data: dict):
-    """
-    技术分析AI智能分析
+    """技术分析AI智能分析
 
     使用AI模型对股票技术指标数据进行智能分析，生成交易信号和市场洞察。
     该端点集成了多种技术分析模型，提供综合性的技术面分析结果。

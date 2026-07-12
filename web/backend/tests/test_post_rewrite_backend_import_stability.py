@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import os
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -16,7 +16,7 @@ def test_backend_pm2_config_includes_project_root_in_pythonpath() -> None:
         {
             "BACKEND_PORT": "8888",
             "BACKEND_BACKUP_PORT": "8889",
-        }
+        },
     )
 
     completed = subprocess.run(
@@ -58,7 +58,7 @@ def test_app_main_imports_on_origin_main_recovery_path() -> None:
             "BACKEND_BACKUP_PORT": "8135",
             "TESTING": "true",
             "PYTHONPATH": ".:web/backend",
-        }
+        },
     )
 
     completed = subprocess.run(
@@ -120,7 +120,7 @@ def test_app_main_imports_when_loguru_is_unavailable() -> None:
             "BACKEND_BACKUP_PORT": "8001",
             "TESTING": "true",
             "PYTHONPATH": ".:web/backend",
-        }
+        },
     )
 
     completed = subprocess.run(
@@ -165,7 +165,7 @@ def test_app_main_imports_when_talib_is_unavailable() -> None:
             "BACKEND_BACKUP_PORT": "8001",
             "TESTING": "true",
             "PYTHONPATH": ".:web/backend",
-        }
+        },
     )
 
     completed = subprocess.run(
@@ -210,7 +210,7 @@ def test_app_main_imports_when_akshare_is_unavailable() -> None:
             "BACKEND_BACKUP_PORT": "8001",
             "TESTING": "true",
             "PYTHONPATH": ".:web/backend",
-        }
+        },
     )
 
     completed = subprocess.run(
@@ -255,7 +255,7 @@ def test_app_main_imports_when_joblib_is_unavailable() -> None:
             "BACKEND_BACKUP_PORT": "8001",
             "TESTING": "true",
             "PYTHONPATH": ".:web/backend",
-        }
+        },
     )
 
     completed = subprocess.run(
@@ -291,7 +291,7 @@ def test_akshare_extension_returns_empty_results_when_akshare_is_unavailable() -
     env.update(
         {
             "PYTHONPATH": ".:web/backend",
-        }
+        },
     )
 
     completed = subprocess.run(
@@ -344,7 +344,7 @@ def test_app_main_imports_when_taos_runtime_is_unavailable() -> None:
             "BACKEND_BACKUP_PORT": "8001",
             "TESTING": "true",
             "PYTHONPATH": ".:web/backend",
-        }
+        },
     )
 
     completed = subprocess.run(

@@ -1,5 +1,4 @@
-"""
-Request Router - API versioning and request routing
+"""Request Router - API versioning and request routing
 
 Handles routing with version support, path normalization,
 and intelligent request routing based on patterns.
@@ -15,6 +14,7 @@ from enum import Enum
 from typing import Any, Callable, Dict, List, Optional
 
 import structlog
+
 
 logger = structlog.get_logger()
 
@@ -53,6 +53,7 @@ class RequestRouter:
 
         Args:
             base_path: Base path for all routes (default: /api)
+
         """
         self.base_path = base_path
         self.routes: Dict[str, List[RouteConfig]] = {}
@@ -64,6 +65,7 @@ class RequestRouter:
 
         Args:
             config: Route configuration
+
         """
         # Normalize path
         normalized_path = self._normalize_path(config.path)
@@ -89,6 +91,7 @@ class RequestRouter:
 
         Args:
             configs: List of route configurations
+
         """
         for config in configs:
             self.register_route(config)
@@ -103,6 +106,7 @@ class RequestRouter:
 
         Returns:
             Route configuration or None if not found
+
         """
         normalized_path = self._normalize_path(path)
         route_key = f"{version}:{normalized_path}"
@@ -133,6 +137,7 @@ class RequestRouter:
 
         Returns:
             True if path matches pattern
+
         """
         return self._match_pattern(pattern, path)
 
@@ -145,6 +150,7 @@ class RequestRouter:
 
         Returns:
             Dictionary of extracted parameters
+
         """
         # Convert pattern to regex
         regex_pattern = self._pattern_to_regex(pattern)
@@ -163,6 +169,7 @@ class RequestRouter:
 
         Returns:
             Normalized version string (e.g., "v1")
+
         """
         if not version:
             return "v1"
@@ -178,6 +185,7 @@ class RequestRouter:
 
         Returns:
             Summary dictionary
+
         """
         summary = {
             "total_routes": sum(len(routes) for routes in self.routes.values()),
@@ -198,7 +206,7 @@ class RequestRouter:
                         "path": path,
                         "methods": route.methods,
                         "description": route.description,
-                    }
+                    },
                 )
 
         summary["versions"] = sorted(list(summary["versions"]))
@@ -212,6 +220,7 @@ class RequestRouter:
 
         Returns:
             Normalized path
+
         """
         # Remove trailing slash
         if path.endswith("/") and len(path) > 1:
@@ -232,6 +241,7 @@ class RequestRouter:
 
         Returns:
             True if path matches
+
         """
         regex = self._pattern_to_regex(pattern)
         return bool(re.match(regex, path))
@@ -244,6 +254,7 @@ class RequestRouter:
 
         Returns:
             Regex pattern string
+
         """
         # Escape special characters except for placeholders
         regex = re.escape(pattern)
@@ -266,6 +277,7 @@ class RequestRouterManager:
 
         Args:
             base_path: Base path for API
+
         """
         self.base_path = base_path
         self.routers: Dict[str, RequestRouter] = {}
@@ -279,6 +291,7 @@ class RequestRouterManager:
 
         Returns:
             Request router
+
         """
         if version not in self.routers:
             self.routers[version] = RequestRouter(self.base_path)
@@ -290,6 +303,7 @@ class RequestRouterManager:
 
         Args:
             config: Route configuration
+
         """
         router = self.get_router(config.version)
         router.register_route(config)
@@ -304,6 +318,7 @@ class RequestRouterManager:
 
         Returns:
             Route configuration or None
+
         """
         router = self.routers.get(version)
         if router is None:
@@ -316,5 +331,6 @@ class RequestRouterManager:
 
         Returns:
             Dictionary of routes by version
+
         """
         return {version: router.get_routes_summary() for version, router in self.routers.items()}

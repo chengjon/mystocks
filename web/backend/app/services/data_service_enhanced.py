@@ -1,5 +1,4 @@
-"""
-Enhanced Data Service with Comprehensive Error Handling and Monitoring
+"""Enhanced Data Service with Comprehensive Error Handling and Monitoring
 增强数据服务 - 集成综合错误处理和监控
 
 创建日期: 2025-11-26
@@ -17,6 +16,7 @@ import numpy as np
 import pandas as pd
 from pydantic import ValidationError
 
+
 # Add project root to path to import unified_manager
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 sys.path.insert(0, project_root)
@@ -24,6 +24,7 @@ sys.path.insert(0, os.path.join(project_root, "src"))
 
 from src.core.data_classification import DataClassification
 from src.core.unified_manager import MyStocksUnifiedManager
+
 
 # Import enhanced error handling and monitoring
 try:
@@ -78,15 +79,13 @@ except ImportError:
 
 
 class EnhancedDataService:
-    """
-    增强数据服务
+    """增强数据服务
 
     集成综合错误处理、监控、熔断器和恢复机制
     """
 
     def __init__(self, auto_fetch: bool = True, use_cache: bool = True):
         """初始化增强数据服务"""
-
         # Initialize monitoring and error handling
         if ENHANCED_ERROR_HANDLING:
             self.api_monitor = get_api_monitor()
@@ -133,10 +132,9 @@ class EnhancedDataService:
 
     @handle_errors(max_attempts=3, fallback_value=pd.DataFrame())
     def get_daily_ohlcv(
-        self, symbol: str, start_date: datetime, end_date: datetime
+        self, symbol: str, start_date: datetime, end_date: datetime,
     ) -> Tuple[pd.DataFrame, Dict[str, np.ndarray]]:
-        """
-        获取日线OHLCV数据 (带增强错误处理)
+        """获取日线OHLCV数据 (带增强错误处理)
 
         Args:
             symbol: 股票代码 (如 '600519.SH')
@@ -151,6 +149,7 @@ class EnhancedDataService:
         Raises:
             InvalidDateRangeError: 日期范围无效
             StockDataNotFoundError: 未找到数据
+
         """
         start_time = time.time()
 
@@ -201,7 +200,7 @@ class EnhancedDataService:
 
             logger.info(
                 f"Loaded {len(df)} records for {symbol} "
-                f"from {start_date.date()} to {end_date.date()} in {response_time:.2f}s"
+                f"from {start_date.date()} to {end_date.date()} in {response_time:.2f}s",
             )
 
             return df, ohlcv_data
@@ -222,7 +221,7 @@ class EnhancedDataService:
             raise
 
     def _load_data_with_retry(
-        self, symbol: str, start_date: datetime, end_date: datetime
+        self, symbol: str, start_date: datetime, end_date: datetime,
     ) -> Tuple[pd.DataFrame, Dict[str, np.ndarray]]:
         """带重试机制的数据加载"""
 
@@ -373,7 +372,7 @@ class EnhancedDataService:
 
         except Exception as e:
             logger.error("Failed to load from UnifiedManager: %(e)s")
-            raise DatabaseQueryError(f"数据库查询失败: {str(e)}")
+            raise DatabaseQueryError(f"数据库查询失败: {e!s}")
 
     def _fetch_and_save_from_akshare(self, symbol: str, start_date: datetime, end_date: datetime) -> pd.DataFrame:
         """从Akshare获取数据并保存到数据库 (带错误处理)"""
@@ -408,7 +407,7 @@ class EnhancedDataService:
                     "close": df["close"],
                     "volume": df["volume"],
                     "amount": df.get("amount", df["volume"] * df["close"]),  # Calculate if missing
-                }
+                },
             )
 
             # Save to database via UnifiedManager
@@ -484,7 +483,7 @@ class EnhancedDataService:
                 "volume": volumes,
                 "amount": closes * volumes,
                 "adj_factor": 1.0,
-            }
+            },
         )
 
         return df
@@ -537,7 +536,7 @@ class EnhancedDataService:
             if exchange == "SH":
                 # Shanghai: 600/601/603/688/689
                 return code.startswith(("600", "601", "603", "688", "689"))
-            elif exchange == "SZ":
+            if exchange == "SZ":
                 # Shenzhen: 000/001/002/003/300
                 return code.startswith(("000", "001", "002", "003", "300"))
 

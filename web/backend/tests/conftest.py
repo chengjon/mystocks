@@ -1,5 +1,4 @@
-"""
-pytest配置文件 - P0改进测试框架
+"""pytest配置文件 - P0改进测试框架
 
 遵循项目Mock数据使用规范：
 - 所有模拟数据通过Mock模块提供
@@ -13,6 +12,7 @@ from pathlib import Path
 
 import pytest
 
+
 # 添加项目路径
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -23,7 +23,6 @@ def test_env():
     """会话级环境配置"""
     # 注意：不硬编码Mock开关，使用项目的统一配置
     os.environ["TESTING"] = "true"
-    return
 
 
 @pytest.fixture
@@ -31,6 +30,7 @@ def test_client():
     """Provide a shared FastAPI TestClient for backend pytest suites."""
     try:
         from fastapi.testclient import TestClient
+
         from app.main import app
 
         with TestClient(app) as client:

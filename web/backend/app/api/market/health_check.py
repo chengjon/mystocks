@@ -1,5 +1,4 @@
-"""
-市场数据API路由
+"""市场数据API路由
 
 提供RESTful接口:
 - GET /api/market/fund-flow - 查询资金流向
@@ -14,32 +13,17 @@
 """
 
 import logging
-import os
-from datetime import date, datetime
-from typing import List, Optional
+from datetime import datetime
 
-from fastapi import APIRouter, Depends, Query, HTTPException
-from pydantic import BaseModel, Field, ValidationError, field_validator
+from fastapi import APIRouter
 
-from app.core.cache_utils import cache_response  # 导入缓存工具
-from app.core.circuit_breaker_manager import get_circuit_breaker  # 导入熔断器
-from app.core.exceptions import BusinessException, NotFoundException, ValidationException
-from app.core.responses import create_error_response, create_success_response
-from app.schemas.market_schemas import (
-    ChipRaceResponse,
-    ETFDataResponse,
-    LongHuBangResponse,
-    MessageResponse,
-)
-from app.services.market_data_service import MarketDataService, get_market_data_service
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
 @router.get("/health", summary="市场数据 API 健康检查", description="检查市场数据 API 服务的健康状态", tags=["health"])
 async def health_check():
-    """
-    检查市场数据 API 服务的整体健康状态
+    """检查市场数据 API 服务的整体健康状态
 
     此端点用于监控市场数据 API 的可用性和响应能力。
 
@@ -80,6 +64,7 @@ async def health_check():
         - 响应时间通常在 50-100ms 以内
         - healthy: 服务正常运行，可以接受数据请求
         - 建议监控系统每 30 秒调用一次
+
     """
     return {
         "status": "healthy",

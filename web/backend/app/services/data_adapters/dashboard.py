@@ -1,9 +1,8 @@
+"""仪表盘数据源适配器
 """
-仪表盘数据源适配器
-"""
-import time
 import logging
 import random
+import time
 from datetime import datetime
 from typing import Any, Dict, Optional
 
@@ -13,7 +12,9 @@ from app.services.data_source_interface import (
     HealthStatusEnum,
     IDataSource,
 )
+
 from .base import DataSourceMetrics
+
 
 logger = logging.getLogger(__name__)
 
@@ -39,8 +40,7 @@ class DashboardDataSourceAdapter(IDataSource):
         self.last_response_time = 0.0
 
     async def get_data(self, endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
-        """
-        从仪表盘数据源获取数据
+        """从仪表盘数据源获取数据
         """
         start_time = time.time()
         self.total_requests += 1
@@ -68,7 +68,7 @@ class DashboardDataSourceAdapter(IDataSource):
             self._update_metrics(response_time, False)
             self.metrics.last_error = str(e)
 
-            logger.error(f"Dashboard数据获取失败: endpoint={endpoint}, error={str(e)}")
+            logger.error(f"Dashboard数据获取失败: endpoint={endpoint}, error={e!s}")
             raise
 
     async def _generate_mock_dashboard_data(self, endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
@@ -208,8 +208,7 @@ class DashboardDataSourceAdapter(IDataSource):
                 "parameters": params or {},
             }
 
-        else:
-            raise ValueError(f"Unsupported dashboard endpoint: {endpoint}")
+        raise ValueError(f"Unsupported dashboard endpoint: {endpoint}")
 
     def _update_metrics(self, response_time: float, success: bool):
         """更新监控指标"""
@@ -254,7 +253,7 @@ class DashboardDataSourceAdapter(IDataSource):
                 success=success,
             )
         except Exception as e:
-            logger.warning(f"Failed to trigger quality monitoring: {str(e)}")
+            logger.warning(f"Failed to trigger quality monitoring: {e!s}")
 
     async def health_check(self) -> HealthStatus:
         """健康检查"""
@@ -284,7 +283,7 @@ class DashboardDataSourceAdapter(IDataSource):
         except Exception as e:
             return HealthStatus(
                 status=HealthStatusEnum.FAILED,
-                message=f"Health check failed: {str(e)}",
+                message=f"Health check failed: {e!s}",
                 response_time=0,
                 timestamp=datetime.now(),
             )

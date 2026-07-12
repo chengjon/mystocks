@@ -1,5 +1,4 @@
-"""
-数据源工厂模式单元测试 - 便捷函数与集成场景部分
+"""数据源工厂模式单元测试 - 便捷函数与集成场景部分
 """
 
 import json
@@ -13,7 +12,6 @@ import pytest
 from ._test_data_source_factory_support import (
     DataSourceFactory,
     HealthStatusEnum,
-    HybridDataSource,
     data_source_factory_module,
     get_dashboard_data,
     get_market_data,
@@ -123,7 +121,7 @@ class TestIntegrationScenarios:
                         "enabled": True,
                         "mode": "mock",
                         "timeout": 10.0,
-                    }
+                    },
                 },
             }
 
@@ -166,7 +164,7 @@ class TestIntegrationScenarios:
                         "fallback_enabled": True,
                         "timeout": 5.0,
                         "retry_count": 1,
-                    }
+                    },
                 },
             }
 

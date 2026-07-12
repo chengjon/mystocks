@@ -1,5 +1,4 @@
-"""
-WebSocket性能优化集成
+"""WebSocket性能优化集成
 WebSocket Performance Optimization Integration - Complete Optimization System
 
 Task 14.2: WebSocket性能优化
@@ -32,6 +31,7 @@ from app.core.socketio_message_batch import (
     BatchMessageType,
     get_message_batcher,
 )
+
 
 logger = structlog.get_logger()
 
@@ -69,8 +69,7 @@ class WebSocketPerformanceManager:
         max_memory_percent: float = 80.0,
         cleanup_interval: int = 60,
     ):
-        """
-        初始化性能管理器
+        """初始化性能管理器
 
         Args:
             pool_min_size: 连接池最小大小
@@ -81,6 +80,7 @@ class WebSocketPerformanceManager:
             batch_max_bytes: 批处理最大字节数
             max_memory_percent: 最大内存占用百分比
             cleanup_interval: 清理间隔
+
         """
         # 初始化所有优化模块
         self.connection_pool = get_connection_pool(
@@ -103,7 +103,7 @@ class WebSocketPerformanceManager:
         # 配置内存压力回调
         self.memory_optimizer.register_pressure_callback(MemoryPressureLevel.HIGH, self._on_high_memory_pressure)
         self.memory_optimizer.register_pressure_callback(
-            MemoryPressureLevel.CRITICAL, self._on_critical_memory_pressure
+            MemoryPressureLevel.CRITICAL, self._on_critical_memory_pressure,
         )
 
         # 统计
@@ -158,8 +158,7 @@ class WebSocketPerformanceManager:
         message_type: BatchMessageType = BatchMessageType.INDIVIDUAL,
         send_immediately: bool = False,
     ) -> None:
-        """
-        排队消息发送
+        """排队消息发送
 
         Args:
             sid: 连接ID
@@ -167,6 +166,7 @@ class WebSocketPerformanceManager:
             data: 消息数据
             message_type: 消息类型
             send_immediately: 是否立即发送
+
         """
         message = BatchMessage(
             sid=sid,

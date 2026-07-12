@@ -1,5 +1,4 @@
-"""
-自选股管理服务模块
+"""自选股管理服务模块
 基于 PostgreSQL 实现用户自选股列表的管理功能
 迁移自 OpenStock 项目，适配 PostgreSQL 数据库
 """
@@ -14,6 +13,7 @@ from psycopg2.extras import RealDictCursor
 
 from web.backend.app.services._watchlist_group_queries import WatchlistGroupQueriesMixin
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -22,31 +22,29 @@ class WatchlistError(Exception):
 
 
 def serialize_datetime(obj):
-    """
-    将datetime和date对象转换为ISO格式字符串
+    """将datetime和date对象转换为ISO格式字符串
 
     Args:
         obj: 任意对象
 
     Returns:
         如果是datetime或date对象，返回ISO格式字符串；否则返回原对象
+
     """
-    if isinstance(obj, datetime):
-        return obj.isoformat()
-    elif isinstance(obj, date):
+    if isinstance(obj, datetime) or isinstance(obj, date):
         return obj.isoformat()
     return obj
 
 
 def serialize_row(row: dict) -> dict:
-    """
-    序列化数据库行，转换所有datetime对象为ISO格式字符串
+    """序列化数据库行，转换所有datetime对象为ISO格式字符串
 
     Args:
         row: 数据库查询结果行（字典）
 
     Returns:
         序列化后的字典
+
     """
     return {key: serialize_datetime(value) for key, value in row.items()}
 
@@ -63,11 +61,11 @@ class WatchlistService(WatchlistGroupQueriesMixin):
         logger.warning(message, *args)
 
     def __init__(self, db_config: Dict[str, str] = None):
-        """
-        初始化自选股管理服务
+        """初始化自选股管理服务
 
         Args:
             db_config: 数据库配置，如果未提供则从环境变量读取
+
         """
         if db_config:
             self.db_config = db_config
@@ -83,11 +81,11 @@ class WatchlistService(WatchlistGroupQueriesMixin):
         self._ensure_table_exists()
 
     def _get_connection(self):
-        """
-        获取数据库连接
+        """获取数据库连接
 
         Returns:
             Connection: 数据库连接对象
+
         """
         try:
             return psycopg2.connect(**self.db_config)
@@ -156,8 +154,7 @@ class WatchlistService(WatchlistGroupQueriesMixin):
         notes: str = None,
         group_id: int = None,
     ) -> bool:
-        """
-        添加股票到自选股列表
+        """添加股票到自选股列表
 
         Args:
             user_id: 用户ID
@@ -170,6 +167,7 @@ class WatchlistService(WatchlistGroupQueriesMixin):
 
         Returns:
             bool: 添加是否成功
+
         """
         # 参数映射：保持API兼容性
         stock_code = symbol
@@ -233,8 +231,7 @@ class WatchlistService(WatchlistGroupQueriesMixin):
             return False
 
     def remove_from_watchlist(self, user_id: int, symbol: str) -> bool:
-        """
-        从自选股列表中删除股票
+        """从自选股列表中删除股票
 
         Args:
             user_id: 用户ID
@@ -242,6 +239,7 @@ class WatchlistService(WatchlistGroupQueriesMixin):
 
         Returns:
             bool: 删除是否成功
+
         """
         stock_code = symbol  # 参数映射
         try:
@@ -260,19 +258,18 @@ class WatchlistService(WatchlistGroupQueriesMixin):
             return False
 
     def get_user_watchlist(self, user_id: int) -> List[Dict]:
-        """
-        获取用户的自选股列表
+        """获取用户的自选股列表
 
         Args:
             user_id: 用户ID
 
         Returns:
             List[Dict]: 自选股列表，每个元素包含股票信息
+
         """
         try:
-            with self._get_connection() as conn:
-                with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                    select_sql = """
+            with self._get_connection() as conn, conn.cursor(cursor_factory=RealDictCursor) as cur:
+                select_sql = """
                     SELECT
                         id, stock_code, stock_name,
                         added_at, notes
@@ -280,44 +277,42 @@ class WatchlistService(WatchlistGroupQueriesMixin):
                     WHERE user_id = %s
                     ORDER BY added_at DESC
                     """
-                    cur.execute(select_sql, (user_id,))
-                    rows = cur.fetchall()
+                cur.execute(select_sql, (user_id,))
+                rows = cur.fetchall()
 
-                    # 转换为列表，并序列化datetime对象
-                    return [serialize_row(dict(row)) for row in rows]
+                # 转换为列表，并序列化datetime对象
+                return [serialize_row(dict(row)) for row in rows]
         except psycopg2.Error as e:
             self._log_database_error("获取自选股列表时发生错误", e)
             return []
 
     def get_watchlist_symbols(self, user_id: int) -> List[str]:
-        """
-        获取用户的自选股代码列表
+        """获取用户的自选股代码列表
 
         Args:
             user_id: 用户ID
 
         Returns:
             List[str]: 股票代码列表
+
         """
         try:
-            with self._get_connection() as conn:
-                with conn.cursor() as cur:
-                    select_sql = """
+            with self._get_connection() as conn, conn.cursor() as cur:
+                select_sql = """
                     SELECT stock_code
                     FROM user_watchlist
                     WHERE user_id = %s
                     ORDER BY added_at DESC
                     """
-                    cur.execute(select_sql, (user_id,))
-                    rows = cur.fetchall()
-                    return [row[0] for row in rows]
+                cur.execute(select_sql, (user_id,))
+                rows = cur.fetchall()
+                return [row[0] for row in rows]
         except psycopg2.Error as e:
             self._log_database_error("获取自选股代码列表时发生错误", e)
             return []
 
     def is_in_watchlist(self, user_id: int, symbol: str) -> bool:
-        """
-        检查股票是否在用户的自选股列表中
+        """检查股票是否在用户的自选股列表中
 
         Args:
             user_id: 用户ID
@@ -325,25 +320,24 @@ class WatchlistService(WatchlistGroupQueriesMixin):
 
         Returns:
             bool: 是否在自选股列表中
+
         """
         stock_code = symbol  # 参数映射
         try:
-            with self._get_connection() as conn:
-                with conn.cursor() as cur:
-                    select_sql = """
+            with self._get_connection() as conn, conn.cursor() as cur:
+                select_sql = """
                     SELECT 1 FROM user_watchlist
                     WHERE user_id = %s AND stock_code = %s
                     LIMIT 1
                     """
-                    cur.execute(select_sql, (user_id, stock_code))
-                    return cur.fetchone() is not None
+                cur.execute(select_sql, (user_id, stock_code))
+                return cur.fetchone() is not None
         except psycopg2.Error as e:
             self._log_database_error("检查自选股时发生错误", e)
             return False
 
     def update_watchlist_notes(self, user_id: int, symbol: str, notes: str) -> bool:
-        """
-        更新自选股备注
+        """更新自选股备注
 
         Args:
             user_id: 用户ID
@@ -352,6 +346,7 @@ class WatchlistService(WatchlistGroupQueriesMixin):
 
         Returns:
             bool: 更新是否成功
+
         """
         stock_code = symbol  # 参数映射
         try:
@@ -371,38 +366,37 @@ class WatchlistService(WatchlistGroupQueriesMixin):
             return False
 
     def get_watchlist_count(self, user_id: int) -> int:
-        """
-        获取用户自选股数量
+        """获取用户自选股数量
 
         Args:
             user_id: 用户ID
 
         Returns:
             int: 自选股数量
+
         """
         try:
-            with self._get_connection() as conn:
-                with conn.cursor() as cur:
-                    select_sql = """
+            with self._get_connection() as conn, conn.cursor() as cur:
+                select_sql = """
                     SELECT COUNT(*) FROM user_watchlist
                     WHERE user_id = %s
                     """
-                    cur.execute(select_sql, (user_id,))
-                    result = cur.fetchone()
-                    return result[0] if result else 0
+                cur.execute(select_sql, (user_id,))
+                result = cur.fetchone()
+                return result[0] if result else 0
         except psycopg2.Error as e:
             self._log_database_error("获取自选股数量时发生错误", e)
             return 0
 
     def clear_watchlist(self, user_id: int) -> bool:
-        """
-        清空用户的自选股列表
+        """清空用户的自选股列表
 
         Args:
             user_id: 用户ID
 
         Returns:
             bool: 清空是否成功
+
         """
         try:
             with self._get_connection() as conn:
@@ -421,8 +415,7 @@ class WatchlistService(WatchlistGroupQueriesMixin):
     # ========== 分组管理功能 ==========
 
     def get_or_create_group(self, user_id: int, group_name: str) -> Optional[Dict]:
-        """
-        获取或创建分组（如果分组不存在则自动创建）
+        """获取或创建分组（如果分组不存在则自动创建）
 
         Args:
             user_id: 用户ID
@@ -430,6 +423,7 @@ class WatchlistService(WatchlistGroupQueriesMixin):
 
         Returns:
             Optional[Dict]: 分组信息
+
         """
         try:
             with self._get_connection() as conn:
@@ -469,11 +463,10 @@ class WatchlistService(WatchlistGroupQueriesMixin):
                 conn.commit()
                 return serialize_row(dict(result)) if result else None
         except psycopg2.Error as e:
-            raise WatchlistError(f"获取或创建分组失败: {str(e)}")
+            raise WatchlistError(f"获取或创建分组失败: {e!s}")
 
     def create_group(self, user_id: int, group_name: str) -> Optional[Dict]:
-        """
-        创建新分组
+        """创建新分组
 
         Args:
             user_id: 用户ID
@@ -484,6 +477,7 @@ class WatchlistService(WatchlistGroupQueriesMixin):
 
         Raises:
             WatchlistError: 当分组名称已存在或其他错误时抛出
+
         """
         try:
             with self._get_connection() as conn:
@@ -527,13 +521,12 @@ class WatchlistService(WatchlistGroupQueriesMixin):
             # UNIQUE 约束冲突
             if "unique" in str(e).lower():
                 raise WatchlistError(f"分组名称 '{group_name}' 已存在")
-            raise WatchlistError(f"数据库完整性错误: {str(e)}")
+            raise WatchlistError(f"数据库完整性错误: {e!s}")
         except psycopg2.Error as e:
-            raise WatchlistError(f"创建分组失败: {str(e)}")
+            raise WatchlistError(f"创建分组失败: {e!s}")
 
     def update_group(self, user_id: int, group_id: int, group_name: str) -> bool:
-        """
-        更新分组名称
+        """更新分组名称
 
         Args:
             user_id: 用户ID
@@ -542,6 +535,7 @@ class WatchlistService(WatchlistGroupQueriesMixin):
 
         Returns:
             bool: 更新是否成功
+
         """
         try:
             with self._get_connection() as conn:
@@ -560,8 +554,7 @@ class WatchlistService(WatchlistGroupQueriesMixin):
             return False
 
     def delete_group(self, user_id: int, group_id: int) -> bool:
-        """
-        删除分组（CASCADE会自动删除该分组下的所有自选股）
+        """删除分组（CASCADE会自动删除该分组下的所有自选股）
 
         Args:
             user_id: 用户ID
@@ -569,6 +562,7 @@ class WatchlistService(WatchlistGroupQueriesMixin):
 
         Returns:
             bool: 删除是否成功
+
         """
         try:
             with self._get_connection() as conn:
@@ -608,11 +602,11 @@ _watchlist_service = None
 
 
 def get_watchlist_service() -> WatchlistService:
-    """
-    获取自选股服务实例（单例模式）
+    """获取自选股服务实例（单例模式）
 
     Returns:
         WatchlistService: 自选股服务实例
+
     """
     global _watchlist_service
     if _watchlist_service is None:

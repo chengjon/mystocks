@@ -1,5 +1,4 @@
-"""
-MyStocks API v1 聚合路由
+"""MyStocks API v1 聚合路由
 
 按业务领域组织API端点：
 - system: 系统健康检查、数据路由
@@ -21,6 +20,7 @@ from .analysis import backtest_router, sentiment_router, stress_test_router
 from .strategy import indicators_router, ml_router
 from .system import health_router, routing_router
 from .trading import positions_router, session_router
+
 
 api_v1_router = APIRouter(
     prefix="/api/v1",

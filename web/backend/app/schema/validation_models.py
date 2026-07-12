@@ -1,5 +1,4 @@
-"""
-Pydantic V2 数据验证模型
+"""Pydantic V2 数据验证模型
 用于所有API端点的输入和输出验证
 
 遵循P0改进计划 Task 2: 数据验证增强
@@ -79,8 +78,8 @@ class MarketDataQueryModel(BaseModel):
                 "start_date": "2025-01-01",
                 "end_date": "2025-12-31",
                 "interval": "daily",
-            }
-        }
+            },
+        },
     )
 
 
@@ -104,8 +103,8 @@ class TechnicalIndicatorQueryModel(BaseModel):
                 "symbol": "000001",
                 "indicators": ["MA", "RSI", "MACD"],
                 "period": 20,
-            }
-        }
+            },
+        },
     )
 
 
@@ -137,8 +136,8 @@ class StockListQueryModel(PaginationModel):
                 "query": "招商银行",
                 "sort_by": "symbol",
                 "sort_order": "asc",
-            }
-        }
+            },
+        },
     )
 
 
@@ -163,8 +162,8 @@ class TradeOrderModel(BaseModel):
                 "price": 10.5,
                 "quantity": 100,
                 "order_validity": "gtc",
-            }
-        }
+            },
+        },
     )
 
     @field_validator("price")
@@ -203,8 +202,8 @@ class ResponseModel(BaseModel):
                 "message": "操作成功",
                 "data": {},
                 "timestamp": 1733318400.123,
-            }
-        }
+            },
+        },
     )
 
 
@@ -223,21 +222,21 @@ class ErrorResponseModel(BaseModel):
                 "message": "验证失败",
                 "details": {"field": "symbol", "error": "Invalid symbol"},
                 "timestamp": 1733318400.123,
-            }
-        }
+            },
+        },
     )
 
 
 # ==================== 应用导出 ====================
 
 __all__ = [
-    "StockSymbolModel",
     "DateRangeModel",
-    "MarketDataQueryModel",
-    "TechnicalIndicatorQueryModel",
-    "PaginationModel",
-    "StockListQueryModel",
-    "TradeOrderModel",
-    "ResponseModel",
     "ErrorResponseModel",
+    "MarketDataQueryModel",
+    "PaginationModel",
+    "ResponseModel",
+    "StockListQueryModel",
+    "StockSymbolModel",
+    "TechnicalIndicatorQueryModel",
+    "TradeOrderModel",
 ]

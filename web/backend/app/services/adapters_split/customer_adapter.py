@@ -1,5 +1,4 @@
-"""
-客户端数据源适配器
+"""客户端数据源适配器
 
 提供WebSocket实时行情推送功能，支持股票、基金、指数等
 """
@@ -8,11 +7,14 @@ import asyncio
 import json
 import os
 from typing import Dict, List, Optional
+
 import websockets
 
-from .base_adapter import BaseAdapter
 from app.core.database import db_service
 from app.services.data_quality_monitor import get_data_quality_monitor
+
+from .base_adapter import BaseAdapter
+
 
 logger = __import__("logging").getLogger(__name__)
 
@@ -91,7 +93,7 @@ class CustomerAdapter(BaseAdapter):
         """获取日线数据"""
         try:
             self._log_request_start(
-                "get_stock_daily", {"stock_code": stock_code, "start_date": start_date, "end_date": end_date}
+                "get_stock_daily", {"stock_code": stock_code, "start_date": start_date, "end_date": end_date},
             )
 
             request_message = {
@@ -179,15 +181,14 @@ class CustomerAdapter(BaseAdapter):
             if result:
                 results.append(result)
 
-            return results if results else None
+            return results or None
 
     async def check_health(self) -> Optional[str]:
         """检查健康状态"""
         try:
             if self.websocket and self.websocket.open:
                 return "healthy"
-            else:
-                return "unhealthy"
+            return "unhealthy"
 
         except Exception as e:
             logger.error(f"{self.name} 健康检查失败: {e}")

@@ -1,5 +1,4 @@
-"""
-# pylint: disable=no-member  # TODO: 实现缺失的 GPU/业务方法
+"""# pylint: disable=no-member  # TODO: 实现缺失的 GPU/业务方法
 实时交易监控API
 Real-time Trading Monitoring API
 
@@ -15,6 +14,7 @@ from pydantic import BaseModel, Field
 
 from src.trading.live_trading_engine import LiveTradingConfig
 from src.trading.realtime_strategy_executor import RealtimeStrategyExecutor
+
 
 router = APIRouter(prefix="/api/trading", tags=["实时交易监控"])
 
@@ -81,8 +81,7 @@ def get_trading_executor() -> RealtimeStrategyExecutor:
 
 @router.get("/status", response_model=TradingStatusResponse, summary="获取交易状态")
 async def get_trading_status():
-    """
-    获取当前实时交易状态
+    """获取当前实时交易状态
 
     返回交易运行状态、活跃头寸数量、盈亏情况等信息。
     """
@@ -101,13 +100,12 @@ async def get_trading_status():
             trading_hours=trading_status.get("trading_hours", False),
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取交易状态失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取交易状态失败: {e!s}")
 
 
 @router.get("/strategies/performance", response_model=List[StrategyPerformanceResponse], summary="获取策略性能")
 async def get_strategies_performance():
-    """
-    获取所有策略的性能指标
+    """获取所有策略的性能指标
 
     返回每个策略的性能统计信息。
     """
@@ -119,19 +117,18 @@ async def get_strategies_performance():
         for strategy_name, metrics in performance_data.items():
             result.append(
                 StrategyPerformanceResponse(
-                    strategy_name=strategy_name, status=metrics.get("status", "unknown"), performance_metrics=metrics
-                )
+                    strategy_name=strategy_name, status=metrics.get("status", "unknown"), performance_metrics=metrics,
+                ),
             )
 
         return result
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取策略性能失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取策略性能失败: {e!s}")
 
 
 @router.get("/market/snapshot", response_model=MarketDataSnapshotResponse, summary="获取市场数据快照")
 async def get_market_snapshot():
-    """
-    获取当前市场数据快照
+    """获取当前市场数据快照
 
     返回所有监控股票的实时价格和交易数据。
     """
@@ -145,13 +142,12 @@ async def get_market_snapshot():
             data=snapshot.get("data", {}),
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取市场快照失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取市场快照失败: {e!s}")
 
 
 @router.post("/start", summary="启动实时交易")
 async def start_trading_session(background_tasks: BackgroundTasks):
-    """
-    启动新的实时交易会话
+    """启动新的实时交易会话
 
     初始化策略执行器并开始监控市场数据和执行交易信号。
     """
@@ -163,13 +159,12 @@ async def start_trading_session(background_tasks: BackgroundTasks):
 
         return {"message": "实时交易会话启动中", "status": "starting"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"启动交易会话失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"启动交易会话失败: {e!s}")
 
 
 @router.post("/stop", response_model=TradingSessionSummaryResponse, summary="停止实时交易")
 async def stop_trading_session():
-    """
-    停止当前实时交易会话
+    """停止当前实时交易会话
 
     关闭所有活跃头寸并生成会话摘要报告。
     """
@@ -190,13 +185,12 @@ async def stop_trading_session():
             win_rate=summary.get("win_rate", 0.0),
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"停止交易会话失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"停止交易会话失败: {e!s}")
 
 
 @router.get("/session/summary", response_model=TradingSessionSummaryResponse, summary="获取会话摘要")
 async def get_session_summary():
-    """
-    获取当前交易会话的摘要信息
+    """获取当前交易会话的摘要信息
 
     包括交易统计、盈亏情况、胜率等关键指标。
     """
@@ -221,13 +215,12 @@ async def get_session_summary():
             win_rate=0.0,
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取会话摘要失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取会话摘要失败: {e!s}")
 
 
 @router.get("/risk/metrics", summary="获取风险指标")
 async def get_risk_metrics():
-    """
-    获取当前风险指标
+    """获取当前风险指标
 
     包括回撤、VaR、压力测试结果等。
     """
@@ -244,13 +237,12 @@ async def get_risk_metrics():
             "last_updated": datetime.now().isoformat(),
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取风险指标失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取风险指标失败: {e!s}")
 
 
 @router.post("/strategies/add", summary="添加策略")
 async def add_strategy(strategy_name: str = Query(..., description="策略名称")):
-    """
-    动态添加策略到实时执行器
+    """动态添加策略到实时执行器
 
     支持在运行时添加新的交易策略。
     """
@@ -278,19 +270,17 @@ async def add_strategy(strategy_name: str = Query(..., description="策略名称
 
         if success:
             return {"message": f"策略 {strategy_name} 添加成功", "strategy_name": strategy_name}
-        else:
-            raise HTTPException(status_code=400, detail=f"添加策略失败: {strategy_name}")
+        raise HTTPException(status_code=400, detail=f"添加策略失败: {strategy_name}")
 
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"添加策略失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"添加策略失败: {e!s}")
 
 
 @router.delete("/strategies/{strategy_name}", summary="移除策略")
 async def remove_strategy(strategy_name: str):
-    """
-    从实时执行器中移除策略
+    """从实时执行器中移除策略
 
     支持在运行时移除交易策略。
     """
@@ -300,10 +290,9 @@ async def remove_strategy(strategy_name: str):
 
         if success:
             return {"message": f"策略 {strategy_name} 移除成功", "strategy_name": strategy_name}
-        else:
-            raise HTTPException(status_code=404, detail=f"策略不存在: {strategy_name}")
+        raise HTTPException(status_code=404, detail=f"策略不存在: {strategy_name}")
 
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"移除策略失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"移除策略失败: {e!s}")

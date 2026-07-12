@@ -1,15 +1,15 @@
-"""
-缓存服务模块
+"""缓存服务模块
 
 提供内存缓存、Redis缓存、分布式缓存、缓存失效策略等功能
 """
 
 import logging
-from typing import Any, Dict, List, Optional
 from datetime import datetime
 from enum import Enum
+from typing import Any, Dict, List, Optional
 
 from src.utils.redis_runtime_config import get_redis_db_for_role
+
 
 logger = __import__("logging").getLogger(__name__)
 
@@ -114,35 +114,33 @@ class CacheService:
         logger.info(f"缓存服务初始化 (类型: {cache_type.value})")
 
     async def get(self, key: str) -> Optional[Any]:
-        """
-        获取缓存值
+        """获取缓存值
 
         Args:
             key: 缓存键
 
         Returns:
             Any: 缓存值，未找到返回None
+
         """
         try:
             self._log_request_start("cache_get", {"key": key})
 
             if self.cache_type == CacheType.MEMORY:
                 return self._get_memory_cache(key)
-            elif self.cache_type == CacheType.REDIS:
+            if self.cache_type == CacheType.REDIS:
                 return await self._get_redis_cache(key)
-            elif self.cache_type == CacheType.DISTRIBUTED:
+            if self.cache_type == CacheType.DISTRIBUTED:
                 return await self._get_distributed_cache(key)
-            else:
-                self.logger.warning(f"不支持的缓存类型: {self.cache_type.value}")
-                return None
+            self.logger.warning(f"不支持的缓存类型: {self.cache_type.value}")
+            return None
 
         except Exception as e:
             self._log_request_error("cache_get", e)
             return None
 
     async def set(self, key: str, value: Any, ttl: int = None, data_type: str = "default") -> bool:
-        """
-        设置缓存值
+        """设置缓存值
 
         Args:
             key: 缓存键
@@ -152,6 +150,7 @@ class CacheService:
 
         Returns:
             bool: 是否设置成功
+
         """
         try:
             self._log_request_start("cache_set", {"key": key, "ttl": ttl, "data_type": data_type})
@@ -176,14 +175,14 @@ class CacheService:
             return False
 
     async def delete(self, key: str) -> bool:
-        """
-        删除缓存值
+        """删除缓存值
 
         Args:
             key: 缓存键
 
         Returns:
             bool: 是否删除成功
+
         """
         try:
             self._log_request_start("cache_delete", {"key": key})
@@ -208,11 +207,11 @@ class CacheService:
             return False
 
     async def clear(self) -> bool:
-        """
-        清空所有缓存
+        """清空所有缓存
 
         Returns:
             bool: 是否清空成功
+
         """
         try:
             self._log_request_start("cache_clear", {})
@@ -258,7 +257,7 @@ class CacheService:
                 created_at=datetime.now(),
                 last_accessed_at=datetime.now(),
                 access_count=0,
-                ttl_seconds=ttl if ttl else self.default_ttl,
+                ttl_seconds=ttl or self.default_ttl,
             )
 
             # 计算缓存大小
@@ -413,7 +412,7 @@ class CacheService:
             import redis.asyncio as redis
 
             self.redis_pool = await redis.create_pool(
-                host=self.redis_host, port=self.redis_port, db=self.redis_db, max_connections=10
+                host=self.redis_host, port=self.redis_port, db=self.redis_db, max_connections=10,
             )
 
             self.is_redis_connected = True
@@ -460,14 +459,14 @@ class CacheService:
         return False
 
     async def warm_up_cache(self, keys: List[str]) -> Dict:
-        """
-        预热缓存
+        """预热缓存
 
         Args:
             keys: 需要预热的缓存键列表
 
         Returns:
             Dict: 预热结果
+
         """
         try:
             self._log_request_start("warm_up_cache", {"keys": len(keys)})
@@ -488,11 +487,11 @@ class CacheService:
             return {}
 
     async def get_stats(self) -> Dict:
-        """
-        获取缓存统计
+        """获取缓存统计
 
         Returns:
             Dict: 缓存统计数据
+
         """
         try:
             # 计算命中率

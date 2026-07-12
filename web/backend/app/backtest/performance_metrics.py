@@ -1,5 +1,4 @@
-"""
-Performance Metrics Calculator
+"""Performance Metrics Calculator
 
 计算回测性能指标，包括夏普比率、最大回撤、收益率等
 """
@@ -12,18 +11,17 @@ import numpy as np
 
 
 class PerformanceMetrics:
-    """
-    性能指标计算器
+    """性能指标计算器
 
     计算各种回测性能指标
     """
 
     def __init__(self, risk_free_rate: float = 0.03):
-        """
-        初始化性能指标计算器
+        """初始化性能指标计算器
 
         Args:
             risk_free_rate: 无风险利率（年化），默认3%
+
         """
         self.risk_free_rate = risk_free_rate
 
@@ -34,8 +32,7 @@ class PerformanceMetrics:
         initial_capital: Decimal,
         benchmark_curve: Optional[List[Dict[str, Any]]] = None,
     ) -> Dict[str, Any]:
-        """
-        计算所有性能指标
+        """计算所有性能指标
 
         Args:
             equity_curve: 资金曲线 [{'date': datetime, 'equity': Decimal, 'drawdown': Decimal}]
@@ -45,6 +42,7 @@ class PerformanceMetrics:
 
         Returns:
             包含所有性能指标的字典
+
         """
         if not equity_curve or len(equity_curve) == 0:
             return self._empty_metrics()
@@ -143,7 +141,7 @@ class PerformanceMetrics:
         return (final_equity - initial_capital) / initial_capital
 
     def _calculate_annualized_return(
-        self, equity_values: List[float], dates: List[datetime], initial_capital: float
+        self, equity_values: List[float], dates: List[datetime], initial_capital: float,
     ) -> float:
         """计算年化收益率"""
         if len(dates) < 2 or initial_capital == 0:
@@ -195,8 +193,7 @@ class PerformanceMetrics:
         max_dd = 0.0
 
         for equity in equity_values:
-            if equity > peak:
-                peak = equity
+            peak = max(peak, equity)
             dd = (peak - equity) / peak if peak != 0 else 0
             max_dd = max(max_dd, dd)
 
@@ -348,7 +345,7 @@ class PerformanceMetrics:
         return alpha, beta
 
     def _calculate_information_ratio(
-        self, portfolio_values: List[float], benchmark_values: List[float]
+        self, portfolio_values: List[float], benchmark_values: List[float],
     ) -> Optional[float]:
         """计算信息比率"""
         if len(portfolio_values) != len(benchmark_values) or len(portfolio_values) < 2:

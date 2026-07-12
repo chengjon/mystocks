@@ -1,20 +1,21 @@
-"""
-风险管理基础模块
+"""风险管理基础模块
 
 提供风险指标定义、事件记录、基础风险计算功能
 """
 
 import logging
-from typing import Any, Dict, List, Optional
-from datetime import datetime
 from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
+from typing import Any, Dict, List, Optional
+
 
 logger = __import__("logging").getLogger(__name__)
 
 
 class RiskLevel(Enum):
     """风险等级枚举"""
+
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
@@ -23,6 +24,7 @@ class RiskLevel(Enum):
 
 class RiskEventType(Enum):
     """风险事件类型"""
+
     THRESHOLD_BREACH = "threshold_breach"
     POSITION_CHANGE = "position_change"
     MARKET_EVENT = "market_event"
@@ -33,6 +35,7 @@ class RiskEventType(Enum):
 @dataclass
 class RiskMetrics:
     """风险指标数据类"""
+
     var_95: float = 0.0
     var_99: float = 0.0
     sharpe_ratio: float = 0.0
@@ -45,19 +48,20 @@ class RiskMetrics:
     def to_dict(self) -> Dict:
         """转换为字典"""
         return {
-            'var_95': self.var_95,
-            'var_99': self.var_99,
-            'sharpe_ratio': self.sharpe_ratio,
-            'max_drawdown': self.max_drawdown,
-            'beta': self.beta,
-            'volatility': self.volatility,
-            'calculated_at': self.calculated_at.isoformat() if self.calculated_at else None
+            "var_95": self.var_95,
+            "var_99": self.var_99,
+            "sharpe_ratio": self.sharpe_ratio,
+            "max_drawdown": self.max_drawdown,
+            "beta": self.beta,
+            "volatility": self.volatility,
+            "calculated_at": self.calculated_at.isoformat() if self.calculated_at else None,
         }
 
 
 @dataclass
 class RiskEvent:
     """风险事件记录类"""
+
     event_id: str = ""
     event_type: RiskEventType = RiskEventType.MODEL_ERROR
     risk_level: RiskLevel = RiskLevel.LOW
@@ -71,14 +75,14 @@ class RiskEvent:
     def to_dict(self) -> Dict:
         """转换为字典"""
         return {
-            'event_id': self.event_id,
-            'event_type': self.event_type.value,
-            'risk_level': self.risk_level.value,
-            'message': self.message,
-            'timestamp': self.timestamp.isoformat() if self.timestamp else None,
-            'portfolio_id': self.portfolio_id,
-            'stock_code': self.stock_code,
-            'metadata': self.metadata
+            "event_id": self.event_id,
+            "event_type": self.event_type.value,
+            "risk_level": self.risk_level.value,
+            "message": self.message,
+            "timestamp": self.timestamp.isoformat() if self.timestamp else None,
+            "portfolio_id": self.portfolio_id,
+            "stock_code": self.stock_code,
+            "metadata": self.metadata,
         }
 
 
@@ -89,6 +93,7 @@ MonitoringEvent = RiskEvent
 @dataclass
 class RiskProfile:
     """风险配置文件"""
+
     profile_id: str = ""
     profile_name: str = ""
     max_position_size: float = 0.0
@@ -102,15 +107,15 @@ class RiskProfile:
     def to_dict(self) -> Dict:
         """转换为字典"""
         return {
-            'profile_id': self.profile_id,
-            'profile_name': self.profile_name,
-            'max_position_size': self.max_position_size,
-            'max_single_stock_weight': self.max_single_stock_weight,
-            'stop_loss_threshold': self.stop_loss_threshold,
-            'var_95_threshold': self.var_95_threshold,
-            'var_99_threshold': self.var_99_threshold,
-            'sharpe_threshold': self.sharpe_threshold,
-            'max_drawdown_threshold': self.max_drawdown_threshold
+            "profile_id": self.profile_id,
+            "profile_name": self.profile_name,
+            "max_position_size": self.max_position_size,
+            "max_single_stock_weight": self.max_single_stock_weight,
+            "stop_loss_threshold": self.stop_loss_threshold,
+            "var_95_threshold": self.var_95_threshold,
+            "var_99_threshold": self.var_99_threshold,
+            "sharpe_threshold": self.sharpe_threshold,
+            "max_drawdown_threshold": self.max_drawdown_threshold,
         }
 
 
@@ -173,7 +178,7 @@ class RiskBase:
             RiskLevel.LOW: 0.5,
             RiskLevel.MEDIUM: 1.0,
             RiskLevel.HIGH: 2.0,
-            RiskLevel.CRITICAL: 3.0
+            RiskLevel.CRITICAL: 3.0,
         }
 
         adjustment = risk_level_adjustments.get(level, 1.0)
@@ -217,40 +222,39 @@ class RiskBase:
         """评估风险水平"""
         if metrics.var_95 > profile.var_95_threshold:
             return RiskLevel.HIGH
-        elif metrics.max_drawdown > profile.max_drawdown_threshold:
+        if metrics.max_drawdown > profile.max_drawdown_threshold:
             return RiskLevel.CRITICAL
-        else:
-            return RiskLevel.MEDIUM
+        return RiskLevel.MEDIUM
 
     def get_metrics_summary(self, count: int = 100) -> Dict:
         """获取风险指标摘要"""
         if len(self.metrics_history) == 0:
             return {
-                'count': 0,
-                'avg_var_95': 0.0,
-                'avg_var_99': 0.0,
-                'avg_sharpe': 0.0,
-                'avg_max_drawdown': 0.0,
-                'avg_beta': 0.0
+                "count": 0,
+                "avg_var_95": 0.0,
+                "avg_var_99": 0.0,
+                "avg_sharpe": 0.0,
+                "avg_max_drawdown": 0.0,
+                "avg_beta": 0.0,
             }
 
         recent_metrics = self.metrics_history[-count:]
 
         if not recent_metrics:
             return {
-                'count': len(self.metrics_history),
-                'avg_var_95': recent_metrics.var_95,
-                'avg_var_99': recent_metrics.var_99,
-                'avg_sharpe': recent_metrics.sharpe_ratio,
-                'avg_max_drawdown': recent_metrics.max_drawdown,
-                'avg_beta': recent_metrics.beta
+                "count": len(self.metrics_history),
+                "avg_var_95": recent_metrics.var_95,
+                "avg_var_99": recent_metrics.var_99,
+                "avg_sharpe": recent_metrics.sharpe_ratio,
+                "avg_max_drawdown": recent_metrics.max_drawdown,
+                "avg_beta": recent_metrics.beta,
             }
 
         return {
-            'count': len(recent_metrics),
-            'avg_var_95': sum(m.var_95 for m in recent_metrics) / len(recent_metrics),
-            'avg_var_99': sum(m.var_99 for m in recent_metrics) / len(recent_metrics),
-            'avg_sharpe': sum(m.sharpe_ratio for m in recent_metrics) / len(recent_metrics),
-            'avg_max_drawdown': sum(m.max_drawdown for m in recent_metrics) / len(recent_metrics),
-            'avg_beta': sum(m.beta for m in recent_metrics) / len(recent_metrics)
+            "count": len(recent_metrics),
+            "avg_var_95": sum(m.var_95 for m in recent_metrics) / len(recent_metrics),
+            "avg_var_99": sum(m.var_99 for m in recent_metrics) / len(recent_metrics),
+            "avg_sharpe": sum(m.sharpe_ratio for m in recent_metrics) / len(recent_metrics),
+            "avg_max_drawdown": sum(m.max_drawdown for m in recent_metrics) / len(recent_metrics),
+            "avg_beta": sum(m.beta for m in recent_metrics) / len(recent_metrics),
         }

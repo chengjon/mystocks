@@ -1,5 +1,4 @@
-"""
-数据库查询批处理优化
+"""数据库查询批处理优化
 Database Query Batch Processing - Batch INSERT/UPDATE/DELETE operations
 
 Task 14.3: 数据库性能优化 - Query Batch Processing
@@ -24,6 +23,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 
 import structlog
+
 
 logger = structlog.get_logger()
 
@@ -85,14 +85,14 @@ class DatabaseQueryBatcher:
         enable_bulk_insert: bool = True,
         enable_bulk_update: bool = True,
     ):
-        """
-        初始化查询批处理器
+        """初始化查询批处理器
 
         Args:
             batch_size: 批处理大小（行数）
             batch_timeout_ms: 批处理超时（毫秒）
             enable_bulk_insert: 启用批量INSERT优化
             enable_bulk_update: 启用批量UPDATE优化
+
         """
         self.batch_size = batch_size
         self.batch_timeout_ms = batch_timeout_ms
@@ -127,8 +127,7 @@ class DatabaseQueryBatcher:
         rows: List[Dict[str, Any]],
         execute_immediately: bool = False,
     ) -> Optional[BatchQuery]:
-        """
-        排队批量INSERT
+        """排队批量INSERT
 
         Args:
             table_name: 表名
@@ -137,6 +136,7 @@ class DatabaseQueryBatcher:
 
         Returns:
             BatchQuery对象
+
         """
         try:
             # 创建查询对象

@@ -1,5 +1,4 @@
-"""
-风险管理领域聚合路由 - V3.1
+"""风险管理领域聚合路由 - V3.1
 
 聚合以下子领域:
 - core: 风险指标核心计算
@@ -16,6 +15,7 @@ Date: 2026-01-10
 from fastapi import APIRouter
 
 from . import alerts, core, position, rules, stop_loss
+
 
 router = APIRouter(prefix="/api/v1/risk", tags=["风险管理"])
 

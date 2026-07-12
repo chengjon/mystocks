@@ -1,5 +1,4 @@
-"""
-Backtest Repository Layer
+"""Backtest Repository Layer
 
 提供回测数据的数据库访问接口，使用SQLAlchemy ORM操作PostgreSQL
 """
@@ -34,6 +33,7 @@ from app.models.strategy_schemas import (
     PerformanceMetrics,
     TradeRecord,
 )
+
 
 logger = logging.getLogger(__name__)
 Base = declarative_base()
@@ -167,6 +167,7 @@ class BacktestRepository:
 
         Args:
             db_session: SQLAlchemy数据库会话
+
         """
         self.db = db_session
 
@@ -181,6 +182,7 @@ class BacktestRepository:
 
         Raises:
             SQLAlchemyError: 数据库操作失败
+
         """
         try:
             backtest_orm = BacktestResultModel(
@@ -217,6 +219,7 @@ class BacktestRepository:
 
         Returns:
             回测结果对象，不存在时返回None
+
         """
         try:
             backtest_orm = (
@@ -252,6 +255,7 @@ class BacktestRepository:
 
         Returns:
             (回测列表, 总数)元组
+
         """
         try:
             query = self.db.query(BacktestResultModel).filter(BacktestResultModel.user_id == user_id)
@@ -292,6 +296,7 @@ class BacktestRepository:
 
         Returns:
             更新后的回测结果，回测不存在时返回None
+
         """
         try:
             backtest_orm = (
@@ -338,6 +343,7 @@ class BacktestRepository:
 
         Returns:
             更新后的回测结果
+
         """
         try:
             backtest_orm = (
@@ -374,6 +380,7 @@ class BacktestRepository:
 
         Returns:
             True表示保存成功
+
         """
         try:
             # 批量插入权益曲线数据
@@ -408,6 +415,7 @@ class BacktestRepository:
 
         Returns:
             权益曲线数据点列表
+
         """
         try:
             curves_orm = (
@@ -440,6 +448,7 @@ class BacktestRepository:
 
         Returns:
             True表示保存成功
+
         """
         try:
             trade_models = [
@@ -477,6 +486,7 @@ class BacktestRepository:
 
         Returns:
             交易记录列表
+
         """
         try:
             trades_orm = (
@@ -512,6 +522,7 @@ class BacktestRepository:
 
         Returns:
             True表示删除成功，False表示回测不存在
+
         """
         try:
             result = self.db.query(BacktestResultModel).filter(BacktestResultModel.backtest_id == backtest_id).delete()
@@ -521,9 +532,8 @@ class BacktestRepository:
             if result > 0:
                 logger.info("删除回测成功: backtest_id=%(backtest_id)s")
                 return True
-            else:
-                logger.warning("回测不存在: backtest_id=%(backtest_id)s")
-                return False
+            logger.warning("回测不存在: backtest_id=%(backtest_id)s")
+            return False
 
         except SQLAlchemyError:
             self.db.rollback()
@@ -542,6 +552,7 @@ class BacktestRepository:
 
         Returns:
             Pydantic BacktestResult模型
+
         """
         # 转换performance_metrics
         performance_metrics = None

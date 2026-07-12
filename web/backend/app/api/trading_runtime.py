@@ -1,5 +1,4 @@
-"""
-Lightweight trading runtime endpoints for frontend runtime availability.
+"""Lightweight trading runtime endpoints for frontend runtime availability.
 
 This module intentionally avoids importing heavy trading engine dependencies,
 so the API remains available in non-trading environments.
@@ -16,6 +15,7 @@ from pydantic import BaseModel, Field
 from app.core.config import settings
 from app.core.responses import APIResponse, ErrorCodes, create_error_response, create_success_response
 from app.core.security import verify_token
+
 
 router = APIRouter(tags=["trading-runtime"])
 
@@ -38,14 +38,14 @@ _RUNTIME_STATE: Dict[str, Any] = {
             "type": "momentum",
             "pnl": 0.0,
             "win_rate": 0.0,
-        }
+        },
     ],
     "market_data": {
         "000001.SH": {
             "price": 12.50,
             "change": 0.08,
             "change_percent": 0.64,
-        }
+        },
     },
 }
 
@@ -149,7 +149,7 @@ async def add_strategy(
             "type": "custom",
             "pnl": 0.0,
             "win_rate": 0.0,
-        }
+        },
     )
     return create_success_response(data={"name": name}, message="策略添加成功")
 

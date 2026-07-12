@@ -1,5 +1,4 @@
-"""
-安全认证和权限管理
+"""安全认证和权限管理
 """
 
 import logging
@@ -13,6 +12,7 @@ from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
 
 from app.core.config import settings
+
 
 logger = logging.getLogger(__name__)
 
@@ -188,8 +188,7 @@ def _is_token_revoked(token: str) -> bool:
 
 
 def authenticate_user(username: str, password: str) -> Optional[UserInDB]:
-    """
-    验证用户身份
+    """验证用户身份
 
     从数据库查询用户信息并验证密码。
     如果数据库连接失败，回退到模拟用户数据。
@@ -206,6 +205,7 @@ def authenticate_user(username: str, password: str) -> Optional[UserInDB]:
         2. 否则尝试从PostgreSQL数据库查询用户
         3. 如果数据库连接失败，回退到环境变量配置的模拟用户数据
         4. 返回验证成功的用户或None
+
     """
     from app.core.config import settings
 
@@ -238,8 +238,7 @@ def authenticate_user(username: str, password: str) -> Optional[UserInDB]:
 
 
 def authenticate_user_by_id(user_id: int) -> Optional[UserInDB]:
-    """
-    根据用户ID从数据库验证用户身份
+    """根据用户ID从数据库验证用户身份
 
     Args:
         user_id: 用户ID
@@ -251,6 +250,7 @@ def authenticate_user_by_id(user_id: int) -> Optional[UserInDB]:
         1. 尝试从PostgreSQL数据库根据ID查询用户
         2. 如果数据库查询失败，返回None
         3. 返回用户信息或None
+
     """
     from app.core.config import settings
 
@@ -277,8 +277,7 @@ def authenticate_user_by_id(user_id: int) -> Optional[UserInDB]:
 
 
 def get_user_from_database(username: str) -> Optional[UserInDB]:
-    """
-    从数据库获取用户信息
+    """从数据库获取用户信息
 
     Args:
         username: 用户名
@@ -290,6 +289,7 @@ def get_user_from_database(username: str) -> Optional[UserInDB]:
         DatabaseConnectionError: 数据库连接失败
         DataValidationError: 用户名无效
         DatabaseOperationError: 数据库操作失败
+
     """
     from app.core.database import get_postgresql_session
     from app.db import UserRepository
@@ -311,8 +311,7 @@ def get_user_from_database(username: str) -> Optional[UserInDB]:
 
 
 def get_user_from_database_by_id(user_id: int) -> Optional[UserInDB]:
-    """
-    根据用户ID从数据库获取用户信息
+    """根据用户ID从数据库获取用户信息
 
     Args:
         user_id: 用户ID
@@ -324,6 +323,7 @@ def get_user_from_database_by_id(user_id: int) -> Optional[UserInDB]:
         DatabaseConnectionError: 数据库连接失败
         DataValidationError: 用户ID无效
         DatabaseOperationError: 数据库操作失败
+
     """
     from app.core.database import get_postgresql_session
     from app.db import UserRepository
@@ -344,7 +344,7 @@ def get_user_from_database_by_id(user_id: int) -> Optional[UserInDB]:
     except Exception as e:
         # 捕获其他异常并转换为DatabaseOperationError
         raise DatabaseOperationError(
-            message=f"Failed to retrieve user from database by ID: {str(e)}",
+            message=f"Failed to retrieve user from database by ID: {e!s}",
             code="DB_OPERATION_FAILED",
             severity="HIGH",
             original_exception=e,
@@ -363,8 +363,7 @@ def check_permission(user_role: str, required_role: str) -> bool:
 
 
 async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
-    """
-    获取当前用户 - 已恢复JWT认证验证
+    """获取当前用户 - 已恢复JWT认证验证
 
     验证JWT令牌的有效性并返回用户信息。
     如果令牌无效或过期，抛出HTTPException。
@@ -377,6 +376,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
 
     Raises:
         HTTPException: 令牌无效时返回401未授权错误
+
     """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -414,8 +414,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
 async def get_current_active_user(
     current_user: User = Depends(get_current_user),
 ) -> User:
-    """
-    获取当前活跃用户
+    """获取当前活跃用户
 
     确保用户已通过认证且处于活跃状态。
     如果用户未激活，抛出HTTPException。
@@ -428,6 +427,7 @@ async def get_current_active_user(
 
     Raises:
         HTTPException: 用户未激活时返回400错误
+
     """
     if not current_user.is_active:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user")
@@ -435,8 +435,7 @@ async def get_current_active_user(
 
 
 def _authenticate_with_mock(username: str, password: str) -> Optional[UserInDB]:
-    """
-    使用Mock用户数据进行认证
+    """使用Mock用户数据进行认证
 
     Args:
         username: 用户名
@@ -444,6 +443,7 @@ def _authenticate_with_mock(username: str, password: str) -> Optional[UserInDB]:
 
     Returns:
         UserInDB: 验证成功的用户信息，验证失败返回None
+
     """
     from app.core.config import settings
 

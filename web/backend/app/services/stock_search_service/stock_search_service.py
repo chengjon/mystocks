@@ -1,5 +1,4 @@
-"""
-股票搜索服务模块
+"""股票搜索服务模块
 支持多数据源：
 - AKShare: A股数据和港股数据
 - 统一搜索接口
@@ -15,6 +14,7 @@ import os
 from typing import Dict, List, Optional
 
 import requests
+
 
 try:
     import akshare as ak
@@ -46,19 +46,33 @@ except ImportError:
     from app.services.stock_search_service._stock_search_cn import (  # type: ignore
         _get_a_stock_exchange as _resolve_a_stock_exchange,
     )
-    from app.services.stock_search_service._stock_search_cn import get_a_stock_kline as _get_a_stock_kline  # type: ignore
+    from app.services.stock_search_service._stock_search_cn import (
+        get_a_stock_kline as _get_a_stock_kline,  # type: ignore
+    )
     from app.services.stock_search_service._stock_search_cn import get_a_stock_news as _get_a_stock_news  # type: ignore
-    from app.services.stock_search_service._stock_search_cn import get_a_stock_realtime as _get_a_stock_realtime  # type: ignore
+    from app.services.stock_search_service._stock_search_cn import (
+        get_a_stock_realtime as _get_a_stock_realtime,  # type: ignore
+    )
     from app.services.stock_search_service._stock_search_cn import search_a_stocks as _search_a_stocks  # type: ignore
-    from app.services.stock_search_service._stock_search_finnhub import get_company_news as _get_company_news  # type: ignore
-    from app.services.stock_search_service._stock_search_finnhub import get_company_profile as _get_company_profile  # type: ignore
-    from app.services.stock_search_service._stock_search_finnhub import get_market_news as _get_market_news  # type: ignore
+    from app.services.stock_search_service._stock_search_finnhub import (
+        get_company_news as _get_company_news,  # type: ignore
+    )
+    from app.services.stock_search_service._stock_search_finnhub import (
+        get_company_profile as _get_company_profile,  # type: ignore
+    )
+    from app.services.stock_search_service._stock_search_finnhub import (
+        get_market_news as _get_market_news,  # type: ignore
+    )
     from app.services.stock_search_service._stock_search_finnhub import (  # type: ignore
         get_recommendation_trends as _get_recommendation_trends,
     )
-    from app.services.stock_search_service._stock_search_finnhub import get_stock_quote as _get_stock_quote  # type: ignore
+    from app.services.stock_search_service._stock_search_finnhub import (
+        get_stock_quote as _get_stock_quote,  # type: ignore
+    )
     from app.services.stock_search_service._stock_search_finnhub import search_stocks as _search_stocks  # type: ignore
-    from app.services.stock_search_service._stock_search_hk import get_hk_stock_news as _get_hk_stock_news  # type: ignore
+    from app.services.stock_search_service._stock_search_hk import (
+        get_hk_stock_news as _get_hk_stock_news,  # type: ignore
+    )
     from app.services.stock_search_service._stock_search_hk import (  # type: ignore
         get_hk_stock_realtime as _get_hk_stock_realtime,
     )
@@ -143,9 +157,7 @@ class StockSearchService:
         results = []
 
         if market == "auto":
-            if any("\u4e00" <= char <= "\u9fff" for char in query):
-                market = "cn"
-            elif query.isdigit() and len(query) == 6:
+            if any("\u4e00" <= char <= "\u9fff" for char in query) or (query.isdigit() and len(query) == 6):
                 market = "cn"
             elif query.isdigit() and len(query) == 5:
                 market = "hk"
@@ -156,10 +168,7 @@ class StockSearchService:
             results = self.search_a_stocks(query)
         elif market == "hk" and self.akshare_available:
             results = self.search_hk_stocks(query)
-        elif market == "all" and self.akshare_available:
-            results.extend(self.search_a_stocks(query))
-            results.extend(self.search_hk_stocks(query))
-        elif self.akshare_available:
+        elif (market == "all" and self.akshare_available) or self.akshare_available:
             results.extend(self.search_a_stocks(query))
             results.extend(self.search_hk_stocks(query))
 

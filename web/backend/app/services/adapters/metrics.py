@@ -1,18 +1,9 @@
-"""
-数据源适配器模块
+"""数据源适配器模块
 """
 
-import time
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from datetime import datetime
+from typing import Optional
 
-from app.core.database import db_service
-from app.services.data_quality_monitor import get_data_quality_monitor
-from app.services.data_source_interface import (
-    HealthStatus,
-    HealthStatusEnum,
-    IDataSource,
-)
 
 logger = __import__("logging").getLogger(__name__)
 

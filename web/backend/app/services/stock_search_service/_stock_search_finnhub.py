@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from functools import lru_cache
 from typing import Dict, List, Optional
 
+
 try:
     from .parse_datetime_to_timestamp import FinnhubAPIError
 except ImportError:
@@ -24,7 +25,7 @@ def search_stocks(self, query: str) -> List[Dict]:
                     "displaySymbol": item.get("displaySymbol"),
                     "type": item.get("type"),
                     "exchange": item.get("exchange"),
-                }
+                },
             )
         return results
     except FinnhubAPIError as error:
@@ -101,7 +102,7 @@ def get_company_news(self, symbol: str, from_date: str = None, to_date: str = No
                     "image": item.get("image"),
                     "related": item.get("related"),
                     "category": item.get("category"),
-                }
+                },
             )
         return news_list
     except FinnhubAPIError as error:
@@ -124,7 +125,7 @@ def get_market_news(self, category: str = "general") -> List[Dict]:
                     "url": item.get("url"),
                     "image": item.get("image"),
                     "category": item.get("category"),
-                }
+                },
             )
         return news_list
     except FinnhubAPIError as error:

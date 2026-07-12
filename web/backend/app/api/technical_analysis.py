@@ -1,5 +1,4 @@
-"""
-技术分析 API 端点
+"""技术分析 API 端点
 Enhanced Technical Analysis
 """
 
@@ -16,6 +15,7 @@ from app.core.exceptions import BusinessException, ValidationException
 from app.core.responses import create_error_response, create_success_response
 from app.schema import StockSymbolModel, TechnicalIndicatorQueryModel  # 导入P0改进的验证模型
 from app.services.data_source_factory import DataSourceFactory
+
 
 logger = logging.getLogger(__name__)
 
@@ -107,9 +107,9 @@ class TechnicalAnalysisRequest(BaseModel):
         # 根据周期设置合理的上限
         if period == "daily" and v > 5000:
             raise ValueError("日线数据最多返回5000个数据点")
-        elif period == "weekly" and v > 1000:
+        if period == "weekly" and v > 1000:
             raise ValueError("周线数据最多返回1000个数据点")
-        elif period == "monthly" and v > 300:
+        if period == "monthly" and v > 300:
             raise ValueError("月线数据最多返回300个数据点")
 
         return v
@@ -246,8 +246,7 @@ async def get_all_indicators(
     *,
     technical_analysis_adapter: Any = Depends(get_technical_analysis_data_source),
 ):
-    """
-    获取股票的所有技术指标
+    """获取股票的所有技术指标
 
     参数:
     - symbol: 股票代码 (如: 600519)
@@ -285,7 +284,7 @@ async def get_all_indicators(
             # P0改进: 标准化验证错误响应
             error_details = [{"field": str(err["loc"][0]), "message": err["msg"]} for err in ve.errors()]
             return create_error_response(
-                error_code="VALIDATION_ERROR", message="输入参数验证失败", details=error_details
+                error_code="VALIDATION_ERROR", message="输入参数验证失败", details=error_details,
             )
 
         # P0改进 Task 3: 使用熔断器保护外部API调用
@@ -312,7 +311,7 @@ async def get_all_indicators(
         except Exception as api_error:
             circuit_breaker.record_failure()
             logger.error(
-                f"❌ Technical analysis API failed: {str(api_error)}, failures: {circuit_breaker.failure_count}"
+                f"❌ Technical analysis API failed: {api_error!s}, failures: {circuit_breaker.failure_count}",
             )
             raise
 
@@ -347,8 +346,7 @@ async def get_trend_indicators(
     *,
     technical_analysis_adapter: Any = Depends(get_technical_analysis_data_source),
 ):
-    """
-    获取趋势指标
+    """获取趋势指标
 
     包括:
     - MA (移动平均线): 5, 10, 20, 30, 60, 120, 250日
@@ -374,7 +372,7 @@ async def get_trend_indicators(
         except ValidationError as ve:
             error_details = [{"field": str(err["loc"][0]), "message": err["msg"]} for err in ve.errors()]
             return create_error_response(
-                error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details
+                error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details,
             )
 
         params = {"symbol": validated_symbol.symbol, "period": period}
@@ -404,7 +402,7 @@ async def get_trend_indicators(
     except Exception as e:
         logger.error("TREND_ENDPOINT_ERROR", error=str(e), exc_info=True)
         raise BusinessException(
-            detail=f"获取趋势指标失败: {str(e)}", status_code=500, error_code="INTERNAL_SERVER_ERROR"
+            detail=f"获取趋势指标失败: {e!s}", status_code=500, error_code="INTERNAL_SERVER_ERROR",
         )
 
 
@@ -415,8 +413,7 @@ async def get_momentum_indicators(
     *,
     technical_analysis_adapter: Any = Depends(get_technical_analysis_data_source),
 ):
-    """
-    获取动量指标
+    """获取动量指标
 
     包括:
     - RSI (相对强弱指标): 6, 12, 24日
@@ -437,7 +434,7 @@ async def get_momentum_indicators(
         except ValidationError as ve:
             error_details = [{"field": str(err["loc"][0]), "message": err["msg"]} for err in ve.errors()]
             return create_error_response(
-                error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details
+                error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details,
             )
 
         params = {"symbol": validated_symbol.symbol, "period": period}
@@ -467,8 +464,7 @@ async def get_volatility_indicators(
     *,
     technical_analysis_adapter: Any = Depends(get_technical_analysis_data_source),
 ):
-    """
-    获取波动性指标
+    """获取波动性指标
 
     包括:
     - Bollinger Bands (布林带): upper, middle, lower, width
@@ -488,7 +484,7 @@ async def get_volatility_indicators(
         except ValidationError as ve:
             error_details = [{"field": str(err["loc"][0]), "message": err["msg"]} for err in ve.errors()]
             return create_error_response(
-                error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details
+                error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details,
             )
 
         params = {"symbol": validated_symbol.symbol, "period": period}
@@ -518,8 +514,7 @@ async def get_volume_indicators(
     *,
     technical_analysis_adapter: Any = Depends(get_technical_analysis_data_source),
 ):
-    """
-    获取成交量指标
+    """获取成交量指标
 
     包括:
     - OBV (能量潮指标)
@@ -539,7 +534,7 @@ async def get_volume_indicators(
         except ValidationError as ve:
             error_details = [{"field": str(err["loc"][0]), "message": err["msg"]} for err in ve.errors()]
             return create_error_response(
-                error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details
+                error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details,
             )
 
         params = {"symbol": validated_symbol.symbol, "period": period}
@@ -569,8 +564,7 @@ async def get_trading_signals(
     *,
     technical_analysis_adapter: Any = Depends(get_technical_analysis_data_source),
 ):
-    """
-    获取交易信号
+    """获取交易信号
 
     基于技术指标生成买入/卖出/持有信号
 
@@ -592,7 +586,7 @@ async def get_trading_signals(
         except ValidationError as ve:
             error_details = [{"field": str(err["loc"][0]), "message": err["msg"]} for err in ve.errors()]
             return create_error_response(
-                error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details
+                error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details,
             )
 
         params = {"symbol": validated_symbol.symbol, "period": period}
@@ -613,7 +607,7 @@ async def get_trading_signals(
         raise
     except Exception as e:
         raise BusinessException(
-            detail=f"获取交易信号失败: {str(e)}", status_code=500, error_code="INTERNAL_SERVER_ERROR"
+            detail=f"获取交易信号失败: {e!s}", status_code=500, error_code="INTERNAL_SERVER_ERROR",
         )
 
 
@@ -627,8 +621,7 @@ async def get_stock_history(
     *,
     technical_analysis_adapter: Any = Depends(get_technical_analysis_data_source),
 ):
-    """
-    获取股票历史行情数据
+    """获取股票历史行情数据
 
     用于前端绘制 K 线图和指标图表
 
@@ -669,8 +662,7 @@ async def get_batch_indicators(
     *,
     technical_analysis_adapter: Any = Depends(get_technical_analysis_data_source),
 ):
-    """
-    批量获取多只股票的技术指标
+    """批量获取多只股票的技术指标
 
     参数:
     - symbols: 股票代码列表 (最多20只)

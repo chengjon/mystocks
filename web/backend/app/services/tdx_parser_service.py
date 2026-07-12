@@ -1,5 +1,4 @@
-"""
-通达信数据解析服务
+"""通达信数据解析服务
 用于解析通达信二进制 .day 文件格式
 """
 
@@ -10,12 +9,12 @@ from typing import List, Optional
 
 import pandas as pd
 
+
 logger = logging.getLogger(__name__)
 
 
 class TdxDayFileParser:
-    """
-    通达信 .day 文件解析器
+    """通达信 .day 文件解析器
 
     文件格式说明：
     - 每条记录 32 字节
@@ -28,14 +27,14 @@ class TdxDayFileParser:
 
     @staticmethod
     def parse_date(date_int: int) -> str:
-        """
-        解析通达信日期格式
+        """解析通达信日期格式
 
         Args:
             date_int: 整数格式的日期（如：20231201）
 
         Returns:
             str: YYYY-MM-DD 格式的日期字符串
+
         """
         try:
             date_str = str(date_int)
@@ -48,8 +47,7 @@ class TdxDayFileParser:
 
     @staticmethod
     def read_tdx_day_file(file_path: str, stock_code: str = None) -> pd.DataFrame:
-        """
-        读取通达信 .day 文件
+        """读取通达信 .day 文件
 
         Args:
             file_path: .day 文件路径
@@ -57,6 +55,7 @@ class TdxDayFileParser:
 
         Returns:
             pd.DataFrame: 包含 OHLCV 数据的 DataFrame
+
         """
         file_path = Path(file_path)
 
@@ -96,7 +95,7 @@ class TdxDayFileParser:
                         "close": close_price,
                         "amount": amount,
                         "volume": volume,
-                    }
+                    },
                 )
 
         # 创建 DataFrame
@@ -110,8 +109,7 @@ class TdxDayFileParser:
 
     @staticmethod
     def convert_to_csv(input_file: str, output_file: str, stock_code: str = None) -> str:
-        """
-        将 .day 文件转换为 CSV 文件
+        """将 .day 文件转换为 CSV 文件
 
         Args:
             input_file: 输入的 .day 文件路径
@@ -120,6 +118,7 @@ class TdxDayFileParser:
 
         Returns:
             str: 输出文件路径
+
         """
         df = TdxDayFileParser.read_tdx_day_file(input_file, stock_code)
         df.to_csv(output_file, index=False, encoding="utf-8")
@@ -127,8 +126,7 @@ class TdxDayFileParser:
 
     @staticmethod
     def get_latest_data(file_path: str, days: int = 30) -> pd.DataFrame:
-        """
-        获取最近 N 天的数据
+        """获取最近 N 天的数据
 
         Args:
             file_path: .day 文件路径
@@ -136,6 +134,7 @@ class TdxDayFileParser:
 
         Returns:
             pd.DataFrame: 最近 N 天的数据
+
         """
         df = TdxDayFileParser.read_tdx_day_file(file_path)
 
@@ -147,8 +146,7 @@ class TdxDayFileParser:
 
     @staticmethod
     def get_date_range_data(file_path: str, start_date: str, end_date: str) -> pd.DataFrame:
-        """
-        获取指定日期范围的数据
+        """获取指定日期范围的数据
 
         Args:
             file_path: .day 文件路径
@@ -157,6 +155,7 @@ class TdxDayFileParser:
 
         Returns:
             pd.DataFrame: 指定日期范围的数据
+
         """
         df = TdxDayFileParser.read_tdx_day_file(file_path)
 
@@ -172,18 +171,17 @@ class TdxDataService:
     """通达信数据服务"""
 
     def __init__(self, data_dir: str = "/mnt/d/ProgramData/tdx_new/vipdoc"):
-        """
-        初始化服务
+        """初始化服务
 
         Args:
             data_dir: 通达信数据目录路径
+
         """
         self.data_dir = Path(data_dir)
         self.parser = TdxDayFileParser()
 
     def get_stock_data(self, stock_code: str, market: str = "sh") -> Optional[pd.DataFrame]:
-        """
-        获取股票数据
+        """获取股票数据
 
         Args:
             stock_code: 股票代码（如：000001）
@@ -191,6 +189,7 @@ class TdxDataService:
 
         Returns:
             Optional[pd.DataFrame]: 股票数据，如果文件不存在返回 None
+
         """
         # 构建文件路径
         market_dir = "sh" if market.lower() == "sh" else "sz"
@@ -206,26 +205,26 @@ class TdxDataService:
             return None
 
     def get_index_data(self, index_code: str = "000001") -> Optional[pd.DataFrame]:
-        """
-        获取指数数据
+        """获取指数数据
 
         Args:
             index_code: 指数代码（默认：上证指数 000001）
 
         Returns:
             Optional[pd.DataFrame]: 指数数据
+
         """
         return self.get_stock_data(index_code, "sh")
 
     def list_available_stocks(self, market: str = "sh") -> List[str]:
-        """
-        列出可用的股票代码
+        """列出可用的股票代码
 
         Args:
             market: 市场代码（sh 或 sz）
 
         Returns:
             List[str]: 股票代码列表
+
         """
         market_dir = "sh" if market.lower() == "sh" else "sz"
         lday_dir = self.data_dir / market_dir / "lday"
@@ -242,8 +241,7 @@ class TdxDataService:
         return sorted(stocks)
 
     def export_to_csv(self, stock_code: str, market: str, output_dir: str = "./exports") -> Optional[str]:
-        """
-        导出股票数据到 CSV
+        """导出股票数据到 CSV
 
         Args:
             stock_code: 股票代码
@@ -252,6 +250,7 @@ class TdxDataService:
 
         Returns:
             Optional[str]: 输出文件路径，失败返回 None
+
         """
         df = self.get_stock_data(stock_code, market)
 

@@ -1,5 +1,4 @@
-"""
-另类数据API - 新闻和社交媒体情感分析
+"""另类数据API - 新闻和社交媒体情感分析
 Alternative Data API - News and Social Media Sentiment Analysis
 
 提供新闻采集、情感分析、社交媒体监控等另类数据服务。
@@ -14,6 +13,7 @@ from pydantic import BaseModel, Field
 
 from src.alternative_data.news_sentiment_analyzer import NewsSentimentService
 from src.infrastructure.logging.audit_system import AuditEvent, get_audit_manager
+
 
 router = APIRouter(prefix="/api/alternative-data", tags=["另类数据分析"])
 
@@ -77,8 +77,7 @@ async def collect_and_analyze_news(
     hours_back: int = Query(24, description="采集过去N小时的新闻", ge=1, le=168),
     user_id: Optional[str] = Query(None, description="用户ID"),
 ):
-    """
-    采集并分析新闻数据
+    """采集并分析新闻数据
 
     从多个新闻源采集金融新闻，进行情感分析并存储结果。
     """
@@ -101,7 +100,7 @@ async def collect_and_analyze_news(
                     "hours_back": hours_back,
                     "collection_type": "sentiment_analysis",
                 },
-            )
+            ),
         )
 
         return {
@@ -112,7 +111,7 @@ async def collect_and_analyze_news(
         }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"启动新闻采集失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"启动新闻采集失败: {e!s}")
 
 
 @router.get("/news/recent", response_model=List[NewsArticleResponse], summary="获取最近新闻")
@@ -122,8 +121,7 @@ async def get_recent_news(
     symbol: Optional[str] = Query(None, description="股票代码过滤"),
     hours_back: int = Query(24, description="时间范围(小时)", ge=1, le=168),
 ):
-    """
-    获取最近的新闻文章
+    """获取最近的新闻文章
 
     支持按情感、股票代码、时间范围过滤。
     """
@@ -158,7 +156,7 @@ async def get_recent_news(
         return [NewsArticleResponse(**article) for article in mock_articles]
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取新闻失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取新闻失败: {e!s}")
 
 
 @router.get(
@@ -170,8 +168,7 @@ async def get_stock_sentiment(
     symbol: str = Path(..., description="股票代码", pattern=r"^\d{6}$"),
     hours: int = Query(24, description="时间范围(小时)", ge=1, le=168),
 ):
-    """
-    获取特定股票的情感指标
+    """获取特定股票的情感指标
 
     基于新闻分析计算股票的情感趋势和强度。
     """
@@ -187,7 +184,7 @@ async def get_stock_sentiment(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取股票情感指标失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取股票情感指标失败: {e!s}")
 
 
 @router.get(
@@ -198,8 +195,7 @@ async def get_stock_sentiment(
 async def get_market_sentiment(
     hours: int = Query(24, description="时间范围(小时)", ge=1, le=168),
 ):
-    """
-    获取市场整体情感概览
+    """获取市场整体情感概览
 
     分析主要股票和指数的情感趋势。
     """
@@ -215,7 +211,7 @@ async def get_market_sentiment(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取市场情感概览失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取市场情感概览失败: {e!s}")
 
 
 @router.get("/sentiment/trend/{symbol}", summary="获取情感趋势分析")
@@ -223,8 +219,7 @@ async def get_sentiment_trend(
     symbol: str = Path(..., description="股票代码", pattern=r"^\d{6}$"),
     days: int = Query(7, description="分析天数", ge=1, le=30),
 ):
-    """
-    获取股票情感趋势分析
+    """获取股票情感趋势分析
 
     分析过去N天的新闻情感变化趋势。
     """
@@ -244,7 +239,7 @@ async def get_sentiment_trend(
                         "sentiment_score": indicators["sentiment_score"],
                         "confidence": indicators["confidence"],
                         "article_count": indicators["article_count"],
-                    }
+                    },
                 )
 
         # 计算趋势
@@ -264,7 +259,7 @@ async def get_sentiment_trend(
         }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取情感趋势失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取情感趋势失败: {e!s}")
 
 
 @router.post("/social-media/monitor", summary="启动社交媒体监控")
@@ -274,8 +269,7 @@ async def start_social_media_monitoring(
     symbols: List[str] = Query(None, description="关联股票代码"),
     user_id: Optional[str] = Query(None, description="用户ID"),
 ):
-    """
-    启动社交媒体情感监控
+    """启动社交媒体情感监控
 
     监控Twitter、微博等社交媒体上的相关讨论和情感。
     """
@@ -297,7 +291,7 @@ async def start_social_media_monitoring(
                     "symbols": symbols or [],
                     "monitoring_type": "sentiment_analysis",
                 },
-            )
+            ),
         )
 
         return {
@@ -309,7 +303,7 @@ async def start_social_media_monitoring(
         }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"启动社交媒体监控失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"启动社交媒体监控失败: {e!s}")
 
 
 @router.get("/social-media/sentiment", summary="获取社交媒体情感数据")
@@ -317,8 +311,7 @@ async def get_social_media_sentiment(
     symbol: str = Query(..., description="股票代码", pattern=r"^\d{6}$"),
     hours: int = Query(24, description="时间范围(小时)", ge=1, le=168),
 ):
-    """
-    获取社交媒体情感数据
+    """获取社交媒体情感数据
 
     返回指定股票在社交媒体上的讨论情感分析。
     """
@@ -344,13 +337,12 @@ async def get_social_media_sentiment(
         return mock_sentiment
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取社交媒体情感数据失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取社交媒体情感数据失败: {e!s}")
 
 
 @router.get("/alternative-data/summary", summary="获取另类数据汇总")
 async def get_alternative_data_summary():
-    """
-    获取所有另类数据的汇总统计
+    """获取所有另类数据的汇总统计
 
     包括新闻情感、市场情绪、社交媒体数据等。
     """
@@ -402,4 +394,4 @@ async def get_alternative_data_summary():
         return summary
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取另类数据汇总失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取另类数据汇总失败: {e!s}")

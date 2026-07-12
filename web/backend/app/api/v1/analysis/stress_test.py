@@ -1,5 +1,4 @@
-"""
-压力测试API
+"""压力测试API
 
 提供组合压力测试功能
 """
@@ -8,6 +7,7 @@ from typing import List
 
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
+
 
 router = APIRouter(
     prefix="/stress-test",
@@ -33,8 +33,7 @@ async def run_custom_stress_test(
     scenarios: List[StressTestScenario],
     initial_capital: float = 1000000.0,
 ):
-    """
-    运行自定义压力测试
+    """运行自定义压力测试
 
     Runs stress test with custom scenarios on a portfolio.
     """
@@ -61,8 +60,7 @@ async def run_custom_stress_test(
 
 @router.get("/scenarios", summary="Get Predefined Scenarios")
 async def get_predefined_scenarios():
-    """
-    获取预定义压力测试场景
+    """获取预定义压力测试场景
 
     Returns list of predefined stress test scenarios.
     """
@@ -92,14 +90,13 @@ async def get_predefined_scenarios():
                 "severity": 0.4,
                 "duration_days": 30,
             },
-        ]
+        ],
     }
 
 
 @router.get("/history", summary="Get Stress Test History")
 async def get_stress_test_history(portfolio_id: str, limit: int = 10):
-    """
-    获取压力测试历史
+    """获取压力测试历史
 
     Returns historical stress test results for a portfolio.
     """
@@ -112,7 +109,7 @@ async def get_stress_test_history(portfolio_id: str, limit: int = 10):
                 "scenario": "market_crash_2008",
                 "impact": -0.35,
                 "passed": True,
-            }
+            },
         ],
         "total": 1,
     }

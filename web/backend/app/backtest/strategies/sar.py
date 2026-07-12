@@ -1,5 +1,4 @@
-"""
-SAR Strategy
+"""SAR Strategy
 
 SAR抛物线转向策略 - 趋势跟踪与止损合一
 Parabolic Stop And Reverse
@@ -12,8 +11,7 @@ from app.backtest.strategies.base import BaseStrategy, SignalType, StrategySigna
 
 
 class SARStrategy(BaseStrategy):
-    """
-    SAR抛物线转向策略
+    """SAR抛物线转向策略
 
     核心逻辑:
     - SAR(n) = SAR(n-1) + AF × (EP - SAR(n-1))
@@ -136,11 +134,11 @@ class SARStrategy(BaseStrategy):
         self.af_values[symbol] = self.parameters["initial_af"]
 
     def _calculate_sar(self, current_data: Dict[str, Any], symbol: str) -> Optional[float]:
-        """
-        计算下一个SAR值
+        """计算下一个SAR值
 
         Returns:
             当前SAR值
+
         """
         if symbol not in self.sar_values:
             return None
@@ -226,7 +224,6 @@ class SARStrategy(BaseStrategy):
         position: Optional[Dict[str, Any]] = None,
     ) -> Optional[StrategySignal]:
         """生成交易信号"""
-
         self.update_history(symbol, current_data)
 
         history = self.price_history.get(symbol, [])
@@ -299,7 +296,7 @@ class SARStrategy(BaseStrategy):
                     )
 
                 # 持续上升趋势中的入场
-                elif trend_aligned:
+                if trend_aligned:
                     # 计算SAR与价格的距离百分比
                     distance_pct = (current_price - sar) / current_price
 

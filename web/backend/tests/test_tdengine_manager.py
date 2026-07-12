@@ -1,5 +1,4 @@
-"""
-Integration tests for TDengineManager - Task 2.1: TDengine Cache Integration
+"""Integration tests for TDengineManager - Task 2.1: TDengine Cache Integration
 
 Tests cover:
 - Connection establishment and health checks
@@ -10,10 +9,12 @@ Tests cover:
 - Cache statistics tracking
 """
 
-import pytest
-from datetime import datetime, timedelta, timezone
-import sys
 import os
+import sys
+from datetime import datetime, timedelta, timezone
+
+import pytest
+
 
 # Add parent directories to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
@@ -109,7 +110,7 @@ class TestTDengineInitialization:
             result = self.manager._execute_query("SELECT COUNT(*) FROM market_data_cache LIMIT 1")
             assert result is not None, "market_data_cache table should exist"
         except Exception as e:
-            pytest.skip(f"TDengine may not be running: {str(e)}")
+            pytest.skip(f"TDengine may not be running: {e!s}")
 
     def test_singleton_manager(self):
         """Test singleton pattern for TDengineManager"""
@@ -133,7 +134,7 @@ class TestCacheWriteOperations:
         try:
             self.manager.initialize()
         except Exception as e:
-            pytest.skip(f"TDengine may not be running: {str(e)}")
+            pytest.skip(f"TDengine may not be running: {e!s}")
 
     def teardown_method(self):
         """Cleanup after each test"""
@@ -220,7 +221,7 @@ class TestCacheReadOperations:
         try:
             self.manager.initialize()
         except Exception as e:
-            pytest.skip(f"TDengine may not be running: {str(e)}")
+            pytest.skip(f"TDengine may not be running: {e!s}")
 
     def teardown_method(self):
         """Cleanup after each test"""
@@ -301,7 +302,7 @@ class TestCacheExpirationAndCleanup:
         try:
             self.manager.initialize()
         except Exception as e:
-            pytest.skip(f"TDengine may not be running: {str(e)}")
+            pytest.skip(f"TDengine may not be running: {e!s}")
 
     def teardown_method(self):
         """Cleanup after each test"""
@@ -364,7 +365,7 @@ class TestCacheStatistics:
         try:
             self.manager.initialize()
         except Exception as e:
-            pytest.skip(f"TDengine may not be running: {str(e)}")
+            pytest.skip(f"TDengine may not be running: {e!s}")
 
     def teardown_method(self):
         """Cleanup after each test"""
@@ -413,7 +414,7 @@ class TestErrorHandling:
         try:
             self.manager.initialize()
         except Exception as e:
-            pytest.skip(f"TDengine may not be running: {str(e)}")
+            pytest.skip(f"TDengine may not be running: {e!s}")
 
     def teardown_method(self):
         """Cleanup after each test"""

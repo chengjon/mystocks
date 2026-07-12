@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-# -*- coding: utf-8 -*-
 # 功能：user模块
 # 作者：JohnC (ninjas@sina.com) & Claude
 # 日期：2025-11-18
@@ -9,8 +7,7 @@
 # 注意事项：模块功能实现
 # 版权：© 2025 MyStocks Project
 
-"""
-User models - 数据库模型
+"""User models - 数据库模型
 
 """
 
@@ -18,6 +15,7 @@ from datetime import datetime
 
 from sqlalchemy import Boolean, Column, DateTime, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
+
 
 Base = declarative_base()
 

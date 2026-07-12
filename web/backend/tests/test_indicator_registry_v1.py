@@ -3,6 +3,7 @@ import os
 import pytest
 from fastapi.testclient import TestClient
 
+
 os.environ.setdefault("TESTING", "true")
 os.environ.setdefault("DEVELOPMENT_MODE", "true")
 os.environ.setdefault("MOCK_AUTH_ENABLED", "true")

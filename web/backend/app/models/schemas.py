@@ -1,5 +1,4 @@
-"""
-行业概念分析API响应模型
+"""行业概念分析API响应模型
 
 定义行业/概念分析相关的响应数据结构
 """
@@ -87,13 +86,13 @@ class IndustryListResponse(BaseModel):
                             "total_market_value": 54321000000.0,
                             "turnover_rate": 0.85,
                             "updated_at": "2025-11-17T10:30:00",
-                        }
+                        },
                     ],
                     "total_count": 1,
                 },
                 "timestamp": "2025-11-17T10:30:00",
-            }
-        }
+            },
+        },
     )
 
 
@@ -125,13 +124,13 @@ class ConceptListResponse(BaseModel):
                             "total_market_value": 123456000000.0,
                             "turnover_rate": 2.15,
                             "updated_at": "2025-11-17T10:30:00",
-                        }
+                        },
                     ],
                     "total_count": 1,
                 },
                 "timestamp": "2025-11-17T10:30:00",
-            }
-        }
+            },
+        },
     )
 
 
@@ -155,14 +154,14 @@ class StockListResponse(BaseModel):
                             "change_percent": 1.85,
                             "volume": 45678901,
                             "amount": 1754321000.0,
-                        }
+                        },
                     ],
                     "total_count": 1,
                     "industry_code": "BK0475",
                 },
                 "timestamp": "2025-11-17T10:30:00",
-            }
-        }
+            },
+        },
     )
 
 
@@ -206,12 +205,12 @@ class IndustryPerformanceResponse(BaseModel):
                             "symbol": "600036.SH",
                             "latest_price": 38.45,
                             "change_percent": 1.85,
-                        }
+                        },
                     ],
                 },
                 "timestamp": "2025-11-17T10:30:00",
-            }
-        }
+            },
+        },
     )
 
 

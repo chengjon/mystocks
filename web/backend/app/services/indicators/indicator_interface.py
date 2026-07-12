@@ -1,5 +1,4 @@
-"""
-Indicator Interface System
+"""Indicator Interface System
 ===========================
 
 指标计算接口定义，提供标准化的指标计算基类。
@@ -21,6 +20,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 
 import numpy as np
+
 
 logger = logging.getLogger(__name__)
 
@@ -144,8 +144,7 @@ class ParameterValidationError(IndicatorError):
 
 
 class IndicatorInterface(ABC):
-    """
-    指标计算接口基类
+    """指标计算接口基类
 
     所有指标实现都应继承此类并实现抽象方法。
     提供了统一的数据验证、错误处理和结果格式化功能。
@@ -162,8 +161,7 @@ class IndicatorInterface(ABC):
 
     @abstractmethod
     def calculate(self, data: OHLCVData, parameters: Dict[str, Any]) -> IndicatorResult:
-        """
-        计算指标
+        """计算指标
 
         Args:
             data: OHLCV数据
@@ -171,11 +169,11 @@ class IndicatorInterface(ABC):
 
         Returns:
             IndicatorResult: 计算结果
+
         """
 
     def validate_data(self, data: OHLCVData, min_required: int) -> None:
-        """
-        验证数据
+        """验证数据
 
         Args:
             data: OHLCV数据
@@ -183,15 +181,15 @@ class IndicatorInterface(ABC):
 
         Raises:
             InsufficientDataError: 数据不足
+
         """
         if data.length < min_required:
             raise InsufficientDataError(
-                self.ABBREVIATION, min_required, data.length, f"请将日期范围扩大至至少 {min_required} 个交易日"
+                self.ABBREVIATION, min_required, data.length, f"请将日期范围扩大至至少 {min_required} 个交易日",
             )
 
     def validate_parameters(self, parameters: Dict[str, Any], valid_params: Dict[str, Any]) -> None:
-        """
-        验证参数
+        """验证参数
 
         Args:
             parameters: 参数字典
@@ -199,6 +197,7 @@ class IndicatorInterface(ABC):
 
         Raises:
             ParameterValidationError: 参数验证失败
+
         """
         for name, value in parameters.items():
             if name not in valid_params:
@@ -210,7 +209,7 @@ class IndicatorInterface(ABC):
             expected_type = param_def.get("type")
             if expected_type == "int" and not isinstance(value, int):
                 raise ParameterValidationError(self.ABBREVIATION, name, f"应为整数，实际为 {type(value).__name__}")
-            elif expected_type == "float" and not isinstance(value, (int, float)):
+            if expected_type == "float" and not isinstance(value, (int, float)):
                 raise ParameterValidationError(self.ABBREVIATION, name, f"应为数值，实际为 {type(value).__name__}")
 
             # 范围检查
@@ -220,7 +219,7 @@ class IndicatorInterface(ABC):
                 raise ParameterValidationError(self.ABBREVIATION, name, f"值 {value} 大于最大值 {param_def['max']}")
 
     def _create_success_result(
-        self, parameters: Dict[str, Any], values: Dict[str, np.ndarray], calculation_time_ms: float = 0.0
+        self, parameters: Dict[str, Any], values: Dict[str, np.ndarray], calculation_time_ms: float = 0.0,
     ) -> IndicatorResult:
         """创建成功结果"""
         data_points = len(values.get("result", values.get(list(values.keys())[0])))
@@ -244,7 +243,7 @@ class IndicatorInterface(ABC):
         )
 
     def _create_insufficient_data_result(
-        self, parameters: Dict[str, Any], required: int, actual: int
+        self, parameters: Dict[str, Any], required: int, actual: int,
     ) -> IndicatorResult:
         """创建数据不足结果"""
         return IndicatorResult(

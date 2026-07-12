@@ -1,5 +1,4 @@
-"""
-客户端重连机制单元测试
+"""客户端重连机制单元测试
 
 Test Reconnection Manager - Auto-reconnect with message buffering
 
@@ -10,10 +9,10 @@ Date: 2025-11-06
 """
 
 from app.core.reconnection_manager import (
-    ReconnectionManager,
-    ReconnectionState,
     MessageBuffer,
     OfflineMessage,
+    ReconnectionManager,
+    ReconnectionState,
     get_reconnection_manager,
     reset_reconnection_manager,
 )

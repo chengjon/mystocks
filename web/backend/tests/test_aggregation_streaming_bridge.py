@@ -1,5 +1,4 @@
-"""
-聚合流媒体桥接服务测试
+"""聚合流媒体桥接服务测试
 
 Tests for AggregationStreamingBridge service
 
@@ -9,9 +8,15 @@ Author: Claude Code
 Date: 2025-11-07
 """
 
-from unittest.mock import MagicMock, patch
 from decimal import Decimal
+from unittest.mock import MagicMock, patch
 
+from app.services.aggregation_streaming_bridge import (
+    AggregationStreamingBridge,
+    BarPublishMode,
+    get_aggregation_streaming_bridge,
+    reset_aggregation_streaming_bridge,
+)
 from app.services.data_aggregation_service import (
     OHLCV,
     Timeframe,
@@ -19,12 +24,6 @@ from app.services.data_aggregation_service import (
 )
 from app.services.realtime_streaming_service import (
     reset_streaming_service,
-)
-from app.services.aggregation_streaming_bridge import (
-    AggregationStreamingBridge,
-    BarPublishMode,
-    get_aggregation_streaming_bridge,
-    reset_aggregation_streaming_bridge,
 )
 
 
@@ -247,7 +246,7 @@ class TestBridgeIntegration:
                 close=Decimal("100.25"),
                 volume=10000,
                 completed=True,
-            )
+            ),
         ]
 
         # Process through bridge

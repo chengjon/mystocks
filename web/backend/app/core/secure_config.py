@@ -1,5 +1,4 @@
-"""
-Secure configuration management for sensitive data
+"""Secure configuration management for sensitive data
 Task 1.3: Sensitive Data Encryption
 
 Manages encrypted storage and retrieval of:
@@ -17,23 +16,23 @@ import structlog
 
 from .encryption import EncryptionManager, SecretManager
 
+
 logger = structlog.get_logger()
 
 
 class SecureConfig:
-    """
-    Manages secure storage and retrieval of sensitive configuration
+    """Manages secure storage and retrieval of sensitive configuration
 
     SECURITY: All database passwords and API keys are encrypted at rest.
     Encryption key derived from ENCRYPTION_MASTER_PASSWORD environment variable.
     """
 
     def __init__(self, encryption_manager: EncryptionManager = None):
-        """
-        Initialize secure configuration manager
+        """Initialize secure configuration manager
 
         Args:
             encryption_manager: Custom EncryptionManager or None for default
+
         """
         self.encryption = encryption_manager or EncryptionManager()
         self.secret_manager = SecretManager(self.encryption)
@@ -49,8 +48,7 @@ class SecureConfig:
         password: str,
         database: str = None,
     ):
-        """
-        Store encrypted database credentials
+        """Store encrypted database credentials
 
         Args:
             db_type: Type of database (postgresql, tdengine, mysql)
@@ -61,6 +59,7 @@ class SecureConfig:
             database: Database name (optional)
 
         SECURITY: Password is encrypted immediately
+
         """
         db_config = {
             "type": db_type,
@@ -77,8 +76,7 @@ class SecureConfig:
         logger.info("✅ Database credentials stored for %(db_type)s")
 
     def get_database_credentials(self, db_type: str) -> Dict[str, Any]:
-        """
-        Retrieve decrypted database credentials
+        """Retrieve decrypted database credentials
 
         Args:
             db_type: Type of database to retrieve
@@ -88,6 +86,7 @@ class SecureConfig:
 
         Raises:
             KeyError: If database credentials not found
+
         """
         key = f"db_{db_type}"
 
@@ -114,8 +113,7 @@ class SecureConfig:
         pool_size: int = 5,
         max_overflow: int = 10,
     ) -> str:
-        """
-        Build database connection string from encrypted credentials
+        """Build database connection string from encrypted credentials
 
         Args:
             db_type: Type of database
@@ -128,6 +126,7 @@ class SecureConfig:
 
         Raises:
             KeyError: If credentials not found
+
         """
         creds = self.get_database_credentials(db_type)
 
@@ -157,22 +156,21 @@ class SecureConfig:
         return conn_str
 
     def set_api_key(self, service: str, api_key: str):
-        """
-        Store encrypted API key
+        """Store encrypted API key
 
         Args:
             service: Service name (e.g., 'akshare', 'tradingview')
             api_key: API key value (will be encrypted)
 
         SECURITY: API key is encrypted immediately
+
         """
         encrypted_key = self.encryption.encrypt(api_key)
         self._config[f"api_key_{service}"] = encrypted_key
         logger.info("✅ API key stored for %(service)s")
 
     def get_api_key(self, service: str) -> str:
-        """
-        Retrieve decrypted API key
+        """Retrieve decrypted API key
 
         Args:
             service: Service name
@@ -182,6 +180,7 @@ class SecureConfig:
 
         Raises:
             KeyError: If API key not found
+
         """
         key = f"api_key_{service}"
 
@@ -195,27 +194,27 @@ class SecureConfig:
             raise
 
     def set_jwt_secret(self, secret: str):
-        """
-        Store encrypted JWT secret key
+        """Store encrypted JWT secret key
 
         Args:
             secret: JWT secret (will be encrypted)
 
         SECURITY: JWT secret is encrypted immediately
+
         """
         encrypted_secret = self.encryption.encrypt(secret)
         self._config["jwt_secret_encrypted"] = encrypted_secret
         logger.info("✅ JWT secret stored")
 
     def get_jwt_secret(self) -> str:
-        """
-        Retrieve decrypted JWT secret
+        """Retrieve decrypted JWT secret
 
         Returns:
             Decrypted JWT secret
 
         Raises:
             KeyError: If JWT secret not found
+
         """
         if "jwt_secret_encrypted" not in self._config:
             raise KeyError("JWT secret not configured")
@@ -227,8 +226,7 @@ class SecureConfig:
             raise
 
     def save_to_file(self, filepath: str) -> bool:
-        """
-        Save encrypted configuration to JSON file
+        """Save encrypted configuration to JSON file
 
         Args:
             filepath: Path to save encrypted config
@@ -237,6 +235,7 @@ class SecureConfig:
             True if successful, False otherwise
 
         SECURITY: Configuration file contains only encrypted data
+
         """
         try:
             with open(filepath, "w") as f:
@@ -253,8 +252,7 @@ class SecureConfig:
             return False
 
     def load_from_file(self, filepath: str) -> bool:
-        """
-        Load encrypted configuration from JSON file
+        """Load encrypted configuration from JSON file
 
         Args:
             filepath: Path to load encrypted config from
@@ -263,9 +261,10 @@ class SecureConfig:
             True if successful, False otherwise
 
         SECURITY: Configuration is encrypted in file, decrypted only on retrieval
+
         """
         try:
-            with open(filepath, "r") as f:
+            with open(filepath) as f:
                 self._config = json.load(f)
 
             self._encrypted_config_file = filepath
@@ -277,8 +276,7 @@ class SecureConfig:
             return False
 
     def to_dict(self, include_encrypted: bool = False) -> Dict[str, Any]:
-        """
-        Get configuration as dictionary
+        """Get configuration as dictionary
 
         Args:
             include_encrypted: If False, decrypt sensitive values before returning
@@ -288,6 +286,7 @@ class SecureConfig:
 
         SECURITY: By default, returns decrypted values. Use include_encrypted=True
         only for storage/transmission scenarios.
+
         """
         config = {}
 
@@ -307,11 +306,11 @@ class SecureConfig:
         return config
 
     def verify_configuration(self) -> Dict[str, bool]:
-        """
-        Verify that all required encrypted data can be decrypted
+        """Verify that all required encrypted data can be decrypted
 
         Returns:
             Dictionary of {key: is_valid} for each encrypted value
+
         """
         verification_results = {}
 
@@ -346,8 +345,7 @@ def get_secure_config() -> SecureConfig:
 
 
 def initialize_secure_config_from_env() -> SecureConfig:
-    """
-    Initialize SecureConfig from environment variables
+    """Initialize SecureConfig from environment variables
 
     Reads credentials from:
     - POSTGRESQL_HOST, POSTGRESQL_USER, POSTGRESQL_PASSWORD, POSTGRESQL_PORT, POSTGRESQL_DATABASE
@@ -358,6 +356,7 @@ def initialize_secure_config_from_env() -> SecureConfig:
         Initialized SecureConfig instance
 
     SECURITY: Reads from environment variables, encrypts before storage
+
     """
     config = SecureConfig()
 

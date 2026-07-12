@@ -1,12 +1,9 @@
 """缓存管理器子模块"""
 
 import logging
-import time
-from collections import OrderedDict
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
-import pandas as pd
 
 logger = logging.getLogger(__name__)
 
@@ -23,8 +20,7 @@ class CacheFetchWriteMixin:
         ttl_days: int = 7,
         timestamp: Optional[datetime] = None,
     ) -> bool:
-        """
-        写入数据到三级缓存 (Write-Through模式)
+        """写入数据到三级缓存 (Write-Through模式)
 
         同时写入L1(内存)+L2(Redis)，L3(TDengine)异步写入
 
@@ -38,6 +34,7 @@ class CacheFetchWriteMixin:
 
         Returns:
             True 如果写入成功，False 否则
+
         """
         self._cache_stats["writes"] += 1
 
@@ -86,7 +83,7 @@ class CacheFetchWriteMixin:
                     timeframe=timeframe,
                     data=enriched_data,
                     timestamp=timestamp,
-                )
+                ),
             )
 
             logger.debug(
@@ -140,13 +137,12 @@ class CacheFetchWriteMixin:
                     ttl_days=ttl_days,
                 )
                 return True
-            else:
-                logger.warning(
-                    "⚠️ TDengine写入失败，但内存缓存已更新",
-                    symbol=symbol,
-                    data_type=data_type,
-                )
-                return True  # 内存缓存成功就认为部分成功
+            logger.warning(
+                "⚠️ TDengine写入失败，但内存缓存已更新",
+                symbol=symbol,
+                data_type=data_type,
+            )
+            return True  # 内存缓存成功就认为部分成功
 
         except Exception as e:
             logger.error(
@@ -162,8 +158,7 @@ class CacheFetchWriteMixin:
         symbol: Optional[str] = None,
         data_type: Optional[str] = None,
     ) -> int:
-        """
-        清除三级缓存中的特定数据
+        """清除三级缓存中的特定数据
 
         Args:
             symbol: 股票代码 (可选，如果省略则清除所有 symbol)
@@ -171,6 +166,7 @@ class CacheFetchWriteMixin:
 
         Returns:
             删除的记录数
+
         """
         total_deleted = 0
 

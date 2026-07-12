@@ -1,18 +1,17 @@
-"""
-数据源适配器模块
+"""数据源适配器模块
 """
 
 import time
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from datetime import datetime
+from typing import Any, Dict, Optional
 
-from app.core.database import db_service
 from app.services.data_quality_monitor import get_data_quality_monitor
 from app.services.data_source_interface import (
     HealthStatus,
     HealthStatusEnum,
     IDataSource,
 )
+
 
 logger = __import__("logging").getLogger(__name__)
 
@@ -42,8 +41,7 @@ class DashboardDataSourceAdapter(IDataSource):
         self.last_response_time = 0.0
 
     async def get_data(self, endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
-        """
-        从仪表盘数据源获取数据
+        """从仪表盘数据源获取数据
         """
         start_time = time.time()
         self.total_requests += 1
@@ -213,8 +211,7 @@ class DashboardDataSourceAdapter(IDataSource):
                 "parameters": params or {},
             }
 
-        else:
-            raise ValueError(f"Unsupported dashboard endpoint: {endpoint}")
+        raise ValueError(f"Unsupported dashboard endpoint: {endpoint}")
 
     def _update_metrics(self, response_time: float, success: bool):
         """更新监控指标"""
@@ -289,7 +286,7 @@ class DashboardDataSourceAdapter(IDataSource):
         except Exception as e:
             return HealthStatus(
                 status=HealthStatusEnum.FAILED,
-                message=f"Health check failed: {str(e)}",
+                message=f"Health check failed: {e!s}",
                 response_time=0,
                 timestamp=datetime.now(),
             )

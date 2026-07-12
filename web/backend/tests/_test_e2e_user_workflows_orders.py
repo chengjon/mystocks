@@ -1,10 +1,10 @@
-"""
-端到端用户工作流测试 - 交易、恢复与性能流程
+"""端到端用户工作流测试 - 交易、恢复与性能流程
 """
 
 from unittest.mock import Mock, patch
 
 from ._test_e2e_user_workflows_support import client
+
 
 __all__ = [
     "TestUserWorkflowErrorRecovery",

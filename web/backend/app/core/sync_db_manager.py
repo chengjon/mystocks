@@ -1,5 +1,4 @@
-"""
-双库同步数据库管理器
+"""双库同步数据库管理器
 Sync Database Manager for Dual-Database Consistency
 
 负责:
@@ -25,12 +24,12 @@ from app.models.sync_message import (
     SyncMessage,
 )
 
+
 logger = structlog.get_logger()
 
 
 class SyncDatabaseManager:
-    """
-    同步数据库管理器
+    """同步数据库管理器
 
     Features:
     - 表初始化和验证
@@ -60,8 +59,7 @@ class SyncDatabaseManager:
             logger.info("✅ Sync database engine initialized")
 
     def create_tables(self):
-        """
-        创建同步消息表和统计表
+        """创建同步消息表和统计表
 
         Creates:
         - sync_message: 主消息表
@@ -114,8 +112,7 @@ class SyncDatabaseManager:
         max_retries: int = 3,
         extra_metadata: Optional[Dict[str, Any]] = None,
     ) -> SyncMessage:
-        """
-        创建同步消息
+        """创建同步消息
 
         Args:
             operation_type: 操作类型
@@ -132,6 +129,7 @@ class SyncDatabaseManager:
 
         Returns:
             创建的消息对象
+
         """
         session = self.get_session()
 
@@ -173,14 +171,14 @@ class SyncDatabaseManager:
             session.close()
 
     def create_messages_batch(self, messages: List[Dict[str, Any]]) -> List[int]:
-        """
-        批量创建同步消息
+        """批量创建同步消息
 
         Args:
             messages: 消息列表，每个元素包含create_message的参数
 
         Returns:
             创建的消息ID列表
+
         """
         session = self.get_session()
 
@@ -235,8 +233,7 @@ class SyncDatabaseManager:
             session.close()
 
     def get_pending_messages(self, limit: int = 100, priority_threshold: int = 1) -> List[SyncMessage]:
-        """
-        查询待处理消息 (按优先级和创建时间排序)
+        """查询待处理消息 (按优先级和创建时间排序)
 
         Args:
             limit: 最大返回数量
@@ -244,6 +241,7 @@ class SyncDatabaseManager:
 
         Returns:
             待处理消息列表
+
         """
         session = self.get_session()
 
@@ -254,7 +252,7 @@ class SyncDatabaseManager:
                     and_(
                         SyncMessage.status == MessageStatus.PENDING,
                         SyncMessage.priority >= priority_threshold,
-                    )
+                    ),
                 )
                 .order_by(desc(SyncMessage.priority), SyncMessage.created_at)
                 .limit(limit)
@@ -267,11 +265,11 @@ class SyncDatabaseManager:
             session.close()
 
     def get_retryable_messages(self, limit: int = 50) -> List[SyncMessage]:
-        """
-        查询可重试消息
+        """查询可重试消息
 
         Returns:
             可重试消息列表 (retry_count < max_retries 且 next_retry_at <= now)
+
         """
         session = self.get_session()
 
@@ -291,7 +289,7 @@ class SyncDatabaseManager:
                             SyncMessage.next_retry_at.is_(None),
                             SyncMessage.next_retry_at <= now,
                         ),
-                    )
+                    ),
                 )
                 .order_by(desc(SyncMessage.priority), SyncMessage.next_retry_at)
                 .limit(limit)
@@ -334,8 +332,7 @@ class SyncDatabaseManager:
         processing_duration_ms: Optional[float] = None,
         processed_by: Optional[str] = None,
     ) -> bool:
-        """
-        更新消息状态
+        """更新消息状态
 
         Args:
             message_id: 消息ID
@@ -348,6 +345,7 @@ class SyncDatabaseManager:
 
         Returns:
             是否更新成功
+
         """
         session = self.get_session()
 
@@ -426,8 +424,7 @@ class SyncDatabaseManager:
             session.close()
 
     def get_sync_statistics(self, window_minutes: int = 5, table_name: Optional[str] = None) -> Dict[str, Any]:
-        """
-        获取同步统计数据
+        """获取同步统计数据
 
         Args:
             window_minutes: 统计窗口(分钟)
@@ -435,6 +432,7 @@ class SyncDatabaseManager:
 
         Returns:
             统计数据字典
+
         """
         session = self.get_session()
 
@@ -446,7 +444,7 @@ class SyncDatabaseManager:
                 func.count(func.nullif(SyncMessage.status == MessageStatus.SUCCESS, False)).label("success_count"),
                 func.count(func.nullif(SyncMessage.status == MessageStatus.FAILED, False)).label("failed_count"),
                 func.count(func.nullif(SyncMessage.status == MessageStatus.DEAD_LETTER, False)).label(
-                    "dead_letter_count"
+                    "dead_letter_count",
                 ),
                 func.avg(SyncMessage.sync_latency_ms).label("avg_sync_latency_ms"),
                 func.max(SyncMessage.sync_latency_ms).label("max_sync_latency_ms"),
@@ -480,14 +478,14 @@ class SyncDatabaseManager:
     # ==================== 清理操作 ====================
 
     def cleanup_old_success_messages(self, days: int = 7) -> int:
-        """
-        清理旧的成功消息
+        """清理旧的成功消息
 
         Args:
             days: 保留天数
 
         Returns:
             删除的消息数量
+
         """
         session = self.get_session()
 
@@ -500,7 +498,7 @@ class SyncDatabaseManager:
                     and_(
                         SyncMessage.status == MessageStatus.SUCCESS,
                         SyncMessage.completed_at < cutoff_date,
-                    )
+                    ),
                 )
                 .delete(synchronize_session=False)
             )
@@ -530,11 +528,11 @@ _sync_db_manager: Optional[SyncDatabaseManager] = None
 
 
 def get_sync_db_manager() -> SyncDatabaseManager:
-    """
-    获取同步数据库管理器单例
+    """获取同步数据库管理器单例
 
     Returns:
         SyncDatabaseManager实例
+
     """
     global _sync_db_manager
 

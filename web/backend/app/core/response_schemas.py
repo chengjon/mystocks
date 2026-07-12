@@ -1,5 +1,4 @@
-"""
-Standardized Response Schemas - Eliminate duplicate response formatting
+"""Standardized Response Schemas - Eliminate duplicate response formatting
 Task 1.4: Remove Duplicate Code - Phase 1
 
 Consolidates 80+ duplicate response dict constructions from 35+ API endpoints.
@@ -34,12 +33,12 @@ from typing import Any, Dict, List, Optional
 import structlog
 from pydantic import BaseModel, Field
 
+
 logger = structlog.get_logger()
 
 
 class APIResponse:
-    """
-    Standardized API response builder
+    """Standardized API response builder
 
     Ensures all API responses follow consistent format across all endpoints.
 
@@ -61,8 +60,7 @@ class APIResponse:
         message: str = "Operation successful",
         code: int = 200,
     ) -> Dict[str, Any]:
-        """
-        Build successful response
+        """Build successful response
 
         Args:
             data: Response data
@@ -71,6 +69,7 @@ class APIResponse:
 
         Returns:
             Standardized success response dict
+
         """
         return {
             "status": "success",
@@ -87,8 +86,7 @@ class APIResponse:
         code: int = 500,
         details: Optional[Dict] = None,
     ) -> Dict[str, Any]:
-        """
-        Build error response
+        """Build error response
 
         Args:
             error: Error type/name
@@ -98,6 +96,7 @@ class APIResponse:
 
         Returns:
             Standardized error response dict
+
         """
         response = {
             "status": "error",
@@ -117,8 +116,7 @@ class APIResponse:
         message: str = "Validation failed",
         errors: Optional[Dict] = None,
     ) -> Dict[str, Any]:
-        """
-        Build validation error response
+        """Build validation error response
 
         Args:
             message: Error message
@@ -126,6 +124,7 @@ class APIResponse:
 
         Returns:
             Standardized validation error response
+
         """
         return APIResponse.error(
             error="Validation Error",
@@ -139,8 +138,7 @@ class APIResponse:
         resource: str = "Resource",
         message: Optional[str] = None,
     ) -> Dict[str, Any]:
-        """
-        Build not found (404) response
+        """Build not found (404) response
 
         Args:
             resource: Name of resource not found
@@ -148,6 +146,7 @@ class APIResponse:
 
         Returns:
             Standardized 404 response
+
         """
         msg = message or f"{resource} not found"
         return APIResponse.error(
@@ -158,14 +157,14 @@ class APIResponse:
 
     @staticmethod
     def unauthorized(message: str = "Unauthorized") -> Dict[str, Any]:
-        """
-        Build unauthorized (401) response
+        """Build unauthorized (401) response
 
         Args:
             message: Error message
 
         Returns:
             Standardized 401 response
+
         """
         return APIResponse.error(
             error="Unauthorized",
@@ -175,14 +174,14 @@ class APIResponse:
 
     @staticmethod
     def forbidden(message: str = "Forbidden") -> Dict[str, Any]:
-        """
-        Build forbidden (403) response
+        """Build forbidden (403) response
 
         Args:
             message: Error message
 
         Returns:
             Standardized 403 response
+
         """
         return APIResponse.error(
             error="Forbidden",
@@ -192,14 +191,14 @@ class APIResponse:
 
     @staticmethod
     def server_error(message: str = "Internal server error") -> Dict[str, Any]:
-        """
-        Build server error (500) response
+        """Build server error (500) response
 
         Args:
             message: Error message
 
         Returns:
             Standardized 500 response
+
         """
         return APIResponse.error(
             error="Internal Server Error",
@@ -215,8 +214,7 @@ class APIResponse:
         page_size: int = 20,
         message: str = "Data retrieved successfully",
     ) -> Dict[str, Any]:
-        """
-        Build paginated response
+        """Build paginated response
 
         Args:
             items: List of items
@@ -227,6 +225,7 @@ class APIResponse:
 
         Returns:
             Standardized paginated response
+
         """
         return APIResponse.success(
             data={

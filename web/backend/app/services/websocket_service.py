@@ -1,14 +1,14 @@
-"""
-WebSocket服务模块
+"""WebSocket服务模块
 
 提供WebSocket连接管理、消息推送、实时通知、订阅管理等功能
 """
 
 import logging
-from typing import Any, Dict, List, Optional
-from datetime import datetime
 from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
+from typing import Any, Dict, List, Optional
+
 
 logger = __import__("logging").getLogger(__name__)
 
@@ -150,9 +150,8 @@ class WebSocketClient:
 
                 logger.info(f"WebSocket已断开: {self.url}")
                 return True
-            else:
-                logger.warning("WebSocket未连接")
-                return False
+            logger.warning("WebSocket未连接")
+            return False
 
         except Exception as e:
             logger.error(f"断开WebSocket失败: {e}")
@@ -197,7 +196,7 @@ class WebSocketClient:
             return False
 
     async def subscribe(
-        self, subscription_type: SubscriptionType, symbols: List[str], callback_url: Optional[str] = None
+        self, subscription_type: SubscriptionType, symbols: List[str], callback_url: Optional[str] = None,
     ) -> bool:
         """添加订阅"""
         try:
@@ -384,7 +383,7 @@ class WebSocketClient:
         """广播消息到订阅者"""
         try:
             message_type = message.get("type", "")
-            message_symbols = symbols if symbols else []
+            message_symbols = symbols or []
 
             sent_count = 0
 
@@ -456,9 +455,8 @@ class WebSocketService:
                 self.clients[user_id] = client
                 logger.info(f"为用户{user_id}创建WebSocket客户端")
                 return client
-            else:
-                logger.warning(f"为用户{user_id}创建WebSocket客户端失败")
-                return None
+            logger.warning(f"为用户{user_id}创建WebSocket客户端失败")
+            return None
 
         except Exception as e:
             logger.error(f"创建客户端失败: {e}")
@@ -501,9 +499,8 @@ class WebSocketService:
             if success:
                 logger.info(f"消息已发送给用户{user_id}")
                 return True
-            else:
-                logger.error(f"发送消息给用户{user_id}失败")
-                return False
+            logger.error(f"发送消息给用户{user_id}失败")
+            return False
 
         except Exception as e:
             logger.error(f"发送消息给用户失败: {user_id}: {e}")

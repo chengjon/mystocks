@@ -1,5 +1,4 @@
-"""
-股票搜索服务模块
+"""股票搜索服务模块
 支持多数据源：
 - AKShare: A股数据和港股数据
 - 统一搜索接口
@@ -7,26 +6,22 @@
 迁移自 OpenStock 项目
 """
 
-import json
-from datetime import datetime, timedelta
-from functools import lru_cache
-from typing import Dict, List, Optional
+from datetime import datetime
 
-import requests
 
 def parse_datetime_to_timestamp(value) -> float:
-    """
-    将各种格式的日期时间转换为 Unix 时间戳
+    """将各种格式的日期时间转换为 Unix 时间戳
 
     Args:
         value: 日期时间值（可能是 datetime 对象、字符串或其他类型）
 
     Returns:
         float: Unix 时间戳
+
     """
     if isinstance(value, datetime):
         return value.timestamp()
-    elif isinstance(value, str):
+    if isinstance(value, str):
         try:
             # 尝试解析常见的日期格式
             for fmt in [
@@ -47,8 +42,7 @@ def parse_datetime_to_timestamp(value) -> float:
 
 
 def normalize_stock_code(code: str, market: str = "cn") -> str:
-    """
-    Normalize stock code by adding exchange suffix if missing
+    """Normalize stock code by adding exchange suffix if missing
 
     Args:
         code: 6-digit stock code (e.g., "600519" or "600519.SH")
@@ -59,6 +53,7 @@ def normalize_stock_code(code: str, market: str = "cn") -> str:
 
     Raises:
         ValueError: If code format is invalid
+
     """
     import re
 
@@ -79,15 +74,11 @@ def normalize_stock_code(code: str, market: str = "cn") -> str:
         first_three = code[:3]
 
         # Shanghai Stock Exchange
-        if first_three in ["600", "601", "603", "688"]:
-            return f"{code}.SH"
-        elif first_digit == "6":
+        if first_three in ["600", "601", "603", "688"] or first_digit == "6":
             return f"{code}.SH"
 
         # Shenzhen Stock Exchange
-        elif first_three in ["000", "001", "002", "003", "300", "301"]:
-            return f"{code}.SZ"
-        elif first_digit in ["0", "3"]:
+        if first_three in ["000", "001", "002", "003", "300", "301"] or first_digit in ["0", "3"]:
             return f"{code}.SZ"
 
     # H-share (Hong Kong)

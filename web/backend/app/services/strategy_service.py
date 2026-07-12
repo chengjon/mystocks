@@ -1,5 +1,4 @@
-"""
-股票策略服务 (StrategyService)
+"""股票策略服务 (StrategyService)
 
 业务逻辑层,负责:
 1. 策略执行: 对股票运行策略检查
@@ -19,6 +18,7 @@ from sqlalchemy.orm import sessionmaker
 
 from app.models.strategy import StrategyDefinition, StrategyResult
 from app.strategies.stock_strategies import get_strategy
+
 
 logger = logging.getLogger(__name__)
 
@@ -74,8 +74,7 @@ class StrategyService:
         end_date: str = None,
         adjust: str = "qfq",
     ) -> pd.DataFrame:
-        """
-        获取股票历史数据
+        """获取股票历史数据
 
         Args:
             symbol: 股票代码 (如: 600519)
@@ -86,6 +85,7 @@ class StrategyService:
 
         Returns:
             DataFrame with columns: date, open, high, low, close, volume, amount, p_change
+
         """
         ak_module = _get_akshare_module("strategy history fetch")
         if ak_module is None:
@@ -141,14 +141,14 @@ class StrategyService:
             return pd.DataFrame()
 
     def get_stock_list(self, market: str = "A") -> List[Dict[str, str]]:
-        """
-        获取股票列表
+        """获取股票列表
 
         Args:
             market: 市场类型 (A=A股全部, SH=上证, SZ=深证, CYB=创业板, KCB=科创板)
 
         Returns:
             List of dict with keys: symbol, name
+
         """
         ak_module = _get_akshare_module("strategy stock list fetch")
         if ak_module is None:
@@ -193,8 +193,7 @@ class StrategyService:
         check_date: date = None,
         threshold: int = 60,
     ) -> Dict[str, Any]:
-        """
-        对单只股票运行策略
+        """对单只股票运行策略
 
         Args:
             strategy_code: 策略代码
@@ -209,6 +208,7 @@ class StrategyService:
                 "match_result": bool,
                 "message": str
             }
+
         """
         try:
             # 1. 获取策略实例
@@ -247,7 +247,7 @@ class StrategyService:
                             StrategyResult.strategy_code == strategy_code,
                             StrategyResult.symbol == symbol,
                             StrategyResult.check_date == today,
-                        )
+                        ),
                     )
                     .first()
                 )
@@ -293,8 +293,7 @@ class StrategyService:
         check_date: date = None,
         limit: int = None,
     ) -> Dict[str, Any]:
-        """
-        批量运行策略
+        """批量运行策略
 
         Args:
             strategy_code: 策略代码
@@ -310,6 +309,7 @@ class StrategyService:
                 "failed": int,
                 "message": str
             }
+
         """
         try:
             # 1. 获取股票列表
@@ -367,8 +367,7 @@ class StrategyService:
         limit: int = 100,
         offset: int = 0,
     ) -> List[Dict]:
-        """
-        查询策略结果
+        """查询策略结果
 
         Args:
             strategy_code: 策略代码
@@ -380,6 +379,7 @@ class StrategyService:
 
         Returns:
             策略结果列表
+
         """
         db = self.SessionLocal()
         try:
@@ -415,8 +415,7 @@ class StrategyService:
             db.close()
 
     def get_matched_stocks(self, strategy_code: str, check_date: date = None, limit: int = 100) -> List[Dict]:
-        """
-        获取匹配指定策略的股票列表
+        """获取匹配指定策略的股票列表
 
         Args:
             strategy_code: 策略代码
@@ -425,6 +424,7 @@ class StrategyService:
 
         Returns:
             匹配的股票列表
+
         """
         db = self.SessionLocal()
         try:
@@ -432,7 +432,7 @@ class StrategyService:
                 and_(
                     StrategyResult.strategy_code == strategy_code,
                     StrategyResult.match_result is True,
-                )
+                ),
             )
 
             if check_date:

@@ -1,5 +1,4 @@
-"""
-数据库性能监控和慢查询检测
+"""数据库性能监控和慢查询检测
 Database Performance Monitoring - Slow query detection and analysis
 
 Task 14.3: 数据库性能优化 - Performance Monitoring
@@ -24,6 +23,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 
 import structlog
+
 
 logger = structlog.get_logger()
 
@@ -103,14 +103,14 @@ class DatabasePerformanceMonitor:
         metrics_retention_hours: int = 24,
         alert_retention_hours: int = 7,
     ):
-        """
-        初始化性能监控器
+        """初始化性能监控器
 
         Args:
             slow_query_threshold_ms: 慢查询阈值（毫秒）
             critical_query_threshold_ms: 严重查询阈值（毫秒）
             metrics_retention_hours: 指标保留时间（小时）
             alert_retention_hours: 告警保留时间（小时）
+
         """
         self.slow_query_threshold_ms = slow_query_threshold_ms
         self.critical_query_threshold_ms = critical_query_threshold_ms
@@ -206,8 +206,7 @@ class DatabasePerformanceMonitor:
         rows_scanned: int = 0,
         error: Optional[str] = None,
     ) -> Optional[SlowQueryAlert]:
-        """
-        记录查询性能
+        """记录查询性能
 
         Args:
             sql: SQL语句
@@ -220,6 +219,7 @@ class DatabasePerformanceMonitor:
 
         Returns:
             如果是慢查询，返回SlowQueryAlert对象
+
         """
         try:
             query_id = f"query_{int(time.time() * 1000000)}"

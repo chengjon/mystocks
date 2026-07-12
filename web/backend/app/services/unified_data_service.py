@@ -1,5 +1,4 @@
-"""
-统一数据服务 - 双数据源调用封装
+"""统一数据服务 - 双数据源调用封装
 
 支持真实数据源和Mock数据源的统一调用，提供：
 - 数据源切换机制
@@ -17,6 +16,7 @@ from typing import Any, Dict, List, Optional
 
 from app.core.cache_integration import get_cache_integration
 from app.core.database import db_service
+
 
 logger = logging.getLogger(__name__)
 
@@ -517,7 +517,7 @@ class UnifiedDataService:
 
             # 搜索筛选
             search_mask = df["symbol"].str.contains(keyword, case=False, na=False) | df["name"].str.contains(
-                keyword, case=False, na=False
+                keyword, case=False, na=False,
             )
             filtered_df = df[search_mask]
 
@@ -538,9 +538,9 @@ class UnifiedDataService:
             # 尝试主要数据源
             if self.config.primary_source == DataSourceType.DATABASE:
                 return await primary_func(*args, **kwargs)
-            elif self.config.primary_source == DataSourceType.MOCK:
+            if self.config.primary_source == DataSourceType.MOCK:
                 return await fallback_func(*args, **kwargs)
-            elif self.config.primary_source == DataSourceType.HYBRID:
+            if self.config.primary_source == DataSourceType.HYBRID:
                 try:
                     # 尝试数据库
                     result = await primary_func(*args, **kwargs)
@@ -550,14 +550,13 @@ class UnifiedDataService:
                     # 切换到Mock数据源
                     if callable(fallback_func):
                         return await fallback_func(*args, **kwargs)
-                    else:
-                        return fallback_func
+                    return fallback_func
         except Exception as e:
             logger.error("主要数据源和Mock数据源都失败: {str(e)}")
             # 如果所有数据源都失败，返回错误信息
             return {
                 "success": False,
-                "msg": f"数据获取失败: {str(e)}",
+                "msg": f"数据获取失败: {e!s}",
                 "timestamp": datetime.now().isoformat(),
             }
 

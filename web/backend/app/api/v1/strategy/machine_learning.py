@@ -1,5 +1,4 @@
-"""
-机器学习策略API
+"""机器学习策略API
 
 提供ML策略训练、预测和回测功能
 """
@@ -10,6 +9,7 @@ from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, Query
 from pydantic import BaseModel, Field
+
 
 router = APIRouter(
     prefix="/strategies",
@@ -105,8 +105,7 @@ class StrategyInfo(BaseModel):
 
 @router.post("/train", response_model=StrategyTrainingResponse, summary="Train ML Strategy")
 async def train_ml_strategy(request: StrategyTrainingRequest):
-    """
-    训练机器学习交易策略
+    """训练机器学习交易策略
 
     Trains specified ML strategy (SVM/Decision Tree/Naive Bayes/LSTM/Transformer)
     using historical market data.
@@ -138,8 +137,7 @@ async def train_ml_strategy(request: StrategyTrainingRequest):
     summary="Generate Strategy Prediction",
 )
 async def generate_strategy_prediction(request: StrategyPredictionRequest):
-    """
-    生成策略预测信号
+    """生成策略预测信号
 
     Uses trained ML strategy to generate trading signals and predictions.
     """
@@ -160,8 +158,7 @@ async def generate_strategy_prediction(request: StrategyPredictionRequest):
 
 @router.post("/backtest", response_model=BacktestResponse, summary="Backtest ML Strategy")
 async def backtest_ml_strategy(request: BacktestRequest):
-    """
-    回测机器学习策略
+    """回测机器学习策略
 
     Runs comprehensive backtest of ML strategy with detailed performance metrics.
     """
@@ -183,8 +180,7 @@ async def list_strategies(
     strategy_type: Optional[MLStrategyType] = None,
     trained_only: bool = Query(False, description="Only return trained strategies"),
 ):
-    """
-    获取可用策略列表
+    """获取可用策略列表
 
     Returns list of available ML trading strategies with their configurations.
     """

@@ -1,12 +1,12 @@
-"""
-市场数据API模块
+"""市场数据API模块
 
 提供股票、基金、指数、期货等市场数据获取功能
 """
 
 import logging
-from typing import Dict, List, Optional
 from datetime import datetime
+from typing import Dict, List, Optional
+
 
 logger = __import__("logging").getLogger(__name__)
 
@@ -76,7 +76,7 @@ class MarketDataService:
             return None
 
     async def get_stock_list(
-        self, industry: Optional[str] = None, area: Optional[str] = None, limit: int = 100
+        self, industry: Optional[str] = None, area: Optional[str] = None, limit: int = 100,
     ) -> List[Dict]:
         """获取股票列表"""
         try:
@@ -114,7 +114,7 @@ class MarketDataService:
                         "name": result["name"],
                         "industry": result["industry"],
                         "area": result["area"],
-                    }
+                    },
                 )
 
             self.cache[cache_key] = (datetime.now(), stocks)

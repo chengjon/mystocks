@@ -1,5 +1,4 @@
-"""
-Strategy Repository Layer
+"""Strategy Repository Layer
 
 提供策略数据的数据库访问接口，使用SQLAlchemy ORM操作PostgreSQL
 """
@@ -97,6 +96,7 @@ class StrategyRepository:
 
         Args:
             db_session: SQLAlchemy数据库会话
+
         """
         self.db = db_session
 
@@ -111,6 +111,7 @@ class StrategyRepository:
 
         Raises:
             SQLAlchemyError: 数据库操作失败
+
         """
         try:
             # 转换Pydantic模型为ORM模型
@@ -140,7 +141,7 @@ class StrategyRepository:
 
         except SQLAlchemyError as e:
             self.db.rollback()
-            logger.error(f"创建策略失败: {str(e)}")
+            logger.error(f"创建策略失败: {e!s}")
             raise
 
     def get_strategy(self, strategy_id: int) -> Optional[StrategyConfig]:
@@ -151,6 +152,7 @@ class StrategyRepository:
 
         Returns:
             策略配置对象，不存在时返回None
+
         """
         try:
             strategy_orm = self.db.query(UserStrategyModel).filter(UserStrategyModel.strategy_id == strategy_id).first()
@@ -184,6 +186,7 @@ class StrategyRepository:
 
         Returns:
             (策略列表, 总数)元组
+
         """
         try:
             # 构建查询
@@ -228,6 +231,7 @@ class StrategyRepository:
 
         Raises:
             SQLAlchemyError: 数据库操作失败
+
         """
         try:
             strategy_orm = self.db.query(UserStrategyModel).filter(UserStrategyModel.strategy_id == strategy_id).first()
@@ -279,6 +283,7 @@ class StrategyRepository:
 
         Raises:
             SQLAlchemyError: 数据库操作失败
+
         """
         try:
             result = self.db.query(UserStrategyModel).filter(UserStrategyModel.strategy_id == strategy_id).delete()
@@ -288,9 +293,8 @@ class StrategyRepository:
             if result > 0:
                 logger.info("删除策略成功: strategy_id=%(strategy_id)s")
                 return True
-            else:
-                logger.warning("策略不存在: strategy_id=%(strategy_id)s")
-                return False
+            logger.warning("策略不存在: strategy_id=%(strategy_id)s")
+            return False
 
         except SQLAlchemyError:
             self.db.rollback()
@@ -306,6 +310,7 @@ class StrategyRepository:
 
         Returns:
             策略列表
+
         """
         try:
             strategies_orm = (
@@ -336,6 +341,7 @@ class StrategyRepository:
 
         Returns:
             Pydantic StrategyConfig模型
+
         """
         # 转换parameters (从dict列表到StrategyParameter对象列表)
         parameters = []

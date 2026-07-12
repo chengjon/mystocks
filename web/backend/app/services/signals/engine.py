@@ -1,5 +1,4 @@
-"""
-Signal Engine Core - 信号引擎核心
+"""Signal Engine Core - 信号引擎核心
 
 实现多指标融合的实时信号生成：
 - 事件驱动架构
@@ -31,6 +30,7 @@ from web.backend.app.services.signals.strategies.base_strategies import (
     SignalType,
     TradingSignal,
 )
+
 
 logger = logging.getLogger(__name__)
 
@@ -65,8 +65,7 @@ class SignalEngineConfig:
 
 
 class SignalEngine:
-    """
-    信号引擎核心
+    """信号引擎核心
 
     负责：
     1. 监听市场数据事件
@@ -76,11 +75,11 @@ class SignalEngine:
     """
 
     def __init__(self, config: Optional[SignalEngineConfig] = None):
-        """
-        初始化信号引擎
+        """初始化信号引擎
 
         Args:
             config: 引擎配置
+
         """
         self.config = config or SignalEngineConfig()
         self.event_bus = get_event_bus()
@@ -118,7 +117,7 @@ class SignalEngine:
                 "overbought_level": 70,
                 "risk_reward_ratio": 2.0,
                 "stop_loss_percentage": 0.05,
-            }
+            },
         )
         self.strategies.append(rsi_strategy)
 
@@ -130,7 +129,7 @@ class SignalEngine:
                 "signal_period": 9,
                 "risk_reward_ratio": 2.0,
                 "stop_loss_percentage": 0.05,
-            }
+            },
         )
         self.strategies.append(macd_strategy)
 
@@ -141,7 +140,7 @@ class SignalEngine:
                 "std_dev": 2.0,
                 "risk_reward_ratio": 2.0,
                 "stop_loss_percentage": 0.05,
-            }
+            },
         )
         self.strategies.append(bb_strategy)
 
@@ -156,11 +155,11 @@ class SignalEngine:
         logger.info("Event subscriptions setup complete")
 
     async def _handle_market_tick(self, event: Event):
-        """
-        处理市场tick事件
+        """处理市场tick事件
 
         Args:
             event: 市场事件
+
         """
         try:
             symbol = event.data.get("symbol")
@@ -176,11 +175,11 @@ class SignalEngine:
             logger.error("Error handling market tick: %(e)s")
 
     async def _handle_market_bar(self, event: Event):
-        """
-        处理市场bar事件
+        """处理市场bar事件
 
         Args:
             event: 市场事件
+
         """
         try:
             symbol = event.data.get("symbol")
@@ -199,13 +198,13 @@ class SignalEngine:
             logger.error("Error handling market bar: %(e)s")
 
     async def _update_indicators(self, symbol: str, market_data: Dict[str, Any], data_type: str):
-        """
-        更新指标数据
+        """更新指标数据
 
         Args:
             symbol: 股票代码
             market_data: 市场数据
             data_type: 数据类型 ('tick' 或 'bar')
+
         """
         try:
             if symbol not in self.indicator_cache:
@@ -230,10 +229,9 @@ class SignalEngine:
             logger.error("Error updating indicators for %(symbol)s: %(e)s")
 
     async def _calculate_indicator(
-        self, symbol: str, indicator_name: str, market_data: Dict[str, Any]
+        self, symbol: str, indicator_name: str, market_data: Dict[str, Any],
     ) -> Optional[Dict[str, Any]]:
-        """
-        计算单个指标
+        """计算单个指标
 
         Args:
             symbol: 股票代码
@@ -242,6 +240,7 @@ class SignalEngine:
 
         Returns:
             指标数据
+
         """
         try:
             # 创建指标配置
@@ -273,12 +272,12 @@ class SignalEngine:
         return param_map.get(indicator_name, {})
 
     async def _generate_signals(self, symbol: str, market_data: Dict[str, Any]):
-        """
-        为股票生成交易信号
+        """为股票生成交易信号
 
         Args:
             symbol: 股票代码
             market_data: 市场数据
+
         """
         start_time = time.time()
 
@@ -322,14 +321,14 @@ class SignalEngine:
             logger.error("Error generating signals for %(symbol)s: %(e)s")
 
     def _can_generate_signal(self, symbol: str) -> bool:
-        """
-        检查是否可以生成信号
+        """检查是否可以生成信号
 
         Args:
             symbol: 股票代码
 
         Returns:
             是否可以生成信号
+
         """
         if symbol not in self.last_signal_time:
             return True
@@ -338,14 +337,14 @@ class SignalEngine:
         return time_since_last_signal >= self.config.signal_cooldown_seconds
 
     def _filter_and_rank_signals(self, signals: List[TradingSignal]) -> List[TradingSignal]:
-        """
-        过滤和排序信号
+        """过滤和排序信号
 
         Args:
             signals: 原始信号列表
 
         Returns:
             过滤后的信号列表
+
         """
         if not signals:
             return []
@@ -373,11 +372,11 @@ class SignalEngine:
         return filtered_signals
 
     async def _publish_signal(self, signal: TradingSignal):
-        """
-        发布交易信号
+        """发布交易信号
 
         Args:
             signal: 交易信号
+
         """
         try:
             # 转换为事件数据
@@ -458,14 +457,14 @@ class SignalEngine:
     # ================ API规范实现 ================
 
     async def get_trading_signals(self, stock_code: str) -> Dict[str, Any]:
-        """
-        获取单个股票的交易信号（符合API规范）
+        """获取单个股票的交易信号（符合API规范）
 
         Args:
             stock_code: 股票代码
 
         Returns:
             Dict: 交易信号数据，符合data_source_interface.py规范
+
         """
         try:
             # 获取该股票的活跃信号
@@ -492,7 +491,7 @@ class SignalEngine:
                         "reason": signal.reason,
                         "indicators": signal.indicators,
                         "strength": signal.strength.value,
-                    }
+                    },
                 )
 
             return {
@@ -518,8 +517,7 @@ class SignalEngine:
         strategy_ids: Optional[List[int]] = None,
         trade_date: Optional[str] = None,
     ) -> List[Dict[str, Any]]:
-        """
-        分析交易信号（符合business_data_source.py API规范）
+        """分析交易信号（符合business_data_source.py API规范）
 
         Args:
             user_id: 用户ID
@@ -528,6 +526,7 @@ class SignalEngine:
 
         Returns:
             List[Dict]: 交易信号列表，符合API规范格式
+
         """
         try:
             # 获取所有活跃信号
@@ -554,7 +553,7 @@ class SignalEngine:
                             "recommended_quantity": None,  # Signal Engine不提供推荐数量
                             "reason": signal.reason,
                             "generated_at": signal.timestamp.isoformat(),
-                        }
+                        },
                     )
 
             # 按时间倒序排序
@@ -568,14 +567,14 @@ class SignalEngine:
             return []
 
     def get_active_signals(self, symbol: Optional[str] = None) -> Dict[str, List[TradingSignal]]:
-        """
-        获取活跃信号
+        """获取活跃信号
 
         Args:
             symbol: 股票代码，如果为None则返回所有
 
         Returns:
             活跃信号字典
+
         """
         if symbol:
             return {symbol: self.active_signals.get(symbol, [])}

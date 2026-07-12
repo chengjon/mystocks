@@ -1,5 +1,4 @@
-"""
-自选股分组查询与视图方法。
+"""自选股分组查询与视图方法。
 """
 
 from datetime import date, datetime
@@ -25,35 +24,33 @@ class WatchlistGroupQueriesMixin:
     """自选股分组查询相关方法集。"""
 
     def get_user_groups(self, user_id: int) -> List[Dict]:
-        """
-        获取用户的所有分组
+        """获取用户的所有分组
 
         Args:
             user_id: 用户ID
 
         Returns:
             List[Dict]: 分组列表
+
         """
         try:
-            with self._get_connection() as conn:
-                with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                    select_sql = """
+            with self._get_connection() as conn, conn.cursor(cursor_factory=RealDictCursor) as cur:
+                select_sql = """
                     SELECT id, group_name, created_at,
                            (SELECT COUNT(*) FROM user_watchlist WHERE group_id = watchlist_groups.id) as stock_count
                     FROM watchlist_groups
                     WHERE user_id = %s
                     ORDER BY sort_order, id
                     """
-                    cur.execute(select_sql, (user_id,))
-                    rows = cur.fetchall()
-                    return [_serialize_row(dict(row)) for row in rows]
+                cur.execute(select_sql, (user_id,))
+                rows = cur.fetchall()
+                return [_serialize_row(dict(row)) for row in rows]
         except psycopg2.Error as error:
             self._log_database_error("获取用户分组时发生错误", error)
             return []
 
     def get_watchlist_by_group(self, user_id: int, group_id: int) -> List[Dict]:
-        """
-        获取指定分组的自选股列表
+        """获取指定分组的自选股列表
 
         Args:
             user_id: 用户ID
@@ -61,11 +58,11 @@ class WatchlistGroupQueriesMixin:
 
         Returns:
             List[Dict]: 自选股列表
+
         """
         try:
-            with self._get_connection() as conn:
-                with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                    select_sql = """
+            with self._get_connection() as conn, conn.cursor(cursor_factory=RealDictCursor) as cur:
+                select_sql = """
                     SELECT
                         id, stock_code, stock_name,
                         added_at, notes
@@ -73,16 +70,15 @@ class WatchlistGroupQueriesMixin:
                     WHERE user_id = %s AND group_id = %s
                     ORDER BY added_at DESC
                     """
-                    cur.execute(select_sql, (user_id, group_id))
-                    rows = cur.fetchall()
-                    return [_serialize_row(dict(row)) for row in rows]
+                cur.execute(select_sql, (user_id, group_id))
+                rows = cur.fetchall()
+                return [_serialize_row(dict(row)) for row in rows]
         except psycopg2.Error as error:
             self._log_database_error("获取分组自选股时发生错误", error)
             return []
 
     def move_stock_to_group(self, user_id: int, symbol: str, from_group_id: int, to_group_id: int) -> bool:
-        """
-        将股票从一个分组移动到另一个分组
+        """将股票从一个分组移动到另一个分组
 
         Args:
             user_id: 用户ID
@@ -92,6 +88,7 @@ class WatchlistGroupQueriesMixin:
 
         Returns:
             bool: 移动是否成功
+
         """
         stock_code = symbol
         try:
@@ -123,14 +120,14 @@ class WatchlistGroupQueriesMixin:
             return False
 
     def get_watchlist_with_groups(self, user_id: int) -> Dict:
-        """
-        获取用户的所有分组及其自选股（分组视图）
+        """获取用户的所有分组及其自选股（分组视图）
 
         Args:
             user_id: 用户ID
 
         Returns:
             Dict: 包含所有分组和自选股的字典
+
         """
         try:
             groups = self.get_user_groups(user_id)

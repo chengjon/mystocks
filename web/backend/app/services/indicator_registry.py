@@ -1,5 +1,4 @@
-"""
-Indicator Registry Service
+"""Indicator Registry Service
 管理所有161个TA-Lib技术指标的元数据注册表
 """
 
@@ -25,8 +24,7 @@ class PanelType(str, Enum):
 
 
 class IndicatorRegistry:
-    """
-    指标注册表
+    """指标注册表
 
     在应用启动时加载所有161个TA-Lib指标的元数据
     提供指标查询、验证和元数据访问功能
@@ -39,7 +37,6 @@ class IndicatorRegistry:
 
     def _load_indicators(self):
         """从TA-Lib加载所有161个指标的元数据"""
-
         # 趋势指标 (Trend Indicators)
         trend_indicators = {
             "SMA": {
@@ -54,7 +51,7 @@ class IndicatorRegistry:
                         "default": 20,
                         "min": 2,
                         "max": 200,
-                    }
+                    },
                 ],
                 "outputs": [{"name": "sma", "description": "SMA值"}],
                 "min_data_points": lambda p: p.get("timeperiod", 20),
@@ -73,7 +70,7 @@ class IndicatorRegistry:
                         "default": 20,
                         "min": 2,
                         "max": 200,
-                    }
+                    },
                 ],
                 "outputs": [{"name": "ema", "description": "EMA值"}],
                 "min_data_points": lambda p: p.get("timeperiod", 20),
@@ -92,7 +89,7 @@ class IndicatorRegistry:
                         "default": 20,
                         "min": 2,
                         "max": 200,
-                    }
+                    },
                 ],
                 "outputs": [{"name": "wma", "description": "WMA值"}],
                 "min_data_points": lambda p: p.get("timeperiod", 20),
@@ -212,7 +209,7 @@ class IndicatorRegistry:
                         "default": 14,
                         "min": 2,
                         "max": 100,
-                    }
+                    },
                 ],
                 "outputs": [{"name": "adx", "description": "ADX值"}],
                 "min_data_points": lambda p: p.get("timeperiod", 14) * 2,
@@ -236,7 +233,7 @@ class IndicatorRegistry:
                         "default": 14,
                         "min": 2,
                         "max": 100,
-                    }
+                    },
                 ],
                 "outputs": [{"name": "rsi", "description": "RSI值"}],
                 "min_data_points": lambda p: p.get("timeperiod", 14) + 1,
@@ -293,7 +290,7 @@ class IndicatorRegistry:
                         "default": 14,
                         "min": 2,
                         "max": 100,
-                    }
+                    },
                 ],
                 "outputs": [{"name": "cci", "description": "CCI值"}],
                 "min_data_points": lambda p: p.get("timeperiod", 14),
@@ -313,7 +310,7 @@ class IndicatorRegistry:
                         "default": 14,
                         "min": 2,
                         "max": 100,
-                    }
+                    },
                 ],
                 "outputs": [{"name": "mfi", "description": "MFI值"}],
                 "min_data_points": lambda p: p.get("timeperiod", 14) + 1,
@@ -333,7 +330,7 @@ class IndicatorRegistry:
                         "default": 14,
                         "min": 2,
                         "max": 100,
-                    }
+                    },
                 ],
                 "outputs": [{"name": "willr", "description": "威廉指标值"}],
                 "min_data_points": lambda p: p.get("timeperiod", 14),
@@ -353,7 +350,7 @@ class IndicatorRegistry:
                         "default": 10,
                         "min": 1,
                         "max": 100,
-                    }
+                    },
                 ],
                 "outputs": [{"name": "roc", "description": "变动率值"}],
                 "min_data_points": lambda p: p.get("timeperiod", 10) + 1,
@@ -373,7 +370,7 @@ class IndicatorRegistry:
                         "default": 10,
                         "min": 1,
                         "max": 100,
-                    }
+                    },
                 ],
                 "outputs": [{"name": "mom", "description": "动量值"}],
                 "min_data_points": lambda p: p.get("timeperiod", 10) + 1,
@@ -397,7 +394,7 @@ class IndicatorRegistry:
                         "default": 14,
                         "min": 1,
                         "max": 100,
-                    }
+                    },
                 ],
                 "outputs": [{"name": "atr", "description": "ATR值"}],
                 "min_data_points": lambda p: p.get("timeperiod", 14),
@@ -416,7 +413,7 @@ class IndicatorRegistry:
                         "default": 14,
                         "min": 1,
                         "max": 100,
-                    }
+                    },
                 ],
                 "outputs": [{"name": "natr", "description": "NATR值"}],
                 "min_data_points": lambda p: p.get("timeperiod", 14),
@@ -536,14 +533,14 @@ class IndicatorRegistry:
         }
 
     def get_indicator(self, abbreviation: str) -> Optional[Dict[str, Any]]:
-        """
-        获取指定指标的元数据
+        """获取指定指标的元数据
 
         Args:
             abbreviation: 指标缩写名称 (如 "MA", "RSI")
 
         Returns:
             指标元数据字典,如果不存在返回None
+
         """
         return self._registry.get(abbreviation.upper())
 
@@ -552,20 +549,19 @@ class IndicatorRegistry:
         return self._registry.copy()
 
     def get_indicators_by_category(self, category: IndicatorCategory) -> Dict[str, Dict[str, Any]]:
-        """
-        按分类获取指标
+        """按分类获取指标
 
         Args:
             category: 指标分类
 
         Returns:
             该分类下的所有指标
+
         """
         return {abbr: meta for abbr, meta in self._registry.items() if meta["category"] == category}
 
     def validate_indicator(self, abbreviation: str, parameters: Dict[str, Any]) -> tuple[bool, Optional[str]]:
-        """
-        验证指标及其参数
+        """验证指标及其参数
 
         Args:
             abbreviation: 指标缩写
@@ -573,6 +569,7 @@ class IndicatorRegistry:
 
         Returns:
             (是否有效, 错误消息)
+
         """
         # 检查指标是否存在
         indicator = self.get_indicator(abbreviation)
@@ -594,7 +591,7 @@ class IndicatorRegistry:
             # 类型检查
             if param_def["type"] == "int" and not isinstance(param_value, int):
                 return False, f"参数 '{param_name}' 应为整数"
-            elif param_def["type"] == "float" and not isinstance(param_value, (int, float)):
+            if param_def["type"] == "float" and not isinstance(param_value, (int, float)):
                 return False, f"参数 '{param_name}' 应为数值"
 
             # 范围检查
@@ -606,8 +603,7 @@ class IndicatorRegistry:
         return True, None
 
     def get_min_data_points(self, abbreviation: str, parameters: Dict[str, Any]) -> int:
-        """
-        计算指标所需的最小数据点数
+        """计算指标所需的最小数据点数
 
         Args:
             abbreviation: 指标缩写
@@ -615,6 +611,7 @@ class IndicatorRegistry:
 
         Returns:
             最小数据点数
+
         """
         indicator = self.get_indicator(abbreviation)
         if not indicator:

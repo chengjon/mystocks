@@ -1,5 +1,4 @@
-"""
-全局异常处理器 (Global Exception Handler)
+"""全局异常处理器 (Global Exception Handler)
 
 统一处理所有异常,转换为标准APIResponse格式
 与error_codes.py和common_schemas.py集成
@@ -23,6 +22,7 @@ from app.core.error_codes import (
     is_client_error,
 )
 from app.schemas.common_schemas import CommonError
+
 
 # ==================== 配置 ====================
 
@@ -50,8 +50,7 @@ config = ExceptionHandlerConfig()
 
 
 async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
-    """
-    全局异常处理器 - 处理所有未捕获的异常
+    """全局异常处理器 - 处理所有未捕获的异常
 
     Args:
         request: FastAPI请求对象
@@ -59,6 +58,7 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
 
     Returns:
         JSONResponse - 统一错误响应格式
+
     """
     # 获取请求ID
     request_id = getattr(request.state, "request_id", "unknown")
@@ -94,8 +94,7 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
 
 
 async def http_exception_handler(request: Request, exc: HTTPException) -> JSONResponse:
-    """
-    HTTP异常处理器 - 处理HTTPException
+    """HTTP异常处理器 - 处理HTTPException
 
     Args:
         request: FastAPI请求对象
@@ -103,6 +102,7 @@ async def http_exception_handler(request: Request, exc: HTTPException) -> JSONRe
 
     Returns:
         JSONResponse - 统一错误响应格式
+
     """
     # 获取请求ID
     request_id = getattr(request.state, "request_id", "unknown")
@@ -149,10 +149,9 @@ async def http_exception_handler(request: Request, exc: HTTPException) -> JSONRe
 
 
 async def validation_exception_handler(
-    request: Request, exc: Union[RequestValidationError, ValidationError]
+    request: Request, exc: Union[RequestValidationError, ValidationError],
 ) -> JSONResponse:
-    """
-    验证异常处理器 - 处理Pydantic验证错误
+    """验证异常处理器 - 处理Pydantic验证错误
 
     Args:
         request: FastAPI请求对象
@@ -160,6 +159,7 @@ async def validation_exception_handler(
 
     Returns:
         JSONResponse - 统一错误响应格式
+
     """
     # 获取请求ID
     request_id = getattr(request.state, "request_id", "unknown")
@@ -202,8 +202,7 @@ async def validation_exception_handler(
 
 
 async def database_exception_handler(request: Request, exc: SQLAlchemyError) -> JSONResponse:
-    """
-    数据库异常处理器 - 处理SQLAlchemy异常
+    """数据库异常处理器 - 处理SQLAlchemy异常
 
     Args:
         request: FastAPI请求对象
@@ -211,6 +210,7 @@ async def database_exception_handler(request: Request, exc: SQLAlchemyError) -> 
 
     Returns:
         JSONResponse - 统一错误响应格式
+
     """
     # 获取请求ID
     request_id = getattr(request.state, "request_id", "unknown")
@@ -257,14 +257,14 @@ async def database_exception_handler(request: Request, exc: SQLAlchemyError) -> 
 
 
 def _determine_error_code_and_status(exc: Exception) -> tuple[ErrorCode, int]:
-    """
-    根据异常类型确定错误码和HTTP状态码
+    """根据异常类型确定错误码和HTTP状态码
 
     Args:
         exc: 异常对象
 
     Returns:
         (错误码, HTTP状态码) 元组
+
     """
     # HTTPException
     if isinstance(exc, HTTPException):
@@ -317,14 +317,14 @@ def _determine_error_code_and_status(exc: Exception) -> tuple[ErrorCode, int]:
 
 
 def _map_http_status_to_error_code(http_status: int) -> ErrorCode:
-    """
-    将HTTP状态码映射到错误码
+    """将HTTP状态码映射到错误码
 
     Args:
         http_status: HTTP状态码
 
     Returns:
         错误码枚举
+
     """
     mapping = {
         400: ErrorCode.BAD_REQUEST,
@@ -344,14 +344,14 @@ def _map_http_status_to_error_code(http_status: int) -> ErrorCode:
 
 
 def _parse_validation_errors(exc: Union[RequestValidationError, ValidationError]) -> list[dict]:
-    """
-    解析Pydantic验证错误
+    """解析Pydantic验证错误
 
     Args:
         exc: 验证异常对象
 
     Returns:
         错误列表
+
     """
     if isinstance(exc, RequestValidationError):
         # FastAPI RequestValidationError
@@ -362,26 +362,24 @@ def _parse_validation_errors(exc: Union[RequestValidationError, ValidationError]
                     "field": ".".join(str(loc) for loc in error["loc"]),
                     "message": error["msg"],
                     "type": error["type"],
-                }
+                },
             )
         return errors
-    else:
-        # Pydantic ValidationError
-        errors = []
-        for error in exc.errors():
-            errors.append(
-                {
-                    "field": ".".join(str(loc) for loc in error["loc"]),
-                    "message": error["msg"],
-                    "type": error["type"],
-                }
-            )
-        return errors
+    # Pydantic ValidationError
+    errors = []
+    for error in exc.errors():
+        errors.append(
+            {
+                "field": ".".join(str(loc) for loc in error["loc"]),
+                "message": error["msg"],
+                "type": error["type"],
+            },
+        )
+    return errors
 
 
 def _build_error_detail(exc: Exception, request: Request, error_code: ErrorCode) -> dict:
-    """
-    构建错误详情
+    """构建错误详情
 
     Args:
         exc: 异常对象
@@ -390,6 +388,7 @@ def _build_error_detail(exc: Exception, request: Request, error_code: ErrorCode)
 
     Returns:
         错误详情字典
+
     """
     detail = {
         "type": type(exc).__name__,
@@ -416,27 +415,27 @@ def _build_error_detail(exc: Exception, request: Request, error_code: ErrorCode)
 
 
 def _format_exception(exc: Exception) -> str:
-    """
-    格式化异常堆栈跟踪
+    """格式化异常堆栈跟踪
 
     Args:
         exc: 异常对象
 
     Returns:
         格式化的堆栈跟踪字符串
+
     """
     return "".join(traceback.format_exception(type(exc), exc, exc.__traceback__))
 
 
 def _log_error(exc: Exception, request: Request, error_code: ErrorCode, detail: dict):
-    """
-    记录错误日志
+    """记录错误日志
 
     Args:
         exc: 异常对象
         request: FastAPI请求对象
         error_code: 错误码
         detail: 错误详情
+
     """
     import structlog
 
@@ -469,11 +468,11 @@ def _log_error(exc: Exception, request: Request, error_code: ErrorCode, detail: 
 
 
 def register_exception_handlers(app):
-    """
-    注册所有异常处理器到FastAPI应用
+    """注册所有异常处理器到FastAPI应用
 
     Args:
         app: FastAPI应用实例
+
     """
     # 全局异常处理器 (处理所有未捕获的异常)
     app.add_exception_handler(Exception, global_exception_handler)
@@ -493,11 +492,11 @@ def register_exception_handlers(app):
 
 
 __all__ = [
-    "global_exception_handler",
-    "http_exception_handler",
-    "validation_exception_handler",
-    "database_exception_handler",
-    "register_exception_handlers",
     "ExceptionHandlerConfig",
     "config",
+    "database_exception_handler",
+    "global_exception_handler",
+    "http_exception_handler",
+    "register_exception_handlers",
+    "validation_exception_handler",
 ]

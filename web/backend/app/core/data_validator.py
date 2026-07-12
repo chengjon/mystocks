@@ -1,5 +1,4 @@
-"""
-数据验证和质量检查模块
+"""数据验证和质量检查模块
 支持API响应数据完整性验证、数据一致性检查和异常值检测
 """
 
@@ -8,6 +7,7 @@ from typing import Any, Dict, List, Tuple
 
 import pandas as pd
 import structlog
+
 
 logger = structlog.get_logger()
 
@@ -122,7 +122,7 @@ class StockDataValidator:
                 if not large_gaps.empty:
                     warnings.append(f"发现 {len(large_gaps)} 个日期断裂（大于5个工作日）")
             except Exception as e:
-                errors.append(f"日期格式错误: {str(e)}")
+                errors.append(f"日期格式错误: {e!s}")
 
         # 检查OHLC关系
         if all(col in df.columns for col in ["open", "high", "low", "close"]):
@@ -172,7 +172,7 @@ class StockDataValidator:
 
     @classmethod
     def validate_api_response(
-        cls, response: Dict[str, Any], expected_fields: List[str] = None
+        cls, response: Dict[str, Any], expected_fields: List[str] = None,
     ) -> Tuple[bool, List[str]]:
         """验证API响应格式"""
         errors = []
@@ -212,7 +212,7 @@ class DataConsistencyValidator:
 
     @staticmethod
     def validate_stocks_search_consistency(
-        basic_stocks: pd.DataFrame, search_results: pd.DataFrame
+        basic_stocks: pd.DataFrame, search_results: pd.DataFrame,
     ) -> ValidationResult:
         """验证搜索结果与基本数据的一致性"""
         errors = []
@@ -255,7 +255,7 @@ class DataConsistencyValidator:
                 if field in search_row.index and field in basic_row.index:
                     if str(search_row[field]) != str(basic_row[field]):
                         errors.append(
-                            f"股票 {symbol} 的 {field} 不一致: " f"搜索={search_row[field]}, 基本={basic_row[field]}"
+                            f"股票 {symbol} 的 {field} 不一致: 搜索={search_row[field]}, 基本={basic_row[field]}",
                         )
 
         is_valid = len(errors) == 0
@@ -271,7 +271,7 @@ class DataConsistencyValidator:
 
     @staticmethod
     def validate_kline_consistency(
-        stock_symbol: str, kline_data: pd.DataFrame, expected_columns: List[str] = None
+        stock_symbol: str, kline_data: pd.DataFrame, expected_columns: List[str] = None,
     ) -> ValidationResult:
         """验证K线数据的一致性和完整性"""
         errors = []

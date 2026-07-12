@@ -1,5 +1,4 @@
-"""
-Redis Pub/Sub Message Bus
+"""Redis Pub/Sub Message Bus
 ==========================
 
 实时消息总线服务，基于Redis Pub/Sub实现。
@@ -22,12 +21,12 @@ from typing import Any, Callable, Dict, List, Optional
 from app.core.config import settings
 from app.core.redis_client import get_redis_client
 
+
 logger = logging.getLogger(__name__)
 
 
 class RedisPubSubService:
-    """
-    Redis消息总线服务
+    """Redis消息总线服务
 
     使用场景:
     - 指标计算完成通知: "indicator:calculated:000001:SMA"
@@ -51,8 +50,7 @@ class RedisPubSubService:
     # ========== 发布 (Publisher) ==========
 
     def publish(self, channel: str, message: Dict[str, Any]) -> int:
-        """
-        发布消息到频道
+        """发布消息到频道
 
         Args:
             channel: 频道名
@@ -60,6 +58,7 @@ class RedisPubSubService:
 
         Returns:
             int: 接收到消息的订阅者数量
+
         """
         try:
             channel_name = self._make_channel(channel)
@@ -74,10 +73,9 @@ class RedisPubSubService:
     # ========== 预定义消息发布方法 ==========
 
     def publish_indicator_calculated(
-        self, stock_code: str, indicator_code: str, params: Dict[str, Any], success: bool = True
+        self, stock_code: str, indicator_code: str, params: Dict[str, Any], success: bool = True,
     ) -> int:
-        """
-        发布指标计算完成事件
+        """发布指标计算完成事件
 
         Args:
             stock_code: 股票代码
@@ -87,6 +85,7 @@ class RedisPubSubService:
 
         Returns:
             订阅者数量
+
         """
         return self.publish(
             "indicator:calculated",
@@ -100,8 +99,7 @@ class RedisPubSubService:
         )
 
     def publish_price_update(self, stock_code: str, price: float, change: float, change_pct: float) -> int:
-        """
-        发布实时价格更新事件
+        """发布实时价格更新事件
 
         Args:
             stock_code: 股票代码
@@ -111,6 +109,7 @@ class RedisPubSubService:
 
         Returns:
             订阅者数量
+
         """
         return self.publish(
             "price:update",
@@ -124,8 +123,7 @@ class RedisPubSubService:
         )
 
     def publish_task_updated(self, task_id: str, status: str, progress: float, result: Optional[Dict] = None) -> int:
-        """
-        发布任务状态更新事件
+        """发布任务状态更新事件
 
         Args:
             task_id: 任务ID
@@ -135,6 +133,7 @@ class RedisPubSubService:
 
         Returns:
             订阅者数量
+
         """
         return self.publish(
             "task:updated",
@@ -148,24 +147,23 @@ class RedisPubSubService:
         )
 
     def publish_config_reloaded(self, config_type: str) -> int:
-        """
-        发布配置重载事件
+        """发布配置重载事件
 
         Args:
             config_type: 配置类型 (data_sources, indicators, etc.)
 
         Returns:
             订阅者数量
+
         """
         return self.publish(
-            "config:reloaded", {"config_type": config_type, "timestamp": asyncio.get_event_loop().time()}
+            "config:reloaded", {"config_type": config_type, "timestamp": asyncio.get_event_loop().time()},
         )
 
     # ========== 订阅 (Subscriber) ==========
 
     def subscribe(self, channel: str, callback: Callable[[Dict[str, Any]], None]):
-        """
-        订阅频道消息
+        """订阅频道消息
 
         Args:
             channel: 频道名
@@ -178,6 +176,7 @@ class RedisPubSubService:
 
         pubsub.subscribe("indicator:calculated", handler)
         ```
+
         """
         if channel not in self._listeners:
             self._listeners[channel] = []
@@ -185,12 +184,12 @@ class RedisPubSubService:
         logger.info("Subscribed to channel: %(channel)s")
 
     def unsubscribe(self, channel: str, callback: Optional[Callable] = None):
-        """
-        取消订阅
+        """取消订阅
 
         Args:
             channel: 频道名
             callback: 要取消的回调函数 (为None则取消该频道所有订阅)
+
         """
         if channel in self._listeners:
             if callback:
@@ -202,11 +201,11 @@ class RedisPubSubService:
             logger.info("Unsubscribed from channel: %(channel)s")
 
     def _message_handler(self, message: Dict[str, Any]):
-        """
-        消息处理 (内部方法)
+        """消息处理 (内部方法)
 
         Args:
             message: Redis消息对象
+
         """
         try:
             channel = message["channel"].replace(self.prefix, "")
@@ -224,8 +223,7 @@ class RedisPubSubService:
             logger.error("Failed to handle message: %(e)s")
 
     def start_listening(self):
-        """
-        启动监听 (阻塞模式)
+        """启动监听 (阻塞模式)
 
         在单独线程中运行，持续监听订阅的频道
         """
@@ -264,8 +262,7 @@ class RedisPubSubService:
     # ========== 便捷方法 ==========
 
     async def async_publish(self, channel: str, message: Dict[str, Any]) -> int:
-        """
-        异步发布消息
+        """异步发布消息
 
         Args:
             channel: 频道名
@@ -273,13 +270,13 @@ class RedisPubSubService:
 
         Returns:
             订阅者数量
+
         """
         loop = asyncio.get_event_loop()
         return await loop.run_in_executor(self._executor, self.publish, channel, message)
 
     def broadcast(self, message: Dict[str, Any], exclude_channel: Optional[str] = None) -> int:
-        """
-        广播消息到所有频道
+        """广播消息到所有频道
 
         Args:
             message: 消息内容
@@ -287,6 +284,7 @@ class RedisPubSubService:
 
         Returns:
             总订阅者数量
+
         """
         total = 0
         for channel in self._listeners.keys():

@@ -1,5 +1,4 @@
-"""
-Backtest Celery Tasks
+"""Backtest Celery Tasks
 
 回测异步任务定义
 """
@@ -12,13 +11,13 @@ from app.backtest.backtest_engine import BacktestEngine
 from app.backtest.events import ProgressEvent
 from app.core.celery_app import celery_app, get_progress_callback
 
+
 logger = logging.getLogger(__name__)
 
 
 @celery_app.task(bind=True, name="app.tasks.backtest_tasks.run_backtest")
 def run_backtest_task(self, backtest_id: int, strategy_config: dict, backtest_config: dict):
-    """
-    执行回测任务
+    """执行回测任务
 
     Args:
         backtest_id: 回测任务ID
@@ -27,6 +26,7 @@ def run_backtest_task(self, backtest_id: int, strategy_config: dict, backtest_co
 
     Returns:
         回测结果字典
+
     """
     logger.info("开始执行回测任务 %(backtest_id)s")
 
@@ -104,7 +104,7 @@ def run_backtest_task(self, backtest_id: int, strategy_config: dict, backtest_co
             meta={
                 "backtest_id": backtest_id,
                 "error": str(e),
-                "message": f"回测失败: {str(e)}",
+                "message": f"回测失败: {e!s}",
             },
         )
 

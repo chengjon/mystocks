@@ -1,5 +1,4 @@
-"""
-高级订阅过滤服务测试
+"""高级订阅过滤服务测试
 
 Tests for Advanced Subscription & Filtering System
 
@@ -12,18 +11,18 @@ Date: 2025-11-07
 from datetime import datetime, timezone
 
 from app.services.filter_service import (
-    FilterCondition,
-    FilterExpression,
-    FilterOperator,
-    FilterEvaluator,
-    AlertPriority,
+    Alert,
     AlertDeliveryMethod,
     AlertDispatcher,
-    SubscriptionManager,
+    AlertPriority,
+    FilterCondition,
+    FilterEvaluator,
+    FilterExpression,
+    FilterOperator,
     Subscription,
-    Alert,
-    get_filter_evaluator,
+    SubscriptionManager,
     get_alert_dispatcher,
+    get_filter_evaluator,
     get_subscription_manager,
     reset_filter_service,
 )

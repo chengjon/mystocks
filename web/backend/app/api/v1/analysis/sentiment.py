@@ -1,5 +1,4 @@
-"""
-情感分析API
+"""情感分析API
 
 提供新闻情感分析功能
 """
@@ -9,6 +8,7 @@ from typing import List, Optional
 
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
+
 
 router = APIRouter(
     prefix="/sentiment",
@@ -39,8 +39,7 @@ class SentimentResponse(BaseModel):
 
 @router.post("/analyze", response_model=SentimentResponse, summary="Analyze Sentiment")
 async def analyze_sentiment(request: SentimentRequest):
-    """
-    分析文本情感
+    """分析文本情感
 
     Analyzes sentiment of given text for a stock.
     """
@@ -58,8 +57,7 @@ async def analyze_sentiment(request: SentimentRequest):
 
 @router.get("/stock/{symbol}", summary="Get Stock Sentiment")
 async def get_stock_sentiment(symbol: str, days: int = 7):
-    """
-    获取股票情感趋势
+    """获取股票情感趋势
 
     Returns sentiment trend for a stock over specified days.
     """
@@ -78,8 +76,7 @@ async def get_stock_sentiment(symbol: str, days: int = 7):
 
 @router.get("/market", summary="Get Market Sentiment")
 async def get_market_sentiment():
-    """
-    获取市场整体情感
+    """获取市场整体情感
 
     Returns overall market sentiment.
     """

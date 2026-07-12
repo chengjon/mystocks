@@ -1,5 +1,4 @@
-"""
-用户体验监控指标 - User Experience Monitoring Metrics
+"""用户体验监控指标 - User Experience Monitoring Metrics
 提供用户体验相关的核心监控指标：响应时间、成功率、系统资源、页面加载时间
 """
 
@@ -8,6 +7,7 @@ import time
 
 import psutil
 from prometheus_client import Counter, Gauge, Histogram, generate_latest
+
 
 logger = logging.getLogger(__name__)
 

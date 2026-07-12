@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-MyStocks Web Mock数据覆盖率快速检查
+"""MyStocks Web Mock数据覆盖率快速检查
 
 检查API文件是否支持Mock数据
 """
@@ -26,7 +24,7 @@ def check_api_mock_support():
             continue
 
         try:
-            with open(py_file, "r", encoding="utf-8") as f:
+            with open(py_file, encoding="utf-8") as f:
                 content = f.read()
 
             # 检查是否包含Mock数据相关代码

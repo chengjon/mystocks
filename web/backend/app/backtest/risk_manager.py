@@ -1,5 +1,4 @@
-"""
-Risk Manager
+"""Risk Manager
 
 风险管理器，负责仓位控制、止损止盈检查等风险管理功能
 """
@@ -13,8 +12,7 @@ from app.backtest.portfolio_manager import PortfolioManager, Position
 
 
 class RiskManager:
-    """
-    风险管理器
+    """风险管理器
 
     检查和控制交易风险
     """
@@ -28,8 +26,7 @@ class RiskManager:
         max_daily_loss: Optional[float] = None,  # 单日最大亏损
         max_drawdown: Optional[float] = None,  # 最大回撤限制
     ):
-        """
-        初始化风险管理器
+        """初始化风险管理器
 
         Args:
             max_position_size: 单个股票最大仓位比例（默认10%）
@@ -38,6 +35,7 @@ class RiskManager:
             take_profit_pct: 止盈比例（如0.10表示10%止盈）
             max_daily_loss: 单日最大亏损比例
             max_drawdown: 最大回撤限制
+
         """
         self.max_position_size = max_position_size
         self.max_total_position = max_total_position
@@ -51,10 +49,9 @@ class RiskManager:
         self.current_date: Optional[datetime] = None
 
     def validate_order(
-        self, order: OrderEvent, portfolio: PortfolioManager, current_price: Decimal
+        self, order: OrderEvent, portfolio: PortfolioManager, current_price: Decimal,
     ) -> tuple[bool, Optional[str]]:
-        """
-        验证订单是否符合风险控制要求
+        """验证订单是否符合风险控制要求
 
         Args:
             order: 订单事件
@@ -63,6 +60,7 @@ class RiskManager:
 
         Returns:
             (是否通过, 拒绝原因)
+
         """
         # 1. 检查仓位限制
         if order.action == "BUY":
@@ -91,7 +89,7 @@ class RiskManager:
         return True, None
 
     def _check_position_limit(
-        self, order: OrderEvent, portfolio: PortfolioManager, current_price: Decimal
+        self, order: OrderEvent, portfolio: PortfolioManager, current_price: Decimal,
     ) -> tuple[bool, Optional[str]]:
         """检查仓位限制"""
         # 计算订单金额
@@ -100,7 +98,7 @@ class RiskManager:
         # 单个股票仓位限制
         max_single_value = portfolio.equity * Decimal(self.max_position_size)
         current_position = portfolio.get_position(order.symbol)
-        current_value = current_position.market_value if current_position else Decimal("0")
+        current_value = current_position.market_value if current_position else Decimal(0)
 
         if current_value + order_value > max_single_value:
             return False, f"超过单股票最大仓位限制 ({self.max_position_size * 100}%)"
@@ -115,7 +113,7 @@ class RiskManager:
         return True, None
 
     def _check_cash_available(
-        self, order: OrderEvent, portfolio: PortfolioManager, current_price: Decimal
+        self, order: OrderEvent, portfolio: PortfolioManager, current_price: Decimal,
     ) -> tuple[bool, Optional[str]]:
         """检查现金是否充足"""
         # 估算手续费
@@ -140,7 +138,7 @@ class RiskManager:
         if len(portfolio.equity_curve) > 0:
             yesterday_equity = portfolio.equity_curve[-1]["equity"]
             daily_pnl = today_equity - yesterday_equity
-            daily_return = daily_pnl / yesterday_equity if yesterday_equity > 0 else Decimal("0")
+            daily_return = daily_pnl / yesterday_equity if yesterday_equity > 0 else Decimal(0)
 
             if daily_return < Decimal(-self.max_daily_loss):
                 return False, f"触发单日最大亏损限制 ({self.max_daily_loss * 100}%)"
@@ -154,7 +152,7 @@ class RiskManager:
 
         # 计算当前回撤
         peak_equity = max(point["equity"] for point in portfolio.equity_curve)
-        current_drawdown = (peak_equity - portfolio.equity) / peak_equity if peak_equity > 0 else Decimal("0")
+        current_drawdown = (peak_equity - portfolio.equity) / peak_equity if peak_equity > 0 else Decimal(0)
 
         if current_drawdown > Decimal(self.max_drawdown):
             return False, f"触发最大回撤限制 ({self.max_drawdown * 100}%)"
@@ -162,8 +160,7 @@ class RiskManager:
         return True, None
 
     def check_stop_loss_take_profit(self, symbol: str, position: Position, current_price: Decimal) -> Optional[str]:
-        """
-        检查止损止盈
+        """检查止损止盈
 
         Args:
             symbol: 股票代码
@@ -172,6 +169,7 @@ class RiskManager:
 
         Returns:
             如果需要平仓，返回原因；否则返回None
+
         """
         if position.quantity == 0:
             return None
@@ -192,10 +190,9 @@ class RiskManager:
         return None
 
     def should_force_close_position(
-        self, symbol: str, position: Position, current_price: Decimal
+        self, symbol: str, position: Position, current_price: Decimal,
     ) -> tuple[bool, Optional[str]]:
-        """
-        判断是否应该强制平仓
+        """判断是否应该强制平仓
 
         Args:
             symbol: 股票代码
@@ -204,6 +201,7 @@ class RiskManager:
 
         Returns:
             (是否需要平仓, 原因)
+
         """
         reason = self.check_stop_loss_take_profit(symbol, position, current_price)
         if reason:
@@ -212,12 +210,12 @@ class RiskManager:
         return False, None
 
     def update_risk_metrics(self, portfolio: PortfolioManager, trade_date: datetime):
-        """
-        更新风险指标
+        """更新风险指标
 
         Args:
             portfolio: 组合管理器
             trade_date: 交易日期
+
         """
         # 更新每日盈亏
         if len(portfolio.equity_curve) > 1:
@@ -228,14 +226,14 @@ class RiskManager:
         self.current_date = trade_date
 
     def get_risk_summary(self, portfolio: PortfolioManager) -> Dict[str, Any]:
-        """
-        获取风险摘要
+        """获取风险摘要
 
         Args:
             portfolio: 组合管理器
 
         Returns:
             风险指标摘要
+
         """
         # 计算当前仓位比例
         total_position_value = sum(pos.market_value for pos in portfolio.positions.values())
@@ -245,7 +243,7 @@ class RiskManager:
         if len(portfolio.equity_curve) > 0:
             peak_equity = max(point["equity"] for point in portfolio.equity_curve)
             current_drawdown = float(
-                (peak_equity - portfolio.equity) / peak_equity if peak_equity > 0 else Decimal("0")
+                (peak_equity - portfolio.equity) / peak_equity if peak_equity > 0 else Decimal(0),
             )
         else:
             current_drawdown = 0.0

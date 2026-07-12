@@ -1,5 +1,4 @@
-"""
-Service Factory - Centralized singleton service management
+"""Service Factory - Centralized singleton service management
 Task 1.4: Remove Duplicate Code - Phase 1
 
 Consolidates the repeated singleton pattern used in 8+ service files:
@@ -27,14 +26,14 @@ from typing import Dict, Generic, Type, TypeVar
 
 import structlog
 
+
 logger = structlog.get_logger()
 
 T = TypeVar("T")
 
 
 class ServiceFactory(Generic[T]):
-    """
-    Generic factory for managing singleton service instances
+    """Generic factory for managing singleton service instances
 
     Consolidates the repeated singleton pattern across all services.
     Each service no longer needs to implement its own singleton.
@@ -60,8 +59,7 @@ class ServiceFactory(Generic[T]):
 
     @staticmethod
     def get_instance(service_class: Type[T], *args, **kwargs) -> T:
-        """
-        Get or create singleton instance of a service
+        """Get or create singleton instance of a service
 
         Args:
             service_class: Service class to instantiate
@@ -72,6 +70,7 @@ class ServiceFactory(Generic[T]):
             Singleton instance of the service
 
         PERFORMANCE: Service instantiated only once, then reused
+
         """
         if service_class not in ServiceFactory._instances:
             logger.info("✅ Creating singleton instance of {service_class.__name__}")
@@ -86,13 +85,13 @@ class ServiceFactory(Generic[T]):
 
     @staticmethod
     def reset_instance(service_class: Type[T]) -> None:
-        """
-        Reset/clear a service instance
+        """Reset/clear a service instance
 
         Useful for testing or when you need to recreate a service.
 
         Args:
             service_class: Service class to reset
+
         """
         if service_class in ServiceFactory._instances:
             logger.info("🔄 Resetting singleton instance of {service_class.__name__}")

@@ -1,5 +1,4 @@
-"""
-Cache Manager Tests - 缓存管理器集成测试
+"""Cache Manager Tests - 缓存管理器集成测试
 Task 2.2: 实现缓存读写逻辑
 
 测试覆盖:
@@ -12,11 +11,13 @@ Task 2.2: 实现缓存读写逻辑
 - 性能验证
 """
 
-import pytest
-from datetime import datetime, timedelta, timezone
-import sys
 import os
+import sys
 import time
+from datetime import datetime, timedelta, timezone
+
+import pytest
+
 
 # Add parent directories to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
@@ -73,7 +74,7 @@ class TestSingleCacheOperations:
             # Clear cache data to ensure clean state for each test
             self.manager.invalidate_cache()
         except Exception as e:
-            pytest.skip(f"TDengine may not be running: {str(e)}")
+            pytest.skip(f"TDengine may not be running: {e!s}")
 
     def teardown_method(self):
         """测试后清理"""
@@ -173,7 +174,7 @@ class TestBatchOperations:
             # Clear cache data to ensure clean state for each test
             self.manager.invalidate_cache()
         except Exception as e:
-            pytest.skip(f"TDengine may not be running: {str(e)}")
+            pytest.skip(f"TDengine may not be running: {e!s}")
 
     def teardown_method(self):
         """测试后清理"""
@@ -300,7 +301,7 @@ class TestCacheInvalidation:
             # Clear cache data to ensure clean state for each test
             self.manager.invalidate_cache()
         except Exception as e:
-            pytest.skip(f"TDengine may not be running: {str(e)}")
+            pytest.skip(f"TDengine may not be running: {e!s}")
 
     def teardown_method(self):
         """测试后清理"""
@@ -355,7 +356,7 @@ class TestCacheValidation:
             # Clear cache data to ensure clean state for each test
             self.manager.invalidate_cache()
         except Exception as e:
-            pytest.skip(f"TDengine may not be running: {str(e)}")
+            pytest.skip(f"TDengine may not be running: {e!s}")
 
     def teardown_method(self):
         """测试后清理"""
@@ -408,7 +409,7 @@ class TestCacheStatistics:
             # Clear cache data to ensure clean state for each test
             self.manager.invalidate_cache()
         except Exception as e:
-            pytest.skip(f"TDengine may not be running: {str(e)}")
+            pytest.skip(f"TDengine may not be running: {e!s}")
 
     def teardown_method(self):
         """测试后清理"""
@@ -509,7 +510,7 @@ class TestCacheAsidesPattern:
             # Clear cache data to ensure clean state
             self.manager.invalidate_cache()
         except Exception as e:
-            pytest.skip(f"TDengine may not be running: {str(e)}")
+            pytest.skip(f"TDengine may not be running: {e!s}")
 
     def teardown_method(self):
         """测试后清理"""
@@ -549,7 +550,7 @@ class TestErrorHandling:
             # Clear cache data to ensure clean state for each test
             self.manager.invalidate_cache()
         except Exception as e:
-            pytest.skip(f"TDengine may not be running: {str(e)}")
+            pytest.skip(f"TDengine may not be running: {e!s}")
 
     def teardown_method(self):
         """测试后清理"""
@@ -590,7 +591,7 @@ class TestPerformance:
             # Clear cache data to ensure clean state for each test
             self.manager.invalidate_cache()
         except Exception as e:
-            pytest.skip(f"TDengine may not be running: {str(e)}")
+            pytest.skip(f"TDengine may not be running: {e!s}")
 
     def teardown_method(self):
         """测试后清理"""
@@ -649,7 +650,7 @@ def setup_test_environment():
     temp_manager = CacheManager()
     if not temp_manager.health_check():
         pytest.skip(
-            "TDengine service is not running. " "Start with: docker-compose -f docker-compose.tdengine.yml up -d"
+            "TDengine service is not running. Start with: docker-compose -f docker-compose.tdengine.yml up -d",
         )
     temp_manager.close()
 

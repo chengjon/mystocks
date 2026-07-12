@@ -1,5 +1,4 @@
-"""
-TradingView Widget 集成服务模块
+"""TradingView Widget 集成服务模块
 实现 TradingView 图表和 widgets 的配置生成
 迁移自 OpenStock 项目
 """
@@ -19,8 +18,7 @@ class TradingViewWidgetService:
         locale: str = "zh_CN",
         **kwargs,
     ) -> Dict[str, Any]:
-        """
-        生成 TradingView 图表配置
+        """生成 TradingView 图表配置
 
         Args:
             symbol: 股票代码（如 "NASDAQ:AAPL" 或 "SSE:600000"）
@@ -32,6 +30,7 @@ class TradingViewWidgetService:
 
         Returns:
             Dict: TradingView 图表配置
+
         """
         config = {
             "autosize": True,
@@ -67,8 +66,7 @@ class TradingViewWidgetService:
         locale: str = "zh_CN",
         **kwargs,
     ) -> Dict[str, Any]:
-        """
-        生成 TradingView 迷你图表配置
+        """生成 TradingView 迷你图表配置
 
         Args:
             symbol: 股票代码
@@ -79,6 +77,7 @@ class TradingViewWidgetService:
 
         Returns:
             Dict: 迷你图表配置
+
         """
         config = {
             "symbol": symbol,
@@ -107,8 +106,7 @@ class TradingViewWidgetService:
         locale: str = "zh_CN",
         **kwargs,
     ) -> Dict[str, Any]:
-        """
-        生成 TradingView Ticker Tape 配置
+        """生成 TradingView Ticker Tape 配置
 
         Args:
             symbols: 股票列表 [{"proName": "NASDAQ:AAPL", "title": "Apple"}, ...]
@@ -119,6 +117,7 @@ class TradingViewWidgetService:
 
         Returns:
             Dict: Ticker Tape 配置
+
         """
         if symbols is None:
             symbols = [
@@ -150,8 +149,7 @@ class TradingViewWidgetService:
         market: str = "china",
         **kwargs,
     ) -> Dict[str, Any]:
-        """
-        生成 TradingView 市场概览配置
+        """生成 TradingView 市场概览配置
 
         Args:
             container_id: 容器 ID
@@ -162,6 +160,7 @@ class TradingViewWidgetService:
 
         Returns:
             Dict: 市场概览配置
+
         """
         # 根据市场类型选择预设
         market_tabs = {
@@ -213,7 +212,7 @@ class TradingViewWidgetService:
                         {"s": "BINANCE:BNBUSDT", "d": "BNB"},
                         {"s": "BINANCE:ADAUSDT", "d": "Cardano"},
                     ],
-                }
+                },
             ],
         }
 
@@ -252,8 +251,7 @@ class TradingViewWidgetService:
         market: str = "china",
         **kwargs,
     ) -> Dict[str, Any]:
-        """
-        生成 TradingView 股票筛选器配置
+        """生成 TradingView 股票筛选器配置
 
         Args:
             container_id: 容器 ID
@@ -264,6 +262,7 @@ class TradingViewWidgetService:
 
         Returns:
             Dict: 筛选器配置
+
         """
         config = {
             "width": "100%",
@@ -282,8 +281,7 @@ class TradingViewWidgetService:
 
     @staticmethod
     def convert_symbol_to_tradingview_format(symbol: str, market: str = "CN") -> str:
-        """
-        将股票代码转换为 TradingView 格式
+        """将股票代码转换为 TradingView 格式
 
         Args:
             symbol: 股票代码（如 "600000" 或 "AAPL"）
@@ -291,25 +289,24 @@ class TradingViewWidgetService:
 
         Returns:
             str: TradingView 格式的股票代码
+
         """
         if market == "CN":
             # A股代码转换
             if symbol.startswith("6"):
                 return f"SSE:{symbol}"  # 上海证券交易所
-            elif symbol.startswith("0") or symbol.startswith("3"):
+            if symbol.startswith("0") or symbol.startswith("3"):
                 return f"SZSE:{symbol}"  # 深圳证券交易所
-            elif symbol.startswith("8") or symbol.startswith("4"):
+            if symbol.startswith("8") or symbol.startswith("4"):
                 return f"BSE:{symbol}"  # 北京证券交易所
-            else:
-                return f"SSE:{symbol}"
-        elif market == "US":
+            return f"SSE:{symbol}"
+        if market == "US":
             # 美股代码
             return f"NASDAQ:{symbol}"  # 默认 NASDAQ，也可以根据需要判断 NYSE
-        elif market == "HK":
+        if market == "HK":
             # 港股代码
             return f"HKEX:{symbol}"
-        else:
-            return symbol
+        return symbol
 
 
 # 创建全局实例
@@ -317,11 +314,11 @@ _tradingview_service = None
 
 
 def get_tradingview_service() -> TradingViewWidgetService:
-    """
-    获取 TradingView 服务实例（单例模式）
+    """获取 TradingView 服务实例（单例模式）
 
     Returns:
         TradingViewWidgetService: TradingView 服务实例
+
     """
     global _tradingview_service
     if _tradingview_service is None:

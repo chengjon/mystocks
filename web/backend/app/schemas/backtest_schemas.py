@@ -1,5 +1,4 @@
-"""
-Backtesting API Pydantic Models
+"""Backtesting API Pydantic Models
 
 Defines Pydantic models for backtesting related API requests and responses.
 Uses centralized mock data for examples.
@@ -28,8 +27,7 @@ def _get_request_example():
 
 
 class BacktestRequest(BaseModel):
-    """
-    Request model for initiating a backtest.
+    """Request model for initiating a backtest.
     """
 
     strategy_name: str = Field(..., description="Name of the strategy to backtest")
@@ -43,8 +41,7 @@ class BacktestRequest(BaseModel):
 
 
 class BacktestTrade(BaseModel):
-    """
-    Model representing a single trade in the backtest result.
+    """Model representing a single trade in the backtest result.
     """
 
     symbol: str = Field(..., description="Stock symbol")
@@ -58,8 +55,7 @@ class BacktestTrade(BaseModel):
 
 
 class BacktestResultSummary(BaseModel):
-    """
-    Summary metrics of the backtest.
+    """Summary metrics of the backtest.
     """
 
     total_return: float = Field(..., description="Total return")
@@ -71,8 +67,7 @@ class BacktestResultSummary(BaseModel):
 
 
 class BacktestResponse(BaseModel):
-    """
-    Response model for backtest results.
+    """Response model for backtest results.
     """
 
     task_id: str = Field(..., description="Unique ID of the backtest task")

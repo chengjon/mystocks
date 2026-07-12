@@ -1,5 +1,4 @@
-"""
-Performance and Security Tests
+"""Performance and Security Tests
 
 This test suite validates API performance and security:
 - Response time benchmarks
@@ -17,8 +16,6 @@ from typing import Any, Dict, List
 
 import pytest
 from fastapi.testclient import TestClient
-
-from web.backend.tests._performance_and_security_test_tail import TestPerformanceAndSecurity
 
 
 class PerformanceSecurityValidator:
@@ -96,7 +93,7 @@ class PerformanceSecurityValidator:
                             "endpoint": f"{method} {url}",
                             "response_time": response_time,
                             "issue": "CRITICAL: Very slow response time",
-                        }
+                        },
                     )
                 elif response_time >= SLOW_THRESHOLD:
                     slow_endpoints.append(
@@ -104,7 +101,7 @@ class PerformanceSecurityValidator:
                             "endpoint": f"{method} {url}",
                             "response_time": response_time,
                             "issue": "WARNING: Slow response time",
-                        }
+                        },
                     )
                 elif response_time <= FAST_THRESHOLD:
                     fast_endpoints.append({"endpoint": f"{method} {url}", "response_time": response_time})
@@ -178,7 +175,7 @@ class PerformanceSecurityValidator:
                                 "payload": payload,
                                 "issue": "Server error (potential SQL injection)",
                                 "status_code": response.status_code,
-                            }
+                            },
                         )
                     elif response.status_code == 200:
                         # Check response for database error patterns
@@ -202,7 +199,7 @@ class PerformanceSecurityValidator:
                                     "issue": "Database error in response (potential SQL injection)",
                                     "status_code": response.status_code,
                                     "response_snippet": response_text[:200],
-                                }
+                                },
                             )
 
                 except Exception:
@@ -263,7 +260,7 @@ class PerformanceSecurityValidator:
                                     "payload": payload,
                                     "issue": "XSS payload reflected unescaped",
                                     "status_code": response.status_code,
-                                }
+                                },
                             )
 
                 except Exception:
@@ -336,7 +333,7 @@ class PerformanceSecurityValidator:
                                 ),
                                 "issue": "Input accepted without validation",
                                 "status_code": response.status_code,
-                            }
+                            },
                         )
                     elif response.status_code in [400, 422]:
                         # Proper validation - this is good
@@ -352,7 +349,7 @@ class PerformanceSecurityValidator:
                                 ),
                                 "issue": "Input caused server error",
                                 "status_code": response.status_code,
-                            }
+                            },
                         )
 
                 except Exception as e:
@@ -364,9 +361,9 @@ class PerformanceSecurityValidator:
                             "payload_value": (
                                 payload["value"][:100] + "..." if len(payload["value"]) > 100 else payload["value"]
                             ),
-                            "issue": f"Exception during validation: {str(e)}",
+                            "issue": f"Exception during validation: {e!s}",
                             "status_code": "Exception",
-                        }
+                        },
                     )
 
         return validation_issues
@@ -421,7 +418,7 @@ class PerformanceSecurityValidator:
                         "rate_limited": rate_limited,
                         "status_codes": status_codes,
                         "average_response_time": sum(request_times) / len(request_times),
-                    }
+                    },
                 )
 
                 if rate_limited:
@@ -431,7 +428,7 @@ class PerformanceSecurityValidator:
                     rate_limit_results["issues"].append(f"Endpoint {endpoint} may not have rate limiting")
 
             except Exception as e:
-                rate_limit_results["issues"].append(f"Error testing rate limiting for {endpoint}: {str(e)}")
+                rate_limit_results["issues"].append(f"Error testing rate limiting for {endpoint}: {e!s}")
 
         return rate_limit_results
 
@@ -453,7 +450,7 @@ class PerformanceSecurityValidator:
                             "issue": f"Weak password accepted: {password}",
                             "endpoint": "/api/auth/login",
                             "status_code": response.status_code,
-                        }
+                        },
                     )
 
             except Exception:
@@ -469,7 +466,7 @@ class PerformanceSecurityValidator:
                         "issue": "Protected endpoint accessible without authentication",
                         "endpoint": "/api/auth/me",
                         "status_code": response.status_code,
-                    }
+                    },
                 )
 
             # Test token validation
@@ -489,7 +486,7 @@ class PerformanceSecurityValidator:
                                 "issue": f"Invalid token accepted: {token}",
                                 "endpoint": "/api/auth/me",
                                 "status_code": response.status_code,
-                            }
+                            },
                         )
 
                 except Exception:

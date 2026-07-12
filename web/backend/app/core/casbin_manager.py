@@ -1,5 +1,4 @@
-"""
-Casbin权限管理集成 - Casbin RBAC Integration
+"""Casbin权限管理集成 - Casbin RBAC Integration
 
 Task 10: Casbin权限集成
 
@@ -19,6 +18,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Set
 
 import structlog
+
 
 try:
     import casbin
@@ -77,6 +77,7 @@ class CasbinManager:
         Args:
             model_path: RBAC模型文件路径
             policy_path: 权限策略文件路径
+
         """
         self.model_path = model_path or self._get_default_model_path()
         self.policy_path = policy_path or self._get_default_policy_path()
@@ -206,6 +207,7 @@ g, guest_user, guest
 
         Returns:
             是否有权限
+
         """
         self.total_enforce_calls += 1
 
@@ -254,6 +256,7 @@ g, guest_user, guest
 
         Returns:
             是否成功添加
+
         """
         if self.enforcer is None:
             return False
@@ -288,6 +291,7 @@ g, guest_user, guest
 
         Returns:
             是否成功移除
+
         """
         if self.enforcer is None:
             return False
@@ -321,6 +325,7 @@ g, guest_user, guest
 
         Returns:
             是否成功
+
         """
         if self.enforcer is None:
             return False
@@ -360,6 +365,7 @@ g, guest_user, guest
 
         Returns:
             是否成功
+
         """
         return self.add_role(subject, action, resource)
 
@@ -371,6 +377,7 @@ g, guest_user, guest
 
         Returns:
             成功添加的数量
+
         """
         count = 0
         for perm in permissions:
@@ -388,6 +395,7 @@ g, guest_user, guest
 
         Returns:
             成功移除的数量
+
         """
         count = 0
         for perm in permissions:
@@ -402,6 +410,7 @@ g, guest_user, guest
 
         Returns:
             权限规则列表
+
         """
         if self.enforcer is None:
             return None
@@ -417,6 +426,7 @@ g, guest_user, guest
 
         Returns:
             角色列表
+
         """
         if self.enforcer is None:
             return []
@@ -442,6 +452,7 @@ g, guest_user, guest
 
         Returns:
             权限规则列表
+
         """
         if self.enforcer is None:
             return []
@@ -463,6 +474,7 @@ g, guest_user, guest
 
         Returns:
             是否成功
+
         """
         if self.enforcer is None:
             return False
@@ -485,6 +497,7 @@ g, guest_user, guest
 
         Returns:
             是否成功
+
         """
         if self.enforcer is None:
             return False
@@ -503,6 +516,7 @@ g, guest_user, guest
 
         Returns:
             统计信息
+
         """
         return {
             "total_enforce_calls": self.total_enforce_calls,
@@ -524,6 +538,7 @@ def get_casbin_manager() -> CasbinManager:
 
     Returns:
         管理器实例
+
     """
     global _manager
     if _manager is None:

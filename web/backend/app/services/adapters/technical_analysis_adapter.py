@@ -1,18 +1,16 @@
-"""
-数据源适配器模块
+"""数据源适配器模块
 """
 
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from app.core.database import db_service
-from app.services.data_quality_monitor import get_data_quality_monitor
 from app.services.data_source_interface import (
     HealthStatus,
     HealthStatusEnum,
     IDataSource,
 )
+
 
 logger = __import__("logging").getLogger(__name__)
 
@@ -101,7 +99,7 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
                     "timestamp": datetime.now().isoformat(),
                 }
 
-            elif endpoint == "trend" or (len(path_parts) >= 2 and path_parts[1] == "trend"):
+            if endpoint == "trend" or (len(path_parts) >= 2 and path_parts[1] == "trend"):
                 # "trend" or /{symbol}/trend
                 period = params.get("period", "daily")
 
@@ -116,7 +114,7 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
                     "timestamp": datetime.now().isoformat(),
                 }
 
-            elif endpoint == "momentum" or (len(path_parts) >= 2 and path_parts[1] == "momentum"):
+            if endpoint == "momentum" or (len(path_parts) >= 2 and path_parts[1] == "momentum"):
                 # "momentum" or /{symbol}/momentum
                 period = params.get("period", "daily")
 
@@ -131,7 +129,7 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
                     "timestamp": datetime.now().isoformat(),
                 }
 
-            elif endpoint == "volatility" or (len(path_parts) >= 2 and path_parts[1] == "volatility"):
+            if endpoint == "volatility" or (len(path_parts) >= 2 and path_parts[1] == "volatility"):
                 # "volatility" or /{symbol}/volatility
                 period = params.get("period", "daily")
 
@@ -146,7 +144,7 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
                     "timestamp": datetime.now().isoformat(),
                 }
 
-            elif endpoint == "volume" or (len(path_parts) >= 2 and path_parts[1] == "volume"):
+            if endpoint == "volume" or (len(path_parts) >= 2 and path_parts[1] == "volume"):
                 # "volume" or /{symbol}/volume
                 period = params.get("period", "daily")
 
@@ -161,7 +159,7 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
                     "timestamp": datetime.now().isoformat(),
                 }
 
-            elif endpoint == "signals" or (len(path_parts) >= 2 and path_parts[1] == "signals"):
+            if endpoint == "signals" or (len(path_parts) >= 2 and path_parts[1] == "signals"):
                 # "signals" or /{symbol}/signals
                 period = params.get("period", "daily")
 
@@ -198,7 +196,7 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
 
         # 使用 run_in_executor 运行同步计算
         return await asyncio.to_thread(
-            service.calculate_all_indicators, symbol=symbol, period=period, start_date=start_date, end_date=end_date
+            service.calculate_all_indicators, symbol=symbol, period=period, start_date=start_date, end_date=end_date,
         )
 
     async def _get_trend_indicators(self, symbol: str, period: str = "1y") -> Dict[str, Any]:
@@ -284,7 +282,7 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
 
         # 获取DataFrame
         df = await asyncio.to_thread(
-            service.get_stock_history, symbol=symbol, period=period, start_date=start_date, end_date=end_date
+            service.get_stock_history, symbol=symbol, period=period, start_date=start_date, end_date=end_date,
         )
 
         if df.empty:
@@ -334,7 +332,7 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
         except Exception as e:
             return HealthStatus(
                 status=HealthStatusEnum.FAILED,
-                message=f"Health check failed: {str(e)}",
+                message=f"Health check failed: {e!s}",
                 response_time=0,
                 timestamp=datetime.now(),
             )

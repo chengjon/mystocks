@@ -1,20 +1,21 @@
-"""
-投资组合追踪模块
+"""投资组合追踪模块
 
 提供投资组合创建、更新、查询、删除、性能追踪、统计分析等功能
 """
 
 import logging
-from typing import Dict, List, Optional
-from datetime import datetime, timedelta
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 from enum import Enum
+from typing import Dict, List, Optional
+
 
 logger = __import__("logging").getLogger(__name__)
 
 
 class PortfolioStatus(Enum):
     """投资组合状态"""
+
     DRAFT = "draft"
     ACTIVE = "active"
     PAUSED = "paused"
@@ -24,6 +25,7 @@ class PortfolioStatus(Enum):
 
 class PerformanceMetric(Enum):
     """性能指标类型"""
+
     TOTAL_RETURN = "total_return"
     ANNUALIZED_RETURN = "annualized_return"
     SHARPE_RATIO = "sharpe_ratio"
@@ -37,6 +39,7 @@ class PerformanceMetric(Enum):
 @dataclass
 class PortfolioInfo:
     """投资组合信息数据类"""
+
     portfolio_id: str = ""
     name: str = ""
     user_id: str = ""
@@ -55,27 +58,28 @@ class PortfolioInfo:
 
     def to_dict(self) -> Dict:
         return {
-            'portfolio_id': self.portfolio_id,
-            'name': self.name,
-            'user_id': self.user_id,
-            'status': self.status.value,
-            'created_at': self.created_at.isoformat() if self.created_at else None,
-            'updated_at': self.updated_at.isoformat() if self.updated_at else None,
-            'initial_capital': self.initial_capital,
-            'current_capital': self.current_capital,
-            'number_of_positions': self.number_of_positions,
-            'total_assets': self.total_assets,
-            'risk_profile_id': self.risk_profile_id,
-            'description': self.description,
-            'tags': self.tags,
-            'is_favorite': self.is_favorite,
-            'is_public': self.is_public
+            "portfolio_id": self.portfolio_id,
+            "name": self.name,
+            "user_id": self.user_id,
+            "status": self.status.value,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
+            "initial_capital": self.initial_capital,
+            "current_capital": self.current_capital,
+            "number_of_positions": self.number_of_positions,
+            "total_assets": self.total_assets,
+            "risk_profile_id": self.risk_profile_id,
+            "description": self.description,
+            "tags": self.tags,
+            "is_favorite": self.is_favorite,
+            "is_public": self.is_public,
         }
 
 
 @dataclass
 class PerformanceMetricsData:
     """性能指标数据类"""
+
     portfolio_id: str = ""
     metric_type: PerformanceMetric = PerformanceMetric.TOTAL_RETURN
     period: str = "daily"
@@ -89,16 +93,16 @@ class PerformanceMetricsData:
 
     def to_dict(self) -> Dict:
         return {
-            'portfolio_id': self.portfolio_id,
-            'metric_type': self.metric_type.value,
-            'period': self.period,
-            'start_date': self.start_date.isoformat() if self.start_date else None,
-            'end_date': self.end_date.isoformat() if self.end_date else None,
-            'value': f"{self.value:.2f}%",
-            'benchmark': f"{self.benchmark:.2f}%" if self.benchmark else None,
-            'rank': self.rank if self.rank else None,
-            'percentile': f"{self.percentile:.2f}%" if self.percentile else None,
-            'calculated_at': self.calculated_at.isoformat() if self.calculated_at else None
+            "portfolio_id": self.portfolio_id,
+            "metric_type": self.metric_type.value,
+            "period": self.period,
+            "start_date": self.start_date.isoformat() if self.start_date else None,
+            "end_date": self.end_date.isoformat() if self.end_date else None,
+            "value": f"{self.value:.2f}%",
+            "benchmark": f"{self.benchmark:.2f}%" if self.benchmark else None,
+            "rank": self.rank or None,
+            "percentile": f"{self.percentile:.2f}%" if self.percentile else None,
+            "calculated_at": self.calculated_at.isoformat() if self.calculated_at else None,
         }
 
 
@@ -110,16 +114,15 @@ class PortfolioTracker:
         self.portfolios = {}  # portfolio_id -> PortfolioInfo
         self.performance_metrics = {}  # portfolio_id -> List[PerformanceMetricsData]
         self.benchmark_metrics = {
-            'avg_return': 0.08,
-            'avg_sharpe': 1.2,
-            'avg_max_drawdown': 0.15
+            "avg_return": 0.08,
+            "avg_sharpe": 1.2,
+            "avg_max_drawdown": 0.15,
         }
 
         logger.info("投资组合追踪模块初始化")
 
     async def create_portfolio(self, user_id: str, name: str, initial_capital: float = 100000.0, risk_profile_id: Optional[str] = None, description: str = "", tags: List[str] = None) -> str:
-        """
-        创建投资组合
+        """创建投资组合
         
         Args:
             user_id: 用户ID
@@ -131,6 +134,7 @@ class PortfolioTracker:
         
         Returns:
             str: 投资组合ID，失败返回空字符串
+
         """
         try:
             import uuid
@@ -150,7 +154,7 @@ class PortfolioTracker:
                 description=description,
                 tags=tags,
                 is_favorite=False,
-                is_public=False
+                is_public=False,
             )
 
             self.portfolios[portfolio_id] = portfolio_info
@@ -163,8 +167,7 @@ class PortfolioTracker:
             raise
 
     async def update_portfolio(self, portfolio_id: str, name: Optional[str] = None, status: Optional[PortfolioStatus] = None, description: Optional[str] = None, tags: Optional[List[str]] = None) -> bool:
-        """
-        更新投资组合
+        """更新投资组合
         
         Args:
             portfolio_id: 投资组合ID
@@ -175,6 +178,7 @@ class PortfolioTracker:
         
         Returns:
             bool: 是否更新成功
+
         """
         try:
             if portfolio_id not in self.portfolios:
@@ -204,14 +208,14 @@ class PortfolioTracker:
             return False
 
     async def delete_portfolio(self, portfolio_id: str) -> bool:
-        """
-        删除投资组合
+        """删除投资组合
         
         Args:
             portfolio_id: 投资组合ID
         
         Returns:
             bool: 是否删除成功
+
         """
         try:
             if portfolio_id not in self.portfolios:
@@ -232,14 +236,14 @@ class PortfolioTracker:
             return False
 
     async def get_portfolio(self, portfolio_id: str) -> Optional[Dict]:
-        """
-        获取投资组合信息
+        """获取投资组合信息
         
         Args:
             portfolio_id: 投资组合ID
         
         Returns:
             Dict: 投资组合信息，失败返回None
+
         """
         try:
             if portfolio_id not in self.portfolios:
@@ -266,8 +270,7 @@ class PortfolioTracker:
             return None
 
     async def list_portfolios(self, user_id: str, status: Optional[PortfolioStatus] = None, limit: int = 100, offset: int = 0) -> List[Dict]:
-        """
-        获取投资组合列表
+        """获取投资组合列表
         
         Args:
             user_id: 用户ID
@@ -277,6 +280,7 @@ class PortfolioTracker:
         
         Returns:
             List[Dict]: 投资组合列表
+
         """
         try:
             user_portfolios = [
@@ -302,8 +306,7 @@ class PortfolioTracker:
             return []
 
     async def calculate_performance_metrics(self, portfolio_id: str, metric_type: PerformanceMetric, period: str = "daily", start_date: Optional[datetime] = None, end_date: Optional[datetime] = None) -> Dict:
-        """
-        计算性能指标
+        """计算性能指标
         
         Args:
             portfolio_id: 投资组合ID
@@ -314,6 +317,7 @@ class PortfolioTracker:
         
         Returns:
             Dict: 性能指标结果
+
         """
         try:
             import uuid
@@ -358,10 +362,10 @@ class PortfolioTracker:
 
             for result in results:
                 if previous_price:
-                    daily_return = (result['close_price'] - previous_price) / previous_price
+                    daily_return = (result["close_price"] - previous_price) / previous_price
                     returns.append(daily_return)
 
-                previous_price = result['close_price']
+                previous_price = result["close_price"]
 
             # 计算性能指标
             if not returns:
@@ -389,8 +393,7 @@ class PortfolioTracker:
                     peak_price = max(peak_price, returns[i])
                     drawdown = (peak_price - returns[i]) / peak_price
 
-                    if drawdown > max_drawdown:
-                        max_drawdown = drawdown
+                    max_drawdown = max(max_drawdown, drawdown)
 
                 value = abs(max_drawdown)
             elif metric_type == PerformanceMetric.VOLATILITY:
@@ -398,7 +401,7 @@ class PortfolioTracker:
                 volatility = sum((r - mean_return) ** 2 for r in returns) / len(returns)
                 value = volatility * (252 ** 0.5)
             elif metric_type == PerformanceMetric.BETA:
-                benchmark_returns = self.benchmark_metrics.get('benchmark_returns', [])
+                benchmark_returns = self.benchmark_metrics.get("benchmark_returns", [])
 
                 if not benchmark_returns:
                     value = 1.0
@@ -431,7 +434,7 @@ class PortfolioTracker:
                 benchmark=None,
                 rank=None,
                 percentile=None,
-                calculated_at=datetime.now()
+                calculated_at=datetime.now(),
             )
 
             # 保存性能指标
@@ -448,69 +451,69 @@ class PortfolioTracker:
             return {}
 
     async def get_performance_summary(self, portfolio_id: str) -> Dict:
-        """
-        获取性能摘要
+        """获取性能摘要
         
         Args:
             portfolio_id: 投资组合ID
         
         Returns:
             Dict: 性能摘要
+
         """
         try:
             if portfolio_id not in self.performance_metrics:
                 return {
-                    'portfolio_id': portfolio_id,
-                    'metrics': [],
-                    'summary': {
-                        'total_return': 0.0,
-                        'sharpe_ratio': 0.0,
-                        'max_drawdown': 0.0,
-                        'volatility': 0.0,
-                        'beta': 0.0,
-                        'information_ratio': 0.0
+                    "portfolio_id": portfolio_id,
+                    "metrics": [],
+                    "summary": {
+                        "total_return": 0.0,
+                        "sharpe_ratio": 0.0,
+                        "max_drawdown": 0.0,
+                        "volatility": 0.0,
+                        "beta": 0.0,
+                        "information_ratio": 0.0,
                     },
-                    'benchmarks': {
-                        'avg_return': self.benchmark_metrics.get('avg_return', 0.08),
-                        'avg_sharpe': self.benchmark_metrics.get('avg_sharpe', 1.2),
-                        'avg_max_drawdown': self.benchmark_metrics.get('avg_max_drawdown', 0.15)
-                    }
+                    "benchmarks": {
+                        "avg_return": self.benchmark_metrics.get("avg_return", 0.08),
+                        "avg_sharpe": self.benchmark_metrics.get("avg_sharpe", 1.2),
+                        "avg_max_drawdown": self.benchmark_metrics.get("avg_max_drawdown", 0.15),
+                    },
                 }
 
             metrics = self.performance_metrics[portfolio_id]
 
             if not metrics:
                 return {
-                    'portfolio_id': portfolio_id,
-                    'metrics': [],
-                    'summary': {
-                        'total_return': 0.0,
-                        'sharpe_ratio': 0.0,
-                        'max_drawdown': 0.0,
-                        'volatility': 0.0,
-                        'beta': 0.0,
-                        'information_ratio': 0.0
+                    "portfolio_id": portfolio_id,
+                    "metrics": [],
+                    "summary": {
+                        "total_return": 0.0,
+                        "sharpe_ratio": 0.0,
+                        "max_drawdown": 0.0,
+                        "volatility": 0.0,
+                        "beta": 0.0,
+                        "information_ratio": 0.0,
                     },
-                    'benchmarks': self.benchmark_metrics
+                    "benchmarks": self.benchmark_metrics,
                 }
 
             # 计算汇总指标
             drawdown_metrics = [m for m in metrics if m.metric_type == PerformanceMetric.MAX_DRAWDOWN]
             summary = {
-                'total_return': sum(m.value for m in metrics if m.metric_type == PerformanceMetric.TOTAL_RETURN) / len(metrics),
-                'sharpe_ratio': sum(m.value for m in metrics if m.metric_type == PerformanceMetric.SHARPE_RATIO) / len(metrics),
-                'max_drawdown': max(abs(m.value) for m in drawdown_metrics) if drawdown_metrics else 0,
-                'volatility': sum(m.value for m in metrics if m.metric_type == PerformanceMetric.VOLATILITY) / len(metrics),
-                'beta': sum(m.value for m in metrics if m.metric_type == PerformanceMetric.BETA) / len(metrics),
-                'information_ratio': sum(m.value for m in metrics if m.metric_type == PerformanceMetric.INFORMATION_RATIO) / len(metrics)
+                "total_return": sum(m.value for m in metrics if m.metric_type == PerformanceMetric.TOTAL_RETURN) / len(metrics),
+                "sharpe_ratio": sum(m.value for m in metrics if m.metric_type == PerformanceMetric.SHARPE_RATIO) / len(metrics),
+                "max_drawdown": max(abs(m.value) for m in drawdown_metrics) if drawdown_metrics else 0,
+                "volatility": sum(m.value for m in metrics if m.metric_type == PerformanceMetric.VOLATILITY) / len(metrics),
+                "beta": sum(m.value for m in metrics if m.metric_type == PerformanceMetric.BETA) / len(metrics),
+                "information_ratio": sum(m.value for m in metrics if m.metric_type == PerformanceMetric.INFORMATION_RATIO) / len(metrics),
             }
 
             return {
-                'portfolio_id': portfolio_id,
-                'metrics': [m.to_dict() for m in metrics],
-                'summary': summary,
-                'benchmarks': self.benchmark_metrics,
-                'generated_at': datetime.now().isoformat()
+                "portfolio_id": portfolio_id,
+                "metrics": [m.to_dict() for m in metrics],
+                "summary": summary,
+                "benchmarks": self.benchmark_metrics,
+                "generated_at": datetime.now().isoformat(),
             }
 
         except Exception as e:
@@ -518,30 +521,30 @@ class PortfolioTracker:
             return {}
 
     async def get_all_portfolios_summary(self, user_id: str) -> Dict:
-        """
-        获取所有投资组合摘要
+        """获取所有投资组合摘要
         
         Args:
             user_id: 用户ID
         
         Returns:
             Dict: 投资组合摘要
+
         """
         try:
             portfolios = await self.list_portfolios(user_id)
 
-            total_portfolio_value = sum(p.get('current_capital', 0) for p in portfolios)
-            total_assets = sum(p.get('total_assets', 0) for p in portfolios)
+            total_portfolio_value = sum(p.get("current_capital", 0) for p in portfolios)
+            total_assets = sum(p.get("total_assets", 0) for p in portfolios)
 
             summary = {
-                'user_id': user_id,
-                'total_portfolios': len(portfolios),
-                'total_value': f"{total_portfolio_value:.2f}",
-                'total_assets': f"{total_assets:.2f}",
-                'active_portfolios': len([p for p in portfolios if p.get('status') == PortfolioStatus.ACTIVE]),
-                'draft_portfolios': len([p for p in portfolios if p.get('status') == PortfolioStatus.DRAFT]),
-                'favorite_portfolios': len([p for p in portfolios if p.get('is_favorite', False)]),
-                'generated_at': datetime.now().isoformat()
+                "user_id": user_id,
+                "total_portfolios": len(portfolios),
+                "total_value": f"{total_portfolio_value:.2f}",
+                "total_assets": f"{total_assets:.2f}",
+                "active_portfolios": len([p for p in portfolios if p.get("status") == PortfolioStatus.ACTIVE]),
+                "draft_portfolios": len([p for p in portfolios if p.get("status") == PortfolioStatus.DRAFT]),
+                "favorite_portfolios": len([p for p in portfolios if p.get("is_favorite", False)]),
+                "generated_at": datetime.now().isoformat(),
             }
 
             self.logger.info(f"获取投资组合摘要: {user_id}")
@@ -551,9 +554,8 @@ class PortfolioTracker:
             self.logger.error(f"获取投资组合摘要失败: {e}")
             return {}
 
-    async def export_portfolio_data(self, portfolio_id: str, format: str = 'json') -> str:
-        """
-        导出投资组合数据
+    async def export_portfolio_data(self, portfolio_id: str, format: str = "json") -> str:
+        """导出投资组合数据
         
         Args:
             portfolio_id: 投资组合ID
@@ -561,6 +563,7 @@ class PortfolioTracker:
         
         Returns:
             str: 导出内容
+
         """
         try:
             portfolio = await self.get_portfolio(portfolio_id)
@@ -569,47 +572,46 @@ class PortfolioTracker:
                 self.logger.warning(f"投资组合不存在: {portfolio_id}")
                 return ""
 
-            if format == 'json':
+            if format == "json":
                 import json
                 return json.dumps(portfolio, indent=2)
 
-            elif format == 'csv':
+            if format == "csv":
                 import csv
                 import io
 
                 output = io.StringIO()
-                writer = csv.DictWriter(output, fieldnames=['portfolio_id', 'name', 'status', 'initial_capital', 'current_capital', 'created_at', 'updated_at'])
+                writer = csv.DictWriter(output, fieldnames=["portfolio_id", "name", "status", "initial_capital", "current_capital", "created_at", "updated_at"])
 
                 writer.writerow({
-                    'portfolio_id': portfolio['portfolio_id'],
-                    'name': portfolio['name'],
-                    'status': portfolio['status'],
-                    'initial_capital': portfolio['initial_capital'],
-                    'current_capital': portfolio['current_capital'],
-                    'created_at': portfolio['created_at'],
-                    'updated_at': portfolio['updated_at']
+                    "portfolio_id": portfolio["portfolio_id"],
+                    "name": portfolio["name"],
+                    "status": portfolio["status"],
+                    "initial_capital": portfolio["initial_capital"],
+                    "current_capital": portfolio["current_capital"],
+                    "created_at": portfolio["created_at"],
+                    "updated_at": portfolio["updated_at"],
                 })
 
                 output.seek(0)
                 return output.getvalue()
 
-            else:
-                self.logger.warning(f"不支持的导出格式: {format}")
-                return ""
+            self.logger.warning(f"不支持的导出格式: {format}")
+            return ""
 
         except Exception as e:
             self.logger.error(f"导出投资组合数据失败: {e}")
             return ""
 
     async def update_benchmark_metrics(self, new_benchmarks: Dict[str, float]) -> bool:
-        """
-        更新基准指标
+        """更新基准指标
         
         Args:
             new_benchmarks: 新的基准指标
         
         Returns:
             bool: 是否更新成功
+
         """
         try:
             self.benchmark_metrics.update(new_benchmarks)

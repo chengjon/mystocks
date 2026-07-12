@@ -1,5 +1,4 @@
-"""
-市场数据聚合服务 - Market Data Aggregation Service
+"""市场数据聚合服务 - Market Data Aggregation Service
 
 Task 7: 实现实时OHLCV柱线聚合与多时间周期支持
 
@@ -22,6 +21,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
 
 import structlog
+
 
 logger = structlog.get_logger()
 
@@ -107,8 +107,7 @@ class TimeframeBuffer:
         return (timestamp // (timeframe_seconds * 1000)) * (timeframe_seconds * 1000)
 
     def add_tick(self, tick: Tick) -> Optional[OHLCV]:
-        """
-        添加tick并更新柱线状态
+        """添加tick并更新柱线状态
 
         返回已完成的柱线（如果跨越了时间边界），否则返回None
         """
@@ -169,21 +168,20 @@ class BarValidator:
         min_volume: int = 0,  # 最小成交量
         max_volume: Optional[int] = None,  # 最大成交量
     ):
-        """
-        初始化验证器
+        """初始化验证器
 
         Args:
             max_price_spike: 最大价格涨跌幅（作为之前收盘价的百分比）
             min_volume: 最小成交量
             max_volume: 最大成交量
+
         """
         self.max_price_spike = max_price_spike
         self.min_volume = min_volume
         self.max_volume = max_volume
 
     def validate_ohlcv(self, bar: OHLCV, prev_close: Optional[Decimal] = None) -> Tuple[bool, Optional[str]]:
-        """
-        验证OHLCV柱线
+        """验证OHLCV柱线
 
         返回 (is_valid, error_message)
         """
@@ -227,8 +225,7 @@ class BarValidator:
         return True, None
 
     def detect_anomalies(self, bar: OHLCV) -> List[str]:
-        """
-        检测柱线异常
+        """检测柱线异常
 
         返回异常列表
         """
@@ -264,11 +261,11 @@ class AggregationEngine:
     """实时OHLCV聚合引擎"""
 
     def __init__(self, validator: Optional[BarValidator] = None):
-        """
-        初始化聚合引擎
+        """初始化聚合引擎
 
         Args:
             validator: OHLCV验证器实例
+
         """
         self.buffers: Dict[Tuple[str, Timeframe], TimeframeBuffer] = {}
         self.validator = validator or BarValidator()
@@ -284,14 +281,14 @@ class AggregationEngine:
         logger.info("✅ Aggregation Engine initialized")
 
     def add_tick(self, tick: Tick) -> List[OHLCV]:
-        """
-        处理单个tick并返回所有完成的柱线
+        """处理单个tick并返回所有完成的柱线
 
         Args:
             tick: Tick对象
 
         Returns:
             已完成的OHLCV柱线列表
+
         """
         self.ticks_processed += 1
         self.last_update_time = datetime.now(timezone.utc)
@@ -344,8 +341,7 @@ class AggregationEngine:
         return None
 
     def force_complete_bars(self, symbol: str) -> List[OHLCV]:
-        """
-        强制完成给定symbol的所有开放柱线
+        """强制完成给定symbol的所有开放柱线
 
         用于EOD或市场暂停
         """

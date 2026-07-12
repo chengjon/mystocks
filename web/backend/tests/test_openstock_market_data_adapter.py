@@ -1,5 +1,4 @@
-"""
-OpenStockMarketDataSourceAdapter 单元测试 (B4.014 S5 / M1k-2 / M1m step 6)
+"""OpenStockMarketDataSourceAdapter 单元测试 (B4.014 S5 / M1k-2 / M1m step 6)
 
 覆盖:
 - get_data("quotes", ...) 正常 + 字段归一
@@ -16,7 +15,7 @@ Plan ref: docs/architecture/M1K_M1M_EXECUTION_PLAN_2026-07-01.md §三 步骤 6
 from __future__ import annotations
 
 from typing import Any
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock
 
 import httpx
 import pytest
@@ -44,7 +43,7 @@ def _make_fetch_result(data: Any, *, source: str = "openstock", category: str = 
 @pytest.fixture
 def adapter():
     a = OpenStockMarketDataSourceAdapter({"base_url": "http://test:8040", "timeout": 1.0})
-    yield a
+    return a
     # no async cleanup needed since _client is None unless _get_client was called
 
 
@@ -90,7 +89,7 @@ def test_init_merges_custom_headers_from_config(monkeypatch):
 
 
 def test_init_no_api_key_when_env_missing(monkeypatch):
-    """env OPENSTOCK_SECURITY_API_KEY 未设时,headers 为 None(向后兼容)。"""
+    """Env OPENSTOCK_SECURITY_API_KEY 未设时,headers 为 None(向后兼容)。"""
     monkeypatch.delenv("OPENSTOCK_SECURITY_API_KEY", raising=False)
     a = OpenStockMarketDataSourceAdapter({"base_url": "http://h:1"})
     # 无 custom_headers 也无 env key → None
@@ -100,7 +99,8 @@ def test_init_no_api_key_when_env_missing(monkeypatch):
 @pytest.mark.asyncio
 async def test_get_quotes_success_normalizes_fields(adapter):
     """B4.014-M1n: 多 symbol 循环调用(每次单 symbol),合并结果。
-    OpenStock 不支持 symbol=000001,600519 逗号分隔(provider 503)。"""
+    OpenStock 不支持 symbol=000001,600519 逗号分隔(provider 503)。
+    """
     # 每次单 symbol 调用返 1 行
     def _fetch_side_effect(category, *, params=None, request_id=None):
         sym = (params or {}).get("symbol")
@@ -407,7 +407,7 @@ def test_transform_kline_row_strips_symbol_prefix_and_truncates_iso8601():
 
 
 def test_transform_kline_row_date_field_also_truncated():
-    """date 字段(若存在)也截断到 10 字符。"""
+    """Date 字段(若存在)也截断到 10 字符。"""
     row = {"date": "2026-06-30T00:00:00+08:00", "open": 1.0}
     out = OpenStockMarketDataSourceAdapter._transform_kline_row(row)
     assert out["datetime"] == "2026-06-30"

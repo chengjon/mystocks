@@ -1,5 +1,4 @@
-"""
-Stock Market API Unit Tests
+"""Stock Market API Unit Tests
 
 Tests for market data APIs including:
 - Stock quotes
@@ -8,12 +7,13 @@ Tests for market data APIs including:
 - Pagination and sorting
 """
 
-import pytest
-from fastapi.testclient import TestClient
 from datetime import datetime, timedelta
 
-from app.main import app
+import pytest
+from fastapi.testclient import TestClient
+
 from app.core.security import User, get_current_user
+from app.main import app
 
 
 @pytest.fixture
@@ -143,7 +143,7 @@ class TestStockKlineDataAPI:
         start_date = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
 
         response = auth_client.get(
-            f"/api/v1/data/stocks/kline?symbol=000001.SZ&start_date={start_date}&end_date={end_date}"
+            f"/api/v1/data/stocks/kline?symbol=000001.SZ&start_date={start_date}&end_date={end_date}",
         )
 
         assert response.status_code == 200
@@ -161,7 +161,7 @@ class TestStockKlineDataAPI:
 
         for period in periods:
             response = auth_client.get(
-                f"/api/v1/data/stocks/kline?symbol=000001.SZ&start_date={start_date}&end_date={end_date}&period={period}"
+                f"/api/v1/data/stocks/kline?symbol=000001.SZ&start_date={start_date}&end_date={end_date}&period={period}",
             )
             assert response.status_code == 200
             data = response.json()
@@ -189,7 +189,7 @@ class TestStockKlineDataAPI:
         start_date = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
 
         response = auth_client.get(
-            f"/api/v1/data/stocks/kline?symbol=000001.SZ&start_date={start_date}&end_date={end_date}&period=invalid"
+            f"/api/v1/data/stocks/kline?symbol=000001.SZ&start_date={start_date}&end_date={end_date}&period=invalid",
         )
         # The API may return 200 with success=False or 422 for invalid period
         assert response.status_code in [200, 422]
@@ -218,8 +218,7 @@ class TestPaginationAndSorting:
 
     def test_paginated_response_model(self):
         """Test PaginatedResponse model"""
-        from app.schemas.pagination import create_paginated_response
-        from app.schemas.pagination import PaginationParams
+        from app.schemas.pagination import PaginationParams, create_paginated_response
 
         # Create mock data
         data = [{"id": 1, "name": "Item 1"}, {"id": 2, "name": "Item 2"}]
@@ -276,7 +275,7 @@ class TestMarketDataIntegration:
         end_date = datetime.now().strftime("%Y-%m-%d")
         start_date = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
         kline_response = auth_client.get(
-            f"/api/v1/data/stocks/kline?symbol={symbol}&start_date={start_date}&end_date={end_date}"
+            f"/api/v1/data/stocks/kline?symbol={symbol}&start_date={start_date}&end_date={end_date}",
         )
         assert kline_response.status_code == 200
 
@@ -288,7 +287,7 @@ class TestMarketDataIntegration:
         """Test API response format consistency"""
         # Test K-line format (standardized endpoint)
         response = auth_client.get(
-            "/api/v1/data/stocks/kline?symbol=000001.SZ&start_date=2024-01-01&end_date=2024-12-31"
+            "/api/v1/data/stocks/kline?symbol=000001.SZ&start_date=2024-01-01&end_date=2024-12-31",
         )
         assert response.status_code == 200
         data = response.json()
@@ -315,7 +314,7 @@ class TestDatabaseIntegration:
 
         # Test minute-level K-line data
         response = auth_client.get(
-            "/api/v1/data/stocks/kline?symbol=000001.SZ&start_date=2024-01-01&end_date=2024-01-31&period=day"
+            "/api/v1/data/stocks/kline?symbol=000001.SZ&start_date=2024-01-01&end_date=2024-01-31&period=day",
         )
         assert response.status_code == 200
 
@@ -353,7 +352,7 @@ class TestAPIErrorHandling:
     def test_invalid_stock_symbol(self, auth_client):
         """Test handling of invalid stock symbol"""
         response = auth_client.get(
-            "/api/v1/data/stocks/kline?symbol=INVALID_SYMBOL_999&start_date=2024-01-01&end_date=2024-12-31"
+            "/api/v1/data/stocks/kline?symbol=INVALID_SYMBOL_999&start_date=2024-01-01&end_date=2024-12-31",
         )
 
         # Should not crash, return 4xx or 5xx or 200 with empty data
@@ -362,7 +361,7 @@ class TestAPIErrorHandling:
     def test_invalid_date_format(self, auth_client):
         """Test handling of invalid date format"""
         response = auth_client.get(
-            "/api/v1/data/stocks/kline?symbol=000001.SZ&start_date=invalid-date&end_date=2024-01-31"
+            "/api/v1/data/stocks/kline?symbol=000001.SZ&start_date=invalid-date&end_date=2024-01-31",
         )
 
         # API may be lenient with date validation, returning 200 or validation error
@@ -371,7 +370,7 @@ class TestAPIErrorHandling:
     def test_invalid_period(self, auth_client):
         """Test handling of invalid period parameter"""
         response = auth_client.get(
-            "/api/v1/data/stocks/kline?symbol=000001.SZ&start_date=2024-01-01&end_date=2024-12-31&period=invalid"
+            "/api/v1/data/stocks/kline?symbol=000001.SZ&start_date=2024-01-01&end_date=2024-12-31&period=invalid",
         )
 
         # Should return validation error (422) or 200 with error message
@@ -381,7 +380,7 @@ class TestAPIErrorHandling:
         """Test handling of invalid adjust type - not applicable for new API"""
         # New standardized API doesn't have adjust parameter
         response = auth_client.get(
-            "/api/v1/data/stocks/kline?symbol=000001.SZ&start_date=2024-01-01&end_date=2024-12-31&period=day"
+            "/api/v1/data/stocks/kline?symbol=000001.SZ&start_date=2024-01-01&end_date=2024-12-31&period=day",
         )
         # Should work fine
         assert response.status_code == 200

@@ -1,5 +1,4 @@
-"""
-认证相关 API
+"""认证相关 API
 """
 
 import logging
@@ -9,9 +8,9 @@ from typing import Any, Dict
 from fastapi import APIRouter, Depends, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer, OAuth2PasswordRequestForm
 
-from app.api.auth_compat import compat_router
 from app.api.auth_schemas import PasswordResetConfirm, PasswordResetRequest, UserRegisterRequest, UserResponse
 from app.core.config import settings
+
 
 logger = logging.getLogger(__name__)
 from app.core.exceptions import ForbiddenException, UnauthorizedException
@@ -39,8 +38,7 @@ security = HTTPBearer()
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
 ) -> User:
-    """
-    获取当前用户 - 恢复认证验证
+    """获取当前用户 - 恢复认证验证
     验证 JWT token 并返回授权用户信息
     """
     if not credentials:
@@ -56,7 +54,7 @@ async def get_current_user(
         if username is None:
             raise UnauthorizedException(detail="Invalid token claims")
     except Exception as e:
-        raise UnauthorizedException(detail=f"Invalid credentials: {str(e)}")
+        raise UnauthorizedException(detail=f"Invalid credentials: {e!s}")
 
     # 从安全模块获取用户信息（数据库或模拟数据）
     from app.core.security import authenticate_user_by_id
@@ -78,8 +76,7 @@ async def get_current_user(
 async def get_current_active_user(
     current_user: User = Depends(get_current_user),
 ) -> User:
-    """
-    获取当前活跃用户 - 验证用户活跃状态
+    """获取当前活跃用户 - 验证用户活跃状态
     检查用户是否处于活跃状态
     """
     if not current_user.is_active:
@@ -92,8 +89,7 @@ async def login_for_access_token(
     request: Request,
     form_data: OAuth2PasswordRequestForm = Depends(),
 ):
-    """
-    用户登录获取访问令牌
+    """用户登录获取访问令牌
     支持 OAuth2 标准的 form data 格式
     返回 APIResponse 格式以匹配前端期望
 
@@ -138,10 +134,9 @@ async def login_for_access_token(
 
 @router.post("/logout")
 async def logout(
-    credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer()), current_user: User = Depends(get_current_user)
+    credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer()), current_user: User = Depends(get_current_user),
 ) -> Dict[str, Any]:
-    """
-    用户登出 - 撤销当前token
+    """用户登出 - 撤销当前token
     """
     # 将当前token加入黑名单
     revoke_token(credentials.credentials)
@@ -150,8 +145,7 @@ async def logout(
 
 @router.get("/me", response_model=User)
 async def read_users_me(current_user: User = Depends(get_current_user)) -> User:
-    """
-    获取当前用户信息
+    """获取当前用户信息
     """
     return current_user
 
@@ -160,8 +154,7 @@ async def read_users_me(current_user: User = Depends(get_current_user)) -> User:
 async def refresh_token(
     current_user: User = Depends(get_current_user),
 ) -> Dict[str, Any]:
-    """
-    刷新访问令牌
+    """刷新访问令牌
     """
     access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
     access_token = create_access_token(
@@ -182,8 +175,7 @@ async def refresh_token(
 
 @router.get("/users")
 async def get_users(current_user: User = Depends(get_current_user)) -> Dict[str, Any]:
-    """
-    获取用户列表（仅管理员）
+    """获取用户列表（仅管理员）
     从PostgreSQL数据库获取所有活跃用户
     """
     if not check_permission(current_user.role, "admin"):
@@ -224,13 +216,12 @@ async def get_users(current_user: User = Depends(get_current_user)) -> Dict[str,
         from app.core.exceptions import BusinessException
 
         raise BusinessException(
-            detail=f"Error retrieving users: {str(e)}", status_code=500, error_code="USER_RETRIEVAL_FAILED"
+            detail=f"Error retrieving users: {e!s}", status_code=500, error_code="USER_RETRIEVAL_FAILED",
         )
 
 
 def check_permission(user_role: str, required_role: str) -> bool:
-    """
-    检查用户权限
+    """检查用户权限
     """
     role_hierarchy = {"user": 0, "admin": 1}
 
@@ -240,8 +231,7 @@ def check_permission(user_role: str, required_role: str) -> bool:
 # SECURITY FIX 1.2: CSRF Token获取端点
 @router.get("/csrf/token")
 async def get_csrf_token():
-    """
-    获取CSRF保护令牌 - v1版本 (标准化端点)
+    """获取CSRF保护令牌 - v1版本 (标准化端点)
 
     用于防止跨站请求伪造（CSRF）攻击。
     前端应该在发送修改请求（POST/PUT/PATCH/DELETE）时，
@@ -306,15 +296,14 @@ async def get_csrf_token():
     except Exception as e:
         return create_success_response(
             data=None,
-            message=f"Failed to generate CSRF token: {str(e)}",
+            message=f"Failed to generate CSRF token: {e!s}",
             code="INTERNAL_SERVER_ERROR",
         )
 
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
 async def register_user(user_data: UserRegisterRequest):
-    """
-    用户注册
+    """用户注册
 
     创建新用户账户。要求：
     - 用户名: 3-50字符，仅允许字母、数字、下划线
@@ -418,10 +407,9 @@ async def register_user(user_data: UserRegisterRequest):
             from app.core.exceptions import BusinessException
 
             raise BusinessException(detail=e.message, status_code=409, error_code="USER_ALREADY_EXISTS")
-        else:
-            from app.core.exceptions import BusinessException
+        from app.core.exceptions import BusinessException
 
-            raise BusinessException(detail=e.message, status_code=500, error_code="DATABASE_OPERATION_FAILED")
+        raise BusinessException(detail=e.message, status_code=500, error_code="DATABASE_OPERATION_FAILED")
 
     except (DatabaseConnectionError, DatabaseOperationError) as e:
         # Database connection errors
@@ -438,7 +426,7 @@ async def register_user(user_data: UserRegisterRequest):
         from app.core.exceptions import BusinessException
 
         raise BusinessException(
-            detail=f"Unexpected error during registration: {str(e)}",
+            detail=f"Unexpected error during registration: {e!s}",
             status_code=500,
             error_code="REGISTRATION_UNEXPECTED_ERROR",
         )
@@ -450,8 +438,7 @@ async def register_user(user_data: UserRegisterRequest):
 
 @router.post("/reset-password/request")
 async def request_password_reset(request: PasswordResetRequest):
-    """
-    请求密码重置
+    """请求密码重置
 
     发送密码重置链接到用户邮箱。
 
@@ -542,8 +529,7 @@ async def request_password_reset(request: PasswordResetRequest):
 
 @router.post("/reset-password/confirm")
 async def confirm_password_reset(reset_data: PasswordResetConfirm):
-    """
-    确认密码重置
+    """确认密码重置
 
     使用重置令牌设置新密码。
 
@@ -588,7 +574,7 @@ async def confirm_password_reset(reset_data: PasswordResetConfirm):
             from app.core.exceptions import BusinessException
 
             raise BusinessException(
-                detail="Invalid or expired reset token", status_code=400, error_code="INVALID_RESET_TOKEN"
+                detail="Invalid or expired reset token", status_code=400, error_code="INVALID_RESET_TOKEN",
             )
 
         # Check if token is for password reset
@@ -602,13 +588,13 @@ async def confirm_password_reset(reset_data: PasswordResetConfirm):
                     from app.core.exceptions import BusinessException
 
                     raise BusinessException(
-                        detail="Invalid token purpose", status_code=400, error_code="INVALID_TOKEN_PURPOSE"
+                        detail="Invalid token purpose", status_code=400, error_code="INVALID_TOKEN_PURPOSE",
                     )
             except Exception:
                 from app.core.exceptions import BusinessException
 
                 raise BusinessException(
-                    detail="Invalid or expired reset token", status_code=400, error_code="INVALID_RESET_TOKEN"
+                    detail="Invalid or expired reset token", status_code=400, error_code="INVALID_RESET_TOKEN",
                 )
 
         # Get user from token
@@ -627,7 +613,7 @@ async def confirm_password_reset(reset_data: PasswordResetConfirm):
             UPDATE users
             SET hashed_password = :hashed_password
             WHERE id = :user_id
-            """
+            """,
         )
 
         session.execute(update_query, {"user_id": user_id, "hashed_password": hashed_password})
@@ -640,7 +626,7 @@ async def confirm_password_reset(reset_data: PasswordResetConfirm):
             """
             INSERT INTO user_audit_log (user_id, action, details)
             VALUES (:user_id, :action, :details)
-            """
+            """,
         )
         session.execute(
             log_query,
@@ -666,7 +652,7 @@ async def confirm_password_reset(reset_data: PasswordResetConfirm):
             session.rollback()
         from app.core.exceptions import BusinessException
 
-        raise BusinessException(detail=f"Failed to reset password: {str(e)}", error_code="PASSWORD_RESET_FAILED")
+        raise BusinessException(detail=f"Failed to reset password: {e!s}", error_code="PASSWORD_RESET_FAILED")
 
     finally:
         if session:

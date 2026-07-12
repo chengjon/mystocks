@@ -1,5 +1,4 @@
-"""
-Backtest Engine
+"""Backtest Engine
 
 事件驱动的回测引擎核心实现
 """
@@ -22,12 +21,12 @@ from app.backtest.performance_metrics import PerformanceMetrics
 from app.backtest.portfolio_manager import PortfolioManager
 from app.backtest.risk_manager import RiskManager
 
+
 logger = logging.getLogger(__name__)
 
 
 class BacktestEngine:
-    """
-    事件驱动的回测引擎
+    """事件驱动的回测引擎
 
     核心组件：
     - PortfolioManager: 管理持仓和资金
@@ -43,14 +42,14 @@ class BacktestEngine:
         data_source: Any,  # 数据源（Composite/Mock/Real）
         progress_callback: Optional[Callable[[ProgressEvent], None]] = None,
     ):
-        """
-        初始化回测引擎
+        """初始化回测引擎
 
         Args:
             strategy_config: 策略配置
             backtest_config: 回测配置
             data_source: 数据源
             progress_callback: 进度回调函数（用于WebSocket推送）
+
         """
         self.strategy_config = strategy_config
         self.backtest_config = backtest_config
@@ -104,11 +103,11 @@ class BacktestEngine:
         logger.info("回测引擎初始化完成: {len(self.symbols)}只股票, {self.start_date} 到 {self.end_date}")
 
     def run(self) -> Dict[str, Any]:
-        """
-        运行回测
+        """运行回测
 
         Returns:
             回测结果字典
+
         """
         logger.info("开始回测...")
         self.is_running = True
@@ -130,7 +129,7 @@ class BacktestEngine:
 
         except Exception as e:
             logger.error("回测过程中发生错误: {str(e)}", exc_info=True)
-            self._send_progress(0.0, self.current_date or self.start_date, f"回测失败: {str(e)}")
+            self._send_progress(0.0, self.current_date or self.start_date, f"回测失败: {e!s}")
             raise
 
         finally:
@@ -144,7 +143,7 @@ class BacktestEngine:
             try:
                 # 从数据源获取历史数据
                 df = self.data_source.get_stock_history(
-                    symbol=symbol, start_date=self.start_date, end_date=self.end_date
+                    symbol=symbol, start_date=self.start_date, end_date=self.end_date,
                 )
 
                 if df is None or df.empty:
@@ -244,8 +243,7 @@ class BacktestEngine:
                 self._on_fill_event(event)
 
     def _on_market_event(self, event: MarketEvent):
-        """
-        处理市场数据事件
+        """处理市场数据事件
 
         1. 更新Portfolio的市场数据
         2. 生成交易信号
@@ -259,8 +257,7 @@ class BacktestEngine:
             self.event_queue.append(signal)
 
     def _generate_signal(self, market_event: MarketEvent) -> Optional[SignalEvent]:
-        """
-        生成交易信号（策略逻辑）
+        """生成交易信号（策略逻辑）
 
         这里实现一个简单的动量策略示例
         实际使用时应该根据strategy_type调用不同的策略
@@ -270,6 +267,7 @@ class BacktestEngine:
 
         Returns:
             交易信号（如果有）
+
         """
         symbol = market_event.symbol
 
@@ -307,7 +305,7 @@ class BacktestEngine:
                 strength=0.8,
                 reason=f"价格突破MA20: {current_price:.2f} > {ma20:.2f}",
             )
-        elif current_price < ma20 * 0.98 and has_position:
+        if current_price < ma20 * 0.98 and has_position:
             # 价格跌破均线2%，卖出信号
             return SignalEvent(
                 symbol=symbol,
@@ -320,8 +318,7 @@ class BacktestEngine:
         return None
 
     def _on_signal_event(self, event: SignalEvent):
-        """
-        处理交易信号事件
+        """处理交易信号事件
 
         1. 计算仓位大小
         2. 生成订单
@@ -368,8 +365,7 @@ class BacktestEngine:
                 self.event_queue.append(order)
 
     def _on_order_event(self, event: OrderEvent):
-        """
-        处理订单事件
+        """处理订单事件
 
         1. 风险检查
         2. 执行订单
@@ -396,8 +392,7 @@ class BacktestEngine:
             self.event_queue.append(fill_event)
 
     def _on_fill_event(self, event: FillEvent):
-        """
-        处理成交事件
+        """处理成交事件
 
         更新Portfolio
         """

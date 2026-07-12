@@ -1,5 +1,4 @@
-"""
-Performance Monitoring Middleware for Prometheus Metrics
+"""Performance Monitoring Middleware for Prometheus Metrics
 Provides request latency, count, and active request metrics for all API endpoints
 """
 
@@ -10,6 +9,7 @@ from typing import Callable
 import structlog
 from fastapi import Response
 from prometheus_client import Counter, Gauge, Histogram, Info, generate_latest
+
 
 logger = structlog.get_logger()
 
@@ -80,7 +80,7 @@ class PerformanceMiddleware:
                     "version": "1.0.0",
                     "environment": "production",
                     "service": "mystocks-api",
-                }
+                },
             )
             self._initialized = True
 
@@ -94,12 +94,12 @@ class PerformanceMiddleware:
 
         # Generate Request ID
         request_id = str(uuid.uuid4())
-        
+
         # Store in scope for other middlewares
         if "state" not in scope:
             scope["state"] = {}
         scope["state"]["request_id"] = request_id
-        
+
         method = scope["method"]
         path = scope["path"]
         endpoint = get_endpoint_name(path)

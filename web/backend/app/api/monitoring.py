@@ -1,5 +1,4 @@
-"""
-监控系统 API 端点
+"""监控系统 API 端点
 Real-time Monitoring System
 """
 
@@ -26,6 +25,7 @@ from app.models.monitoring import (
     RealtimeMonitoringResponse,
 )
 from app.services.monitoring_service import monitoring_service
+
 
 router = APIRouter()
 
@@ -130,8 +130,7 @@ async def get_alert_rules(
     is_active: Optional[bool] = None,
     current_user: User = Depends(get_current_user),
 ):
-    """
-    获取告警规则列表
+    """获取告警规则列表
 
     参数:
     - rule_type: 规则类型 (可选)
@@ -139,7 +138,7 @@ async def get_alert_rules(
     """
     try:
         rules = monitoring_service.get_alert_rules(
-            rule_type=rule_type.value if rule_type else None, is_active=is_active
+            rule_type=rule_type.value if rule_type else None, is_active=is_active,
         )
         return create_unified_success_response(
             data=[AlertRuleResponse.from_orm(rule) for rule in rules],
@@ -156,8 +155,7 @@ async def get_alert_rules(
 
 @router.post("/alert-rules", response_model=AlertRuleResponse)
 async def create_alert_rule(rule: AlertRuleCreate, current_user: User = Depends(get_current_user)):
-    """
-    创建告警规则
+    """创建告警规则
 
     示例:
     ```json
@@ -183,8 +181,7 @@ async def create_alert_rule(rule: AlertRuleCreate, current_user: User = Depends(
 
 @router.put("/alert-rules/{rule_id}", response_model=AlertRuleResponse)
 async def update_alert_rule(rule_id: int, updates: AlertRuleUpdate, current_user: User = Depends(get_current_user)):
-    """
-    更新告警规则
+    """更新告警规则
 
     参数:
     - rule_id: 规则ID
@@ -202,8 +199,7 @@ async def update_alert_rule(rule_id: int, updates: AlertRuleUpdate, current_user
 
 @router.delete("/alert-rules/{rule_id}")
 async def delete_alert_rule(rule_id: int, current_user: User = Depends(get_current_user)):
-    """
-    删除告警规则
+    """删除告警规则
 
     参数:
     - rule_id: 规则ID
@@ -244,8 +240,7 @@ async def get_alert_records(
     offset: int = Query(0, ge=0),
     current_user: User = Depends(get_current_user),
 ):
-    """
-    查询告警记录
+    """查询告警记录
 
     参数:
     - symbol: 股票代码 (可选)
@@ -297,8 +292,7 @@ async def get_alert_records(
 
 @router.post("/alerts/{alert_id}/mark-read")
 async def mark_alert_read(alert_id: int, current_user: User = Depends(get_current_user)):
-    """
-    标记告警为已读
+    """标记告警为已读
 
     参数:
     - alert_id: 告警记录ID
@@ -331,8 +325,7 @@ async def mark_all_alerts_read(current_user: User = Depends(get_current_user)):
 
 @router.get("/realtime/{symbol}", response_model=RealtimeMonitoringResponse)
 async def get_realtime_monitoring(symbol: str, current_user: User = Depends(get_current_user)):
-    """
-    获取单只股票的最新实时监控数据
+    """获取单只股票的最新实时监控数据
 
     参数:
     - symbol: 股票代码
@@ -372,8 +365,7 @@ async def get_realtime_monitoring_list(
     is_limit_down: Optional[bool] = None,
     current_user: User = Depends(get_current_user),
 ):
-    """
-    获取实时监控数据列表
+    """获取实时监控数据列表
 
     参数:
     - symbols: 股票代码列表，逗号分隔 (可选，如: "600519,000001")
@@ -417,8 +409,7 @@ async def get_realtime_monitoring_list(
 
 @router.post("/realtime/fetch")
 async def fetch_realtime_data(symbols: Optional[List[str]] = None, current_user: User = Depends(get_current_user)):
-    """
-    手动触发获取实时数据
+    """手动触发获取实时数据
 
     参数:
     - symbols: 股票代码列表 (可选，不提供则获取全市场)
@@ -467,8 +458,7 @@ async def get_dragon_tiger_list(
     limit: int = Query(100, ge=1, le=500),
     current_user: User = Depends(get_current_user),
 ):
-    """
-    获取龙虎榜数据
+    """获取龙虎榜数据
 
     参数:
     - trade_date: 交易日期 (可选，默认今天)
@@ -507,8 +497,7 @@ async def get_dragon_tiger_list(
 
 @router.post("/dragon-tiger/fetch")
 async def fetch_dragon_tiger_data(trade_date: Optional[date] = None, current_user: User = Depends(get_current_user)):
-    """
-    手动触发获取龙虎榜数据
+    """手动触发获取龙虎榜数据
 
     参数:
     - trade_date: 交易日期 (可选，默认今天)
@@ -539,8 +528,7 @@ async def fetch_dragon_tiger_data(trade_date: Optional[date] = None, current_use
 
 @router.get("/analyze", response_model=MonitoringSummaryResponse)
 async def analyze_monitoring(current_user: User = Depends(get_current_user)):
-    """
-    监控分析 (Alias for summary)
+    """监控分析 (Alias for summary)
 
     Compatible with Phase 2.8 requirements
     """
@@ -549,8 +537,7 @@ async def analyze_monitoring(current_user: User = Depends(get_current_user)):
 
 @router.get("/summary", response_model=MonitoringSummaryResponse)
 async def get_monitoring_summary(current_user: User = Depends(get_current_user)):
-    """
-    获取监控系统摘要
+    """获取监控系统摘要
 
     返回:
     - 总监控股票数
@@ -583,10 +570,9 @@ async def get_monitoring_summary(current_user: User = Depends(get_current_user))
                 "unread_alerts": 5,
             }
             return MonitoringSummaryResponse(**summary)
-        else:
-            # 使用真实数据库
-            summary = monitoring_service.get_monitoring_summary()
-            return MonitoringSummaryResponse(**summary)
+        # 使用真实数据库
+        summary = monitoring_service.get_monitoring_summary()
+        return MonitoringSummaryResponse(**summary)
     except Exception as e:
         raise BusinessException(detail=str(e), status_code=500, error_code="MONITORING_OPERATION_FAILED")
 
@@ -637,8 +623,7 @@ class MonitoringControlRequest(BaseModel):
 
 @router.post("/control/start")
 async def start_monitoring(request: MonitoringControlRequest, current_user: User = Depends(get_current_user)):
-    """
-    启动监控
+    """启动监控
 
     参数:
     - symbols: 要监控的股票代码列表 (可选，不提供则监控全市场)
@@ -668,8 +653,7 @@ async def stop_monitoring(current_user: User = Depends(get_current_user)):
 
 @router.get("/control/status")
 async def get_monitoring_status():
-    """
-    获取实时监控系统运行状态
+    """获取实时监控系统运行状态
 
     查询当前监控系统的运行状态、监控范围和统计信息。该端点用于检查监控服务是否
     正常运行，以及正在监控的股票列表。

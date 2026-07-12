@@ -1,5 +1,4 @@
-"""
-房间管理器单元测试
+"""房间管理器单元测试
 
 Test Room Manager - Room-based pub/sub messaging
 
@@ -10,10 +9,10 @@ Date: 2025-11-06
 """
 
 from app.core.room_manager import (
-    RoomManager,
     Room,
-    RoomMember,
     RoomEventType,
+    RoomManager,
+    RoomMember,
     get_room_manager,
     reset_room_manager,
 )

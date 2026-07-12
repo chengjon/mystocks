@@ -1,5 +1,4 @@
-"""
-统一响应格式中间件 (增强版)
+"""统一响应格式中间件 (增强版)
 
 功能:
 1. 自动为所有API请求添加request_id
@@ -16,32 +15,21 @@
 - 自动转换旧的响应格式
 """
 
-import json
 import logging
 import time
 import uuid
-from typing import Any, Callable, Dict
+from typing import Callable
 
 from fastapi import Request, Response
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from app.core.responses import (
-    BusinessCode,
-    ErrorCodes,
-    ErrorDetail,
-    ResponseMessages,
-    UnifiedResponse,
-    create_unified_error_response,
-    create_validation_error_response,
-)
 
 logger = logging.getLogger(__name__)
 
 
 class ResponseFormatMiddleware(BaseHTTPMiddleware):
-    """
-    统一响应格式中间件 (增强版)
+    """统一响应格式中间件 (增强版)
 
     自动将所有API响应包装为统一的UnifiedResponse格式。
     """
@@ -64,7 +52,7 @@ class ResponseFormatMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
         # 获取由 PerformanceMiddleware 生成的请求ID
         request_id = getattr(request.state, "request_id", str(uuid.uuid4()))
-        
+
         # 记录开始时间（微秒级精确度）
         start_time = time.perf_counter()
 
@@ -74,7 +62,7 @@ class ResponseFormatMiddleware(BaseHTTPMiddleware):
 
         try:
             response = await call_next(request)
-            
+
             # 计算处理时间（毫秒）
             process_time = (time.perf_counter() - start_time) * 1000
 
@@ -87,15 +75,15 @@ class ResponseFormatMiddleware(BaseHTTPMiddleware):
             )
 
         except Exception as e:
-            logger.error(f"Middleware Error [request_id={request_id}]: {str(e)}", exc_info=True)
+            logger.error(f"Middleware Error [request_id={request_id}]: {e!s}", exc_info=True)
             return JSONResponse(
                 status_code=500,
                 content={
                     "success": False,
                     "code": 500,
                     "message": "Internal Server Error",
-                    "request_id": request_id
-                }
+                    "request_id": request_id,
+                },
             )
 
     def _should_skip_wrapping(self, request: Request) -> bool:
@@ -137,8 +125,7 @@ class ResponseFormatMiddleware(BaseHTTPMiddleware):
 
 
 def exclude_response_wrapper():
-    """
-    装饰器: 标记端点排除响应自动包装
+    """装饰器: 标记端点排除响应自动包装
 
     用法:
         @router.get("/custom")

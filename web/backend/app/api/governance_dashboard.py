@@ -1,5 +1,4 @@
-"""
-数据治理仪表板数据聚合 API
+"""数据治理仪表板数据聚合 API
 
 提供数据质量、血缘统计、资产目录和治理合规指标的聚合数据。
 
@@ -27,6 +26,7 @@ from app.core.responses import (
     create_unified_error_response,
     create_unified_success_response,
 )
+
 
 logger = logging.getLogger(__name__)
 
@@ -110,11 +110,11 @@ class DashboardSummaryResponse(BaseModel):
 
 
 async def get_postgres_connection():
-    """
-    获取PostgreSQL数据库连接
+    """获取PostgreSQL数据库连接
 
     Returns:
         数据库连接
+
     """
     import asyncpg
 
@@ -130,8 +130,7 @@ async def get_postgres_connection():
 
 
 def handle_governance_error(error: str, request_id: Optional[str] = None) -> UnifiedResponse:
-    """
-    处理治理API错误
+    """处理治理API错误
 
     Args:
         error: 错误消息
@@ -139,6 +138,7 @@ def handle_governance_error(error: str, request_id: Optional[str] = None) -> Uni
 
     Returns:
         UnifiedResponse: 错误响应
+
     """
     return create_unified_error_response(
         code=BusinessCode.INTERNAL_ERROR,
@@ -155,8 +155,7 @@ def handle_governance_error(error: str, request_id: Optional[str] = None) -> Uni
 
 @router.get("/quality/overview", response_model=UnifiedResponse)
 async def get_quality_overview(http_request: Request):
-    """
-    数据质量总览
+    """数据质量总览
 
     返回数据质量评分的总体统计信息，包括：
     - 总资产数
@@ -169,6 +168,7 @@ async def get_quality_overview(http_request: Request):
 
     Returns:
         UnifiedResponse: 数据质量总览
+
     """
     request_id = getattr(http_request.state, "request_id", None)
     logger.info("Fetching quality overview", extra={"request_id": request_id})
@@ -184,7 +184,7 @@ async def get_quality_overview(http_request: Request):
                     COUNT(*) as total,
                     COALESCE(AVG(quality_score), 0) as avg_score
                 FROM data_assets
-                """
+                """,
             )
 
             total_assets = total_assets_row["total"]
@@ -203,7 +203,7 @@ async def get_quality_overview(http_request: Request):
                 FROM data_assets
                 WHERE quality_score IS NOT NULL
                 GROUP BY quality_level
-                """
+                """,
             )
 
             quality_distribution = {row["quality_level"]: row["count"] for row in quality_dist_rows}
@@ -224,7 +224,7 @@ async def get_quality_overview(http_request: Request):
                 WHERE quality_score IS NOT NULL
                 ORDER BY quality_score DESC
                 LIMIT 10
-                """
+                """,
             )
 
             top_assets = [
@@ -270,8 +270,7 @@ async def get_lineage_stats(
     days: int = 7,
     http_request: Request = None,
 ):
-    """
-    数据血缘统计
+    """数据血缘统计
 
     返回数据血缘的统计信息，包括：
     - 总节点数和边数
@@ -285,6 +284,7 @@ async def get_lineage_stats(
 
     Returns:
         UnifiedResponse: 数据血缘统计
+
     """
     request_id = getattr(http_request.state, "request_id", None) if http_request else None
     logger.info("Fetching lineage stats for last {days} days", extra={"request_id": request_id})
@@ -299,13 +299,13 @@ async def get_lineage_stats(
 
             # 查询节点类型分布
             node_type_rows = await conn.fetch(
-                "SELECT node_type, COUNT(*) as count FROM data_lineage_nodes GROUP BY node_type"
+                "SELECT node_type, COUNT(*) as count FROM data_lineage_nodes GROUP BY node_type",
             )
             node_type_distribution = {row["node_type"]: row["count"] for row in node_type_rows}
 
             # 查询操作类型分布
             operation_type_rows = await conn.fetch(
-                "SELECT operation, COUNT(*) as count FROM data_lineage_edges GROUP BY operation"
+                "SELECT operation, COUNT(*) as count FROM data_lineage_edges GROUP BY operation",
             )
             operation_type_distribution = {row["operation"]: row["count"] for row in operation_type_rows}
 
@@ -393,8 +393,7 @@ async def get_assets_catalog(
     asset_type: Optional[str] = None,
     http_request: Request = None,
 ):
-    """
-    数据资产目录
+    """数据资产目录
 
     返回数据资产目录，支持分页和类型过滤。
 
@@ -406,6 +405,7 @@ async def get_assets_catalog(
 
     Returns:
         UnifiedResponse: 数据资产目录
+
     """
     request_id = getattr(http_request.state, "request_id", None) if http_request else None
     logger.info(
@@ -502,8 +502,7 @@ async def get_compliance_metrics(
     limit: int = 20,
     http_request: Request = None,
 ):
-    """
-    治理合规指标
+    """治理合规指标
 
     返回治理合规相关的指标，包括：
     - 已配置数据源数
@@ -520,6 +519,7 @@ async def get_compliance_metrics(
 
     Returns:
         UnifiedResponse: 治理合规指标
+
     """
     request_id = getattr(http_request.state, "request_id", None) if http_request else None
     logger.info("Fetching compliance metrics: {days} days, {limit} changes", extra={"request_id": request_id})
@@ -578,7 +578,7 @@ async def get_compliance_metrics(
                 FROM data_source_audit_log
                 WHERE timestamp >= NOW() - INTERVAL '1 day'
                 GROUP BY action
-                """
+                """,
             )
 
             operation_stats = {row["action"]: row["count"] for row in operation_stats_rows}
@@ -611,8 +611,7 @@ async def get_compliance_metrics(
 
 @router.get("/dashboard/summary", response_model=UnifiedResponse)
 async def get_dashboard_summary(http_request: Request):
-    """
-    仪表板摘要
+    """仪表板摘要
 
     返回完整的仪表板摘要数据，整合所有治理信息。
 
@@ -621,6 +620,7 @@ async def get_dashboard_summary(http_request: Request):
 
     Returns:
         UnifiedResponse: 仪表板摘要
+
     """
     request_id = getattr(http_request.state, "request_id", None)
     logger.info("Fetching dashboard summary", extra={"request_id": request_id})
@@ -643,7 +643,7 @@ async def get_dashboard_summary(http_request: Request):
                 total_assets = await conn.fetchval("SELECT COUNT(*) FROM data_assets")
 
                 assets_by_type_rows = await conn.fetch(
-                    "SELECT asset_type, COUNT(*) as count FROM data_assets GROUP BY asset_type"
+                    "SELECT asset_type, COUNT(*) as count FROM data_assets GROUP BY asset_type",
                 )
                 assets_by_type = {row["asset_type"]: row["count"] for row in assets_by_type_rows}
 

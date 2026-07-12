@@ -1,5 +1,4 @@
-"""
-信号监控 API 端点
+"""信号监控 API 端点
 Signal Monitoring API Endpoints
 
 提供信号历史查询、质量报告和实时监控功能。
@@ -16,16 +15,12 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.api.signal_monitoring.signal_history_response_schemas import (
-    ActiveSignalItem,
-    ActiveSignalsResponse,
     SignalHistoryResponse,
     SignalQualityReportResponse,
-    SignalStatisticsResponse,
-    StrategyDetailedHealthResponse,
     StrategyRealtimeMonitoringResponse,
-    UnifiedResponse,
 )
 from app.core.security import User, get_current_user
+
 
 logger = logging.getLogger(__name__)
 
@@ -43,8 +38,7 @@ async def get_signal_history(
     offset: int = Query(0, ge=0),
     current_user: User = Depends(get_current_user),
 ):
-    """
-    获取信号历史记录
+    """获取信号历史记录
 
     **功能说明**:
     - 查询策略生成的信号历史记录
@@ -187,7 +181,7 @@ async def get_signal_history(
         raise
     except Exception as e:
         logger.error("查询信号历史失败: %(e)s")
-        raise HTTPException(status_code=500, detail=f"查询失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"查询失败: {e!s}")
 
 
 @router.get("/signals/quality-report", response_model=SignalQualityReportResponse)
@@ -196,8 +190,7 @@ async def get_signal_quality_report(
     period_days: int = Query(7, ge=1, le=90, description="统计周期（天）"),
     current_user: User = Depends(get_current_user),
 ):
-    """
-    获取信号质量报告
+    """获取信号质量报告
 
     **功能说明**:
     - 统计指定周期的信号质量指标
@@ -373,7 +366,7 @@ async def get_signal_quality_report(
         raise
     except Exception as e:
         logger.error("生成信号质量报告失败: %(e)s")
-        raise HTTPException(status_code=500, detail=f"查询失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"查询失败: {e!s}")
 
 
 @router.get("/strategies/{strategy_id}/realtime", response_model=StrategyRealtimeMonitoringResponse)
@@ -381,8 +374,7 @@ async def get_strategy_realtime_monitoring(
     strategy_id: str,
     current_user: User = Depends(get_current_user),
 ):
-    """
-    获取策略实时监控数据
+    """获取策略实时监控数据
 
     **功能说明**:
     - 查询策略的实时健康状态
@@ -546,13 +538,12 @@ async def get_strategy_realtime_monitoring(
         raise
     except Exception as e:
         logger.error("查询策略实时监控失败: %(e)s")
-        raise HTTPException(status_code=500, detail=f"查询失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"查询失败: {e!s}")
 
 
 @router.get("/health")
 async def health_check():
-    """
-    信号监控API健康检查
+    """信号监控API健康检查
 
     **功能说明**:
     - 检查信号监控API的可用性

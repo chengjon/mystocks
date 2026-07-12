@@ -1,5 +1,4 @@
-"""
-技术指标API
+"""技术指标API
 
 提供各种技术指标的计算功能
 """
@@ -8,6 +7,7 @@ from typing import Any, Dict, List
 
 from fastapi import APIRouter, Query
 from pydantic import BaseModel
+
 
 router = APIRouter(
     prefix="/technical-indicators",
@@ -29,8 +29,7 @@ async def get_technical_indicators(
     indicators: List[str] = Query(..., description="Indicator names (rsi,macd,bollinger,etc.)"),
     period: int = Query(14, description="Calculation period"),
 ):
-    """
-    计算技术指标
+    """计算技术指标
 
     Calculates various technical indicators for given symbol and time period.
     """

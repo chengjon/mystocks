@@ -1,10 +1,10 @@
-"""
-契约验证服务
+"""契约验证服务
 验证OpenAPI规范的正确性和完整性
 """
 
 import json
 from typing import Any, Dict, List
+
 
 try:
     from prance import BaseParser
@@ -25,10 +25,9 @@ class ContractValidator:
 
     @staticmethod
     def validate(
-        spec: Dict[str, Any], check_breaking_changes: bool = True, compare_to_spec: Dict[str, Any] = None
+        spec: Dict[str, Any], check_breaking_changes: bool = True, compare_to_spec: Dict[str, Any] = None,
     ) -> ContractValidateResponse:
-        """
-        验证OpenAPI规范
+        """验证OpenAPI规范
 
         Args:
             spec: 待验证的OpenAPI规范
@@ -37,6 +36,7 @@ class ContractValidator:
 
         Returns:
             验证响应
+
         """
         results = []
         error_count = 0
@@ -77,14 +77,14 @@ class ContractValidator:
 
     @staticmethod
     def _validate_basic_structure(spec: Dict[str, Any]) -> List[ValidationResult]:
-        """
-        验证基础结构
+        """验证基础结构
 
         Args:
             spec: OpenAPI规范
 
         Returns:
             验证结果列表
+
         """
         results = []
 
@@ -99,7 +99,7 @@ class ContractValidator:
                         path=f"/{field}",
                         message=f"缺少必需字段: {field}",
                         suggestion=f"添加 {field} 字段到OpenAPI规范根级别",
-                    )
+                    ),
                 )
 
         # 检查openapi版本
@@ -113,7 +113,7 @@ class ContractValidator:
                         path="/openapi",
                         message=f"不支持的OpenAPI版本: {openapi_version}",
                         suggestion="建议使用OpenAPI 3.0.x版本",
-                    )
+                    ),
                 )
 
         # 检查info
@@ -129,21 +129,21 @@ class ContractValidator:
                             path="/info",
                             message=f"info缺少必需字段: {field}",
                             suggestion=f"添加 {field} 字段到info对象",
-                        )
+                        ),
                     )
 
         return results
 
     @staticmethod
     def _validate_openapi_spec(spec: Dict[str, Any]) -> List[ValidationResult]:
-        """
-        使用prance验证OpenAPI规范
+        """使用prance验证OpenAPI规范
 
         Args:
             spec: OpenAPI规范
 
         Returns:
             验证结果列表
+
         """
         results = []
 
@@ -169,7 +169,7 @@ class ContractValidator:
                             path=error.get("path", "/"),
                             message=error.get("message", "OpenAPI规范错误"),
                             suggestion=error.get("suggestion"),
-                        )
+                        ),
                     )
 
             finally:
@@ -181,17 +181,16 @@ class ContractValidator:
                     valid=False,
                     category="error",
                     path="/",
-                    message=f"OpenAPI规范解析失败: {str(e)}",
+                    message=f"OpenAPI规范解析失败: {e!s}",
                     suggestion="检查OpenAPI规范格式是否正确",
-                )
+                ),
             )
 
         return results
 
     @staticmethod
     def _check_breaking_changes(new_spec: Dict[str, Any], old_spec: Dict[str, Any]) -> List[ValidationResult]:
-        """
-        检查破坏性变更
+        """检查破坏性变更
 
         Args:
             new_spec: 新规范
@@ -199,6 +198,7 @@ class ContractValidator:
 
         Returns:
             验证结果列表
+
         """
         results = []
 
@@ -215,7 +215,7 @@ class ContractValidator:
                     path=f"paths.{path}",
                     message=f"删除API端点: {path}",
                     suggestion="考虑保留旧端点或使用API版本控制",
-                )
+                ),
             )
 
         # 检查删除的Schema
@@ -231,21 +231,21 @@ class ContractValidator:
                     path=f"components.schemas.{schema}",
                     message=f"删除Schema: {schema}",
                     suggestion="考虑标记为deprecated而非直接删除",
-                )
+                ),
             )
 
         return results
 
     @staticmethod
     def _check_best_practices(spec: Dict[str, Any]) -> List[ValidationResult]:
-        """
-        检查最佳实践
+        """检查最佳实践
 
         Args:
             spec: OpenAPI规范
 
         Returns:
             验证结果列表
+
         """
         results = []
 
@@ -258,7 +258,7 @@ class ContractValidator:
                     path="/info/description",
                     message="缺少API描述",
                     suggestion="添加info.description字段以改善文档可读性",
-                )
+                ),
             )
 
         # 检查服务器配置
@@ -271,7 +271,7 @@ class ContractValidator:
                     path="/servers",
                     message="缺少服务器配置",
                     suggestion="添加servers字段定义API服务器地址",
-                )
+                ),
             )
 
         # 检查操作ID
@@ -286,7 +286,7 @@ class ContractValidator:
                             path=f"paths.{path}.{method}",
                             message=f"缺少operationId: {method} {path}",
                             suggestion="添加operationId字段以便于生成客户端SDK",
-                        )
+                        ),
                     )
 
         return results

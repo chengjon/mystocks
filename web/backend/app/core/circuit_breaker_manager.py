@@ -1,5 +1,4 @@
-"""
-P0 Task 3: CircuitBreaker管理器
+"""P0 Task 3: CircuitBreaker管理器
 
 统一管理所有外部API调用的熔断器实例
 遵循单例模式，确保全局唯一的熔断器实例
@@ -10,12 +9,12 @@ from typing import Dict, Optional
 
 from app.core.error_handling import CircuitBreaker
 
+
 logger = logging.getLogger(__name__)
 
 
 class CircuitBreakerManager:
-    """
-    熔断器管理器 - 单例模式
+    """熔断器管理器 - 单例模式
 
     管理所有外部API服务的熔断器实例：
     - market_data: 市场数据API
@@ -86,8 +85,7 @@ class CircuitBreakerManager:
         logger.info("✅ CircuitBreaker Manager initialized with 5 circuit breakers")
 
     def get_circuit_breaker(self, service_name: str) -> CircuitBreaker:
-        """
-        获取指定服务的熔断器
+        """获取指定服务的熔断器
 
         Args:
             service_name: 服务名称
@@ -102,6 +100,7 @@ class CircuitBreakerManager:
 
         Raises:
             ValueError: 如果服务名称不存在
+
         """
         if service_name not in self._circuit_breakers:
             logger.warning("⚠️ Circuit breaker for '%(service_name)s' not found, using external_api")
@@ -110,23 +109,23 @@ class CircuitBreakerManager:
         return self._circuit_breakers[service_name]
 
     def get_all_statuses(self) -> dict:
-        """
-        获取所有熔断器的状态
+        """获取所有熔断器的状态
 
         Returns:
             {service_name: {state, failure_count, ...}, ...}
+
         """
         return {name: cb.get_status() for name, cb in self._circuit_breakers.items()}
 
     def reset_circuit_breaker(self, service_name: str) -> bool:
-        """
-        手动重置指定服务的熔断器
+        """手动重置指定服务的熔断器
 
         Args:
             service_name: 服务名称
 
         Returns:
             是否成功重置
+
         """
         if service_name in self._circuit_breakers:
             cb = self._circuit_breakers[service_name]
@@ -140,11 +139,11 @@ class CircuitBreakerManager:
         return False
 
     def reset_all_circuit_breakers(self) -> int:
-        """
-        重置所有熔断器
+        """重置所有熔断器
 
         Returns:
             重置的熔断器数量
+
         """
         count = 0
         for service_name in self._circuit_breakers:

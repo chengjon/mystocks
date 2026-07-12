@@ -1,5 +1,4 @@
-"""
-WebSocket Connection Manager
+"""WebSocket Connection Manager
 ============================
 
 Manages WebSocket connections for real-time event broadcasting.
@@ -23,12 +22,12 @@ from fastapi import WebSocket
 
 from app.models.event_models import BaseEvent
 
+
 logger = logging.getLogger(__name__)
 
 
 class ConnectionManager:
-    """
-    WebSocket connection manager
+    """WebSocket connection manager
 
     Manages active WebSocket connections and provides broadcasting capabilities.
     """
@@ -65,14 +64,14 @@ class ConnectionManager:
         user_id: Optional[str] = None,
         subscribe_channels: Optional[List[str]] = None,
     ):
-        """
-        Accept a new WebSocket connection
+        """Accept a new WebSocket connection
 
         Args:
             websocket: WebSocket connection
             connection_id: Unique connection identifier
             user_id: Optional user ID
             subscribe_channels: Optional list of channels to auto-subscribe
+
         """
         await websocket.accept()
 
@@ -111,11 +110,11 @@ class ConnectionManager:
             self._heartbeat_task = asyncio.create_task(self._heartbeat_checker())
 
     def disconnect(self, connection_id: str):
-        """
-        Remove a WebSocket connection
+        """Remove a WebSocket connection
 
         Args:
             connection_id: Connection identifier
+
         """
         # Remove from active connections
         if connection_id in self.active_connections:
@@ -144,12 +143,12 @@ class ConnectionManager:
         logger.info("WebSocket disconnected: %(connection_id)s (user: %(user_id)s)")
 
     def subscribe(self, connection_id: str, channel: str):
-        """
-        Subscribe a connection to a channel
+        """Subscribe a connection to a channel
 
         Args:
             connection_id: Connection identifier
             channel: Channel name
+
         """
         if connection_id not in self.active_connections:
             logger.warning("Cannot subscribe %(connection_id)s to %(channel)s: connection not found")
@@ -162,12 +161,12 @@ class ConnectionManager:
         logger.debug("Connection %(connection_id)s subscribed to %(channel)s")
 
     def unsubscribe(self, connection_id: str, channel: str):
-        """
-        Unsubscribe a connection from a channel
+        """Unsubscribe a connection from a channel
 
         Args:
             connection_id: Connection identifier
             channel: Channel name
+
         """
         if channel in self.channel_subscriptions:
             self.channel_subscriptions[channel].discard(connection_id)
@@ -176,12 +175,12 @@ class ConnectionManager:
             logger.debug("Connection %(connection_id)s unsubscribed from %(channel)s")
 
     async def send_personal_message(self, message: dict, connection_id: str):
-        """
-        Send a message to a specific connection
+        """Send a message to a specific connection
 
         Args:
             message: Message to send (will be JSON serialized)
             connection_id: Connection identifier
+
         """
         if connection_id in self.active_connections:
             try:
@@ -194,12 +193,12 @@ class ConnectionManager:
             logger.warning("Cannot send message to %(connection_id)s: connection not found")
 
     async def broadcast(self, message: dict, channel: str):
-        """
-        Broadcast a message to all subscribers of a channel
+        """Broadcast a message to all subscribers of a channel
 
         Args:
             message: Message to broadcast (will be JSON serialized)
             channel: Channel name
+
         """
         if channel not in self.channel_subscriptions:
             logger.debug("No subscribers for channel %(channel)s")
@@ -229,12 +228,12 @@ class ConnectionManager:
             self.disconnect(connection_id)
 
     async def broadcast_to_user(self, message: dict, user_id: str):
-        """
-        Broadcast a message to all connections of a specific user
+        """Broadcast a message to all connections of a specific user
 
         Args:
             message: Message to broadcast
             user_id: User identifier
+
         """
         if user_id not in self.user_connections:
             logger.debug("No connections for user %(user_id)s")
@@ -245,29 +244,28 @@ class ConnectionManager:
             await self.send_personal_message(message, connection_id)
 
     async def broadcast_event(self, event: BaseEvent, channel: str):
-        """
-        Broadcast a typed event to a channel
+        """Broadcast a typed event to a channel
 
         Args:
             event: Event model (will be converted to dict)
             channel: Channel name
+
         """
         message = event.model_dump()
         await self.broadcast(message, channel)
 
     async def update_heartbeat(self, connection_id: str):
-        """
-        Update heartbeat timestamp for a connection
+        """Update heartbeat timestamp for a connection
 
         Args:
             connection_id: Connection identifier
+
         """
         if connection_id in self.active_connections:
             self.last_heartbeat[connection_id] = datetime.now(timezone.utc)
 
     async def _heartbeat_checker(self):
-        """
-        Background task to check for stale connections
+        """Background task to check for stale connections
         """
         while self.active_connections:
             try:

@@ -1,5 +1,4 @@
-"""
-Casbin权限管理集成测试
+"""Casbin权限管理集成测试
 
 Tests for Casbin RBAC Integration
 
@@ -11,8 +10,8 @@ Date: 2025-11-07
 
 from app.core.casbin_manager import (
     CasbinManager,
-    RoleDefinition,
     PermissionRule,
+    RoleDefinition,
     get_casbin_manager,
     reset_casbin_manager,
 )

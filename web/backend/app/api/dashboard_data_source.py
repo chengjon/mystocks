@@ -1,5 +1,4 @@
-"""
-仪表盘真实数据源适配层
+"""仪表盘真实数据源适配层
 """
 
 from __future__ import annotations
@@ -18,6 +17,7 @@ from sqlalchemy import text
 from app.services.market_data_service_v2 import get_market_data_service_v2
 from app.services.tdx_service import get_tdx_service
 
+
 logger = logging.getLogger(__name__)
 
 _TDX_MARKET_SNAPSHOT_CACHE: Optional[Dict] = None
@@ -31,8 +31,7 @@ _LIVE_MARKET_SNAPSHOT_FAILURE_COOLDOWN_SECONDS = 300
 
 
 class RealBusinessDataSource:
-    """
-    真实业务数据源
+    """真实业务数据源
 
     使用现有API端点获取真实数据，替代硬编码的Mock数据。
     实现方案与前端dashboardService.ts保持一致。
@@ -147,7 +146,7 @@ class RealBusinessDataSource:
                             "volume": etf.get("volume", 0),
                             "turnover": etf.get("amount", 0),
                             "update_time": etf.get("created_at") or etf.get("trade_date"),
-                        }
+                        },
                     )
 
                     if change_percent > 0:
@@ -159,9 +158,11 @@ class RealBusinessDataSource:
 
             indices = self._get_major_index_quotes() or ranking_indices[:10]
             ranking_source = ranking_indices or indices
-            market_stats = market_snapshot if market_snapshot else None
+            market_stats = market_snapshot or None
             fallback_total_turnover = sum(idx.get("turnover", 0) for idx in ranking_source)
-            fallback_top_gainers = sorted(ranking_source, key=lambda item: item.get("change_percent", 0), reverse=True)[:3]
+            fallback_top_gainers = sorted(ranking_source, key=lambda item: item.get("change_percent", 0), reverse=True)[
+                :3
+            ]
             fallback_top_losers = sorted(ranking_source, key=lambda item: item.get("change_percent", 0))[:3]
             fallback_most_active = sorted(ranking_source, key=lambda item: item.get("volume", 0), reverse=True)[:3]
 
@@ -226,7 +227,7 @@ class RealBusinessDataSource:
                         "volume": quote.get("volume", 0),
                         "turnover": quote.get("amount", quote.get("turnover", 0)),
                         "update_time": quote.get("timestamp") or quote.get("update_time"),
-                    }
+                    },
                 )
 
             _MAJOR_INDEX_QUOTES_CACHE = indices
@@ -239,6 +240,7 @@ class RealBusinessDataSource:
         # Fallback: 直接用 OpenStock HTTP API 获取指数数据
         try:
             import os
+
             openstock_url = os.getenv("OPENSTOCK_BASE_URL", "http://192.168.123.104:8040")
             openstock_key = os.getenv("OPENSTOCK_SECURITY_API_KEY", "")
             resp = httpx.post(
@@ -254,15 +256,17 @@ class RealBusinessDataSource:
                     indices = []
                     for q in rows:
                         code = str(q.get("code", q.get("symbol", ""))).replace("sh", "").replace("sz", "")
-                        indices.append({
-                            "symbol": code,
-                            "name": index_labels.get(code, q.get("name", "")),
-                            "current_price": float(q.get("last_price", q.get("price", 0)) or 0),
-                            "change_percent": float(q.get("change_pct", q.get("change_percent", 0)) or 0),
-                            "volume": int(q.get("volume", 0) or 0),
-                            "turnover": float(q.get("amount", 0) or 0),
-                            "update_time": datetime.now().isoformat(),
-                        })
+                        indices.append(
+                            {
+                                "symbol": code,
+                                "name": index_labels.get(code, q.get("name", "")),
+                                "current_price": float(q.get("last_price", q.get("price", 0)) or 0),
+                                "change_percent": float(q.get("change_pct", q.get("change_percent", 0)) or 0),
+                                "volume": int(q.get("volume", 0) or 0),
+                                "turnover": float(q.get("amount", 0) or 0),
+                                "update_time": datetime.now().isoformat(),
+                            },
+                        )
                     if indices:
                         _MAJOR_INDEX_QUOTES_CACHE = indices
                         _MAJOR_INDEX_QUOTES_CACHE_AT = now
@@ -303,7 +307,7 @@ class RealBusinessDataSource:
               AND pct_chg IS NOT NULL
               AND close IS NOT NULL
               AND amount IS NOT NULL
-            """
+            """,
         )
         top_gainers_sql = text(
             """
@@ -326,7 +330,7 @@ class RealBusinessDataSource:
               AND amount IS NOT NULL
             ORDER BY pct_chg DESC, amount DESC
             LIMIT 3
-            """
+            """,
         )
         top_losers_sql = text(
             """
@@ -349,7 +353,7 @@ class RealBusinessDataSource:
               AND amount IS NOT NULL
             ORDER BY pct_chg ASC, amount DESC
             LIMIT 3
-            """
+            """,
         )
         most_active_sql = text(
             """
@@ -372,7 +376,7 @@ class RealBusinessDataSource:
               AND amount IS NOT NULL
             ORDER BY amount DESC
             LIMIT 3
-            """
+            """,
         )
 
         try:
@@ -412,7 +416,9 @@ class RealBusinessDataSource:
 
             snapshot_df = FinancialDataSource().get_real_time_data()
             if not isinstance(snapshot_df, pd.DataFrame) or snapshot_df.empty:
-                _LIVE_MARKET_SNAPSHOT_DISABLED_UNTIL = now + pd.Timedelta(seconds=_LIVE_MARKET_SNAPSHOT_FAILURE_COOLDOWN_SECONDS)
+                _LIVE_MARKET_SNAPSHOT_DISABLED_UNTIL = now + pd.Timedelta(
+                    seconds=_LIVE_MARKET_SNAPSHOT_FAILURE_COOLDOWN_SECONDS,
+                )
                 return None
 
             normalized = pd.DataFrame(
@@ -424,12 +430,14 @@ class RealBusinessDataSource:
                     "volume": pd.to_numeric(snapshot_df.get("成交量"), errors="coerce"),
                     "turnover": pd.to_numeric(snapshot_df.get("成交额"), errors="coerce"),
                     "update_time": snapshot_df.get("更新时间"),
-                }
+                },
             )
 
             normalized = normalized.dropna(subset=["symbol", "current_price", "change_percent", "turnover"])
             if normalized.empty:
-                _LIVE_MARKET_SNAPSHOT_DISABLED_UNTIL = now + pd.Timedelta(seconds=_LIVE_MARKET_SNAPSHOT_FAILURE_COOLDOWN_SECONDS)
+                _LIVE_MARKET_SNAPSHOT_DISABLED_UNTIL = now + pd.Timedelta(
+                    seconds=_LIVE_MARKET_SNAPSHOT_FAILURE_COOLDOWN_SECONDS,
+                )
                 return None
 
             _LIVE_MARKET_SNAPSHOT_DISABLED_UNTIL = None
@@ -442,10 +450,10 @@ class RealBusinessDataSource:
                 return frame.to_dict(orient="records")
 
             top_gainers = _records(
-                normalized.sort_values(["change_percent", "turnover"], ascending=[False, False]).head(3)
+                normalized.sort_values(["change_percent", "turnover"], ascending=[False, False]).head(3),
             )
             top_losers = _records(
-                normalized.sort_values(["change_percent", "turnover"], ascending=[True, False]).head(3)
+                normalized.sort_values(["change_percent", "turnover"], ascending=[True, False]).head(3),
             )
             most_active = _records(normalized.sort_values(["turnover"], ascending=[False]).head(3))
 
@@ -461,7 +469,9 @@ class RealBusinessDataSource:
             }
 
         except Exception as error:
-            _LIVE_MARKET_SNAPSHOT_DISABLED_UNTIL = now + pd.Timedelta(seconds=_LIVE_MARKET_SNAPSHOT_FAILURE_COOLDOWN_SECONDS)
+            _LIVE_MARKET_SNAPSHOT_DISABLED_UNTIL = now + pd.Timedelta(
+                seconds=_LIVE_MARKET_SNAPSHOT_FAILURE_COOLDOWN_SECONDS,
+            )
             logger.warning("获取实时全市场快照失败: %s", error)
             return None
 
@@ -509,7 +519,7 @@ class RealBusinessDataSource:
                   AND amount IS NOT NULL
                   AND symbol ~ '^[0-9]{6}$'
                 ORDER BY symbol, amount DESC NULLS LAST
-                """
+                """,
             )
 
             with engine.connect() as conn:
@@ -518,7 +528,9 @@ class RealBusinessDataSource:
             if not symbol_rows:
                 return None
 
-            symbol_name_map = {row._mapping["symbol"]: row._mapping.get("name") or row._mapping["symbol"] for row in symbol_rows}
+            symbol_name_map = {
+                row._mapping["symbol"]: row._mapping.get("name") or row._mapping["symbol"] for row in symbol_rows
+            }
             symbol_pairs = [(_infer_market_code(symbol), symbol) for symbol in symbol_name_map]
 
             api = TdxHq_API()
@@ -548,7 +560,7 @@ class RealBusinessDataSource:
                                 "volume": volume,
                                 "turnover": amount,
                                 "update_time": batch_timestamp,
-                            }
+                            },
                         )
 
             if not snapshot_rows:
@@ -620,7 +632,7 @@ class RealBusinessDataSource:
             import requests
 
             strategy_response = requests.get(
-                f"{self.base_url}/api/strategy-mgmt/strategies", params={"user_id": user_id}, timeout=5
+                f"{self.base_url}/api/strategy-mgmt/strategies", params={"user_id": user_id}, timeout=5,
             )
 
             if strategy_response.status_code == 200:
@@ -723,4 +735,4 @@ def get_data_source():
         return RealBusinessDataSource()
     except Exception as error:
         logger.error("获取数据源失败: %s", error)
-        raise HTTPException(status_code=500, detail=f"数据源初始化失败: {str(error)}")
+        raise HTTPException(status_code=500, detail=f"数据源初始化失败: {error!s}")

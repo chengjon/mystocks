@@ -1,5 +1,4 @@
-"""
-WebSocket Router for Real-Time Events
+"""WebSocket Router for Real-Time Events
 ======================================
 
 Provides WebSocket endpoints for real-time event streaming.
@@ -21,6 +20,7 @@ from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
 
 from app.services.websocket_manager import manager
 
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/ws", tags=["websocket"])
@@ -28,10 +28,9 @@ router = APIRouter(prefix="/ws", tags=["websocket"])
 
 @router.websocket("/events")
 async def websocket_events(
-    websocket: WebSocket, token: Optional[str] = Query(None), channels: Optional[str] = Query(None)
+    websocket: WebSocket, token: Optional[str] = Query(None), channels: Optional[str] = Query(None),
 ):
-    """
-    WebSocket endpoint for real-time events
+    """WebSocket endpoint for real-time events
 
     Query Parameters:
     - token: Optional authentication token
@@ -44,6 +43,7 @@ async def websocket_events(
     Example:
     - ws://localhost:${BACKEND_PORT}/ws/events?channels=events:tasks,events:indicators
     - ws://localhost:${BACKEND_PORT}/ws/events?channels=events:task:calc_1234567890
+
     """
     # Generate connection ID
     import time
@@ -109,26 +109,24 @@ async def websocket_events(
 
 @router.get("/stats")
 async def get_websocket_stats():
-    """
-    Get WebSocket connection statistics
+    """Get WebSocket connection statistics
 
     Returns:
     - Total active connections
     - Total unique users
     - Total channels
     - Per-channel subscriber counts
+
     """
     return manager.get_stats()
 
 
 @router.get("/channels")
 async def list_channels():
-    """
-    List available event channels
+    """List available event channels
 
     Returns channel descriptions and recommended usage
     """
-
     return {
         "channels": {
             "events:tasks": {

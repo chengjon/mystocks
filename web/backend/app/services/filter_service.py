@@ -1,5 +1,4 @@
-"""
-高级订阅过滤服务 - Advanced Subscription & Filtering System
+"""高级订阅过滤服务 - Advanced Subscription & Filtering System
 
 Task 8: 实现灵活的用户订阅过滤系统
 
@@ -24,6 +23,7 @@ from enum import Enum
 from typing import Any, Callable, Dict, List, Optional, Set, Union
 
 import structlog
+
 
 logger = structlog.get_logger()
 
@@ -83,9 +83,8 @@ class FilterCondition:
             if self.operator == FilterOperator.MATCH:
                 # 正则匹配
                 return bool(re.search(self.value, str(field_value)))
-            else:
-                # 精确、通配符、比较操作符
-                return self._match_symbol(field_value, self.value)
+            # 精确、通配符、比较操作符
+            return self._match_symbol(field_value, self.value)
 
         # 数值比较
         if isinstance(self.value, (int, float, Decimal)):
@@ -116,9 +115,9 @@ class FilterCondition:
 
         if self.operator == FilterOperator.MATCH:
             return bool(re.search(pattern, value))
-        elif self.operator == FilterOperator.EQ:
+        if self.operator == FilterOperator.EQ:
             return value == pattern
-        elif self.operator == FilterOperator.NE:
+        if self.operator == FilterOperator.NE:
             return value != pattern
         return False
 
@@ -126,15 +125,15 @@ class FilterCondition:
         """数值比较"""
         if operator == FilterOperator.EQ:
             return value == threshold
-        elif operator == FilterOperator.NE:
+        if operator == FilterOperator.NE:
             return value != threshold
-        elif operator == FilterOperator.GT:
+        if operator == FilterOperator.GT:
             return value > threshold
-        elif operator == FilterOperator.GTE:
+        if operator == FilterOperator.GTE:
             return value >= threshold
-        elif operator == FilterOperator.LT:
+        if operator == FilterOperator.LT:
             return value < threshold
-        elif operator == FilterOperator.LTE:
+        if operator == FilterOperator.LTE:
             return value <= threshold
         return False
 
@@ -162,7 +161,7 @@ class FilterExpression:
 
         if self.logic.upper() == "AND":
             return all(cond.matches(data) for cond in self.conditions)
-        elif self.logic.upper() == "OR":
+        if self.logic.upper() == "OR":
             return any(cond.matches(data) for cond in self.conditions)
 
         return False

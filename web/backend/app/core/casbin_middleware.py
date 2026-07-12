@@ -1,5 +1,4 @@
-"""
-Casbin FastAPI 集成 - 简化版 (单用户系统)
+"""Casbin FastAPI 集成 - 简化版 (单用户系统)
 
 Casbin FastAPI Integration - Simplified for Single-User System
 
@@ -22,6 +21,7 @@ from fastapi import HTTPException, status
 
 from app.core.casbin_manager import CasbinManager, get_casbin_manager
 
+
 logger = structlog.get_logger()
 
 
@@ -35,6 +35,7 @@ def get_current_role(role: str = "user") -> str:
 
     Returns:
         用户角色
+
     """
     logger.debug("Getting current role", role=role)
     return role
@@ -57,6 +58,7 @@ def require_permission(resource: str, action: str, role: str = "user") -> Callab
             _ = Depends(require_permission("indicator", "read"))
         ):
             return {"indicators": []}
+
     """
 
     async def check_permission() -> bool:
@@ -64,6 +66,7 @@ def require_permission(resource: str, action: str, role: str = "user") -> Callab
 
         Raises:
             HTTPException: 权限不足
+
         """
         manager = get_casbin_manager()
 
@@ -113,6 +116,7 @@ def check_permission(resource: str, action: str, role: str = "user") -> bool:
             if not check_permission("indicator", "read"):
                 raise HTTPException(status_code=403, detail="Permission denied")
             return {"indicators": []}
+
     """
     manager = get_casbin_manager()
     has_permission = manager.enforce(role, resource, action)
@@ -140,5 +144,6 @@ def get_manager() -> CasbinManager:
 
     Returns:
         CasbinManager实例
+
     """
     return get_casbin_manager()

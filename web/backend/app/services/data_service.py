@@ -1,5 +1,4 @@
-"""
-Data Service for Technical Analysis
+"""Data Service for Technical Analysis
 股票数据服务 - 为技术指标计算提供OHLCV数据
 
 Integrates with MyStocksUnifiedManager to load historical price data
@@ -15,6 +14,7 @@ from typing import Dict, Optional, Tuple
 import numpy as np
 import pandas as pd
 
+
 # Add project root to path to import unified_manager
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
 sys.path.insert(0, project_root)
@@ -22,6 +22,7 @@ sys.path.insert(0, os.path.join(project_root, "src"))
 
 from src.core.data_classification import DataClassification
 from src.unified_manager import MyStocksUnifiedManager
+
 
 logger = logging.getLogger(__name__)
 
@@ -59,8 +60,7 @@ class InvalidDateRangeError(Exception):
 
 
 class DataService:
-    """
-    数据服务
+    """数据服务
 
     提供股票OHLCV数据加载功能,集成MyStocksUnifiedManager和缓存管理
     """
@@ -71,6 +71,7 @@ class DataService:
         Args:
             auto_fetch: 当数据库无数据时,是否自动从Akshare获取 (默认True)
             use_cache: 是否启用缓存 (默认True)
+
         """
         try:
             # Initialize unified manager (with monitoring disabled for web service)
@@ -110,10 +111,9 @@ class DataService:
                 self.use_cache = False
 
     def get_daily_ohlcv(
-        self, symbol: str, start_date: datetime, end_date: datetime
+        self, symbol: str, start_date: datetime, end_date: datetime,
     ) -> Tuple[pd.DataFrame, Dict[str, np.ndarray]]:
-        """
-        获取日线OHLCV数据
+        """获取日线OHLCV数据
 
         Args:
             symbol: 股票代码 (如 '600519.SH')
@@ -128,6 +128,7 @@ class DataService:
         Raises:
             InvalidDateRangeError: 日期范围无效
             StockDataNotFoundError: 未找到数据
+
         """
         # Validate date range
         if start_date >= end_date:
@@ -164,11 +165,10 @@ class DataService:
             raise
         except Exception as e:
             logger.error("Failed to load daily OHLCV data: %(e)s")
-            raise RuntimeError(f"加载股票数据失败: {str(e)}")
+            raise RuntimeError(f"加载股票数据失败: {e!s}")
 
     def _fetch_and_save_from_akshare(self, symbol: str, start_date: datetime, end_date: datetime) -> pd.DataFrame:
-        """
-        从Akshare获取数据并保存到数据库
+        """从Akshare获取数据并保存到数据库
 
         Args:
             symbol: 股票代码 (如 '600519.SH')
@@ -177,6 +177,7 @@ class DataService:
 
         Returns:
             pd.DataFrame: 下载并保存的数据
+
         """
         try:
             if not self.akshare_adapter:
@@ -209,7 +210,7 @@ class DataService:
                     "close": df["close"],
                     "volume": df["volume"],
                     "amount": df.get("amount", df["volume"] * df["close"]),  # Calculate if missing
-                }
+                },
             )
 
             # Save to database via UnifiedManager
@@ -235,8 +236,7 @@ class DataService:
             return pd.DataFrame()
 
     def _load_from_unified_manager(self, symbol: str, start_date: datetime, end_date: datetime) -> pd.DataFrame:
-        """
-        从UnifiedManager加载数据
+        """从UnifiedManager加载数据
 
         Args:
             symbol: 股票代码
@@ -245,6 +245,7 @@ class DataService:
 
         Returns:
             pd.DataFrame: 日线数据
+
         """
         try:
             # Use load_data_by_classification to query PostgreSQL daily_kline table
@@ -284,8 +285,7 @@ class DataService:
         end_date: datetime,
         base_price: float = 100.0,
     ) -> pd.DataFrame:
-        """
-        生成模拟数据 (用于开发测试)
+        """生成模拟数据 (用于开发测试)
 
         Args:
             symbol: 股票代码
@@ -295,6 +295,7 @@ class DataService:
 
         Returns:
             pd.DataFrame: 模拟的日线数据
+
         """
         logger.warning("Generating mock data for %(symbol)s")
 
@@ -335,20 +336,20 @@ class DataService:
                 "volume": volumes,
                 "amount": closes * volumes,
                 "adj_factor": 1.0,
-            }
+            },
         )
 
         return df
 
     def _dataframe_to_ohlcv_arrays(self, df: pd.DataFrame) -> Dict[str, np.ndarray]:
-        """
-        将DataFrame转换为TA-Lib所需的NumPy数组格式
+        """将DataFrame转换为TA-Lib所需的NumPy数组格式
 
         Args:
             df: 包含OHLCV数据的DataFrame
 
         Returns:
             Dict[str, np.ndarray]: OHLCV数组字典
+
         """
         return {
             "open": df["open"].to_numpy(dtype=np.float64),
@@ -359,14 +360,14 @@ class DataService:
         }
 
     def get_symbol_name(self, symbol: str) -> str:
-        """
-        获取股票名称
+        """获取股票名称
 
         Args:
             symbol: 股票代码
 
         Returns:
             str: 股票名称
+
         """
         try:
             if self.unified_manager:
@@ -388,8 +389,7 @@ class DataService:
         return symbol
 
     def validate_symbol_format(self, symbol: str) -> bool:
-        """
-        验证股票代码格式
+        """验证股票代码格式
 
         Args:
             symbol: 股票代码
@@ -402,6 +402,7 @@ class DataService:
             - 000001.SZ (深圳主板)
             - 300XXX.SZ (创业板)
             - 688XXX.SH (科创板)
+
         """
         import re
 
@@ -417,21 +418,21 @@ class DataService:
         if exchange == "SH":
             # Shanghai: 600/601/603/688/689
             return code.startswith(("600", "601", "603", "688", "689"))
-        elif exchange == "SZ":
+        if exchange == "SZ":
             # Shenzhen: 000/001/002/003/300
             return code.startswith(("000", "001", "002", "003", "300"))
 
         return False
 
     def get_available_date_range(self, symbol: str) -> Optional[Tuple[datetime, datetime]]:
-        """
-        获取股票可用的数据日期范围
+        """获取股票可用的数据日期范围
 
         Args:
             symbol: 股票代码
 
         Returns:
             Optional[Tuple[datetime, datetime]]: (最早日期, 最晚日期) 或 None
+
         """
         try:
             if not self.unified_manager:

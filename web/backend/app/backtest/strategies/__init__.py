@@ -1,5 +1,4 @@
-"""
-Strategy Templates Package
+"""Strategy Templates Package
 
 预置策略模板系统
 """
@@ -11,12 +10,13 @@ from app.backtest.strategies.grid import GridStrategy
 from app.backtest.strategies.mean_reversion import MeanReversionStrategy
 from app.backtest.strategies.momentum import MomentumStrategy
 
+
 __all__ = [
     "BaseStrategy",
-    "StrategySignal",
-    "MomentumStrategy",
-    "MeanReversionStrategy",
     "BreakoutStrategy",
     "GridStrategy",
+    "MeanReversionStrategy",
+    "MomentumStrategy",
     "StrategyFactory",
+    "StrategySignal",
 ]

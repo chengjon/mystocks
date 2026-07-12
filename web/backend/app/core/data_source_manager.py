@@ -1,5 +1,4 @@
-"""
-数据源配置中心
+"""数据源配置中心
 
 管理 Mock 数据与真实数据的切换配置。
 支持按模块、按时段、按条件切换数据源。
@@ -13,6 +12,7 @@ from enum import Enum
 from typing import Dict, List
 
 from config.data_sources_loader import JSON_DATA_SOURCES_CONFIG_PATH
+
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +50,7 @@ class DataSourceManager:
     def _load_config(self):
         """加载配置文件"""
         if os.path.exists(self.config_path):
-            with open(self.config_path, "r") as f:
+            with open(self.config_path) as f:
                 data = json.load(f)
                 self._raw_config = data
                 self.modules.clear()
@@ -112,7 +112,7 @@ class DataSourceManager:
                         "enabled": m.enabled,
                     }
                     for m in self.modules.values()
-                ]
+                ],
             }
 
         os.makedirs(os.path.dirname(self.config_path), exist_ok=True)
@@ -188,7 +188,7 @@ DEFAULT_MODULE_CONFIG = {
             "endpoints": ["/api/monitoring/*", "/api/metrics/*"],
             "cache_ttl": 30,
         },
-    ]
+    ],
 }
 
 

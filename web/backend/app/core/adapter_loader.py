@@ -1,5 +1,4 @@
-"""
-适配器加载器 - 统一管理外部适配器导入
+"""适配器加载器 - 统一管理外部适配器导入
 
 解决问题：
 - 移除硬编码的 sys.path.insert()
@@ -19,6 +18,7 @@ import sys
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Dict, Optional
+
 
 logger = logging.getLogger(__name__)
 

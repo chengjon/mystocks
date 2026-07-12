@@ -1,5 +1,4 @@
-"""
-Structured Logging Module for MyStocks
+"""Structured Logging Module for MyStocks
 Provides context-aware logging with trace_id and request_id injection
 """
 
@@ -13,6 +12,7 @@ from typing import Any, Dict, Optional
 from loguru import logger as loguru_logger
 
 from app.core.config import settings
+
 
 trace_id_var: ContextVar[Optional[str]] = ContextVar("trace_id", default=None)
 request_id_var: ContextVar[Optional[str]] = ContextVar("request_id", default=None)

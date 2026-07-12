@@ -6,6 +6,7 @@ from pydantic import BaseModel
 
 from src.indicators.indicator_factory import IndicatorFactory
 
+
 router = APIRouter(prefix="/api/indicator-registry", tags=["Indicator Registry"])
 
 # Singleton Factory
@@ -55,7 +56,7 @@ async def list_indicators():
                 use_case=config.get("use_case", "Unknown"),
                 description=config.get("description"),
                 status=config.get("status", "active"),
-            )
+            ),
         )
     return results
 

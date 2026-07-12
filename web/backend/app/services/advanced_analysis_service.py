@@ -1,5 +1,4 @@
-"""
-高级分析服务
+"""高级分析服务
 Advanced Analysis Service
 
 提供统一的分析服务接口，整合所有12个高级分析模块。
@@ -19,12 +18,12 @@ from app.services.websocket_manager import manager as websocket_manager
 from src.advanced_analysis import AdvancedAnalysisEngine
 from src.core import MyStocksUnifiedManager
 
+
 logger = get_logger(__name__)
 
 
 class AdvancedAnalysisService:
-    """
-    高级分析服务类
+    """高级分析服务类
 
     提供统一的分析服务接口，封装所有12个高级分析模块的功能。
     支持异步处理、缓存、监控和错误处理。
@@ -153,7 +152,7 @@ class AdvancedAnalysisService:
                 "debt_ratio": 35.2,
                 "net_margin": 12.3,
             }
-        elif analysis_type == "technical":
+        if analysis_type == "technical":
             return {
                 "overall_signal": "观望",
                 "trend": "震荡",
@@ -161,14 +160,13 @@ class AdvancedAnalysisService:
                 "macd_signal": "金叉",
                 "bollinger_position": "中轨",
             }
-        elif analysis_type == "trading-signals":
+        if analysis_type == "trading-signals":
             return {"buy_signals": 2, "sell_signals": 1, "confidence": 78}
-        else:
-            return {
-                "overall_signal": "中性",
-                "analysis_type": analysis_type,
-                "symbol": symbol,
-            }
+        return {
+            "overall_signal": "中性",
+            "analysis_type": analysis_type,
+            "symbol": symbol,
+        }
 
     async def _ensure_initialized(self):
         """确保服务已初始化"""
@@ -176,7 +174,7 @@ class AdvancedAnalysisService:
             await self.initialize()
 
     async def analyze_fundamental(
-        self, symbol: str, include_raw_data: bool = False, user_id: Optional[str] = None
+        self, symbol: str, include_raw_data: bool = False, user_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """基本面分析"""
         await self._ensure_initialized()
@@ -197,7 +195,7 @@ class AdvancedAnalysisService:
             raise
 
     async def analyze_technical(
-        self, symbol: str, include_raw_data: bool = False, user_id: Optional[str] = None
+        self, symbol: str, include_raw_data: bool = False, user_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """技术面分析"""
         await self._ensure_initialized()
@@ -232,7 +230,7 @@ class AdvancedAnalysisService:
             raise
 
     async def analyze_time_series(
-        self, symbol: str, include_raw_data: bool = False, user_id: Optional[str] = None
+        self, symbol: str, include_raw_data: bool = False, user_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """时序分析"""
         await self._ensure_initialized()
@@ -247,7 +245,7 @@ class AdvancedAnalysisService:
             raise
 
     async def analyze_market_panorama(
-        self, include_raw_data: bool = False, user_id: Optional[str] = None
+        self, include_raw_data: bool = False, user_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """市场全景分析"""
         await self._ensure_initialized()
@@ -262,7 +260,7 @@ class AdvancedAnalysisService:
             raise
 
     async def analyze_capital_flow(
-        self, symbol: str, include_raw_data: bool = False, user_id: Optional[str] = None
+        self, symbol: str, include_raw_data: bool = False, user_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """资金流向分析"""
         await self._ensure_initialized()
@@ -277,7 +275,7 @@ class AdvancedAnalysisService:
             raise
 
     async def analyze_chip_distribution(
-        self, symbol: str, include_raw_data: bool = False, user_id: Optional[str] = None
+        self, symbol: str, include_raw_data: bool = False, user_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """筹码分布分析"""
         await self._ensure_initialized()
@@ -292,7 +290,7 @@ class AdvancedAnalysisService:
             raise
 
     async def analyze_anomaly_tracking(
-        self, symbol: str, include_raw_data: bool = False, user_id: Optional[str] = None
+        self, symbol: str, include_raw_data: bool = False, user_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """异常追踪分析"""
         await self._ensure_initialized()
@@ -307,7 +305,7 @@ class AdvancedAnalysisService:
             raise
 
     async def analyze_financial_valuation(
-        self, symbol: str, include_raw_data: bool = False, user_id: Optional[str] = None
+        self, symbol: str, include_raw_data: bool = False, user_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """财务估值分析"""
         await self._ensure_initialized()
@@ -322,7 +320,7 @@ class AdvancedAnalysisService:
             raise
 
     async def analyze_sentiment(
-        self, symbol: str, include_raw_data: bool = False, user_id: Optional[str] = None
+        self, symbol: str, include_raw_data: bool = False, user_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """情绪分析"""
         await self._ensure_initialized()
@@ -337,7 +335,7 @@ class AdvancedAnalysisService:
             raise
 
     async def analyze_decision_models(
-        self, symbol: str, include_raw_data: bool = False, user_id: Optional[str] = None
+        self, symbol: str, include_raw_data: bool = False, user_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """决策模型分析"""
         await self._ensure_initialized()
@@ -352,7 +350,7 @@ class AdvancedAnalysisService:
             raise
 
     async def analyze_multidimensional_radar(
-        self, symbol: str, include_raw_data: bool = False, user_id: Optional[str] = None
+        self, symbol: str, include_raw_data: bool = False, user_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """多维度雷达分析"""
         await self._ensure_initialized()
@@ -429,8 +427,7 @@ class AdvancedAnalysisService:
 
         if analysis_type == "market_panorama":
             return await method(user_id=user_id)
-        else:
-            return await method(symbol=symbol, user_id=user_id)
+        return await method(symbol=symbol, user_id=user_id)
 
     async def health_check(self) -> Dict[str, Any]:
         """健康检查"""
@@ -454,7 +451,7 @@ class AdvancedAnalysisService:
                         # 简单的可用性检查
                         health_info["analyzers_status"][name] = "healthy"
                     except Exception as e:
-                        health_info["analyzers_status"][name] = f"unhealthy: {str(e)}"
+                        health_info["analyzers_status"][name] = f"unhealthy: {e!s}"
                         health_info["overall_status"] = "degraded"
 
             return health_info

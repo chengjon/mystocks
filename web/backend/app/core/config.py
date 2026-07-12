@@ -1,5 +1,4 @@
-"""
-应用配置管理
+"""应用配置管理
 """
 
 import logging
@@ -7,6 +6,7 @@ from typing import List
 
 from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +30,7 @@ class Settings(BaseSettings):
     # Mock API配置
     use_mock_apis: bool = Field(default=False, validation_alias="USE_MOCK_DATA")  # 控制是否注册Mock API路由
     mock_auth_enabled: bool = Field(
-        default=False, validation_alias="MOCK_AUTH_ENABLED"
+        default=False, validation_alias="MOCK_AUTH_ENABLED",
     )  # 生产环境安全控制：禁用Mock认证
 
     # 服务器配置
@@ -213,13 +213,12 @@ class Settings(BaseSettings):
     wencai_auto_refresh: bool = True
 
     model_config = SettingsConfigDict(
-        env_file=_ENV_FILE_PATH, env_file_encoding="utf-8", case_sensitive=False, extra="allow"
+        env_file=_ENV_FILE_PATH, env_file_encoding="utf-8", case_sensitive=False, extra="allow",
     )  # 允许额外字段，使用动态查找的.env文件路径
 
 
 def validate_required_settings(settings_obj: Settings):
-    """
-    验证必需的安全配置项
+    """验证必需的安全配置项
 
     在应用启动时验证所有必需的敏感信息是否已正确设置
     如果缺少必需配置，抛出ValueError
@@ -229,6 +228,7 @@ def validate_required_settings(settings_obj: Settings):
 
     Raises:
         ValueError: 当必需的配置项缺失时
+
     """
     required_fields = [
         ("postgresql_host", "POSTGRESQL_HOST"),

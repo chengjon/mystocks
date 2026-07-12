@@ -1,5 +1,4 @@
-"""
-User, Watchlist and Notification Schemas for Frontend Compatibility
+"""User, Watchlist and Notification Schemas for Frontend Compatibility
 These models match the expectations of the frontend adapters.
 """
 
@@ -20,7 +19,7 @@ class UserPreferences(BaseModel):
     defaultDashboard: str = "overview"
     watchlistLayout: str = "grid"
     chartSettings: Dict[str, Any] = Field(
-        default_factory=lambda: {"defaultPeriod": "1D", "showVolume": True, "showMA": True, "indicators": []}
+        default_factory=lambda: {"defaultPeriod": "1D", "showVolume": True, "showMA": True, "indicators": []},
     )
     notifications: Dict[str, bool] = Field(
         default_factory=lambda: {
@@ -32,7 +31,7 @@ class UserPreferences(BaseModel):
             "systemUpdates": True,
             "marketNews": True,
             "strategySignals": True,
-        }
+        },
     )
     privacy: Dict[str, Any] = Field(
         default_factory=lambda: {
@@ -42,7 +41,7 @@ class UserPreferences(BaseModel):
             "showTradingStats": True,
             "allowDirectMessages": True,
             "dataSharing": False,
-        }
+        },
     )
 
 
@@ -78,7 +77,7 @@ class SubscriptionInfo(BaseModel):
             "maxWatchlists": 10,
             "maxApiCallsPerDay": 1000,
             "maxDataRetention": 30,
-        }
+        },
     )
     nextBillingAmount: Optional[float] = None
     nextBillingDate: Optional[str] = None

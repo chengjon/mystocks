@@ -1,5 +1,4 @@
-"""
-告警规则引擎 API - V3.1
+"""告警规则引擎 API - V3.1
 
 提供告警规则管理功能:
 - 告警规则评估
@@ -19,6 +18,7 @@ from typing import Any, Dict, List
 
 import structlog
 from fastapi import APIRouter, HTTPException
+
 
 logger = structlog.get_logger(__name__)
 
@@ -71,7 +71,7 @@ async def evaluate_alert_rules(request: Dict[str, Any]) -> List[Dict[str, Any]]:
                     "severity": result.severity.value,
                     "actions": result.actions,
                     "evaluation_details": result.evaluation_details,
-                }
+                },
             )
 
         return response
@@ -80,7 +80,7 @@ async def evaluate_alert_rules(request: Dict[str, Any]) -> List[Dict[str, Any]]:
         raise
     except Exception as e:
         logger.error("评估告警规则失败: %(e)s")
-        raise HTTPException(status_code=500, detail=f"评估告警规则失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"评估告警规则失败: {e!s}")
 
 
 @router.post("/add", response_model=Dict[str, Any])
@@ -106,14 +106,13 @@ async def add_alert_rule(request: Dict[str, Any]) -> Dict[str, Any]:
 
         if rule_engine.add_rule(rule):
             return {"success": True, "rule_id": rule_id, "message": "规则添加成功"}
-        else:
-            raise HTTPException(status_code=400, detail="规则添加失败")
+        raise HTTPException(status_code=400, detail="规则添加失败")
 
     except HTTPException:
         raise
     except Exception as e:
         logger.error("添加告警规则失败: %(e)s")
-        raise HTTPException(status_code=500, detail=f"添加告警规则失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"添加告警规则失败: {e!s}")
 
 
 @router.delete("/remove/{rule_id}", response_model=Dict[str, Any])
@@ -129,14 +128,13 @@ async def remove_alert_rule(rule_id: str) -> Dict[str, Any]:
 
         if rule_engine.remove_rule(rule_id):
             return {"success": True, "rule_id": rule_id, "message": "规则移除成功"}
-        else:
-            raise HTTPException(status_code=404, detail="规则不存在")
+        raise HTTPException(status_code=404, detail="规则不存在")
 
     except HTTPException:
         raise
     except Exception as e:
         logger.error("移除告警规则失败: %(e)s")
-        raise HTTPException(status_code=500, detail=f"移除告警规则失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"移除告警规则失败: {e!s}")
 
 
 @router.get("/statistics", response_model=Dict[str, Any])
@@ -157,7 +155,7 @@ async def get_rule_statistics() -> Dict[str, Any]:
         raise
     except Exception as e:
         logger.error("获取规则统计失败: %(e)s")
-        raise HTTPException(status_code=500, detail=f"获取规则统计失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取规则统计失败: {e!s}")
 
 
 @router.get("/realtime/{symbol}", response_model=Dict[str, Any])
@@ -181,4 +179,4 @@ async def get_realtime_risk_metrics(symbol: str) -> Dict[str, Any]:
         raise
     except Exception as e:
         logger.error("获取实时风险指标失败 %(symbol)s: %(e)s")
-        raise HTTPException(status_code=500, detail=f"获取实时风险指标失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取实时风险指标失败: {e!s}")

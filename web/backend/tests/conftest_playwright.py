@@ -1,16 +1,17 @@
-"""
-Pytest configuration for Playwright E2E tests
+"""Pytest configuration for Playwright E2E tests
 Provides shared fixtures and configuration for browser-based testing
 
 Reference: web/backend/tests/test_e2e_playwright.py (Task 6 implementation)
 """
 
-import pytest
 import asyncio
 import os
 import sys
 from pathlib import Path
+
+import pytest
 from dotenv import load_dotenv
+
 
 # Load environment variables
 load_dotenv()

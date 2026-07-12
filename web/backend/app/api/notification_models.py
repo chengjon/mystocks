@@ -1,5 +1,4 @@
-"""
-通知管理 API 数据模型
+"""通知管理 API 数据模型
 """
 
 from datetime import datetime, timezone
@@ -14,7 +13,7 @@ class SendEmailRequest(BaseModel):
     to_addresses: List[EmailStr] = Field(..., min_length=1, max_length=100, description="收件人列表，最多100个邮箱地址")
     subject: constr(min_length=1, max_length=200, strip_whitespace=True) = Field(..., description="邮件主题，1-200字符")
     content: constr(min_length=1, max_length=100000, strip_whitespace=True) = Field(
-        ..., description="邮件内容，1-100000字符"
+        ..., description="邮件内容，1-100000字符",
     )
     content_type: str = Field("plain", pattern="^(plain|html)$", description="内容类型: plain 或 html")
     priority: str = Field("normal", pattern="^(low|normal|high|urgent)$", description="邮件优先级")
@@ -46,7 +45,7 @@ class SendWelcomeEmailRequest(BaseModel):
 
     user_email: EmailStr = Field(..., description="用户邮箱")
     user_name: constr(min_length=1, max_length=100, strip_whitespace=True) = Field(
-        ..., description="用户姓名，1-100字符"
+        ..., description="用户姓名，1-100字符",
     )
     welcome_offer: Optional[str] = Field(None, max_length=500, description="欢迎优惠信息，最多500字符")
     language: str = Field("zh-CN", pattern="^(zh-CN|en-US)$", description="邮件语言")
@@ -58,7 +57,7 @@ class SendNewsletterRequest(BaseModel):
     user_email: EmailStr = Field(..., description="用户邮箱")
     user_name: constr(min_length=1, max_length=100, strip_whitespace=True) = Field(..., description="用户姓名")
     watchlist_symbols: List[constr(min_length=1, max_length=20, strip_whitespace=True)] = Field(
-        ..., min_length=1, max_length=50, description="自选股列表，1-50个股票代码"
+        ..., min_length=1, max_length=50, description="自选股列表，1-50个股票代码",
     )
     news_data: List[Dict] = Field(..., min_length=1, max_length=100, description="新闻数据，1-100条新闻")
     newsletter_type: str = Field("daily", pattern="^(daily|weekly|monthly)$", description="简报类型")
@@ -78,7 +77,7 @@ class SendPriceAlertRequest(BaseModel):
     user_email: EmailStr = Field(..., description="用户邮箱")
     user_name: constr(min_length=1, max_length=100, strip_whitespace=True) = Field(..., description="用户姓名")
     symbol: constr(min_length=1, max_length=20, strip_whitespace=True, pattern=r"^[A-Za-z0-9\.]+$") = Field(
-        ..., description="股票代码"
+        ..., description="股票代码",
     )
     stock_name: constr(min_length=1, max_length=100, strip_whitespace=True) = Field(..., description="股票名称")
     current_price: float = Field(..., gt=0, description="当前价格，必须大于0")

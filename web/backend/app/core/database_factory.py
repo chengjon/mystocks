@@ -1,5 +1,4 @@
-"""
-Database Factory - Centralized database connection management
+"""Database Factory - Centralized database connection management
 Task 1.4: Remove Duplicate Code - Phase 1
 
 Consolidates duplicate database connection initialization patterns
@@ -17,6 +16,7 @@ from typing import Optional, Tuple
 import structlog
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
+
 
 logger = structlog.get_logger()
 
@@ -41,8 +41,7 @@ def _resolve_env_value(name: str, dev_default: str) -> str:
 
 
 class DatabaseFactory:
-    """
-    Factory for creating database connections and sessions
+    """Factory for creating database connections and sessions
 
     Consolidates duplicate database URL building and connection initialization
     that was repeated in 9+ service files.
@@ -77,8 +76,7 @@ class DatabaseFactory:
         pool_size: int = 10,
         max_overflow: int = 20,
     ) -> Tuple:
-        """
-        Create PostgreSQL database engine and session factory
+        """Create PostgreSQL database engine and session factory
 
         Args:
             host: Database host (reads from POSTGRESQL_HOST env var if not provided)
@@ -93,6 +91,7 @@ class DatabaseFactory:
             Tuple of (engine, SessionLocal)
 
         SECURITY: Use environment variables for credentials, never hardcode
+
         """
         # Get credentials from environment
         host = host or _resolve_env_value("POSTGRESQL_HOST", "127.0.0.1")
@@ -141,8 +140,7 @@ class DatabaseFactory:
         pool_size: int = 10,
         max_overflow: int = 20,
     ) -> Tuple:
-        """
-        Create MySQL database engine and session factory
+        """Create MySQL database engine and session factory
 
         Args:
             host: Database host
@@ -155,6 +153,7 @@ class DatabaseFactory:
 
         Returns:
             Tuple of (engine, SessionLocal)
+
         """
         host = host or _resolve_env_value("MYSQL_HOST", "127.0.0.1")
         port = port or int(_resolve_env_value("MYSQL_PORT", "3306"))
@@ -189,8 +188,7 @@ class DatabaseFactory:
 
     @staticmethod
     def get_session(db_type: str = "postgresql") -> Session:
-        """
-        Get a new database session
+        """Get a new database session
 
         Args:
             db_type: Type of database (postgresql, mysql)
@@ -200,9 +198,10 @@ class DatabaseFactory:
 
         Raises:
             KeyError: If database type not initialized
+
         """
         if db_type not in DatabaseFactory._session_factories:
-            raise KeyError(f"Database type '{db_type}' not initialized. " f"Call create_{db_type}() first.")
+            raise KeyError(f"Database type '{db_type}' not initialized. Call create_{db_type}() first.")
 
         return DatabaseFactory._session_factories[db_type]()
 

@@ -1,14 +1,14 @@
-"""
-数据库服务模块
+"""数据库服务模块
 
 提供数据库连接、查询、事务管理、批量操作等功能
 """
 
 import logging
-from typing import Any, Dict, List, Optional
-from datetime import datetime
 from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
+from typing import Any, Dict, List, Optional
+
 
 logger = __import__("logging").getLogger(__name__)
 
@@ -100,11 +100,11 @@ class DatabaseService:
         logger.info("数据库服务初始化")
 
     async def connect(self) -> bool:
-        """
-        建立数据库连接
+        """建立数据库连接
 
         Returns:
             bool: 是否连接成功
+
         """
         try:
             from psycopg2 import pool
@@ -137,11 +137,11 @@ class DatabaseService:
             return False
 
     async def disconnect(self) -> bool:
-        """
-        断开数据库连接
+        """断开数据库连接
 
         Returns:
             bool: 是否断开成功
+
         """
         try:
             if self.connection:
@@ -151,17 +151,15 @@ class DatabaseService:
 
                 logger.info("数据库连接已关闭")
                 return True
-            else:
-                logger.warning("数据库未连接")
-                return False
+            logger.warning("数据库未连接")
+            return False
 
         except Exception as e:
             logger.error(f"断开连接失败: {e}")
             return False
 
     async def execute_query(self, query: str, params: Dict[str, Any] = None) -> QueryResult:
-        """
-        执行SQL查询
+        """执行SQL查询
 
         Args:
             query: SQL查询语句
@@ -169,6 +167,7 @@ class DatabaseService:
 
         Returns:
             QueryResult: 查询结果
+
         """
         try:
             start_time = datetime.now()
@@ -218,14 +217,14 @@ class DatabaseService:
             )
 
     async def execute_batch_queries(self, queries: List[Dict]) -> List[QueryResult]:
-        """
-        批量执行SQL查询
+        """批量执行SQL查询
 
         Args:
             queries: SQL查询列表
 
         Returns:
             List[QueryResult]: 查询结果列表
+
         """
         try:
             results = []
@@ -241,8 +240,7 @@ class DatabaseService:
             return []
 
     async def fetch_one(self, query: str, params: Dict[str, Any] = None) -> Optional[Any]:
-        """
-        获取单条记录
+        """获取单条记录
 
         Args:
             query: SQL查询语句
@@ -250,6 +248,7 @@ class DatabaseService:
 
         Returns:
             Any: 查询结果，失败返回None
+
         """
         try:
             query_result = await self.execute_query(query, params)
@@ -264,8 +263,7 @@ class DatabaseService:
             return None
 
     async def fetch_many(self, query: str, params: Dict[str, Any] = None, limit: int = 100) -> List[Any]:
-        """
-        获取多条记录
+        """获取多条记录
 
         Args:
             query: SQL查询语句
@@ -274,6 +272,7 @@ class DatabaseService:
 
         Returns:
             List[Any]: 查询结果列表，失败返回空列表
+
         """
         try:
             query_with_limit = query
@@ -298,11 +297,11 @@ class DatabaseService:
             return []
 
     async def begin_transaction(self) -> bool:
-        """
-        开始事务
+        """开始事务
 
         Returns:
             bool: 是否成功
+
         """
         try:
             if not self.is_transaction_active:
@@ -312,20 +311,19 @@ class DatabaseService:
 
                 logger.info("事务已开始")
                 return True
-            else:
-                logger.warning("事务已活动")
-                return False
+            logger.warning("事务已活动")
+            return False
 
         except Exception as e:
             logger.error(f"开始事务失败: {e}")
             return False
 
     async def commit_transaction(self) -> bool:
-        """
-        提交事务
+        """提交事务
 
         Returns:
             bool: 是否成功
+
         """
         try:
             if self.is_transaction_active:
@@ -335,20 +333,19 @@ class DatabaseService:
 
                 logger.info("事务已提交")
                 return True
-            else:
-                logger.warning("无活动事务")
-                return False
+            logger.warning("无活动事务")
+            return False
 
         except Exception as e:
             logger.error(f"提交事务失败: {e}")
             return False
 
     async def rollback_transaction(self) -> bool:
-        """
-        回滚事务
+        """回滚事务
 
         Returns:
             bool: 是否成功
+
         """
         try:
             if self.is_transaction_active:
@@ -358,17 +355,15 @@ class DatabaseService:
 
                 logger.info("事务已回滚")
                 return True
-            else:
-                logger.warning("无活动事务")
-                return False
+            logger.warning("无活动事务")
+            return False
 
         except Exception as e:
             logger.error(f"回滚事务失败: {e}")
             return False
 
     async def execute_in_transaction(self, operation: callable, *args, **kwargs) -> Any:
-        """
-        在事务中执行操作
+        """在事务中执行操作
 
         Args:
             operation: 操作函数
@@ -377,6 +372,7 @@ class DatabaseService:
 
         Returns:
             Any: 操作结果，失败返回None
+
         """
         try:
             await self.begin_transaction()
@@ -403,11 +399,11 @@ class DatabaseService:
         return self.connection
 
     async def check_connection_health(self) -> Dict:
-        """
-        检查连接健康状态
+        """检查连接健康状态
 
         Returns:
             Dict: 健康状态
+
         """
         try:
             is_connected = self.config.is_connected
@@ -438,11 +434,11 @@ class DatabaseService:
         return self.config
 
     async def get_connection_pool_stats(self) -> Dict:
-        """
-        获取连接池统计
+        """获取连接池统计
 
         Returns:
             Dict: 连接池统计
+
         """
         try:
             if not self.connection:

@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-问财API路由
+"""问财API路由
 
 提供问财股票筛选功能的RESTful API端点
 
@@ -31,6 +29,7 @@ from app.schemas.wencai_schemas import (
 )
 from app.services.wencai_service import WencaiService
 
+
 # 配置日志
 logger = logging.getLogger(__name__)
 
@@ -50,8 +49,7 @@ router = APIRouter(prefix="/api/market/wencai", tags=["wencai"])
     description="获取所有可用的问财查询配置",
 )
 async def get_all_queries(db: Session = Depends(get_db)) -> WencaiQueryListResponse:
-    """
-    获取所有查询列表
+    """获取所有查询列表
 
     返回所有预定义的问财查询配置（qs_1 ~ qs_9）
     支持Mock数据模式切换
@@ -66,17 +64,16 @@ async def get_all_queries(db: Session = Depends(get_db)) -> WencaiQueryListRespo
             queries_data = mock_manager.get_data("wencai", query_name="all")
 
             return WencaiQueryListResponse(
-                queries=queries_data.get("queries", []), total=len(queries_data.get("queries", []))
+                queries=queries_data.get("queries", []), total=len(queries_data.get("queries", [])),
             )
-        else:
-            # 使用真实数据库
-            service = WencaiService(db=db)
-            queries = service.get_all_queries()
-            return WencaiQueryListResponse(queries=queries, total=len(queries))
+        # 使用真实数据库
+        service = WencaiService(db=db)
+        queries = service.get_all_queries()
+        return WencaiQueryListResponse(queries=queries, total=len(queries))
 
     except Exception as e:
         logger.error("Failed to get queries: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"获取查询列表失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取查询列表失败: {e!s}")
 
 
 @router.get(
@@ -86,14 +83,14 @@ async def get_all_queries(db: Session = Depends(get_db)) -> WencaiQueryListRespo
     description="根据查询名称获取查询配置详情",
 )
 async def get_query_by_name(query_name: str, db: Session = Depends(get_db)) -> WencaiQueryInfo:
-    """
-    获取指定查询信息
+    """获取指定查询信息
 
     Args:
         query_name: 查询名称（如qs_1）
 
     Returns:
         查询配置详情
+
     """
     try:
         service = WencaiService(db=db)
@@ -108,7 +105,7 @@ async def get_query_by_name(query_name: str, db: Session = Depends(get_db)) -> W
         raise
     except Exception as e:
         logger.error("Failed to get query {query_name}: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"获取查询失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取查询失败: {e!s}")
 
 
 @router.post(
@@ -118,8 +115,7 @@ async def get_query_by_name(query_name: str, db: Session = Depends(get_db)) -> W
     description="执行指定的问财查询并保存结果到数据库",
 )
 async def execute_query(request: WencaiQueryRequest, db: Session = Depends(get_db)) -> WencaiQueryResponse:
-    """
-    执行问财查询
+    """执行问财查询
 
     从问财API获取数据，清理、去重后保存到数据库
     支持Mock数据模式切换
@@ -129,6 +125,7 @@ async def execute_query(request: WencaiQueryRequest, db: Session = Depends(get_d
 
     Returns:
         查询执行结果统计
+
     """
     try:
         logger.info("Executing query: {request.query_name}, pages={request.pages}")
@@ -150,18 +147,17 @@ async def execute_query(request: WencaiQueryRequest, db: Session = Depends(get_d
                 execution_time=0.1,
                 timestamp=datetime.now(),
             )
-        else:
-            # 使用真实数据库
-            service = WencaiService(db=db)
-            result = service.fetch_and_save(query_name=request.query_name, pages=request.pages)
-            return WencaiQueryResponse(**result)
+        # 使用真实数据库
+        service = WencaiService(db=db)
+        result = service.fetch_and_save(query_name=request.query_name, pages=request.pages)
+        return WencaiQueryResponse(**result)
 
     except ValueError as e:
         logger.warning("Validation error: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         logger.error("Failed to execute query: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"查询执行失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"查询执行失败: {e!s}")
 
 
 @router.get(
@@ -176,8 +172,7 @@ async def get_query_results(
     offset: int = Query(0, ge=0, description="偏移量"),
     db: Session = Depends(get_db),
 ) -> WencaiResultsResponse:
-    """
-    获取查询结果
+    """获取查询结果
 
     从数据库获取指定查询的最新结果
 
@@ -188,6 +183,7 @@ async def get_query_results(
 
     Returns:
         查询结果列表
+
     """
     try:
         service = WencaiService(db=db)
@@ -197,7 +193,7 @@ async def get_query_results(
 
     except Exception as e:
         logger.error("Failed to get results for {query_name}: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"获取结果失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取结果失败: {e!s}")
 
 
 @router.post(
@@ -212,8 +208,7 @@ async def refresh_query(
     pages: int = Query(1, ge=1, le=10, description="获取页数"),
     db: Session = Depends(get_db),
 ) -> WencaiRefreshResponse:
-    """
-    刷新查询数据（后台任务）
+    """刷新查询数据（后台任务）
 
     在后台异步执行数据刷新，立即返回任务状态
 
@@ -224,6 +219,7 @@ async def refresh_query(
 
     Returns:
         任务状态响应
+
     """
     try:
         # 验证查询是否存在
@@ -249,7 +245,7 @@ async def refresh_query(
         raise
     except Exception as e:
         logger.error("Failed to start refresh task: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"启动刷新任务失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"启动刷新任务失败: {e!s}")
 
 
 @router.get(
@@ -263,8 +259,7 @@ async def get_query_history(
     days: int = Query(7, ge=1, le=30, description="查询天数"),
     db: Session = Depends(get_db),
 ) -> WencaiHistoryResponse:
-    """
-    获取查询历史
+    """获取查询历史
 
     统计指定天数内的查询数据情况
 
@@ -274,6 +269,7 @@ async def get_query_history(
 
     Returns:
         历史统计数据
+
     """
     try:
         service = WencaiService(db=db)
@@ -283,7 +279,7 @@ async def get_query_history(
 
     except Exception as e:
         logger.error("Failed to get history for {query_name}: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"获取历史数据失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取历史数据失败: {e!s}")
 
 
 @router.post(
@@ -293,10 +289,9 @@ async def get_query_history(
     description="执行用户自定义的问财查询（直接返回结果，不保存到数据库）",
 )
 async def execute_custom_query(
-    request: WencaiCustomQueryRequest, db: Session = Depends(get_db)
+    request: WencaiCustomQueryRequest, db: Session = Depends(get_db),
 ) -> WencaiCustomQueryResponse:
-    """
-    执行自定义查询
+    """执行自定义查询
 
     用户可以输入任意自然语言查询，直接获取结果
     支持Mock数据模式切换
@@ -306,6 +301,7 @@ async def execute_custom_query(
 
     Returns:
         查询结果（不保存到数据库）
+
     """
     try:
         logger.info("Executing custom query: {request.query_text[:50]}..., pages={request.pages}")
@@ -339,52 +335,51 @@ async def execute_custom_query(
                 columns=["stock_code", "stock_name", "current_price", "change_percent", "volume", "market_cap"],
                 fetch_time=datetime.now(),
             )
-        else:
-            # 使用真实数据库
-            service = WencaiService(db=db)
-            df = service.adapter.fetch_data(query=request.query_text, pages=request.pages)
+        # 使用真实数据库
+        service = WencaiService(db=db)
+        df = service.adapter.fetch_data(query=request.query_text, pages=request.pages)
 
-            if df.empty:
-                return WencaiCustomQueryResponse(
-                    success=True,
-                    message="查询成功，但没有找到匹配的数据",
-                    query_text=request.query_text,
-                    total_records=0,
-                    results=[],
-                    columns=[],
-                    fetch_time=datetime.now(),
-                )
-
-            results = df.to_dict("records")
-            columns = df.columns.tolist()
-
+        if df.empty:
             return WencaiCustomQueryResponse(
                 success=True,
-                message=f"查询成功，共获取 {len(results)} 条数据",
+                message="查询成功，但没有找到匹配的数据",
                 query_text=request.query_text,
-                total_records=len(results),
-                results=results,
-                columns=columns,
+                total_records=0,
+                results=[],
+                columns=[],
                 fetch_time=datetime.now(),
             )
+
+        results = df.to_dict("records")
+        columns = df.columns.tolist()
+
+        return WencaiCustomQueryResponse(
+            success=True,
+            message=f"查询成功，共获取 {len(results)} 条数据",
+            query_text=request.query_text,
+            total_records=len(results),
+            results=results,
+            columns=columns,
+            fetch_time=datetime.now(),
+        )
 
     except ValueError as e:
         logger.warning("Validation error: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         logger.error("Failed to execute custom query: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"自定义查询执行失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"自定义查询执行失败: {e!s}")
 
 
 @router.get("/health", summary="健康检查", description="检查问财API服务状态")
 async def health_check():
-    """
-    健康检查
+    """健康检查
 
     检查服务是否正常运行
 
     Returns:
         健康状态
+
     """
     return {"status": "healthy", "service": "wencai", "version": "1.0.0"}
 
@@ -395,12 +390,12 @@ async def health_check():
 
 
 async def _refresh_query_task(query_name: str, pages: int = 1):
-    """
-    后台刷新任务
+    """后台刷新任务
 
     Args:
         query_name: 查询名称
         pages: 获取页数
+
     """
     # 创建新的数据库会话
     db = SessionLocal()

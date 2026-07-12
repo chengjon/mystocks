@@ -1,5 +1,4 @@
-"""
-Adapter Factory - Unified adapter instantiation and management
+"""Adapter Factory - Unified adapter instantiation and management
 Task 1.4 Phase 2: Remove Duplicate Code - Service Consolidation
 
 Consolidates repeated adapter initialization patterns across 6+ adapter files.
@@ -31,14 +30,14 @@ from typing import Any, Dict, Type, TypeVar
 
 import structlog
 
+
 logger = structlog.get_logger()
 
 T = TypeVar("T")
 
 
 class AdapterRegistry:
-    """
-    Central registry for all data source adapters.
+    """Central registry for all data source adapters.
 
     Provides lazy-loading and singleton pattern for all adapters.
     """
@@ -48,13 +47,13 @@ class AdapterRegistry:
 
     @staticmethod
     def register_adapter(name: str, adapter_class: Type, lazy_load: bool = True):
-        """
-        Register an adapter class in the registry
+        """Register an adapter class in the registry
 
         Args:
             name: Unique adapter name (e.g., "akshare", "eastmoney")
             adapter_class: Adapter class or factory function
             lazy_load: Whether to instantiate on-demand (True) or at registration (False)
+
         """
         AdapterRegistry._adapter_classes[name] = adapter_class
         logger.info("✅ Registered adapter: %(name)s (lazy_load=%(lazy_load)s)")
@@ -64,8 +63,7 @@ class AdapterRegistry:
 
     @staticmethod
     def get_adapter(name: str, *args, **kwargs) -> Any:
-        """
-        Get or create singleton instance of an adapter
+        """Get or create singleton instance of an adapter
 
         Args:
             name: Adapter name
@@ -77,10 +75,11 @@ class AdapterRegistry:
 
         Raises:
             KeyError: If adapter not registered
+
         """
         if name not in AdapterRegistry._adapter_classes:
             raise KeyError(
-                f"Adapter '{name}' not registered. Available: {list(AdapterRegistry._adapter_classes.keys())}"
+                f"Adapter '{name}' not registered. Available: {list(AdapterRegistry._adapter_classes.keys())}",
             )
 
         if name not in AdapterRegistry._adapters:
@@ -101,9 +100,8 @@ class AdapterRegistry:
             ):
                 # It's a factory function
                 return adapter_class(*args, **kwargs)
-            else:
-                # It's a class
-                return adapter_class(*args, **kwargs)
+            # It's a class
+            return adapter_class(*args, **kwargs)
         except Exception:
             logger.error("❌ Failed to instantiate adapter '%(name)s': {str(e)}")
             raise
@@ -133,8 +131,7 @@ class AdapterRegistry:
 
 
 class AdapterFactory:
-    """
-    Generic factory for managing all data source adapters.
+    """Generic factory for managing all data source adapters.
 
     Consolidates repeated adapter initialization patterns.
     Supports lazy-loading and singleton pattern for all adapters.
@@ -159,20 +156,19 @@ class AdapterFactory:
 
     @staticmethod
     def register(name: str, adapter_class_or_factory: Type, lazy_load: bool = True):
-        """
-        Register an adapter
+        """Register an adapter
 
         Args:
             name: Unique adapter name
             adapter_class_or_factory: Adapter class or factory function
             lazy_load: Instantiate on-demand if True
+
         """
         AdapterRegistry.register_adapter(name, adapter_class_or_factory, lazy_load)
 
     @staticmethod
     def get(name: str, *args, **kwargs) -> Any:
-        """
-        Get or create singleton adapter instance
+        """Get or create singleton adapter instance
 
         Args:
             name: Adapter name
@@ -181,6 +177,7 @@ class AdapterFactory:
 
         Returns:
             Adapter instance
+
         """
         return AdapterRegistry.get_adapter(name, *args, **kwargs)
 
@@ -218,8 +215,7 @@ class AdapterFactory:
 
 
 def init_default_adapters():
-    """
-    Initialize default adapters at application startup.
+    """Initialize default adapters at application startup.
 
     Should be called in main.py or app initialization.
     """

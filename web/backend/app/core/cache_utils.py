@@ -1,5 +1,4 @@
-"""
-API缓存工具 - 减少数据库查询压力
+"""API缓存工具 - 减少数据库查询压力
 
 解决问题：
 - 高频API缺少缓存导致数据库压力大
@@ -18,6 +17,7 @@ import logging
 from datetime import datetime, timedelta
 from functools import wraps
 from typing import Any, Callable, Dict, Optional
+
 
 logger = logging.getLogger(__name__)
 
@@ -99,7 +99,7 @@ class CacheManager:
     def clear_cache(cls, prefix: Optional[str] = None):
         """清除缓存"""
         if prefix:
-            keys_to_delete = [k for k in _memory_cache.keys() if k.startswith(f"api:{prefix}:")]
+            keys_to_delete = [k for k in _memory_cache if k.startswith(f"api:{prefix}:")]
             for key in keys_to_delete:
                 del _memory_cache[key]
             logger.info("🗑️  Cleared cache: %(prefix)s* ({len(keys_to_delete)} keys)")
@@ -124,13 +124,12 @@ class CacheManager:
             "total_keys": total_keys,
             "valid_keys": valid_keys,
             "expired_keys": expired_keys,
-            "cache_types": list(set(k.split(":")[1] for k in _memory_cache.keys() if ":" in k)),
+            "cache_types": list(set(k.split(":")[1] for k in _memory_cache if ":" in k)),
         }
 
 
 def cache_response(cache_type: str, ttl: Optional[int] = None, skip_cache: bool = False):
-    """
-    API响应缓存装饰器
+    """API响应缓存装饰器
 
     Args:
         cache_type: 缓存类型（用于生成缓存键前缀）
@@ -141,6 +140,7 @@ def cache_response(cache_type: str, ttl: Optional[int] = None, skip_cache: bool 
         @cache_response("fund_flow", ttl=300)
         async def get_fund_flow(symbol: str, timeframe: str):
             ...
+
     """
 
     def decorator(func: Callable):
@@ -194,8 +194,7 @@ def cache_response(cache_type: str, ttl: Optional[int] = None, skip_cache: bool 
 
         if inspect.iscoroutinefunction(func):
             return async_wrapper
-        else:
-            return sync_wrapper
+        return sync_wrapper
 
     return decorator
 

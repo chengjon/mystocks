@@ -1,5 +1,4 @@
-"""
-Strategy Base Class
+"""Strategy Base Class
 
 策略基类定义
 """
@@ -35,18 +34,17 @@ class StrategySignal:
 
 
 class BaseStrategy(ABC):
-    """
-    策略基类
+    """策略基类
 
     所有策略模板必须继承此类
     """
 
     def __init__(self, parameters: Dict[str, Any] = None):
-        """
-        初始化策略
+        """初始化策略
 
         Args:
             parameters: 策略参数字典
+
         """
         self.parameters = parameters or {}
         self.name = self.__class__.__name__
@@ -71,8 +69,7 @@ class BaseStrategy(ABC):
         current_data: Dict[str, Any],
         position: Optional[Dict[str, Any]] = None,
     ) -> Optional[StrategySignal]:
-        """
-        生成交易信号
+        """生成交易信号
 
         Args:
             symbol: 股票代码
@@ -81,15 +78,16 @@ class BaseStrategy(ABC):
 
         Returns:
             交易信号或None
+
         """
 
     def update_history(self, symbol: str, data: Dict[str, Any]):
-        """
-        更新历史数据
+        """更新历史数据
 
         Args:
             symbol: 股票代码
             data: OHLCV数据
+
         """
         if symbol not in self.price_history:
             self.price_history[symbol] = []

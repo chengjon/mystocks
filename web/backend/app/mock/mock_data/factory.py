@@ -1,14 +1,11 @@
 """Mock 数据子模块"""
 
 import logging
-import random
-import time
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
+
 
 logger = logging.getLogger(__name__)
 
-from typing import Callable, TYPE_CHECKING
 
 
 class _FallbackMockDataManager:
@@ -27,17 +24,17 @@ def _is_valid_manager(manager: Any) -> bool:
     return callable(getattr(manager, "get_data", None))
 
 
-def get_mock_data_manager() -> 'UnifiedMockDataManager':
+def get_mock_data_manager() -> "UnifiedMockDataManager":
     """获取Mock数据管理器实例"""
     try:
-        from app.mock.mock_data import UnifiedMockDataManager
-
         # 尝试从全局模块缓存获取实例
         import sys
 
-        main_module = sys.modules.get('app.mock.mock_data')
-        if main_module and hasattr(main_module, 'mock_data_manager'):
-            cached_manager = getattr(main_module, 'mock_data_manager')
+        from app.mock.mock_data import UnifiedMockDataManager
+
+        main_module = sys.modules.get("app.mock.mock_data")
+        if main_module and hasattr(main_module, "mock_data_manager"):
+            cached_manager = main_module.mock_data_manager
             logger.info(
                 "使用缓存 mock_data_manager: type=%s module=%s",
                 type(cached_manager).__name__,
@@ -77,43 +74,43 @@ def get_mock_data_manager() -> 'UnifiedMockDataManager':
 def get_dashboard_data() -> Dict[str, Any]:
     """获取Dashboard数据"""
     manager = get_mock_data_manager()
-    return manager.get_data("dashboard") if hasattr(manager, 'get_data') else {}
+    return manager.get_data("dashboard") if hasattr(manager, "get_data") else {}
 
 
 def get_stocks_data(page: int = 1, page_size: int = 20, exchange: str = "all") -> Dict[str, Any]:
     """获取股票数据"""
     manager = get_mock_data_manager()
-    return manager.get_data("stocks", page=page, page_size=page_size, exchange=exchange) if hasattr(manager, 'get_data') else {}
+    return manager.get_data("stocks", page=page, page_size=page_size, exchange=exchange) if hasattr(manager, "get_data") else {}
 
 
 def get_technical_data(symbol: str = None, symbols: List[str] = None) -> Dict[str, Any]:
     """获取技术指标数据"""
     manager = get_mock_data_manager()
-    return manager.get_data("technical", symbol=symbol, symbols=symbols) if hasattr(manager, 'get_data') else {}
+    return manager.get_data("technical", symbol=symbol, symbols=symbols) if hasattr(manager, "get_data") else {}
 
 
 def get_wencai_data(query_name: str = "all") -> Dict[str, Any]:
     """获取问财数据"""
     manager = get_mock_data_manager()
-    return manager.get_data("wencai", query_name=query_name) if hasattr(manager, 'get_data') else {}
+    return manager.get_data("wencai", query_name=query_name) if hasattr(manager, "get_data") else {}
 
 
 def get_strategy_data(action: str = "list", **kwargs) -> Dict[str, Any]:
     """获取策略数据"""
     manager = get_mock_data_manager()
-    return manager.get_data("strategy", action=action, **kwargs) if hasattr(manager, 'get_data') else {}
+    return manager.get_data("strategy", action=action, **kwargs) if hasattr(manager, "get_data") else {}
 
 
 def get_monitoring_data(alert_type: str = "all") -> Dict[str, Any]:
     """获取监控数据"""
     manager = get_mock_data_manager()
-    return manager.get_data("monitoring", alert_type=alert_type) if hasattr(manager, 'get_data') else {}
+    return manager.get_data("monitoring", alert_type=alert_type) if hasattr(manager, "get_data") else {}
 
 
 def get_backtest_data(**kwargs) -> Dict[str, Any]:
     """Get mock backtest data"""
     manager = get_mock_data_manager()
-    return manager.get_data("backtest", **kwargs) if hasattr(manager, 'get_data') else {}
+    return manager.get_data("backtest", **kwargs) if hasattr(manager, "get_data") else {}
 
 
 # 数据源切换装饰器

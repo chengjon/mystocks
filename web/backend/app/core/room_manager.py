@@ -1,5 +1,4 @@
-"""
-房间管理器 - Room Management System
+"""房间管理器 - Room Management System
 
 Implements room-based pub/sub messaging with join/leave notifications
 
@@ -24,6 +23,7 @@ from typing import Any, Callable, Dict, List, Optional
 
 import structlog
 
+
 logger = structlog.get_logger()
 
 
@@ -40,12 +40,12 @@ class RoomMember:
     """房间成员信息"""
 
     def __init__(self, sid: str, user_id: Optional[str] = None):
-        """
-        初始化房间成员
+        """初始化房间成员
 
         Args:
             sid: Socket.IO连接ID
             user_id: 用户ID
+
         """
         self.sid = sid
         self.user_id = user_id
@@ -73,11 +73,11 @@ class Room:
     """房间类"""
 
     def __init__(self, name: str):
-        """
-        初始化房间
+        """初始化房间
 
         Args:
             name: 房间名称
+
         """
         self.name = name
         self.room_id = str(uuid.uuid4())

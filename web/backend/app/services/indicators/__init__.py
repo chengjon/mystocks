@@ -1,5 +1,4 @@
-"""
-Indicators Module
+"""Indicators Module
 =================
 
 技术指标管理模块，提供指标元数据、注册表、计算接口、依赖管理等功能。
@@ -77,6 +76,7 @@ from .smart_scheduler import (
     create_scheduler,
 )
 from .talib_adapter import TalibGenericIndicator, register_all_talib_indicators
+
 
 __all__ = [
     # Enums

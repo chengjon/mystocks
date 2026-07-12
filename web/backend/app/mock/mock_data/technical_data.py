@@ -2,9 +2,9 @@
 
 import logging
 import random
-import time
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
+
 
 logger = logging.getLogger(__name__)
 
@@ -13,8 +13,7 @@ class MockTechnicalDataMixin:
     """Mock 技术指标与资金流向数据"""
 
     def _generate_mock_fund_flow(self, symbol: str = "600519", timeframe: str = "1", **kwargs) -> Dict[str, Any]:
-        """
-        生成模拟资金流向数据
+        """生成模拟资金流向数据
 
         Args:
             symbol: 股票代码，默认600519（贵州茅台）
@@ -24,10 +23,8 @@ class MockTechnicalDataMixin:
 
         Returns:
             资金流向数据
-        """
-        import random
-        from datetime import datetime
 
+        """
         # 解析时间维度
         timeframe_days = {"1": 1, "3": 3, "5": 5, "10": 10}.get(timeframe, 1)
 
@@ -101,7 +98,7 @@ class MockTechnicalDataMixin:
                     "retain_outflow": round(retain_outflow, 2),
                     "retain_net": round(retain_net, 2),
                     "total_net": round(total_net, 2),
-                }
+                },
             )
 
             total_main_inflow += main_inflow

@@ -1,5 +1,4 @@
-"""
-数据源工厂模式单元测试 - 配置管理与工厂部分
+"""数据源工厂模式单元测试 - 配置管理与工厂部分
 """
 
 import asyncio
@@ -17,7 +16,6 @@ from ._test_data_source_factory_support import (
     DataSourceMode,
     DynamicConfigManager,
     HealthStatusEnum,
-    MockDataSource,
     get_data_source_mode,
     is_fallback_enabled,
 )
@@ -38,7 +36,7 @@ class TestDynamicConfigManager:
                         "type": "test",
                         "enabled": True,
                         "mode": "mock",
-                    }
+                    },
                 },
             }
             json.dump(config_data, file_handle)
@@ -69,7 +67,7 @@ class TestDynamicConfigManager:
                         "type": "test",
                         "enabled": True,
                         "mode": "mock",
-                    }
+                    },
                 },
             }
             yaml.dump(config_data, file_handle)
@@ -128,7 +126,7 @@ class TestDynamicConfigManager:
                         "type": "test",
                         "enabled": True,
                         "mode": "real",
-                    }
+                    },
                 },
             }
 

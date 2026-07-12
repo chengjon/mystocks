@@ -1,5 +1,4 @@
-"""
-Daily Indicator Calculation Job
+"""Daily Indicator Calculation Job
 ===============================
 
 Fetches OHLCV data for all stocks and calculates indicators.
@@ -21,6 +20,7 @@ from app.core.database import db_service
 from app.repositories.indicator_repo import IndicatorRepository
 from app.services.indicators import CalculationMode, OHLCVData, create_scheduler
 from app.services.indicators.defaults import load_default_indicators
+
 
 logger = logging.getLogger(__name__)
 
@@ -116,7 +116,7 @@ async def _publish_task_completed(job_id: str, task_type: str, status: TaskStatu
 
     try:
         event = create_task_completed_event(
-            task_id=job_id, task_type=task_type, status=status, duration_seconds=duration_seconds, **result
+            task_id=job_id, task_type=task_type, status=status, duration_seconds=duration_seconds, **result,
         )
 
         # Publish to both channels
@@ -131,8 +131,7 @@ async def _publish_task_completed(job_id: str, task_type: str, status: TaskStatu
 
 
 async def run_daily_calculation(params: Dict[str, Any] = None):
-    """
-    Run daily indicator calculation for all stocks.
+    """Run daily indicator calculation for all stocks.
 
     Phase 3 Enhancements:
     - Publishes task progress events to Redis Pub/Sub
@@ -212,7 +211,7 @@ async def run_daily_calculation(params: Dict[str, Any] = None):
                     progress=0.0,
                     message="No stocks found in database",
                 )
-                return
+                return None
             stock_codes = df_stocks["symbol"].tolist()
         except Exception as e:
             logger.error("Failed to fetch stock list: %(e)s")
@@ -223,7 +222,7 @@ async def run_daily_calculation(params: Dict[str, Any] = None):
                 progress=0.0,
                 message=f"Failed to fetch stock list: {e}",
             )
-            return
+            return None
 
     total_stocks = len(stock_codes)
     logger.info("Processing %(total_stocks)s stocks...")
@@ -353,6 +352,6 @@ async def run_daily_calculation(params: Dict[str, Any] = None):
     )
 
     logger.info(
-        f"Job {job_id} completed. Success: {success_count}, Failed: {fail_count}, Duration: {job_duration:.2f}s"
+        f"Job {job_id} completed. Success: {success_count}, Failed: {fail_count}, Duration: {job_duration:.2f}s",
     )
     return {"success": success_count, "failed": fail_count}

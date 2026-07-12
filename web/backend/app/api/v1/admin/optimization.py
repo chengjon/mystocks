@@ -1,5 +1,4 @@
-"""
-数据库优化API
+"""数据库优化API
 
 提供数据库优化和维护功能
 """
@@ -8,6 +7,7 @@ from typing import Any, Dict
 
 from fastapi import APIRouter
 from pydantic import BaseModel
+
 
 router = APIRouter(
     prefix="/optimization",
@@ -26,8 +26,7 @@ class OptimizationResponse(BaseModel):
 
 @router.post("/vacuum", response_model=OptimizationResponse, summary="Vacuum Database")
 async def vacuum_database():
-    """
-    执行数据库Vacuum操作
+    """执行数据库Vacuum操作
 
     Performs database vacuum to reclaim storage and update statistics.
     """
@@ -44,8 +43,7 @@ async def vacuum_database():
 
 @router.post("/analyze", response_model=OptimizationResponse, summary="Analyze Database")
 async def analyze_database():
-    """
-    执行数据库Analyze操作
+    """执行数据库Analyze操作
 
     Updates statistics for query planner.
     """
@@ -62,8 +60,7 @@ async def analyze_database():
 
 @router.post("/reindex", response_model=OptimizationResponse, summary="Reindex Database")
 async def reindex_database():
-    """
-    执行数据库Reindex操作
+    """执行数据库Reindex操作
 
     Rebuilds indexes for improved query performance.
     """
@@ -80,8 +77,7 @@ async def reindex_database():
 
 @router.get("/status", summary="Get Database Status")
 async def get_database_status():
-    """
-    获取数据库优化状态
+    """获取数据库优化状态
 
     Returns current database optimization status and recommendations.
     """
@@ -109,8 +105,7 @@ async def get_database_status():
 
 @router.get("/slow-queries", summary="Get Slow Queries")
 async def get_slow_queries(limit: int = 10):
-    """
-    获取慢查询列表
+    """获取慢查询列表
 
     Returns slowest queries for optimization.
     """

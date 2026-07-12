@@ -1,5 +1,4 @@
-"""
-GPU监控API路由 (CLI-5: Phase 6 - T5.2)
+"""GPU监控API路由 (CLI-5: Phase 6 - T5.2)
 
 提供GPU硬件状态、性能指标和监控数据的API端点。
 与CLI-5的GPU监控服务集成，支持Prometheus指标导出。
@@ -26,6 +25,7 @@ from pydantic import BaseModel, Field
 
 # 导入统一响应格式
 from app.core.responses import create_unified_success_response
+
 
 # 配置日志
 logger = logging.getLogger(__name__)
@@ -69,14 +69,14 @@ class GPUPerformanceMetrics(BaseModel):
 
 @router.get("/status")
 async def get_gpu_status(request: Request, device_id: Optional[int] = None):
-    """
-    获取GPU实时状态
+    """获取GPU实时状态
 
     Args:
         device_id: GPU设备ID（可选，不指定则返回所有GPU）
 
     Returns:
         GPU状态列表
+
     """
     request_id = getattr(request.state, "request_id", None)
 
@@ -98,7 +98,7 @@ async def get_gpu_status(request: Request, device_id: Optional[int] = None):
             power_usage=320.5,
             sm_clock=1755,
             memory_clock=9751,
-        )
+        ),
     ]
 
     logger.info("GPU状态查询: device_id=%(device_id)s, request_id=%(request_id)s")
@@ -112,14 +112,14 @@ async def get_gpu_status(request: Request, device_id: Optional[int] = None):
 
 @router.get("/performance")
 async def get_gpu_performance(request: Request, device_id: Optional[int] = None):
-    """
-    获取GPU性能指标
+    """获取GPU性能指标
 
     Args:
         device_id: GPU设备ID（可选，不指定则返回所有GPU）
 
     Returns:
         GPU性能指标列表
+
     """
     request_id = getattr(request.state, "request_id", None)
 
@@ -137,7 +137,7 @@ async def get_gpu_performance(request: Request, device_id: Optional[int] = None)
             memory_gflops=450.2,
             memory_speedup=82.53,
             throughput=1000000.0,
-        )
+        ),
     ]
 
     logger.info("GPU性能查询: device_id=%(device_id)s, request_id=%(request_id)s")
@@ -151,13 +151,13 @@ async def get_gpu_performance(request: Request, device_id: Optional[int] = None)
 
 @router.get("/metrics")
 async def get_prometheus_metrics(request: Request):
-    """
-    Prometheus格式指标导出端点
+    """Prometheus格式指标导出端点
 
     由Prometheus定期抓取（scrape_interval: 10s）
 
     Returns:
         Prometheus格式的文本指标
+
     """
     # TODO: 集成CLI-5的Prometheus导出器
     # from src.gpu_monitoring.prometheus_exporter import PrometheusExporter
@@ -209,8 +209,7 @@ async def get_gpu_history(
     end_time: Optional[float] = Query(None, description="结束时间戳"),
     limit: int = Query(100, description="返回记录数", ge=1, le=1000),
 ):
-    """
-    获取GPU历史监控数据
+    """获取GPU历史监控数据
 
     Args:
         device_id: GPU设备ID
@@ -220,6 +219,7 @@ async def get_gpu_history(
 
     Returns:
         GPU历史数据列表
+
     """
     request_id = getattr(request.state, "request_id", None)
 

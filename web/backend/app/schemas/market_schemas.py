@@ -1,5 +1,4 @@
-"""
-市场数据API Schemas (Pydantic模型)
+"""市场数据API Schemas (Pydantic模型)
 
 用于FastAPI请求验证和响应序列化:
 - FundFlow: 个股资金流向
@@ -13,6 +12,7 @@ from datetime import date, datetime
 from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+
 
 # ==================== 资金流向 (Fund Flow) ====================
 
@@ -367,14 +367,14 @@ class MarketOverviewResponse(BaseModel):
                         "current_price": 3000.5,
                         "change": 15.3,
                         "change_percent": 0.51,
-                    }
+                    },
                 ],
                 "hot_sectors": [
-                    {"sector_name": "新能源", "change_percent": 3.2, "leading_stock": "600519.SH", "stock_count": 45}
+                    {"sector_name": "新能源", "change_percent": 3.2, "leading_stock": "600519.SH", "stock_count": 45},
                 ],
                 "market_sentiment": "up",
-            }
-        }
+            },
+        },
     )
 
 
@@ -385,13 +385,13 @@ class KLineRequestV2(BaseModel):
     """增强版K线查询请求 (符合OpenAPI模板)"""
 
     symbol: str = Field(
-        ..., description="股票代码", examples=["000001.SZ", "600519.SH"], pattern=r"^[0-9]{6}\.[A-Z]{2}$"
+        ..., description="股票代码", examples=["000001.SZ", "600519.SH"], pattern=r"^[0-9]{6}\.[A-Z]{2}$",
     )
     interval: str = Field(..., description="K线周期", examples=["1m", "5m", "15m", "1h", "1d", "1w", "1M"])
     start_date: Optional[str] = Field(None, description="开始日期", examples=["2024-01-01"])
     end_date: Optional[str] = Field(None, description="结束日期", examples=["2024-12-29"])
     adjust: str = Field(
-        default="qfq", description="复权方式 (qfq=前复权, hfq=后复权, none=不复权)", pattern="^(qfq|hfq|none)$"
+        default="qfq", description="复权方式 (qfq=前复权, hfq=后复权, none=不复权)", pattern="^(qfq|hfq|none)$",
     )
     limit: int = Field(default=500, ge=1, le=1000, description="返回数量限制")
 
@@ -434,8 +434,8 @@ class KLineCandleV2(BaseModel):
                 "close": 10.8,
                 "volume": 1000000,
                 "amount": 10800000.0,
-            }
-        }
+            },
+        },
     )
 
 
@@ -458,11 +458,11 @@ class KLineResponseV2(BaseModel):
                         "low": 10.3,
                         "close": 10.8,
                         "volume": 1000000,
-                    }
+                    },
                 ],
                 "total_count": 250,
                 "symbol": "000001.SZ",
                 "interval": "1d",
-            }
-        }
+            },
+        },
     )

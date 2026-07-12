@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-问财API请求/响应Schema
+"""问财API请求/响应Schema
 
 定义问财功能的Pydantic数据模型，用于API请求验证和响应序列化
 
@@ -15,14 +13,14 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+
 # ============================================================================
 # 请求Schema
 # ============================================================================
 
 
 class WencaiQueryRequest(BaseModel):
-    """
-    执行问财查询请求
+    """执行问财查询请求
 
     用于POST /api/market/wencai/query
     """
@@ -48,8 +46,7 @@ class WencaiQueryRequest(BaseModel):
 
 
 class WencaiCustomQueryRequest(BaseModel):
-    """
-    自定义查询请求
+    """自定义查询请求
 
     用于POST /api/market/wencai/custom-query
     """
@@ -67,8 +64,7 @@ class WencaiCustomQueryRequest(BaseModel):
 
 
 class WencaiRefreshRequest(BaseModel):
-    """
-    刷新查询数据请求（可选参数）
+    """刷新查询数据请求（可选参数）
 
     用于POST /api/market/wencai/refresh/{query_name}
     """
@@ -83,8 +79,7 @@ class WencaiRefreshRequest(BaseModel):
 
 
 class WencaiQueryInfo(BaseModel):
-    """
-    查询信息
+    """查询信息
 
     用于GET /api/market/wencai/queries
     """
@@ -108,14 +103,13 @@ class WencaiQueryInfo(BaseModel):
                 "is_active": True,
                 "created_at": "2025-10-17T09:00:00",
                 "updated_at": "2025-10-17T09:00:00",
-            }
+            },
         },
     )
 
 
 class WencaiQueryListResponse(BaseModel):
-    """
-    查询列表响应
+    """查询列表响应
 
     用于GET /api/market/wencai/queries
     """
@@ -135,17 +129,16 @@ class WencaiQueryListResponse(BaseModel):
                         "is_active": True,
                         "created_at": "2025-10-17T09:00:00",
                         "updated_at": "2025-10-17T09:00:00",
-                    }
+                    },
                 ],
                 "total": 9,
-            }
-        }
+            },
+        },
     )
 
 
 class WencaiQueryResponse(BaseModel):
-    """
-    查询执行响应
+    """查询执行响应
 
     用于POST /api/market/wencai/query
     """
@@ -173,14 +166,13 @@ class WencaiQueryResponse(BaseModel):
                 "duplicate_records": 33,
                 "query_name": "qs_9",
                 "fetch_time": "2025-10-17T09:00:00",
-            }
-        }
+            },
+        },
     )
 
 
 class WencaiCustomQueryResponse(BaseModel):
-    """
-    自定义查询响应
+    """自定义查询响应
 
     用于POST /api/market/wencai/custom-query
     """
@@ -203,14 +195,13 @@ class WencaiCustomQueryResponse(BaseModel):
                 "results": [{"股票代码": "000001", "股票简称": "平安银行", "涨跌幅": "6.5%"}],
                 "columns": ["股票代码", "股票简称", "涨跌幅"],
                 "fetch_time": "2025-10-18T10:00:00",
-            }
-        }
+            },
+        },
     )
 
 
 class WencaiResultItem(BaseModel):
-    """
-    单条查询结果
+    """单条查询结果
 
     注意：由于不同查询返回的字段不同，这里使用动态字典
     """
@@ -228,14 +219,13 @@ class WencaiResultItem(BaseModel):
                     "换手率": "3.2%",
                 },
                 "fetch_time": "2025-10-17T09:00:00",
-            }
-        }
+            },
+        },
     )
 
 
 class WencaiResultsResponse(BaseModel):
-    """
-    查询结果列表响应
+    """查询结果列表响应
 
     用于GET /api/market/wencai/results/{query_name}
     """
@@ -256,18 +246,17 @@ class WencaiResultsResponse(BaseModel):
                         "股票代码": "000001",
                         "股票简称": "平安银行",
                         "fetch_time": "2025-10-17T09:00:00",
-                    }
+                    },
                 ],
                 "columns": ["股票代码", "股票简称", "fetch_time"],
                 "latest_fetch_time": "2025-10-17T09:00:00",
-            }
-        }
+            },
+        },
     )
 
 
 class WencaiRefreshResponse(BaseModel):
-    """
-    刷新任务响应
+    """刷新任务响应
 
     用于POST /api/market/wencai/refresh/{query_name}
     """
@@ -284,14 +273,13 @@ class WencaiRefreshResponse(BaseModel):
                 "message": "后台任务已启动",
                 "task_id": "abc123-def456-ghi789",
                 "query_name": "qs_9",
-            }
-        }
+            },
+        },
     )
 
 
 class WencaiHistoryItem(BaseModel):
-    """
-    历史数据项
+    """历史数据项
     """
 
     date: str = Field(..., description="日期", json_schema_extra={"example": "2025-10-17"})
@@ -299,13 +287,12 @@ class WencaiHistoryItem(BaseModel):
     fetch_count: int = Field(..., description="获取次数", ge=0)
 
     model_config = ConfigDict(
-        json_schema_extra={"example": {"date": "2025-10-17", "total_records": 45, "fetch_count": 3}}
+        json_schema_extra={"example": {"date": "2025-10-17", "total_records": 45, "fetch_count": 3}},
     )
 
 
 class WencaiHistoryResponse(BaseModel):
-    """
-    历史数据响应
+    """历史数据响应
 
     用于GET /api/market/wencai/history/{query_name}
     """
@@ -322,8 +309,8 @@ class WencaiHistoryResponse(BaseModel):
                 "date_range": ["2025-10-10", "2025-10-17"],
                 "history": [{"date": "2025-10-17", "total_records": 45, "fetch_count": 3}],
                 "total_days": 7,
-            }
-        }
+            },
+        },
     )
 
 
@@ -333,8 +320,7 @@ class WencaiHistoryResponse(BaseModel):
 
 
 class WencaiErrorResponse(BaseModel):
-    """
-    错误响应
+    """错误响应
 
     统一的错误格式
     """
@@ -351,8 +337,8 @@ class WencaiErrorResponse(BaseModel):
                 "error": "ValidationError",
                 "message": "query_name must start with 'qs_'",
                 "details": {"field": "query_name", "value": "invalid_name"},
-            }
-        }
+            },
+        },
     )
 
 
@@ -362,8 +348,7 @@ class WencaiErrorResponse(BaseModel):
 
 
 class WencaiStatsResponse(BaseModel):
-    """
-    统计信息响应（可选，用于监控面板）
+    """统计信息响应（可选，用于监控面板）
     """
 
     total_queries: int = Field(..., description="总查询数", ge=0)
@@ -378,6 +363,6 @@ class WencaiStatsResponse(BaseModel):
                 "active_queries": 9,
                 "total_records": 350,
                 "last_refresh_time": "2025-10-17T09:00:00",
-            }
-        }
+            },
+        },
     )

@@ -11,12 +11,13 @@ pytest.mark.integration marker 在 pytest.ini / pyproject.toml 注册。
 """
 from __future__ import annotations
 
+import json
 import os
+import urllib.request
 from typing import Any
 
 import pytest
-import urllib.request
-import json
+
 
 OPENSTOCK_BASE_URL = os.environ.get("OPENSTOCK_BASE_URL", "").rstrip("/")
 OPENSTOCK_SECURITY_API_KEY = os.environ.get("OPENSTOCK_SECURITY_API_KEY", "")
@@ -135,7 +136,8 @@ class TestOpenStockRealBehavior:
 
     def test_probe_legacy_symbols_plural_ignored_returns_hot(self):
         """发现 #1 根因:复数 symbols 参数被忽略 → 返 50 条默认热点。
-        此 probe 用于证明为何 adapter 必须用单数 symbol。"""
+        此 probe 用于证明为何 adapter 必须用单数 symbol。
+        """
         body = _post(
             "/data/fetch",
             {"data_category": "REALTIME_QUOTES",

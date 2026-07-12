@@ -1,5 +1,4 @@
-"""
-API Version Mapping Configuration
+"""API Version Mapping Configuration
 This file serves as the Single Source of Truth for API versioning.
 """
 

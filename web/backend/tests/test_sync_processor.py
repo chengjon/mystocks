@@ -1,5 +1,4 @@
-"""
-双库同步处理器测试
+"""双库同步处理器测试
 Test Suite for Sync Processor
 
 测试覆盖:
@@ -9,25 +8,26 @@ Test Suite for Sync Processor
 - 错误处理和重试
 """
 
-import pytest
 from datetime import datetime, timedelta, timezone
 from unittest.mock import Mock
 
-from app.models.sync_message import (
-    SyncMessage,
-    MessageStatus,
-    SyncDirection,
-    OperationType,
-)
+import pytest
+
+from app.core.cache_manager import reset_cache_manager
+from app.core.sync_db_manager import SyncDatabaseManager, reset_sync_db_manager
 from app.core.sync_processor import (
     SyncExecutor,
     SyncProcessor,
     get_sync_processor,
     reset_sync_processor,
 )
-from app.core.sync_db_manager import SyncDatabaseManager, reset_sync_db_manager
-from app.core.cache_manager import reset_cache_manager
 from app.core.tdengine_manager import reset_tdengine_manager
+from app.models.sync_message import (
+    MessageStatus,
+    OperationType,
+    SyncDirection,
+    SyncMessage,
+)
 
 
 @pytest.fixture

@@ -1,5 +1,4 @@
-"""
-TradingView Widget API
+"""TradingView Widget API
 提供 TradingView 图表和 widgets 配置
 """
 
@@ -11,6 +10,7 @@ from pydantic import BaseModel, Field
 
 from app.api.auth import User, get_current_user
 from app.services.tradingview_widget_service import get_tradingview_service
+
 
 router = APIRouter()
 
@@ -44,8 +44,7 @@ class TickerTapeConfigRequest(BaseModel):
 
 @router.post("/chart/config")
 async def get_chart_config(request: ChartConfigRequest, current_user: User = Depends(get_current_user)) -> Dict:
-    """
-    获取 TradingView 图表配置
+    """获取 TradingView 图表配置
 
     返回用于前端嵌入的图表配置
     """
@@ -68,25 +67,24 @@ async def get_chart_config(request: ChartConfigRequest, current_user: User = Dep
                 container_id=request.container_id,
             )
             return {"success": True, "config": mock_data.get("config", {})}
-        else:
-            # 正常获取真实数据
-            service = get_tradingview_service()
+        # 正常获取真实数据
+        service = get_tradingview_service()
 
-            # 转换股票代码为 TradingView 格式
-            tv_symbol = service.convert_symbol_to_tradingview_format(request.symbol, request.market)
+        # 转换股票代码为 TradingView 格式
+        tv_symbol = service.convert_symbol_to_tradingview_format(request.symbol, request.market)
 
-            # 生成图表配置
-            config = service.generate_chart_config(
-                symbol=tv_symbol,
-                container_id=request.container_id,
-                interval=request.interval,
-                theme=request.theme,
-                locale=request.locale,
-            )
+        # 生成图表配置
+        config = service.generate_chart_config(
+            symbol=tv_symbol,
+            container_id=request.container_id,
+            interval=request.interval,
+            theme=request.theme,
+            locale=request.locale,
+        )
 
-            return {"success": True, "config": config}
+        return {"success": True, "config": config}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"生成图表配置失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"生成图表配置失败: {e!s}")
 
 
 @router.post("/mini-chart/config")
@@ -98,8 +96,7 @@ async def get_mini_chart_config(
     container_id: str = Query("tradingview_mini_chart", description="容器ID"),
     current_user: User = Depends(get_current_user),
 ) -> Dict:
-    """
-    获取 TradingView 迷你图表配置
+    """获取 TradingView 迷你图表配置
     """
     try:
         # 检查是否使用Mock数据
@@ -119,29 +116,27 @@ async def get_mini_chart_config(
                 container_id=container_id,
             )
             return {"success": True, "config": mock_data.get("config", {})}
-        else:
-            # 正常获取真实数据
-            service = get_tradingview_service()
+        # 正常获取真实数据
+        service = get_tradingview_service()
 
-            # 转换股票代码
-            tv_symbol = service.convert_symbol_to_tradingview_format(symbol, market)
+        # 转换股票代码
+        tv_symbol = service.convert_symbol_to_tradingview_format(symbol, market)
 
-            # 生成迷你图表配置
-            config = service.generate_mini_chart_config(
-                symbol=tv_symbol, container_id=container_id, theme=theme, locale=locale
-            )
+        # 生成迷你图表配置
+        config = service.generate_mini_chart_config(
+            symbol=tv_symbol, container_id=container_id, theme=theme, locale=locale,
+        )
 
-            return {"success": True, "config": config}
+        return {"success": True, "config": config}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"生成迷你图表配置失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"生成迷你图表配置失败: {e!s}")
 
 
 @router.post("/ticker-tape/config")
 async def get_ticker_tape_config(
-    request: TickerTapeConfigRequest, current_user: User = Depends(get_current_user)
+    request: TickerTapeConfigRequest, current_user: User = Depends(get_current_user),
 ) -> Dict:
-    """
-    获取 TradingView Ticker Tape 配置
+    """获取 TradingView Ticker Tape 配置
     """
     try:
         # 检查是否使用Mock数据
@@ -163,26 +158,25 @@ async def get_ticker_tape_config(
                 container_id=request.container_id,
             )
             return {"success": True, "config": mock_data.get("config", {})}
-        else:
-            # 正常获取真实数据
-            service = get_tradingview_service()
+        # 正常获取真实数据
+        service = get_tradingview_service()
 
-            # 转换 symbols 为字典列表
-            symbols = None
-            if request.symbols:
-                symbols = [item.dict() for item in request.symbols]
+        # 转换 symbols 为字典列表
+        symbols = None
+        if request.symbols:
+            symbols = [item.dict() for item in request.symbols]
 
-            # 生成 Ticker Tape 配置
-            config = service.generate_ticker_tape_config(
-                symbols=symbols,
-                container_id=request.container_id,
-                theme=request.theme,
-                locale=request.locale,
-            )
+        # 生成 Ticker Tape 配置
+        config = service.generate_ticker_tape_config(
+            symbols=symbols,
+            container_id=request.container_id,
+            theme=request.theme,
+            locale=request.locale,
+        )
 
-            return {"success": True, "config": config}
+        return {"success": True, "config": config}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"生成 Ticker Tape 配置失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"生成 Ticker Tape 配置失败: {e!s}")
 
 
 @router.get("/market-overview/config")
@@ -193,8 +187,7 @@ async def get_market_overview_config(
     container_id: str = Query("tradingview_market_overview", description="容器ID"),
     current_user: User = Depends(get_current_user),
 ) -> Dict:
-    """
-    获取 TradingView 市场概览配置
+    """获取 TradingView 市场概览配置
     """
     try:
         # 检查是否使用Mock数据
@@ -206,21 +199,20 @@ async def get_market_overview_config(
 
             mock_manager = get_mock_data_manager()
             mock_data = mock_manager.get_data(
-                "tradingview_market_overview", market=market, theme=theme, locale=locale, container_id=container_id
+                "tradingview_market_overview", market=market, theme=theme, locale=locale, container_id=container_id,
             )
             return {"success": True, "config": mock_data.get("config", {})}
-        else:
-            # 正常获取真实数据
-            service = get_tradingview_service()
+        # 正常获取真实数据
+        service = get_tradingview_service()
 
-            # 生成市场概览配置
-            config = service.generate_market_overview_config(
-                container_id=container_id, theme=theme, locale=locale, market=market
-            )
+        # 生成市场概览配置
+        config = service.generate_market_overview_config(
+            container_id=container_id, theme=theme, locale=locale, market=market,
+        )
 
-            return {"success": True, "config": config}
+        return {"success": True, "config": config}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"生成市场概览配置失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"生成市场概览配置失败: {e!s}")
 
 
 @router.get("/screener/config")
@@ -231,8 +223,7 @@ async def get_screener_config(
     container_id: str = Query("tradingview_screener", description="容器ID"),
     current_user: User = Depends(get_current_user),
 ) -> Dict:
-    """
-    获取 TradingView 股票筛选器配置
+    """获取 TradingView 股票筛选器配置
     """
     try:
         # 检查是否使用Mock数据
@@ -244,21 +235,20 @@ async def get_screener_config(
 
             mock_manager = get_mock_data_manager()
             mock_data = mock_manager.get_data(
-                "tradingview_screener", market=market, theme=theme, locale=locale, container_id=container_id
+                "tradingview_screener", market=market, theme=theme, locale=locale, container_id=container_id,
             )
             return {"success": True, "config": mock_data.get("config", {})}
-        else:
-            # 正常获取真实数据
-            service = get_tradingview_service()
+        # 正常获取真实数据
+        service = get_tradingview_service()
 
-            # 生成筛选器配置
-            config = service.generate_screener_config(
-                container_id=container_id, theme=theme, locale=locale, market=market
-            )
+        # 生成筛选器配置
+        config = service.generate_screener_config(
+            container_id=container_id, theme=theme, locale=locale, market=market,
+        )
 
-            return {"success": True, "config": config}
+        return {"success": True, "config": config}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"生成筛选器配置失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"生成筛选器配置失败: {e!s}")
 
 
 @router.get("/symbol/convert")
@@ -267,8 +257,7 @@ async def convert_symbol(
     market: str = Query("CN", description="市场类型"),
     current_user: User = Depends(get_current_user),
 ) -> Dict:
-    """
-    将股票代码转换为 TradingView 格式
+    """将股票代码转换为 TradingView 格式
     """
     try:
         # 检查是否使用Mock数据
@@ -286,16 +275,15 @@ async def convert_symbol(
                 "tradingview_symbol": mock_data.get("tradingview_symbol", ""),
                 "market": market,
             }
-        else:
-            # 正常获取真实数据
-            service = get_tradingview_service()
-            tv_symbol = service.convert_symbol_to_tradingview_format(symbol, market)
+        # 正常获取真实数据
+        service = get_tradingview_service()
+        tv_symbol = service.convert_symbol_to_tradingview_format(symbol, market)
 
-            return {
-                "success": True,
-                "original_symbol": symbol,
-                "tradingview_symbol": tv_symbol,
-                "market": market,
-            }
+        return {
+            "success": True,
+            "original_symbol": symbol,
+            "tradingview_symbol": tv_symbol,
+            "market": market,
+        }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"转换股票代码失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"转换股票代码失败: {e!s}")

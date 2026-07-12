@@ -1,5 +1,4 @@
-"""
-监控系统API模块
+"""监控系统API模块
 """
 
 # NOTE: This __init__.py should NOT be used for importing router
@@ -10,6 +9,7 @@
 # The actual router is imported from app.api.monitoring
 
 from app.api.monitoring import router as main_router
+
 
 __all__ = ["router"]
 

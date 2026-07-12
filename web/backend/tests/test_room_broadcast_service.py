@@ -1,5 +1,4 @@
-"""
-房间消息广播服务测试
+"""房间消息广播服务测试
 
 Tests for Room Message Broadcasting Service
 
@@ -10,12 +9,12 @@ Date: 2025-11-07
 """
 
 from app.services.room_broadcast_service import (
-    MessageType,
     BroadcastTarget,
-    RoomMessage,
     BroadcastTask,
+    MessageType,
     OfflineMessageQueue,
     RoomBroadcaster,
+    RoomMessage,
     get_broadcaster,
     reset_broadcaster,
 )

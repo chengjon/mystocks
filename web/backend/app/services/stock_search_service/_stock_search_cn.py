@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from functools import lru_cache
 from typing import Dict, List, Optional, Tuple
 
+
 try:
     from .kline_fallback import build_fallback_kline
     from .parse_datetime_to_timestamp import normalize_stock_code, parse_datetime_to_timestamp
@@ -41,7 +42,7 @@ def search_a_stocks(self, query: str) -> List[Dict]:
                     "type": "A股",
                     "exchange": self._get_a_stock_exchange(row["code"]),
                     "market": "CN",
-                }
+                },
             )
         return results
     except Exception as error:
@@ -128,7 +129,7 @@ def get_a_stock_news(self, symbol: str = None, days: int = 7) -> List[Dict]:
                     "datetime": parse_datetime_to_timestamp(row.get("发布时间")),
                     "url": row.get("新闻链接", ""),
                     "category": "A股新闻",
-                }
+                },
             )
         return news_list
     except Exception as error:
@@ -155,7 +156,7 @@ def _parse_kline_date(date_str: str) -> datetime:
     """解析 K 线日期。"""
     if len(date_str) == 8:
         return datetime.strptime(date_str, "%Y%m%d")
-    return datetime.strptime(date_str.split(" ")[0], "%Y-%m-%d")
+    return datetime.strptime(date_str.split(" ", maxsplit=1)[0], "%Y-%m-%d")
 
 
 def _build_kline_data_points(df) -> List[Dict]:
@@ -191,7 +192,7 @@ def _build_kline_data_points(df) -> List[Dict]:
                 "amount": round(amount, 2),
                 "amplitude": round(amplitude, 2),
                 "change_percent": round(change_percent, 2),
-            }
+            },
         )
         previous_close = close_price
 

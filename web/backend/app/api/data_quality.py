@@ -1,5 +1,4 @@
-"""
-数据质量监控API端点
+"""数据质量监控API端点
 提供数据源状态、健康检查、质量指标等监控信息
 """
 
@@ -13,9 +12,9 @@ from fastapi import APIRouter, Query
 from app.core.exceptions import NotFoundException
 from app.core.responses import create_error_response, create_success_response
 from app.services.data_quality_monitor import get_data_quality_monitor, monitor_data_quality
-from app.services.data_source_factory import get_data_source_factory
+from app.services.data_source_factory import get_data_source_factory, is_fallback_enabled
 from app.services.data_source_factory import get_data_source_mode as get_factory_mode
-from app.services.data_source_factory import is_fallback_enabled
+
 
 logger = logging.getLogger(__name__)
 
@@ -109,39 +108,38 @@ async def get_data_quality_metrics(source: Optional[str] = Query(None, descripti
             }
 
             return create_success_response(
-                data=metrics_data, message=f"Data quality metrics for '{source}' retrieved successfully"
+                data=metrics_data, message=f"Data quality metrics for '{source}' retrieved successfully",
             )
-        else:
-            # 获取所有数据源的指标
-            all_source_metrics = monitor.get_all_source_metrics()
-            health_summary = monitor.get_overall_health_summary()
+        # 获取所有数据源的指标
+        all_source_metrics = monitor.get_all_source_metrics()
+        health_summary = monitor.get_overall_health_summary()
 
-            all_metrics_data = {"timestamp": datetime.now().isoformat(), "summary": health_summary, "sources": {}}
+        all_metrics_data = {"timestamp": datetime.now().isoformat(), "summary": health_summary, "sources": {}}
 
-            for source_name, source_metrics in all_source_metrics.items():
-                quality_score = source_metrics.get_overall_quality_score()
-                active_alerts = source_metrics.get_active_alerts()
+        for source_name, source_metrics in all_source_metrics.items():
+            quality_score = source_metrics.get_overall_quality_score()
+            active_alerts = source_metrics.get_active_alerts()
 
-                all_metrics_data["sources"][source_name] = {
-                    "overall_quality_score": quality_score,
-                    "overall_health": (
-                        "healthy" if quality_score >= 90 else "degraded" if quality_score >= 70 else "unhealthy"
-                    ),
-                    "active_alerts_count": len(active_alerts),
-                    "metrics_summary": {
-                        name: {
-                            "value": metric.value,
-                            "unit": metric.unit,
-                            "quality_level": metric.quality_level.value,
-                            "severity": metric.get_severity().value,
-                        }
-                        for name, metric in source_metrics.metrics.items()
-                    },
-                }
+            all_metrics_data["sources"][source_name] = {
+                "overall_quality_score": quality_score,
+                "overall_health": (
+                    "healthy" if quality_score >= 90 else "degraded" if quality_score >= 70 else "unhealthy"
+                ),
+                "active_alerts_count": len(active_alerts),
+                "metrics_summary": {
+                    name: {
+                        "value": metric.value,
+                        "unit": metric.unit,
+                        "quality_level": metric.quality_level.value,
+                        "severity": metric.get_severity().value,
+                    }
+                    for name, metric in source_metrics.metrics.items()
+                },
+            }
 
-            return create_success_response(
-                data=all_metrics_data, message="All data quality metrics retrieved successfully"
-            )
+        return create_success_response(
+            data=all_metrics_data, message="All data quality metrics retrieved successfully",
+        )
 
     except NotFoundException:
         raise
@@ -203,7 +201,7 @@ async def get_active_alerts(
     except Exception as e:
         logger.error("Failed to get active alerts: {str(e)}")
         return create_error_response(
-            error_code="ALERTS_RETRIEVAL_FAILED", message="Failed to retrieve active alerts", details={"error": str(e)}
+            error_code="ALERTS_RETRIEVAL_FAILED", message="Failed to retrieve active alerts", details={"error": str(e)},
         )
 
 
@@ -230,7 +228,7 @@ async def acknowledge_alert(alert_id: str):
     except Exception as e:
         logger.error("Failed to acknowledge alert: {str(e)}")
         return create_error_response(
-            error_code="ALERT_ACKNOWLEDGE_FAILED", message="Failed to acknowledge alert", details={"error": str(e)}
+            error_code="ALERT_ACKNOWLEDGE_FAILED", message="Failed to acknowledge alert", details={"error": str(e)},
         )
 
 
@@ -257,7 +255,7 @@ async def resolve_alert(alert_id: str):
     except Exception as e:
         logger.error("Failed to resolve alert: {str(e)}")
         return create_error_response(
-            error_code="ALERT_RESOLVE_FAILED", message="Failed to resolve alert", details={"error": str(e)}
+            error_code="ALERT_RESOLVE_FAILED", message="Failed to resolve alert", details={"error": str(e)},
         )
 
 
@@ -285,13 +283,13 @@ async def get_data_source_mode():
         }
 
         return create_success_response(
-            data=config_data, message="Data source mode configuration retrieved successfully"
+            data=config_data, message="Data source mode configuration retrieved successfully",
         )
 
     except Exception as e:
         logger.error("Failed to get data source mode: {str(e)}")
         return create_error_response(
-            error_code="MODE_RETRIEVAL_FAILED", message="Failed to retrieve data source mode", details={"error": str(e)}
+            error_code="MODE_RETRIEVAL_FAILED", message="Failed to retrieve data source mode", details={"error": str(e)},
         )
 
 
@@ -357,7 +355,7 @@ async def get_system_status_overview():
                         for s in available_sources
                         if factory.get_source_metrics(s)
                     ),
-                }
+                },
             },
         }
 
@@ -374,7 +372,7 @@ async def get_system_status_overview():
 
 @router.post("/test/quality")
 async def test_data_quality(
-    source: str = Query(..., description="Data source name"), test_data: Optional[Dict[str, Any]] = None
+    source: str = Query(..., description="Data source name"), test_data: Optional[Dict[str, Any]] = None,
 ):
     """测试数据质量监控"""
     try:
@@ -392,7 +390,7 @@ async def test_data_quality(
 
         # 执行数据质量监控
         quality_result = await monitor_data_quality(
-            data=test_data, source=source, response_time=response_time, success=True
+            data=test_data, source=source, response_time=response_time, success=True,
         )
 
         return create_success_response(data=quality_result, message=f"Data quality test completed for '{source}'")
@@ -400,7 +398,7 @@ async def test_data_quality(
     except Exception as e:
         logger.error("Failed to test data quality: {str(e)}")
         return create_error_response(
-            error_code="QUALITY_TEST_FAILED", message="Failed to test data quality", details={"error": str(e)}
+            error_code="QUALITY_TEST_FAILED", message="Failed to test data quality", details={"error": str(e)},
         )
 
 
@@ -481,5 +479,5 @@ async def get_quality_trends(
     except Exception as e:
         logger.error("Failed to get quality trends: {str(e)}")
         return create_error_response(
-            error_code="TRENDS_RETRIEVAL_FAILED", message="Failed to retrieve quality trends", details={"error": str(e)}
+            error_code="TRENDS_RETRIEVAL_FAILED", message="Failed to retrieve quality trends", details={"error": str(e)},
         )

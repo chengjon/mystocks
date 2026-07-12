@@ -1,5 +1,4 @@
-"""
-高级回测API
+"""高级回测API
 
 提供蒙特卡洛回测和高级分析功能
 """
@@ -8,6 +7,7 @@ from typing import Any, Dict, List
 
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
+
 
 router = APIRouter(
     prefix="/backtest",
@@ -61,8 +61,7 @@ class StressTestResponse(BaseModel):
     summary="Run Monte Carlo Backtest",
 )
 async def run_monte_carlo_backtest(request: MonteCarloRequest):
-    """
-    运行蒙特卡洛回测
+    """运行蒙特卡洛回测
 
     Runs Monte Carlo simulation for strategy backtesting.
     """
@@ -93,8 +92,7 @@ async def run_monte_carlo_backtest(request: MonteCarloRequest):
 
 @router.post("/stress-test", response_model=StressTestResponse, summary="Run Stress Test")
 async def run_stress_test(request: StressTestRequest):
-    """
-    运行压力测试
+    """运行压力测试
 
     Runs stress test on portfolio under various scenarios.
     """
@@ -119,8 +117,7 @@ async def run_stress_test(request: StressTestRequest):
 
 @router.get("/equity-curve/{strategy_id}", summary="Get Equity Curve")
 async def get_equity_curve(strategy_id: str, start_date: str, end_date: str):
-    """
-    获取权益曲线
+    """获取权益曲线
 
     Returns equity curve data for a strategy.
     """

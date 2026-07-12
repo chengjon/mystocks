@@ -1,17 +1,17 @@
-"""
-Unit and Integration Tests for Indicator Calculation
+"""Unit and Integration Tests for Indicator Calculation
 测试技术指标计算功能
 """
 
-import pytest
 import numpy as np
+import pytest
 from fastapi.testclient import TestClient
 
-from app.services.indicator_calculator import (
-    get_indicator_calculator,
-    InsufficientDataError,
-)
 from app.main import app
+from app.services.indicator_calculator import (
+    InsufficientDataError,
+    get_indicator_calculator,
+)
+
 
 # Test client
 client = TestClient(app)
@@ -21,8 +21,7 @@ class TestMACalculation:
     """测试MA指标计算 (T016)"""
 
     def test_calculate_ma(self):
-        """
-        T016: Unit test for MA calculation
+        """T016: Unit test for MA calculation
         验证 NumPy array → TA-Lib → 正确的MA值
         """
         calculator = get_indicator_calculator()
@@ -62,8 +61,7 @@ class TestMultipleMACalculation:
     """测试批量MA计算 (T017)"""
 
     def test_calculate_multiple_mas(self):
-        """
-        T017: Unit test for multiple MAs
+        """T017: Unit test for multiple MAs
         验证批量计算功能
         """
         calculator = get_indicator_calculator()
@@ -113,8 +111,7 @@ class TestInsufficientDataHandling:
     """测试数据点不足处理 (T018)"""
 
     def test_insufficient_data_error(self):
-        """
-        T018: Unit test for insufficient data handling
+        """T018: Unit test for insufficient data handling
         MA(200) with 50 days → InsufficientDataError
         """
         calculator = get_indicator_calculator()
@@ -158,7 +155,7 @@ class TestInsufficientDataHandling:
 
         # 应该成功计算
         result = calculator.calculate_indicator(
-            abbreviation="SMA", ohlcv_data=ohlcv_data, parameters={"timeperiod": 20}
+            abbreviation="SMA", ohlcv_data=ohlcv_data, parameters={"timeperiod": 20},
         )
 
         # 验证最后一个值不是NaN
@@ -169,8 +166,7 @@ class TestRegistryEndpoint:
     """测试注册表API端点 (T019)"""
 
     def test_get_registry(self):
-        """
-        T019: Integration test for registry endpoint
+        """T019: Integration test for registry endpoint
         验证返回161个指标及其元数据
         """
         response = client.get("/api/indicators/registry")
@@ -237,8 +233,7 @@ class TestCalculateEndpoint:
     """测试指标计算API端点 (T020)"""
 
     def test_calculate_indicators_endpoint(self):
-        """
-        T020: Integration test for calculate endpoint
+        """T020: Integration test for calculate endpoint
         POST /api/indicators/calculate with MA → 验证响应schema
         """
         request_data = {
@@ -434,7 +429,7 @@ class TestRSICalculation:
         }
 
         result = calculator.calculate_indicator(
-            abbreviation="RSI", ohlcv_data=ohlcv_data, parameters={"timeperiod": 14}
+            abbreviation="RSI", ohlcv_data=ohlcv_data, parameters={"timeperiod": 14},
         )
 
         # 验证返回格式

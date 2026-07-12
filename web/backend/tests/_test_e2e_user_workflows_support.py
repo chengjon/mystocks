@@ -1,5 +1,4 @@
-"""
-端到端用户工作流测试 - 共享 fixture 与验证支持
+"""端到端用户工作流测试 - 共享 fixture 与验证支持
 """
 
 from __future__ import annotations
@@ -67,7 +66,7 @@ class FakeClient:
                 {
                     "items": [{"symbol": "600519", "name": "贵州茅台"}],
                     "pagination": {"page": 1, "size": 10},
-                }
+                },
             )
 
         if path == "/api/market/overview":
@@ -103,7 +102,7 @@ class FakeClient:
 
         if path == "/api/trade/positions":
             return _success_response(
-                [{"symbol": order["symbol"], "quantity": order["quantity"]} for order in self.orders.values()]
+                [{"symbol": order["symbol"], "quantity": order["quantity"]} for order in self.orders.values()],
             )
 
         if path == "/api/strategy/strategies":
@@ -124,7 +123,7 @@ class FakeClient:
                         "sharpe_ratio": 1.2,
                         "max_drawdown": -5.0,
                         "win_rate": 0.55,
-                    }
+                    },
                 },
             )
             return _success_response(backtest.get("results", {}))
@@ -356,7 +355,7 @@ class RealDataValidationMixin:
                                 "initial_capital": 100000.0,
                             }
                             backtest_response = client.post(
-                                "/api/strategy/backtest/run", json=backtest_data, headers=headers
+                                "/api/strategy/backtest/run", json=backtest_data, headers=headers,
                             )
                             if backtest_response.status_code == 200:
                                 results["backtest_api_available"] = True

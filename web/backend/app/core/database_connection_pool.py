@@ -1,5 +1,4 @@
-"""
-数据库连接池优化管理器
+"""数据库连接池优化管理器
 Database Connection Pool Optimization - Advanced pool management with health checking
 
 Task 14.3: 数据库性能优化 - Connection Pool Optimization
@@ -24,6 +23,7 @@ from enum import Enum
 from typing import Any, Dict, Optional
 
 import structlog
+
 
 logger = structlog.get_logger()
 
@@ -87,8 +87,7 @@ class DatabaseConnectionPoolOptimizer:
         health_check_interval: int = 60,
         validation_query: str = "SELECT 1",
     ):
-        """
-        初始化连接池优化器
+        """初始化连接池优化器
 
         Args:
             min_size: 最小连接数（核心连接数）
@@ -99,6 +98,7 @@ class DatabaseConnectionPoolOptimizer:
             stale_timeout: 连接过期超时（秒）
             health_check_interval: 健康检查间隔（秒）
             validation_query: 健康检查查询语句
+
         """
         self.min_size = min_size
         self.max_size = max_size
@@ -250,8 +250,7 @@ class DatabaseConnectionPoolOptimizer:
             logger.error("❌ Error evicting stale connections", error=str(e))
 
     def get_connection(self, conn_obj: Any = None) -> PooledConnection:
-        """
-        获取连接
+        """获取连接
 
         Args:
             conn_obj: 真实的数据库连接对象
@@ -261,6 +260,7 @@ class DatabaseConnectionPoolOptimizer:
 
         Raises:
             RuntimeError: 无法获取连接
+
         """
         try:
             # 尝试从空闲连接池获取
@@ -293,7 +293,7 @@ class DatabaseConnectionPoolOptimizer:
             # 已达上限，抛出异常
             raise RuntimeError(
                 f"Connection pool exhausted (max={self.max_size}), "
-                f"active={len(self.in_use_connections)}, idle={len(self.idle_connections)}"
+                f"active={len(self.in_use_connections)}, idle={len(self.idle_connections)}",
             )
 
         except Exception as e:
@@ -302,13 +302,13 @@ class DatabaseConnectionPoolOptimizer:
             raise
 
     def return_connection(self, conn_id: str, error: bool = False, latency_ms: float = 0.0) -> None:
-        """
-        归还连接
+        """归还连接
 
         Args:
             conn_id: 连接ID
             error: 是否发生错误
             latency_ms: 查询延迟（毫秒）
+
         """
         try:
             if conn_id not in self.in_use_connections:

@@ -1,5 +1,4 @@
-"""
-风险指标核心 API - V3.1
+"""风险指标核心 API - V3.1
 
 提供基础风险指标计算功能:
 - VaR (Value at Risk) 计算
@@ -22,6 +21,7 @@ import pandas as pd
 import structlog
 from fastapi import APIRouter, HTTPException
 
+
 logger = structlog.get_logger(__name__)
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../"))
@@ -31,6 +31,7 @@ if project_root not in sys.path:
 from src.core import DataClassification  # noqa: E402
 from src.monitoring.monitoring_database import MonitoringDatabase  # noqa: E402
 from unified_manager import MyStocksUnifiedManager as UM  # noqa: E402,F401
+
 
 try:
     from src.ml_strategy.backtest.risk_metrics import RiskMetrics
@@ -192,8 +193,8 @@ async def calculate_var_cvar(request: VaRCVaRRequest) -> VaRCVaRResult:
                     "cvar_95": metrics["cvar_95"],
                     "cvar_99": metrics["cvar_99"],
                     "created_at": datetime.now(),
-                }
-            ]
+                },
+            ],
         )
 
         result = manager.save_data_by_classification(
@@ -238,7 +239,7 @@ async def calculate_var_cvar(request: VaRCVaRRequest) -> VaRCVaRResult:
             success=False,
             error_message=str(e),
         )
-        raise HTTPException(status_code=500, detail=f"计算VaR/CVaR失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"计算VaR/CVaR失败: {e!s}")
 
 
 @router.post("/beta", response_model=BetaResult)
@@ -284,8 +285,8 @@ async def calculate_beta(request: BetaRequest) -> BetaResult:
                     "metric_date": datetime.now().date(),
                     "beta": beta,
                     "created_at": datetime.now(),
-                }
-            ]
+                },
+            ],
         )
 
         result = manager.save_data_by_classification(
@@ -324,7 +325,7 @@ async def calculate_beta(request: BetaRequest) -> BetaResult:
             success=False,
             error_message=str(e),
         )
-        raise HTTPException(status_code=500, detail=f"计算Beta失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"计算Beta失败: {e!s}")
 
 
 @router.get("/dashboard", response_model=RiskDashboardResponse)
@@ -333,7 +334,7 @@ async def get_risk_dashboard() -> RiskDashboardResponse:
         manager = MyStocksUnifiedManager()  # noqa: F821
 
         metrics_df = manager.load_data_by_classification(
-            classification=DataClassification.MODEL_OUTPUT, table_name="risk_metrics"
+            classification=DataClassification.MODEL_OUTPUT, table_name="risk_metrics",
         )
 
         latest_metrics = None
@@ -350,7 +351,7 @@ async def get_risk_dashboard() -> RiskDashboardResponse:
 
         thirty_days_ago = (datetime.now() - timedelta(days=30)).date()
         history_df = manager.load_data_by_classification(
-            classification=DataClassification.MODEL_OUTPUT, table_name="risk_metrics"
+            classification=DataClassification.MODEL_OUTPUT, table_name="risk_metrics",
         )
 
         risk_history = []
@@ -385,7 +386,7 @@ async def get_risk_dashboard() -> RiskDashboardResponse:
         }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取仪表盘数据失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取仪表盘数据失败: {e!s}")
 
 
 @router.get("/metrics/history")
@@ -419,7 +420,7 @@ async def get_risk_metrics_history(entity_type: str, entity_id: int, start_date:
         ]
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取历史数据失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取历史数据失败: {e!s}")
 
 
 @router.post("/metrics/calculate")
@@ -448,29 +449,28 @@ async def calculate_risk_metrics(request: Dict[str, Any]) -> Dict[str, Any]:
                 "calculated_at": datetime.now().isoformat(),
                 "module": "RiskMetrics (main project)",
             }
-        else:
-            logger.info("主项目风险指标模块不可用，返回简化指标")
-            returns_series = pd.Series(request.get("returns", []))
+        logger.info("主项目风险指标模块不可用，返回简化指标")
+        returns_series = pd.Series(request.get("returns", []))
 
-            metrics = {
-                "volatility": float(returns_series.std() * np.sqrt(252)) if len(returns_series) > 0 else 0,
-                "sharpe_ratio": (
-                    float((returns_series.mean() * 252) / (returns_series.std() * np.sqrt(252)))
-                    if returns_series.std() > 0
-                    else 0
-                ),
-                "max_drawdown": request.get("max_drawdown", 0),
-                "skewness": float(returns_series.skew()) if len(returns_series) > 0 else 0,
-                "kurtosis": float(returns_series.kurtosis()) if len(returns_series) > 0 else 0,
-            }
+        metrics = {
+            "volatility": float(returns_series.std() * np.sqrt(252)) if len(returns_series) > 0 else 0,
+            "sharpe_ratio": (
+                float((returns_series.mean() * 252) / (returns_series.std() * np.sqrt(252)))
+                if returns_series.std() > 0
+                else 0
+            ),
+            "max_drawdown": request.get("max_drawdown", 0),
+            "skewness": float(returns_series.skew()) if len(returns_series) > 0 else 0,
+            "kurtosis": float(returns_series.kurtosis()) if len(returns_series) > 0 else 0,
+        }
 
-            return {
-                "status": "success",
-                "metrics": metrics,
-                "calculated_at": datetime.now().isoformat(),
-                "module": "Simplified (fallback)",
-            }
+        return {
+            "status": "success",
+            "metrics": metrics,
+            "calculated_at": datetime.now().isoformat(),
+            "module": "Simplified (fallback)",
+        }
 
     except Exception as e:
         logger.error("计算风险指标失败: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"计算风险指标失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"计算风险指标失败: {e!s}")

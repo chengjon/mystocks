@@ -1,5 +1,4 @@
-"""
-K 线 fallback 数据辅助函数。
+"""K 线 fallback 数据辅助函数。
 """
 
 from __future__ import annotations
@@ -55,14 +54,14 @@ def build_fallback_kline(
                 "amount": amount,
                 "amplitude": amplitude,
                 "change_percent": change_percent,
-            }
+            },
         )
         previous_close = close_price
 
     points.reverse()
     return {
         "stock_code": normalized_code,
-        "stock_name": f"Fallback-{normalized_code.split('.')[0]}",
+        "stock_name": f"Fallback-{normalized_code.split('.', maxsplit=1)[0]}",
         "period": period,
         "adjust": adjust,
         "data": points,

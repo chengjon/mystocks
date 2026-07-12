@@ -1,13 +1,14 @@
-"""
-End-to-End Integration Tests
+"""End-to-End Integration Tests
 端到端集成测试 - 验证完整数据流
 """
 
-import pytest
-from fastapi.testclient import TestClient
 from datetime import datetime, timedelta
 
+import pytest
+from fastapi.testclient import TestClient
+
 from app.main import app
+
 
 # Test client
 client = TestClient(app)
@@ -17,8 +18,7 @@ class TestE2EIndicatorCalculation:
     """端到端指标计算测试 (T027)"""
 
     def test_full_indicator_calculation_flow(self):
-        """
-        T027: 完整的指标计算流程测试
+        """T027: 完整的指标计算流程测试
 
         测试流程:
         1. 调用 POST /api/indicators/calculate
@@ -195,8 +195,9 @@ class TestDataServiceIntegration:
 
     def test_data_service_with_mock_data(self):
         """测试DataService的mock数据功能"""
-        from app.services.data_service import get_data_service
         from datetime import datetime, timedelta
+
+        from app.services.data_service import get_data_service
 
         data_service = get_data_service()
 

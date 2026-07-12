@@ -1,5 +1,4 @@
-"""
-API契约管理 API路由
+"""API契约管理 API路由
 提供契约版本管理、差异检测、验证和同步功能
 """
 
@@ -24,6 +23,7 @@ from app.api.contract.services.validator import ContractValidator
 from app.api.contract.services.version_manager import VersionManager
 from app.core.database import get_db
 
+
 router = APIRouter(prefix="/api/contracts", tags=["contract-management"])
 
 
@@ -32,8 +32,7 @@ router = APIRouter(prefix="/api/contracts", tags=["contract-management"])
 
 @router.post("/versions", response_model=ContractVersionResponse)
 async def create_version(version_data: ContractVersionCreate, db: Session = Depends(get_db)):
-    """
-    创建新的契约版本
+    """创建新的契约版本
 
     - **name**: 契约名称 (如: market-api, trade-api)
     - **version**: 版本号 (如: 1.0.0)
@@ -115,8 +114,7 @@ async def list_contracts(db: Session = Depends(get_db)):
 
 @router.post("/diff", response_model=ContractDiffResponse)
 async def compare_versions(request: ContractDiffRequest, db: Session = Depends(get_db)):
-    """
-    对比两个契约版本的差异
+    """对比两个契约版本的差异
 
     - **from_version_id**: 源版本ID
     - **to_version_id**: 目标版本ID
@@ -152,8 +150,7 @@ async def compare_versions(request: ContractDiffRequest, db: Session = Depends(g
 
 @router.post("/validate", response_model=ContractValidateResponse)
 async def validate_contract(request: ContractValidateRequest):
-    """
-    验证OpenAPI规范
+    """验证OpenAPI规范
 
     - **spec**: 待验证的OpenAPI规范
     - **check_breaking_changes**: 是否检查破坏性变更
@@ -195,8 +192,7 @@ async def validate_contract(request: ContractValidateRequest):
 
 @router.post("/sync")
 async def sync_contract(request: ContractSyncRequest, db: Session = Depends(get_db)):
-    """
-    同步契约
+    """同步契约
 
     - **name**: 契约名称
     - **direction**: 同步方向 (code_to_db | db_to_code)
@@ -209,7 +205,6 @@ async def sync_contract(request: ContractSyncRequest, db: Session = Depends(get_
     Code-to-DB: 从 FastAPI 代码生成 OpenAPI Spec 并保存到数据库
     DB-to-Code: 从数据库导出 OpenAPI Spec 到文件
     """
-
     result = VersionManager.sync(
         db=db,
         contract_name=request.name,
@@ -224,8 +219,7 @@ async def sync_contract(request: ContractSyncRequest, db: Session = Depends(get_
 
 @router.get("/sync/report")
 async def get_sync_report(db: Session = Depends(get_db)):
-    """
-    获取同步报告
+    """获取同步报告
 
     返回当前可以同步的端点信息
     """

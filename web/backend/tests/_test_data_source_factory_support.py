@@ -1,5 +1,4 @@
-"""
-Support loader for data source factory split tests.
+"""Support loader for data source factory split tests.
 """
 
 from __future__ import annotations
@@ -8,8 +7,7 @@ import importlib
 import sys
 from datetime import datetime
 from pathlib import Path
-from types import SimpleNamespace
-from types import ModuleType
+from types import ModuleType, SimpleNamespace
 
 
 def _build_adapter_modules() -> dict[str, ModuleType]:

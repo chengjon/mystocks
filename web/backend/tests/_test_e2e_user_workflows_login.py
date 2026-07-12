@@ -1,10 +1,10 @@
-"""
-端到端用户工作流测试 - 登录、搜索、自选流程
+"""端到端用户工作流测试 - 登录、搜索、自选流程
 """
 
 from unittest.mock import Mock, patch
 
 from ._test_e2e_user_workflows_support import client
+
 
 __all__ = ["TestUserWorkflowLoginSearchWatchlist", "client"]
 
@@ -36,7 +36,7 @@ class TestUserWorkflowLoginSearchWatchlist:
             "/api/watchlist/add",
             json={"symbol": "600519", "name": "贵州茅台", "notes": "长期关注"},
             headers={
-                "Authorization": f"Bearer {login_data['data'].get('access_token', login_data['data'].get('token', ''))}"
+                "Authorization": f"Bearer {login_data['data'].get('access_token', login_data['data'].get('token', ''))}",
             },
         )
 
@@ -47,7 +47,7 @@ class TestUserWorkflowLoginSearchWatchlist:
         my_watchlist_response = client.get(
             "/api/watchlist/my",
             headers={
-                "Authorization": f"Bearer {login_data['data'].get('access_token', login_data['data'].get('token', ''))}"
+                "Authorization": f"Bearer {login_data['data'].get('access_token', login_data['data'].get('token', ''))}",
             },
         )
 

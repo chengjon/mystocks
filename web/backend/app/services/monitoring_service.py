@@ -1,5 +1,4 @@
-"""
-实时监控服务
+"""实时监控服务
 Real-time Monitoring System
 
 适配中国A股市场
@@ -20,6 +19,7 @@ from app.models.monitoring import (
     DragonTigerList,
     RealtimeMonitoring,
 )
+
 
 # 配置日志
 logging.basicConfig(level=logging.INFO)
@@ -219,7 +219,7 @@ class MonitoringService:
                     "成交量": "volume",
                     "成交额": "amount",
                     "换手率": "turnover_rate",
-                }
+                },
             )
 
             logger.info("Fetched {len(df)} stocks realtime data")
@@ -357,11 +357,7 @@ class MonitoringService:
             change_pct = row.get("change_percent", 0)
 
             triggered = False
-            if direction == "up" and change_pct >= threshold:
-                triggered = True
-            elif direction == "down" and change_pct <= -abs(threshold):
-                triggered = True
-            elif direction == "both" and abs(change_pct) >= threshold:
+            if (direction == "up" and change_pct >= threshold) or (direction == "down" and change_pct <= -abs(threshold)) or (direction == "both" and abs(change_pct) >= threshold):
                 triggered = True
 
             if triggered:
@@ -375,7 +371,7 @@ class MonitoringService:
                         "alert_title": f"价格{'急涨' if change_pct > 0 else '急跌'}",
                         "alert_message": f"{row.get('stock_name')}({row['symbol']}) 涨跌幅{change_pct:.2f}%",
                         "snapshot_data": row.to_dict(),
-                    }
+                    },
                 )
 
         return alerts
@@ -410,7 +406,7 @@ class MonitoringService:
                     "alert_title": "涨停",
                     "alert_message": f"{row.get('stock_name')}({row['symbol']}) 涨停",
                     "snapshot_data": row.to_dict(),
-                }
+                },
             )
 
         return alerts
@@ -438,7 +434,7 @@ class MonitoringService:
                     "alert_title": "跌停",
                     "alert_message": f"{row.get('stock_name')}({row['symbol']}) 跌停",
                     "snapshot_data": row.to_dict(),
-                }
+                },
             )
 
         return alerts
@@ -588,7 +584,7 @@ class MonitoringService:
                         and_(
                             DragonTigerList.symbol == row["股票代码"],
                             DragonTigerList.trade_date == trade_date,
-                        )
+                        ),
                     )
                     .first()
                 )

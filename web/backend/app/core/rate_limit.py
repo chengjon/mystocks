@@ -1,5 +1,4 @@
-"""
-Rate Limiting Module - 认证端点速率限制
+"""Rate Limiting Module - 认证端点速率限制
 
 【设计边界说明】
 本模块为可选功能，默认禁用。仅当系统暴露到公网时建议启用。
@@ -36,7 +35,7 @@ class RateLimitConfig:
             "/docs",
             "/openapi.json",
             "/redoc",
-        }
+        },
     )
     auth_paths: set = field(
         default_factory=lambda: {
@@ -44,7 +43,7 @@ class RateLimitConfig:
             "/api/auth/register",
             "/api/auth/password-reset",
             "/api/auth/password-reset/confirm",
-        }
+        },
     )
 
 
@@ -59,8 +58,7 @@ class ClientState:
 
 
 class InMemoryRateLimiter:
-    """
-    内存速率限制器
+    """内存速率限制器
 
     使用滑动窗口算法实现精确的速率限制。
     线程安全，支持并发访问。
@@ -113,11 +111,11 @@ class InMemoryRateLimiter:
                 del self._clients[ip]
 
     def _check_rate_limit(self, client_ip: str) -> Tuple[bool, Optional[str]]:
-        """
-        检查是否超过速率限制
+        """检查是否超过速率限制
 
         Returns:
             Tuple[bool, Optional[str]]: (是否允许, 错误消息)
+
         """
         current_time = time.time()
 
@@ -178,8 +176,7 @@ class InMemoryRateLimiter:
 
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
-    """
-    速率限制中间件
+    """速率限制中间件
 
     对认证端点实施严格的速率限制，防止暴力破解。
     默认禁用，仅通过环境变量 RATE_LIMIT_ENABLED=true 启用。
@@ -240,8 +237,7 @@ def get_rate_limiter() -> InMemoryRateLimiter:
 
 
 def setup_rate_limiting(app, config: Optional[RateLimitConfig] = None) -> InMemoryRateLimiter:
-    """
-    配置应用的速率限制
+    """配置应用的速率限制
 
     Args:
         app: FastAPI 应用实例
@@ -249,6 +245,7 @@ def setup_rate_limiting(app, config: Optional[RateLimitConfig] = None) -> InMemo
 
     Returns:
         InMemoryRateLimiter: 速率限制器实例
+
     """
     global _rate_limiter
 

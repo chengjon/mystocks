@@ -1,5 +1,4 @@
-"""
-SSE (Server-Sent Events) 性能优化管理器
+"""SSE (Server-Sent Events) 性能优化管理器
 SSE Performance Optimization Manager
 
 提供高性能的SSE推送优化功能：
@@ -25,6 +24,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, Set, Tuple
 
 import structlog
+
 
 logger = structlog.get_logger()
 
@@ -105,12 +105,12 @@ class EventCache:
     """事件缓存管理器"""
 
     def __init__(self, max_size: int = 10000, ttl_seconds: int = 300):
-        """
-        初始化事件缓存
+        """初始化事件缓存
 
         Args:
             max_size: 最大缓存条目数
             ttl_seconds: 缓存过期时间（秒）
+
         """
         self.max_size = max_size
         self.ttl_seconds = ttl_seconds
@@ -144,11 +144,10 @@ class EventCache:
                     self.access_order.remove(key)
                 self.access_order.append(key)
                 return cached_event
-            else:
-                # 过期，删除
-                del self.cache[key]
-                if key in self.access_order:
-                    self.access_order.remove(key)
+            # 过期，删除
+            del self.cache[key]
+            if key in self.access_order:
+                self.access_order.remove(key)
 
         self.stats["misses"] += 1
         return None
@@ -191,11 +190,11 @@ class EventDeduplicator:
     """事件去重器"""
 
     def __init__(self, window_size: int = 1000):
-        """
-        初始化去重器
+        """初始化去重器
 
         Args:
             window_size: 去重窗口大小
+
         """
         self.window_size = window_size
         self.seen_events: Set[str] = set()
@@ -272,7 +271,7 @@ class CompressionManager:
 
             return compressed_bytes
 
-        elif compression_type == CompressionType.NONE:
+        if compression_type == CompressionType.NONE:
             self.compression_stats["none"]["original_size"] += original_size
             self.compression_stats["none"]["compressed_size"] += original_size
             self.compression_stats["none"]["count"] += 1
@@ -302,11 +301,11 @@ class LoadBalancer:
     """负载均衡器"""
 
     def __init__(self, strategy: str = "round_robin"):
-        """
-        初始化负载均衡器
+        """初始化负载均衡器
 
         Args:
             strategy: 负载均衡策略 (round_robin, least_connections, random)
+
         """
         self.strategy = strategy
         self.servers = []
@@ -335,11 +334,11 @@ class LoadBalancer:
             self.current_index += 1
             return server["id"]
 
-        elif self.strategy == "least_connections":
+        if self.strategy == "least_connections":
             min_connections_server = min(active_servers, key=lambda s: self.connection_counts[s["id"]])
             return min_connections_server["id"]
 
-        elif self.strategy == "random":
+        if self.strategy == "random":
             import random
 
             return random.choice(active_servers)["id"]
@@ -587,7 +586,7 @@ class SSEPerformanceOptimizer:
                         f"事件发送={self.metrics.total_events_sent}, "
                         f"丢弃={self.metrics.total_events_dropped}, "
                         f"平均批次大小={self.metrics.avg_batch_size:.1f}, "
-                        f"压缩比={self.metrics.compression_ratio:.2f}"
+                        f"压缩比={self.metrics.compression_ratio:.2f}",
                     )
 
                 await asyncio.sleep(30)  # 每30秒监控一次

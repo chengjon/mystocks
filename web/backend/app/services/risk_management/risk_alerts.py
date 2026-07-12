@@ -1,16 +1,16 @@
-"""
-风险管理告警模块
+"""风险管理告警模块
 
 提供告警规则管理、告警触发器、多渠道告警通知功能
 """
 
 import logging
-from typing import Any, Dict, List, Optional
-from datetime import datetime
 from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
+from typing import Any, Dict, List, Optional
 
 from .risk_base import RiskLevel
+
 
 logger = __import__("logging").getLogger(__name__)
 
@@ -170,10 +170,9 @@ class AlertManager:
             return {"type": AlertChannel.IN_APP, "config": {"is_enabled": False}}
 
     async def create_alert_rule(
-        self, rule_name: str, risk_level: RiskLevel, conditions: Dict, channel: AlertChannel = AlertChannel.EMAIL
+        self, rule_name: str, risk_level: RiskLevel, conditions: Dict, channel: AlertChannel = AlertChannel.EMAIL,
     ) -> AlertRule:
-        """
-        创建告警规则
+        """创建告警规则
 
         Args:
             rule_name: 规则名称
@@ -183,6 +182,7 @@ class AlertManager:
 
         Returns:
             AlertRule: 创建的规则
+
         """
         try:
             import uuid
@@ -209,10 +209,9 @@ class AlertManager:
             raise
 
     async def check_and_trigger_alerts(
-        self, portfolio_id: str, current_metrics: Any, rule_id_filter: Optional[str] = None
+        self, portfolio_id: str, current_metrics: Any, rule_id_filter: Optional[str] = None,
     ) -> List[AlertHistory]:
-        """
-        检查并触发告警
+        """检查并触发告警
 
         Args:
             portfolio_id: 投资组合ID
@@ -221,6 +220,7 @@ class AlertManager:
 
         Returns:
             List[AlertHistory]: 触发的告警列表
+
         """
         triggered_alerts = []
 
@@ -301,10 +301,10 @@ class AlertManager:
     async def _send_email_alert(self, alert: AlertHistory) -> None:
         """发送邮件告警"""
         try:
-            import smtplib
-            from email.mime.text import MIMEText
-            from email.mime.multipart import MIMEMultipart
             import os
+            import smtplib
+            from email.mime.multipart import MIMEMultipart
+            from email.mime.text import MIMEText
 
             smtp_server = self.notification_channels["email"]["config"]["smtp_server"]
             smtp_port = self.notification_channels["email"]["config"]["smtp_port"]

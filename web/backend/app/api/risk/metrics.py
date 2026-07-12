@@ -5,21 +5,22 @@ import numpy as np
 import pandas as pd
 from fastapi import APIRouter
 
-from app.core.exceptions import BusinessException, ValidationException
 from app.api.risk._shared import (
+    RISK_METRICS_AVAILABLE,
+    BetaRequest,
+    BetaResult,
     DataClassification,
     MyStocksUnifiedManager,
     RiskCalculator,
-    RiskMetrics,
-    RISK_METRICS_AVAILABLE,
-    get_monitoring_db,
-    logger,
-    BetaRequest,
-    BetaResult,
     RiskDashboardResponse,
+    RiskMetrics,
     VaRCVaRRequest,
     VaRCVaRResult,
+    get_monitoring_db,
+    logger,
 )
+from app.core.exceptions import BusinessException
+
 
 router = APIRouter(prefix="/api/v1/risk", tags=["风险管理-指标计算"])
 
@@ -60,8 +61,8 @@ async def calculate_var_cvar(request: VaRCVaRRequest) -> VaRCVaRResult:
                     "cvar_95": metrics["cvar_95"],
                     "cvar_99": metrics["cvar_99"],
                     "created_at": datetime.now(),
-                }
-            ]
+                },
+            ],
         )
 
         result = manager.save_data_by_classification(
@@ -107,7 +108,7 @@ async def calculate_var_cvar(request: VaRCVaRRequest) -> VaRCVaRResult:
             error_message=str(e),
         )
         raise BusinessException(
-            detail=f"计算VaR/CVaR失败: {str(e)}", status_code=500, error_code="VAR_CALCULATION_FAILED"
+            detail=f"计算VaR/CVaR失败: {e!s}", status_code=500, error_code="VAR_CALCULATION_FAILED",
         )
 
 
@@ -153,8 +154,8 @@ async def calculate_beta(request: BetaRequest) -> BetaResult:
                     "metric_date": datetime.now().date(),
                     "beta": beta,
                     "created_at": datetime.now(),
-                }
-            ]
+                },
+            ],
         )
 
         result = manager.save_data_by_classification(
@@ -193,7 +194,7 @@ async def calculate_beta(request: BetaRequest) -> BetaResult:
             success=False,
             error_message=str(e),
         )
-        raise BusinessException(detail=f"计算Beta失败: {str(e)}", status_code=500, error_code="BETA_CALCULATION_FAILED")
+        raise BusinessException(detail=f"计算Beta失败: {e!s}", status_code=500, error_code="BETA_CALCULATION_FAILED")
 
 
 @router.get("/dashboard", response_model=RiskDashboardResponse)
@@ -202,7 +203,7 @@ async def get_risk_dashboard() -> RiskDashboardResponse:
         manager = MyStocksUnifiedManager()
 
         metrics_df = manager.load_data_by_classification(
-            classification=DataClassification.MODEL_OUTPUT, table_name="risk_metrics"
+            classification=DataClassification.MODEL_OUTPUT, table_name="risk_metrics",
         )
         latest_metrics = None
         if metrics_df is not None and len(metrics_df) > 0:
@@ -217,7 +218,7 @@ async def get_risk_dashboard() -> RiskDashboardResponse:
 
         thirty_days_ago = (datetime.now() - timedelta(days=30)).date()
         history_df = manager.load_data_by_classification(
-            classification=DataClassification.MODEL_OUTPUT, table_name="risk_metrics"
+            classification=DataClassification.MODEL_OUTPUT, table_name="risk_metrics",
         )
         risk_history = []
         if history_df is not None:
@@ -252,13 +253,13 @@ async def get_risk_dashboard() -> RiskDashboardResponse:
 
     except Exception as e:
         raise BusinessException(
-            detail=f"获取仪表盘数据失败: {str(e)}", status_code=500, error_code="DASHBOARD_DATA_RETRIEVAL_FAILED"
+            detail=f"获取仪表盘数据失败: {e!s}", status_code=500, error_code="DASHBOARD_DATA_RETRIEVAL_FAILED",
         )
 
 
 @router.get("/metrics/history", response_model=List[Dict[str, Any]])
 async def get_risk_metrics_history(
-    entity_type: str, entity_id: int, start_date: str, end_date: str
+    entity_type: str, entity_id: int, start_date: str, end_date: str,
 ) -> List[Dict[str, Any]]:
     try:
         manager = MyStocksUnifiedManager()
@@ -288,7 +289,7 @@ async def get_risk_metrics_history(
 
     except Exception as e:
         raise BusinessException(
-            detail=f"获取历史数据失败: {str(e)}", status_code=500, error_code="HISTORICAL_DATA_RETRIEVAL_FAILED"
+            detail=f"获取历史数据失败: {e!s}", status_code=500, error_code="HISTORICAL_DATA_RETRIEVAL_FAILED",
         )
 
 
@@ -315,28 +316,27 @@ async def calculate_risk_metrics(request: Dict[str, Any]) -> Dict[str, Any]:
                 "calculated_at": datetime.now().isoformat(),
                 "module": "RiskMetrics (main project)",
             }
-        else:
-            returns_series = pd.Series(request.get("returns", []))
-            metrics = {
-                "volatility": float(returns_series.std() * np.sqrt(252)) if len(returns_series) > 0 else 0,
-                "sharpe_ratio": float((returns_series.mean() * 252) / (returns_series.std() * np.sqrt(252)))
-                if returns_series.std() > 0
-                else 0,
-                "max_drawdown": request.get("max_drawdown", 0),
-                "skewness": float(returns_series.skew()) if len(returns_series) > 0 else 0,
-                "kurtosis": float(returns_series.kurtosis()) if len(returns_series) > 0 else 0,
-            }
-            return {
-                "status": "success",
-                "metrics": metrics,
-                "calculated_at": datetime.now().isoformat(),
-                "module": "Simplified (fallback)",
-            }
+        returns_series = pd.Series(request.get("returns", []))
+        metrics = {
+            "volatility": float(returns_series.std() * np.sqrt(252)) if len(returns_series) > 0 else 0,
+            "sharpe_ratio": float((returns_series.mean() * 252) / (returns_series.std() * np.sqrt(252)))
+            if returns_series.std() > 0
+            else 0,
+            "max_drawdown": request.get("max_drawdown", 0),
+            "skewness": float(returns_series.skew()) if len(returns_series) > 0 else 0,
+            "kurtosis": float(returns_series.kurtosis()) if len(returns_series) > 0 else 0,
+        }
+        return {
+            "status": "success",
+            "metrics": metrics,
+            "calculated_at": datetime.now().isoformat(),
+            "module": "Simplified (fallback)",
+        }
 
     except Exception as e:
         logger.error("计算风险指标失败: {e}", exc_info=True)
         raise BusinessException(
-            detail=f"计算风险指标失败: {str(e)}", status_code=500, error_code="RISK_METRICS_CALCULATION_FAILED"
+            detail=f"计算风险指标失败: {e!s}", status_code=500, error_code="RISK_METRICS_CALCULATION_FAILED",
         )
 
 
@@ -364,7 +364,7 @@ async def assess_position_risk(request: Dict[str, Any]) -> Dict[str, Any]:
             exceeds_limit = concentration > max_position_size
 
             position_concentration.append(
-                {"symbol": symbol, "concentration": concentration, "exceeds_limit": exceeds_limit}
+                {"symbol": symbol, "concentration": concentration, "exceeds_limit": exceeds_limit},
             )
             if exceeds_limit:
                 exceeded_positions.append({"symbol": symbol, "concentration": concentration})
@@ -403,5 +403,5 @@ async def assess_position_risk(request: Dict[str, Any]) -> Dict[str, Any]:
     except Exception as e:
         logger.error("评估仓位风险失败: {e}", exc_info=True)
         raise BusinessException(
-            detail=f"评估仓位风险失败: {str(e)}", status_code=500, error_code="POSITION_RISK_ASSESSMENT_FAILED"
+            detail=f"评估仓位风险失败: {e!s}", status_code=500, error_code="POSITION_RISK_ASSESSMENT_FAILED",
         )

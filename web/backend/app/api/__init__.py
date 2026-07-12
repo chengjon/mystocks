@@ -1,5 +1,4 @@
-"""
-Lightweight API package entrypoint.
+"""Lightweight API package entrypoint.
 
 Submodules are imported on demand by callers such as ``router_registry``.
 Keeping this package init side-effect free avoids startup failures from

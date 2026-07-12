@@ -1,5 +1,4 @@
-"""
-FastAPI全局异常处理器 (增强版 - 统一响应格式)
+"""FastAPI全局异常处理器 (增强版 - 统一响应格式)
 
 本模块实现FastAPI应用的全局异常处理，提供统一的错误响应格式。
 与ResponseFormatMiddleware配合，自动将所有异常转换为UnifiedResponse格式。
@@ -36,6 +35,7 @@ from app.core.responses import (
     ResponseMessages,
     UnifiedResponse,
 )
+
 
 # 导入自定义异常类
 try:
@@ -79,8 +79,7 @@ def create_unified_exception_response(
     path: Optional[str] = None,
     include_path_in_data: bool = False,
 ) -> JSONResponse:
-    """
-    创建统一格式的异常响应
+    """创建统一格式的异常响应
 
     Args:
         code: 业务状态码 (400, 401, 404, 500 等)
@@ -93,6 +92,7 @@ def create_unified_exception_response(
 
     Returns:
         JSONResponse: 统一格式的错误响应
+
     """
     data = None
     if include_path_in_data and path:
@@ -117,8 +117,7 @@ def create_unified_exception_response(
 
 
 async def mystocks_exception_handler(request: Request, exc: MyStocksException) -> JSONResponse:
-    """
-    处理所有MyStocks自定义异常
+    """处理所有MyStocks自定义异常
 
     自动根据异常类型确定HTTP状态码：
     - 数据源异常: 根据具体类型返回400/404/500/503
@@ -188,7 +187,7 @@ async def mystocks_exception_handler(request: Request, exc: MyStocksException) -
                 ErrorDetail(
                     code=exc.error_code,
                     message=str(exc.details.get("error", exc.message)),
-                )
+                ),
             ]
 
     # 返回统一格式响应
@@ -207,8 +206,7 @@ async def mystocks_exception_handler(request: Request, exc: MyStocksException) -
 
 
 async def request_validation_error_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
-    """
-    处理请求参数验证错误
+    """处理请求参数验证错误
 
     当请求参数不符合Pydantic模型定义时触发。
     自动将Pydantic验证错误转换为ErrorDetail数组。
@@ -240,7 +238,7 @@ async def request_validation_error_handler(request: Request, exc: RequestValidat
                 field=field,
                 code=error_code,
                 message=error_msg,
-            )
+            ),
         )
 
     # 记录警告日志
@@ -296,8 +294,7 @@ def _map_validation_error_code(error_type: str) -> str:
 
 
 async def http_exception_handler(request: Request, exc: StarletteHTTPException) -> JSONResponse:
-    """
-    处理HTTP异常
+    """处理HTTP异常
 
     捕获FastAPI/Starlette的HTTPException。
     """
@@ -376,8 +373,7 @@ def _get_default_message_for_status(status_code: int) -> str:
 
 
 async def general_exception_handler(request: Request, exc: Exception) -> JSONResponse:
-    """
-    处理所有未被捕获的异常
+    """处理所有未被捕获的异常
 
     作为兜底机制，防止异常泄露给客户端。
     记录完整堆栈信息便于排查问题。
@@ -401,7 +397,7 @@ async def general_exception_handler(request: Request, exc: Exception) -> JSONRes
         ErrorDetail(
             code=ErrorCodes.INTERNAL_SERVER_ERROR,
             message=str(exc),
-        )
+        ),
     ]
 
     return create_unified_exception_response(
@@ -417,8 +413,7 @@ async def general_exception_handler(request: Request, exc: Exception) -> JSONRes
 
 
 def register_global_exception_handlers(app: FastAPI) -> None:
-    """
-    注册所有全局异常处理器到FastAPI应用
+    """注册所有全局异常处理器到FastAPI应用
 
     调用此函数可一次性注册所有异常处理器。
 
@@ -431,6 +426,7 @@ def register_global_exception_handlers(app: FastAPI) -> None:
 
         app = FastAPI()
         register_global_exception_handlers(app)
+
     """
     # MyStocks自定义异常
     try:

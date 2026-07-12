@@ -1,5 +1,4 @@
-"""
-邮件通知服务模块
+"""邮件通知服务模块
 实现基于 SMTP 的邮件发送功能
 迁移自 OpenStock 项目
 """
@@ -12,6 +11,7 @@ from email.header import Header
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from typing import Dict, List
+
 
 logger = logging.getLogger(__name__)
 
@@ -36,11 +36,11 @@ class EmailNotificationService:
         logger.info(message, *args)
 
     def __init__(self, config: Dict[str, any] = None):
-        """
-        初始化邮件服务
+        """初始化邮件服务
 
         Args:
             config: 邮件服务配置，如果未提供则从环境变量读取
+
         """
         if config:
             self.smtp_host = config.get("smtp_host")
@@ -69,8 +69,7 @@ class EmailNotificationService:
         content_type: str = "html",
         from_name: str = None,
     ) -> bool:
-        """
-        发送邮件
+        """发送邮件
 
         Args:
             to_addresses: 收件人地址列表
@@ -81,6 +80,7 @@ class EmailNotificationService:
 
         Returns:
             bool: 发送是否成功
+
         """
         if not self.username or not self.password:
             self._log_warning("邮件发送失败: SMTP 配置未完整")
@@ -117,8 +117,7 @@ class EmailNotificationService:
             return False
 
     def send_welcome_email(self, user_email: str, user_name: str) -> bool:
-        """
-        发送欢迎邮件
+        """发送欢迎邮件
 
         Args:
             user_email: 用户邮箱
@@ -126,6 +125,7 @@ class EmailNotificationService:
 
         Returns:
             bool: 发送是否成功
+
         """
         subject = "欢迎使用 MyStocks 量化交易平台"
         content = f"""
@@ -175,8 +175,7 @@ class EmailNotificationService:
         watchlist_symbols: List[str],
         news_data: List[Dict],
     ) -> bool:
-        """
-        发送每日新闻简报
+        """发送每日新闻简报
 
         Args:
             user_email: 用户邮箱
@@ -186,6 +185,7 @@ class EmailNotificationService:
 
         Returns:
             bool: 发送是否成功
+
         """
         subject = f"{datetime.now().strftime('%Y-%m-%d')} MyStocks 每日新闻简报"
 
@@ -262,8 +262,7 @@ class EmailNotificationService:
         return self.send_email([user_email], subject, content, "html")
 
     def send_alert_email(self, user_email: str, alert_type: str, alert_message: str) -> bool:
-        """
-        发送告警邮件
+        """发送告警邮件
 
         Args:
             user_email: 用户邮箱
@@ -272,6 +271,7 @@ class EmailNotificationService:
 
         Returns:
             bool: 发送是否成功
+
         """
         alert_types = {
             "price_alert": "价格提醒",
@@ -322,11 +322,11 @@ _email_service = None
 
 
 def get_email_service() -> EmailNotificationService:
-    """
-    获取邮件服务实例（单例模式）
+    """获取邮件服务实例（单例模式）
 
     Returns:
         EmailNotificationService: 邮件服务实例
+
     """
     global _email_service
     if _email_service is None:

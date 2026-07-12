@@ -1,5 +1,4 @@
-"""
-持仓管理API
+"""持仓管理API
 
 提供交易持仓管理功能
 """
@@ -9,6 +8,7 @@ from typing import Any, Dict, Optional
 
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
+
 
 router = APIRouter(
     prefix="/positions",
@@ -54,8 +54,7 @@ async def list_positions(
     symbol: Optional[str] = None,
     session_id: Optional[str] = None,
 ):
-    """
-    获取持仓列表
+    """获取持仓列表
 
     Returns list of current positions.
     """
@@ -108,8 +107,7 @@ async def list_positions(
 
 @router.get("/{position_id}", response_model=PositionResponse, summary="Get Position")
 async def get_position(position_id: str):
-    """
-    获取单个持仓详情
+    """获取单个持仓详情
 
     Returns details of a specific position.
     """
@@ -131,8 +129,7 @@ async def get_position(position_id: str):
 
 @router.post("", response_model=PositionResponse, summary="Create Position")
 async def create_position(request: PositionCreate):
-    """
-    创建新持仓
+    """创建新持仓
 
     Creates a new position.
     """
@@ -156,8 +153,7 @@ async def create_position(request: PositionCreate):
 
 @router.patch("/{position_id}", response_model=PositionResponse, summary="Update Position")
 async def update_position(position_id: str, request: PositionUpdate):
-    """
-    更新持仓
+    """更新持仓
 
     Updates position parameters (quantity, stop loss, take profit).
     """
@@ -179,8 +175,7 @@ async def update_position(position_id: str, request: PositionUpdate):
 
 @router.delete("/{position_id}", summary="Delete Position")
 async def delete_position(position_id: str):
-    """
-    删除持仓
+    """删除持仓
 
     Closes and removes a position.
     """

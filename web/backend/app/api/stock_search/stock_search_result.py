@@ -1,5 +1,4 @@
-"""
-# pylint: disable=no-member  # TODO: 修复异常类的 to_dict 方法
+"""# pylint: disable=no-member  # TODO: 修复异常类的 to_dict 方法
 股票搜索 API
 提供统一的股票搜索、报价和新闻接口
 支持 A 股和 H 股（港股）
@@ -15,11 +14,11 @@ import re
 import time
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Depends, Query, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import ValidationError
 
 from app.api.auth import User, get_current_user
-from app.api.stock_search.stock_search_schemas import NewsItem, SearchRequest, StockQuote, StockSearchResult
+from app.api.stock_search.stock_search_schemas import NewsItem, StockQuote, StockSearchResult
 from app.api.stock_search.stock_search_support import (
     check_admin_privileges,
     check_search_rate_limit,
@@ -40,13 +39,13 @@ from src.core.exceptions import (
     ServiceError,
 )
 
+
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
 def validate_stock_symbol(symbol: str, market: str) -> str:
-    """
-    验证股票代码格式
+    """验证股票代码格式
 
     Args:
         symbol: 股票代码
@@ -54,6 +53,7 @@ def validate_stock_symbol(symbol: str, market: str) -> str:
 
     Returns:
         str: 验证后的股票代码
+
     """
     if not symbol:
         raise ValueError("股票代码不能为空")
@@ -74,14 +74,14 @@ def validate_stock_symbol(symbol: str, market: str) -> str:
 
 
 def sanitize_query_params(params: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    清理查询参数
+    """清理查询参数
 
     Args:
         params: 原始查询参数
 
     Returns:
         Dict: 清理后的参数
+
     """
     sanitized = {}
     for key, value in params.items():
@@ -104,8 +104,7 @@ async def search_stocks(
     sort_order: str = Query("desc", description="排序顺序: asc, desc"),
     current_user: User = Depends(get_current_user),
 ) -> List[Dict]:
-    """
-    搜索股票
+    """搜索股票
 
     Security:
         - 需要用户认证
@@ -121,18 +120,18 @@ async def search_stocks(
         # 检查搜索频率限制
         if not check_search_rate_limit(current_user.id, max_searches_per_minute=30):
             raise BusinessException(
-                detail="搜索频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED"
+                detail="搜索频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED",
             )
 
         # 使用 StockListQueryModel 验证参数
         try:
             validated_params = StockListQueryModel(
-                query=q, page=page, page_size=page_size, sort_by=sort_by, sort_order=sort_order
+                query=q, page=page, page_size=page_size, sort_by=sort_by, sort_order=sort_order,
             )
         except ValidationError as ve:
             error_details = [{"field": str(err["loc"][0]), "message": err["msg"]} for err in ve.errors()]
             return create_error_response(
-                error_code="VALIDATION_ERROR", message="输入参数验证失败", details=error_details
+                error_code="VALIDATION_ERROR", message="输入参数验证失败", details=error_details,
             )
 
         # 清理搜索关键词，防止注入攻击
@@ -173,63 +172,62 @@ async def search_stocks(
             # 应用分页
             offset = (validated_params.page - 1) * validated_params.page_size
             return results[offset : offset + validated_params.page_size]
-        else:
-            # P0改进 Task 3: 使用熔断器保护外部API调用
-            circuit_breaker = get_circuit_breaker("stock_search")
+        # P0改进 Task 3: 使用熔断器保护外部API调用
+        circuit_breaker = get_circuit_breaker("stock_search")
 
-            if circuit_breaker.is_open():
-                # 熔断器打开，降级到Mock数据
-                logger.warning("⚠️ Circuit breaker for stock_search is OPEN, falling back to mock data")
-                from app.mock.unified_mock_data import get_mock_data_manager
+        if circuit_breaker.is_open():
+            # 熔断器打开，降级到Mock数据
+            logger.warning("⚠️ Circuit breaker for stock_search is OPEN, falling back to mock data")
+            from app.mock.unified_mock_data import get_mock_data_manager
 
-                mock_manager = get_mock_data_manager()
-                mock_data = mock_manager.get_data("stock_search", keyword=clean_query, **params)
-                results = mock_data.get("data", [])
+            mock_manager = get_mock_data_manager()
+            mock_data = mock_manager.get_data("stock_search", keyword=clean_query, **params)
+            results = mock_data.get("data", [])
 
-                # 应用分页
-                offset = (validated_params.page - 1) * validated_params.page_size
-                return results[offset : offset + validated_params.page_size]
+            # 应用分页
+            offset = (validated_params.page - 1) * validated_params.page_size
+            return results[offset : offset + validated_params.page_size]
 
-            # 正常获取真实数据
-            service = get_stock_search_service()
-            try:
-                results = service.unified_search(
-                    clean_query,
-                    market=market,
-                    limit=validated_params.page_size,
-                    offset=(validated_params.page - 1) * validated_params.page_size,
-                )
-                circuit_breaker.record_success()
-            except (DataFetchError, ServiceError, NetworkError) as api_error:
-                circuit_breaker.record_failure()
-                logger.error(
-                    f"❌ Stock search API failed: {api_error.message}, failures: {circuit_breaker.failure_count}",
-                    extra=api_error.to_dict(),
-                )
-                raise BusinessException(
-                    detail="股票搜索服务暂时不可用，请稍后重试", status_code=503, error_code="SERVICE_UNAVAILABLE"
-                )
-            except Exception as api_error:
-                circuit_breaker.record_failure()
-                logger.error(
-                    f"❌ Stock search API failed with unexpected error: {str(api_error)}, "
-                    f"failures: {circuit_breaker.failure_count}"
-                )
-                raise BusinessException(detail="股票搜索失败，请稍后重试", status_code=500, error_code="SEARCH_FAILED")
+        # 正常获取真实数据
+        service = get_stock_search_service()
+        try:
+            results = service.unified_search(
+                clean_query,
+                market=market,
+                limit=validated_params.page_size,
+                offset=(validated_params.page - 1) * validated_params.page_size,
+            )
+            circuit_breaker.record_success()
+        except (DataFetchError, ServiceError, NetworkError) as api_error:
+            circuit_breaker.record_failure()
+            logger.error(
+                f"❌ Stock search API failed: {api_error.message}, failures: {circuit_breaker.failure_count}",
+                extra=api_error.to_dict(),
+            )
+            raise BusinessException(
+                detail="股票搜索服务暂时不可用，请稍后重试", status_code=503, error_code="SERVICE_UNAVAILABLE",
+            )
+        except Exception as api_error:
+            circuit_breaker.record_failure()
+            logger.error(
+                f"❌ Stock search API failed with unexpected error: {api_error!s}, "
+                f"failures: {circuit_breaker.failure_count}",
+            )
+            raise BusinessException(detail="股票搜索失败，请稍后重试", status_code=500, error_code="SEARCH_FAILED")
 
-            # 应用排序
-            if validated_params.sort_by and validated_params.sort_by != "relevance":
-                reverse = validated_params.sort_order.lower() == "desc"
-                results = sorted(results, key=lambda x: x.get(validated_params.sort_by, 0), reverse=reverse)
+        # 应用排序
+        if validated_params.sort_by and validated_params.sort_by != "relevance":
+            reverse = validated_params.sort_order.lower() == "desc"
+            results = sorted(results, key=lambda x: x.get(validated_params.sort_by, 0), reverse=reverse)
 
-            return results
+        return results
 
     except HTTPException:
         raise
     except (DataFetchError, DataValidationError, ServiceError) as e:
         logger.error("Stock search failed for user {current_user.username}: {e.message}", extra=e.to_dict())
         raise BusinessException(
-            detail="搜索参数无效或数据源暂时不可用，请稍后重试", status_code=400, error_code="INVALID_SEARCH_PARAMS"
+            detail="搜索参数无效或数据源暂时不可用，请稍后重试", status_code=400, error_code="INVALID_SEARCH_PARAMS",
         )
     except Exception:
         logger.error("Stock search failed for user {current_user.username}: {str(e)}")
@@ -242,8 +240,7 @@ async def get_stock_quote(
     market: str = Query("cn", description="市场类型: cn, hk", pattern=r"^(cn|hk)$"),
     current_user: User = Depends(get_current_user),
 ) -> Dict:
-    """
-    获取股票实时报价
+    """获取股票实时报价
 
     Security:
         - 需要用户认证
@@ -254,12 +251,13 @@ async def get_stock_quote(
     Args:
         symbol: 股票代码
         market: 市场类型（cn=A股, hk=港股）
+
     """
     try:
         # 检查访问频率限制
         if not check_search_rate_limit(current_user.id, max_searches_per_minute=60):
             raise BusinessException(
-                detail="访问频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED"
+                detail="访问频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED",
             )
 
         # 验证股票代码格式
@@ -288,21 +286,20 @@ async def get_stock_quote(
                 raise NotFoundException(resource="股票报价", identifier="查询条件")
 
             return quote_data
+        # 正常获取真实数据
+        service = get_stock_search_service()
+
+        if market.lower() == "cn":
+            quote = service.get_a_stock_realtime(validated_symbol)
+        elif market.lower() == "hk":
+            quote = service.get_hk_stock_realtime(validated_symbol)
         else:
-            # 正常获取真实数据
-            service = get_stock_search_service()
+            raise ValidationException(detail="不支持的市场类型，仅支持: cn, hk", field="market")
 
-            if market.lower() == "cn":
-                quote = service.get_a_stock_realtime(validated_symbol)
-            elif market.lower() == "hk":
-                quote = service.get_hk_stock_realtime(validated_symbol)
-            else:
-                raise ValidationException(detail="不支持的市场类型，仅支持: cn, hk", field="market")
+        if not quote:
+            raise NotFoundException(resource="股票报价", identifier="查询条件")
 
-            if not quote:
-                raise NotFoundException(resource="股票报价", identifier="查询条件")
-
-            return quote
+        return quote
 
     except HTTPException:
         raise
@@ -310,10 +307,10 @@ async def get_stock_quote(
         raise BusinessException(detail=str(e), status_code=400, error_code="VALIDATION_ERROR")
     except (DataFetchError, NetworkError, ServiceError) as e:
         logger.error(
-            f"Get stock quote failed for user {current_user.username}, symbol {symbol}: {e.message}", extra=e.to_dict()
+            f"Get stock quote failed for user {current_user.username}, symbol {symbol}: {e.message}", extra=e.to_dict(),
         )
         raise BusinessException(
-            detail="数据源暂时不可用，请稍后重试", status_code=503, error_code="SERVICE_UNAVAILABLE"
+            detail="数据源暂时不可用，请稍后重试", status_code=503, error_code="SERVICE_UNAVAILABLE",
         )
     except Exception:
         logger.error("Get stock quote failed for user {current_user.username}, symbol %(symbol)s: {str(e)}")
@@ -326,12 +323,12 @@ async def get_company_profile(
     market: str = Query("cn", description="市场类型: cn, hk"),
     current_user: User = Depends(get_current_user),
 ) -> Dict:
-    """
-    获取公司基本信息
+    """获取公司基本信息
 
     Args:
         symbol: 股票代码
         market: 市场类型
+
     """
     try:
         # 检查是否使用Mock数据
@@ -344,24 +341,23 @@ async def get_company_profile(
             mock_manager = get_mock_data_manager()
             mock_data = mock_manager.get_data("stock_profile", symbol=symbol, market=market)
             return mock_data.get("data", {})
-        else:
-            # 正常获取真实数据
-            raise BusinessException(
-                detail="公司基本信息功能暂不支持，本系统仅支持 A 股和 H 股（港股），不支持美股",
-                status_code=501,
-                error_code="FEATURE_NOT_SUPPORTED",
-            )
+        # 正常获取真实数据
+        raise BusinessException(
+            detail="公司基本信息功能暂不支持，本系统仅支持 A 股和 H 股（港股），不支持美股",
+            status_code=501,
+            error_code="FEATURE_NOT_SUPPORTED",
+        )
     except (BusinessException, ValidationException, NotFoundException, ForbiddenException):
         raise
     except (DataFetchError, ServiceError) as e:
         logger.error("Get company profile failed for symbol {symbol}: {e.message}", extra=e.to_dict())
         raise BusinessException(
-            detail="公司信息服务暂时不可用，请稍后重试", status_code=503, error_code="COMPANY_INFO_SERVICE_UNAVAILABLE"
+            detail="公司信息服务暂时不可用，请稍后重试", status_code=503, error_code="COMPANY_INFO_SERVICE_UNAVAILABLE",
         )
     except Exception:
         logger.error("Get company profile failed for symbol %(symbol)s: {str(e)}")
         raise BusinessException(
-            detail="获取公司信息失败，请稍后重试", status_code=500, error_code="COMPANY_INFO_RETRIEVAL_FAILED"
+            detail="获取公司信息失败，请稍后重试", status_code=500, error_code="COMPANY_INFO_RETRIEVAL_FAILED",
         )
 
 
@@ -372,13 +368,13 @@ async def get_stock_news(
     days: int = Query(7, description="获取最近几天的新闻", ge=1, le=30),
     current_user: User = Depends(get_current_user),
 ) -> List[Dict]:
-    """
-    获取股票新闻
+    """获取股票新闻
 
     Args:
         symbol: 股票代码
         market: 市场类型（cn=A股, hk=港股）
         days: 获取最近几天的新闻
+
     """
     try:
         # 检查是否使用Mock数据
@@ -391,22 +387,21 @@ async def get_stock_news(
             mock_manager = get_mock_data_manager()
             mock_data = mock_manager.get_data("stock_news", symbol=symbol, market=market, days=days)
             return mock_data.get("data", [])
+        # 正常获取真实数据
+        service = get_stock_search_service()
+
+        if market.lower() == "cn":
+            news = service.get_a_stock_news(symbol, days=days)
+        elif market.lower() == "hk":
+            news = service.get_hk_stock_news(symbol)
         else:
-            # 正常获取真实数据
-            service = get_stock_search_service()
+            raise ValidationException(detail="不支持的市场类型，仅支持: cn, hk", field="market")
 
-            if market.lower() == "cn":
-                news = service.get_a_stock_news(symbol, days=days)
-            elif market.lower() == "hk":
-                news = service.get_hk_stock_news(symbol)
-            else:
-                raise ValidationException(detail="不支持的市场类型，仅支持: cn, hk", field="market")
-
-            return news
+        return news
     except (DataFetchError, ServiceError, NetworkError) as e:
         logger.error("Get stock news failed for symbol {symbol}: {e.message}", extra=e.to_dict())
         raise BusinessException(
-            detail="新闻服务暂时不可用，请稍后重试", status_code=503, error_code="NEWS_SERVICE_UNAVAILABLE"
+            detail="新闻服务暂时不可用，请稍后重试", status_code=503, error_code="NEWS_SERVICE_UNAVAILABLE",
         )
     except Exception:
         logger.error("Get stock news failed for symbol %(symbol)s: {str(e)}")
@@ -419,12 +414,12 @@ async def get_market_news(
     market: str = Query("cn", description="市场类型: cn, hk"),
     current_user: User = Depends(get_current_user),
 ) -> List[Dict]:
-    """
-    获取市场新闻
+    """获取市场新闻
 
     Args:
         category: 新闻类别
         market: 市场类型（cn=A股, hk=港股）
+
     """
     try:
         service = get_stock_search_service()
@@ -440,22 +435,22 @@ async def get_market_news(
     except (DataFetchError, ServiceError, NetworkError) as e:
         logger.error("Get market news failed for category {category}: {e.message}", extra=e.to_dict())
         raise BusinessException(
-            detail="市场新闻服务暂时不可用，请稍后重试", status_code=503, error_code="MARKET_NEWS_SERVICE_UNAVAILABLE"
+            detail="市场新闻服务暂时不可用，请稍后重试", status_code=503, error_code="MARKET_NEWS_SERVICE_UNAVAILABLE",
         )
     except Exception:
         logger.error("Get market news failed for category %(category)s: {str(e)}")
         raise BusinessException(
-            detail="获取市场新闻失败，请稍后重试", status_code=500, error_code="MARKET_NEWS_RETRIEVAL_FAILED"
+            detail="获取市场新闻失败，请稍后重试", status_code=500, error_code="MARKET_NEWS_RETRIEVAL_FAILED",
         )
 
 
 @router.get("/recommendation/{symbol}")
 async def get_recommendation_trends(symbol: str, current_user: User = Depends(get_current_user)) -> Dict:
-    """
-    获取分析师推荐趋势
+    """获取分析师推荐趋势
 
     Args:
         symbol: 股票代码
+
     """
     try:
         # 检查是否使用Mock数据
@@ -468,13 +463,12 @@ async def get_recommendation_trends(symbol: str, current_user: User = Depends(ge
             mock_manager = get_mock_data_manager()
             mock_data = mock_manager.get_data("stock_recommendation", symbol=symbol)
             return mock_data.get("data", {})
-        else:
-            # 正常获取真实数据
-            raise BusinessException(
-                detail="分析师推荐功能暂不支持，本系统仅支持 A 股和 H 股（港股），不支持美股",
-                status_code=501,
-                error_code="FEATURE_NOT_SUPPORTED",
-            )
+        # 正常获取真实数据
+        raise BusinessException(
+            detail="分析师推荐功能暂不支持，本系统仅支持 A 股和 H 股（港股），不支持美股",
+            status_code=501,
+            error_code="FEATURE_NOT_SUPPORTED",
+        )
     except HTTPException:
         raise
     except (DataFetchError, ServiceError) as e:
@@ -487,14 +481,13 @@ async def get_recommendation_trends(symbol: str, current_user: User = Depends(ge
     except Exception:
         logger.error("Get recommendation trends failed for symbol %(symbol)s: {str(e)}")
         raise BusinessException(
-            detail="获取分析师推荐失败，请稍后重试", status_code=500, error_code="RECOMMENDATION_RETRIEVAL_FAILED"
+            detail="获取分析师推荐失败，请稍后重试", status_code=500, error_code="RECOMMENDATION_RETRIEVAL_FAILED",
         )
 
 
 @router.post("/cache/clear", response_model=APIResponse)
 async def clear_search_cache(current_user: User = Depends(get_current_user)) -> APIResponse:
-    """
-    清除搜索缓存
+    """清除搜索缓存
 
     Security:
         - 仅管理员可访问
@@ -534,8 +527,7 @@ async def get_search_analytics(
     username: Optional[str] = Query(None, description="用户名过滤"),
     current_user: User = Depends(get_current_user),
 ):
-    """
-    获取搜索操作分析数据
+    """获取搜索操作分析数据
 
     Security:
         - 仅管理员可访问
@@ -596,24 +588,23 @@ async def get_search_analytics(
         raise
     except (DatabaseNotFoundError, DataValidationError) as e:
         logger.error(
-            f"Failed to get search analytics for admin {current_user.username}: {e.message}", extra=e.to_dict()
+            f"Failed to get search analytics for admin {current_user.username}: {e.message}", extra=e.to_dict(),
         )
         raise BusinessException(
-            detail="获取搜索分析数据失败", status_code=500, error_code="SEARCH_ANALYTICS_DATA_RETRIEVAL_FAILED"
+            detail="获取搜索分析数据失败", status_code=500, error_code="SEARCH_ANALYTICS_DATA_RETRIEVAL_FAILED",
         )
     except Exception:
         logger.error("Failed to get search analytics for admin {current_user.username}: {str(e)}")
         raise BusinessException(
-            detail="获取搜索分析数据失败", status_code=500, error_code="SEARCH_ANALYTICS_DATA_RETRIEVAL_FAILED"
+            detail="获取搜索分析数据失败", status_code=500, error_code="SEARCH_ANALYTICS_DATA_RETRIEVAL_FAILED",
         )
 
 
 @router.post("/analytics/cleanup", response_model=APIResponse)
 async def cleanup_search_analytics(
-    days: int = Query(7, description="保留最近几天的数据", ge=1, le=30), current_user: User = Depends(get_current_user)
+    days: int = Query(7, description="保留最近几天的数据", ge=1, le=30), current_user: User = Depends(get_current_user),
 ):
-    """
-    清理旧的搜索分析数据
+    """清理旧的搜索分析数据
 
     Security:
         - 仅管理员可访问
@@ -652,13 +643,13 @@ async def cleanup_search_analytics(
         raise
     except (DatabaseNotFoundError, DatabaseOperationError) as e:
         logger.error(
-            f"Failed to cleanup search analytics for admin {current_user.username}: {e.message}", extra=e.to_dict()
+            f"Failed to cleanup search analytics for admin {current_user.username}: {e.message}", extra=e.to_dict(),
         )
         raise BusinessException(
-            detail="清理搜索分析数据失败", status_code=500, error_code="SEARCH_ANALYTICS_DATA_CLEANUP_FAILED"
+            detail="清理搜索分析数据失败", status_code=500, error_code="SEARCH_ANALYTICS_DATA_CLEANUP_FAILED",
         )
     except Exception:
         logger.error("Failed to cleanup search analytics for admin {current_user.username}: {str(e)}")
         raise BusinessException(
-            detail="清理搜索分析数据失败", status_code=500, error_code="SEARCH_ANALYTICS_DATA_CLEANUP_FAILED"
+            detail="清理搜索分析数据失败", status_code=500, error_code="SEARCH_ANALYTICS_DATA_CLEANUP_FAILED",
         )

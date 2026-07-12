@@ -1,5 +1,4 @@
-"""
-市场数据API路由 V2
+"""市场数据API路由 V2
 使用东方财富直接API
 
 提供RESTful接口:
@@ -18,6 +17,7 @@ from fastapi import APIRouter, HTTPException, Query
 
 from app.services.market_data_service_v2 import get_market_data_service_v2
 
+
 router = APIRouter(tags=["市场数据V2"])
 
 
@@ -31,13 +31,13 @@ async def get_fund_flow(
     start_date: Optional[date] = Query(None, description="开始日期"),
     end_date: Optional[date] = Query(None, description="结束日期"),
 ):
-    """
-    查询个股资金流向历史数据
+    """查询个股资金流向历史数据
 
     Args:
         symbol: 股票代码 (如: 600519)
         timeframe: 1=今日, 3=3日, 5=5日, 10=10日
         start_date/end_date: 时间范围筛选
+
     """
     try:
         service = get_market_data_service_v2()
@@ -52,8 +52,7 @@ async def refresh_fund_flow(
     symbol: Optional[str] = Query(None, description="股票代码，不传则刷新全市场"),
     timeframe: str = Query(default="今日", description="时间维度: 今日/3日/5日/10日"),
 ):
-    """
-    从东方财富刷新资金流向数据
+    """从东方财富刷新资金流向数据
 
     不传symbol则刷新全市场数据（约4000+只股票）
     """
@@ -74,8 +73,7 @@ async def get_etf_list(
     keyword: Optional[str] = Query(None, description="关键词搜索"),
     limit: int = Query(default=50, ge=1, le=500, description="返回数量"),
 ):
-    """
-    查询ETF实时行情数据
+    """查询ETF实时行情数据
 
     支持按代码精确查询或按关键词模糊搜索
     """
@@ -89,8 +87,7 @@ async def get_etf_list(
 
 @router.post("/etf/refresh", summary="刷新ETF数据")
 async def refresh_etf_spot():
-    """
-    从东方财富刷新全市场ETF数据
+    """从东方财富刷新全市场ETF数据
     """
     try:
         service = get_market_data_service_v2()
@@ -111,8 +108,7 @@ async def get_lhb_detail(
     min_net_amount: Optional[float] = Query(None, description="最小净买入额(元)"),
     limit: int = Query(default=100, ge=1, le=500, description="返回数量"),
 ):
-    """
-    查询龙虎榜详细数据
+    """查询龙虎榜详细数据
 
     支持按股票代码、日期范围、净买入额筛选
     """
@@ -126,8 +122,7 @@ async def get_lhb_detail(
 
 @router.post("/lhb/refresh", summary="刷新龙虎榜数据")
 async def refresh_lhb_detail(trade_date: str = Query(..., description="交易日期 (YYYY-MM-DD)")):
-    """
-    从东方财富刷新指定日期的龙虎榜数据
+    """从东方财富刷新指定日期的龙虎榜数据
     """
     try:
         service = get_market_data_service_v2()
@@ -146,12 +141,12 @@ async def get_sector_fund_flow(
     timeframe: str = Query(default="今日", description="时间维度: 今日/3日/5日/10日"),
     limit: int = Query(default=100, ge=1, le=500, description="返回数量"),
 ):
-    """
-    查询行业/概念板块资金流向
+    """查询行业/概念板块资金流向
 
     Args:
         sector_type: 行业、概念或地域板块
         timeframe: 今日、3日、5日或10日
+
     """
     try:
         service = get_market_data_service_v2()
@@ -166,8 +161,7 @@ async def refresh_sector_fund_flow(
     sector_type: str = Query(default="行业", description="板块类型: 行业/概念/地域"),
     timeframe: str = Query(default="今日", description="时间维度: 今日/3日/5日/10日"),
 ):
-    """
-    从东方财富刷新行业/概念资金流向数据
+    """从东方财富刷新行业/概念资金流向数据
     """
     try:
         service = get_market_data_service_v2()
@@ -185,11 +179,11 @@ async def get_stock_dividend(
     symbol: str = Query(..., description="股票代码"),
     limit: int = Query(default=50, ge=1, le=200, description="返回数量"),
 ):
-    """
-    查询股票分红配送历史记录
+    """查询股票分红配送历史记录
 
     Args:
         symbol: 股票代码 (如: 600519)
+
     """
     try:
         service = get_market_data_service_v2()
@@ -201,8 +195,7 @@ async def get_stock_dividend(
 
 @router.post("/dividend/refresh", summary="刷新股票分红配送数据")
 async def refresh_stock_dividend(symbol: str = Query(..., description="股票代码")):
-    """
-    从东方财富刷新股票分红配送数据
+    """从东方财富刷新股票分红配送数据
     """
     try:
         service = get_market_data_service_v2()
@@ -222,12 +215,12 @@ async def get_stock_blocktrade(
     end_date: Optional[date] = Query(None, description="结束日期"),
     limit: int = Query(default=100, ge=1, le=500, description="返回数量"),
 ):
-    """
-    查询股票大宗交易记录
+    """查询股票大宗交易记录
 
     Args:
         symbol: 股票代码 (可选)
         start_date/end_date: 日期范围 (可选)
+
     """
     try:
         service = get_market_data_service_v2()
@@ -239,10 +232,9 @@ async def get_stock_blocktrade(
 
 @router.post("/blocktrade/refresh", summary="刷新股票大宗交易数据")
 async def refresh_stock_blocktrade(
-    trade_date: Optional[str] = Query(None, description="交易日期 (YYYY-MM-DD)，不传则获取最新")
+    trade_date: Optional[str] = Query(None, description="交易日期 (YYYY-MM-DD)，不传则获取最新"),
 ):
-    """
-    从东方财富刷新大宗交易数据
+    """从东方财富刷新大宗交易数据
     """
     try:
         service = get_market_data_service_v2()
@@ -257,8 +249,7 @@ async def refresh_stock_blocktrade(
 
 @router.post("/refresh-all", summary="批量刷新所有市场数据")
 async def refresh_all_market_data():
-    """
-    一键刷新所有市场数据（用于定时任务）
+    """一键刷新所有市场数据（用于定时任务）
 
     包括：
     - 全市场资金流向（今日）

@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-问财数据ORM模型
+"""问财数据ORM模型
 
 定义问财查询和结果的数据库模型
 
@@ -26,8 +24,7 @@ from app.core.database import Base
 
 
 class WencaiQuery(Base):
-    """
-    问财查询定义表
+    """问财查询定义表
 
     存储预定义的查询语句配置
     """
@@ -76,8 +73,7 @@ class WencaiQuery(Base):
 
 
 class WencaiResultBase:
-    """
-    问财查询结果基类（抽象类）
+    """问财查询结果基类（抽象类）
 
     用于动态创建查询结果表（wencai_qs_1 ~ wencai_qs_9）
     注意：实际的结果表会根据问财API返回的数据动态创建，

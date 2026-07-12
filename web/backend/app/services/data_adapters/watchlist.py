@@ -1,8 +1,7 @@
+"""自选股管理数据源适配器
 """
-自选股管理数据源适配器
-"""
-import time
 import logging
+import time
 from datetime import datetime
 from typing import Any, Dict
 
@@ -11,7 +10,9 @@ from app.services.data_source_interface import (
     HealthStatusEnum,
     IDataSource,
 )
+
 from .base import DataSourceMetrics
+
 
 logger = logging.getLogger(__name__)
 
@@ -69,8 +70,7 @@ class WatchlistDataSourceAdapter(IDataSource):
                 if time.time() - cached_item["timestamp"] < self._cache_ttl:
                     self.metrics.record_success(time.time() - start_time)
                     return cached_item["data"]
-                else:
-                    del self._cache[cache_key]
+                del self._cache[cache_key]
 
             # 获取数据
             data = await self._fetch_watchlist_data(endpoint, params)
@@ -110,7 +110,7 @@ class WatchlistDataSourceAdapter(IDataSource):
                     "message": "获取自选股列表成功",
                 }
 
-            elif endpoint == "symbols" or endpoint == "/symbols":
+            if endpoint == "symbols" or endpoint == "/symbols":
                 # 获取自选股代码列表
                 watchlist_service = self._get_watchlist_service()
                 symbols = watchlist_service.get_watchlist_symbols(user_id)
@@ -121,7 +121,7 @@ class WatchlistDataSourceAdapter(IDataSource):
                     "message": "获取自选股代码列表成功",
                 }
 
-            elif endpoint.startswith("add/"):
+            if endpoint.startswith("add/"):
                 # 添加自选股 add/{symbol}
                 if len(path_parts) >= 2:
                     symbol = path_parts[1]
@@ -185,7 +185,7 @@ class WatchlistDataSourceAdapter(IDataSource):
                         "message": "获取自选股分组列表成功",
                     }
 
-                elif path_parts[1] == "create":
+                if path_parts[1] == "create":
                     # 创建分组 groups/create
                     group_name = params.get("group_name", "默认分组")
 
@@ -227,7 +227,7 @@ class WatchlistDataSourceAdapter(IDataSource):
             logger.error(f"Mock watchlist data fetch failed for {endpoint}: {e}")
             return {
                 "success": False,
-                "error": f"Failed to fetch mock watchlist data: {str(e)}",
+                "error": f"Failed to fetch mock watchlist data: {e!s}",
                 "data": None,
             }
 
@@ -268,7 +268,7 @@ class WatchlistDataSourceAdapter(IDataSource):
             return HealthStatus(
                 status=HealthStatusEnum.FAILED,
                 response_time=0.0,
-                message=f"Watchlist health check failed: {str(e)}",
+                message=f"Watchlist health check failed: {e!s}",
                 timestamp=datetime.now(),
             )
 
@@ -278,4 +278,3 @@ class WatchlistDataSourceAdapter(IDataSource):
 
     async def close(self):
         """关闭连接和清理资源"""
-        pass

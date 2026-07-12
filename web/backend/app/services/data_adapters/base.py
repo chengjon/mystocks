@@ -1,8 +1,8 @@
-"""
-数据源适配器基类和指标
+"""数据源适配器基类和指标
 """
 from datetime import datetime
 from typing import Optional
+
 
 class DataSourceMetrics:
     """数据源监控指标"""

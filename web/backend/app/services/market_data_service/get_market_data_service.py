@@ -1,5 +1,4 @@
-"""
-市场数据服务 (MarketDataService)
+"""市场数据服务 (MarketDataService)
 
 业务逻辑层,负责:
 1. 数据获取: 调用adapters获取外部数据
@@ -13,19 +12,10 @@
 """
 
 import logging
-import os
-from datetime import date, datetime
-from typing import Any, Dict, List, Optional
+from typing import Optional
 
-import pandas as pd
-from sqlalchemy import and_, create_engine, or_
-from sqlalchemy.orm import sessionmaker
-
-from app.adapters.akshare_extension import get_akshare_extension
-from app.adapters.tqlex_adapter import get_tqlex_adapter
-from app.core.cache_integration import get_cache_integration
-from app.models.market_data import ChipRaceEndData, ChipRaceOpenData, ETFData, FundFlow, LongHuBangData
 from .market_data_service import MarketDataService
+
 
 logger = logging.getLogger(__name__)
 

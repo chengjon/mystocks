@@ -1,5 +1,4 @@
-"""
-实时市场数据流服务 - Real-Time Market Data Streaming Service
+"""实时市场数据流服务 - Real-Time Market Data Streaming Service
 
 Task 6: 实现基于WebSocket的实时行情流传输
 
@@ -22,6 +21,7 @@ from enum import Enum
 from typing import Any, Callable, Dict, List, Optional, Set
 
 import structlog
+
 
 logger = structlog.get_logger()
 
@@ -94,13 +94,13 @@ class MarketDataStream:
         update_interval: float = 1.0,
         buffer_size: int = 100,
     ):
-        """
-        初始化市场数据流
+        """初始化市场数据流
 
         Args:
             symbol: 股票代码（如 600519）
             update_interval: 更新间隔（秒）
             buffer_size: 消息缓冲区大小
+
         """
         self.symbol = symbol
         self.stream_id = str(uuid.uuid4())
@@ -228,11 +228,11 @@ class RealtimeStreamingService:
     """实时流式传输服务 - 管理所有市场数据流"""
 
     def __init__(self, default_buffer_size: int = 100):
-        """
-        初始化实时流服务
+        """初始化实时流服务
 
         Args:
             default_buffer_size: 默认缓冲区大小
+
         """
         self.streams: Dict[str, MarketDataStream] = {}
         self.subscriber_to_stream: Dict[str, str] = {}  # sid -> symbol
@@ -300,8 +300,7 @@ class RealtimeStreamingService:
 
         # 更新峰值
         total_subscribers = sum(len(s.subscribers) for s in self.streams.values())
-        if total_subscribers > self.peak_subscribers:
-            self.peak_subscribers = total_subscribers
+        self.peak_subscribers = max(self.peak_subscribers, total_subscribers)
 
         logger.info(
             "✅ Subscriber added to stream",

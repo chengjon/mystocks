@@ -1,5 +1,4 @@
-"""
-WebSocket连接稳定性增强管理器
+"""WebSocket连接稳定性增强管理器
 WebSocket Connection Stability Enhancement Manager
 
 解决WebSocket连接稳定性问题的关键功能：
@@ -23,6 +22,7 @@ from threading import Lock
 from typing import Any, Callable, Dict, List, Optional, Set
 
 import structlog
+
 
 logger = structlog.get_logger()
 
@@ -85,13 +85,13 @@ class CircuitBreaker:
         recovery_timeout: float = 60.0,
         expected_exception: type = Exception,
     ):
-        """
-        初始化断路器
+        """初始化断路器
 
         Args:
             failure_threshold: 失败阈值
             recovery_timeout: 恢复超时时间
             expected_exception: 预期异常类型
+
         """
         self.failure_threshold = failure_threshold
         self.recovery_timeout = recovery_timeout
@@ -146,13 +146,13 @@ class MessageQueue:
         batch_size: int = 100,
         flush_interval: float = 0.1,
     ):
-        """
-        初始化消息队列
+        """初始化消息队列
 
         Args:
             max_size: 队列最大大小
             batch_size: 批处理大小
             flush_interval: 刷新间隔
+
         """
         self.max_size = max_size
         self.batch_size = batch_size
@@ -232,14 +232,14 @@ class ConnectionPool:
         connection_timeout: float = 30.0,
         idle_timeout: float = 300.0,
     ):
-        """
-        初始化连接池
+        """初始化连接池
 
         Args:
             min_connections: 最小连接数
             max_connections: 最大连接数
             connection_timeout: 连接超时
             idle_timeout: 空闲超时
+
         """
         self.min_connections = min_connections
         self.max_connections = max_connections

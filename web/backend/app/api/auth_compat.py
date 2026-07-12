@@ -11,6 +11,7 @@ from app.core.exceptions import UnauthorizedException
 from app.core.responses import create_success_response
 from app.core.security import authenticate_user, create_access_token
 
+
 compat_router = APIRouter()
 
 

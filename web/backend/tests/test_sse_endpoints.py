@@ -1,5 +1,4 @@
-"""
-SSE Endpoints Tests
+"""SSE Endpoints Tests
 Week 2 Day 3 - SSE Real-time Push Testing
 
 Tests SSE endpoints for:
@@ -9,9 +8,11 @@ Tests SSE endpoints for:
 - Multiple concurrent clients
 """
 
-import pytest
 import asyncio
 import json
+
+import pytest
+
 
 # Mark all tests in this module
 pytestmark = [pytest.mark.week2, pytest.mark.sse]
@@ -21,8 +22,7 @@ class TestSSEBasicConnection:
     """Test basic SSE connection functionality"""
 
     def test_training_sse_connection(self, test_client):
-        """
-        Test SSE connection to training channel
+        """Test SSE connection to training channel
         Expected: 200 OK with SSE headers
         """
         with test_client.stream("GET", "/api/v1/sse/training") as response:
@@ -40,8 +40,7 @@ class TestSSEBasicConnection:
                     break
 
     def test_backtest_sse_connection(self, test_client):
-        """
-        Test SSE connection to backtest channel
+        """Test SSE connection to backtest channel
         Expected: 200 OK with connection event
         """
         with test_client.stream("GET", "/api/v1/sse/backtest") as response:
@@ -55,8 +54,7 @@ class TestSSEBasicConnection:
                     break
 
     def test_alerts_sse_connection(self, test_client):
-        """
-        Test SSE connection to alerts channel
+        """Test SSE connection to alerts channel
         Expected: 200 OK with connection event
         """
         with test_client.stream("GET", "/api/v1/sse/alerts") as response:
@@ -69,8 +67,7 @@ class TestSSEBasicConnection:
                     break
 
     def test_dashboard_sse_connection(self, test_client):
-        """
-        Test SSE connection to dashboard channel
+        """Test SSE connection to dashboard channel
         Expected: 200 OK with connection event
         """
         with test_client.stream("GET", "/api/v1/sse/dashboard") as response:
@@ -88,8 +85,7 @@ class TestSSEBroadcasting:
 
     @pytest.mark.asyncio
     async def test_broadcast_training_progress(self):
-        """
-        Test broadcasting training progress events
+        """Test broadcasting training progress events
         Expected: Events received by all connected clients
         """
         from app.core.sse_manager import get_sse_broadcaster
@@ -110,8 +106,7 @@ class TestSSEBroadcasting:
 
     @pytest.mark.asyncio
     async def test_broadcast_backtest_progress(self):
-        """
-        Test broadcasting backtest progress events
+        """Test broadcasting backtest progress events
         Expected: Events received by subscribers
         """
         from app.core.sse_manager import get_sse_broadcaster
@@ -129,8 +124,7 @@ class TestSSEBroadcasting:
 
     @pytest.mark.asyncio
     async def test_broadcast_risk_alert(self):
-        """
-        Test broadcasting risk alerts
+        """Test broadcasting risk alerts
         Expected: Alerts delivered to subscribers
         """
         from app.core.sse_manager import get_sse_broadcaster
@@ -148,8 +142,7 @@ class TestSSEBroadcasting:
 
     @pytest.mark.asyncio
     async def test_broadcast_dashboard_update(self):
-        """
-        Test broadcasting dashboard updates
+        """Test broadcasting dashboard updates
         Expected: Dashboard data pushed to clients
         """
         from app.core.sse_manager import get_sse_broadcaster
@@ -166,8 +159,7 @@ class TestSSEStatus:
     """Test SSE status endpoint"""
 
     def test_sse_status_no_connections(self, test_client):
-        """
-        Test SSE status with no active connections
+        """Test SSE status with no active connections
         Expected: 200 OK with zero connection count
         """
         response = test_client.get("/api/v1/sse/status")
@@ -180,8 +172,7 @@ class TestSSEStatus:
         assert "channels" in data
 
     def test_sse_status_with_connections(self, test_client):
-        """
-        Test SSE status with active connections
+        """Test SSE status with active connections
         Expected: Status shows connected clients
         """
         # Note: This would require actually establishing SSE connections
@@ -195,8 +186,7 @@ class TestSSEConnectionManager:
 
     @pytest.mark.asyncio
     async def test_connection_manager_connect_disconnect(self):
-        """
-        Test connection manager connect/disconnect cycle
+        """Test connection manager connect/disconnect cycle
         Expected: Proper connection registration and cleanup
         """
         from app.core.sse_manager import SSEConnectionManager
@@ -214,8 +204,7 @@ class TestSSEConnectionManager:
 
     @pytest.mark.asyncio
     async def test_connection_manager_multiple_clients(self):
-        """
-        Test multiple concurrent clients
+        """Test multiple concurrent clients
         Expected: All clients registered correctly
         """
         from app.core.sse_manager import SSEConnectionManager
@@ -238,8 +227,7 @@ class TestSSEConnectionManager:
 
     @pytest.mark.asyncio
     async def test_connection_manager_broadcast(self):
-        """
-        Test event broadcasting to multiple clients
+        """Test event broadcasting to multiple clients
         Expected: All clients receive the event
         """
         from app.core.sse_manager import SSEConnectionManager, SSEEvent
@@ -277,8 +265,7 @@ class TestSSEErrorHandling:
 
     @pytest.mark.asyncio
     async def test_queue_overflow_handling(self):
-        """
-        Test queue overflow handling
+        """Test queue overflow handling
         Expected: Client disconnected when queue is full
         """
         from app.core.sse_manager import SSEConnectionManager, SSEEvent
@@ -300,8 +287,7 @@ class TestSSEErrorHandling:
 
     @pytest.mark.asyncio
     async def test_invalid_channel(self):
-        """
-        Test broadcasting to non-existent channel
+        """Test broadcasting to non-existent channel
         Expected: Graceful handling (no error)
         """
         from app.core.sse_manager import SSEConnectionManager, SSEEvent

@@ -1,5 +1,4 @@
-"""
-系统管理API端点
+"""系统管理API端点
 提供系统设置、数据库连接测试、运行日志查询等功能
 """
 
@@ -13,6 +12,7 @@ from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
 from app.api.system._logs_summary_helper import build_logs_summary_payload
+
 
 logger = logging.getLogger(__name__)
 
@@ -41,8 +41,7 @@ def _close_resource_quietly(resource_name: str, resource: Any) -> None:
 
 @router.get("/health")
 async def system_health():
-    """
-    系统健康检查端点 (双数据库架构: TDengine + PostgreSQL)
+    """系统健康检查端点 (双数据库架构: TDengine + PostgreSQL)
 
     返回:
     - 数据库连接状态
@@ -93,13 +92,12 @@ async def system_health():
             "architecture": "dual-database",
         }
     except Exception as e:
-        raise HTTPException(status_code=503, detail=f"系统健康检查失败: {str(e)}")
+        raise HTTPException(status_code=503, detail=f"系统健康检查失败: {e!s}")
 
 
 @router.get("/adapters/health")
 async def get_adapters_health():
-    """
-    🚀 适配器健康检查端点（新增）
+    """🚀 适配器健康检查端点（新增）
 
     检查所有数据适配器的健康状态：
     - akshare: AkShare适配器
@@ -147,13 +145,12 @@ async def get_adapters_health():
         }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"适配器健康检查失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"适配器健康检查失败: {e!s}")
 
 
 @router.get("/datasources")
 async def get_datasources():
-    """
-    获取已配置的数据源列表
+    """获取已配置的数据源列表
 
     返回所有可用的数据源配置信息
     """
@@ -218,8 +215,7 @@ class ConnectionTestResponse(BaseModel):
 
 @router.post("/test-connection", response_model=ConnectionTestResponse)
 async def test_database_connection(request: ConnectionTestRequest):
-    """
-    测试数据库连接 (双数据库架构)
+    """测试数据库连接 (双数据库架构)
 
     支持的数据库类型:
     - postgresql: PostgreSQL (主数据库)
@@ -263,11 +259,10 @@ async def test_database_connection(request: ConnectionTestRequest):
                         success=True,
                         message=f"PostgreSQL 连接成功 ({version})，发现数据库: {', '.join(db_list)}",
                     )
-                else:
-                    return ConnectionTestResponse(
-                        success=True,
-                        message=f"PostgreSQL 连接成功 ({version})，但未发现 mystocks 相关数据库",
-                    )
+                return ConnectionTestResponse(
+                    success=True,
+                    message=f"PostgreSQL 连接成功 ({version})，但未发现 mystocks 相关数据库",
+                )
             except psycopg2.Error:
                 raise
             finally:
@@ -306,11 +301,10 @@ async def test_database_connection(request: ConnectionTestRequest):
                         success=True,
                         message=f"TDengine 连接成功 (版本: {version})，发现数据库: {', '.join(db_list)}",
                     )
-                else:
-                    return ConnectionTestResponse(
-                        success=True,
-                        message=f"TDengine 连接成功 (版本: {version})，但未发现 mystocks 相关数据库",
-                    )
+                return ConnectionTestResponse(
+                    success=True,
+                    message=f"TDengine 连接成功 (版本: {version})，但未发现 mystocks 相关数据库",
+                )
             except Exception as e:
                 # TDengine 可能需要特殊处理
                 error_msg = str(e)
@@ -327,7 +321,7 @@ async def test_database_connection(request: ConnectionTestRequest):
 
         else:
             return ConnectionTestResponse(
-                success=False, error=f"不支持的数据库类型: {db_type}，仅支持 postgresql 和 tdengine"
+                success=False, error=f"不支持的数据库类型: {db_type}，仅支持 postgresql 和 tdengine",
             )
 
     except psycopg2.OperationalError as e:
@@ -337,16 +331,15 @@ async def test_database_connection(request: ConnectionTestRequest):
                 success=False,
                 error=f"无法连接到 PostgreSQL 服务器 ({host}:{port})，请检查地址和端口是否正确",
             )
-        elif "password authentication failed" in error_msg:
+        if "password authentication failed" in error_msg:
             return ConnectionTestResponse(success=False, error="PostgreSQL 认证失败，用户名或密码错误")
-        else:
-            return ConnectionTestResponse(success=False, error=f"PostgreSQL 连接错误: {error_msg}")
+        return ConnectionTestResponse(success=False, error=f"PostgreSQL 连接错误: {error_msg}")
 
     except RuntimeError as e:
         return ConnectionTestResponse(success=False, error=str(e))
 
     except Exception as e:
-        return ConnectionTestResponse(success=False, error=f"连接测试失败: {str(e)}")
+        return ConnectionTestResponse(success=False, error=f"连接测试失败: {e!s}")
 
 
 class SystemLog(BaseModel):
@@ -380,8 +373,7 @@ def get_system_logs_from_db(
     level: Optional[str] = None,
     category: Optional[str] = None,
 ) -> List[SystemLog]:
-    """
-    从PostgreSQL监控数据库获取系统日志
+    """从PostgreSQL监控数据库获取系统日志
 
     Args:
         filter_errors: 是否只返回有问题的日志 (WARNING, ERROR, CRITICAL)
@@ -392,6 +384,7 @@ def get_system_logs_from_db(
 
     Returns:
         系统日志列表
+
     """
     conn = None
     cursor = None
@@ -492,8 +485,7 @@ def get_system_logs_from_db(
 
 
 def get_mock_system_logs(filter_errors: bool = False, limit: int = 100) -> List[SystemLog]:
-    """
-    生成模拟的系统日志（用于演示和数据库不可用时的备用）
+    """生成模拟的系统日志（用于演示和数据库不可用时的备用）
     """
     mock_logs = []
 
@@ -612,8 +604,7 @@ async def get_system_logs(
     level: Optional[str] = Query(None, description="日志级别筛选 (INFO/WARNING/ERROR/CRITICAL)"),
     category: Optional[str] = Query(None, description="日志分类筛选 (database/api/adapter/system)"),
 ):
-    """
-    获取系统运行日志
+    """获取系统运行日志
 
     参数:
     - filter_errors: 是否只显示有问题的日志 (WARNING/ERROR/CRITICAL)
@@ -655,13 +646,12 @@ async def get_system_logs(
         )
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取系统日志失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取系统日志失败: {e!s}")
 
 
 @router.get("/logs/summary")
 async def get_logs_summary():
-    """
-    获取日志统计摘要
+    """获取日志统计摘要
 
     返回:
     - 总日志数
@@ -680,4 +670,4 @@ async def get_logs_summary():
         return build_logs_summary_payload(logs, total)
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取日志统计失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取日志统计失败: {e!s}")

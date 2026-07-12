@@ -61,7 +61,7 @@ async def build_impacted_nodes(tracker: Any, request_node_id: str, impacted_node
                 "level": level,
                 "path": _find_path(request_node_id, node_id, edges),
                 "impact_type": "direct" if level == 1 else "indirect",
-            }
+            },
         )
 
     return impacted_nodes

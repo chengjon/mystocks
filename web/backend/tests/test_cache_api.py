@@ -1,5 +1,4 @@
-"""
-缓存 API 端点测试
+"""缓存 API 端点测试
 
 测试缓存管理的HTTP API端点。
 
@@ -12,13 +11,14 @@ Test Coverage:
 - GET /cache/{symbol}/{type}/fresh - 检查新鲜度
 """
 
-import pytest
-from fastapi.testclient import TestClient
 from datetime import datetime
 
+import pytest
+from fastapi.testclient import TestClient
+
 from app.api.cache import router
-from app.core.cache_manager import reset_cache_manager, get_cache_manager
 from app.core.cache_integration import reset_cache_integration
+from app.core.cache_manager import get_cache_manager, reset_cache_manager
 
 
 @pytest.fixture

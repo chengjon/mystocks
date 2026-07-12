@@ -1,5 +1,4 @@
-"""
-仪表盘聚合结果构建辅助函数
+"""仪表盘聚合结果构建辅助函数
 """
 
 from __future__ import annotations
@@ -18,6 +17,7 @@ from app.models.dashboard import (
     WatchlistItem,
     WatchlistSummary,
 )
+
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +39,7 @@ def build_market_overview(raw_data: dict) -> Optional[MarketOverview]:
                     volume=idx.get("volume"),
                     turnover=idx.get("turnover"),
                     update_time=idx.get("update_time"),
-                )
+                ),
             )
 
         return MarketOverview(
@@ -109,7 +109,7 @@ def build_portfolio_summary(raw_data: dict) -> Optional[PortfolioSummary]:
                     profit_loss=pos.get("profit_loss"),
                     profit_loss_percent=pos.get("profit_loss_percent"),
                     position_percent=pos.get("position_percent"),
-                )
+                ),
             )
 
         return PortfolioSummary(

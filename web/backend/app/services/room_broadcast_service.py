@@ -1,5 +1,4 @@
-"""
-房间消息广播服务 - Room Message Broadcasting Service
+"""房间消息广播服务 - Room Message Broadcasting Service
 
 Task 9: 多房间订阅扩展
 
@@ -22,6 +21,7 @@ from enum import Enum
 from typing import Any, Callable, Dict, List, Optional
 
 import structlog
+
 
 logger = structlog.get_logger()
 
@@ -107,6 +107,7 @@ class OfflineMessageQueue:
 
         Args:
             max_queue_size: 最大队列大小
+
         """
         self.max_queue_size = max_queue_size
         self.queues: Dict[str, List[RoomMessage]] = defaultdict(list)
@@ -121,6 +122,7 @@ class OfflineMessageQueue:
 
         Returns:
             是否成功添加
+
         """
         if len(self.queues[user_id]) >= self.max_queue_size:
             # 移除最早的消息
@@ -138,6 +140,7 @@ class OfflineMessageQueue:
 
         Returns:
             消息列表
+
         """
         if user_id not in self.queues:
             return []
@@ -155,6 +158,7 @@ class OfflineMessageQueue:
 
         Returns:
             队列大小
+
         """
         return len(self.queues.get(user_id, []))
 
@@ -166,6 +170,7 @@ class OfflineMessageQueue:
 
         Returns:
             是否成功清空
+
         """
         if user_id in self.queues:
             del self.queues[user_id]
@@ -204,6 +209,7 @@ class RoomBroadcaster:
 
         Args:
             callback: 回调函数 (user_id, message) -> bool
+
         """
         self.delivery_callbacks.append(callback)
         logger.info("✅ Delivery callback registered")
@@ -229,6 +235,7 @@ class RoomBroadcaster:
 
         Returns:
             创建的消息对象
+
         """
         message = RoomMessage(
             room_id=room_id,
@@ -258,6 +265,7 @@ class RoomBroadcaster:
 
         Returns:
             是否广播成功
+
         """
         task = BroadcastTask(
             room_id=message.room_id,
@@ -298,6 +306,7 @@ class RoomBroadcaster:
 
         Returns:
             是否广播成功
+
         """
         task = BroadcastTask(
             room_id=message.room_id,
@@ -334,6 +343,7 @@ class RoomBroadcaster:
 
         Returns:
             是否广播成功
+
         """
         task = BroadcastTask(
             room_id=message.room_id,
@@ -362,6 +372,7 @@ class RoomBroadcaster:
 
         Returns:
             是否广播成功
+
         """
         task = BroadcastTask(
             room_id=message.room_id,
@@ -397,6 +408,7 @@ class RoomBroadcaster:
 
         Returns:
             是否成功传递
+
         """
         # 尝试所有注册的回调
         for callback in self.delivery_callbacks:
@@ -420,6 +432,7 @@ class RoomBroadcaster:
 
         Args:
             task: 广播任务
+
         """
         self.broadcast_history.append(task)
 
@@ -436,6 +449,7 @@ class RoomBroadcaster:
 
         Returns:
             消息列表
+
         """
         return self.offline_queue.dequeue(user_id, count)
 
@@ -448,6 +462,7 @@ class RoomBroadcaster:
 
         Returns:
             广播任务列表
+
         """
         filtered = [task for task in self.broadcast_history if task.room_id == room_id]
         return filtered[-limit:]
@@ -473,6 +488,7 @@ def get_broadcaster() -> RoomBroadcaster:
 
     Returns:
         广播器实例
+
     """
     global _broadcaster
     if _broadcaster is None:

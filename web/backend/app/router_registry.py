@@ -6,28 +6,22 @@ import logging
 
 from fastapi import FastAPI
 
-from .api import contract
-from .api import data_lineage
-from .api import data_source_config
-from .api import data_source_registry
-from .api import governance_dashboard
-from .api import gpu_monitoring
-from .api import indicator_registry
-from .api import monitoring_analysis
-from .api import monitoring_watchlists
-from .api import prometheus_exporter
-from .api import realtime_market
-from .api import signal_monitoring
-from .api import strategy_list_mock
-from .api import websocket
 from .api import (
+    akshare_market,
     announcement,
     auth,
     cache,
+    contract,
     dashboard,
     data,
+    data_lineage,
     data_quality,
+    data_source_config,
+    data_source_registry,
+    governance_dashboard,
+    gpu_monitoring,
     health,
+    indicator_registry,
     indicators,
     industry_concept_analysis,
     market,
@@ -35,12 +29,18 @@ from .api import (
     metrics,
     ml,
     monitoring,
+    monitoring_analysis,
+    monitoring_watchlists,
     multi_source,
     notification,
+    prometheus_exporter,
+    realtime_market,
     risk_management,
+    signal_monitoring,
     sse_endpoints,
     stock_search,
     strategy,
+    strategy_list_mock,
     strategy_management,
     strategy_mgmt,
     system,
@@ -51,9 +51,9 @@ from .api import (
     trading_runtime,
     tradingview,
     watchlist,
+    websocket,
     wencai,
 )
-from .api import akshare_market
 from .api.v1 import pool_monitoring
 from .api.v1.router import api_v1_router as mystocks_v1_router
 from .api.VERSION_MAPPING import VERSION_MAPPING

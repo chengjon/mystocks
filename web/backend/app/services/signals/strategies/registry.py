@@ -1,5 +1,4 @@
-"""
-Strategy Registry - 策略注册表
+"""Strategy Registry - 策略注册表
 
 支持YAML和Python配置的信号策略管理系统：
 - 策略注册和发现
@@ -25,6 +24,7 @@ from web.backend.app.services.signals.strategies.base_strategies import (
     SignalStrategy,
 )
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -42,8 +42,7 @@ class StrategyDefinition:
 
 
 class StrategyRegistry:
-    """
-    策略注册表
+    """策略注册表
 
     管理信号生成策略的注册、配置和生命周期
     """
@@ -92,12 +91,12 @@ class StrategyRegistry:
         logger.info("Built-in strategies registered and instantiated")
 
     def register_strategy(self, name: str, strategy_class: Type[SignalStrategy]):
-        """
-        注册策略类
+        """注册策略类
 
         Args:
             name: 策略名称
             strategy_class: 策略类
+
         """
         self.strategies[name] = strategy_class
         logger.debug("Strategy registered: %(name)s")
@@ -108,13 +107,13 @@ class StrategyRegistry:
         strategy_class: Type[SignalStrategy],
         parameters: Dict[str, Any],
     ):
-        """
-        注册策略类并创建实例
+        """注册策略类并创建实例
 
         Args:
             name: 策略名称
             strategy_class: 策略类
             parameters: 策略参数
+
         """
         self.register_strategy(name, strategy_class)
         try:
@@ -125,17 +124,17 @@ class StrategyRegistry:
             logger.error("Failed to create strategy instance %(name)s: %(e)s")
 
     def load_from_yaml(self, yaml_path: str) -> List[str]:
-        """
-        从YAML文件加载策略定义
+        """从YAML文件加载策略定义
 
         Args:
             yaml_path: YAML文件路径
 
         Returns:
             加载的策略名称列表
+
         """
         try:
-            with open(yaml_path, "r", encoding="utf-8") as f:
+            with open(yaml_path, encoding="utf-8") as f:
                 config = yaml.safe_load(f)
 
             loaded_strategies = []
@@ -163,14 +162,14 @@ class StrategyRegistry:
             return []
 
     def load_from_directory(self, directory_path: str) -> List[str]:
-        """
-        从目录加载所有YAML策略文件
+        """从目录加载所有YAML策略文件
 
         Args:
             directory_path: 策略文件目录
 
         Returns:
             加载的策略名称列表
+
         """
         directory = Path(directory_path)
         if not directory.exists():
@@ -191,14 +190,14 @@ class StrategyRegistry:
         return all_strategies
 
     def create_strategy(self, definition: StrategyDefinition) -> Optional[SignalStrategy]:
-        """
-        创建策略实例
+        """创建策略实例
 
         Args:
             definition: 策略定义
 
         Returns:
             策略实例
+
         """
         try:
             if not definition.enabled:
@@ -222,32 +221,32 @@ class StrategyRegistry:
             return None
 
     def get_strategy(self, name: str) -> Optional[SignalStrategy]:
-        """
-        获取策略实例
+        """获取策略实例
 
         Args:
             name: 策略名称
 
         Returns:
             策略实例
+
         """
         return self.instances.get(name)
 
     def get_all_strategies(self) -> List[SignalStrategy]:
-        """
-        获取所有活跃策略实例
+        """获取所有活跃策略实例
 
         Returns:
             策略实例列表
+
         """
         return list(self.instances.values())
 
     def get_enabled_strategies(self) -> List[SignalStrategy]:
-        """
-        获取所有启用的策略实例
+        """获取所有启用的策略实例
 
         Returns:
             启用的策略实例列表
+
         """
         enabled_strategies = []
 
@@ -259,14 +258,14 @@ class StrategyRegistry:
         return enabled_strategies
 
     def enable_strategy(self, name: str) -> bool:
-        """
-        启用策略
+        """启用策略
 
         Args:
             name: 策略名称
 
         Returns:
             是否成功
+
         """
         if name in self.definitions:
             self.definitions[name].enabled = True
@@ -275,14 +274,14 @@ class StrategyRegistry:
         return False
 
     def disable_strategy(self, name: str) -> bool:
-        """
-        禁用策略
+        """禁用策略
 
         Args:
             name: 策略名称
 
         Returns:
             是否成功
+
         """
         if name in self.definitions:
             self.definitions[name].enabled = False
@@ -291,8 +290,7 @@ class StrategyRegistry:
         return False
 
     def update_strategy_parameters(self, name: str, parameters: Dict[str, Any]) -> bool:
-        """
-        更新策略参数
+        """更新策略参数
 
         Args:
             name: 策略名称
@@ -300,6 +298,7 @@ class StrategyRegistry:
 
         Returns:
             是否成功
+
         """
         try:
             if name in self.instances:
@@ -339,11 +338,11 @@ class StrategyRegistry:
         }
 
     def save_to_yaml(self, yaml_path: str):
-        """
-        保存策略定义到YAML文件
+        """保存策略定义到YAML文件
 
         Args:
             yaml_path: 输出文件路径
+
         """
         try:
             strategies_config = {
@@ -358,7 +357,7 @@ class StrategyRegistry:
                         "priority": definition.priority,
                     }
                     for definition in self.definitions.values()
-                ]
+                ],
             }
 
             with open(yaml_path, "w", encoding="utf-8") as f:

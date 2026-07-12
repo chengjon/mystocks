@@ -1,5 +1,4 @@
-"""
-Announcement API
+"""Announcement API
 Multi-data Source Support
 
 公告查询和监控的API端点
@@ -21,6 +20,7 @@ from app.models.announcement import (
 )
 from app.services.announcement_service import get_announcement_service
 
+
 router = APIRouter()
 
 
@@ -36,8 +36,7 @@ async def fetch_announcements(
     end_date: Optional[date] = Query(None, description="结束日期"),
     category: Optional[str] = Query("all", description="公告类别"),
 ):
-    """
-    从数据源获取并保存公告
+    """从数据源获取并保存公告
 
     Args:
         symbol: 股票代码（可选）
@@ -47,6 +46,7 @@ async def fetch_announcements(
 
     Returns:
         Dict: 获取结果
+
     """
     try:
         service = get_announcement_service()
@@ -58,12 +58,12 @@ async def fetch_announcements(
             start_date = end_date - timedelta(days=7)
 
         result = service.fetch_and_save_announcements(
-            symbol=symbol, start_date=start_date, end_date=end_date, category=category
+            symbol=symbol, start_date=start_date, end_date=end_date, category=category,
         )
 
         if not result["success"]:
             raise BusinessException(
-                detail=result.get("error", "Failed to fetch"), status_code=400, error_code="ANNOUNCEMENT_FETCH_FAILED"
+                detail=result.get("error", "Failed to fetch"), status_code=400, error_code="ANNOUNCEMENT_FETCH_FAILED",
             )
 
         return result
@@ -84,8 +84,7 @@ async def get_announcements(
     page: int = Query(1, ge=1, description="页码"),
     page_size: int = Query(20, ge=1, le=100, description="每页数量"),
 ):
-    """
-    查询公告列表
+    """查询公告列表
 
     Args:
         stock_code: 股票代码
@@ -98,6 +97,7 @@ async def get_announcements(
 
     Returns:
         Dict: 公告列表
+
     """
     try:
         service = get_announcement_service()
@@ -114,7 +114,7 @@ async def get_announcements(
 
         if not result["success"]:
             raise BusinessException(
-                detail=result.get("error", "Query failed"), status_code=400, error_code="ANNOUNCEMENT_QUERY_FAILED"
+                detail=result.get("error", "Query failed"), status_code=400, error_code="ANNOUNCEMENT_QUERY_FAILED",
             )
 
         return result
@@ -127,14 +127,14 @@ async def get_announcements(
 
 @router.get("/today")
 async def get_today_announcements(min_importance: Optional[int] = Query(0, ge=0, le=5, description="最小重要性级别")):
-    """
-    获取今日公告
+    """获取今日公告
 
     Args:
         min_importance: 最小重要性级别
 
     Returns:
         Dict: 今日公告列表
+
     """
     try:
         service = get_announcement_service()
@@ -151,7 +151,7 @@ async def get_today_announcements(min_importance: Optional[int] = Query(0, ge=0,
 
         if not result["success"]:
             raise BusinessException(
-                detail=result.get("error", "Query failed"), status_code=400, error_code="ANNOUNCEMENT_QUERY_FAILED"
+                detail=result.get("error", "Query failed"), status_code=400, error_code="ANNOUNCEMENT_QUERY_FAILED",
             )
 
         return {
@@ -172,8 +172,7 @@ async def get_important_announcements(
     days: int = Query(7, ge=1, le=30, description="查询天数"),
     min_importance: int = Query(3, ge=0, le=5, description="最小重要性级别"),
 ):
-    """
-    获取重要公告
+    """获取重要公告
 
     Args:
         days: 查询天数（默认7天）
@@ -181,6 +180,7 @@ async def get_important_announcements(
 
     Returns:
         Dict: 重要公告列表
+
     """
     try:
         service = get_announcement_service()
@@ -198,7 +198,7 @@ async def get_important_announcements(
 
         if not result["success"]:
             raise BusinessException(
-                detail=result.get("error", "Query failed"), status_code=400, error_code="ANNOUNCEMENT_QUERY_FAILED"
+                detail=result.get("error", "Query failed"), status_code=400, error_code="ANNOUNCEMENT_QUERY_FAILED",
             )
 
         return {
@@ -221,8 +221,7 @@ async def get_stock_announcements(
     stock_code: str = Path(..., description="股票代码"),
     days: int = Query(30, ge=1, le=365, description="查询天数"),
 ):
-    """
-    获取指定股票的公告
+    """获取指定股票的公告
 
     Args:
         stock_code: 股票代码
@@ -230,6 +229,7 @@ async def get_stock_announcements(
 
     Returns:
         Dict: 股票公告列表
+
     """
     try:
         service = get_announcement_service()
@@ -247,7 +247,7 @@ async def get_stock_announcements(
 
         if not result["success"]:
             raise BusinessException(
-                detail=result.get("error", "Query failed"), status_code=400, error_code="ANNOUNCEMENT_QUERY_FAILED"
+                detail=result.get("error", "Query failed"), status_code=400, error_code="ANNOUNCEMENT_QUERY_FAILED",
             )
 
         return {
@@ -267,13 +267,13 @@ async def get_stock_announcements(
 
 @router.post("/monitor/evaluate")
 async def evaluate_monitor_rules():
-    """
-    评估所有监控规则
+    """评估所有监控规则
 
     检查是否有新公告触发监控规则
 
     Returns:
         Dict: 评估结果
+
     """
     try:
         service = get_announcement_service()
@@ -297,11 +297,11 @@ async def evaluate_monitor_rules():
 
 @router.get("/stats")
 async def get_announcement_stats():
-    """
-    获取公告统计信息
+    """获取公告统计信息
 
     Returns:
         AnnouncementStatsResponse: 统计信息
+
     """
     try:
         # 简化实现，返回基本统计
@@ -338,11 +338,11 @@ async def get_announcement_stats():
 
 @router.get("/types")
 async def get_announcement_types():
-    """
-    获取支持的公告类型
+    """获取支持的公告类型
 
     Returns:
         Dict: 公告类型列表
+
     """
     from app.adapters.cninfo_adapter import get_cninfo_adapter
 
@@ -361,11 +361,11 @@ async def get_announcement_types():
 
 @router.get("/monitor-rules")
 async def get_monitor_rules():
-    """
-    获取监控规则列表
+    """获取监控规则列表
 
     Returns:
         List: 监控规则列表
+
     """
     try:
         service = get_announcement_service()
@@ -383,14 +383,14 @@ async def get_monitor_rules():
 
 @router.post("/monitor-rules")
 async def create_monitor_rule(rule: AnnouncementMonitorRuleCreate):
-    """
-    创建监控规则
+    """创建监控规则
 
     Args:
         rule: 监控规则创建请求
 
     Returns:
         AnnouncementMonitorRuleResponse: 创建的规则
+
     """
     try:
         service = get_announcement_service()
@@ -434,8 +434,7 @@ async def create_monitor_rule(rule: AnnouncementMonitorRuleCreate):
 
 @router.put("/monitor-rules/{rule_id}")
 async def update_monitor_rule(rule_id: int, updates: AnnouncementMonitorRuleUpdate):
-    """
-    更新监控规则
+    """更新监控规则
 
     Args:
         rule_id: 规则ID
@@ -443,6 +442,7 @@ async def update_monitor_rule(rule_id: int, updates: AnnouncementMonitorRuleUpda
 
     Returns:
         AnnouncementMonitorRuleResponse: 更新后的规则
+
     """
     try:
         service = get_announcement_service()
@@ -473,14 +473,14 @@ async def update_monitor_rule(rule_id: int, updates: AnnouncementMonitorRuleUpda
 
 @router.delete("/monitor-rules/{rule_id}")
 async def delete_monitor_rule(rule_id: int):
-    """
-    删除监控规则
+    """删除监控规则
 
     Args:
         rule_id: 规则ID
 
     Returns:
         Dict: 操作结果
+
     """
     try:
         service = get_announcement_service()
@@ -511,8 +511,7 @@ async def get_triggered_records(
     page: int = Query(1, ge=1, description="页码"),
     page_size: int = Query(20, ge=1, le=100, description="每页数量"),
 ):
-    """
-    获取触发记录列表
+    """获取触发记录列表
 
     Args:
         rule_id: 规则ID
@@ -522,6 +521,7 @@ async def get_triggered_records(
 
     Returns:
         Dict: 触发记录列表
+
     """
     try:
         service = get_announcement_service()
@@ -563,7 +563,7 @@ async def get_triggered_records(
                         "rule_name": record.rule.rule_name,
                         "announcement_title": record.announcement.announcement_title,
                         "stock_code": record.announcement.stock_code,
-                    }
+                    },
                 )
 
             return {

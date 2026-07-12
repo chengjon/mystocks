@@ -1,5 +1,4 @@
-"""
-仪表盘API路由
+"""仪表盘API路由
 
 提供仪表盘相关的RESTful API端点，整合市场概览、自选股、持仓、风险预警等数据。
 
@@ -34,6 +33,7 @@ from app.models.dashboard import (
     DashboardResponse,
     MarketOverview,
 )
+
 
 # 配置日志
 logger = logging.getLogger(__name__)
@@ -88,8 +88,7 @@ async def get_dashboard_summary(
     include_alerts: bool = Query(True, description="是否包含风险预警"),
     bypass_cache: bool = Query(False, description="是否跳过缓存直接获取新数据"),
 ):
-    """
-    获取仪表盘汇总数据
+    """获取仪表盘汇总数据
 
     **参数说明**:
     - user_id: 用户ID（必须）
@@ -171,16 +170,16 @@ async def get_dashboard_summary(
         cache_stats = cache_manager.get_cache_stats()
         logger.info(
             f"仪表盘数据获取成功: user_id={user_id}, cache_hit={cache_hit}, "
-            f"hit_rate={cache_stats.get('hit_rate', 'N/A')}"
+            f"hit_rate={cache_stats.get('hit_rate', 'N/A')}",
         )
         return response
 
     except ValueError as e:
         logger.error("参数验证失败: %s", e)
-        raise HTTPException(status_code=400, detail=f"参数验证失败: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"参数验证失败: {e!s}")
     except Exception as e:
         logger.error("获取仪表盘数据失败: %s", e, exc_info=True)
-        raise HTTPException(status_code=500, detail=f"获取仪表盘数据失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取仪表盘数据失败: {e!s}")
 
 
 @router.get(
@@ -225,13 +224,12 @@ async def get_market_overview(
         raise
     except Exception as e:
         logger.error("获取市场概览失败: %s", e)
-        raise HTTPException(status_code=500, detail=f"获取市场概览失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取市场概览失败: {e!s}")
 
 
 @router.get("/health", summary="仪表盘健康检查", description="检查仪表盘服务和数据源的健康状态", tags=["health"])
 async def health_check(request: Request, data_source=Depends(get_data_source)):
-    """
-    检查仪表盘服务及其依赖组件的健康状态
+    """检查仪表盘服务及其依赖组件的健康状态
 
     此端点定期用于监控仪表盘服务的可用性和数据源的连接状态。
 
@@ -248,6 +246,7 @@ async def health_check(request: Request, data_source=Depends(get_data_source)):
     Notes:
         - healthy: 所有组件工作正常
         - unhealthy: 一个或多个组件不可用
+
     """
     try:
         # 获取请求ID
@@ -269,6 +268,6 @@ async def health_check(request: Request, data_source=Depends(get_data_source)):
         logger.error("健康检查失败: %s", e)
         return create_error_response(
             error_code=ErrorCodes.SERVICE_UNAVAILABLE,
-            message=f"仪表盘服务不可用: {str(e)}",
+            message=f"仪表盘服务不可用: {e!s}",
             request_id=getattr(request.state, "request_id", None),
         )

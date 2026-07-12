@@ -1,5 +1,4 @@
-"""
-统一API响应格式和公共模型
+"""统一API响应格式和公共模型
 
 该模块定义了所有API端点必须使用的标准响应格式,确保前后端协作的一致性。
 
@@ -15,13 +14,13 @@ from uuid import uuid4
 
 from pydantic import BaseModel, Field
 
+
 # 定义泛型类型变量
 T = TypeVar("T")
 
 
 class APIResponse(BaseModel, Generic[T]):
-    """
-    统一API响应格式
+    """统一API响应格式
 
     所有API端点必须返回此格式,确保前端可以统一处理响应。
 
@@ -40,6 +39,7 @@ class APIResponse(BaseModel, Generic[T]):
         ...     message="操作成功",
         ...     data={"user_id": 123, "name": "张三"}
         ... )
+
     """
 
     success: bool = Field(default=True, description="请求是否成功")
@@ -60,13 +60,12 @@ class APIResponse(BaseModel, Generic[T]):
                 "data": {"user_id": 123, "name": "张三"},
                 "request_id": "550e8400-e29b-41d4-a716-446655440000",
                 "timestamp": "2025-12-29T15:30:00.000Z",
-            }
+            },
         }
 
 
 class CommonError(BaseModel):
-    """
-    统一错误响应模型
+    """统一错误响应模型
 
     当API调用失败时,返回此格式的错误信息。
 
@@ -82,6 +81,7 @@ class CommonError(BaseModel):
         ...     message="参数错误",
         ...     detail="symbol字段不能为空"
         ... )
+
     """
 
     code: int = Field(..., description="错误码")
@@ -93,13 +93,12 @@ class CommonError(BaseModel):
         """Pydantic配置"""
 
         json_schema_extra = {
-            "example": {"code": 400, "message": "参数错误", "data": None, "detail": "symbol字段不能为空"}
+            "example": {"code": 400, "message": "参数错误", "data": None, "detail": "symbol字段不能为空"},
         }
 
 
 class PaginationParams(BaseModel):
-    """
-    分页参数模型
+    """分页参数模型
 
     用于列表查询API的统一分页参数。
 
@@ -109,6 +108,7 @@ class PaginationParams(BaseModel):
 
     Example:
         >>> params = PaginationParams(page=1, page_size=20)
+
     """
 
     page: int = Field(default=1, ge=1, description="页码 (从1开始)")
@@ -121,8 +121,7 @@ class PaginationParams(BaseModel):
 
 
 class PaginatedResponse(BaseModel, Generic[T]):
-    """
-    分页响应模型
+    """分页响应模型
 
     用于列表查询API的统一分页响应格式。
 
@@ -141,6 +140,7 @@ class PaginatedResponse(BaseModel, Generic[T]):
         ...     page_size=20,
         ...     total_pages=5
         ... )
+
     """
 
     items: list[T] = Field(..., description="数据列表")
@@ -159,14 +159,13 @@ class PaginatedResponse(BaseModel, Generic[T]):
                 "page": 1,
                 "page_size": 20,
                 "total_pages": 5,
-            }
+            },
         }
 
 
 # 便捷工厂函数
 def success_response(data: Any = None, message: str = "操作成功") -> dict:
-    """
-    创建成功响应的便捷函数
+    """创建成功响应的便捷函数
 
     Args:
         data: 实际数据载荷
@@ -177,6 +176,7 @@ def success_response(data: Any = None, message: str = "操作成功") -> dict:
 
     Example:
         >>> resp = success_response({"user_id": 123}, "查询成功")
+
     """
     return {
         "success": True,
@@ -189,8 +189,7 @@ def success_response(data: Any = None, message: str = "操作成功") -> dict:
 
 
 def error_response(code: int, message: str, detail: str = None) -> dict:
-    """
-    创建错误响应的便捷函数
+    """创建错误响应的便捷函数
 
     Args:
         code: 错误码
@@ -202,5 +201,6 @@ def error_response(code: int, message: str, detail: str = None) -> dict:
 
     Example:
         >>> resp = error_response(400, "参数错误", "symbol字段不能为空")
+
     """
     return {"success": False, "code": code, "message": message, "data": None, "detail": detail}

@@ -12,19 +12,19 @@ def load_stock_search_service_module():
     module_name = "app.services.stock_search_service.stock_search_service"
     module_paths = {
         "app.services.stock_search_service.parse_datetime_to_timestamp": Path(
-            "web/backend/app/services/stock_search_service/parse_datetime_to_timestamp.py"
+            "web/backend/app/services/stock_search_service/parse_datetime_to_timestamp.py",
         ),
         "app.services.stock_search_service.kline_fallback": Path(
-            "web/backend/app/services/stock_search_service/kline_fallback.py"
+            "web/backend/app/services/stock_search_service/kline_fallback.py",
         ),
         "app.services.stock_search_service._stock_search_cn": Path(
-            "web/backend/app/services/stock_search_service/_stock_search_cn.py"
+            "web/backend/app/services/stock_search_service/_stock_search_cn.py",
         ),
         "app.services.stock_search_service._stock_search_hk": Path(
-            "web/backend/app/services/stock_search_service/_stock_search_hk.py"
+            "web/backend/app/services/stock_search_service/_stock_search_hk.py",
         ),
         "app.services.stock_search_service._stock_search_finnhub": Path(
-            "web/backend/app/services/stock_search_service/_stock_search_finnhub.py"
+            "web/backend/app/services/stock_search_service/_stock_search_finnhub.py",
         ),
     }
 

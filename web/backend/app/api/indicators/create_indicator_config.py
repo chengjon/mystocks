@@ -1,5 +1,4 @@
-"""
-Indicator Calculation API Endpoints
+"""Indicator Calculation API Endpoints
 技术指标计算API路由
 
 Phase 4C Enhanced - 企业级技术指标计算服务
@@ -11,38 +10,22 @@ Phase 4C Enhanced - 企业级技术指标计算服务
 - 批量计算优化
 """
 
-import asyncio
-import hashlib
-import json
-import time
-from collections import defaultdict
-from datetime import datetime, timezone
-from functools import wraps
-from typing import Dict, List, Optional, Union
 
-import numpy as np
 import structlog
-from fastapi import APIRouter, Depends, Query
-from pydantic import BaseModel, Field, constr, validator
+from fastapi import APIRouter, Depends
 
 from app.api.auth import get_current_active_user
 from app.core.exceptions import BusinessException, ForbiddenException, NotFoundException, ValidationException
-from app.core.responses import create_success_response
 from app.core.security import User
 from app.schemas.indicator_request import (
-    IndicatorCalculateRequest,
     IndicatorConfigCreateRequest,
     IndicatorConfigUpdateRequest,
 )
 from app.schemas.indicator_response import (
     IndicatorConfigListResponse,
     IndicatorConfigResponse,
-    IndicatorMetadata,
-    IndicatorRegistryResponse,
 )
-from app.services.data_service import InvalidDateRangeError, StockDataNotFoundError, get_data_service
-from app.services.indicator_calculator import IndicatorCalculationError, InsufficientDataError, get_indicator_calculator
-from app.services.indicator_registry import IndicatorCategory, get_indicator_registry
+
 
 logger = structlog.get_logger()
 router = APIRouter()
@@ -52,8 +35,7 @@ async def create_indicator_config(
     request: IndicatorConfigCreateRequest,
     current_user: User = Depends(get_current_active_user),
 ):
-    """
-    创建指标配置
+    """创建指标配置
 
     保存用户的常用指标组合配置,方便下次快速加载
 
@@ -89,7 +71,7 @@ async def create_indicator_config(
 
             if existing:
                 raise BusinessException(
-                    detail=f"配置名称已存在: {request.name}", status_code=409, error_code="CONFIG_NAME_EXISTS"
+                    detail=f"配置名称已存在: {request.name}", status_code=409, error_code="CONFIG_NAME_EXISTS",
                 )
 
             # 创建新配置
@@ -127,13 +109,12 @@ async def create_indicator_config(
         raise
     except Exception as e:
         logger.error("Failed to create indicator config", exc_info=e)
-        raise BusinessException(detail=f"创建配置失败: {str(e)}", status_code=500, error_code="CONFIG_CREATION_FAILED")
+        raise BusinessException(detail=f"创建配置失败: {e!s}", status_code=500, error_code="CONFIG_CREATION_FAILED")
 
 
 @router.get("/configs", response_model=IndicatorConfigListResponse)
 async def list_indicator_configs(current_user: User = Depends(get_current_active_user)):
-    """
-    获取用户的指标配置列表
+    """获取用户的指标配置列表
 
     返回当前用户的所有已保存指标配置
     """
@@ -184,14 +165,13 @@ async def list_indicator_configs(current_user: User = Depends(get_current_active
     except Exception as e:
         logger.error("Failed to list indicator configs", exc_info=e)
         raise BusinessException(
-            detail=f"获取配置列表失败: {str(e)}", status_code=500, error_code="CONFIG_LIST_RETRIEVAL_FAILED"
+            detail=f"获取配置列表失败: {e!s}", status_code=500, error_code="CONFIG_LIST_RETRIEVAL_FAILED",
         )
 
 
 @router.get("/configs/{config_id}", response_model=IndicatorConfigResponse)
 async def get_indicator_config(config_id: int, current_user: User = Depends(get_current_active_user)):
-    """
-    获取指定的指标配置详情
+    """获取指定的指标配置详情
 
     - **config_id**: 配置ID
     """
@@ -243,7 +223,7 @@ async def get_indicator_config(config_id: int, current_user: User = Depends(get_
         raise
     except Exception as e:
         logger.error("Failed to get indicator config", exc_info=e)
-        raise BusinessException(detail=f"获取配置失败: {str(e)}", status_code=500, error_code="CONFIG_RETRIEVAL_FAILED")
+        raise BusinessException(detail=f"获取配置失败: {e!s}", status_code=500, error_code="CONFIG_RETRIEVAL_FAILED")
 
 
 @router.put("/configs/{config_id}", response_model=IndicatorConfigResponse)
@@ -252,8 +232,7 @@ async def update_indicator_config(
     request: IndicatorConfigUpdateRequest,
     current_user: User = Depends(get_current_active_user),
 ):
-    """
-    更新指标配置
+    """更新指标配置
 
     可以更新配置名称和/或指标列表
 
@@ -296,7 +275,7 @@ async def update_indicator_config(
 
                 if existing:
                     raise BusinessException(
-                        detail=f"配置名称已存在: {request.name}", status_code=409, error_code="CONFIG_NAME_EXISTS"
+                        detail=f"配置名称已存在: {request.name}", status_code=409, error_code="CONFIG_NAME_EXISTS",
                     )
 
                 config.name = request.name
@@ -329,13 +308,12 @@ async def update_indicator_config(
         raise
     except Exception as e:
         logger.error("Failed to update indicator config", exc_info=e)
-        raise BusinessException(detail=f"更新配置失败: {str(e)}", status_code=500, error_code="CONFIG_UPDATE_FAILED")
+        raise BusinessException(detail=f"更新配置失败: {e!s}", status_code=500, error_code="CONFIG_UPDATE_FAILED")
 
 
 @router.delete("/configs/{config_id}", status_code=204)
 async def delete_indicator_config(config_id: int, current_user: User = Depends(get_current_active_user)):
-    """
-    删除指标配置
+    """删除指标配置
 
     - **config_id**: 配置ID
     """
@@ -366,7 +344,7 @@ async def delete_indicator_config(config_id: int, current_user: User = Depends(g
 
             logger.info("Deleted indicator config", config_id=config_id, user_id=user_id)
 
-            return None  # 204 No Content
+            return  # 204 No Content
 
         finally:
             session.close()
@@ -375,6 +353,6 @@ async def delete_indicator_config(config_id: int, current_user: User = Depends(g
         raise
     except Exception as e:
         logger.error("Failed to delete indicator config", exc_info=e)
-        raise BusinessException(detail=f"删除配置失败: {str(e)}", status_code=500, error_code="CONFIG_DELETION_FAILED")
+        raise BusinessException(detail=f"删除配置失败: {e!s}", status_code=500, error_code="CONFIG_DELETION_FAILED")
 
 

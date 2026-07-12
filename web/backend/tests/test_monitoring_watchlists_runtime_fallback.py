@@ -8,6 +8,7 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
+
 os.environ.setdefault("POSTGRESQL_HOST", "localhost")
 os.environ.setdefault("POSTGRESQL_USER", "tester")
 os.environ.setdefault("POSTGRESQL_PASSWORD", "tester")

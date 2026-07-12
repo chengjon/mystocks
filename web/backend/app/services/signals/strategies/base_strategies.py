@@ -1,5 +1,4 @@
-"""
-Signal Engine - 信号引擎
+"""Signal Engine - 信号引擎
 
 基于技术指标和市场数据的智能交易信号生成引擎：
 - 多指标融合分析
@@ -16,6 +15,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional
+
 
 logger = logging.getLogger(__name__)
 
@@ -94,30 +94,28 @@ class TradingSignal:
 
 
 class SignalStrategy:
-    """
-    信号策略基类
+    """信号策略基类
 
     定义信号生成规则和逻辑
     """
 
     def __init__(self, name: str, indicators: List[str], parameters: Dict[str, Any]):
-        """
-        初始化信号策略
+        """初始化信号策略
 
         Args:
             name: 策略名称
             indicators: 所需指标列表
             parameters: 策略参数
+
         """
         self.name = name
         self.indicators = indicators
         self.parameters = parameters
 
     def evaluate(
-        self, symbol: str, indicator_data: Dict[str, Any], market_data: Dict[str, Any]
+        self, symbol: str, indicator_data: Dict[str, Any], market_data: Dict[str, Any],
     ) -> Optional[TradingSignal]:
-        """
-        评估信号
+        """评估信号
 
         Args:
             symbol: 股票代码
@@ -126,6 +124,7 @@ class SignalStrategy:
 
         Returns:
             交易信号，如果没有信号则返回None
+
         """
         raise NotImplementedError("Subclasses must implement evaluate method")
 
@@ -135,10 +134,9 @@ class SignalStrategy:
             # 使用ATR计算止损
             multiplier = self.parameters.get("stop_loss_atr_multiplier", 1.5)
             return entry_price - (atr_value * multiplier)
-        else:
-            # 使用百分比止损
-            percentage = self.parameters.get("stop_loss_percentage", 0.05)
-            return entry_price * (1 - percentage)
+        # 使用百分比止损
+        percentage = self.parameters.get("stop_loss_percentage", 0.05)
+        return entry_price * (1 - percentage)
 
     def calculate_take_profit(self, entry_price: float, stop_loss: float) -> float:
         """计算止盈价"""
@@ -154,7 +152,7 @@ class RSIStrategy(SignalStrategy):
         super().__init__(name="rsi_strategy", indicators=["rsi"], parameters=parameters)
 
     def evaluate(
-        self, symbol: str, indicator_data: Dict[str, Any], market_data: Dict[str, Any]
+        self, symbol: str, indicator_data: Dict[str, Any], market_data: Dict[str, Any],
     ) -> Optional[TradingSignal]:
         """基于RSI评估信号"""
         rsi_data = indicator_data.get("rsi", [])
@@ -188,7 +186,7 @@ class RSIStrategy(SignalStrategy):
                 risk_reward_ratio=self.parameters.get("risk_reward_ratio", 2.0),
             )
 
-        elif current_rsi > overbought_level and previous_rsi <= overbought_level:
+        if current_rsi > overbought_level and previous_rsi <= overbought_level:
             # RSI从低位突破超买线，卖出信号
             stop_loss = self.calculate_stop_loss(current_price)
             take_profit = self.calculate_take_profit(current_price, stop_loss)
@@ -217,7 +215,7 @@ class MACDStrategy(SignalStrategy):
         super().__init__(name="macd_strategy", indicators=["macd"], parameters=parameters)
 
     def evaluate(
-        self, symbol: str, indicator_data: Dict[str, Any], market_data: Dict[str, Any]
+        self, symbol: str, indicator_data: Dict[str, Any], market_data: Dict[str, Any],
     ) -> Optional[TradingSignal]:
         """基于MACD评估信号"""
         macd_data = indicator_data.get("macd", {})
@@ -257,7 +255,7 @@ class MACDStrategy(SignalStrategy):
                 risk_reward_ratio=self.parameters.get("risk_reward_ratio", 2.0),
             )
 
-        elif prev_macd >= prev_signal and current_macd < current_signal:
+        if prev_macd >= prev_signal and current_macd < current_signal:
             # 死叉，卖出信号
             stop_loss = self.calculate_stop_loss(current_price)
             take_profit = self.calculate_take_profit(current_price, stop_loss)
@@ -286,7 +284,7 @@ class BollingerBandsStrategy(SignalStrategy):
         super().__init__(name="bbands_strategy", indicators=["bbands"], parameters=parameters)
 
     def evaluate(
-        self, symbol: str, indicator_data: Dict[str, Any], market_data: Dict[str, Any]
+        self, symbol: str, indicator_data: Dict[str, Any], market_data: Dict[str, Any],
     ) -> Optional[TradingSignal]:
         """基于布林带评估信号"""
         bb_data = indicator_data.get("bbands", {})
@@ -327,7 +325,7 @@ class BollingerBandsStrategy(SignalStrategy):
                 risk_reward_ratio=self.parameters.get("risk_reward_ratio", 2.0),
             )
 
-        elif prev_price >= lower[-2] and current_price < lower[-1]:
+        if prev_price >= lower[-2] and current_price < lower[-1]:
             # 跌破下轨，买入信号
             stop_loss = self.calculate_stop_loss(current_price)
             take_profit = self.calculate_take_profit(current_price, stop_loss)

@@ -1,5 +1,4 @@
-"""
-Base Optimizer
+"""Base Optimizer
 
 参数优化基类 - 定义优化器接口和通用功能
 """
@@ -11,13 +10,13 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
+
 logger = logging.getLogger(__name__)
 
 
 @dataclass
 class OptimizationResult:
-    """
-    优化结果
+    """优化结果
 
     存储单次参数组合的回测结果
     """
@@ -56,14 +55,14 @@ class OptimizationResult:
             self.win_rate = self.winning_trades / self.total_trades
 
     def get_score(self, metric: str = "sharpe_ratio") -> float:
-        """
-        获取评分指标值
+        """获取评分指标值
 
         Args:
             metric: 评分指标名称
 
         Returns:
             指标值
+
         """
         return getattr(self, metric, 0.0)
 
@@ -89,8 +88,7 @@ class OptimizationResult:
 
 @dataclass
 class ParameterSpace:
-    """
-    参数空间定义
+    """参数空间定义
 
     定义单个参数的取值范围
     """
@@ -137,13 +135,11 @@ class ParameterSpace:
 
         if self.param_type == "int":
             return rand.randint(int(self.min_value), int(self.max_value))
-        else:
-            return rand.uniform(self.min_value, self.max_value)
+        return rand.uniform(self.min_value, self.max_value)
 
 
 class BaseOptimizer(ABC):
-    """
-    参数优化基类
+    """参数优化基类
 
     提供优化器的通用接口和辅助方法
     """
@@ -155,14 +151,14 @@ class BaseOptimizer(ABC):
         objective: str = "sharpe_ratio",
         maximize: bool = True,
     ):
-        """
-        初始化优化器
+        """初始化优化器
 
         Args:
             strategy_type: 策略类型
             parameter_spaces: 参数空间列表
             objective: 优化目标指标
             maximize: 是否最大化目标
+
         """
         self.strategy_type = strategy_type
         self.parameter_spaces = parameter_spaces
@@ -187,8 +183,7 @@ class BaseOptimizer(ABC):
         self.backtest_engine = engine
 
     def _get_mock_data_source(self):
-        """
-        获取mock数据源
+        """获取mock数据源
 
         遵循项目mock数据使用规则:
         - 通过工厂函数获取数据源
@@ -213,8 +208,7 @@ class BaseOptimizer(ABC):
         end_date: datetime,
         interval: str = "1d",
     ) -> Dict[str, Any]:
-        """
-        加载市场数据 (使用mock数据源)
+        """加载市场数据 (使用mock数据源)
 
         Args:
             symbols: 股票代码列表
@@ -224,6 +218,7 @@ class BaseOptimizer(ABC):
 
         Returns:
             市场数据字典 {symbol: DataFrame}
+
         """
         source = self._get_mock_data_source()
 
@@ -251,10 +246,9 @@ class BaseOptimizer(ABC):
         return market_data
 
     def _run_single_backtest(
-        self, parameters: Dict[str, Any], market_data: Dict[str, Any] = None
+        self, parameters: Dict[str, Any], market_data: Dict[str, Any] = None,
     ) -> OptimizationResult:
-        """
-        运行单次回测
+        """运行单次回测
 
         Args:
             parameters: 参数组合
@@ -262,6 +256,7 @@ class BaseOptimizer(ABC):
 
         Returns:
             优化结果
+
         """
         import time
 
@@ -320,14 +315,12 @@ class BaseOptimizer(ABC):
             if self.maximize:
                 if score > best_score:
                     self.best_result = result
-            else:
-                if score < best_score:
-                    self.best_result = result
+            elif score < best_score:
+                self.best_result = result
 
     @abstractmethod
     def optimize(self, market_data: Dict[str, Any] = None, **kwargs) -> List[OptimizationResult]:
-        """
-        执行参数优化
+        """执行参数优化
 
         Args:
             market_data: 市场数据
@@ -335,17 +328,18 @@ class BaseOptimizer(ABC):
 
         Returns:
             所有优化结果列表
+
         """
 
     def get_top_results(self, n: int = 10) -> List[OptimizationResult]:
-        """
-        获取前N个最佳结果
+        """获取前N个最佳结果
 
         Args:
             n: 返回数量
 
         Returns:
             排序后的结果列表
+
         """
         sorted_results = sorted(
             self.results,
@@ -355,11 +349,11 @@ class BaseOptimizer(ABC):
         return sorted_results[:n]
 
     def get_optimization_summary(self) -> Dict[str, Any]:
-        """
-        获取优化摘要
+        """获取优化摘要
 
         Returns:
             摘要字典
+
         """
         if not self.results:
             return {"status": "no_results"}
@@ -378,11 +372,11 @@ class BaseOptimizer(ABC):
         }
 
     def export_results(self, filepath: str):
-        """
-        导出结果到文件
+        """导出结果到文件
 
         Args:
             filepath: 文件路径
+
         """
         import json
 

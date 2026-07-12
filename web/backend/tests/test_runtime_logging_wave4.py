@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 
+
 SOURCE_FILES = [
     "web/backend/app/core/config.py",
     "web/backend/app/services/tdx_parser_service.py",

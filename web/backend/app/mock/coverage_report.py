@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-MyStocks Web Mock数据覆盖率分析报告
+"""MyStocks Web Mock数据覆盖率分析报告
 
 分析前端API调用与Mock数据支持的匹配度，识别缺失的Mock数据支持
 
@@ -25,7 +23,7 @@ def scan_api_files() -> Dict[str, List[str]]:
 
         endpoints = []
         try:
-            with open(py_file, "r", encoding="utf-8") as f:
+            with open(py_file, encoding="utf-8") as f:
                 content = f.read()
 
             # 提取@router.get装饰的端点
@@ -63,7 +61,7 @@ def scan_frontend_api_calls() -> Set[str]:
 
     for vue_file in frontend_dir.rglob("*.vue"):
         try:
-            with open(vue_file, "r", encoding="utf-8") as f:
+            with open(vue_file, encoding="utf-8") as f:
                 content = f.read()
 
             # 提取API调用路径
@@ -100,7 +98,7 @@ def check_mock_support() -> Dict[str, bool]:
             continue
 
         try:
-            with open(py_file, "r", encoding="utf-8") as f:
+            with open(py_file, encoding="utf-8") as f:
                 content = f.read()
 
             # 检查是否包含Mock数据相关代码

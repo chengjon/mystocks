@@ -1,5 +1,4 @@
-"""
-Week 1 Architecture-Compliant Strategy Management API E2E Tests
+"""Week 1 Architecture-Compliant Strategy Management API E2E Tests
 
 Tests all 12 strategy management endpoints:
 - Strategy CRUD (5 endpoints)
@@ -19,8 +18,7 @@ class TestStrategyCRUD:
     """Test Strategy CRUD operations (5 endpoints)"""
 
     def test_list_strategies_empty(self, test_client):
-        """
-        Test GET /api/v1/strategy/strategies - Empty list
+        """Test GET /api/v1/strategy/strategies - Empty list
         Expected: 200 OK with empty items list
         """
         response = test_client.get("/api/v1/strategy/strategies")
@@ -36,8 +34,7 @@ class TestStrategyCRUD:
         assert data["page"] == 1
 
     def test_list_strategies_with_pagination(self, test_client):
-        """
-        Test GET /api/v1/strategy/strategies?page=1&page_size=10
+        """Test GET /api/v1/strategy/strategies?page=1&page_size=10
         Expected: 200 OK with pagination metadata
         """
         response = test_client.get("/api/v1/strategy/strategies", params={"page": 1, "page_size": 10})
@@ -49,8 +46,7 @@ class TestStrategyCRUD:
         assert data["page_size"] == 10
 
     def test_list_strategies_with_status_filter(self, test_client):
-        """
-        Test GET /api/v1/strategy/strategies?status=active
+        """Test GET /api/v1/strategy/strategies?status=active
         Expected: 200 OK with filtered results
         """
         response = test_client.get("/api/v1/strategy/strategies", params={"status": "active"})
@@ -60,8 +56,7 @@ class TestStrategyCRUD:
         assert "items" in data
 
     def test_create_strategy_success(self, test_client, sample_strategy_data):
-        """
-        Test POST /api/v1/strategy/strategies
+        """Test POST /api/v1/strategy/strategies
         Expected: 201 Created with strategy ID
         """
         response = test_client.post("/api/v1/strategy/strategies", json=sample_strategy_data)
@@ -79,8 +74,7 @@ class TestStrategyCRUD:
             assert data["status"] == "draft"
 
     def test_create_strategy_invalid_data(self, test_client):
-        """
-        Test POST /api/v1/strategy/strategies with invalid data
+        """Test POST /api/v1/strategy/strategies with invalid data
         Expected: 422 Unprocessable Entity
         """
         invalid_data = {
@@ -99,8 +93,7 @@ class TestStrategyCRUD:
         ]  # 200 if validation not implemented
 
     def test_get_strategy_by_id_not_found(self, test_client):
-        """
-        Test GET /api/v1/strategy/strategies/{strategy_id}
+        """Test GET /api/v1/strategy/strategies/{strategy_id}
         Expected: 404 Not Found for non-existent ID
         """
         response = test_client.get("/api/v1/strategy/strategies/99999")
@@ -108,8 +101,7 @@ class TestStrategyCRUD:
         assert response.status_code in [404, 500]
 
     def test_update_strategy_not_found(self, test_client, sample_strategy_data):
-        """
-        Test PUT /api/v1/strategy/strategies/{strategy_id}
+        """Test PUT /api/v1/strategy/strategies/{strategy_id}
         Expected: 404 Not Found for non-existent ID
         """
         response = test_client.put("/api/v1/strategy/strategies/99999", json=sample_strategy_data)
@@ -117,8 +109,7 @@ class TestStrategyCRUD:
         assert response.status_code in [404, 500]
 
     def test_delete_strategy_not_found(self, test_client):
-        """
-        Test DELETE /api/v1/strategy/strategies/{strategy_id}
+        """Test DELETE /api/v1/strategy/strategies/{strategy_id}
         Expected: 404 Not Found for non-existent ID
         """
         response = test_client.delete("/api/v1/strategy/strategies/99999")
@@ -130,8 +121,7 @@ class TestModelManagement:
     """Test ML Model Management (3 endpoints)"""
 
     def test_list_models_empty(self, test_client):
-        """
-        Test GET /api/v1/strategy/models
+        """Test GET /api/v1/strategy/models
         Expected: 200 OK with empty models list
         """
         response = test_client.get("/api/v1/strategy/models")
@@ -143,12 +133,11 @@ class TestModelManagement:
             assert "items" in data or isinstance(data, list)
 
     def test_train_model_missing_data(self, test_client):
-        """
-        Test POST /api/v1/strategy/models/train with missing data
+        """Test POST /api/v1/strategy/models/train with missing data
         Expected: 400/422 Bad Request
         """
         incomplete_data = {
-            "name": "Test Model"
+            "name": "Test Model",
             # Missing required fields
         }
 
@@ -157,8 +146,7 @@ class TestModelManagement:
         assert response.status_code in [400, 422, 500]
 
     def test_get_training_status_invalid_task(self, test_client):
-        """
-        Test GET /api/v1/strategy/models/training/{task_id}/status
+        """Test GET /api/v1/strategy/models/training/{task_id}/status
         Expected: 404 Not Found for invalid task ID
         """
         response = test_client.get("/api/v1/strategy/models/training/invalid-task-id/status")
@@ -170,8 +158,7 @@ class TestBacktestExecution:
     """Test Backtest Execution (4 endpoints)"""
 
     def test_list_backtest_results_empty(self, test_client):
-        """
-        Test GET /api/v1/strategy/backtest/results
+        """Test GET /api/v1/strategy/backtest/results
         Expected: 200 OK with empty results
         """
         response = test_client.get("/api/v1/strategy/backtest/results")
@@ -183,12 +170,11 @@ class TestBacktestExecution:
             assert "items" in data or isinstance(data, list)
 
     def test_run_backtest_missing_data(self, test_client):
-        """
-        Test POST /api/v1/strategy/backtest/run with incomplete data
+        """Test POST /api/v1/strategy/backtest/run with incomplete data
         Expected: 400/422 Bad Request
         """
         incomplete_data = {
-            "strategy_id": 1
+            "strategy_id": 1,
             # Missing required fields like date range
         }
 
@@ -197,8 +183,7 @@ class TestBacktestExecution:
         assert response.status_code in [400, 422, 500]
 
     def test_get_backtest_result_not_found(self, test_client):
-        """
-        Test GET /api/v1/strategy/backtest/results/{backtest_id}
+        """Test GET /api/v1/strategy/backtest/results/{backtest_id}
         Expected: 404 Not Found
         """
         response = test_client.get("/api/v1/strategy/backtest/results/99999")
@@ -206,8 +191,7 @@ class TestBacktestExecution:
         assert response.status_code in [404, 500]
 
     def test_get_backtest_chart_data_not_found(self, test_client):
-        """
-        Test GET /api/v1/strategy/backtest/results/{backtest_id}/chart-data
+        """Test GET /api/v1/strategy/backtest/results/{backtest_id}/chart-data
         Expected: 404 Not Found
         """
         response = test_client.get("/api/v1/strategy/backtest/results/99999/chart-data")
@@ -220,8 +204,7 @@ class TestStrategyAPIIntegration:
 
     @pytest.mark.integration
     def test_complete_strategy_workflow(self, test_client, sample_strategy_data):
-        """
-        Test complete workflow: Create → Update → Get → Delete
+        """Test complete workflow: Create → Update → Get → Delete
         Note: This test requires database connectivity
         """
         # Step 1: Create strategy
@@ -257,8 +240,7 @@ class TestStrategyAPIIntegration:
 
     @pytest.mark.integration
     def test_architecture_compliance(self, test_client):
-        """
-        Verify Week 1 architecture compliance:
+        """Verify Week 1 architecture compliance:
         - MyStocksUnifiedManager usage
         - MonitoringDatabase logging
         - DataClassification routing

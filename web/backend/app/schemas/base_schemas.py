@@ -1,5 +1,4 @@
-"""
-Base Schema Definitions
+"""Base Schema Definitions
 
 Provides reusable Pydantic base models with automatic data format validation.
 All API schemas should inherit from these base classes to ensure consistency.
@@ -11,6 +10,7 @@ from decimal import Decimal
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field, constr, validator
+
 
 try:
     from app.core.data_formats import (
@@ -67,7 +67,7 @@ class StandardResponse(BaseModel):
                 "code": 200,
                 "message": "Operation successful",
                 "timestamp": "2025-11-11T12:34:56.789Z",
-            }
+            },
         }
 
 
@@ -85,7 +85,7 @@ class SuccessResponse(StandardResponse):
                 "message": "Data retrieved successfully",
                 "data": {"symbol": "600000", "price": 150.50},
                 "timestamp": "2025-11-11T12:34:56.789Z",
-            }
+            },
         }
 
 
@@ -105,7 +105,7 @@ class ErrorResponse(StandardResponse):
                 "error": "INVALID_PARAMETERS",
                 "details": {"field": "symbol", "reason": "Invalid stock symbol format"},
                 "timestamp": "2025-11-11T12:34:56.789Z",
-            }
+            },
         }
 
 
@@ -152,7 +152,7 @@ class PaginatedResponse(StandardResponse):
                     },
                 },
                 "timestamp": "2025-11-11T12:34:56.789Z",
-            }
+            },
         }
 
 
@@ -175,7 +175,7 @@ class ValidationErrorResponse(ErrorResponse):
                     "price": ["Price must be positive"],
                 },
                 "timestamp": "2025-11-11T12:34:56.789Z",
-            }
+            },
         }
 
 
@@ -193,7 +193,7 @@ class UnauthorizedResponse(ErrorResponse):
                 "message": "Authentication required",
                 "error": "UNAUTHORIZED",
                 "timestamp": "2025-11-11T12:34:56.789Z",
-            }
+            },
         }
 
 
@@ -211,7 +211,7 @@ class ForbiddenResponse(ErrorResponse):
                 "message": "Permission denied",
                 "error": "FORBIDDEN",
                 "timestamp": "2025-11-11T12:34:56.789Z",
-            }
+            },
         }
 
 
@@ -229,7 +229,7 @@ class NotFoundResponse(ErrorResponse):
                 "message": "Resource not found",
                 "error": "NOT_FOUND",
                 "timestamp": "2025-11-11T12:34:56.789Z",
-            }
+            },
         }
 
 
@@ -247,7 +247,7 @@ class ServerErrorResponse(ErrorResponse):
                 "message": "Internal server error",
                 "error": "INTERNAL_SERVER_ERROR",
                 "timestamp": "2025-11-11T12:34:56.789Z",
-            }
+            },
         }
 
 
@@ -423,7 +423,7 @@ class AuthTokenResponse(StandardResponse):
                     "refresh_token": "refresh_token_here",
                 },
                 "timestamp": "2025-11-11T12:34:56.789Z",
-            }
+            },
         }
 
 
@@ -441,7 +441,7 @@ class CSRFTokenResponse(StandardResponse):
                 "message": "CSRF token generated",
                 "data": {"csrf_token": "550e8400-e29b-41d4-a716-446655440000"},
                 "timestamp": "2025-11-11T12:34:56.789Z",
-            }
+            },
         }
 
 
@@ -463,7 +463,7 @@ class BatchOperation(BaseModel):
                 "operation": "create",
                 "data": {"symbol": "600000", "price": 150.50},
                 "id": "op_1",
-            }
+            },
         }
 
 
@@ -471,7 +471,7 @@ class BatchOperationRequest(BaseModel):
     """Batch operation request"""
 
     operations: List[BatchOperation] = Field(
-        ..., min_items=1, max_items=100, description="List of operations to perform"
+        ..., min_items=1, max_items=100, description="List of operations to perform",
     )
 
     class Config:
@@ -488,8 +488,8 @@ class BatchOperationRequest(BaseModel):
                         "data": {"symbol": "600001", "price": 45.25},
                         "id": "op_2",
                     },
-                ]
-            }
+                ],
+            },
         }
 
 
@@ -508,7 +508,7 @@ class BatchOperationResult(BaseModel):
                 "success": True,
                 "data": {"id": 123},
                 "error": None,
-            }
+            },
         }
 
 
@@ -532,7 +532,7 @@ class BatchOperationResponse(StandardResponse):
                     "summary": {"total": 2, "succeeded": 1, "failed": 1},
                 },
                 "timestamp": "2025-11-11T12:34:56.789Z",
-            }
+            },
         }
 
 

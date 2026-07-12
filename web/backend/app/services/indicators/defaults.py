@@ -1,5 +1,4 @@
-"""
-Indicator Defaults Loader
+"""Indicator Defaults Loader
 =========================
 
 Migrates metadata from Legacy Registry to V2 Registry on startup.
@@ -19,6 +18,7 @@ from app.services.indicators.indicator_metadata import (
 )
 from app.services.indicators.indicator_registry import get_indicator_registry
 from app.services.indicators.talib_adapter import register_all_talib_indicators
+
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +85,7 @@ def load_default_indicators():
                         default=p["default"],
                         constraints=constraint,
                         description=p.get("description", ""),
-                    )
+                    ),
                 )
 
             # Map Outputs
@@ -96,7 +96,7 @@ def load_default_indicators():
                         name=o["name"],
                         display_name=o.get("description", o["name"]),
                         description=o.get("description", ""),
-                    )
+                    ),
                 )
 
             meta = IndicatorMetadata(

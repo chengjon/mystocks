@@ -1,5 +1,4 @@
-"""
-审计日志API
+"""审计日志API
 
 提供系统审计和日志管理功能
 """
@@ -9,6 +8,7 @@ from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, Query
 from pydantic import BaseModel
+
 
 router = APIRouter(
     prefix="/audit",
@@ -39,8 +39,7 @@ async def list_audit_logs(
     end_date: Optional[str] = None,
     limit: int = Query(50, description="Maximum number of logs to return"),
 ):
-    """
-    获取审计日志列表
+    """获取审计日志列表
 
     Returns audit logs with filtering options.
     """
@@ -68,8 +67,7 @@ async def list_audit_logs(
 
 @router.get("/logs/{log_id}", response_model=AuditLogResponse, summary="Get Audit Log")
 async def get_audit_log(log_id: str):
-    """
-    获取单个审计日志详情
+    """获取单个审计日志详情
 
     Returns details of a specific audit log.
     """
@@ -91,8 +89,7 @@ async def get_audit_statistics(
     start_date: Optional[str] = None,
     end_date: Optional[str] = None,
 ):
-    """
-    获取审计统计信息
+    """获取审计统计信息
 
     Returns audit statistics for the specified period.
     """

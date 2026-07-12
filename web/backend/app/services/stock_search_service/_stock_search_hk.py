@@ -31,7 +31,7 @@ def search_hk_stocks(self, query: str) -> List[Dict]:
                     "type": "H股",
                     "exchange": "香港证券交易所",
                     "market": "HK",
-                }
+                },
             )
         return results
     except Exception as error:

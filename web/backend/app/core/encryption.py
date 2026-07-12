@@ -1,5 +1,4 @@
-"""
-Encryption utilities for protecting sensitive data
+"""Encryption utilities for protecting sensitive data
 Task 1.3: Sensitive Data Encryption
 Task 20: Key Rotation Support (Phase 3)
 
@@ -26,12 +25,12 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
+
 logger = structlog.get_logger()
 
 
 class EncryptionManager:
-    """
-    Manages encryption and decryption of sensitive data using AES-256-GCM
+    """Manages encryption and decryption of sensitive data using AES-256-GCM
 
     SECURITY: All sensitive data should be encrypted at rest using this manager.
     Encryption keys are derived from master password using PBKDF2.
@@ -43,8 +42,7 @@ class EncryptionManager:
     """
 
     def __init__(self, master_password: str = None, key_version: int = 1):
-        """
-        Initialize encryption manager with master password
+        """Initialize encryption manager with master password
 
         Args:
             master_password: Master password for deriving encryption keys.
@@ -52,13 +50,14 @@ class EncryptionManager:
             key_version: Current key version (default: 1, for new encryptions)
 
         SECURITY: Master password should be stored securely in environment
+
         """
         if master_password is None:
             master_password = os.getenv("ENCRYPTION_MASTER_PASSWORD")
             if not master_password:
                 logger.error(
                     "❌ Missing ENCRYPTION_MASTER_PASSWORD. "
-                    "Refusing to initialize EncryptionManager with insecure defaults."
+                    "Refusing to initialize EncryptionManager with insecure defaults.",
                 )
                 raise ValueError("ENCRYPTION_MASTER_PASSWORD environment variable must be set")
 
@@ -72,8 +71,7 @@ class EncryptionManager:
         self._setup_key()
 
     def _setup_key(self):
-        """
-        Derive encryption key from master password using PBKDF2
+        """Derive encryption key from master password using PBKDF2
 
         Phase 3: Creates current key version and maintains backward compatibility
         """
@@ -89,13 +87,13 @@ class EncryptionManager:
         )
 
     def _derive_key_for_version(self, version: int):
-        """
-        Derive encryption key for a specific version
+        """Derive encryption key for a specific version
 
         Args:
             version: Key version number (1, 2, 3, ...)
 
         Phase 3: Each version uses a different salt for key derivation
+
         """
         # Version-specific salt for key derivation
         # SECURITY: Each version has a unique salt to ensure different keys
@@ -119,22 +117,21 @@ class EncryptionManager:
         logger.debug("✅ Key derived for version %(version)s")
 
     def add_old_key_version(self, version: int):
-        """
-        Add an old key version for decryption of legacy data
+        """Add an old key version for decryption of legacy data
 
         Args:
             version: Old key version to add
 
         Usage: During key rotation, add old versions to decrypt legacy data
         Phase 3: Enables gradual migration from old to new keys
+
         """
         if version not in self._cipher_keys:
             self._derive_key_for_version(version)
             logger.info("✅ Old key version %(version)s added for decryption")
 
     def rotate_key(self, new_version: int) -> bool:
-        """
-        Rotate to a new encryption key version
+        """Rotate to a new encryption key version
 
         Args:
             new_version: New key version number (must be > current_key_version)
@@ -143,6 +140,7 @@ class EncryptionManager:
             True if rotation successful
 
         Phase 3: Rotates to new key while maintaining old keys for decryption
+
         """
         if new_version <= self.current_key_version:
             logger.error(
@@ -171,13 +169,13 @@ class EncryptionManager:
         return True
 
     def get_key_info(self) -> Dict[str, Any]:
-        """
-        Get information about current and available key versions
+        """Get information about current and available key versions
 
         Returns:
             Dictionary with key version information
 
         Phase 3: Provides visibility into key rotation status
+
         """
         return {
             "current_version": self.current_key_version,
@@ -186,8 +184,7 @@ class EncryptionManager:
         }
 
     def encrypt(self, plaintext: Union[str, bytes]) -> str:
-        """
-        Encrypt plaintext using AES-256-GCM
+        """Encrypt plaintext using AES-256-GCM
 
         Args:
             plaintext: Data to encrypt (str or bytes)
@@ -199,6 +196,7 @@ class EncryptionManager:
         - version: Key version used for encryption (1 byte, 0-255)
         - nonce: Random 12-byte nonce for GCM
         - ciphertext: Encrypted data with authentication tag
+
         """
         # Convert to bytes if string
         if isinstance(plaintext, str):
@@ -221,8 +219,7 @@ class EncryptionManager:
         return base64.b64encode(encrypted_data).decode("utf-8")
 
     def decrypt(self, encrypted_data: str) -> str:
-        """
-        Decrypt AES-256-GCM encrypted data
+        """Decrypt AES-256-GCM encrypted data
 
         Args:
             encrypted_data: Base64-encoded encrypted data
@@ -236,6 +233,7 @@ class EncryptionManager:
         Phase 3: Supports both old format (no version) and new format (with version)
         - New format: base64(version:1byte + nonce:12bytes + ciphertext + tag)
         - Old format: base64(nonce:12bytes + ciphertext + tag)
+
         """
         try:
             # Decode from base64
@@ -281,11 +279,10 @@ class EncryptionManager:
 
         except Exception as e:
             logger.error("❌ Decryption failed", error=str(e))
-            raise ValueError(f"Failed to decrypt data: {str(e)}")
+            raise ValueError(f"Failed to decrypt data: {e!s}")
 
     def encrypt_dict(self, data: Dict[str, Any], keys_to_encrypt: list) -> Dict:
-        """
-        Encrypt specific keys in a dictionary
+        """Encrypt specific keys in a dictionary
 
         Args:
             data: Dictionary containing sensitive data
@@ -293,6 +290,7 @@ class EncryptionManager:
 
         Returns:
             Dictionary with specified keys encrypted
+
         """
         encrypted_data = data.copy()
 
@@ -308,14 +306,14 @@ class EncryptionManager:
         return encrypted_data
 
     def decrypt_dict(self, data: Dict[str, Any]) -> Dict:
-        """
-        Decrypt encrypted values in a dictionary
+        """Decrypt encrypted values in a dictionary
 
         Args:
             data: Dictionary with encrypted values
 
         Returns:
             Dictionary with encrypted values decrypted
+
         """
         decrypted_data = data.copy()
 
@@ -340,8 +338,7 @@ class EncryptionManager:
         return decrypted_data
 
     def re_encrypt(self, encrypted_data: str, target_version: Optional[int] = None) -> str:
-        """
-        Re-encrypt data with a different key version
+        """Re-encrypt data with a different key version
 
         Args:
             encrypted_data: Currently encrypted data
@@ -352,6 +349,7 @@ class EncryptionManager:
 
         Phase 3: Essential for key rotation migration
         Usage: During key rotation, re-encrypt all secrets with new key
+
         """
         # Decrypt with old key
         plaintext = self.decrypt(encrypted_data)
@@ -379,8 +377,7 @@ class EncryptionManager:
         return new_encrypted
 
     def get_encrypted_version(self, encrypted_data: str) -> Optional[int]:
-        """
-        Extract key version from encrypted data
+        """Extract key version from encrypted data
 
         Args:
             encrypted_data: Encrypted data string
@@ -392,6 +389,7 @@ class EncryptionManager:
 
         Note: Only versions 1-20 are considered valid to avoid misidentifying
         legacy format data (where first byte is random nonce data).
+
         """
         try:
             encrypted_bytes = base64.b64decode(encrypted_data)
@@ -410,8 +408,7 @@ class EncryptionManager:
 
 
 class SecretManager:
-    """
-    Manages encrypted storage of secrets and sensitive configuration
+    """Manages encrypted storage of secrets and sensitive configuration
 
     Handles:
     - Database credentials
@@ -421,31 +418,30 @@ class SecretManager:
     """
 
     def __init__(self, encryption_manager: EncryptionManager = None):
-        """
-        Initialize secret manager
+        """Initialize secret manager
 
         Args:
             encryption_manager: EncryptionManager instance.
                               If None, creates a new one.
+
         """
         self.encryption = encryption_manager or EncryptionManager()
         self.secrets = {}
 
     def store_secret(self, key: str, value: str):
-        """
-        Store an encrypted secret
+        """Store an encrypted secret
 
         Args:
             key: Secret identifier
             value: Secret value to encrypt
+
         """
         encrypted_value = self.encryption.encrypt(value)
         self.secrets[key] = encrypted_value
         logger.info("✅ Secret stored: %(key)s")
 
     def retrieve_secret(self, key: str) -> str:
-        """
-        Retrieve and decrypt a secret
+        """Retrieve and decrypt a secret
 
         Args:
             key: Secret identifier
@@ -455,6 +451,7 @@ class SecretManager:
 
         Raises:
             KeyError: If secret not found
+
         """
         if key not in self.secrets:
             logger.error("❌ Secret not found: %(key)s")
@@ -464,37 +461,36 @@ class SecretManager:
         return self.encryption.decrypt(encrypted_value)
 
     def store_secrets_from_dict(self, secrets_dict: Dict[str, str]):
-        """
-        Store multiple encrypted secrets from dictionary
+        """Store multiple encrypted secrets from dictionary
 
         Args:
             secrets_dict: Dictionary of {key: value} pairs to encrypt
+
         """
         for key, value in secrets_dict.items():
             self.store_secret(key, value)
 
     def to_encrypted_json(self) -> str:
-        """
-        Serialize encrypted secrets to JSON
+        """Serialize encrypted secrets to JSON
 
         Returns:
             JSON string containing encrypted secrets
+
         """
         return json.dumps(self.secrets)
 
     def from_encrypted_json(self, json_str: str):
-        """
-        Load encrypted secrets from JSON
+        """Load encrypted secrets from JSON
 
         Args:
             json_str: JSON string containing encrypted secrets
+
         """
         self.secrets = json.loads(json_str)
         logger.info("✅ Loaded {len(self.secrets)} encrypted secrets")
 
     def migrate_to_key_version(self, target_version: int) -> Dict[str, Any]:
-        """
-        Migrate all secrets to a new key version
+        """Migrate all secrets to a new key version
 
         Args:
             target_version: Target key version for migration
@@ -504,6 +500,7 @@ class SecretManager:
 
         Phase 3 (Task 20): Essential for key rotation
         Usage: After rotating key, migrate all existing secrets
+
         """
         logger.info(
             f"🔄 Starting migration to key version {target_version}",
@@ -553,13 +550,13 @@ class SecretManager:
         return migration_report
 
     def get_version_report(self) -> Dict[str, Any]:
-        """
-        Generate report on key versions used by stored secrets
+        """Generate report on key versions used by stored secrets
 
         Returns:
             Report with version distribution
 
         Phase 3 (Task 20): Helps identify secrets needing migration
+
         """
         version_counts = {}
         legacy_count = 0

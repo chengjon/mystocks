@@ -2,11 +2,9 @@
 
 import logging
 import time
-from collections import OrderedDict
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
-import pandas as pd
 
 logger = logging.getLogger(__name__)
 
@@ -15,8 +13,7 @@ class CacheBatchMixin:
     """缓存批量读写操作"""
 
     def batch_read(self, queries: List[Dict[str, Any]]) -> Dict[str, Any]:
-        """
-        批量读取缓存 (优化版) - 显著提高性能
+        """批量读取缓存 (优化版) - 显著提高性能
 
         Args:
             queries: 查询列表，每个元素包含:
@@ -33,6 +30,7 @@ class CacheBatchMixin:
                 "000858:etf": {...},
                 ...
             }
+
         """
         self._cache_stats["batch_operations"] += 1
         start_time = time.time()
@@ -41,8 +39,8 @@ class CacheBatchMixin:
 
         try:
             # 优化：并发读取内存缓存，先处理最可能命中的数据
-            _ = []  # noqa: F841 - Placeholder for memory_cache_futures (to be implemented)
-            _ = []  # noqa: F841 - Placeholder for tdengine_cache_futures (to be implemented)
+            _ = []
+            _ = []
 
             # 预过滤：避免重复查询
             unique_queries = []
@@ -165,8 +163,7 @@ class CacheBatchMixin:
             return results
 
     def batch_write(self, records: List[Dict[str, Any]], ttl_days: int = 7) -> int:
-        """
-        批量写入缓存
+        """批量写入缓存
 
         Args:
             records: 记录列表，每个元素包含:
@@ -180,6 +177,7 @@ class CacheBatchMixin:
 
         Returns:
             成功写入的记录数
+
         """
         count = 0
 

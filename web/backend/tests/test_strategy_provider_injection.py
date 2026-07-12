@@ -3,6 +3,7 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
+
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 STRATEGY_PATH = PROJECT_ROOT / "web/backend/app/api/strategy.py"
 PROVIDER_NAME = "get_strategy_data_source"

@@ -1,5 +1,4 @@
-"""
-ADX Strategy
+"""ADX Strategy
 
 ADX平均趋向指标策略 - 判断趋势强度和方向
 Average Directional Index
@@ -11,8 +10,7 @@ from app.backtest.strategies.base import BaseStrategy, SignalType, StrategySigna
 
 
 class ADXStrategy(BaseStrategy):
-    """
-    ADX平均趋向指标策略
+    """ADX平均趋向指标策略
 
     核心逻辑:
     - +DI: 正向动向指标 (上涨趋势)
@@ -112,13 +110,13 @@ class ADXStrategy(BaseStrategy):
         ]
 
     def _calculate_adx(
-        self, history: List[Dict[str, Any]], symbol: str
+        self, history: List[Dict[str, Any]], symbol: str,
     ) -> tuple[Optional[float], Optional[float], Optional[float]]:
-        """
-        计算ADX指标
+        """计算ADX指标
 
         Returns:
             (ADX, +DI, -DI)
+
         """
         period = self.parameters["adx_period"]
 
@@ -193,54 +191,53 @@ class ADXStrategy(BaseStrategy):
 
             return adx, plus_di, minus_di
 
+        # 使用最新数据更新
+        curr = history[-1]
+        prev = history[-2]
+
+        # True Range
+        tr = max(
+            curr["high"] - curr["low"],
+            abs(curr["high"] - prev["close"]),
+            abs(curr["low"] - prev["close"]),
+        )
+
+        # +DM and -DM
+        up_move = curr["high"] - prev["high"]
+        down_move = prev["low"] - curr["low"]
+
+        plus_dm = up_move if (up_move > down_move and up_move > 0) else 0
+        minus_dm = down_move if (down_move > up_move and down_move > 0) else 0
+
+        # 更新平滑值
+        self.smoothed_tr[symbol] = self.smoothed_tr[symbol] - (self.smoothed_tr[symbol] / period) + tr
+        self.smoothed_plus_dm[symbol] = (
+            self.smoothed_plus_dm[symbol] - (self.smoothed_plus_dm[symbol] / period) + plus_dm
+        )
+        self.smoothed_minus_dm[symbol] = (
+            self.smoothed_minus_dm[symbol] - (self.smoothed_minus_dm[symbol] / period) + minus_dm
+        )
+
+        # 计算DI
+        if self.smoothed_tr[symbol] == 0:
+            return None, None, None
+
+        plus_di = (self.smoothed_plus_dm[symbol] / self.smoothed_tr[symbol]) * 100
+        minus_di = (self.smoothed_minus_dm[symbol] / self.smoothed_tr[symbol]) * 100
+
+        # 计算DX
+        di_sum = plus_di + minus_di
+        if di_sum == 0:
+            dx = 0
         else:
-            # 使用最新数据更新
-            curr = history[-1]
-            prev = history[-2]
+            dx = abs(plus_di - minus_di) / di_sum * 100
 
-            # True Range
-            tr = max(
-                curr["high"] - curr["low"],
-                abs(curr["high"] - prev["close"]),
-                abs(curr["low"] - prev["close"]),
-            )
+        # 更新ADX (简化的平滑)
+        prev_adx = self.adx_values.get(symbol, dx)
+        adx = prev_adx + (dx - prev_adx) / period
+        self.adx_values[symbol] = adx
 
-            # +DM and -DM
-            up_move = curr["high"] - prev["high"]
-            down_move = prev["low"] - curr["low"]
-
-            plus_dm = up_move if (up_move > down_move and up_move > 0) else 0
-            minus_dm = down_move if (down_move > up_move and down_move > 0) else 0
-
-            # 更新平滑值
-            self.smoothed_tr[symbol] = self.smoothed_tr[symbol] - (self.smoothed_tr[symbol] / period) + tr
-            self.smoothed_plus_dm[symbol] = (
-                self.smoothed_plus_dm[symbol] - (self.smoothed_plus_dm[symbol] / period) + plus_dm
-            )
-            self.smoothed_minus_dm[symbol] = (
-                self.smoothed_minus_dm[symbol] - (self.smoothed_minus_dm[symbol] / period) + minus_dm
-            )
-
-            # 计算DI
-            if self.smoothed_tr[symbol] == 0:
-                return None, None, None
-
-            plus_di = (self.smoothed_plus_dm[symbol] / self.smoothed_tr[symbol]) * 100
-            minus_di = (self.smoothed_minus_dm[symbol] / self.smoothed_tr[symbol]) * 100
-
-            # 计算DX
-            di_sum = plus_di + minus_di
-            if di_sum == 0:
-                dx = 0
-            else:
-                dx = abs(plus_di - minus_di) / di_sum * 100
-
-            # 更新ADX (简化的平滑)
-            prev_adx = self.adx_values.get(symbol, dx)
-            adx = prev_adx + (dx - prev_adx) / period
-            self.adx_values[symbol] = adx
-
-            return adx, plus_di, minus_di
+        return adx, plus_di, minus_di
 
     def generate_signal(
         self,
@@ -249,7 +246,6 @@ class ADXStrategy(BaseStrategy):
         position: Optional[Dict[str, Any]] = None,
     ) -> Optional[StrategySignal]:
         """生成交易信号"""
-
         self.update_history(symbol, current_data)
 
         history = self.price_history.get(symbol, [])

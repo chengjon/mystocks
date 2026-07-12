@@ -1,5 +1,4 @@
-"""
-OpenStock /quotes + /kline 路由集成测试 (B4.014 M1m / step 7)
+"""OpenStock /quotes + /kline 路由集成测试 (B4.014 M1m / step 7)
 
 验证:
 1. /quotes 路由走 factory → OpenStockMarketDataSourceAdapter → build_quotes_response_payload
@@ -16,7 +15,6 @@ Plan ref: docs/architecture/M1K_M1M_EXECUTION_PLAN_2026-07-01.md §三 步骤 7
 
 from __future__ import annotations
 
-from typing import Any, Dict
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -60,7 +58,8 @@ def mock_factory():
 @pytest.fixture
 def patch_factory(monkeypatch, mock_factory):
     """Patch dsf_module.get_data_source_factory,使路由 `from ... import get_data_source_factory`
-    拿到的 callable 返回 mock_factory。注意路由内部是 lazy import,所以 patch 源模块即可。"""
+    拿到的 callable 返回 mock_factory。注意路由内部是 lazy import,所以 patch 源模块即可。
+    """
     async def _return_mock_factory():
         return mock_factory
 
@@ -75,7 +74,8 @@ def patch_factory(monkeypatch, mock_factory):
 @pytest.fixture
 def patch_circuit_breaker(monkeypatch):
     """禁用熔断器。路由 `from app.core.circuit_breaker_manager import get_circuit_breaker`
-    是模块级 import(line 27),会绑定到 market_module 全局,所以需要 patch 路由模块属性。"""
+    是模块级 import(line 27),会绑定到 market_module 全局,所以需要 patch 路由模块属性。
+    """
     cb = MagicMock()
     cb.is_open.return_value = False
     cb.record_success = MagicMock()
@@ -92,7 +92,8 @@ def patch_circuit_breaker(monkeypatch):
 def patch_stock_search_service(monkeypatch):
     """Mock stock_search_service。路由 lazy import
     `from app.services.stock_search_service import get_stock_search_service`(函数体内),
-    patch 包 __init__ 的属性。"""
+    patch 包 __init__ 的属性。
+    """
     import app.services.stock_search_service as sss_pkg
 
     service = MagicMock()
@@ -114,10 +115,11 @@ class TestQuotesRouteViaOpenStockFactory:
     """GET /api/v1/market/quotes → factory → OpenStockMarketDataSourceAdapter envelope"""
 
     def test_quotes_factory_success_returns_normalized_schema(
-        self, auth_client, patch_factory, mock_factory
+        self, auth_client, patch_factory, mock_factory,
     ):
-        """quotes factory 返回 OpenStockMarketDataSourceAdapter 风格 envelope,
-        build_quotes_response_payload 应抽出 data 行并归一化 symbol/price 字段。"""
+        """Quotes factory 返回 OpenStockMarketDataSourceAdapter 风格 envelope,
+        build_quotes_response_payload 应抽出 data 行并归一化 symbol/price 字段。
+        """
         rows = [
             {"symbol": "000001", "price": 12.34, "volume": 1000},
             {"symbol": "600519", "price": 1800.0, "volume": 500},
@@ -152,10 +154,11 @@ class TestQuotesRouteViaOpenStockFactory:
         assert call_args[2] == {"symbols": ["000001", "600519"]}
 
     def test_quotes_factory_empty_data_uses_fallback_payload(
-        self, auth_client, patch_factory, mock_factory
+        self, auth_client, patch_factory, mock_factory,
     ):
-        """factory 返回空 data 时, build_quotes_response_payload 用 _build_fallback_quotes
-        合成兜底行情,前端仍能拿到结构化 quotes。"""
+        """Factory 返回空 data 时, build_quotes_response_payload 用 _build_fallback_quotes
+        合成兜底行情,前端仍能拿到结构化 quotes。
+        """
         mock_factory.get_data_with_fallback.return_value = {
             "status": "success",
             "data": [],
@@ -176,11 +179,11 @@ class TestQuotesRouteViaOpenStockFactory:
             assert key in payload["quotes"][0]
 
     def test_quotes_factory_exception_propagates_to_500(
-        self, auth_client, patch_factory, mock_factory
+        self, auth_client, patch_factory, mock_factory,
     ):
-        """factory 抛异常,路由层应包成 BusinessException → 500。"""
+        """Factory 抛异常,路由层应包成 BusinessException → 500。"""
         mock_factory.get_data_with_fallback.side_effect = RuntimeError(
-            "openstock primary and mock both failed"
+            "openstock primary and mock both failed",
         )
 
         resp = auth_client.get("/api/v1/market/quotes?symbols=000001")
@@ -206,7 +209,8 @@ class TestKlineRouteViaOpenStockFactory:
         patch_stock_search_service,
     ):
         """OpenStock factory 成功路径:candles 非空,直接返回,
-        不应调用 service.get_a_stock_kline。"""
+        不应调用 service.get_a_stock_kline。
+        """
         candles = [
             {"datetime": "2026-06-01", "open": 10.0, "high": 11.0,
              "low": 9.5, "close": 10.5, "volume": 1000},
@@ -222,7 +226,7 @@ class TestKlineRouteViaOpenStockFactory:
         }
 
         resp = auth_client.get(
-            "/api/v1/market/kline?stock_code=000001&period=daily"
+            "/api/v1/market/kline?stock_code=000001&period=daily",
         )
 
         assert resp.status_code == 200, resp.text
@@ -256,7 +260,8 @@ class TestKlineRouteViaOpenStockFactory:
         patch_stock_search_service,
     ):
         """OpenStock 返回空 candles 列表(停牌股票的合法空响应),
-        路由应直接返回 count=0,不触发 akshare 二级 fallback。"""
+        路由应直接返回 count=0,不触发 akshare 二级 fallback。
+        """
         mock_factory.get_data_with_fallback.return_value = {
             "status": "success",
             "data": [],
@@ -266,7 +271,7 @@ class TestKlineRouteViaOpenStockFactory:
         }
 
         resp = auth_client.get(
-            "/api/v1/market/kline?stock_code=000001&period=daily"
+            "/api/v1/market/kline?stock_code=000001&period=daily",
         )
 
         assert resp.status_code == 200, resp.text
@@ -303,7 +308,7 @@ class TestKlineRouteViaOpenStockFactory:
         patch_stock_search_service.get_a_stock_kline.return_value = service_result
 
         resp = auth_client.get(
-            "/api/v1/market/kline?stock_code=000001&period=daily"
+            "/api/v1/market/kline?stock_code=000001&period=daily",
         )
 
         assert resp.status_code == 200, resp.text
@@ -319,7 +324,7 @@ class TestKlineRouteViaOpenStockFactory:
     ):
         """OpenStock factory 抛异常,路由 except 分支回退到 service。"""
         mock_factory.get_data_with_fallback.side_effect = RuntimeError(
-            "OpenStock HTTP 502"
+            "OpenStock HTTP 502",
         )
         service_result = {
             "data": [
@@ -331,7 +336,7 @@ class TestKlineRouteViaOpenStockFactory:
         patch_stock_search_service.get_a_stock_kline.return_value = service_result
 
         resp = auth_client.get(
-            "/api/v1/market/kline?stock_code=000001&period=daily"
+            "/api/v1/market/kline?stock_code=000001&period=daily",
         )
 
         assert resp.status_code == 200, resp.text
@@ -349,20 +354,20 @@ class TestKlineRouteViaOpenStockFactory:
         """OpenStock factory + akshare service 都失败 → 路由抛 BusinessException 500。"""
         mock_factory.get_data_with_fallback.side_effect = RuntimeError("primary down")
         patch_stock_search_service.get_a_stock_kline.side_effect = ConnectionError(
-            "akshare offline"
+            "akshare offline",
         )
 
         resp = auth_client.get(
-            "/api/v1/market/kline?stock_code=000001&period=daily"
+            "/api/v1/market/kline?stock_code=000001&period=daily",
         )
 
         assert resp.status_code in (500,)
         patch_circuit_breaker.record_failure.assert_called()
 
     def test_kline_invalid_period_returns_422(self, auth_client, patch_factory):
-        """period 校验失败(pattern mismatch)→ 422, 不应触碰 factory。"""
+        """Period 校验失败(pattern mismatch)→ 422, 不应触碰 factory。"""
         resp = auth_client.get(
-            "/api/v1/market/kline?stock_code=000001&period=hourly"
+            "/api/v1/market/kline?stock_code=000001&period=hourly",
         )
         assert resp.status_code == 422
 
@@ -388,7 +393,7 @@ class TestKlineRouteViaOpenStockFactory:
         # 30 天范围 → daily count 应 ≈ 30
         resp = auth_client.get(
             "/api/v1/market/kline?stock_code=000001&period=daily"
-            "&start_date=2026-05-01&end_date=2026-05-31"
+            "&start_date=2026-05-01&end_date=2026-05-31",
         )
 
         assert resp.status_code == 200, resp.text
@@ -416,7 +421,7 @@ class TestKlineRouteViaOpenStockFactory:
         }
 
         resp = auth_client.get(
-            "/api/v1/market/kline?stock_code=000001&period=daily"
+            "/api/v1/market/kline?stock_code=000001&period=daily",
         )
 
         assert resp.status_code == 200
@@ -432,7 +437,8 @@ class TestKlineRouteViaOpenStockFactory:
 @pytest.mark.asyncio
 async def test_get_data_with_fallback_invokes_mock_when_primary_raises():
     """直接验证 DataSourceFactory.get_data_with_fallback 行为:
-    primary 抛异常时跳到 {source}_mock。这是路由层依赖的契约。"""
+    primary 抛异常时跳到 {source}_mock。这是路由层依赖的契约。
+    """
     from app.services.data_source_factory.data_source_factory import (
         DataSourceFactory,
     )
@@ -443,7 +449,7 @@ async def test_get_data_with_fallback_invokes_mock_when_primary_raises():
     primary.get_data = AsyncMock(side_effect=RuntimeError("primary boom"))
     mock_src = MagicMock()
     mock_src.get_data = AsyncMock(
-        return_value={"status": "success", "data": [], "quotes": []}
+        return_value={"status": "success", "data": [], "quotes": []},
     )
     factory._data_sources = {
         "openstock_market": primary,
@@ -452,19 +458,19 @@ async def test_get_data_with_fallback_invokes_mock_when_primary_raises():
     factory._initialized = True
 
     result = await factory.get_data_with_fallback(
-        "openstock_market", "quotes", {"symbols": "000001"}
+        "openstock_market", "quotes", {"symbols": "000001"},
     )
 
     assert result["status"] == "success"
     primary.get_data.assert_awaited_once()
     mock_src.get_data.assert_awaited_once_with(
-        "quotes", {"symbols": "000001"}
+        "quotes", {"symbols": "000001"},
     )
 
 
 @pytest.mark.asyncio
 async def test_get_data_with_fallback_no_mock_propagates_exception():
-    """primary 失败且无 {source}_mock 时,异常应向上抛。"""
+    """Primary 失败且无 {source}_mock 时,异常应向上抛。"""
     from app.services.data_source_factory.data_source_factory import (
         DataSourceFactory,
     )
@@ -477,5 +483,5 @@ async def test_get_data_with_fallback_no_mock_propagates_exception():
 
     with pytest.raises(RuntimeError, match="primary boom"):
         await factory.get_data_with_fallback(
-            "openstock_market", "quotes", {"symbols": "000001"}
+            "openstock_market", "quotes", {"symbols": "000001"},
         )

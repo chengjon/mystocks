@@ -4,6 +4,7 @@ import os
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
+
 os.environ.setdefault("POSTGRESQL_HOST", "localhost")
 os.environ.setdefault("POSTGRESQL_PORT", "5432")
 os.environ.setdefault("POSTGRESQL_USER", "tester")

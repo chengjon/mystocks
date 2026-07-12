@@ -1,5 +1,4 @@
-"""
-数据源工厂模式单元测试 - 数据源与模式切换部分
+"""数据源工厂模式单元测试 - 数据源与模式切换部分
 """
 
 import os
@@ -12,12 +11,13 @@ import pytest
 from ._test_data_source_factory_support import (
     DataSourceConfig,
     DataSourceMode,
-    HybridDataSource,
     HealthStatus,
     HealthStatusEnum,
+    HybridDataSource,
     MockDataSource,
     RealDataSource,
 )
+
 
 BACKEND_PORT = os.getenv("BACKEND_PORT", "8020")
 API_BASE_URL = f"http://localhost:{BACKEND_PORT}/api"
@@ -117,9 +117,8 @@ class TestMockDataSource:
             assert source.metrics.success_rate == 100.0
             assert source.metrics.error_count == 0
 
-            with patch.object(source, "_mock_data", {"data": None}):
-                with pytest.raises(Exception):
-                    await source.get_data("market/overview")
+            with patch.object(source, "_mock_data", {"data": None}), pytest.raises(Exception):
+                await source.get_data("market/overview")
 
             assert source.metrics.total_requests == 2
             assert source.metrics.error_count == 1
@@ -221,10 +220,9 @@ class TestRealDataSource:
         async with source:
             with (
                 patch.object(source._session, "get", return_value=_AsyncResponseContext(mock_response)),
-                patch("asyncio.sleep"),
+                patch("asyncio.sleep"),pytest.raises(Exception),
             ):
-                with pytest.raises(Exception):
-                    await source.get_data("market/data")
+                await source.get_data("market/data")
 
             assert source.metrics.total_requests == 1
             assert source.metrics.error_count == 1

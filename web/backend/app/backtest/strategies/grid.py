@@ -1,5 +1,4 @@
-"""
-Grid Strategy
+"""Grid Strategy
 
 网格策略模板 - 区间震荡套利
 """
@@ -11,8 +10,7 @@ from app.backtest.strategies.base import BaseStrategy, SignalType, StrategySigna
 
 
 class GridStrategy(BaseStrategy):
-    """
-    网格策略
+    """网格策略
 
     核心逻辑：
     - 设置价格区间和网格数量
@@ -93,19 +91,19 @@ class GridStrategy(BaseStrategy):
         self.grid_levels.sort()
 
     def _find_nearest_grid_level(self, price: float, direction: str) -> Optional[float]:
-        """
-        找到最近的网格线
+        """找到最近的网格线
 
         Args:
             price: 当前价格
             direction: 'below'查找下方网格线, 'above'查找上方网格线
+
         """
         if direction == "below":
             levels_below = [level for level in self.grid_levels if level < price]
             return max(levels_below) if levels_below else None
-        else:  # above
-            levels_above = [level for level in self.grid_levels if level > price]
-            return min(levels_above) if levels_above else None
+        # above
+        levels_above = [level for level in self.grid_levels if level > price]
+        return min(levels_above) if levels_above else None
 
     def generate_signal(
         self,
@@ -114,7 +112,6 @@ class GridStrategy(BaseStrategy):
         position: Optional[Dict[str, Any]] = None,
     ) -> Optional[StrategySignal]:
         """生成交易信号"""
-
         self.update_history(symbol, current_data)
 
         current_price = float(current_data["close"])

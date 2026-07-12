@@ -1,5 +1,4 @@
-"""
-Pydantic Response Schemas for Indicator API
+"""Pydantic Response Schemas for Indicator API
 定义指标计算API的响应数据模型
 """
 
@@ -10,8 +9,7 @@ from pydantic import BaseModel, Field
 
 
 class IndicatorValueOutput(BaseModel):
-    """
-    单个指标的输出值
+    """单个指标的输出值
 
     Example:
         {
@@ -19,6 +17,7 @@ class IndicatorValueOutput(BaseModel):
             "values": [10.5, 11.2, 10.8, ...],
             "display_name": "SMA(20)"
         }
+
     """
 
     output_name: str = Field(..., description="输出字段名称 (如 sma, macd, rsi)")
@@ -27,8 +26,7 @@ class IndicatorValueOutput(BaseModel):
 
 
 class IndicatorResult(BaseModel):
-    """
-    单个指标的计算结果
+    """单个指标的计算结果
 
     Example:
         {
@@ -45,6 +43,7 @@ class IndicatorResult(BaseModel):
             "reference_lines": null,
             "error": null
         }
+
     """
 
     abbreviation: str = Field(..., description="指标缩写")
@@ -56,8 +55,7 @@ class IndicatorResult(BaseModel):
 
 
 class OHLCVData(BaseModel):
-    """
-    OHLCV K线数据
+    """OHLCV K线数据
 
     Example:
         {
@@ -69,6 +67,7 @@ class OHLCVData(BaseModel):
             "volume": [1000000, 1200000, ...],
             "turnover": [10800000, 12544000, ...]
         }
+
     """
 
     dates: List[str] = Field(..., description="日期列表 (YYYY-MM-DD 格式)")
@@ -81,8 +80,7 @@ class OHLCVData(BaseModel):
 
 
 class IndicatorCalculateResponse(BaseModel):
-    """
-    指标计算响应
+    """指标计算响应
 
     Example:
         {
@@ -108,6 +106,7 @@ class IndicatorCalculateResponse(BaseModel):
             "calculation_time_ms": 15.5,
             "cached": false
         }
+
     """
 
     symbol: str = Field(..., description="股票代码")
@@ -121,8 +120,7 @@ class IndicatorCalculateResponse(BaseModel):
 
 
 class IndicatorMetadata(BaseModel):
-    """
-    指标元数据
+    """指标元数据
 
     Example:
         {
@@ -151,6 +149,7 @@ class IndicatorMetadata(BaseModel):
             "reference_lines": null,
             "min_data_points_formula": "timeperiod"
         }
+
     """
 
     abbreviation: str = Field(..., description="指标缩写")
@@ -166,8 +165,7 @@ class IndicatorMetadata(BaseModel):
 
 
 class IndicatorRegistryResponse(BaseModel):
-    """
-    指标注册表响应
+    """指标注册表响应
 
     Example:
         {
@@ -184,6 +182,7 @@ class IndicatorRegistryResponse(BaseModel):
                 {...}
             ]
         }
+
     """
 
     total_count: int = Field(..., description="指标总数", ge=0)
@@ -192,8 +191,7 @@ class IndicatorRegistryResponse(BaseModel):
 
 
 class IndicatorConfigResponse(BaseModel):
-    """
-    指标配置响应
+    """指标配置响应
 
     Example:
         {
@@ -208,6 +206,7 @@ class IndicatorConfigResponse(BaseModel):
             "updated_at": "2024-01-02T15:30:00",
             "last_used_at": "2024-01-03T09:00:00"
         }
+
     """
 
     id: int = Field(..., description="配置ID")
@@ -220,8 +219,7 @@ class IndicatorConfigResponse(BaseModel):
 
 
 class IndicatorConfigListResponse(BaseModel):
-    """
-    指标配置列表响应
+    """指标配置列表响应
 
     Example:
         {
@@ -231,6 +229,7 @@ class IndicatorConfigListResponse(BaseModel):
                 {...}
             ]
         }
+
     """
 
     total_count: int = Field(..., description="配置总数", ge=0)
@@ -238,8 +237,7 @@ class IndicatorConfigListResponse(BaseModel):
 
 
 class ErrorDetail(BaseModel):
-    """
-    错误详情
+    """错误详情
 
     Example:
         {
@@ -251,6 +249,7 @@ class ErrorDetail(BaseModel):
                 "actual_points": 150
             }
         }
+
     """
 
     error_code: str = Field(..., description="错误代码")
@@ -259,8 +258,7 @@ class ErrorDetail(BaseModel):
 
 
 class APIResponse(BaseModel):
-    """
-    通用API响应包装器
+    """通用API响应包装器
 
     Example:
         {
@@ -269,6 +267,7 @@ class APIResponse(BaseModel):
             "error": null,
             "timestamp": "2024-01-01T10:00:00"
         }
+
     """
 
     success: bool = Field(..., description="请求是否成功")

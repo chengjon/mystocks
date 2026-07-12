@@ -1,5 +1,4 @@
-"""
-策略管理API路由 (Phase 4)
+"""策略管理API路由 (Phase 4)
 
 提供策略CRUD和回测引擎的RESTful API端点。
 基于Phase 3的CompositeBusinessDataSource架构。
@@ -12,7 +11,7 @@ import logging
 from datetime import datetime
 from typing import Optional
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Path, Query, Header
+from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException, Path, Query
 from sqlalchemy.orm import Session
 
 from app.api.strategy_management.backtest_status_contract import (
@@ -39,6 +38,7 @@ from app.repositories import BacktestRepository, StrategyRepository
 from app.tasks.backtest_tasks import run_backtest_task
 from src.data_sources import get_business_source
 
+
 # 配置日志
 logger = logging.getLogger(__name__)
 
@@ -57,7 +57,7 @@ def get_data_source():
         return get_business_source()
     except Exception as e:
         logger.error("获取数据源失败: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"数据源初始化失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"数据源初始化失败: {e!s}")
 
 
 def get_strategy_repository(db: Session = Depends(get_db)) -> StrategyRepository:
@@ -112,8 +112,7 @@ async def create_strategy(
     strategy_repo: StrategyRepository = Depends(get_strategy_repository),
     authorization: Optional[str] = Header(default=None, alias="Authorization"),
 ):
-    """
-    创建新策略
+    """创建新策略
 
     **请求参数**:
     - user_id: 用户ID
@@ -139,10 +138,10 @@ async def create_strategy(
 
     except ValueError as e:
         logger.error("参数验证失败: {str(e)}")
-        raise HTTPException(status_code=400, detail=f"参数验证失败: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"参数验证失败: {e!s}")
     except Exception as e:
         logger.error("创建策略失败: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"创建策略失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"创建策略失败: {e!s}")
 
 
 @router.get(
@@ -158,8 +157,7 @@ async def list_strategies(
     page_size: int = Query(20, description="每页数量", ge=1, le=100),
     strategy_repo: StrategyRepository = Depends(get_strategy_repository),
 ):
-    """
-    获取策略列表
+    """获取策略列表
 
     **查询参数**:
     - user_id: 用户ID (必需)
@@ -173,7 +171,7 @@ async def list_strategies(
     try:
         # 使用仓库查询策略列表
         strategies, total_count = strategy_repo.list_strategies(
-            user_id=user_id, status=status, page=page, page_size=page_size
+            user_id=user_id, status=status, page=page, page_size=page_size,
         )
 
         logger.info("获取策略列表成功: user_id=%(user_id)s, count=%(total_count)s")
@@ -182,7 +180,7 @@ async def list_strategies(
 
     except Exception as e:
         logger.error("获取策略列表失败: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"获取策略列表失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取策略列表失败: {e!s}")
 
 
 @router.get(
@@ -195,8 +193,7 @@ async def get_strategy(
     strategy_id: int = Path(..., description="策略ID", ge=1),
     strategy_repo: StrategyRepository = Depends(get_strategy_repository),
 ):
-    """
-    获取策略详情
+    """获取策略详情
 
     **路径参数**:
     - strategy_id: 策略ID
@@ -217,11 +214,11 @@ async def get_strategy(
         raise
     except Exception as e:
         logger.error("获取策略详情失败: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"获取策略详情失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取策略详情失败: {e!s}")
 
 
 @router.put(
-    "/strategies/{strategy_id}", response_model=StrategyConfig, summary="更新策略", description="更新策略的配置信息"
+    "/strategies/{strategy_id}", response_model=StrategyConfig, summary="更新策略", description="更新策略的配置信息",
 )
 async def update_strategy(
     strategy_id: int = Path(..., description="策略ID", ge=1),
@@ -229,8 +226,7 @@ async def update_strategy(
     strategy_repo: StrategyRepository = Depends(get_strategy_repository),
     authorization: Optional[str] = Header(default=None, alias="Authorization"),
 ):
-    """
-    更新策略
+    """更新策略
 
     **路径参数**:
     - strategy_id: 策略ID
@@ -255,7 +251,7 @@ async def update_strategy(
         raise
     except Exception as e:
         logger.error("更新策略失败: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"更新策略失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"更新策略失败: {e!s}")
 
 
 @router.delete("/strategies/{strategy_id}", status_code=204, summary="删除策略", description="删除指定的策略配置")
@@ -264,8 +260,7 @@ async def delete_strategy(
     strategy_repo: StrategyRepository = Depends(get_strategy_repository),
     authorization: Optional[str] = Header(default=None, alias="Authorization"),
 ):
-    """
-    删除策略
+    """删除策略
 
     **路径参数**:
     - strategy_id: 策略ID
@@ -286,7 +281,7 @@ async def delete_strategy(
         raise
     except Exception as e:
         logger.error("删除策略失败: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"删除策略失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"删除策略失败: {e!s}")
 
 
 # ============================================================================
@@ -308,8 +303,7 @@ async def execute_backtest(
     backtest_repo: BacktestRepository = Depends(get_backtest_repository),
     authorization: Optional[str] = Header(default=None, alias="Authorization"),
 ):
-    """
-    执行回测
+    """执行回测
 
     **请求参数**:
     - strategy_id: 策略ID
@@ -388,10 +382,10 @@ async def execute_backtest(
         raise
     except ValueError as e:
         logger.error("回测参数验证失败: {str(e)}")
-        raise HTTPException(status_code=400, detail=f"回测参数验证失败: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"回测参数验证失败: {e!s}")
     except Exception as e:
         logger.error("执行回测失败: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"执行回测失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"执行回测失败: {e!s}")
 
 
 @router.get(
@@ -404,8 +398,7 @@ async def get_backtest_result(
     backtest_id: int = Path(..., description="回测ID", ge=1),
     backtest_repo: BacktestRepository = Depends(get_backtest_repository),
 ):
-    """
-    获取回测结果
+    """获取回测结果
 
     **路径参数**:
     - backtest_id: 回测ID
@@ -426,7 +419,7 @@ async def get_backtest_result(
         raise
     except Exception as e:
         logger.error("获取回测结果失败: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"获取回测结果失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取回测结果失败: {e!s}")
 
 
 @router.get(
@@ -443,8 +436,7 @@ async def list_backtests(
     strategy_repo: StrategyRepository = Depends(get_strategy_repository),
     backtest_repo: BacktestRepository = Depends(get_backtest_repository),
 ):
-    """
-    获取回测列表
+    """获取回测列表
 
     **查询参数**:
     - user_id: 用户ID (必需)
@@ -458,7 +450,7 @@ async def list_backtests(
     try:
         # 使用仓库查询回测列表
         backtests, total_count = backtest_repo.list_backtests(
-            user_id=user_id, strategy_id=strategy_id, page=page, page_size=page_size
+            user_id=user_id, strategy_id=strategy_id, page=page, page_size=page_size,
         )
 
         # 转换为汇总格式
@@ -482,12 +474,12 @@ async def list_backtests(
         logger.info("获取回测列表成功: user_id=%(user_id)s, count=%(total_count)s")
 
         return BacktestListResponse(
-            total_count=total_count, backtests=backtest_summaries, page=page, page_size=page_size
+            total_count=total_count, backtests=backtest_summaries, page=page, page_size=page_size,
         )
 
     except Exception as e:
         logger.error("获取回测列表失败: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"获取回测列表失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取回测列表失败: {e!s}")
 
 
 @router.get("/health", summary="健康检查", description="检查策略管理服务和数据库连接的健康状态")
@@ -542,8 +534,7 @@ async def get_backtest_status(
     backtest_id: int = Path(..., description="回测ID", ge=1),
     backtest_repo: BacktestRepository = Depends(get_backtest_repository),
 ) -> BacktestStatusResponse:
-    """
-    获取回测任务状态。
+    """获取回测任务状态。
 
     兼容保留接口，前端契约应迁移到 `/api/v1/strategy/backtest/status/{backtest_id}`。
 
@@ -566,4 +557,4 @@ async def get_backtest_status(
         raise
     except Exception as e:
         logger.error("获取回测状态失败: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"获取回测状态失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取回测状态失败: {e!s}")

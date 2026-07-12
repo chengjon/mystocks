@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-问财数据后台任务
+"""问财数据后台任务
 
 使用Celery实现的后台任务：
   1. 单个查询刷新任务
@@ -24,6 +22,7 @@ from app.core.config import settings
 from app.core.database import SessionLocal
 from app.services.wencai_service import ALLOWED_QUERY_TABLES, WencaiService
 
+
 # 配置日志
 logger = logging.getLogger(__name__)
 
@@ -37,8 +36,7 @@ def _assert_safe_table_identifier(table_name: str) -> str:
     return table_name
 
 def _get_safe_table_name(query_name: str) -> str:
-    """
-    从白名单获取安全的表名，防止 SQL 注入
+    """从白名单获取安全的表名，防止 SQL 注入
 
     Args:
         query_name: 查询名称（如 'qs_1'）
@@ -48,6 +46,7 @@ def _get_safe_table_name(query_name: str) -> str:
 
     Raises:
         ValueError: 如果 query_name 不在白名单中
+
     """
     table_name = ALLOWED_QUERY_TABLES.get(query_name)
     if not table_name:
@@ -57,8 +56,7 @@ def _get_safe_table_name(query_name: str) -> str:
 
 @shared_task(name="wencai.refresh_query", bind=True, max_retries=3, default_retry_delay=60)
 def refresh_wencai_query(self, query_name: str, pages: int = 1) -> Dict[str, Any]:
-    """
-    刷新单个问财查询（后台任务）
+    """刷新单个问财查询（后台任务）
 
     Args:
         query_name: 查询名称（如qs_1）
@@ -66,6 +64,7 @@ def refresh_wencai_query(self, query_name: str, pages: int = 1) -> Dict[str, Any
 
     Returns:
         执行结果统计
+
     """
     logger.info("[Celery Task] Starting refresh for %(query_name)s, pages=%(pages)s")
 
@@ -79,7 +78,7 @@ def refresh_wencai_query(self, query_name: str, pages: int = 1) -> Dict[str, Any
             f"[Celery Task] Refresh completed for {query_name}: "
             f"total={result['total_records']}, "
             f"new={result['new_records']}, "
-            f"dup={result['duplicate_records']}"
+            f"dup={result['duplicate_records']}",
         )
 
         return {
@@ -112,8 +111,7 @@ def refresh_wencai_query(self, query_name: str, pages: int = 1) -> Dict[str, Any
 
 @shared_task(name="wencai.scheduled_refresh_all")
 def scheduled_refresh_all_queries(pages: int = 1, active_only: bool = True) -> Dict[str, Any]:
-    """
-    定时刷新所有查询（每日任务）
+    """定时刷新所有查询（每日任务）
 
     Args:
         pages: 每个查询获取的页数
@@ -121,6 +119,7 @@ def scheduled_refresh_all_queries(pages: int = 1, active_only: bool = True) -> D
 
     Returns:
         批量执行结果统计
+
     """
     logger.info("[Celery Task] Starting scheduled refresh all queries, " f"pages={pages}, active_only={active_only}")
 
@@ -158,7 +157,7 @@ def scheduled_refresh_all_queries(pages: int = 1, active_only: bool = True) -> D
                         "query_name": query_name,
                         "success": True,
                         "new_records": result["new_records"],
-                    }
+                    },
                 )
 
                 logger.info("✅ %(query_name)s: {result['new_records']} new records")
@@ -172,7 +171,7 @@ def scheduled_refresh_all_queries(pages: int = 1, active_only: bool = True) -> D
         results["completed_at"] = datetime.now().isoformat()
         logger.info(
             f"[Celery Task] Scheduled refresh completed: "
-            f"{results['successful']}/{results['total_queries']} successful"
+            f"{results['successful']}/{results['total_queries']} successful",
         )
 
         return results
@@ -189,8 +188,7 @@ def scheduled_refresh_all_queries(pages: int = 1, active_only: bool = True) -> D
 
 @shared_task(name="wencai.cleanup_old_data")
 def cleanup_old_wencai_data(days: int = 30, dry_run: bool = False) -> Dict[str, Any]:
-    """
-    清理旧数据（定期维护任务）
+    """清理旧数据（定期维护任务）
 
     删除指定天数之前的数据，释放存储空间
 
@@ -200,6 +198,7 @@ def cleanup_old_wencai_data(days: int = 30, dry_run: bool = False) -> Dict[str, 
 
     Returns:
         清理统计结果
+
     """
     logger.info("[Celery Task] Starting cleanup old data, days=%(days)s, dry_run=%(dry_run)s")
 
@@ -237,7 +236,7 @@ def cleanup_old_wencai_data(days: int = 30, dry_run: bool = False) -> Dict[str, 
                 with engine.connect() as conn:
                     # 统计将被删除的记录数
                     count_query = text(
-                        f"SELECT COUNT(*) as cnt FROM {safe_table_name} " f"WHERE fetch_time < :cutoff_date"
+                        f"SELECT COUNT(*) as cnt FROM {safe_table_name} WHERE fetch_time < :cutoff_date",
                     )
                     count_result = conn.execute(count_query, {"cutoff_date": cutoff_date})
                     delete_count = count_result.scalar()
@@ -246,7 +245,7 @@ def cleanup_old_wencai_data(days: int = 30, dry_run: bool = False) -> Dict[str, 
                         if not dry_run:
                             # 实际删除
                             delete_query = text(
-                                f"DELETE FROM {safe_table_name} " f"WHERE fetch_time < :cutoff_date"
+                                f"DELETE FROM {safe_table_name} WHERE fetch_time < :cutoff_date",
                             )
                             conn.execute(delete_query, {"cutoff_date": cutoff_date})
                             conn.commit()
@@ -265,7 +264,7 @@ def cleanup_old_wencai_data(days: int = 30, dry_run: bool = False) -> Dict[str, 
         results["completed_at"] = datetime.now().isoformat()
         logger.info(
             f"[Celery Task] Cleanup completed: "
-            f"{results['total_deleted']} records deleted from {results['total_tables']} tables"
+            f"{results['total_deleted']} records deleted from {results['total_tables']} tables",
         )
 
         return results
@@ -282,13 +281,13 @@ def cleanup_old_wencai_data(days: int = 30, dry_run: bool = False) -> Dict[str, 
 
 @shared_task(name="wencai.stats")
 def get_wencai_stats() -> Dict[str, Any]:
-    """
-    获取问财统计信息（监控任务）
+    """获取问财统计信息（监控任务）
 
     统计所有查询的数据情况
 
     Returns:
         统计信息
+
     """
     logger.info("[Celery Task] Getting Wencai stats")
 
@@ -324,7 +323,7 @@ def get_wencai_stats() -> Dict[str, Any]:
                         "SELECT COUNT(*) as cnt "
                         "FROM information_schema.tables "
                         "WHERE table_schema = DATABASE() "
-                        "AND table_name = :table_name"
+                        "AND table_name = :table_name",
                     )
                     exists = conn.execute(check_query, {"table_name": table_name}).scalar() > 0
 
@@ -346,7 +345,7 @@ def get_wencai_stats() -> Dict[str, Any]:
                                 "table_name": table_name,
                                 "record_count": record_count,
                                 "latest_fetch": (latest_fetch.isoformat() if latest_fetch else None),
-                            }
+                            },
                         )
 
                 except Exception as e:
@@ -372,19 +371,18 @@ def get_wencai_stats() -> Dict[str, Any]:
 
 
 def trigger_refresh_all():
-    """
-    手动触发刷新所有查询
+    """手动触发刷新所有查询
 
     Returns:
         Celery AsyncResult
+
     """
     logger.info("Manually triggering refresh all queries")
     return scheduled_refresh_all_queries.delay()
 
 
 def trigger_cleanup(days: int = 30, dry_run: bool = False):
-    """
-    手动触发清理任务
+    """手动触发清理任务
 
     Args:
         days: 保留天数
@@ -392,6 +390,7 @@ def trigger_cleanup(days: int = 30, dry_run: bool = False):
 
     Returns:
         Celery AsyncResult
+
     """
     logger.info("Manually triggering cleanup: days=%(days)s, dry_run=%(dry_run)s")
     return cleanup_old_wencai_data.delay(days=days, dry_run=dry_run)

@@ -1,5 +1,4 @@
-"""
-Unified Exception Handling - Decorator pattern for API endpoints
+"""Unified Exception Handling - Decorator pattern for API endpoints
 Task 1.4: Remove Duplicate Code - Phase 1
 
 Consolidates 100+ duplicate try/except blocks from 20+ API endpoint files.
@@ -38,6 +37,7 @@ from typing import Any, Callable, Dict
 import structlog
 from fastapi import HTTPException
 
+
 logger = structlog.get_logger()
 
 
@@ -49,8 +49,7 @@ def handle_exceptions(
     error_key: str = "error",
     message_key: str = "message",
 ):
-    """
-    Decorator for unified exception handling in API endpoints
+    """Decorator for unified exception handling in API endpoints
 
     Automatically catches and logs exceptions, returns standardized error responses.
 
@@ -76,6 +75,7 @@ def handle_exceptions(
 
     Returns:
         Standardized error response on exception
+
     """
 
     def decorator(f: Callable) -> Callable:
@@ -103,7 +103,7 @@ def handle_exceptions(
                 logger.warning("Missing required parameter in {f.__name__}", error=str(e))
                 return {
                     error_key: "Missing Required Parameter",
-                    message_key: f"Required parameter not found: {str(e)}",
+                    message_key: f"Required parameter not found: {e!s}",
                 }, 400
 
             except PermissionError as e:
@@ -154,7 +154,7 @@ def handle_exceptions(
                 logger.warning("Missing required parameter in {f.__name__}", error=str(e))
                 return {
                     error_key: "Missing Required Parameter",
-                    message_key: f"Required parameter not found: {str(e)}",
+                    message_key: f"Required parameter not found: {e!s}",
                 }, 400
 
             except PermissionError as e:
@@ -185,19 +185,16 @@ def handle_exceptions(
         # Return appropriate wrapper based on function type
         if inspect.iscoroutinefunction(f):
             return async_wrapper
-        else:
-            return sync_wrapper
+        return sync_wrapper
 
     # Support both @handle_exceptions and @handle_exceptions(...)
     if func is not None:
         return decorator(func)
-    else:
-        return decorator
+    return decorator
 
 
 def handle_validation_errors(func: Callable) -> Callable:
-    """
-    Specialized decorator for validation-heavy endpoints
+    """Specialized decorator for validation-heavy endpoints
 
     Catches only validation errors (ValueError, KeyError) and returns 400.
     Other exceptions are logged as warnings and re-raised.
@@ -231,13 +228,11 @@ def handle_validation_errors(func: Callable) -> Callable:
 
     if inspect.iscoroutinefunction(func):
         return async_wrapper
-    else:
-        return sync_wrapper
+    return sync_wrapper
 
 
 def handle_database_errors(func: Callable) -> Callable:
-    """
-    Specialized decorator for database-heavy endpoints
+    """Specialized decorator for database-heavy endpoints
 
     Catches database errors and returns 503 Service Unavailable.
 
@@ -262,8 +257,7 @@ def handle_database_errors(func: Callable) -> Callable:
                     "error": "Database Error",
                     "message": "Database connection failed",
                 }, 503
-            else:
-                raise
+            raise
 
     @functools.wraps(func)
     def sync_wrapper(*args, **kwargs):
@@ -277,10 +271,8 @@ def handle_database_errors(func: Callable) -> Callable:
                     "error": "Database Error",
                     "message": "Database connection failed",
                 }, 503
-            else:
-                raise
+            raise
 
     if inspect.iscoroutinefunction(func):
         return async_wrapper
-    else:
-        return sync_wrapper
+    return sync_wrapper

@@ -1,5 +1,4 @@
-"""
-Turtle Trading Strategy
+"""Turtle Trading Strategy
 
 海龟交易策略 - 经典的趋势跟踪系统
 基于Richard Dennis和William Eckhardt的传奇交易策略
@@ -12,8 +11,7 @@ from app.backtest.strategies.base import BaseStrategy, SignalType, StrategySigna
 
 
 class TurtleStrategy(BaseStrategy):
-    """
-    海龟交易策略
+    """海龟交易策略
 
     核心逻辑:
     - 唐奇安通道突破入场 (20日/55日高点)
@@ -126,8 +124,7 @@ class TurtleStrategy(BaseStrategy):
         return self.atr(history, atr_period)
 
     def _calculate_unit_size(self, symbol: str, account_value: float, n_value: float) -> int:
-        """
-        计算单位大小
+        """计算单位大小
 
         海龟规则: 1 Unit = (账户价值 × 1%) / N
 
@@ -138,6 +135,7 @@ class TurtleStrategy(BaseStrategy):
 
         Returns:
             单位数量 (股数)
+
         """
         risk_per_unit = self.parameters["risk_per_unit"]
         dollar_volatility = n_value * self.parameters["n_multiplier"]
@@ -199,8 +197,7 @@ class TurtleStrategy(BaseStrategy):
         return current_price < n_day_low
 
     def _can_add_unit(self, symbol: str, current_price: float, n_value: float) -> bool:
-        """
-        检查是否可以加仓
+        """检查是否可以加仓
 
         海龟规则: 价格每上涨1/2N可以加仓一次, 最多4个单位
         """
@@ -234,7 +231,6 @@ class TurtleStrategy(BaseStrategy):
         position: Optional[Dict[str, Any]] = None,
     ) -> Optional[StrategySignal]:
         """生成交易信号"""
-
         self.update_history(symbol, current_data)
 
         current_price = float(current_data["close"])

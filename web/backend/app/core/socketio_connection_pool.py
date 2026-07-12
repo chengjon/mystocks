@@ -1,5 +1,4 @@
-"""
-WebSocket连接池管理
+"""WebSocket连接池管理
 WebSocket Connection Pool - Connection Management and Pooling Strategy
 
 Task 14.2: WebSocket性能优化
@@ -24,6 +23,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, Set
 
 import structlog
+
 
 logger = structlog.get_logger()
 
@@ -99,14 +99,14 @@ class WebSocketConnectionPool:
         stale_timeout: int = 300,
         cleanup_interval: int = 60,
     ):
-        """
-        初始化连接池
+        """初始化连接池
 
         Args:
             min_size: 最小连接池大小
             max_size: 最大连接池大小
             stale_timeout: 连接陈旧超时（秒）
             cleanup_interval: 清理间隔（秒）
+
         """
         self.min_size = min_size
         self.max_size = max_size
@@ -135,8 +135,7 @@ class WebSocketConnectionPool:
         )
 
     async def acquire_connection(self, user_id: Optional[str] = None) -> PooledConnection:
-        """
-        获取一个连接
+        """获取一个连接
         - 优先从空闲队列获取
         - 如果队列空，新建连接
         - 如果达到max_size，等待空闲连接
@@ -146,6 +145,7 @@ class WebSocketConnectionPool:
 
         Returns:
             可用的连接
+
         """
         try:
             # 尝试从空闲队列获取
@@ -165,14 +165,13 @@ class WebSocketConnectionPool:
                         reuse_count=connection.reuse_count,
                     )
                     return connection
-                else:
-                    # 连接不健康，标记为回收
-                    logger.warning(
-                        "⚠️ Unhealthy connection discarded",
-                        sid=connection.sid,
-                        healthy=connection.is_healthy(),
-                        stale=connection.is_stale(self.stale_timeout),
-                    )
+                # 连接不健康，标记为回收
+                logger.warning(
+                    "⚠️ Unhealthy connection discarded",
+                    sid=connection.sid,
+                    healthy=connection.is_healthy(),
+                    stale=connection.is_stale(self.stale_timeout),
+                )
             except asyncio.QueueEmpty:
                 pass
 
@@ -215,12 +214,12 @@ class WebSocketConnectionPool:
             raise RuntimeError("Connection pool exhausted, no available connections")
 
     async def release_connection(self, sid: str, error: bool = False) -> None:
-        """
-        释放连接回到池中
+        """释放连接回到池中
 
         Args:
             sid: 连接ID
             error: 是否有错误发生
+
         """
         connection = self.active_connections.pop(sid, None)
         if not connection:
@@ -251,11 +250,11 @@ class WebSocketConnectionPool:
             self._remove_connection(sid)
 
     def _remove_connection(self, sid: str) -> None:
-        """
-        移除连接
+        """移除连接
 
         Args:
             sid: 连接ID
+
         """
         connection = self.all_connections.pop(sid, None)
         if connection:
@@ -273,12 +272,12 @@ class WebSocketConnectionPool:
             )
 
     def register_connection(self, sid: str, user_id: Optional[str] = None) -> None:
-        """
-        注册新连接到池中
+        """注册新连接到池中
 
         Args:
             sid: 连接ID
             user_id: 用户ID
+
         """
         connection = PooledConnection(sid=sid, user_id=user_id)
         self.all_connections[sid] = connection
@@ -298,14 +297,14 @@ class WebSocketConnectionPool:
         )
 
     def get_user_connections(self, user_id: str) -> List[PooledConnection]:
-        """
-        获取用户的所有连接
+        """获取用户的所有连接
 
         Args:
             user_id: 用户ID
 
         Returns:
             连接列表
+
         """
         sids = self.user_connections.get(user_id, set())
         return [self.all_connections[sid] for sid in sids if sid in self.all_connections]

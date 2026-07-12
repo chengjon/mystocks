@@ -1,5 +1,4 @@
-"""
-Event Models for Redis Pub/Sub
+"""Event Models for Redis Pub/Sub
 ==============================
 
 Standardized Pydantic models for all event messages published via Redis Pub/Sub.
@@ -90,7 +89,7 @@ class TaskProgressEvent(BaseEvent):
                 "processed": 2275,
                 "total": 5000,
                 "failed": 12,
-            }
+            },
         }
 
 
@@ -113,7 +112,7 @@ class TaskCompletedEvent(BaseEvent):
                 "status": "completed",
                 "duration_seconds": 123.45,
                 "result": {"success": 4988, "failed": 12},
-            }
+            },
         }
 
 
@@ -138,7 +137,7 @@ class StockIndicatorsCompletedEvent(BaseEvent):
                 "failed_count": 0,
                 "calculation_time_ms": 123.45,
                 "from_cache_count": 2,
-            }
+            },
         }
 
 
@@ -164,7 +163,7 @@ class IndicatorCalculationEvent(BaseEvent):
                 "success": True,
                 "calculation_time_ms": 45.67,
                 "from_cache": False,
-            }
+            },
         }
 
 
@@ -189,7 +188,7 @@ class MarketDataUpdateEvent(BaseEvent):
                     "volume": 1234567,
                     "timestamp": "2026-01-10T09:30:00Z",
                 },
-            }
+            },
         }
 
 
@@ -208,7 +207,7 @@ class SystemHeartbeatEvent(BaseEvent):
                 "service": "indicator_calculator",
                 "status": "healthy",
                 "metrics": {"cpu_usage": 45.2, "memory_usage": 67.8, "active_tasks": 3},
-            }
+            },
         }
 
 
@@ -216,8 +215,7 @@ class SystemHeartbeatEvent(BaseEvent):
 
 
 class EventChannels:
-    """
-    Hierarchical channel naming convention
+    """Hierarchical channel naming convention
 
     Channel Structure:
     - events:tasks              - All task events (global broadcast)
@@ -297,9 +295,9 @@ def create_stock_indicators_completed_event(
 
 
 def create_task_completed_event(
-    task_id: str, task_type: str, status: TaskStatus, duration_seconds: float, **result
+    task_id: str, task_type: str, status: TaskStatus, duration_seconds: float, **result,
 ) -> TaskCompletedEvent:
     """Helper to create task completed event"""
     return TaskCompletedEvent(
-        task_id=task_id, task_type=task_type, status=status, duration_seconds=duration_seconds, result=result
+        task_id=task_id, task_type=task_type, status=status, duration_seconds=duration_seconds, result=result,
     )

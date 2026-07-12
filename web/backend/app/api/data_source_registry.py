@@ -1,5 +1,4 @@
-"""
-数据源注册表管理API
+"""数据源注册表管理API
 
 提供数据源的查询、更新、测试等功能。
 
@@ -20,12 +19,13 @@ import os
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, HTTPException, Query, Header
+from fastapi import APIRouter, Header, HTTPException, Query
 from pydantic import BaseModel
 
 from app.core.config import settings
 from app.core.responses import ErrorCodes, create_error_response
 from app.core.security import verify_token
+
 
 logger = logging.getLogger(__name__)
 
@@ -145,8 +145,7 @@ async def search_data_sources(
     keyword: Optional[str] = Query(None, description="模糊搜索关键词"),
     status: str = Query("active", description="数据源状态（active/maintenance/deprecated）"),
 ):
-    """
-    搜索和筛选数据源接口
+    """搜索和筛选数据源接口
 
     支持的筛选条件:
     - data_category: 按5层数据分类筛选
@@ -201,13 +200,12 @@ async def search_data_sources(
         return DataSourceSearchResponse(total=len(endpoints), data_sources=endpoints)
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"搜索失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"搜索失败: {e!s}")
 
 
 @router.get("/categories", response_model=List[CategoryStatsResponse])
 async def get_category_stats():
-    """
-    获取所有5层数据分类的统计信息
+    """获取所有5层数据分类的统计信息
 
     返回:
         分类统计列表，包含每个分类的:
@@ -275,7 +273,7 @@ async def get_category_stats():
                     unhealthy=stats["unhealthy"],
                     avg_quality_score=round(avg_quality, 2),
                     avg_response_time=round(avg_response, 3),
-                )
+                ),
             )
 
         # 按分类名称排序
@@ -284,13 +282,12 @@ async def get_category_stats():
         return result
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取分类统计失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取分类统计失败: {e!s}")
 
 
 @router.get("/{endpoint_name}")
 async def get_data_source(endpoint_name: str):
-    """
-    获取单个数据源的详细信息
+    """获取单个数据源的详细信息
 
     Args:
         endpoint_name: 接口名称
@@ -300,6 +297,7 @@ async def get_data_source(endpoint_name: str):
 
     示例:
         GET /api/v1/data-sources/akshare.stock_zh_a_hist
+
     """
     try:
         manager = get_manager()
@@ -320,7 +318,7 @@ async def get_data_source(endpoint_name: str):
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取数据源失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取数据源失败: {e!s}")
 
 
 @router.put("/{endpoint_name}")
@@ -329,8 +327,7 @@ async def update_data_source(
     update: DataSourceUpdate,
     authorization: Optional[str] = Header(default=None, alias="Authorization"),
 ):
-    """
-    更新数据源配置
+    """更新数据源配置
 
     支持更新的字段:
     - priority: 优先级（1-10，数字越小优先级越高）
@@ -351,6 +348,7 @@ async def update_data_source(
             "priority": 1,
             "data_quality_score": 9.5
         }
+
     """
     try:
         _require_write_auth(authorization)
@@ -377,7 +375,7 @@ async def update_data_source(
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        set_clause = ", ".join([f"{k} = %({k})s" for k in updates.keys()])
+        set_clause = ", ".join([f"{k} = %({k})s" for k in updates])
         updates["updated_at"] = "NOW()"
 
         sql = f"""
@@ -404,7 +402,7 @@ async def update_data_source(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"更新失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"更新失败: {e!s}")
 
 
 @router.post("/{endpoint_name}/test", response_model=TestResponse)
@@ -413,8 +411,7 @@ async def test_data_source(
     request: TestRequest,
     authorization: Optional[str] = Header(default=None, alias="Authorization"),
 ):
-    """
-    手动测试数据源
+    """手动测试数据源
 
     发送测试请求到数据源接口，验证其可用性和数据质量
 
@@ -440,6 +437,7 @@ async def test_data_source(
                 "end_date": "20240131"
             }
         }
+
     """
     try:
         _require_write_auth(authorization)
@@ -502,7 +500,7 @@ async def test_data_source(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"测试失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"测试失败: {e!s}")
 
 
 @router.post("/{endpoint_name}/health-check")
@@ -510,8 +508,7 @@ async def health_check_data_source(
     endpoint_name: str,
     authorization: Optional[str] = Header(default=None, alias="Authorization"),
 ):
-    """
-    健康检查单个数据源
+    """健康检查单个数据源
 
     使用预设的测试参数进行健康检查，验证数据源是否可用
 
@@ -523,6 +520,7 @@ async def health_check_data_source(
 
     示例:
         POST /api/v1/data-sources/akshare.stock_zh_a_hist/health-check
+
     """
     try:
         _require_write_auth(authorization)
@@ -550,15 +548,14 @@ async def health_check_data_source(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"健康检查失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"健康检查失败: {e!s}")
 
 
 @router.post("/health-check/all")
 async def health_check_all_data_sources(
     authorization: Optional[str] = Header(default=None, alias="Authorization"),
 ):
-    """
-    健康检查所有数据源
+    """健康检查所有数据源
 
     遍历所有数据源，使用预设参数进行健康检查
 
@@ -582,7 +579,7 @@ async def health_check_all_data_sources(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"健康检查失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"健康检查失败: {e!s}")
 
 
 # ==================== Helper Functions ====================
@@ -605,8 +602,7 @@ def _get_category_display_name(category: str) -> str:
 
 
 def _check_data_quality(data: Any, config: Dict) -> Dict[str, Any]:
-    """
-    数据质量检查
+    """数据质量检查
 
     检查项:
     - 数据完整性（列缺失检查）
@@ -620,6 +616,7 @@ def _check_data_quality(data: Any, config: Dict) -> Dict[str, Any]:
 
     Returns:
         质量检查结果
+
     """
     checks = {
         "has_data": data is not None,

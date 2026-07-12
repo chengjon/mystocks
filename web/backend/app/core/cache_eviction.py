@@ -1,5 +1,4 @@
-"""
-Cache Eviction Strategy - 缓存淘汰策略
+"""Cache Eviction Strategy - 缓存淘汰策略
 
 实现基于时间窗口和访问频率的缓存淘汰机制。
 
@@ -26,6 +25,7 @@ from apscheduler.triggers.cron import CronTrigger
 
 from app.core.cache_manager import CacheManager, get_cache_manager
 
+
 logger = structlog.get_logger()
 
 
@@ -41,11 +41,11 @@ class AccessFrequencyTracker:
         logger.info("🔧 初始化访问频率追踪器")
 
     def record_access(self, cache_key: str) -> None:
-        """
-        记录缓存访问
+        """记录缓存访问
 
         Args:
             cache_key: 缓存键 (格式: "symbol:data_type:timeframe")
+
         """
         self.access_counts[cache_key] += 1
         self.last_access_time[cache_key] = datetime.now(timezone.utc)
@@ -67,14 +67,14 @@ class AccessFrequencyTracker:
         return self.creation_time.get(cache_key)
 
     def get_hot_data(self, top_n: int = 10) -> List[Tuple[str, int]]:
-        """
-        获取热点数据（最常访问的N个缓存项）
+        """获取热点数据（最常访问的N个缓存项）
 
         Args:
             top_n: 返回数量 (默认10)
 
         Returns:
             [(cache_key, access_count), ...] 按访问频率排序
+
         """
         sorted_items = sorted(self.access_counts.items(), key=lambda x: x[1], reverse=True)
         return sorted_items[:top_n]
@@ -116,12 +116,12 @@ class TimeWindowEvictionStrategy:
         cache_manager: Optional[CacheManager] = None,
         ttl_days: int = 7,
     ):
-        """
-        初始化淘汰策略
+        """初始化淘汰策略
 
         Args:
             cache_manager: CacheManager实例
             ttl_days: 缓存生存时间 (默认7天)
+
         """
         self.cache_manager = cache_manager or get_cache_manager()
         self.ttl_days = ttl_days
@@ -133,26 +133,26 @@ class TimeWindowEvictionStrategy:
         )
 
     def record_cache_access(self, symbol: str, data_type: str, timeframe: str = "1d") -> None:
-        """
-        记录缓存访问以进行热数据分析
+        """记录缓存访问以进行热数据分析
 
         Args:
             symbol: 股票代码
             data_type: 数据类型
             timeframe: 时间维度
+
         """
         cache_key = f"{symbol}:{data_type}:{timeframe}".lower()
         self.frequency_tracker.record_access(cache_key)
 
     def evict_expired_cache(self, max_age_days: Optional[int] = None) -> int:
-        """
-        清除过期缓存 (基于7天TTL)
+        """清除过期缓存 (基于7天TTL)
 
         Args:
             max_age_days: 最大年龄 (默认使用初始化的ttl_days)
 
         Returns:
             清除的记录数
+
         """
         max_age = max_age_days or self.ttl_days
 
@@ -175,14 +175,14 @@ class TimeWindowEvictionStrategy:
             return 0
 
     def get_hot_data(self, top_n: int = 10) -> List[Dict[str, Any]]:
-        """
-        获取热点数据列表
+        """获取热点数据列表
 
         Args:
             top_n: 返回热点数据数量
 
         Returns:
             热点数据列表，包含访问频率和时间戳
+
         """
         hot_items = self.frequency_tracker.get_hot_data(top_n)
 
@@ -227,11 +227,11 @@ class EvictionScheduler:
     """缓存淘汰调度器"""
 
     def __init__(self, eviction_strategy: Optional[TimeWindowEvictionStrategy] = None):
-        """
-        初始化淘汰调度器
+        """初始化淘汰调度器
 
         Args:
             eviction_strategy: TimeWindowEvictionStrategy实例
+
         """
         self.eviction_strategy = eviction_strategy or TimeWindowEvictionStrategy()
         self.scheduler = BackgroundScheduler()
@@ -240,12 +240,12 @@ class EvictionScheduler:
         logger.info("🔧 初始化缓存淘汰调度器")
 
     def start_daily_cleanup(self, hour: int = 2, minute: int = 0) -> None:
-        """
-        启动每日定时清理任务
+        """启动每日定时清理任务
 
         Args:
             hour: 清理时刻（小时）默认凌晨2点
             minute: 清理时刻（分钟）
+
         """
         try:
             if not self.scheduler.running:
@@ -296,11 +296,11 @@ class EvictionScheduler:
             logger.error("❌ 定时清理任务失败", error=str(e))
 
     def manual_cleanup(self) -> Dict[str, Any]:
-        """
-        手动清理缓存
+        """手动清理缓存
 
         Returns:
             清理结果
+
         """
         try:
             deleted_count = self.eviction_strategy.evict_expired_cache()
@@ -345,14 +345,14 @@ _eviction_scheduler: Optional[EvictionScheduler] = None
 def get_eviction_strategy(
     cache_manager: Optional[CacheManager] = None,
 ) -> TimeWindowEvictionStrategy:
-    """
-    获取淘汰策略单例
+    """获取淘汰策略单例
 
     Args:
         cache_manager: CacheManager实例 (可选)
 
     Returns:
         TimeWindowEvictionStrategy实例
+
     """
     global _eviction_strategy
 
@@ -363,11 +363,11 @@ def get_eviction_strategy(
 
 
 def get_eviction_scheduler() -> EvictionScheduler:
-    """
-    获取淘汰调度器单例
+    """获取淘汰调度器单例
 
     Returns:
         EvictionScheduler实例
+
     """
     global _eviction_scheduler
 

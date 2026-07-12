@@ -1,12 +1,10 @@
-"""
-P0改进 Task 4: 错误处理单元测试
+"""P0改进 Task 4: 错误处理单元测试
 
 测试错误处理和响应生成的核心功能
 遵循项目测试规范和Mock数据使用规范
 """
 
 from datetime import datetime, timezone
-
 
 from app.core.responses import (
     APIResponse,
@@ -366,7 +364,6 @@ class TestResponseTimestamps:
 
     def test_response_timestamps_are_recent(self):
         """测试响应时间戳是最近的"""
-
         before = datetime.now(timezone.utc)
         response = create_success_response()
         after = datetime.now(timezone.utc)

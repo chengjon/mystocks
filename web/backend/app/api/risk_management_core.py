@@ -1,15 +1,17 @@
-"""
-风险管理核心逻辑 (Core Logic)
+"""风险管理核心逻辑 (Core Logic)
 
 Extracted from risk_management.py to reduce file size.
 """
 from datetime import datetime, timedelta
 from typing import Any, Dict
+
 import numpy as np
 import pandas as pd
 import structlog
-from src.core import DataClassification
+
 from app.core.exceptions import BusinessException
+from src.core import DataClassification
+
 
 logger = structlog.get_logger(__name__)
 
@@ -31,7 +33,7 @@ class RiskCalculator:
 
         return {
             "var_95_hist": float(var_95_hist) if not np.isnan(var_95_hist) else 0.0,
-            "cvar_95": float(cvar_95) if not np.isnan(cvar_95) else 0.0
+            "cvar_95": float(cvar_95) if not np.isnan(cvar_95) else 0.0,
         }
 
     @staticmethod
@@ -69,7 +71,7 @@ class RiskService:
 
             calc_results = RiskCalculator.calculate_var_cvar(
                 returns,
-                request_data.get("confidence_level", 0.95)
+                request_data.get("confidence_level", 0.95),
             )
 
             # 保存结果
@@ -77,13 +79,13 @@ class RiskService:
                 "entity_type": request_data.get("entity_type"),
                 "entity_id": entity_id,
                 "metric_date": datetime.now().date(),
-                **calc_results
+                **calc_results,
             }])
 
             success = self.manager.save_data_by_classification(
                 data=result_df,
                 classification=DataClassification.MODEL_OUTPUT,
-                table_name="risk_metrics"
+                table_name="risk_metrics",
             )
 
             # 记录监控日志
@@ -92,7 +94,7 @@ class RiskService:
                 table_name="risk_metrics",
                 operation_name="calculate_var_cvar",
                 success=success,
-                operation_time_ms=(datetime.now() - operation_start).total_seconds() * 1000
+                operation_time_ms=(datetime.now() - operation_start).total_seconds() * 1000,
             )
 
             if not success:
@@ -101,7 +103,7 @@ class RiskService:
             return {
                 "entity_id": entity_id,
                 "calculation_date": str(datetime.now().date()),
-                **calc_results
+                **calc_results,
             }
 
         except Exception as e:
@@ -113,7 +115,7 @@ class RiskService:
         try:
             # 获取最新指标
             metrics_df = self.manager.load_data_by_classification(
-                classification=DataClassification.MODEL_OUTPUT, table_name="risk_metrics"
+                classification=DataClassification.MODEL_OUTPUT, table_name="risk_metrics",
             )
 
             latest_metrics = {}
@@ -126,7 +128,7 @@ class RiskService:
             alerts_df = self.manager.load_data_by_classification(
                 classification=DataClassification.MODEL_OUTPUT,
                 table_name="risk_alerts",
-                filters={"is_active": True}
+                filters={"is_active": True},
             )
             active_alerts = alerts_df.to_dict("records") if alerts_df is not None and not alerts_df.empty else []
 
@@ -148,10 +150,10 @@ class RiskService:
                 "metrics": {
                     "var_95_hist": latest_metrics.get("var_95_hist"),
                     "cvar_95": latest_metrics.get("cvar_95"),
-                    "beta": latest_metrics.get("beta")
+                    "beta": latest_metrics.get("beta"),
                 },
                 "active_alerts": active_alerts,
-                "risk_history": history
+                "risk_history": history,
             }
         except Exception as e:
             logger.error(f"获取仪表盘失败: {e}")

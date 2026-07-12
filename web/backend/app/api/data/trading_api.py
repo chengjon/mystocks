@@ -1,14 +1,14 @@
-"""
-交易数据API模块
+"""交易数据API模块
 
 提供订单、持仓、历史、策略执行等交易相关数据获取功能
 """
 
 import logging
-from typing import Dict, List, Optional
-from datetime import datetime
 from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
+from typing import Dict, List, Optional
+
 
 logger = __import__("logging").getLogger(__name__)
 
@@ -152,7 +152,7 @@ class TradingDataService:
         logger.info("交易数据API模块初始化")
 
     async def create_order(
-        self, symbol: str, side: OrderSide, order_type: OrderType, quantity: float, price: Optional[float] = None
+        self, symbol: str, side: OrderSide, order_type: OrderType, quantity: float, price: Optional[float] = None,
     ) -> str:
         """创建订单"""
         try:
@@ -163,7 +163,7 @@ class TradingDataService:
             sql = f"""
             INSERT INTO orders
             (order_id, symbol, side, order_type, quantity, price, status, created_at, updated_at)
-            VALUES ('{order_id}', '{symbol}', '{side.value}', '{order_type.value}', {quantity}, {price if price else "NULL"}, 'pending', NOW(), NOW())
+            VALUES ('{order_id}', '{symbol}', '{side.value}', '{order_type.value}', {quantity}, {price or "NULL"}, 'pending', NOW(), NOW())
             """
 
             await db_service.execute(sql)
@@ -192,9 +192,8 @@ class TradingDataService:
             if result:
                 self.logger.info(f"取消订单: {order_id}")
                 return True
-            else:
-                self.logger.warning(f"订单不存在或已处理: {order_id}")
-                return False
+            self.logger.warning(f"订单不存在或已处理: {order_id}")
+            return False
 
         except Exception as e:
             self.logger.error(f"取消订单失败: {order_id}: {e}")
@@ -269,7 +268,7 @@ class TradingDataService:
                         "realized_pnl": result["realized_pnl"],
                         "created_at": result["created_at"].isoformat(),
                         "updated_at": result["updated_at"].isoformat(),
-                    }
+                    },
                 )
 
             self.logger.info(f"获取{len(positions)}个持仓")
@@ -315,7 +314,7 @@ class TradingDataService:
                         "pnl": result["pnl"],
                         "pnl_percent": result["pnl_percent"],
                         "created_at": result["created_at"].isoformat(),
-                    }
+                    },
                 )
 
             self.logger.info(f"获取{len(trades)}条交易记录")

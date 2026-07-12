@@ -1,5 +1,4 @@
-"""
-Prometheus监控指标端点
+"""Prometheus监控指标端点
 提供系统运行指标用于Prometheus采集
 
 安全级别：分级别访问控制
@@ -26,6 +25,7 @@ from prometheus_client import (
 from app.api.auth import User, get_current_user
 from app.core.exceptions import BusinessException, ForbiddenException
 from app.core.responses import APIResponse
+
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -54,42 +54,38 @@ def _get_or_create_metric(metric_class, name, documentation, labelnames=None, re
         # Try to create the metric
         if labelnames:
             return metric_class(name, documentation, labelnames, registry=registry)
-        else:
-            return metric_class(name, documentation, registry=registry)
+        return metric_class(name, documentation, registry=registry)
     except ValueError as e:
         if "Duplicated timeseries" in str(e):
             # Metric already exists, try to get it from registry
             if hasattr(registry, "_names_to_collectors") and name in registry._names_to_collectors:
                 return registry._names_to_collectors[name]
-            else:
-                logger.warning("Cannot access existing metric %(name)s, creating new registry")
-                # Create a new registry if we can't access the existing one
-                new_registry = CollectorRegistry()
-                if labelnames:
-                    return metric_class(name, documentation, labelnames, registry=new_registry)
-                else:
-                    return metric_class(name, documentation, registry=new_registry)
-        else:
-            raise
+            logger.warning("Cannot access existing metric %(name)s, creating new registry")
+            # Create a new registry if we can't access the existing one
+            new_registry = CollectorRegistry()
+            if labelnames:
+                return metric_class(name, documentation, labelnames, registry=new_registry)
+            return metric_class(name, documentation, registry=new_registry)
+        raise
 
 
 # HTTP请求计数器
 http_requests_total = _get_or_create_metric(
-    Counter, "mystocks_http_requests_total", "Total HTTP requests", ["method", "endpoint", "status"]
+    Counter, "mystocks_http_requests_total", "Total HTTP requests", ["method", "endpoint", "status"],
 )
 
 # HTTP请求延迟直方图
 http_request_duration_seconds = _get_or_create_metric(
-    Histogram, "mystocks_http_request_duration_seconds", "HTTP request latency", ["method", "endpoint"]
+    Histogram, "mystocks_http_request_duration_seconds", "HTTP request latency", ["method", "endpoint"],
 )
 
 # 数据库连接池状态
 db_connections_active = _get_or_create_metric(
-    Gauge, "mystocks_db_connections_active", "Active database connections", ["database"]
+    Gauge, "mystocks_db_connections_active", "Active database connections", ["database"],
 )
 
 db_connections_idle = _get_or_create_metric(
-    Gauge, "mystocks_db_connections_idle", "Idle database connections", ["database"]
+    Gauge, "mystocks_db_connections_idle", "Idle database connections", ["database"],
 )
 
 # 缓存命中率
@@ -99,20 +95,19 @@ cache_misses_total = _get_or_create_metric(Counter, "mystocks_cache_misses_total
 
 # API响应状态
 api_health_status = _get_or_create_metric(
-    Gauge, "mystocks_api_health_status", "API health status (1=healthy, 0=unhealthy)", ["service"]
+    Gauge, "mystocks_api_health_status", "API health status (1=healthy, 0=unhealthy)", ["service"],
 )
 
 # 数据源可用性
 datasource_availability = _get_or_create_metric(
-    Gauge, "mystocks_datasource_availability", "Data source availability (1=available, 0=unavailable)", ["datasource"]
+    Gauge, "mystocks_datasource_availability", "Data source availability (1=available, 0=unavailable)", ["datasource"],
 )
 
 # ==================== 辅助函数 ====================
 
 
 def check_rate_limit(user_id: int, max_requests_per_minute: int = 60) -> bool:
-    """
-    检查用户访问频率限制
+    """检查用户访问频率限制
 
     Args:
         user_id: 用户ID
@@ -120,6 +115,7 @@ def check_rate_limit(user_id: int, max_requests_per_minute: int = 60) -> bool:
 
     Returns:
         bool: 是否允许访问
+
     """
     import time
 
@@ -183,8 +179,7 @@ def update_database_metrics():
 
 @router.get("/health")
 async def health_check() -> Dict[str, Any]:
-    """
-    公共健康检查端点
+    """公共健康检查端点
 
     Returns:
         Dict: 基础健康状态信息
@@ -192,6 +187,7 @@ async def health_check() -> Dict[str, Any]:
     Security:
         - 无需认证
         - 仅返回基础状态，不包含敏感信息
+
     """
     try:
         # 更新基础健康状态
@@ -205,8 +201,7 @@ async def health_check() -> Dict[str, Any]:
 
 @router.get("/status")
 async def basic_status() -> APIResponse:
-    """
-    基础系统状态
+    """基础系统状态
 
     Returns:
         APIResponse: 系统状态信息
@@ -214,6 +209,7 @@ async def basic_status() -> APIResponse:
     Security:
         - 无需认证
         - 仅提供基础状态信息
+
     """
     try:
         update_database_metrics()
@@ -233,8 +229,7 @@ async def basic_status() -> APIResponse:
 
 @router.get("/basic")
 async def basic_metrics(current_user: User = Depends(get_current_user)) -> APIResponse:
-    """
-    基础监控指标
+    """基础监控指标
 
     Returns:
         APIResponse: 基础监控数据
@@ -243,12 +238,13 @@ async def basic_metrics(current_user: User = Depends(get_current_user)) -> APIRe
         - 需要用户认证
         - 应用访问频率限制
         - 仅返回基础监控数据
+
     """
     try:
         # 检查访问频率限制
         if not check_rate_limit(current_user.id, max_requests_per_minute=30):
             raise BusinessException(
-                detail="访问频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED"
+                detail="访问频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED",
             )
 
         # 更新监控指标
@@ -271,14 +267,13 @@ async def basic_metrics(current_user: User = Depends(get_current_user)) -> APIRe
     except Exception:
         logger.error("Basic metrics failed for user {current_user.username}: %(e)s")
         raise BusinessException(
-            detail="获取监控数据失败", status_code=500, error_code="MONITORING_DATA_RETRIEVAL_FAILED"
+            detail="获取监控数据失败", status_code=500, error_code="MONITORING_DATA_RETRIEVAL_FAILED",
         )
 
 
 @router.get("/performance")
 async def performance_metrics(current_user: User = Depends(get_current_user)) -> APIResponse:
-    """
-    性能监控指标
+    """性能监控指标
 
     Returns:
         APIResponse: 性能监控数据
@@ -287,12 +282,13 @@ async def performance_metrics(current_user: User = Depends(get_current_user)) ->
         - 需要用户认证
         - 应用访问频率限制
         - 返回性能相关指标
+
     """
     try:
         # 检查访问频率限制
         if not check_rate_limit(current_user.id, max_requests_per_minute=20):
             raise BusinessException(
-                detail="访问频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED"
+                detail="访问频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED",
             )
 
         # 返回性能指标
@@ -314,7 +310,7 @@ async def performance_metrics(current_user: User = Depends(get_current_user)) ->
     except Exception:
         logger.error("Performance metrics failed for user {current_user.username}: %(e)s")
         raise BusinessException(
-            detail="获取性能数据失败", status_code=500, error_code="PERFORMANCE_DATA_RETRIEVAL_FAILED"
+            detail="获取性能数据失败", status_code=500, error_code="PERFORMANCE_DATA_RETRIEVAL_FAILED",
         )
 
 
@@ -323,8 +319,7 @@ async def performance_metrics(current_user: User = Depends(get_current_user)) ->
 
 @router.get("/metrics")
 async def prometheus_metrics(current_user: User = Depends(get_current_user)) -> Response:
-    """
-    Prometheus metrics端点
+    """Prometheus metrics端点
 
     Returns:
         Response: Prometheus格式的监控指标
@@ -333,6 +328,7 @@ async def prometheus_metrics(current_user: User = Depends(get_current_user)) -> 
         - 需要管理员权限
         - 严格访问频率限制
         - 返回完整的Prometheus指标
+
     """
     try:
         # 检查管理员权限
@@ -343,7 +339,7 @@ async def prometheus_metrics(current_user: User = Depends(get_current_user)) -> 
         # 检查访问频率限制（更严格的限制）
         if not check_rate_limit(current_user.id, max_requests_per_minute=10):
             raise BusinessException(
-                detail="访问频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED"
+                detail="访问频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED",
             )
 
         # 更新所有监控指标
@@ -364,8 +360,7 @@ async def prometheus_metrics(current_user: User = Depends(get_current_user)) -> 
 
 @router.get("/detailed")
 async def detailed_metrics(current_user: User = Depends(get_current_user)) -> APIResponse:
-    """
-    详细系统指标
+    """详细系统指标
 
     Returns:
         APIResponse: 详细的系统监控数据
@@ -374,6 +369,7 @@ async def detailed_metrics(current_user: User = Depends(get_current_user)) -> AP
         - 需要管理员权限
         - 严格访问频率限制
         - 返回完整的系统监控数据
+
     """
     try:
         # 检查管理员权限
@@ -384,7 +380,7 @@ async def detailed_metrics(current_user: User = Depends(get_current_user)) -> AP
         # 检查访问频率限制
         if not check_rate_limit(current_user.id, max_requests_per_minute=5):
             raise BusinessException(
-                detail="访问频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED"
+                detail="访问频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED",
             )
 
         # 更新监控指标
@@ -411,14 +407,13 @@ async def detailed_metrics(current_user: User = Depends(get_current_user)) -> AP
     except Exception:
         logger.error("Detailed metrics failed for admin {current_user.username}: %(e)s")
         raise BusinessException(
-            detail="获取详细监控数据失败", status_code=500, error_code="DETAILED_MONITORING_DATA_RETRIEVAL_FAILED"
+            detail="获取详细监控数据失败", status_code=500, error_code="DETAILED_MONITORING_DATA_RETRIEVAL_FAILED",
         )
 
 
 @router.post("/reset")
 async def reset_metrics(current_user: User = Depends(get_current_user)) -> APIResponse:
-    """
-    重置监控指标
+    """重置监控指标
 
     Returns:
         APIResponse: 重置结果
@@ -426,6 +421,7 @@ async def reset_metrics(current_user: User = Depends(get_current_user)) -> APIRe
     Security:
         - 仅管理员可访问
         - 需要管理员权限
+
     """
     try:
         # 检查管理员权限
@@ -453,14 +449,14 @@ async def reset_metrics(current_user: User = Depends(get_current_user)) -> APIRe
 
 
 def record_request_metric(method: str, endpoint: str, status_code: int, duration: float):
-    """
-    记录请求指标
+    """记录请求指标
 
     Args:
         method: HTTP方法
         endpoint: 端点路径
         status_code: 响应状态码
         duration: 请求耗时（秒）
+
     """
     # 记录请求计数
     http_requests_total.labels(method=method, endpoint=endpoint, status=str(status_code)).inc()

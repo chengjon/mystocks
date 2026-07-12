@@ -1,5 +1,4 @@
-"""
-OHLCV Storage Service Tests
+"""OHLCV Storage Service Tests
 
 Tests for PostgreSQL TimescaleDB integration for OHLCV bars
 
@@ -9,9 +8,9 @@ Author: Claude Code
 Date: 2025-11-07
 """
 
-from unittest.mock import MagicMock, patch
-from decimal import Decimal
 from datetime import datetime, timezone
+from decimal import Decimal
+from unittest.mock import MagicMock, patch
 
 from app.services.data_aggregation_service import OHLCV, Timeframe
 from app.services.ohlcv_storage import (
@@ -254,7 +253,7 @@ class TestOHLCVStorageBatchInsert:
                         low=Decimal("99.50"),
                         close=Decimal("100.25"),
                         volume=10000,
-                    )
+                    ),
                 ]
 
                 count = storage.insert_bars_batch(bars)

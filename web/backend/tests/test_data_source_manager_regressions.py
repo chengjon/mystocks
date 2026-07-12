@@ -50,7 +50,7 @@ def test_data_source_manager_loads_current_data_sources_json_shape(tmp_path):
                         "cache_ttl": 120,
                     },
                 },
-            }
+            },
         ),
         encoding="utf-8",
     )
@@ -68,9 +68,9 @@ def test_backend_duplicate_data_sources_json_is_removed():
 
 def test_data_source_config_matrix_distinguishes_yaml_and_json_roles():
     from config.data_sources_loader import (
-        DataSourcesLoader,
         JSON_DATA_SOURCES_CONFIG_PATH,
         YAML_DATA_SOURCES_REGISTRY_PATH,
+        DataSourcesLoader,
         get_data_source_config_matrix,
     )
 
@@ -118,8 +118,8 @@ def test_default_entry_points_follow_declared_source_of_truth_paths():
     expected_yaml_path = str((REPO_ROOT / "config" / "data_sources_registry.yaml").resolve())
     expected_json_path = str((REPO_ROOT / "config" / "data_sources.json").resolve())
 
-    assert YAML_DATA_SOURCES_REGISTRY_PATH == expected_yaml_path
-    assert JSON_DATA_SOURCES_CONFIG_PATH == expected_json_path
+    assert expected_yaml_path == YAML_DATA_SOURCES_REGISTRY_PATH
+    assert expected_json_path == JSON_DATA_SOURCES_CONFIG_PATH
     assert inspect.signature(DataSourceManagerV2).parameters["yaml_config_path"].default == expected_yaml_path
     assert inspect.signature(ConfigManager).parameters["yaml_config_path"].default == expected_yaml_path
     assert inspect.signature(backend_manager_module.DataSourceManager).parameters["config_path"].default == expected_json_path

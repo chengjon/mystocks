@@ -1,5 +1,4 @@
-"""
-认证API
+"""认证API
 
 提供用户认证和授权功能
 """
@@ -9,6 +8,7 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel, Field
+
 
 router = APIRouter(
     prefix="/auth",
@@ -45,8 +45,7 @@ class TokenPayload(BaseModel):
 
 @router.post("/login", response_model=LoginResponse, summary="User Login")
 async def login(request: LoginRequest):
-    """
-    用户登录
+    """用户登录
 
     Authenticates user and returns JWT token.
     """
@@ -64,8 +63,7 @@ async def login(request: LoginRequest):
 
 @router.post("/logout", summary="User Logout")
 async def logout(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    """
-    用户登出
+    """用户登出
 
     Invalidates the current token.
     """
@@ -74,8 +72,7 @@ async def logout(credentials: HTTPAuthorizationCredentials = Depends(security)):
 
 @router.post("/refresh", response_model=LoginResponse, summary="Refresh Token")
 async def refresh_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    """
-    刷新Token
+    """刷新Token
 
     Returns a new JWT token.
     """
@@ -92,8 +89,7 @@ async def refresh_token(credentials: HTTPAuthorizationCredentials = Depends(secu
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
 ):
-    """
-    获取当前用户信息
+    """获取当前用户信息
 
     Returns the current authenticated user's information.
     """

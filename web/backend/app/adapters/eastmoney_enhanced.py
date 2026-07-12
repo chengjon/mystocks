@@ -1,5 +1,4 @@
-"""
-EastMoney Enhanced Adapter
+"""EastMoney Enhanced Adapter
 Multi-data Source Support
 
 This adapter enhances the existing EastMoneyAdapter with BaseDataSourceAdapter features:
@@ -24,23 +23,23 @@ from app.adapters.base import (
 )
 from app.adapters.eastmoney_adapter import EastMoneyAdapter
 
+
 logger = logging.getLogger(__name__)
 
 
 class EastMoneyEnhancedAdapter(BaseDataSourceAdapter):
-    """
-    增强版东方财富适配器
+    """增强版东方财富适配器
 
     在原有EastMoneyAdapter基础上，集成BaseDataSourceAdapter功能
     提供统一的接口和健康监控
     """
 
     def __init__(self, config: Optional[DataSourceConfig] = None):
-        """
-        初始化增强版适配器
+        """初始化增强版适配器
 
         Args:
             config: 数据源配置
+
         """
         # 使用默认配置
         if config is None:
@@ -60,11 +59,11 @@ class EastMoneyEnhancedAdapter(BaseDataSourceAdapter):
         logger.info("EastMoneyEnhancedAdapter initialized")
 
     def get_supported_categories(self) -> List[DataCategory]:
-        """
-        获取支持的数据类别
+        """获取支持的数据类别
 
         Returns:
             List[DataCategory]: 支持的数据类别
+
         """
         return [
             DataCategory.REALTIME_QUOTE,
@@ -77,14 +76,14 @@ class EastMoneyEnhancedAdapter(BaseDataSourceAdapter):
         ]
 
     def fetch_realtime_quote(self, symbols: Optional[List[str]] = None) -> pd.DataFrame:
-        """
-        获取实时行情
+        """获取实时行情
 
         Args:
             symbols: 股票代码列表
 
         Returns:
             pd.DataFrame: 实时行情数据
+
         """
         start_time = time.time()
         success = False
@@ -113,8 +112,7 @@ class EastMoneyEnhancedAdapter(BaseDataSourceAdapter):
         return data
 
     def fetch_fund_flow(self, symbol: Optional[str] = None, timeframe: str = "今日") -> pd.DataFrame:
-        """
-        获取资金流向
+        """获取资金流向
 
         Args:
             symbol: 股票代码
@@ -122,6 +120,7 @@ class EastMoneyEnhancedAdapter(BaseDataSourceAdapter):
 
         Returns:
             pd.DataFrame: 资金流向数据
+
         """
         start_time = time.time()
         success = False
@@ -147,14 +146,14 @@ class EastMoneyEnhancedAdapter(BaseDataSourceAdapter):
         return data
 
     def fetch_dragon_tiger(self, date_str: str) -> pd.DataFrame:
-        """
-        获取龙虎榜
+        """获取龙虎榜
 
         Args:
             date_str: 日期 (YYYY-MM-DD)
 
         Returns:
             pd.DataFrame: 龙虎榜数据
+
         """
         start_time = time.time()
         success = False
@@ -180,11 +179,11 @@ class EastMoneyEnhancedAdapter(BaseDataSourceAdapter):
         return data
 
     def fetch_etf_spot(self) -> pd.DataFrame:
-        """
-        获取ETF实时行情
+        """获取ETF实时行情
 
         Returns:
             pd.DataFrame: ETF实时数据
+
         """
         start_time = time.time()
         success = False
@@ -210,8 +209,7 @@ class EastMoneyEnhancedAdapter(BaseDataSourceAdapter):
         return data
 
     def fetch_sector_fund_flow(self, sector_type: str = "行业", timeframe: str = "今日") -> pd.DataFrame:
-        """
-        获取板块资金流向
+        """获取板块资金流向
 
         Args:
             sector_type: 板块类型 (行业, 概念, 地域)
@@ -219,6 +217,7 @@ class EastMoneyEnhancedAdapter(BaseDataSourceAdapter):
 
         Returns:
             pd.DataFrame: 板块资金流向数据
+
         """
         start_time = time.time()
         success = False
@@ -244,14 +243,14 @@ class EastMoneyEnhancedAdapter(BaseDataSourceAdapter):
         return data
 
     def fetch_dividend(self, symbol: str) -> pd.DataFrame:
-        """
-        获取分红配送
+        """获取分红配送
 
         Args:
             symbol: 股票代码
 
         Returns:
             pd.DataFrame: 分红配送数据
+
         """
         start_time = time.time()
         success = False
@@ -277,14 +276,14 @@ class EastMoneyEnhancedAdapter(BaseDataSourceAdapter):
         return data
 
     def fetch_block_trade(self, date_str: Optional[str] = None) -> pd.DataFrame:
-        """
-        获取大宗交易
+        """获取大宗交易
 
         Args:
             date_str: 日期 (YYYY-MM-DD)
 
         Returns:
             pd.DataFrame: 大宗交易数据
+
         """
         start_time = time.time()
         success = False

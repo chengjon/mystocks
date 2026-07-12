@@ -1,5 +1,4 @@
-"""
-通达信TQLEX数据源适配器
+"""通达信TQLEX数据源适配器
 实现竞价抢筹数据获取接口
 
 参考instock实现:
@@ -19,6 +18,7 @@ from typing import Optional
 
 import pandas as pd
 import requests
+
 
 logger = logging.getLogger(__name__)
 
@@ -68,7 +68,7 @@ class TqlexDataSource:
                     logger.warning("[TQLEX] 第%(attempt)s次尝试失败: {str(e)}")
                     if attempt < self.MAX_RETRIES:
                         time.sleep(self.RETRY_DELAY * attempt)
-            raise last_exception if last_exception else Exception("未知错误")
+            raise last_exception or Exception("未知错误")
 
         return wrapper
 
@@ -178,14 +178,14 @@ class TqlexDataSource:
         return df
 
     def get_chip_race_open(self, date: Optional[str] = None) -> pd.DataFrame:
-        """
-        获取早盘抢筹数据 (集合竞价)
+        """获取早盘抢筹数据 (集合竞价)
 
         Args:
             date: 日期 (格式: YYYY-MM-DD 或 YYYYMMDD), 默认为最新交易日
 
         Returns:
             pd.DataFrame: 早盘抢筹数据
+
         """
         if self.disabled:
             logger.warning("TQLEX适配器未启用,返回空数据")
@@ -225,14 +225,14 @@ class TqlexDataSource:
         return _fetch()
 
     def get_chip_race_end(self, date: Optional[str] = None) -> pd.DataFrame:
-        """
-        获取尾盘抢筹数据 (收盘竞价)
+        """获取尾盘抢筹数据 (收盘竞价)
 
         Args:
             date: 日期 (格式: YYYY-MM-DD 或 YYYYMMDD), 默认为最新交易日
 
         Returns:
             pd.DataFrame: 尾盘抢筹数据
+
         """
         if self.disabled:
             logger.warning("TQLEX适配器未启用,返回空数据")
@@ -272,14 +272,14 @@ class TqlexDataSource:
         return _fetch()
 
     def get_chip_race_combined(self, date: Optional[str] = None) -> pd.DataFrame:
-        """
-        获取完整的竞价抢筹数据(早盘+尾盘)
+        """获取完整的竞价抢筹数据(早盘+尾盘)
 
         Args:
             date: 日期 (格式: YYYY-MM-DD), 默认为最新交易日
 
         Returns:
             pd.DataFrame: 合并的抢筹数据
+
         """
         try:
             df_open = self.get_chip_race_open(date)

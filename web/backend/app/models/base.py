@@ -1,5 +1,4 @@
-"""
-统一API响应模型 (Pydantic)
+"""统一API响应模型 (Pydantic)
 
 提供标准化的API响应格式，确保前后端接口一致性
 
@@ -40,13 +39,13 @@ from typing import Any, Dict, Generic, List, Literal, Optional, TypeVar
 
 from pydantic import BaseModel, Field
 
+
 # 泛型类型变量，用于BaseResponse和PagedResponse
 T = TypeVar("T")
 
 
 class BaseResponse(BaseModel, Generic[T]):
-    """
-    通用API响应模型（泛型）
+    """通用API响应模型（泛型）
 
     所有API响应的基础模型，支持任意类型的data字段
 
@@ -77,6 +76,7 @@ class BaseResponse(BaseModel, Generic[T]):
             success=True,
             message="操作成功"
         )
+
     """
 
     success: bool = Field(..., description="请求是否成功")
@@ -93,13 +93,12 @@ class BaseResponse(BaseModel, Generic[T]):
                 "data": {"symbol": "600000", "name": "浦发银行"},
                 "timestamp": "2025-10-25T10:30:00Z",
                 "request_id": "req_123456",
-            }
+            },
         }
 
 
 class PagedResponse(BaseModel, Generic[T]):
-    """
-    分页响应模型（泛型）
+    """分页响应模型（泛型）
 
     用于返回分页列表数据，包含完整的分页元数据
 
@@ -127,6 +126,7 @@ class PagedResponse(BaseModel, Generic[T]):
             page=1,
             page_size=20
         )
+
     """
 
     success: bool = Field(True, description="请求是否成功")
@@ -170,13 +170,12 @@ class PagedResponse(BaseModel, Generic[T]):
                 "has_next": True,
                 "has_prev": False,
                 "timestamp": "2025-10-25T10:30:00Z",
-            }
+            },
         }
 
 
 class ErrorResponse(BaseModel):
-    """
-    错误响应模型
+    """错误响应模型
 
     用于返回详细的错误信息，包含错误码和调试信息
 
@@ -220,6 +219,7 @@ class ErrorResponse(BaseModel):
             error_code="DATABASE_ERROR",
             details={"error": "Connection timeout"}
         )
+
     """
 
     success: Literal[False] = Field(False, description="固定为False")
@@ -240,13 +240,12 @@ class ErrorResponse(BaseModel):
                 "timestamp": "2025-10-25T10:30:00Z",
                 "path": "/api/stock/quote",
                 "request_id": "req_123456",
-            }
+            },
         }
 
 
 class HealthCheckResponse(BaseModel):
-    """
-    健康检查响应模型
+    """健康检查响应模型
 
     用于系统健康检查接口，返回系统运行状态
 
@@ -268,6 +267,7 @@ class HealthCheckResponse(BaseModel):
                 "tdengine": {"status": "healthy", "latency_ms": 8}
             }
         )
+
     """
 
     status: str = Field(..., description="健康状态: healthy, degraded, unhealthy")
@@ -288,7 +288,7 @@ class HealthCheckResponse(BaseModel):
                     "tdengine": {"status": "healthy", "latency_ms": 8},
                     "monitoring": {"status": "healthy", "latency_ms": 3},
                 },
-            }
+            },
         }
 
 
@@ -298,8 +298,7 @@ class HealthCheckResponse(BaseModel):
 
 
 def success_response(data: Any = None, message: str = "操作成功", request_id: Optional[str] = None) -> Dict[str, Any]:
-    """
-    快速创建成功响应
+    """快速创建成功响应
 
     Args:
         data: 响应数据
@@ -314,6 +313,7 @@ def success_response(data: Any = None, message: str = "操作成功", request_id
             data={"symbol": "600000", "name": "浦发银行"},
             message="查询成功"
         )
+
     """
     return BaseResponse(success=True, message=message, data=data, request_id=request_id).model_dump()
 
@@ -325,8 +325,7 @@ def error_response(
     path: Optional[str] = None,
     request_id: Optional[str] = None,
 ) -> Dict[str, Any]:
-    """
-    快速创建错误响应
+    """快速创建错误响应
 
     Args:
         message: 错误消息
@@ -344,6 +343,7 @@ def error_response(
             error_code="INVALID_PARAMETER",
             details={"field": "symbol", "value": "abc"}
         )
+
     """
     return ErrorResponse(
         message=message,
@@ -361,8 +361,7 @@ def paged_response(
     page_size: int = 20,
     message: str = "查询成功",
 ) -> Dict[str, Any]:
-    """
-    快速创建分页响应
+    """快速创建分页响应
 
     Args:
         data: 当前页数据列表
@@ -382,6 +381,7 @@ def paged_response(
             page_size=20,
             message="股票列表查询成功"
         )
+
     """
     return PagedResponse(
         success=True,

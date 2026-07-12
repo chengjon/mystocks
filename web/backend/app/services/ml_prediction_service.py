@@ -1,18 +1,18 @@
-"""
-机器学习预测服务
+"""机器学习预测服务
 使用 LightGBM 进行股票价格预测
 """
 
 import json
-import joblib
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List
 
+import joblib
 import numpy as np
 import pandas as pd
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.model_selection import GridSearchCV, train_test_split
+
 
 try:
     from lightgbm import LGBMRegressor
@@ -24,8 +24,7 @@ except ImportError:
 
 
 class MLPredictionService:
-    """
-    机器学习预测服务
+    """机器学习预测服务
 
     功能：
     1. 模型训练
@@ -36,11 +35,11 @@ class MLPredictionService:
     """
 
     def __init__(self, model_dir: str = "./models"):
-        """
-        初始化服务
+        """初始化服务
 
         Args:
             model_dir: 模型保存目录
+
         """
         if not LIGHTGBM_AVAILABLE:
             raise ImportError("LightGBM 未安装，请运行: pip install lightgbm")
@@ -60,8 +59,7 @@ class MLPredictionService:
         max_depth: int = 15,
         **kwargs,
     ) -> LGBMRegressor:
-        """
-        创建 LightGBM 模型
+        """创建 LightGBM 模型
 
         Args:
             num_leaves: 叶子节点数
@@ -72,6 +70,7 @@ class MLPredictionService:
 
         Returns:
             LGBMRegressor: 模型实例
+
         """
         default_params = {
             "boosting_type": "gbdt",
@@ -104,8 +103,7 @@ class MLPredictionService:
         random_state: int = 123,
         model_params: dict = None,
     ) -> Dict:
-        """
-        训练模型
+        """训练模型
 
         Args:
             X: 特征矩阵
@@ -116,6 +114,7 @@ class MLPredictionService:
 
         Returns:
             Dict: 训练结果（包含评估指标）
+
         """
         # 分割数据
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
@@ -141,8 +140,8 @@ class MLPredictionService:
             "test_mae": float(mean_absolute_error(y_test, y_pred_test)),
             "train_r2": float(r2_score(y_train, y_pred_train)),
             "test_r2": float(r2_score(y_test, y_pred_test)),
-            "train_samples": int(len(X_train)),
-            "test_samples": int(len(X_test)),
+            "train_samples": len(X_train),
+            "test_samples": len(X_test),
             "feature_dim": int(X.shape[1]),
             "trained_at": datetime.now().isoformat(),
         }
@@ -160,14 +159,14 @@ class MLPredictionService:
         return metrics
 
     def predict(self, X: pd.DataFrame) -> np.ndarray:
-        """
-        使用模型进行预测
+        """使用模型进行预测
 
         Args:
             X: 特征矩阵
 
         Returns:
             np.ndarray: 预测结果
+
         """
         if self.model is None:
             raise ValueError("模型尚未训练，请先调用 train() 方法")
@@ -176,14 +175,14 @@ class MLPredictionService:
         return predictions
 
     def save_model(self, model_name: str) -> str:
-        """
-        保存模型
+        """保存模型
 
         Args:
             model_name: 模型名称
 
         Returns:
             str: 模型文件路径
+
         """
         if self.model is None:
             raise ValueError("模型尚未训练，无法保存")
@@ -209,14 +208,14 @@ class MLPredictionService:
         return str(model_file)
 
     def load_model(self, model_name: str) -> bool:
-        """
-        加载模型
+        """加载模型
 
         Args:
             model_name: 模型名称
 
         Returns:
             bool: 是否加载成功
+
         """
         model_path = self.model_dir / model_name
         model_file = model_path / "model.joblib"
@@ -244,20 +243,19 @@ class MLPredictionService:
         # 加载元数据
         metadata_file = model_path / "metadata.json"
         if metadata_file.exists():
-            with open(metadata_file, "r", encoding="utf-8") as f:
+            with open(metadata_file, encoding="utf-8") as f:
                 self.model_metadata = json.load(f)
 
         # 加载训练历史
         history_file = model_path / "history.json"
         if history_file.exists():
-            with open(history_file, "r", encoding="utf-8") as f:
+            with open(history_file, encoding="utf-8") as f:
                 self.training_history = json.load(f)
 
         return True
 
     def hyperparameter_search(self, X: pd.DataFrame, y: pd.Series, param_grid: dict = None, cv: int = 5) -> Dict:
-        """
-        超参数搜索
+        """超参数搜索
 
         Args:
             X: 特征矩阵
@@ -267,6 +265,7 @@ class MLPredictionService:
 
         Returns:
             Dict: 最佳参数和评分
+
         """
         if param_grid is None:
             param_grid = {
@@ -311,14 +310,14 @@ class MLPredictionService:
         return result
 
     def get_feature_importance(self, top_k: int = 20) -> List[Dict]:
-        """
-        获取特征重要性
+        """获取特征重要性
 
         Args:
             top_k: 返回前 K 个重要特征
 
         Returns:
             List[Dict]: 特征重要性列表
+
         """
         if self.model is None:
             raise ValueError("模型尚未训练")
@@ -338,8 +337,7 @@ class MLPredictionService:
         return feature_importance[:top_k]
 
     def evaluate_model(self, X: pd.DataFrame, y: pd.Series) -> Dict:
-        """
-        评估模型
+        """评估模型
 
         Args:
             X: 特征矩阵
@@ -347,6 +345,7 @@ class MLPredictionService:
 
         Returns:
             Dict: 评估指标
+
         """
         if self.model is None:
             raise ValueError("模型尚未训练")
@@ -359,17 +358,17 @@ class MLPredictionService:
             "rmse": float(np.sqrt(mean_squared_error(y, y_pred))),
             "mae": float(mean_absolute_error(y, y_pred)),
             "r2": float(r2_score(y, y_pred)),
-            "samples": int(len(X)),
+            "samples": len(X),
         }
 
         return metrics
 
     def list_saved_models(self) -> List[Dict]:
-        """
-        列出已保存的模型
+        """列出已保存的模型
 
         Returns:
             List[Dict]: 模型列表
+
         """
         models = []
 
@@ -378,7 +377,7 @@ class MLPredictionService:
                 metadata_file = model_path / "metadata.json"
 
                 if metadata_file.exists():
-                    with open(metadata_file, "r", encoding="utf-8") as f:
+                    with open(metadata_file, encoding="utf-8") as f:
                         metadata = json.load(f)
 
                     models.append(
@@ -388,7 +387,7 @@ class MLPredictionService:
                             "trained_at": metadata.get("metrics", {}).get("trained_at", "unknown"),
                             "test_rmse": metadata.get("metrics", {}).get("test_rmse", 0),
                             "test_r2": metadata.get("metrics", {}).get("test_r2", 0),
-                        }
+                        },
                     )
 
         # 按训练时间排序

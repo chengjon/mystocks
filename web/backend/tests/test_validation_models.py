@@ -1,5 +1,4 @@
-"""
-P0改进 Task 4: 验证模型单元测试
+"""P0改进 Task 4: 验证模型单元测试
 
 测试所有Pydantic V2数据验证模型的核心功能和边界情况
 遵循项目Mock数据使用规范 - 通过conftest fixture获取测试数据

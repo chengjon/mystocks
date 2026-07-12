@@ -1,5 +1,4 @@
-"""
-Unified Market Data Service - Consolidate market_data_service.py and market_data_service_v2.py
+"""Unified Market Data Service - Consolidate market_data_service.py and market_data_service_v2.py
 Task 1.4 Phase 2: Remove Duplicate Code - Service Consolidation
 
 Consolidates 300+ LOC of duplicate market data service implementations.
@@ -48,6 +47,7 @@ import structlog
 from sqlalchemy import and_, create_engine
 from sqlalchemy.orm import sessionmaker
 
+
 logger = structlog.get_logger()
 
 
@@ -71,8 +71,7 @@ def _resolve_env_value(name: str, dev_default: str) -> str:
 
 
 class UnifiedMarketDataService:
-    """
-    Unified market data service consolidating MarketDataService and MarketDataServiceV2.
+    """Unified market data service consolidating MarketDataService and MarketDataServiceV2.
 
     Supports multiple data source adapters (Akshare, EastMoney, etc.) with a single interface.
     Automatically handles data persistence, validation, and error recovery.
@@ -112,8 +111,7 @@ class UnifiedMarketDataService:
         pool_size: int = 10,
         max_overflow: int = 20,
     ):
-        """
-        Initialize market data service
+        """Initialize market data service
 
         Args:
             adapter_name: Name of adapter to use (default: "akshare")
@@ -123,6 +121,7 @@ class UnifiedMarketDataService:
 
         Raises:
             KeyError: If adapter not found or not registered
+
         """
         self.adapter_name = adapter_name
 
@@ -176,14 +175,14 @@ class UnifiedMarketDataService:
             logger.info("📦 Using custom adapter: {self.adapter_name}")
 
     def switch_adapter(self, adapter_name: str):
-        """
-        Switch to a different data source adapter
+        """Switch to a different data source adapter
 
         Args:
             adapter_name: Name of adapter to switch to
 
         Raises:
             KeyError: If adapter not found
+
         """
         from app.core.adapter_factory import AdapterFactory
 
@@ -199,10 +198,9 @@ class UnifiedMarketDataService:
     # ==================== Fund Flow Methods ====================
 
     def fetch_and_save_fund_flow(
-        self, symbol: Optional[str] = None, timeframe: Union[str, int] = "1"
+        self, symbol: Optional[str] = None, timeframe: Union[str, int] = "1",
     ) -> Dict[str, Any]:
-        """
-        Fetch and save fund flow data from adapter
+        """Fetch and save fund flow data from adapter
 
         Supports both single symbol and batch (all symbols) modes.
 
@@ -216,6 +214,7 @@ class UnifiedMarketDataService:
                 - saved_count (int): Number of records saved
                 - message (str): Status message
                 - error (str, optional): Error details if failed
+
         """
         try:
             logger.info("📊 Fetching fund flow: symbol=%(symbol)s, timeframe=%(timeframe)s")
@@ -236,10 +235,9 @@ class UnifiedMarketDataService:
                     }
                 df = self.adapter.get_stock_fund_flow(None, timeframe)
                 return self._save_fund_flow_batch(df, timeframe)
-            else:
-                # Single symbol fetch
-                data = self.adapter.get_stock_fund_flow(symbol, timeframe)
-                return self._save_fund_flow_single(symbol, data, timeframe)
+            # Single symbol fetch
+            data = self.adapter.get_stock_fund_flow(symbol, timeframe)
+            return self._save_fund_flow_single(symbol, data, timeframe)
 
         except Exception as e:
             logger.error("❌ Failed to fetch/save fund flow: {str(e)}", exc_info=e)
@@ -282,7 +280,7 @@ class UnifiedMarketDataService:
                         and_(
                             FundFlow.symbol == symbol,
                             FundFlow.trade_date == fund_flow.trade_date,
-                        )
+                        ),
                     )
                     .first()
                 )
@@ -354,7 +352,7 @@ class UnifiedMarketDataService:
                                 and_(
                                     FundFlow.symbol == fund_flow.symbol,
                                     FundFlow.trade_date == today,
-                                )
+                                ),
                             )
                             .first()
                         )
@@ -403,8 +401,7 @@ class UnifiedMarketDataService:
         days: int = 7,
         limit: int = 100,
     ) -> List[Dict[str, Any]]:
-        """
-        Query fund flow data from database
+        """Query fund flow data from database
 
         Args:
             symbol: Filter by symbol (optional)
@@ -415,6 +412,7 @@ class UnifiedMarketDataService:
 
         Returns:
             List of fund flow records as dicts
+
         """
         try:
             from app.models.market_data import FundFlow
@@ -433,7 +431,7 @@ class UnifiedMarketDataService:
                     and_(
                         FundFlow.trade_date >= start_date,
                         FundFlow.trade_date <= end_date,
-                    )
+                    ),
                 )
 
                 # Symbol filter

@@ -1,5 +1,4 @@
-"""
-交易管理API路由
+"""交易管理API路由
 
 使用统一的Pydantic模型和APIResponse格式
 """
@@ -22,6 +21,7 @@ from app.schemas.trade_schemas import (
     TradeHistoryItem,
     TradeHistoryResponse,
 )
+
 
 router = APIRouter()
 
@@ -47,8 +47,7 @@ async def health_check():
 
 @router.get("/portfolio", response_model=APIResponse)
 async def get_portfolio():
-    """
-    获取投资组合概览
+    """获取投资组合概览
 
     返回账户总资产、可用资金、持仓市值、盈亏等信息
     """
@@ -85,7 +84,7 @@ async def get_portfolio():
         raise HTTPException(
             status_code=500,
             detail=create_error_response(
-                error_code=ErrorCodes.INTERNAL_SERVER_ERROR, message=f"获取账户信息失败: {str(e)}"
+                error_code=ErrorCodes.INTERNAL_SERVER_ERROR, message=f"获取账户信息失败: {e!s}",
             ).model_dump(),
         )
 
@@ -95,8 +94,7 @@ async def get_portfolio():
 
 @router.get("/positions", response_model=APIResponse)
 async def get_positions():
-    """
-    获取持仓列表
+    """获取持仓列表
 
     返回用户当前所有持仓的详细信息，包括股票代码、数量、成本价、当前价、盈亏等
     """
@@ -152,21 +150,20 @@ async def get_positions():
         )
 
         return create_success_response(
-            data=positions_response.model_dump(), message=f"获取持仓列表成功，共{total_count}只股票"
+            data=positions_response.model_dump(), message=f"获取持仓列表成功，共{total_count}只股票",
         )
     except Exception as e:
         raise HTTPException(
             status_code=500,
             detail=create_error_response(
-                error_code=ErrorCodes.INTERNAL_SERVER_ERROR, message=f"获取持仓列表失败: {str(e)}"
+                error_code=ErrorCodes.INTERNAL_SERVER_ERROR, message=f"获取持仓列表失败: {e!s}",
             ).model_dump(),
         )
 
 
 @router.get("/signals", response_model=APIResponse)
 async def get_signals(limit: int = Query(20, ge=1, le=200)):
-    """
-    获取交易信号列表
+    """获取交易信号列表
 
     返回用于策略/交易页面展示的信号数据。
     """
@@ -199,7 +196,7 @@ async def get_signals(limit: int = Query(20, ge=1, le=200)):
             status_code=500,
             detail=create_error_response(
                 error_code=ErrorCodes.INTERNAL_SERVER_ERROR,
-                message=f"获取交易信号失败: {str(e)}",
+                message=f"获取交易信号失败: {e!s}",
             ).model_dump(),
         )
 
@@ -215,8 +212,7 @@ async def get_trades(
     page: int = Query(1, ge=1, description="页码"),
     page_size: int = Query(20, ge=1, le=100, description="每页数量"),
 ):
-    """
-    获取交易记录列表
+    """获取交易记录列表
 
     支持按股票代码、日期范围过滤，返回分页的交易历史记录
     """
@@ -308,7 +304,7 @@ async def get_trades(
         )
 
         return create_success_response(
-            data=trade_history_response.model_dump(), message=f"获取交易记录成功，共{total}条记录"
+            data=trade_history_response.model_dump(), message=f"获取交易记录成功，共{total}条记录",
         )
     except HTTPException:
         raise
@@ -316,7 +312,7 @@ async def get_trades(
         raise HTTPException(
             status_code=500,
             detail=create_error_response(
-                error_code=ErrorCodes.INTERNAL_SERVER_ERROR, message=f"获取交易记录失败: {str(e)}"
+                error_code=ErrorCodes.INTERNAL_SERVER_ERROR, message=f"获取交易记录失败: {e!s}",
             ).model_dump(),
         )
 
@@ -339,8 +335,7 @@ class TradeStatistics(BaseModel):
 
 @router.get("/statistics", response_model=APIResponse)
 async def get_statistics():
-    """
-    获取交易统计数据
+    """获取交易统计数据
 
     返回总交易次数、买卖次数、持仓数量、成交金额、手续费、已实现盈亏等统计信息
     """
@@ -379,7 +374,7 @@ async def get_statistics():
         raise HTTPException(
             status_code=500,
             detail=create_error_response(
-                error_code=ErrorCodes.INTERNAL_SERVER_ERROR, message=f"获取交易统计失败: {str(e)}"
+                error_code=ErrorCodes.INTERNAL_SERVER_ERROR, message=f"获取交易统计失败: {e!s}",
             ).model_dump(),
         )
 
@@ -389,8 +384,7 @@ async def get_statistics():
 
 @router.post("/execute", response_model=APIResponse)
 async def execute_trade(order: dict):
-    """
-    执行买卖交易
+    """执行买卖交易
 
     接收交易指令，验证参数，模拟执行交易并返回结果
 
@@ -399,6 +393,7 @@ async def execute_trade(order: dict):
 
     Returns:
         APIResponse: 包含交易执行结果的响应
+
     """
     try:
         import uuid
@@ -410,7 +405,7 @@ async def execute_trade(order: dict):
             raise HTTPException(
                 status_code=400,
                 detail=create_error_response(
-                    error_code=ErrorCodes.VALIDATION_ERROR, message="缺少必填字段: direction, symbol, quantity"
+                    error_code=ErrorCodes.VALIDATION_ERROR, message="缺少必填字段: direction, symbol, quantity",
                 ).model_dump(),
             )
 
@@ -419,7 +414,7 @@ async def execute_trade(order: dict):
             raise HTTPException(
                 status_code=400,
                 detail=create_error_response(
-                    error_code=ErrorCodes.INVALID_VALUE, message="交易方向必须是 buy 或 sell"
+                    error_code=ErrorCodes.INVALID_VALUE, message="交易方向必须是 buy 或 sell",
                 ).model_dump(),
             )
 
@@ -428,7 +423,7 @@ async def execute_trade(order: dict):
             raise HTTPException(
                 status_code=400,
                 detail=create_error_response(
-                    error_code=ErrorCodes.OUT_OF_RANGE, message="委托数量必须大于0"
+                    error_code=ErrorCodes.OUT_OF_RANGE, message="委托数量必须大于0",
                 ).model_dump(),
             )
 
@@ -437,7 +432,7 @@ async def execute_trade(order: dict):
             raise HTTPException(
                 status_code=400,
                 detail=create_error_response(
-                    error_code=ErrorCodes.INVALID_VALUE, message="委托数量必须是100的整数倍"
+                    error_code=ErrorCodes.INVALID_VALUE, message="委托数量必须是100的整数倍",
                 ).model_dump(),
             )
 
@@ -467,6 +462,6 @@ async def execute_trade(order: dict):
         raise HTTPException(
             status_code=500,
             detail=create_error_response(
-                error_code=ErrorCodes.INTERNAL_SERVER_ERROR, message=f"交易执行失败: {str(e)}"
+                error_code=ErrorCodes.INTERNAL_SERVER_ERROR, message=f"交易执行失败: {e!s}",
             ).model_dump(),
         )

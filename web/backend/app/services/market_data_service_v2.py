@@ -1,5 +1,4 @@
-"""
-市场数据服务 V2 (MarketDataServiceV2)
+"""市场数据服务 V2 (MarketDataServiceV2)
 使用东方财富直接API，不依赖akshare
 
 业务逻辑层,负责:
@@ -27,6 +26,7 @@ from app.models.market_data import (
     StockBlockTrade,
     StockDividend,
 )
+
 
 logger = logging.getLogger(__name__)
 
@@ -97,7 +97,7 @@ class MarketDataServiceV2:
                     "leading_stock": None,
                     "leading_stock_change_percent": 0,
                     "created_at": None,
-                }
+                },
             )
 
         return rows
@@ -105,8 +105,7 @@ class MarketDataServiceV2:
     # ==================== 资金流向 (Fund Flow) ====================
 
     def fetch_and_save_fund_flow(self, symbol: Optional[str] = None, timeframe: str = "今日") -> Dict[str, Any]:
-        """
-        获取并保存资金流向数据
+        """获取并保存资金流向数据
 
         Args:
             symbol: 股票代码(可选，不传则保存全市场)
@@ -114,6 +113,7 @@ class MarketDataServiceV2:
 
         Returns:
             保存结果字典
+
         """
         try:
             # 1. 从东方财富获取数据
@@ -153,7 +153,7 @@ class MarketDataServiceV2:
                                 FundFlow.symbol == fund_flow.symbol,
                                 FundFlow.trade_date == today,
                                 FundFlow.timeframe == tf_value,
-                            )
+                            ),
                         )
                         .first()
                     )
@@ -244,7 +244,7 @@ class MarketDataServiceV2:
                             and_(
                                 ETFData.symbol == etf_data.symbol,
                                 ETFData.trade_date == today,
-                            )
+                            ),
                         )
                         .first()
                     )
@@ -298,7 +298,7 @@ class MarketDataServiceV2:
                     or_(
                         ETFData.symbol.like(f"%{keyword}%"),
                         ETFData.name.like(f"%{keyword}%"),
-                    )
+                    ),
                 )
 
             results = query.order_by(ETFData.change_percent.desc()).limit(limit).all()
@@ -344,7 +344,7 @@ class MarketDataServiceV2:
                             and_(
                                 LongHuBangData.symbol == lhb_data.symbol,
                                 LongHuBangData.trade_date == date_obj,
-                            )
+                            ),
                         )
                         .first()
                     )
@@ -443,7 +443,7 @@ class MarketDataServiceV2:
                                 SectorFundFlow.sector_code == sector_flow.sector_code,
                                 SectorFundFlow.trade_date == today,
                                 SectorFundFlow.timeframe == timeframe,
-                            )
+                            ),
                         )
                         .first()
                     )
@@ -465,7 +465,7 @@ class MarketDataServiceV2:
             return {"success": False, "message": str(e)}
 
     def query_sector_fund_flow(
-        self, sector_type: str = "行业", timeframe: str = "今日", limit: int = 100
+        self, sector_type: str = "行业", timeframe: str = "今日", limit: int = 100,
     ) -> List[Dict]:
         """查询行业/概念资金流向"""
         try:
@@ -479,7 +479,7 @@ class MarketDataServiceV2:
                     and_(
                         SectorFundFlow.sector_type == sector_type,
                         SectorFundFlow.timeframe == timeframe,
-                    )
+                    ),
                 )
                 .scalar()
             )
@@ -494,7 +494,7 @@ class MarketDataServiceV2:
                     SectorFundFlow.sector_type == sector_type,
                     SectorFundFlow.timeframe == timeframe,
                     SectorFundFlow.trade_date == latest_date,
-                )
+                ),
             )
 
             results = query.order_by(SectorFundFlow.main_net_inflow.desc()).limit(limit).all()

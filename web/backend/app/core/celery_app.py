@@ -1,5 +1,4 @@
-"""
-Celery Application Configuration
+"""Celery Application Configuration
 
 配置 Celery 异步任务系统
 """
@@ -7,6 +6,7 @@ Celery Application Configuration
 from celery import Celery
 
 from app.core.config import settings
+
 
 # 创建 Celery 应用
 celery_app = Celery(
@@ -50,8 +50,7 @@ def register_progress_callback(task_id: str, callback):
 
 def unregister_progress_callback(task_id: str):
     """注销任务进度回调"""
-    if task_id in task_progress_callbacks:
-        del task_progress_callbacks[task_id]
+    task_progress_callbacks.pop(task_id, None)
 
 
 def get_progress_callback(task_id: str):

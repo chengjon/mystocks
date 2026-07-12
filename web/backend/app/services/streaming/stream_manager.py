@@ -1,5 +1,4 @@
-"""
-Unified Stream Manager - 统一流管理器
+"""Unified Stream Manager - 统一流管理器
 
 提供实时数据流的统一管理，包括：
 - WebSocket连接管理
@@ -19,6 +18,7 @@ from enum import Enum
 from typing import Any, Callable, Dict, List, Optional, Set
 
 from src.core.unified_manager import MyStocksUnifiedManager
+
 
 logger = logging.getLogger(__name__)
 
@@ -46,8 +46,7 @@ class StreamSubscription:
 
 
 class StreamManager:
-    """
-    Unified Stream Manager - 统一流管理器
+    """Unified Stream Manager - 统一流管理器
 
     核心功能：
     1. 实时数据流订阅管理
@@ -62,11 +61,11 @@ class StreamManager:
     """
 
     def __init__(self, unified_manager: Optional[MyStocksUnifiedManager] = None):
-        """
-        初始化流管理器
+        """初始化流管理器
 
         Args:
             unified_manager: 统一数据管理器实例
+
         """
         self.unified_manager = unified_manager or MyStocksUnifiedManager()
 
@@ -83,8 +82,7 @@ class StreamManager:
         logger.info("✅ Unified Stream Manager initialized")
 
     async def subscribe(self, symbols: List[str], subscriber_id: str = "default") -> Dict[str, bool]:
-        """
-        订阅股票实时数据流
+        """订阅股票实时数据流
 
         Args:
             symbols: 股票代码列表
@@ -92,6 +90,7 @@ class StreamManager:
 
         Returns:
             订阅结果字典 {symbol: success}
+
         """
         results = {}
 
@@ -132,8 +131,7 @@ class StreamManager:
         return results
 
     async def unsubscribe(self, symbols: List[str], subscriber_id: str = "default") -> Dict[str, bool]:
-        """
-        取消订阅
+        """取消订阅
 
         Args:
             symbols: 股票代码列表
@@ -141,6 +139,7 @@ class StreamManager:
 
         Returns:
             取消订阅结果字典 {symbol: success}
+
         """
         results = {}
 
@@ -167,33 +166,33 @@ class StreamManager:
         return results
 
     async def get_stream_status(self, symbol: str) -> Optional[StreamSubscription]:
-        """
-        获取流状态
+        """获取流状态
 
         Args:
             symbol: 股票代码
 
         Returns:
             流订阅信息，如果不存在返回None
+
         """
         return self.subscriptions.get(symbol)
 
     async def get_active_streams(self) -> List[str]:
-        """
-        获取所有活跃的流
+        """获取所有活跃的流
 
         Returns:
             活跃流符号列表
+
         """
         return [symbol for symbol, sub in self.subscriptions.items() if sub.status == StreamStatus.ACTIVE]
 
     def add_event_handler(self, event_type: str, handler: Callable) -> None:
-        """
-        添加事件处理器
+        """添加事件处理器
 
         Args:
             event_type: 事件类型 (e.g., "market.tick", "market.bar")
             handler: 事件处理函数
+
         """
         if event_type not in self.event_handlers:
             self.event_handlers[event_type] = []
@@ -201,38 +200,37 @@ class StreamManager:
         logger.debug("Added event handler for %(event_type)s")
 
     async def _resolve_adapter(self, symbol: str) -> Optional[str]:
-        """
-        解析股票代码对应的适配器
+        """解析股票代码对应的适配器
 
         Args:
             symbol: 股票代码
 
         Returns:
             适配器名称，如果找不到返回None
+
         """
         try:
             if symbol.startswith(("6", "000", "001", "002", "300")):
                 return "sina_finance"
-            elif symbol.startswith(("HK", "hk")):
+            if symbol.startswith(("HK", "hk")):
                 return "hkex"
-            elif symbol.startswith(("US", "us")):
+            if symbol.startswith(("US", "us")):
                 return "yahoo_finance"
-            else:
-                return "sina_finance"
+            return "sina_finance"
 
         except Exception:
             logger.error("Error resolving adapter for %(symbol)s: %(e)s")
             return None
 
     async def _start_stream(self, symbol: str) -> bool:
-        """
-        启动数据流
+        """启动数据流
 
         Args:
             symbol: 股票代码
 
         Returns:
             是否成功启动
+
         """
         try:
             subscription = self.subscriptions[symbol]
@@ -269,11 +267,11 @@ class StreamManager:
             return False
 
     async def _stop_stream(self, symbol: str) -> None:
-        """
-        停止数据流
+        """停止数据流
 
         Args:
             symbol: 股票代码
+
         """
         try:
             if symbol in self.active_streams:
@@ -291,24 +289,24 @@ class StreamManager:
             logger.error("Error stopping stream for %(symbol)s: %(e)s")
 
     async def _get_websocket_adapter(self, adapter_name: str) -> Optional[Any]:
-        """
-        获取WebSocket适配器实例
+        """获取WebSocket适配器实例
 
         Args:
             adapter_name: 适配器名称
 
         Returns:
             WebSocket适配器实例
+
         """
         logger.warning("WebSocket adapter %(adapter_name)s not implemented yet")
         return None
 
     async def _handle_stream_message(self, message: Dict[str, Any]) -> None:
-        """
-        处理流消息
+        """处理流消息
 
         Args:
             message: 消息数据
+
         """
         try:
             msg_type = message.get("type", "unknown")
@@ -328,12 +326,12 @@ class StreamManager:
             logger.error("Error handling stream message: %(e)s")
 
     async def _trigger_event(self, event_type: str, data: Dict[str, Any]) -> None:
-        """
-        触发事件
+        """触发事件
 
         Args:
             event_type: 事件类型
             data: 事件数据
+
         """
         try:
             if event_type in self.event_handlers:
@@ -345,11 +343,11 @@ class StreamManager:
             logger.error("Error triggering event %(event_type)s: %(e)s")
 
     async def _heartbeat_monitor(self, symbol: str) -> None:
-        """
-        心跳监控
+        """心跳监控
 
         Args:
             symbol: 股票代码
+
         """
         while symbol in self.subscriptions:
             try:

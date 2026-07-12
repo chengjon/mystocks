@@ -1,5 +1,4 @@
-"""
-交易执行API Schemas (Pydantic模型)
+"""交易执行API Schemas (Pydantic模型)
 
 用于FastAPI请求验证和响应序列化:
 - OrderRequest: 下单请求
@@ -15,6 +14,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field, field_validator
 
+
 # ==================== Order Request ====================
 
 
@@ -22,11 +22,11 @@ class OrderRequest(BaseModel):
     """下单请求"""
 
     symbol: str = Field(
-        ..., description="股票代码", examples=["000001.SZ", "600519.SH"], pattern=r"^[0-9]{6}\.[A-Z]{2}$"
+        ..., description="股票代码", examples=["000001.SZ", "600519.SH"], pattern=r"^[0-9]{6}\.[A-Z]{2}$",
     )
     direction: str = Field(..., description="交易方向", pattern=r"^(buy|sell)$")
     order_type: str = Field(
-        default="limit", description="订单类型 (limit=限价, market=市价)", pattern=r"^(limit|market)$"
+        default="limit", description="订单类型 (limit=限价, market=市价)", pattern=r"^(limit|market)$",
     )
     price: Optional[Decimal] = Field(None, ge=0.01, description="委托价格 (限价单必填)", examples=[10.50])
     quantity: int = Field(..., gt=0, description="委托数量 (100的整数倍)", examples=[100, 200, 500])
@@ -55,7 +55,7 @@ class OrderRequest(BaseModel):
                 "order_type": "limit",
                 "price": 10.50,
                 "quantity": 100,
-            }
+            },
         }
 
 
@@ -74,7 +74,7 @@ class OrderResponse(BaseModel):
     filled_quantity: int = Field(default=0, description="成交数量")
     average_price: Optional[Decimal] = Field(None, description="成交均价")
     status: str = Field(
-        description="委托状态 (pending=待成交, partial=部分成交, filled=完全成交, cancelled=已撤销, rejected=已拒绝)"
+        description="委托状态 (pending=待成交, partial=部分成交, filled=完全成交, cancelled=已撤销, rejected=已拒绝)",
     )
     commission: Optional[Decimal] = Field(None, description="手续费")
     created_at: datetime = Field(description="创建时间")
@@ -94,7 +94,7 @@ class OrderResponse(BaseModel):
                 "status": "filled",
                 "commission": Decimal("0.52"),
                 "created_at": "2025-12-29T15:30:00",
-            }
+            },
         }
 
 
@@ -128,7 +128,7 @@ class Position(BaseModel):
                 "profit_loss": Decimal("500.00"),
                 "profit_loss_percent": 5.0,
                 "last_update": "2025-12-29T15:30:00",
-            }
+            },
         }
 
 
@@ -172,7 +172,7 @@ class AccountInfo(BaseModel):
                 "profit_loss_percent": 5.0,
                 "risk_level": "low",
                 "last_update": "2025-12-29T15:30:00",
-            }
+            },
         }
 
 

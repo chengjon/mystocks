@@ -1,5 +1,4 @@
-"""
-风险管理工具模块
+"""风险管理工具模块
 
 存放风险管理相关的辅助函数、类和单例。
 拆分自 risk_management.py。
@@ -9,11 +8,13 @@ Date: 2026-02-08
 """
 
 import json
+from typing import Any, Dict, List, Set
+
 import structlog
-from typing import Dict, List, Set, Any
 from fastapi import WebSocket
 
 from src.monitoring.monitoring_database import MonitoringDatabase
+
 
 logger = structlog.get_logger(__name__)
 
@@ -143,8 +144,7 @@ class ConnectionManager:
 connection_manager = ConnectionManager()
 
 async def setup_risk_event_broadcasting(enhanced_risk_features_available: bool = False):
-    """
-    设置风险事件自动广播到WebSocket
+    """设置风险事件自动广播到WebSocket
 
     这个函数应该在应用启动时调用，以设置事件监听器。
     """

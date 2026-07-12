@@ -1,5 +1,4 @@
-"""
-缓存淘汰系统测试
+"""缓存淘汰系统测试
 
 测试缓存淘汰策略、频率追踪和调度器功能。
 
@@ -9,16 +8,17 @@ Test Coverage:
 - EvictionScheduler: 淘汰调度器
 """
 
-import pytest
-from unittest.mock import patch
 import time
+from unittest.mock import patch
+
+import pytest
 
 from app.core.cache_eviction import (
     AccessFrequencyTracker,
-    TimeWindowEvictionStrategy,
     EvictionScheduler,
-    reset_eviction_strategy,
+    TimeWindowEvictionStrategy,
     reset_eviction_scheduler,
+    reset_eviction_strategy,
 )
 from app.core.cache_manager import get_cache_manager, reset_cache_manager
 

@@ -1,11 +1,11 @@
-"""
-数据库连接管理 - Week 3 简化版
+"""数据库连接管理 - Week 3 简化版
 仅使用 PostgreSQL + TimescaleDB
 复用现有 MyStocks 数据库连接
 """
 
 import functools
 import json
+
 # 添加重试逻辑
 import time
 from typing import Optional
@@ -19,13 +19,13 @@ from app.core.config import get_postgresql_connection_string, settings
 
 
 def db_retry(max_retries: int = 3, delay: float = 1.0, backoff: float = 2.0):
-    """
-    数据库连接重试装饰器
+    """数据库连接重试装饰器
 
     Args:
         max_retries: 最大重试次数
         delay: 初始延迟时间（秒）
         backoff: 延迟倍数
+
     """
 
     def decorator(func):
@@ -57,10 +57,9 @@ def db_retry(max_retries: int = 3, delay: float = 1.0, backoff: float = 2.0):
                         if retries < max_retries:
                             logger.warning(
                                 f"数据库连接失败，{current_delay}秒后重试 ({retries}/{max_retries})",
-                                 logger.warning(
-                                    f"数据库连接失败，{current_delay}秒后重试 ({retries}/{max_retries})",
-                                    error=str(e)
-                                 )
+                                logger.warning(
+                                    f"数据库连接失败，{current_delay}秒后重试 ({retries}/{max_retries})", error=str(e),
+                                ),
                             )
                             time.sleep(current_delay)
                             current_delay *= backoff
@@ -94,8 +93,7 @@ sessions = {}
 
 
 def get_postgresql_engine():
-    """
-    获取 PostgreSQL 数据库引擎（单例模式）
+    """获取 PostgreSQL 数据库引擎（单例模式）
 
     连接池配置（Phase 3优化）:
     - pool_size=20: 核心连接数（从10提升至20）
@@ -176,7 +174,7 @@ try:
 
     logger.info("MyStocks PostgreSQLDataAccess loaded successfully")
 
-except (ImportError, OSError, EnvironmentError) as e:
+except (ImportError, OSError) as e:
     # Week 3 简化: 如果MyStocks核心模块不可用，跳过（web backend可独立运行）
     logger.warning("MyStocks data access modules not available (expected in Week 3 simplified mode): %s", e)
     postgresql_access = None
@@ -194,6 +192,7 @@ class DatabaseService:
         """获取 Redis 客户端"""
         try:
             from app.core.redis_client import get_redis_client
+
             return get_redis_client()
         except Exception:
             return None
@@ -203,7 +202,7 @@ class DatabaseService:
         redis = self._get_redis()
         if not redis:
             return None
-        
+
         try:
             data = redis.get(cache_key)
             if data:
@@ -217,7 +216,7 @@ class DatabaseService:
         redis = self._get_redis()
         if not redis:
             return
-        
+
         try:
             redis.setex(cache_key, ttl, json.dumps(data))
         except Exception as e:
@@ -227,7 +226,7 @@ class DatabaseService:
     def query_stocks_basic(self, limit: int = 100, search: Optional[str] = None) -> pd.DataFrame:
         """查询股票基本信息 (带缓存优化)"""
         cache_key = f"stocks_basic:{limit}:{search or 'all'}"
-        
+
         # 尝试缓存
         cached = self.get_cache_data(cache_key)
         if cached:
@@ -240,14 +239,16 @@ class DatabaseService:
 
             df = pd.DataFrame()
             if postgresql_access:
-                # 使用 PostgreSQLDataAccess
-                where_clause = None
-                params = None
-                if search:
-                    where_clause = "symbol LIKE %s OR name LIKE %s"
-                    search_pattern = f"%{search}%"
-                    params = (search_pattern, search_pattern)
-                df = postgresql_access.query("symbols_info", limit=limit, where=where_clause, params=params)
+                # 直接查询 PostgreSQL (绕过 postgresql_access.query 的 pd.read_sql 兼容性问题)
+                with get_postgresql_session() as session:
+                    sql = "SELECT symbol, name, industry, area, market, list_date FROM symbols_info"
+                    query_params = {"limit": limit}
+                    if search:
+                        sql += " WHERE symbol LIKE :search OR name LIKE :search"
+                        query_params["search"] = f"%{search}%"
+                    sql += " LIMIT :limit"
+                    result = session.execute(text(sql), query_params)
+                    df = pd.DataFrame(result.fetchall(), columns=result.keys())
             else:
                 # 直接查询 PostgreSQL
                 with get_postgresql_session() as session:
@@ -262,9 +263,9 @@ class DatabaseService:
 
             # 存入缓存
             if not df.empty:
-                self.set_cache_data(cache_key, df.to_dict("records"), ttl=1800) # 30分钟缓存
+                self.set_cache_data(cache_key, df.to_dict("records"), ttl=1800)  # 30分钟缓存
             return df
-            
+
         except Exception as e:
             logger.error("Failed to query stocks basic", error=str(e))
             raise
@@ -273,7 +274,7 @@ class DatabaseService:
     def query_daily_kline(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         """查询日线数据 (带缓存优化)"""
         cache_key = f"kline:{symbol}:{start_date}:{end_date}"
-        
+
         cached = self.get_cache_data(cache_key)
         if cached:
             return pd.DataFrame(cached)
@@ -283,7 +284,9 @@ class DatabaseService:
             if postgresql_access:
                 where_clause = "symbol = %s AND trade_date >= %s AND trade_date <= %s"
                 params = [symbol, start_date, end_date]
-                df = postgresql_access.query("daily_kline", where=where_clause, order_by="trade_date ASC", params=params)
+                df = postgresql_access.query(
+                    "daily_kline", where=where_clause, order_by="trade_date ASC", params=params,
+                )
             else:
                 with get_postgresql_session() as session:
                     query = text("""
@@ -294,14 +297,13 @@ class DatabaseService:
                     """)
                     result = session.execute(query, {"symbol": symbol, "start_date": start_date, "end_date": end_date})
                     df = pd.DataFrame(result.fetchall(), columns=result.keys())
-            
+
             if not df.empty:
-                self.set_cache_data(cache_key, df.to_dict("records"), ttl=300) # 5分钟缓存
+                self.set_cache_data(cache_key, df.to_dict("records"), ttl=300)  # 5分钟缓存
             return df
         except Exception as e:
             logger.error("Failed to query daily kline", symbol=symbol, error=str(e))
             return pd.DataFrame()
-
 
     @db_retry(max_retries=3, delay=1.0)
     def query_concepts(self, limit: int = 10000) -> pd.DataFrame:
@@ -313,34 +315,33 @@ class DatabaseService:
                     logger.warning("Empty result from PostgreSQL concepts query")
                     return pd.DataFrame()
                 return result
-            else:
-                session = None
-                try:
-                    session = get_postgresql_session()
-                    query = text(
-                        """
+            session = None
+            try:
+                session = get_postgresql_session()
+                query = text(
+                    """
                         SELECT code, name, stock_count, updated_at
                         FROM concepts
                         ORDER BY id
                         LIMIT :limit
-                    """
-                    )
-                    result = session.execute(query, {"limit": limit})
-                    df = pd.DataFrame(result.fetchall(), columns=result.keys())
-                    if df.empty:
-                        logger.warning("Empty concepts result from database, limit=%s", limit)
-                    else:
-                        logger.info("Successfully fetched %s concepts from database", len(df))
-                    return df
-                except Exception as e:
-                    logger.error(
-                        f"Database query error in query_concepts: {e}",
-                        exc_info=True,
-                    )
-                    raise
-                finally:
-                    if session:
-                        session.close()
+                    """,
+                )
+                result = session.execute(query, {"limit": limit})
+                df = pd.DataFrame(result.fetchall(), columns=result.keys())
+                if df.empty:
+                    logger.warning("Empty concepts result from database, limit=%s", limit)
+                else:
+                    logger.info("Successfully fetched %s concepts from database", len(df))
+                return df
+            except Exception as e:
+                logger.error(
+                    f"Database query error in query_concepts: {e}",
+                    exc_info=True,
+                )
+                raise
+            finally:
+                if session:
+                    session.close()
         except Exception as e:
             logger.error("Failed to query concepts: %s", e, exc_info=True)
             raise

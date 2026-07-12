@@ -1,5 +1,4 @@
-"""
-统一API响应格式单元测试
+"""统一API响应格式单元测试
 
 测试覆盖:
 - APIResponse 类
@@ -20,13 +19,13 @@ from pydantic import ValidationError
 
 from app.core.responses import (
     APIResponse,
+    ErrorCodes,
     ErrorResponse,
     PaginatedResponse,
-    create_success_response,
+    ResponseMessages,
     create_error_response,
     create_health_response,
-    ErrorCodes,
-    ResponseMessages,
+    create_success_response,
 )
 
 
@@ -614,8 +613,8 @@ class TestEdgeCases:
                 "level2": {
                     "level3": {
                         "value": "deep",
-                    }
-                }
+                    },
+                },
             },
             "list": [[1, 2], [3, 4]],
         }

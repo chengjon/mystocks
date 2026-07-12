@@ -1,5 +1,4 @@
-"""
-Algorithm Model Repository Layer
+"""Algorithm Model Repository Layer
 
 提供算法模型数据的数据库访问接口，使用SQLAlchemy ORM操作PostgreSQL
 """
@@ -8,20 +7,10 @@ import logging
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
-from sqlalchemy import (
-    JSON,
-    TIMESTAMP,
-    Boolean,
-    Column,
-    Index,
-    Integer,
-    Numeric,
-    String,
-    Text,
-)
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
+
 
 logger = logging.getLogger(__name__)
 Base = declarative_base()
@@ -34,14 +23,14 @@ class AlgorithmModelRepositoryCoreMixin:
         self.session = session
 
     async def save_model(self, model_data: Dict[str, Any]) -> bool:
-        """
-        保存算法模型到数据库
+        """保存算法模型到数据库
 
         Args:
             model_data: 模型数据字典
 
         Returns:
             保存是否成功
+
         """
         try:
             model = AlgorithmModel(**model_data)
@@ -59,14 +48,14 @@ class AlgorithmModelRepositoryCoreMixin:
             return False
 
     async def get_model(self, model_id: str) -> Optional[Dict[str, Any]]:
-        """
-        根据ID获取算法模型
+        """根据ID获取算法模型
 
         Args:
             model_id: 模型ID
 
         Returns:
             模型数据字典或None
+
         """
         try:
             model = self.session.query(AlgorithmModel).filter_by(model_id=model_id).first()
@@ -93,8 +82,7 @@ class AlgorithmModelRepositoryCoreMixin:
             return None
 
     async def update_model(self, model_id: str, updates: Dict[str, Any]) -> bool:
-        """
-        更新算法模型信息
+        """更新算法模型信息
 
         Args:
             model_id: 模型ID
@@ -102,6 +90,7 @@ class AlgorithmModelRepositoryCoreMixin:
 
         Returns:
             更新是否成功
+
         """
         try:
             updates["updated_at"] = datetime.now()
@@ -120,14 +109,14 @@ class AlgorithmModelRepositoryCoreMixin:
             return False
 
     async def delete_model(self, model_id: str) -> bool:
-        """
-        删除算法模型
+        """删除算法模型
 
         Args:
             model_id: 模型ID
 
         Returns:
             删除是否成功
+
         """
         try:
             result = self.session.query(AlgorithmModel).filter_by(model_id=model_id).delete()
@@ -144,10 +133,9 @@ class AlgorithmModelRepositoryCoreMixin:
             return False
 
     async def list_models(
-        self, algorithm_type: Optional[str] = None, symbol: Optional[str] = None, is_active: bool = True
+        self, algorithm_type: Optional[str] = None, symbol: Optional[str] = None, is_active: bool = True,
     ) -> List[Dict[str, Any]]:
-        """
-        列出算法模型
+        """列出算法模型
 
         Args:
             algorithm_type: 算法类型过滤
@@ -156,6 +144,7 @@ class AlgorithmModelRepositoryCoreMixin:
 
         Returns:
             模型列表
+
         """
         try:
             query = self.session.query(AlgorithmModel)
@@ -190,14 +179,14 @@ class AlgorithmModelRepositoryCoreMixin:
             return []
 
     async def save_training_history(self, history_data: Dict[str, Any]) -> bool:
-        """
-        保存训练历史记录
+        """保存训练历史记录
 
         Args:
             history_data: 训练历史数据
 
         Returns:
             保存是否成功
+
         """
         try:
             history = TrainingHistoryModel(**history_data)
@@ -213,14 +202,14 @@ class AlgorithmModelRepositoryCoreMixin:
             return False
 
     async def get_training_history(self, training_id: str) -> Optional[Dict[str, Any]]:
-        """
-        获取训练历史记录
+        """获取训练历史记录
 
         Args:
             training_id: 训练记录ID
 
         Returns:
             训练历史数据或None
+
         """
         try:
             history = self.session.query(TrainingHistoryModel).filter_by(training_id=training_id).first()
@@ -250,10 +239,9 @@ class AlgorithmModelRepositoryCoreMixin:
             return None
 
     async def list_training_history(
-        self, model_id: Optional[str] = None, algorithm_type: Optional[str] = None, limit: int = 50
+        self, model_id: Optional[str] = None, algorithm_type: Optional[str] = None, limit: int = 50,
     ) -> List[Dict[str, Any]]:
-        """
-        列出训练历史记录
+        """列出训练历史记录
 
         Args:
             model_id: 模型ID过滤
@@ -262,6 +250,7 @@ class AlgorithmModelRepositoryCoreMixin:
 
         Returns:
             训练历史列表
+
         """
         try:
             query = self.session.query(TrainingHistoryModel)
@@ -293,14 +282,14 @@ class AlgorithmModelRepositoryCoreMixin:
             return []
 
     async def save_prediction_history(self, history_data: Dict[str, Any]) -> bool:
-        """
-        保存预测历史记录
+        """保存预测历史记录
 
         Args:
             history_data: 预测历史数据
 
         Returns:
             保存是否成功
+
         """
         try:
             history = PredictionHistoryModel(**history_data)
@@ -316,14 +305,14 @@ class AlgorithmModelRepositoryCoreMixin:
             return False
 
     async def get_prediction_history(self, prediction_id: str) -> Optional[Dict[str, Any]]:
-        """
-        获取预测历史记录
+        """获取预测历史记录
 
         Args:
             prediction_id: 预测记录ID
 
         Returns:
             预测历史数据或None
+
         """
         try:
             history = self.session.query(PredictionHistoryModel).filter_by(prediction_id=prediction_id).first()
@@ -350,10 +339,9 @@ class AlgorithmModelRepositoryCoreMixin:
             return None
 
     async def list_prediction_history(
-        self, model_id: Optional[str] = None, algorithm_type: Optional[str] = None, limit: int = 100
+        self, model_id: Optional[str] = None, algorithm_type: Optional[str] = None, limit: int = 100,
     ) -> List[Dict[str, Any]]:
-        """
-        列出预测历史记录
+        """列出预测历史记录
 
         Args:
             model_id: 模型ID过滤
@@ -362,6 +350,7 @@ class AlgorithmModelRepositoryCoreMixin:
 
         Returns:
             预测历史列表
+
         """
         try:
             query = self.session.query(PredictionHistoryModel)
@@ -393,11 +382,11 @@ class AlgorithmModelRepositoryCoreMixin:
             return []
 
     async def get_model_statistics(self) -> Dict[str, Any]:
-        """
-        获取模型统计信息
+        """获取模型统计信息
 
         Returns:
             统计数据字典
+
         """
         try:
             # 模型总数
@@ -448,14 +437,14 @@ class AlgorithmModelRepositoryCoreMixin:
             return {}
 
     async def cleanup_old_history(self, days_to_keep: int = 90) -> int:
-        """
-        清理旧的历史记录
+        """清理旧的历史记录
 
         Args:
             days_to_keep: 保留天数
 
         Returns:
             删除的记录数量
+
         """
         try:
             cutoff_date = datetime.now() - timedelta(days=days_to_keep)
@@ -485,14 +474,14 @@ class AlgorithmModelRepositoryCoreMixin:
             return 0
 
     async def validate_model_data(self, model_data: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        验证模型数据的完整性和一致性
+        """验证模型数据的完整性和一致性
 
         Args:
             model_data: 模型数据字典
 
         Returns:
             验证结果 {"valid": bool, "errors": list, "warnings": list}
+
         """
         errors = []
         warnings = []
@@ -532,8 +521,7 @@ class AlgorithmModelRepositoryCoreMixin:
         return {"valid": len(errors) == 0, "errors": errors, "warnings": warnings}
 
     async def validate_history_data(self, history_data: Dict[str, Any], history_type: str) -> Dict[str, Any]:
-        """
-        验证历史记录数据的完整性和一致性
+        """验证历史记录数据的完整性和一致性
 
         Args:
             history_data: 历史数据字典
@@ -541,6 +529,7 @@ class AlgorithmModelRepositoryCoreMixin:
 
         Returns:
             验证结果 {"valid": bool, "errors": list, "warnings": list}
+
         """
         errors = []
         warnings = []

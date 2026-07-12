@@ -1,12 +1,10 @@
-"""
-P0改进 Task 4: CircuitBreaker熔断器单元测试
+"""P0改进 Task 4: CircuitBreaker熔断器单元测试
 
 测试CircuitBreaker的核心功能，包括状态转换、失败计数、恢复逻辑等
 遵循项目测试规范 - 通过conftest fixture获取CircuitBreakerManager
 """
 
 import time
-
 
 from app.core.circuit_breaker_manager import CircuitBreakerManager
 from app.core.error_handling import CircuitBreaker, CircuitBreakerState

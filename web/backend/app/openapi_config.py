@@ -1,5 +1,4 @@
-"""
-OpenAPI 配置模块
+"""OpenAPI 配置模块
 OpenAPI Configuration Module
 
 为FastAPI应用提供增强的OpenAPI/Swagger文档配置:
@@ -14,6 +13,7 @@ Date: 2025-11-06
 
 import os
 from typing import Any, Dict
+
 
 # ==================== API 元数据 ====================
 
@@ -530,8 +530,8 @@ COMMON_RESPONSES = {
                     "message": "操作成功",
                     "data": {"result": "示例数据"},
                     "timestamp": "2025-11-06T12:34:56.789Z",
-                }
-            }
+                },
+            },
         },
     },
     400: {
@@ -544,8 +544,8 @@ COMMON_RESPONSES = {
                     "error_code": "INVALID_PARAMETER",
                     "details": {"field": "symbol", "reason": "格式不正确"},
                     "timestamp": "2025-11-06T12:34:56.789Z",
-                }
-            }
+                },
+            },
         },
     },
     401: {
@@ -557,8 +557,8 @@ COMMON_RESPONSES = {
                     "message": "未授权访问",
                     "error_code": "UNAUTHORIZED",
                     "timestamp": "2025-11-06T12:34:56.789Z",
-                }
-            }
+                },
+            },
         },
     },
     403: {
@@ -570,8 +570,8 @@ COMMON_RESPONSES = {
                     "message": "权限不足或CSRF验证失败",
                     "error_code": "FORBIDDEN",
                     "timestamp": "2025-11-06T12:34:56.789Z",
-                }
-            }
+                },
+            },
         },
     },
     404: {
@@ -583,8 +583,8 @@ COMMON_RESPONSES = {
                     "message": "请求的资源不存在",
                     "error_code": "RESOURCE_NOT_FOUND",
                     "timestamp": "2025-11-06T12:34:56.789Z",
-                }
-            }
+                },
+            },
         },
     },
     422: {
@@ -600,11 +600,11 @@ COMMON_RESPONSES = {
                             "loc": ["body", "symbol"],
                             "msg": "field required",
                             "type": "value_error.missing",
-                        }
+                        },
                     ],
                     "timestamp": "2025-11-06T12:34:56.789Z",
-                }
-            }
+                },
+            },
         },
     },
     500: {
@@ -616,19 +616,19 @@ COMMON_RESPONSES = {
                     "message": "服务器内部错误，请稍后重试",
                     "error_code": "INTERNAL_ERROR",
                     "timestamp": "2025-11-06T12:34:56.789Z",
-                }
-            }
+                },
+            },
         },
     },
 }
 
 
 def get_openapi_config() -> Dict[str, Any]:
-    """
-    获取OpenAPI配置
+    """获取OpenAPI配置
 
     Returns:
         OpenAPI配置字典，用于FastAPI app初始化
+
     """
     return {
         **API_METADATA,
@@ -650,11 +650,11 @@ def get_openapi_config() -> Dict[str, Any]:
 
 
 def get_openapi_schema_extra() -> Dict[str, Any]:
-    """
-    获取OpenAPI Schema扩展配置
+    """获取OpenAPI Schema扩展配置
 
     Returns:
         OpenAPI Schema扩展配置（servers, security等）
+
     """
     backend_port = os.getenv("BACKEND_PORT", "").strip()
     backend_backup_port = os.getenv("BACKEND_BACKUP_PORT", "").strip()
@@ -671,7 +671,7 @@ def get_openapi_schema_extra() -> Dict[str, Any]:
         {
             "url": "https://api.mystocks.com",
             "description": "生产环境 (需要HTTPS)",
-        }
+        },
     )
 
     return {

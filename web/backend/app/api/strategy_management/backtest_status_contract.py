@@ -22,7 +22,6 @@ class BacktestStatusResponse(BaseModel):
 
 def build_backtest_status_response(backtest_id: int, backtest: Any) -> BacktestStatusResponse:
     """Normalize repository backtest records into the public route contract."""
-
     return BacktestStatusResponse(
         backtest_id=backtest_id,
         status=backtest.status.value if hasattr(backtest.status, "value") else backtest.status,

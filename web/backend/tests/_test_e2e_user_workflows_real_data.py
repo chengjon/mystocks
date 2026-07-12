@@ -1,10 +1,10 @@
-"""
-端到端用户工作流测试 - 真实数据集成校验
+"""端到端用户工作流测试 - 真实数据集成校验
 """
 
 import pytest
 
 from ._test_e2e_user_workflows_support import RealDataValidationMixin, client
+
 
 __all__ = ["RealDataValidationMixin", "TestRealDataIntegration", "client"]
 
@@ -71,7 +71,7 @@ class TestRealDataIntegration(RealDataValidationMixin):
             if method == "GET":
                 response = client.get(endpoint)
             else:
-                response = client.post(endpoint, json=data if data else {})
+                response = client.post(endpoint, json=data or {})
 
             assert response.status_code in [200, 201, 422], f"API {endpoint} 返回异常状态码: {response.status_code}"
 
@@ -112,7 +112,7 @@ class TestRealDataIntegration(RealDataValidationMixin):
         assert market_response.status_code == 200
         market_data = market_response.json()["data"]
 
-        if "indices" in market_data and market_data["indices"]:
+        if market_data.get("indices"):
             first_index = market_data["indices"][0]
             frontend_fields = ["symbol", "name", "current_price", "change_percent"]
             available_fields = [field for field in frontend_fields if field in first_index]
@@ -122,7 +122,7 @@ class TestRealDataIntegration(RealDataValidationMixin):
         assert strategy_response.status_code == 200
         strategy_data = strategy_response.json()["data"]
 
-        if "strategies" in strategy_data and strategy_data["strategies"]:
+        if strategy_data.get("strategies"):
             first_strategy = strategy_data["strategies"][0]
             frontend_fields = ["id", "name", "type", "status"]
             available_fields = [field for field in frontend_fields if field in first_strategy]

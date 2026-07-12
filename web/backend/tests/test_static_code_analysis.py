@@ -1,5 +1,4 @@
-"""
-Static Code Analysis Tests
+"""Static Code Analysis Tests
 
 This test suite performs static analysis of API source code to ensure:
 - Proper docstring documentation
@@ -21,6 +20,7 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 import pytest
+
 
 # Add the app directory to Python path for importing modules
 app_path = Path(__file__).parent.parent / "app"
@@ -58,7 +58,7 @@ class StaticCodeAnalyzer:
         }
 
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             # Parse AST
@@ -75,9 +75,9 @@ class StaticCodeAnalyzer:
             file_result["issues"]["suggestions"].extend(self._check_code_complexity(tree))
 
         except SyntaxError as e:
-            file_result["issues"]["critical"].append(f"Syntax error: {str(e)}")
+            file_result["issues"]["critical"].append(f"Syntax error: {e!s}")
         except Exception as e:
-            file_result["issues"]["warnings"].append(f"Analysis error: {str(e)}")
+            file_result["issues"]["warnings"].append(f"Analysis error: {e!s}")
 
         # Count issues
         file_result["total_issues"] = (
@@ -156,7 +156,7 @@ class StaticCodeAnalyzer:
         )
 
         if has_router:
-            missing = [name for name in required_imports.keys() if name not in imports]
+            missing = [name for name in required_imports if name not in imports]
             if missing:
                 issues.append(f"Missing required imports for API: {', '.join(missing)}")
 
@@ -570,7 +570,7 @@ class TestStaticCodeAnalysis:
                     issues.append(f"Endpoint {func.__name__} has insufficient docstring")
 
             except Exception as e:
-                issues.append(f"Could not analyze endpoint {func.__name__}: {str(e)}")
+                issues.append(f"Could not analyze endpoint {func.__name__}: {e!s}")
 
         # Allow some issues for now
         assert len(issues) <= 10, f"Too many endpoint function issues: {len(issues)}"

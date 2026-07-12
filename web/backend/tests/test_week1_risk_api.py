@@ -1,5 +1,4 @@
-"""
-Week 1 Architecture-Compliant Risk Management API E2E Tests
+"""Week 1 Architecture-Compliant Risk Management API E2E Tests
 
 Tests all 9 risk management endpoints:
 - Risk Metrics Calculation (4 endpoints)
@@ -12,16 +11,16 @@ Architecture Requirements:
 - Uses DataClassification for data routing
 """
 
-import pytest
 from datetime import datetime, timedelta
+
+import pytest
 
 
 class TestRiskMetricsCalculation:
     """Test Risk Metrics Calculation (4 endpoints)"""
 
     def test_calculate_var_cvar_missing_data(self, test_client):
-        """
-        Test GET /api/v1/risk/var-cvar without required parameters
+        """Test GET /api/v1/risk/var-cvar without required parameters
         Expected: 400/422 Bad Request
         """
         response = test_client.get("/api/v1/risk/var-cvar")
@@ -30,8 +29,7 @@ class TestRiskMetricsCalculation:
         assert response.status_code in [400, 422, 500]
 
     def test_calculate_var_cvar_with_params(self, test_client, sample_portfolio_positions):
-        """
-        Test GET /api/v1/risk/var-cvar with valid portfolio data
+        """Test GET /api/v1/risk/var-cvar with valid portfolio data
         Expected: 200 OK with VaR/CVaR values
         """
         params = {"confidence_level": 0.95, "lookback_days": 252}
@@ -46,8 +44,7 @@ class TestRiskMetricsCalculation:
             assert "var" in data or "VaR" in data or "value_at_risk" in data
 
     def test_calculate_beta_missing_params(self, test_client):
-        """
-        Test GET /api/v1/risk/beta without required parameters
+        """Test GET /api/v1/risk/beta without required parameters
         Expected: 400/422 Bad Request
         """
         response = test_client.get("/api/v1/risk/beta")
@@ -55,8 +52,7 @@ class TestRiskMetricsCalculation:
         assert response.status_code in [400, 422, 500]
 
     def test_calculate_beta_with_params(self, test_client):
-        """
-        Test GET /api/v1/risk/beta with symbol and benchmark
+        """Test GET /api/v1/risk/beta with symbol and benchmark
         Expected: 200 OK with beta value
         """
         params = {"symbol": "600519.SH", "benchmark": "000300.SH", "lookback_days": 252}
@@ -71,8 +67,7 @@ class TestRiskMetricsCalculation:
             assert "beta" in data or "value" in data
 
     def test_get_risk_dashboard_empty(self, test_client):
-        """
-        Test GET /api/v1/risk/dashboard
+        """Test GET /api/v1/risk/dashboard
         Expected: 200 OK with dashboard data structure
         """
         response = test_client.get("/api/v1/risk/dashboard")
@@ -85,8 +80,7 @@ class TestRiskMetricsCalculation:
             assert isinstance(data, dict) or isinstance(data, list)
 
     def test_get_metrics_history_empty(self, test_client):
-        """
-        Test GET /api/v1/risk/metrics/history
+        """Test GET /api/v1/risk/metrics/history
         Expected: 200 OK with empty or populated history
         """
         params = {
@@ -107,8 +101,7 @@ class TestRiskAlertManagement:
     """Test Risk Alert CRUD operations (4 endpoints)"""
 
     def test_list_alerts_empty(self, test_client):
-        """
-        Test GET /api/v1/risk/alerts
+        """Test GET /api/v1/risk/alerts
         Expected: 200 OK with empty alerts list
         """
         response = test_client.get("/api/v1/risk/alerts")
@@ -120,8 +113,7 @@ class TestRiskAlertManagement:
             assert "items" in data or isinstance(data, list)
 
     def test_create_alert_success(self, test_client, sample_risk_alert_data):
-        """
-        Test POST /api/v1/risk/alerts
+        """Test POST /api/v1/risk/alerts
         Expected: 201 Created with alert ID
         """
         response = test_client.post("/api/v1/risk/alerts", json=sample_risk_alert_data)
@@ -135,8 +127,7 @@ class TestRiskAlertManagement:
             assert data["name"] == sample_risk_alert_data["name"]
 
     def test_create_alert_invalid_data(self, test_client):
-        """
-        Test POST /api/v1/risk/alerts with invalid data
+        """Test POST /api/v1/risk/alerts with invalid data
         Expected: 400/422 Bad Request
         """
         invalid_data = {
@@ -150,8 +141,7 @@ class TestRiskAlertManagement:
         assert response.status_code in [400, 422, 500]
 
     def test_update_alert_not_found(self, test_client, sample_risk_alert_data):
-        """
-        Test PUT /api/v1/risk/alerts/{alert_id}
+        """Test PUT /api/v1/risk/alerts/{alert_id}
         Expected: 404 Not Found for non-existent alert
         """
         response = test_client.put("/api/v1/risk/alerts/99999", json=sample_risk_alert_data)
@@ -159,8 +149,7 @@ class TestRiskAlertManagement:
         assert response.status_code in [404, 500]
 
     def test_delete_alert_not_found(self, test_client):
-        """
-        Test DELETE /api/v1/risk/alerts/{alert_id}
+        """Test DELETE /api/v1/risk/alerts/{alert_id}
         Expected: 404 Not Found
         """
         response = test_client.delete("/api/v1/risk/alerts/99999")
@@ -172,8 +161,7 @@ class TestRiskNotifications:
     """Test Risk Notification System (1 endpoint)"""
 
     def test_send_test_notification_no_config(self, test_client):
-        """
-        Test POST /api/v1/risk/notifications/test
+        """Test POST /api/v1/risk/notifications/test
         Expected: May fail if notification system not configured
         """
         test_data = {
@@ -188,8 +176,7 @@ class TestRiskNotifications:
         assert response.status_code in [200, 400, 422, 500]
 
     def test_send_test_notification_invalid_channel(self, test_client):
-        """
-        Test POST /api/v1/risk/notifications/test with invalid channel
+        """Test POST /api/v1/risk/notifications/test with invalid channel
         Expected: 400 Bad Request
         """
         invalid_data = {"channel": "invalid_channel", "recipient": "test@example.com"}
@@ -204,8 +191,7 @@ class TestRiskAPIIntegration:
 
     @pytest.mark.integration
     def test_complete_alert_workflow(self, test_client, sample_risk_alert_data):
-        """
-        Test complete workflow: Create Alert → Update → Get → Delete
+        """Test complete workflow: Create Alert → Update → Get → Delete
         Note: Requires database connectivity
         """
         # Step 1: Create alert
@@ -244,8 +230,7 @@ class TestRiskAPIIntegration:
 
     @pytest.mark.integration
     def test_risk_calculation_pipeline(self, test_client):
-        """
-        Test complete risk calculation pipeline:
+        """Test complete risk calculation pipeline:
         Dashboard → Metrics History → VaR/CVaR → Beta
         """
         # Step 1: Get dashboard overview
@@ -274,8 +259,7 @@ class TestRiskAPIIntegration:
 
     @pytest.mark.integration
     def test_architecture_compliance(self, test_client):
-        """
-        Verify Week 1 architecture compliance for risk APIs:
+        """Verify Week 1 architecture compliance for risk APIs:
         - MyStocksUnifiedManager usage
         - MonitoringDatabase logging
         - DataClassification routing
@@ -301,8 +285,7 @@ class TestRiskAPIErrorHandling:
     """Test error handling and edge cases"""
 
     def test_invalid_date_format(self, test_client):
-        """
-        Test endpoints with invalid date formats
+        """Test endpoints with invalid date formats
         Expected: 400/422 Bad Request
         """
         params = {
@@ -315,8 +298,7 @@ class TestRiskAPIErrorHandling:
         assert response.status_code in [400, 422, 500]
 
     def test_negative_threshold(self, test_client):
-        """
-        Test alert creation with negative threshold
+        """Test alert creation with negative threshold
         Expected: Should be validated and rejected
         """
         invalid_alert = {
@@ -332,8 +314,7 @@ class TestRiskAPIErrorHandling:
         assert response.status_code in [201, 400, 422, 500]
 
     def test_concurrent_requests(self, test_client):
-        """
-        Test concurrent requests to same endpoint
+        """Test concurrent requests to same endpoint
         Verifies connection pool handling
         """
         import concurrent.futures

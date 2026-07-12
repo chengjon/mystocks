@@ -1,14 +1,15 @@
-"""
-K线与行情数据路由 (KLine Data)
+"""K线与行情数据路由 (KLine Data)
 """
 from datetime import datetime, timedelta
 from typing import Any, Dict, Optional
+
 import pandas as pd
-from fastapi import APIRouter, Depends, Query, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.core.database import db_service
 from app.core.exceptions import BusinessException
 from app.core.security import User, get_current_user
+
 
 router = APIRouter()
 
@@ -79,7 +80,7 @@ async def get_kline_data(
                 "date": row["date"].strftime("%Y-%m-%d"),
                 "open": float(row["open"]), "close": float(row["close"]),
                 "high": float(row["high"]), "low": float(row["low"]),
-                "volume": int(row["volume"])
+                "volume": int(row["volume"]),
             })
 
         result = {"success": True, "data": data_records, "total": len(data_records), "timestamp": datetime.now().isoformat()}

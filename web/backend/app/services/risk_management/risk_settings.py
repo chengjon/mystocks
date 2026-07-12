@@ -1,14 +1,13 @@
-"""
-风险设置模块
+"""风险设置模块
 
 提供风险参数配置、风险模型选择、风险阈值设置、用户风险管理配置功能
 """
 
 import logging
-from typing import Dict, List, Optional
-from datetime import datetime
 from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
+from typing import Dict, List, Optional
 
 
 logger = __import__("logging").getLogger(__name__)
@@ -118,8 +117,7 @@ class RiskSettingsManager:
         )
 
     async def create_settings(self, user_id: str, profile_id: str, settings_data: Dict) -> RiskSettings:
-        """
-        创建风险设置
+        """创建风险设置
 
         Args:
             user_id: 用户ID
@@ -128,6 +126,7 @@ class RiskSettingsManager:
 
         Returns:
             RiskSettings: 创建的设置
+
         """
         try:
             import uuid
@@ -202,8 +201,7 @@ class RiskSettingsManager:
                 del self.user_settings[settings_id]
                 self.logger.info(f"删除风险设置: {settings_id}")
                 return True
-            else:
-                return False
+            return False
 
         except Exception as e:
             self.logger.error(f"删除风险设置失败: {e}")
@@ -250,7 +248,7 @@ class RiskSettingsManager:
                 import json
 
                 return json.dumps([s.to_dict() for s in user_settings.values()], indent=2)
-            elif format == "csv":
+            if format == "csv":
                 import csv
                 import io
 
@@ -286,7 +284,7 @@ class RiskSettingsManager:
                             "lookback_days": settings.lookback_days,
                             "rebalance_threshold": f"{settings.rebalance_threshold:.0%}",
                             "is_enabled": settings.is_enabled,
-                        }
+                        },
                     )
 
                 output.seek(0)

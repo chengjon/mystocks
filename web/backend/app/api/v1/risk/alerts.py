@@ -1,5 +1,4 @@
-"""
-风险告警管理 API - V3.1
+"""风险告警管理 API - V3.1
 
 提供风险告警功能:
 - 风险告警发送
@@ -19,6 +18,7 @@ from typing import Any, Dict, List, Optional
 import structlog
 from fastapi import APIRouter, HTTPException
 
+
 logger = structlog.get_logger(__name__)
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../"))
@@ -27,6 +27,7 @@ if project_root not in sys.path:
 
 from src.core import DataClassification  # noqa: E402
 from unified_manager import MyStocksUnifiedManager as UM  # noqa: E402,F401
+
 
 try:
     from src.governance.risk_management.services.alert_rule_engine import (
@@ -72,7 +73,7 @@ async def list_risk_alerts(is_active: Optional[bool] = None) -> List[Dict[str, A
         return alerts_df.to_dict("records") if alerts_df is not None else []
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取预警列表失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取预警列表失败: {e!s}")
 
 
 @router.post("/", response_model=RiskAlertResponse)
@@ -100,11 +101,10 @@ async def create_risk_alert(alert_data: RiskAlertCreate) -> RiskAlertResponse:
         if result:
             data_dict["id"] = int(dt.now().timestamp())
             return RiskAlertResponse(**data_dict)
-        else:
-            raise HTTPException(status_code=500, detail="创建预警规则失败")
+        raise HTTPException(status_code=500, detail="创建预警规则失败")
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"创建预警规则失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"创建预警规则失败: {e!s}")
 
 
 @router.put("/{alert_id}")
@@ -132,11 +132,10 @@ async def update_risk_alert(alert_id: int, alert_update: RiskAlertUpdate) -> Dic
 
         if result:
             return {"message": "预警规则已更新"}
-        else:
-            raise HTTPException(status_code=500, detail="更新预警规则失败")
+        raise HTTPException(status_code=500, detail="更新预警规则失败")
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"更新预警规则失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"更新预警规则失败: {e!s}")
 
 
 @router.delete("/{alert_id}")
@@ -158,11 +157,10 @@ async def delete_risk_alert(alert_id: int) -> Dict[str, str]:
 
         if result:
             return {"message": "预警规则已禁用"}
-        else:
-            raise HTTPException(status_code=500, detail="删除预警规则失败")
+        raise HTTPException(status_code=500, detail="删除预警规则失败")
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"删除预警规则失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"删除预警规则失败: {e!s}")
 
 
 @router.post("/send", response_model=Dict[str, Any])
@@ -212,7 +210,7 @@ async def send_risk_alert(request: Dict[str, Any]) -> Dict[str, Any]:
         raise
     except Exception as e:
         logger.error("发送风险告警失败: %(e)s")
-        raise HTTPException(status_code=500, detail=f"发送风险告警失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"发送风险告警失败: {e!s}")
 
 
 @router.get("/statistics", response_model=Dict[str, Any])
@@ -233,4 +231,4 @@ async def get_alert_statistics() -> Dict[str, Any]:
         raise
     except Exception as e:
         logger.error("获取告警统计失败: %(e)s")
-        raise HTTPException(status_code=500, detail=f"获取告警统计失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取告警统计失败: {e!s}")

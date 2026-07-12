@@ -1,8 +1,8 @@
-"""
-监控系统API路由
+"""监控系统API路由
 """
 
 from fastapi import APIRouter
+
 
 router = APIRouter(prefix="/monitoring")
 
@@ -21,8 +21,7 @@ async def get_status():
 
 @router.post("/analyze")
 async def analyze_data(data: dict):
-    """
-    监控数据AI智能分析
+    """监控数据AI智能分析
 
     使用AI模型对实时监控数据进行智能分析，识别异常行为和市场风险。
     该端点专注于监控告警数据的深度分析，提供风险预警和投资建议。

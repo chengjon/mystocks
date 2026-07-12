@@ -1,5 +1,4 @@
-"""
-东方财富网直接API适配器
+"""东方财富网直接API适配器
 直接调用东方财富网API，不经过akshare
 提供稳定高效的数据获取服务
 """
@@ -11,6 +10,7 @@ from typing import Optional
 
 import pandas as pd
 import requests
+
 
 logger = logging.getLogger(__name__)
 
@@ -26,14 +26,13 @@ class EastMoneyAdapter:
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
                 "Accept": "application/json, text/plain, */*",
                 "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
-            }
+            },
         )
 
     # ==================== 资金流向数据 ====================
 
     def get_stock_fund_flow(self, symbol: str = None, timeframe: str = "今日") -> pd.DataFrame:
-        """
-        获取个股资金流向数据
+        """获取个股资金流向数据
 
         Args:
             symbol: 股票代码(可选，不传则返回全市场)
@@ -41,6 +40,7 @@ class EastMoneyAdapter:
 
         Returns:
             pd.DataFrame: 资金流向数据
+
         """
         try:
             indicator_map = {
@@ -149,7 +149,7 @@ class EastMoneyAdapter:
 
             # 如果指定了股票代码，则筛选
             if symbol:
-                stock_code = symbol.split(".")[0] if "." in symbol else symbol
+                stock_code = symbol.split(".", maxsplit=1)[0] if "." in symbol else symbol
                 temp_df = temp_df[temp_df["代码"] == stock_code]
 
             return temp_df
@@ -161,11 +161,11 @@ class EastMoneyAdapter:
     # ==================== ETF数据 ====================
 
     def get_etf_spot(self) -> pd.DataFrame:
-        """
-        获取ETF实时行情数据
+        """获取ETF实时行情数据
 
         Returns:
             pd.DataFrame: ETF实时数据
+
         """
         try:
             url = "http://88.push2.eastmoney.com/api/qt/clist/get"
@@ -279,14 +279,14 @@ class EastMoneyAdapter:
     # ==================== 龙虎榜数据 ====================
 
     def get_stock_lhb_detail(self, date_str: str) -> pd.DataFrame:
-        """
-        获取指定日期龙虎榜详细数据
+        """获取指定日期龙虎榜详细数据
 
         Args:
             date_str: 日期 (格式: YYYY-MM-DD)
 
         Returns:
             pd.DataFrame: 龙虎榜数据
+
         """
         try:
             # 转换日期格式
@@ -369,8 +369,7 @@ class EastMoneyAdapter:
     # ==================== 竞价抢筹数据 ====================
 
     def get_chip_race(self, race_type: str = "open", date_str: Optional[str] = None) -> pd.DataFrame:
-        """
-        获取竞价抢筹数据（早盘/尾盘）
+        """获取竞价抢筹数据（早盘/尾盘）
         注意：此功能需要通达信或其他数据源支持，东方财富网暂不提供
 
         Args:
@@ -379,6 +378,7 @@ class EastMoneyAdapter:
 
         Returns:
             pd.DataFrame: 竞价抢筹数据
+
         """
         # 东方财富网暂不提供竞价抢筹数据，需要其他数据源
         logger.warning("东方财富网暂不提供竞价抢筹数据，请使用TQLEX或其他数据源")
@@ -387,8 +387,7 @@ class EastMoneyAdapter:
     # ==================== 行业/概念资金流向 ====================
 
     def get_sector_fund_flow(self, sector_type: str = "行业", timeframe: str = "今日") -> pd.DataFrame:
-        """
-        获取行业/概念板块资金流向
+        """获取行业/概念板块资金流向
 
         Args:
             sector_type: 板块类型 ("行业", "概念", "地域")
@@ -396,6 +395,7 @@ class EastMoneyAdapter:
 
         Returns:
             pd.DataFrame: 板块资金流向数据
+
         """
         try:
             # 板块类型映射
@@ -450,7 +450,7 @@ class EastMoneyAdapter:
                         "f81": "中单净流入占比",
                         "f84": "小单净流入",
                         "f87": "小单净流入占比",
-                    }
+                    },
                 )
 
             # 数据类型转换
@@ -467,17 +467,17 @@ class EastMoneyAdapter:
     # ==================== 股票分红配送 ====================
 
     def get_stock_dividend(self, symbol: str) -> pd.DataFrame:
-        """
-        获取股票分红配送数据
+        """获取股票分红配送数据
 
         Args:
             symbol: 股票代码
 
         Returns:
             pd.DataFrame: 分红配送数据
+
         """
         try:
-            stock_code = symbol.split(".")[0] if "." in symbol else symbol
+            stock_code = symbol.split(".", maxsplit=1)[0] if "." in symbol else symbol
 
             url = "http://datacenter-web.eastmoney.com/api/data/v1/get"
 
@@ -512,7 +512,7 @@ class EastMoneyAdapter:
                     "EX_DIVIDEND_DATE": "除权除息日",
                     "RECORD_DATE": "股权登记日",
                     "PAYMENT_DATE": "派息日",
-                }
+                },
             )
 
             return temp_df
@@ -524,14 +524,14 @@ class EastMoneyAdapter:
     # ==================== 股票大宗交易 ====================
 
     def get_stock_blocktrade(self, date_str: Optional[str] = None) -> pd.DataFrame:
-        """
-        获取股票大宗交易数据
+        """获取股票大宗交易数据
 
         Args:
             date_str: 日期 (格式: YYYY-MM-DD)，不传则获取最新
 
         Returns:
             pd.DataFrame: 大宗交易数据
+
         """
         try:
             url = "http://datacenter-web.eastmoney.com/api/data/v1/get"
@@ -572,7 +572,7 @@ class EastMoneyAdapter:
                     "TURNOVER_RATE": "成交占比",
                     "BUYER_NAME": "买方营业部",
                     "SELLER_NAME": "卖方营业部",
-                }
+                },
             )
 
             # 数据类型转换

@@ -2,6 +2,7 @@ import importlib
 
 import pytest
 
+
 strategy_api = importlib.import_module("web.backend.app.api.strategy_management.get_monitoring_db")
 
 
@@ -34,7 +35,7 @@ class _DataFrameLike:
 class _Manager:
     def load_data_by_classification(self, **_kwargs):
         return _DataFrameLike([
-            {"strategy_id": 1, "strategy_name": "fallback_strategy", "is_active": True}
+            {"strategy_id": 1, "strategy_name": "fallback_strategy", "is_active": True},
         ])
 
 

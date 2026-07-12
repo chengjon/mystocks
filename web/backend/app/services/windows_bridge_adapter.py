@@ -1,14 +1,14 @@
-"""
-分布式任务调度适配器 (方案 B 扩展)
+"""分布式任务调度适配器 (方案 B 扩展)
 支持 Windows 下的 Wind, Choice, MiniQMT 多源触发。
 """
 
-import time
-import httpx
-import asyncio
 from datetime import datetime
-from typing import Any, Dict, List, Optional
-from app.services.data_source_interface import IDataSource, HealthStatus, HealthStatusEnum
+from typing import Any, Dict
+
+import httpx
+
+from app.services.data_source_interface import HealthStatus, HealthStatusEnum, IDataSource
+
 
 logger = __import__("logging").getLogger(__name__)
 
@@ -23,14 +23,14 @@ class MultiSourceBridgeAdapter(IDataSource):
         self.timeout = config.get("timeout", 30.0) # 采集可能较慢，增加超时
 
     async def get_data(self, endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
-        """
-        按需触发数据采集逻辑
+        """按需触发数据采集逻辑
         
         Args:
             endpoint: 格式为 "provider/method", 如 "wind/wsd" 或 "qmt/position"
+
         """
         try:
-            provider_name, method = endpoint.split('/')
+            provider_name, method = endpoint.split("/")
         except ValueError:
             raise ValueError(f"Invalid endpoint format: {endpoint}. Use 'provider/method'.")
 
@@ -41,14 +41,14 @@ class MultiSourceBridgeAdapter(IDataSource):
         # 发起按需采集指令
         async with httpx.AsyncClient(timeout=self.timeout) as client:
             logger.info(f"🚀 Triggering remote task: {provider_name} via {method}")
-            
+
             response = await client.post(
                 f"{base_url}/api/v1/task/execute",
                 json={
                     "method": method,
                     "params": params,
-                    "write_to_nas": True # 强制要求 Windows 端写入 NAS
-                }
+                    "write_to_nas": True, # 强制要求 Windows 端写入 NAS
+                },
             )
             response.raise_for_status()
             task_result = response.json()
@@ -59,7 +59,7 @@ class MultiSourceBridgeAdapter(IDataSource):
                 "status": "success",
                 "task_id": task_result.get("task_id"),
                 "source": provider_name,
-                "timestamp": datetime.now().isoformat()
+                "timestamp": datetime.now().isoformat(),
             }
 
     async def health_check(self) -> HealthStatus:
@@ -73,10 +73,10 @@ class MultiSourceBridgeAdapter(IDataSource):
                         results.append(f"{name}:OK")
                 except:
                     results.append(f"{name}:OFFLINE")
-        
+
         return HealthStatus(
             status=HealthStatusEnum.HEALTHY if "OK" in "".join(results) else HealthStatusEnum.FAILED,
             response_time=0,
             message=" | ".join(results),
-            timestamp=datetime.now()
+            timestamp=datetime.now(),
         )

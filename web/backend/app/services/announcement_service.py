@@ -1,5 +1,4 @@
-"""
-公告监控服务
+"""公告监控服务
 Multi-data Source Support
 
 功能：
@@ -25,19 +24,18 @@ from app.models.announcement import (
 )
 from app.services.multi_source_manager import get_multi_source_manager
 
+
 logger = logging.getLogger(__name__)
 
 
 class AnnouncementService:
-    """
-    公告监控服务
+    """公告监控服务
 
     负责公告的获取、存储、分析和监控
     """
 
     def __init__(self, db_url: str = None):
-        """
-        初始化服务（使用环境变量配置数据库连接）
+        """初始化服务（使用环境变量配置数据库连接）
 
         Args:
             db_url: 数据库连接URL（如果为None，从环境变量读取）
@@ -48,6 +46,7 @@ class AnnouncementService:
             POSTGRESQL_USER: PostgreSQL用户名
             POSTGRESQL_PASSWORD: PostgreSQL密码
             POSTGRESQL_DATABASE: PostgreSQL数据库名
+
         """
         if db_url is None:
             # 从环境变量读取数据库配置
@@ -95,8 +94,7 @@ class AnnouncementService:
         end_date: Optional[date] = None,
         category: Optional[str] = None,
     ) -> Dict[str, Any]:
-        """
-        获取并保存公告
+        """获取并保存公告
 
         Args:
             symbol: 股票代码
@@ -106,6 +104,7 @@ class AnnouncementService:
 
         Returns:
             Dict: 执行结果
+
         """
         try:
             # 从多数据源获取公告
@@ -146,14 +145,14 @@ class AnnouncementService:
             return {"success": False, "error": str(e)}
 
     def _save_announcements_to_db(self, df: pd.DataFrame) -> tuple:
-        """
-        保存公告到数据库
+        """保存公告到数据库
 
         Args:
             df: 公告DataFrame
 
         Returns:
             tuple: (新增数量, 更新数量)
+
         """
         session = self.SessionLocal()
         saved_count = 0
@@ -169,7 +168,7 @@ class AnnouncementService:
                             Announcement.stock_code == row.get("stock_code"),
                             Announcement.source_id == row.get("announcement_id"),
                             Announcement.data_source == row.get("data_source", "cninfo"),
-                        )
+                        ),
                     )
                     .first()
                 )
@@ -212,14 +211,14 @@ class AnnouncementService:
         return saved_count, updated_count
 
     def _calculate_importance(self, title: str) -> int:
-        """
-        计算公告重要性等级
+        """计算公告重要性等级
 
         Args:
             title: 公告标题
 
         Returns:
             int: 重要性等级 (0-5)
+
         """
         max_level = 0
 
@@ -230,14 +229,14 @@ class AnnouncementService:
         return max_level
 
     def _analyze_sentiment(self, title: str) -> str:
-        """
-        分析公告情感倾向
+        """分析公告情感倾向
 
         Args:
             title: 公告标题
 
         Returns:
             str: positive, negative, neutral
+
         """
         positive_keywords = ["预增", "增长", "分红", "派息", "利好", "中标", "合作"]
         negative_keywords = ["预降", "下降", "亏损", "风险", "诉讼", "退市", "ST"]
@@ -247,17 +246,16 @@ class AnnouncementService:
 
         if positive_count > negative_count:
             return "positive"
-        elif negative_count > positive_count:
+        if negative_count > positive_count:
             return "negative"
-        else:
-            return "neutral"
+        return "neutral"
 
     def evaluate_monitor_rules(self) -> Dict[str, Any]:
-        """
-        评估所有活跃的监控规则
+        """评估所有活跃的监控规则
 
         Returns:
             Dict: 评估结果
+
         """
         session = self.SessionLocal()
         triggered_count = 0
@@ -301,8 +299,7 @@ class AnnouncementService:
         rule: AnnouncementMonitorRule,
         announcements: List[Announcement],
     ) -> int:
-        """
-        评估单个监控规则
+        """评估单个监控规则
 
         Args:
             session: 数据库会话
@@ -311,6 +308,7 @@ class AnnouncementService:
 
         Returns:
             int: 触发数量
+
         """
         triggered_count = 0
 
@@ -322,7 +320,7 @@ class AnnouncementService:
                     and_(
                         AnnouncementMonitorRecord.rule_id == rule.id,
                         AnnouncementMonitorRecord.announcement_id == announcement.id,
-                    )
+                    ),
                 )
                 .first()
             )
@@ -356,8 +354,7 @@ class AnnouncementService:
         return triggered_count
 
     def _check_rule_conditions(self, rule: AnnouncementMonitorRule, announcement: Announcement) -> bool:
-        """
-        检查规则条件是否满足
+        """检查规则条件是否满足
 
         Args:
             rule: 监控规则
@@ -365,6 +362,7 @@ class AnnouncementService:
 
         Returns:
             bool: 是否满足条件
+
         """
         # 检查股票代码（如果规则指定了）
         if rule.stock_codes:
@@ -389,8 +387,7 @@ class AnnouncementService:
         return True
 
     def _find_matched_keywords(self, keywords: list, text: str) -> list:
-        """
-        查找匹配的关键词
+        """查找匹配的关键词
 
         Args:
             keywords: 关键词列表
@@ -398,6 +395,7 @@ class AnnouncementService:
 
         Returns:
             list: 匹配的关键词
+
         """
         matched = []
 
@@ -413,13 +411,13 @@ class AnnouncementService:
         announcement: Announcement,
         matched_keywords: list,
     ):
-        """
-        发送通知
+        """发送通知
 
         Args:
             rule: 监控规则
             announcement: 公告
             matched_keywords: 匹配的关键词
+
         """
         # 简化实现：仅记录日志
         # 实际应用中应该发送邮件、webhook等
@@ -427,7 +425,7 @@ class AnnouncementService:
             f"[NOTIFICATION] Rule: {rule.rule_name}, "
             f"Stock: {announcement.stock_code} {announcement.stock_name}, "
             f"Title: {announcement.announcement_title}, "
-            f"Keywords: {matched_keywords}"
+            f"Keywords: {matched_keywords}",
         )
 
     def get_announcements(
@@ -440,8 +438,7 @@ class AnnouncementService:
         page: int = 1,
         page_size: int = 20,
     ) -> Dict[str, Any]:
-        """
-        查询公告
+        """查询公告
 
         Args:
             stock_code: 股票代码
@@ -454,6 +451,7 @@ class AnnouncementService:
 
         Returns:
             Dict: 查询结果
+
         """
         session = self.SessionLocal()
 

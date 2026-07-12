@@ -53,7 +53,7 @@ def test_init_logs_warning_when_smtp_config_incomplete(caplog):
                 "smtp_port": 587,
                 "username": "",
                 "password": "",
-            }
+            },
         )
 
     assert service.username == ""
@@ -71,7 +71,7 @@ def test_send_email_logs_success(monkeypatch, caplog):
             "password": "secret",
             "use_tls": True,
             "from_name": "MyStocks Bot",
-        }
+        },
     )
 
     with caplog.at_level(logging.INFO, logger=module.__name__):
@@ -102,7 +102,7 @@ def test_send_email_logs_smtp_errors(monkeypatch, caplog):
             "username": "bot@example.com",
             "password": "secret",
             "use_tls": True,
-        }
+        },
     )
 
     with caplog.at_level(logging.ERROR, logger=module.__name__):

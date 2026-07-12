@@ -1,10 +1,10 @@
-"""
-机器学习相关的数据模型定义
+"""机器学习相关的数据模型定义
 """
 
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
+
 
 # ==================== 通达信数据相关 ====================
 
@@ -160,7 +160,7 @@ class HyperparameterSearchRequest(BaseModel):
                 "num_leaves": [5, 10, 15, 20, 25],
                 "n_estimators": [10, 40, 70, 100],
                 "learning_rate": [0.01, 0.1, 0.2],
-            }
+            },
         },
     )
 

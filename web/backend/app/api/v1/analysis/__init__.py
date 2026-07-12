@@ -1,5 +1,4 @@
-"""
-分析模块API
+"""分析模块API
 
 提供情感分析、回测和压力测试功能
 
@@ -13,4 +12,5 @@ from .backtest import router as backtest_router
 from .sentiment import router as sentiment_router
 from .stress_test import router as stress_test_router
 
-__all__ = ["sentiment_router", "backtest_router", "stress_test_router"]
+
+__all__ = ["backtest_router", "sentiment_router", "stress_test_router"]

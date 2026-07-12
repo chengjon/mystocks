@@ -1,5 +1,4 @@
-"""
-密码策略验证模块
+"""密码策略验证模块
 实现强密码策略要求，包括：
 - 最小长度要求
 - 复杂度要求（大小写字母、数字、特殊字符）
@@ -10,6 +9,7 @@ import re
 from typing import Dict, List, Tuple
 
 import structlog
+
 
 logger = structlog.get_logger()
 
@@ -27,8 +27,7 @@ class PasswordPolicy:
         check_common_passwords: bool = True,
         max_length: int = 128,
     ):
-        """
-        初始化密码策略
+        """初始化密码策略
 
         Args:
             min_length: 最小密码长度
@@ -38,6 +37,7 @@ class PasswordPolicy:
             require_special_char: 是否需要特殊字符
             check_common_passwords: 是否检查常见密码
             max_length: 最大密码长度
+
         """
         self.min_length = min_length
         self.max_length = max_length
@@ -83,14 +83,14 @@ class PasswordPolicy:
         }
 
     def validate_password(self, password: str) -> Tuple[bool, List[str]]:
-        """
-        验证密码是否符合策略
+        """验证密码是否符合策略
 
         Args:
             password: 要验证的密码
 
         Returns:
             Tuple[bool, List[str]]: (是否通过验证, 错误信息列表)
+
         """
         errors = []
 

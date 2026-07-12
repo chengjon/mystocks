@@ -1,5 +1,4 @@
-"""
-Redis Client Manager
+"""Redis Client Manager
 =====================
 
 统一的Redis连接管理器，支持连接池、自动重连、错误处理。
@@ -17,12 +16,12 @@ import redis
 from app.core.config import settings
 from src.utils.redis_runtime_config import get_redis_connection_kwargs
 
+
 logger = logging.getLogger(__name__)
 
 
 class RedisManager:
-    """
-    Redis连接管理器 (单例模式)
+    """Redis连接管理器 (单例模式)
 
     功能:
     1. 连接池管理
@@ -46,7 +45,7 @@ class RedisManager:
     def _initialize_client(self):
         """初始化Redis连接池"""
         try:
-            redis_kwargs = get_redis_connection_kwargs('app_cache', decode_responses=settings.redis_decode_responses)
+            redis_kwargs = get_redis_connection_kwargs("app_cache", decode_responses=settings.redis_decode_responses)
             self._redis_client = redis.Redis(
                 **redis_kwargs,
                 max_connections=settings.redis_max_connections,
@@ -72,8 +71,7 @@ class RedisManager:
 
     @contextmanager
     def get_connection(self):
-        """
-        获取Redis连接的上下文管理器
+        """获取Redis连接的上下文管理器
 
         使用示例:
         ```python
@@ -89,11 +87,11 @@ class RedisManager:
             raise
 
     def health_check(self) -> bool:
-        """
-        健康检查
+        """健康检查
 
         Returns:
             bool: Redis是否可用
+
         """
         try:
             self.client.ping()
@@ -110,11 +108,11 @@ class RedisManager:
             logger.info("Redis connection closed")
 
     def flush_db(self, asynchronous: bool = False):
-        """
-        清空当前数据库（谨慎使用！）
+        """清空当前数据库（谨慎使用！）
 
         Args:
             asynchronous: 是否异步执行
+
         """
         try:
             self.client.flushdb(asynchronous=asynchronous)
@@ -128,10 +126,10 @@ redis_manager = RedisManager()
 
 
 def get_redis_client() -> redis.Redis:
-    """
-    获取Redis客户端的快捷函数
+    """获取Redis客户端的快捷函数
 
     Returns:
         redis.Redis: Redis客户端实例
+
     """
     return redis_manager.client

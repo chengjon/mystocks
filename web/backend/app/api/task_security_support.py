@@ -1,5 +1,4 @@
-"""
-任务 API 安全与审计辅助函数。
+"""任务 API 安全与审计辅助函数。
 """
 
 import time
@@ -7,6 +6,7 @@ from datetime import datetime, timezone
 from typing import Dict, Optional
 
 from app.api.auth import User
+
 
 task_operation_count: dict[int, dict[int, int]] = {}
 task_audit_log: list[dict] = []

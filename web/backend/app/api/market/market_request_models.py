@@ -1,5 +1,4 @@
-"""
-市场数据 API 请求模型。
+"""市场数据 API 请求模型。
 """
 
 from datetime import date

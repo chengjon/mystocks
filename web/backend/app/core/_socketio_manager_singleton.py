@@ -2,15 +2,16 @@
 
 from __future__ import annotations
 
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
+
 
 if TYPE_CHECKING:
     from app.core.socketio_manager import MySocketIOManager
 
-_socketio_manager: Optional["MySocketIOManager"] = None
+_socketio_manager: Optional[MySocketIOManager] = None
 
 
-def get_socketio_manager() -> "MySocketIOManager":
+def get_socketio_manager() -> MySocketIOManager:
     """获取Socket.IO管理器单例"""
     global _socketio_manager
     if _socketio_manager is None:

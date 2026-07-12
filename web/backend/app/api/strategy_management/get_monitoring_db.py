@@ -1,5 +1,4 @@
-"""
-策略管理 API - Week 1 Architecture Compliant
+"""策略管理 API - Week 1 Architecture Compliant
 
 提供策略CRUD、模型训练、回测执行等接口
 使用 MyStocksUnifiedManager 统一数据访问 + MonitoringDatabase 监控集成
@@ -17,6 +16,7 @@ from typing import Any, Dict, List, Optional
 import structlog
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Path
 
+
 logger = structlog.get_logger(__name__)
 
 # 添加项目根目录到路径
@@ -24,16 +24,17 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from app.mock.unified_mock_data import get_mock_data_manager
 from app.api.strategy_management._strategy_management_task_tail import run_backtest_task, train_model_task
-from app.core.responses import create_unified_success_response
-from app.schemas.backtest_schemas import BacktestRequest
 from app.api.strategy_management.monitoring_adapter import MonitoringAdapter, MonitoringFallback
+from app.core.responses import create_unified_success_response
+from app.mock.unified_mock_data import get_mock_data_manager
+from app.schemas.backtest_schemas import BacktestRequest
 from src.core import DataClassification
 from src.monitoring.monitoring_database import MonitoringDatabase
 
 # 使用 MyStocksUnifiedManager 作为统一入口点
 from unified_manager import MyStocksUnifiedManager
+
 
 router = APIRouter(prefix="/api/v1/strategy", tags=["策略管理-Week1"])
 
@@ -121,7 +122,7 @@ def _build_runtime_strategy_record(strategy_data: Dict[str, Any], strategy_id: O
             "created_at": created_at,
             "updated_at": updated_at,
             "status": strategy_data.get("status", "draft"),
-        }
+        },
     )
 
 
@@ -350,7 +351,7 @@ async def _handle_strategy_lifecycle_action(
 
             updated_strategy = _set_runtime_strategy_status(strategy_id, status)
             if updated_strategy is None:
-                raise HTTPException(status_code=500, detail=f"{success_message}失败: {str(db_error)}")
+                raise HTTPException(status_code=500, detail=f"{success_message}失败: {db_error!s}")
             source = "runtime-fallback"
             logger.warning("策略生命周期动作降级到 runtime fallback: %(e)s", e=str(db_error))
 
@@ -380,7 +381,7 @@ async def _handle_strategy_lifecycle_action(
             success=False,
             error_message=str(e),
         )
-        raise HTTPException(status_code=500, detail=f"{success_message}失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"{success_message}失败: {e!s}")
 
 def get_monitoring_db():
     """获取监控数据库实例（延迟初始化）"""
@@ -400,8 +401,7 @@ def get_monitoring_db():
 
 @router.get("/strategies")
 async def list_strategies(status: Optional[str] = None, page: int = 1, page_size: int = 20) -> Any:
-    """
-    获取策略列表
+    """获取策略列表
 
     Args:
         status: 过滤状态 ('draft', 'active', 'archived')
@@ -417,6 +417,7 @@ async def list_strategies(status: Optional[str] = None, page: int = 1, page_size
         }
 
     支持Mock数据模式切换
+
     """
     operation_start = datetime.now()
     use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
@@ -513,13 +514,12 @@ async def list_strategies(status: Optional[str] = None, page: int = 1, page_size
             success=False,
             details=str(e),
         )
-        raise HTTPException(status_code=500, detail=f"获取策略列表失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取策略列表失败: {e!s}")
 
 
 @router.post("/strategies")
 async def create_strategy(strategy_data: Dict[str, Any]) -> Any:
-    """
-    创建新策略
+    """创建新策略
 
     Args:
         strategy_data: 策略创建数据
@@ -528,6 +528,7 @@ async def create_strategy(strategy_data: Dict[str, Any]) -> Any:
         创建的策略对象
 
     支持Mock数据模式切换
+
     """
     operation_start = datetime.now()
     strategy_record: Optional[Dict[str, Any]] = None
@@ -546,7 +547,7 @@ async def create_strategy(strategy_data: Dict[str, Any]) -> Any:
                     "parameters": strategy_data.get("parameters", {}),
                     "status": strategy_data.get("status", "draft"),
                     "is_mock": True,
-                }
+                },
             )
             source = "mock"
             if _runtime_fallback_enabled():
@@ -596,8 +597,7 @@ async def create_strategy(strategy_data: Dict[str, Any]) -> Any:
 
         if result:
             return create_unified_success_response(data=strategy_record, message="策略创建成功")
-        else:
-            raise HTTPException(status_code=500, detail="策略创建失败")
+        raise HTTPException(status_code=500, detail="策略创建失败")
 
     except Exception as e:
         # 记录失败操作
@@ -611,7 +611,7 @@ async def create_strategy(strategy_data: Dict[str, Any]) -> Any:
             success=False,
             error_message=str(e),
         )
-        raise HTTPException(status_code=500, detail=f"创建策略失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"创建策略失败: {e!s}")
 
 
 @router.get("/strategies/{strategy_id}")
@@ -643,7 +643,7 @@ async def get_strategy(strategy_id: int) -> Any:
         fallback_strategy = _find_runtime_strategy(strategy_id) if _runtime_fallback_enabled() else None
         if fallback_strategy is not None:
             return create_unified_success_response(data=fallback_strategy, message="获取策略成功")
-        raise HTTPException(status_code=500, detail=f"获取策略失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取策略失败: {e!s}")
 
 
 @router.put("/strategies/{strategy_id}")
@@ -693,7 +693,7 @@ async def update_strategy(strategy_id: int, strategy_update: Dict[str, Any]) -> 
                 raise
             runtime_strategy = _find_runtime_strategy(strategy_id)
             if runtime_strategy is None:
-                raise HTTPException(status_code=500, detail=f"更新策略失败: {str(db_error)}")
+                raise HTTPException(status_code=500, detail=f"更新策略失败: {db_error!s}")
             updated_strategy = _build_runtime_strategy_record(
                 {**runtime_strategy, **strategy_update, "strategy_id": strategy_id, "id": strategy_id},
                 strategy_id=strategy_id,
@@ -714,13 +714,12 @@ async def update_strategy(strategy_id: int, strategy_update: Dict[str, Any]) -> 
 
         if result:
             return create_unified_success_response(message="策略更新成功")
-        else:
-            raise HTTPException(status_code=500, detail="策略更新失败")
+        raise HTTPException(status_code=500, detail="策略更新失败")
 
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"更新策略失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"更新策略失败: {e!s}")
 
 
 @router.delete("/strategies/{strategy_id}")
@@ -746,7 +745,7 @@ async def delete_strategy(strategy_id: int) -> Any:
                 raise
             removed = _delete_runtime_strategy(strategy_id)
             if not removed:
-                raise HTTPException(status_code=500, detail=f"删除策略失败: {str(db_error)}")
+                raise HTTPException(status_code=500, detail=f"删除策略失败: {db_error!s}")
             return create_unified_success_response(message="策略已归档")
 
         if not result and _runtime_fallback_enabled():
@@ -756,11 +755,10 @@ async def delete_strategy(strategy_id: int) -> Any:
 
         if result:
             return create_unified_success_response(message="策略已归档")
-        else:
-            raise HTTPException(status_code=500, detail="策略删除失败")
+        raise HTTPException(status_code=500, detail="策略删除失败")
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"删除策略失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"删除策略失败: {e!s}")
 
 
 @router.post("/{strategy_id}/start")
@@ -809,14 +807,14 @@ async def stop_strategy(strategy_id: int) -> Any:
 
 @router.post("/models/train")
 async def train_model(config: Dict[str, Any], background_tasks: BackgroundTasks) -> Dict[str, Any]:
-    """
-    启动模型训练任务
+    """启动模型训练任务
 
     Args:
         config: 训练配置
 
     Returns:
         {"task_id": "task_xxx", "model_id": 123}
+
     """
     try:
         manager = MyStocksUnifiedManager()
@@ -859,13 +857,12 @@ async def train_model(config: Dict[str, Any], background_tasks: BackgroundTasks)
         return {"task_id": task_id, "model_id": model_id}
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"启动模型训练失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"启动模型训练失败: {e!s}")
 
 
 @router.get("/models/training/{task_id}/status")
 async def get_training_status(task_id: str) -> Dict[str, Any]:
-    """
-    查询训练状态
+    """查询训练状态
 
     Returns:
         {
@@ -873,6 +870,7 @@ async def get_training_status(task_id: str) -> Dict[str, Any]:
             "progress": 75,
             "metrics": {...}
         }
+
     """
     try:
         # 从task_id解析model_id
@@ -906,7 +904,7 @@ async def get_training_status(task_id: str) -> Dict[str, Any]:
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取训练状态失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取训练状态失败: {e!s}")
 
 
 @router.get("/models")
@@ -930,19 +928,19 @@ async def list_models(model_type: Optional[str] = None, status: Optional[str] = 
         return models.to_dict("records") if models is not None else []
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取模型列表失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取模型列表失败: {e!s}")
 
 
 @router.post("/backtest/run")
 async def run_backtest(request: BacktestRequest, background_tasks: BackgroundTasks) -> Dict[str, int]:
-    """
-    执行回测
+    """执行回测
 
     Args:
         request: 回测请求参数
 
     Returns:
         {"backtest_id": 123}
+
     """
     import pandas as pd
 
@@ -1006,12 +1004,12 @@ async def run_backtest(request: BacktestRequest, background_tasks: BackgroundTas
             fallback_record = _build_runtime_backtest_record(request, config)
             _store_runtime_backtest(fallback_record)
             return {"backtest_id": int(fallback_record["id"])}
-        raise HTTPException(status_code=500, detail=f"启动回测失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"启动回测失败: {e!s}")
 
 
 @router.get("/backtest/results")
 async def list_backtest_results(
-    strategy_id: Optional[int] = None, page: int = 1, page_size: int = 20
+    strategy_id: Optional[int] = None, page: int = 1, page_size: int = 20,
 ) -> Dict[str, Any]:
     """获取回测结果列表"""
     try:
@@ -1040,7 +1038,7 @@ async def list_backtest_results(
     except Exception as e:
         if _runtime_fallback_enabled():
             return _list_runtime_backtests(strategy_id=strategy_id, page=page, page_size=page_size)
-        raise HTTPException(status_code=500, detail=f"获取回测结果失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取回测结果失败: {e!s}")
 
 
 @router.get("/backtest/results/{backtest_id}")
@@ -1069,7 +1067,7 @@ async def get_backtest_result(backtest_id: int = Path(..., description="回测ID
         fallback_record = _find_runtime_backtest(backtest_id) if _runtime_fallback_enabled() else None
         if fallback_record is not None:
             return fallback_record
-        raise HTTPException(status_code=500, detail=f"获取回测结果失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取回测结果失败: {e!s}")
 
 
 @router.get("/backtest/status/{backtest_id}")

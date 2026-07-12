@@ -1,5 +1,4 @@
-"""
-API验证错误消息常量 (中文)
+"""API验证错误消息常量 (中文)
 
 提供统一的中文错误消息，确保用户友好的错误提示
 """
@@ -186,7 +185,7 @@ class ValidationErrorBuilder:
             "too_long": CommonMessages.SYMBOL_TOO_LONG,
         }
         return ValidationErrorBuilder.build_field_error(
-            "symbol", error_map.get(error_type, CommonMessages.SYMBOL_INVALID_FORMAT)
+            "symbol", error_map.get(error_type, CommonMessages.SYMBOL_INVALID_FORMAT),
         )
 
     @staticmethod
@@ -200,7 +199,7 @@ class ValidationErrorBuilder:
             "too_long": CommonMessages.DATE_RANGE_TOO_LONG,
         }
         return ValidationErrorBuilder.build_field_error(
-            field_name, error_map.get(error_type, CommonMessages.DATE_INVALID_FORMAT)
+            field_name, error_map.get(error_type, CommonMessages.DATE_INVALID_FORMAT),
         )
 
     @staticmethod
@@ -225,9 +224,9 @@ class ValidationErrorBuilder:
 
 __all__ = [
     "CommonMessages",
+    "ErrorMessages",
     "MarketMessages",
     "TechnicalMessages",
     "TradeMessages",
-    "ErrorMessages",
     "ValidationErrorBuilder",
 ]

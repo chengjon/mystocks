@@ -1,5 +1,4 @@
-"""
-量化交易算法 API 数据模型
+"""量化交易算法 API 数据模型
 
 定义所有算法API的Pydantic模型，包括：
 - 请求模型：算法训练、预测、配置等
@@ -15,6 +14,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, Field, field_validator
+
 
 # ==================== 枚举定义 ====================
 
@@ -153,7 +153,7 @@ class NaiveBayesConfig(AlgorithmConfig):
     """朴素贝叶斯算法配置"""
 
     distribution_type: str = Field(
-        default="gaussian", pattern="^(gaussian|multinomial|bernoulli)$", description="分布类型"
+        default="gaussian", pattern="^(gaussian|multinomial|bernoulli)$", description="分布类型",
     )
 
 
@@ -250,7 +250,7 @@ class NGramTrainRequest(BaseModel):
     symbol: str = Field(..., min_length=1, max_length=20, description="股票代码")
     n: int = Field(default=3, ge=2, le=10, description="N-gram的N值")
     sequence_type: str = Field(
-        default="price_changes", pattern="^(price_changes|volume_changes)$", description="序列类型"
+        default="price_changes", pattern="^(price_changes|volume_changes)$", description="序列类型",
     )
     window_size: int = Field(default=1000, ge=100, description="历史数据窗口大小")
 

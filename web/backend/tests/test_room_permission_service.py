@@ -1,5 +1,4 @@
-"""
-房间权限控制服务测试
+"""房间权限控制服务测试
 
 Tests for Room Permission Control Service
 
@@ -10,14 +9,14 @@ Date: 2025-11-07
 """
 
 from app.services.room_permission_service import (
-    RoomRole,
+    RoomAccessControl,
     RoomPermission,
     RoomPermissionManager,
-    RoomAccessControl,
-    get_permission_manager,
+    RoomRole,
     get_access_control,
-    reset_permission_manager,
+    get_permission_manager,
     reset_access_control,
+    reset_permission_manager,
 )
 
 

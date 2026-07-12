@@ -1,5 +1,4 @@
-"""
-缓存预热系统测试
+"""缓存预热系统测试
 
 测试缓存预热策略、监控和API功能。
 
@@ -9,9 +8,12 @@ Test Coverage:
 - API endpoints: 预热和监控端点
 """
 
-import pytest
 import time
 
+import pytest
+
+from app.core.cache_eviction import reset_eviction_strategy
+from app.core.cache_manager import get_cache_manager, reset_cache_manager
 from app.core.cache_prewarming import (
     CacheMonitor,
     CachePrewarmingStrategy,
@@ -20,8 +22,6 @@ from app.core.cache_prewarming import (
     reset_cache_monitor,
     reset_prewarming_strategy,
 )
-from app.core.cache_manager import get_cache_manager, reset_cache_manager
-from app.core.cache_eviction import reset_eviction_strategy
 
 
 @pytest.fixture

@@ -1,5 +1,4 @@
-"""
-Authentication API Unit Tests
+"""Authentication API Unit Tests
 
 Tests for JWT authentication system including:
 - User registration
@@ -9,20 +8,21 @@ Tests for JWT authentication system including:
 - User validation
 """
 
+from unittest.mock import patch
+
 import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
-from unittest.mock import patch
 
-from app.main import app
 from app.core.security import (
+    create_access_token,
     get_password_hash,
     verify_password,
-    create_access_token,
     verify_token,
 )
+from app.main import app
 
 
 # PostgreSQL test database
@@ -454,8 +454,9 @@ class TestPasswordReset:
 
         # Request reset (this would normally send email with token)
         # For testing, we'll create a reset token manually
-        from app.core.security import create_access_token
         from datetime import timedelta
+
+        from app.core.security import create_access_token
 
         reset_token = create_access_token(
             data={"sub": "testuser", "user_id": user_id, "role": "user", "purpose": "password_reset"},

@@ -1,5 +1,4 @@
-"""
-市场数据服务 (MarketDataService)
+"""市场数据服务 (MarketDataService)
 
 业务逻辑层,负责:
 1. 数据获取: 调用adapters获取外部数据
@@ -13,18 +12,13 @@
 """
 
 import logging
-import os
 from datetime import date, datetime
 from typing import Any, Dict, List, Optional
 
-import pandas as pd
-from sqlalchemy import and_, create_engine, or_
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import and_
 
-from app.adapters.akshare_extension import get_akshare_extension
-from app.adapters.tqlex_adapter import get_tqlex_adapter
-from app.core.cache_integration import get_cache_integration
-from app.models.market_data import ChipRaceEndData, ChipRaceOpenData, ETFData, FundFlow, LongHuBangData
+from app.models.market_data import LongHuBangData
+
 
 logger = logging.getLogger(__name__)
 
@@ -33,14 +27,14 @@ class MarketDataServiceFetchAndSaveMixin:
     """MarketDataService 方法集 Part 2"""
 
     def fetch_and_save_lhb_detail(self, trade_date: str) -> Dict[str, Any]:
-        """
-        获取并保存龙虎榜数据
+        """获取并保存龙虎榜数据
 
         Args:
             trade_date: 交易日期 (YYYY-MM-DD)
 
         Returns:
             保存结果字典
+
         """
         try:
             # 1. 从Akshare获取数据
@@ -75,7 +69,7 @@ class MarketDataServiceFetchAndSaveMixin:
                             and_(
                                 LongHuBangData.symbol == lhb_data.symbol,
                                 LongHuBangData.trade_date == date_obj,
-                            )
+                            ),
                         )
                         .first()
                     )
@@ -104,8 +98,7 @@ class MarketDataServiceFetchAndSaveMixin:
         min_net_amount: Optional[float] = None,
         limit: int = 100,
     ) -> List[LongHuBangData]:
-        """
-        查询龙虎榜数据
+        """查询龙虎榜数据
 
         Args:
             symbol: 股票代码
@@ -116,6 +109,7 @@ class MarketDataServiceFetchAndSaveMixin:
 
         Returns:
             LongHuBangData对象列表
+
         """
         db = self.SessionLocal()
         try:

@@ -1,5 +1,4 @@
-"""
-API Gateway Tests - Rate limiter, circuit breaker, router, transformer
+"""API Gateway Tests - Rate limiter, circuit breaker, router, transformer
 
 Task 11: API Gateway and Request Routing
 Author: Claude Code
@@ -9,15 +8,15 @@ Date: 2025-11-07
 import time
 
 from app.gateway import (
-    RateLimiter,
-    RateLimitConfig,
     CircuitBreaker,
     CircuitBreakerConfig,
     CircuitBreakerState,
+    RateLimitConfig,
+    RateLimiter,
     RequestRouter,
-    RouteConfig,
     RequestTransformer,
     ResponseTransformer,
+    RouteConfig,
 )
 
 
@@ -432,7 +431,7 @@ class TestGatewayIntegration:
                 path="/api/v1/users",
                 methods=["GET"],
                 version="v1",
-            )
+            ),
         )
 
         # Check rate limit

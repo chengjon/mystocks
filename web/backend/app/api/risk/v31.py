@@ -5,13 +5,14 @@ from typing import Any, Dict, List, Set
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
-from app.core.exceptions import BusinessException, NotFoundException, ValidationException
 from app.api.risk._shared import (
     ENHANCED_RISK_FEATURES_AVAILABLE,
     RISK_MANAGEMENT_V31_AVAILABLE,
     get_risk_management_core,
     logger,
 )
+from app.core.exceptions import BusinessException, NotFoundException, ValidationException
+
 
 router = APIRouter(prefix="/api/v1/risk", tags=["风险管理-V3.1"])
 
@@ -21,13 +22,13 @@ async def get_stock_risk_v31(symbol: str) -> Dict[str, Any]:
     try:
         if not RISK_MANAGEMENT_V31_AVAILABLE:
             raise BusinessException(
-                detail="V3.1风险管理系统未初始化", status_code=503, error_code="RISK_MANAGEMENT_SYSTEM_NOT_INITIALIZED"
+                detail="V3.1风险管理系统未初始化", status_code=503, error_code="RISK_MANAGEMENT_SYSTEM_NOT_INITIALIZED",
             )
 
         core = get_risk_management_core()
         if not core:
             raise BusinessException(
-                detail="风险管理核心不可用", status_code=503, error_code="RISK_MANAGEMENT_CORE_UNAVAILABLE"
+                detail="风险管理核心不可用", status_code=503, error_code="RISK_MANAGEMENT_CORE_UNAVAILABLE",
             )
 
         risk_metrics = await core.calculate_stock_risk(symbol)
@@ -48,7 +49,7 @@ async def get_stock_risk_v31(symbol: str) -> Dict[str, Any]:
     except Exception as e:
         logger.error("V3.1个股风险计算失败 %(symbol)s: %(e)s")
         raise BusinessException(
-            detail=f"个股风险计算失败: {str(e)}", status_code=500, error_code="INDIVIDUAL_STOCK_RISK_CALCULATION_FAILED"
+            detail=f"个股风险计算失败: {e!s}", status_code=500, error_code="INDIVIDUAL_STOCK_RISK_CALCULATION_FAILED",
         )
 
 
@@ -57,18 +58,18 @@ async def get_portfolio_risk_v31(portfolio_id: str) -> Dict[str, Any]:
     try:
         if not RISK_MANAGEMENT_V31_AVAILABLE:
             raise BusinessException(
-                detail="V3.1风险管理系统未初始化", status_code=503, error_code="RISK_MANAGEMENT_SYSTEM_NOT_INITIALIZED"
+                detail="V3.1风险管理系统未初始化", status_code=503, error_code="RISK_MANAGEMENT_SYSTEM_NOT_INITIALIZED",
             )
 
         core = get_risk_management_core()
         if not core:
             raise BusinessException(
-                detail="风险管理核心不可用", status_code=503, error_code="RISK_MANAGEMENT_CORE_UNAVAILABLE"
+                detail="风险管理核心不可用", status_code=503, error_code="RISK_MANAGEMENT_CORE_UNAVAILABLE",
             )
 
         risk_metrics = await core.calculate_portfolio_risk(portfolio_id)
         await core._publish_risk_event(
-            "portfolio_risk_calculated", {"portfolio_id": portfolio_id, "metrics": risk_metrics.__dict__}
+            "portfolio_risk_calculated", {"portfolio_id": portfolio_id, "metrics": risk_metrics.__dict__},
         )
 
         return {
@@ -86,7 +87,7 @@ async def get_portfolio_risk_v31(portfolio_id: str) -> Dict[str, Any]:
     except Exception as e:
         logger.error("V3.1组合风险计算失败 %(portfolio_id)s: %(e)s")
         raise BusinessException(
-            detail=f"组合风险计算失败: {str(e)}", status_code=500, error_code="PORTFOLIO_RISK_CALCULATION_FAILED"
+            detail=f"组合风险计算失败: {e!s}", status_code=500, error_code="PORTFOLIO_RISK_CALCULATION_FAILED",
         )
 
 
@@ -203,7 +204,7 @@ async def websocket_risk_updates(websocket: WebSocket, topics: str = "portfolio_
                     message = json.loads(data)
                     if message.get("type") == "ping":
                         await connection_manager.send_personal_message(
-                            {"type": "pong", "timestamp": datetime.now().isoformat()}, websocket
+                            {"type": "pong", "timestamp": datetime.now().isoformat()}, websocket,
                         )
                     elif message.get("type") == "subscribe":
                         logger.info("客户端请求更新订阅: %(new_topics)s", new_topics=message.get("topics", []))
@@ -241,7 +242,7 @@ async def broadcast_risk_update(topic: str, message: Dict[str, Any]):
         raise
     except Exception as e:
         logger.error("广播风险更新失败 %(topic)s: %(e)s")
-        raise BusinessException(detail=f"广播失败: {str(e)}", status_code=500, error_code="BROADCAST_FAILED")
+        raise BusinessException(detail=f"广播失败: {e!s}", status_code=500, error_code="BROADCAST_FAILED")
 
 
 @router.get("/v31/ws/connections")
@@ -258,7 +259,7 @@ async def get_websocket_connections():
     except Exception as e:
         logger.error("获取WebSocket连接统计失败: %(e)s")
         raise BusinessException(
-            detail=f"获取统计失败: {str(e)}", status_code=500, error_code="STATISTICS_RETRIEVAL_FAILED"
+            detail=f"获取统计失败: {e!s}", status_code=500, error_code="STATISTICS_RETRIEVAL_FAILED",
         )
 
 

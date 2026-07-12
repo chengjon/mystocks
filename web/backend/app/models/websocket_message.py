@@ -1,5 +1,4 @@
-"""
-WebSocket消息格式定义
+"""WebSocket消息格式定义
 WebSocket Message Format Specification
 
 定义统一的WebSocket通信消息格式，包括：
@@ -36,8 +35,7 @@ class WebSocketMessageType(str, Enum):
 
 
 class WebSocketRequestMessage(BaseModel):
-    """
-    WebSocket请求消息格式
+    """WebSocket请求消息格式
 
     客户端发送给服务器的消息统一格式
 
@@ -57,6 +55,7 @@ class WebSocketRequestMessage(BaseModel):
             "trace_id": "trace_abc123"
         }
         ```
+
     """
 
     type: WebSocketMessageType = Field(default=WebSocketMessageType.REQUEST, description="消息类型 (固定为request)")
@@ -84,13 +83,12 @@ class WebSocketRequestMessage(BaseModel):
                 "user_id": "user_001",
                 "timestamp": 1699267200000,
                 "trace_id": "trace_abc123",
-            }
+            },
         }
 
 
 class WebSocketResponseMessage(BaseModel):
-    """
-    WebSocket响应消息格式
+    """WebSocket响应消息格式
 
     服务器返回给客户端的成功响应
 
@@ -112,6 +110,7 @@ class WebSocketResponseMessage(BaseModel):
             "trace_id": "trace_abc123"
         }
         ```
+
     """
 
     type: WebSocketMessageType = Field(default=WebSocketMessageType.RESPONSE, description="消息类型 (固定为response)")
@@ -141,13 +140,12 @@ class WebSocketResponseMessage(BaseModel):
                 "timestamp": 1699267201500,
                 "server_time": 1699267201500,
                 "trace_id": "trace_abc123",
-            }
+            },
         }
 
 
 class WebSocketErrorMessage(BaseModel):
-    """
-    WebSocket错误消息格式
+    """WebSocket错误消息格式
 
     服务器返回给客户端的错误响应
 
@@ -166,6 +164,7 @@ class WebSocketErrorMessage(BaseModel):
             "trace_id": "trace_abc123"
         }
         ```
+
     """
 
     type: WebSocketMessageType = Field(default=WebSocketMessageType.ERROR, description="消息类型 (固定为error)")
@@ -189,13 +188,12 @@ class WebSocketErrorMessage(BaseModel):
                 "error_details": {"symbol": "INVALID", "hint": "请使用6位数字股票代码"},
                 "timestamp": 1699267201500,
                 "trace_id": "trace_abc123",
-            }
+            },
         }
 
 
 class WebSocketSubscribeMessage(BaseModel):
-    """
-    WebSocket房间订阅消息
+    """WebSocket房间订阅消息
 
     客户端订阅特定房间以接收实时数据
 
@@ -209,6 +207,7 @@ class WebSocketSubscribeMessage(BaseModel):
             "timestamp": 1699267200000
         }
         ```
+
     """
 
     type: WebSocketMessageType = Field(default=WebSocketMessageType.SUBSCRIBE, description="消息类型 (固定为subscribe)")
@@ -228,13 +227,12 @@ class WebSocketSubscribeMessage(BaseModel):
                 "room": "market_600519",
                 "user_id": "user_001",
                 "timestamp": 1699267200000,
-            }
+            },
         }
 
 
 class WebSocketNotificationMessage(BaseModel):
-    """
-    WebSocket服务器推送通知
+    """WebSocket服务器推送通知
 
     服务器主动推送给订阅房间的客户端
 
@@ -253,6 +251,7 @@ class WebSocketNotificationMessage(BaseModel):
             "server_time": 1699267202000
         }
         ```
+
     """
 
     type: WebSocketMessageType = Field(
@@ -280,13 +279,12 @@ class WebSocketNotificationMessage(BaseModel):
                 "data": {"symbol": "600519", "price": 1850.50, "change": 2.5},
                 "timestamp": 1699267202000,
                 "server_time": 1699267202000,
-            }
+            },
         }
 
 
 class WebSocketHeartbeatMessage(BaseModel):
-    """
-    WebSocket心跳消息
+    """WebSocket心跳消息
 
     用于检测连接状态，防止超时断开
 
@@ -326,7 +324,7 @@ class WebSocketHeartbeatMessage(BaseModel):
                     "timestamp": 1699267200500,
                     "server_time": 1699267200500,
                 },
-            ]
+            ],
         }
 
 

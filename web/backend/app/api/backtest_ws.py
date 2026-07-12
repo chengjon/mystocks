@@ -1,5 +1,4 @@
-"""
-WebSocket endpoints for backtest progress
+"""WebSocket endpoints for backtest progress
 
 回测进度 WebSocket 推送
 """
@@ -11,6 +10,7 @@ from typing import Dict, Set
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 from app.core.celery_app import register_progress_callback, unregister_progress_callback
+
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/ws", tags=["WebSocket"])
@@ -103,8 +103,7 @@ manager = ConnectionManager()
 
 @router.websocket("/backtest/{backtest_id}")
 async def websocket_backtest_progress(websocket: WebSocket, backtest_id: str):
-    """
-    WebSocket endpoint for backtest progress updates
+    """WebSocket endpoint for backtest progress updates
 
     订阅指定回测任务的进度更新
     """
@@ -113,7 +112,7 @@ async def websocket_backtest_progress(websocket: WebSocket, backtest_id: str):
     try:
         # 发送连接确认
         await manager.send_personal_message(
-            json.dumps({"type": "connected", "backtest_id": backtest_id, "message": "已连接到回测进度推送"}), websocket
+            json.dumps({"type": "connected", "backtest_id": backtest_id, "message": "已连接到回测进度推送"}), websocket,
         )
 
         # 保持连接，等待消息
@@ -130,7 +129,7 @@ async def websocket_backtest_progress(websocket: WebSocket, backtest_id: str):
                     # 取消回测请求
                     # TODO: 实现取消逻辑
                     await manager.send_personal_message(
-                        json.dumps({"type": "cancelled", "message": "回测已取消"}), websocket
+                        json.dumps({"type": "cancelled", "message": "回测已取消"}), websocket,
                     )
                     break
 
@@ -147,11 +146,11 @@ async def websocket_backtest_progress(websocket: WebSocket, backtest_id: str):
 
 @router.get("/status")
 async def get_websocket_status():
-    """
-    获取 WebSocket 连接状态
+    """获取 WebSocket 连接状态
 
     Returns:
         当前活跃连接数
+
     """
     total_connections = sum(len(conns) for conns in manager.connections.values())
 

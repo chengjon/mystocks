@@ -1,5 +1,4 @@
-"""
-Comprehensive API Compliance Test Suite
+"""Comprehensive API Compliance Test Suite
 
 This test suite validates that all API endpoints comply with:
 - Unified API response structure
@@ -47,7 +46,7 @@ class APIComplianceValidator:
                         "endpoint": route.endpoint,
                         "dependencies": route.dependencies,
                         "response_model": route.response_model,
-                    }
+                    },
                 )
         return endpoints
 
@@ -147,7 +146,7 @@ class APIComplianceValidator:
                 # Auth should be required for protected endpoints
                 if response.status_code == 401 or response.status_code == 403:
                     continue  # Expected behavior
-                elif auth_response.status_code == 401 and response.status_code == 200:
+                if auth_response.status_code == 401 and response.status_code == 200:
                     # Endpoint works both ways (might be public)
                     result["auth_required"] = False
                 elif response.status_code == 200 and auth_response.status_code == 200:
@@ -199,7 +198,7 @@ class APIComplianceValidator:
                     result["errors"].append(f"{test_case['test']}: Expected 400/422, got {response.status_code}")
 
             except Exception as e:
-                result["errors"].append(f"{test_case['test']}: Exception occurred - {str(e)}")
+                result["errors"].append(f"{test_case['test']}: Exception occurred - {e!s}")
 
         return result
 
@@ -283,17 +282,17 @@ class APIComplianceValidator:
                     except Exception as e:
                         endpoint_result["validations"][f"{method}_exception"] = {
                             "compliance": False,
-                            "errors": [f"Exception during testing: {str(e)}"],
+                            "errors": [f"Exception during testing: {e!s}"],
                         }
 
             # Authentication validation
             endpoint_result["validations"]["authentication"] = self.validate_authentication(
-                endpoint["path"], endpoint["methods"]
+                endpoint["path"], endpoint["methods"],
             )
 
             # HTTP method semantics validation
             endpoint_result["validations"]["http_semantics"] = self.validate_http_method_semantics(
-                endpoint["path"], endpoint["methods"]
+                endpoint["path"], endpoint["methods"],
             )
 
             # Calculate endpoint compliance
@@ -332,27 +331,22 @@ class TestAPICompliance:
     def test_unified_response_structure(self, compliance_validator):
         """Test that all endpoints follow unified response structure"""
         # This is now integrated into the comprehensive validation
-        pass
 
     def test_authentication_requirements(self, compliance_validator):
         """Test authentication requirements for protected endpoints"""
         # This is now integrated into the comprehensive validation
-        pass
 
     def test_parameter_validation_completeness(self, compliance_validator):
         """Test parameter validation completeness"""
         # This is now integrated into the comprehensive validation
-        pass
 
     def test_http_method_semantics(self, compliance_validator):
         """Test HTTP method semantics"""
         # This is now integrated into the comprehensive validation
-        pass
 
     def test_rest_api_design_principles(self, compliance_validator):
         """Test REST API design principles"""
         # This is now integrated into the comprehensive validation
-        pass
 
     def test_comprehensive_api_compliance(self, compliance_validator):
         """Run comprehensive API compliance validation"""

@@ -1,5 +1,4 @@
-"""
-交易模块API
+"""交易模块API
 
 提供交易会话和持仓管理功能
 
@@ -11,4 +10,5 @@
 from .positions import router as positions_router
 from .session import router as session_router
 
-__all__ = ["session_router", "positions_router"]
+
+__all__ = ["positions_router", "session_router"]

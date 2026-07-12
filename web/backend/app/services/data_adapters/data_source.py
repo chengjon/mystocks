@@ -1,8 +1,7 @@
+"""基础数据源适配器
 """
-基础数据源适配器
-"""
-import time
 import logging
+import time
 from datetime import datetime
 from typing import Any, Dict, Optional
 
@@ -13,7 +12,9 @@ from app.services.data_source_interface import (
     HealthStatusEnum,
     IDataSource,
 )
+
 from .base import DataSourceMetrics
+
 
 logger = logging.getLogger(__name__)
 
@@ -39,8 +40,7 @@ class DataDataSourceAdapter(IDataSource):
         self.last_response_time = 0.0
 
     async def get_data(self, endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
-        """
-        获取数据
+        """获取数据
 
         Args:
             endpoint: 数据端点 (stocks/basic, stocks/daily, financial, etc.)
@@ -48,6 +48,7 @@ class DataDataSourceAdapter(IDataSource):
 
         Returns:
             格式化的数据响应
+
         """
         start_time = time.time()
         self.total_requests += 1
@@ -72,7 +73,7 @@ class DataDataSourceAdapter(IDataSource):
         except Exception as e:
             self.error_count += 1
             response_time = time.time() - start_time
-            logger.error(f"Data fetch failed for {endpoint}: {str(e)}")
+            logger.error(f"Data fetch failed for {endpoint}: {e!s}")
 
             # 更新监控指标
             self._update_metrics(success=False, response_time=response_time * 1000, error=str(e))
@@ -83,7 +84,7 @@ class DataDataSourceAdapter(IDataSource):
             # 返回错误响应格式
             return {
                 "status": "error",
-                "message": f"Failed to fetch data: {str(e)}",
+                "message": f"Failed to fetch data: {e!s}",
                 "data": None,
                 "timestamp": datetime.now().isoformat(),
                 "source": self.source_type,
@@ -91,28 +92,26 @@ class DataDataSourceAdapter(IDataSource):
             }
 
     async def _fetch_data(self, endpoint: str, params: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        实际的数据获取逻辑
+        """实际的数据获取逻辑
         """
         # 根据端点类型调用相应的数据获取方法
         if endpoint == "stocks/basic":
             return await self._fetch_stocks_basic(params)
-        elif endpoint == "stocks/daily":
+        if endpoint == "stocks/daily":
             return await self._fetch_stocks_daily(params)
-        elif endpoint == "stocks/kline":
+        if endpoint == "stocks/kline":
             return await self._fetch_stocks_kline(params)
-        elif endpoint == "financial":
+        if endpoint == "financial":
             return await self._fetch_financial_data(params)
-        elif endpoint == "stocks/detail":
+        if endpoint == "stocks/detail":
             return await self._fetch_stock_detail(params)
-        elif endpoint == "stocks/search":
+        if endpoint == "stocks/search":
             return await self._fetch_stocks_search(params)
-        elif endpoint == "markets/overview":
+        if endpoint == "markets/overview":
             return await self._fetch_markets_overview(params)
-        elif endpoint == "stocks/intraday":
+        if endpoint == "stocks/intraday":
             return await self._fetch_stocks_intraday(params)
-        else:
-            raise ValueError(f"Unsupported data endpoint: {endpoint}")
+        raise ValueError(f"Unsupported data endpoint: {endpoint}")
 
     async def _fetch_stocks_basic(self, params: Dict[str, Any]) -> Dict[str, Any]:
         """获取股票基本信息"""
@@ -127,8 +126,7 @@ class DataDataSourceAdapter(IDataSource):
 
         try:
             fetch_limit = 1000
-            if limit + offset > fetch_limit:
-                fetch_limit = limit + offset
+            fetch_limit = max(fetch_limit, limit + offset)
 
             # 传递search参数到数据库查询
             df = db_service.query_stocks_basic(limit=fetch_limit, search=search)
@@ -197,7 +195,7 @@ class DataDataSourceAdapter(IDataSource):
             }
 
         except Exception as e:
-            raise RuntimeError(f"Failed to fetch stocks basic data: {str(e)}")
+            raise RuntimeError(f"Failed to fetch stocks basic data: {e!s}")
 
     async def _fetch_stocks_daily(self, params: Dict[str, Any]) -> Dict[str, Any]:
         """获取股票日线数据"""
@@ -238,7 +236,7 @@ class DataDataSourceAdapter(IDataSource):
             }
 
         except Exception as e:
-            raise RuntimeError(f"Failed to fetch stocks daily data: {str(e)}")
+            raise RuntimeError(f"Failed to fetch stocks daily data: {e!s}")
 
     async def _fetch_stocks_kline(self, params: Dict[str, Any]) -> Dict[str, Any]:
         """获取股票K线数据 (标准化接口)"""
@@ -256,7 +254,7 @@ class DataDataSourceAdapter(IDataSource):
                     "start_date": start_date,
                     "end_date": end_date,
                     "limit": 1000,
-                }
+                },
             )
 
             # 添加K线特定字段
@@ -270,7 +268,7 @@ class DataDataSourceAdapter(IDataSource):
             return kline_data
 
         except Exception as e:
-            raise RuntimeError(f"Failed to fetch stocks kline data: {str(e)}")
+            raise RuntimeError(f"Failed to fetch stocks kline data: {e!s}")
 
     async def _fetch_financial_data(self, params: Dict[str, Any]) -> Dict[str, Any]:
         """获取财务数据"""
@@ -317,7 +315,7 @@ class DataDataSourceAdapter(IDataSource):
                         "net_profit": round(random.uniform(1e7, 1e9), 2),
                         "total_assets": round(random.uniform(5e9, 5e11), 2),
                         "total_liabilities": round(random.uniform(1e9, 3e11), 2),
-                    }
+                    },
                 ]
 
                 return {
@@ -333,7 +331,7 @@ class DataDataSourceAdapter(IDataSource):
                 }
 
         except Exception as e:
-            raise RuntimeError(f"Failed to fetch financial data: {str(e)}")
+            raise RuntimeError(f"Failed to fetch financial data: {e!s}")
 
     async def _fetch_stock_detail(self, params: Dict[str, Any]) -> Dict[str, Any]:
         """获取股票详细信息"""
@@ -375,7 +373,7 @@ class DataDataSourceAdapter(IDataSource):
             }
 
         except Exception as e:
-            raise RuntimeError(f"Failed to fetch stock detail: {str(e)}")
+            raise RuntimeError(f"Failed to fetch stock detail: {e!s}")
 
     async def _fetch_stocks_search(self, params: Dict[str, Any]) -> Dict[str, Any]:
         """股票搜索"""
@@ -390,7 +388,7 @@ class DataDataSourceAdapter(IDataSource):
                     "limit": limit,
                     "sort_field": "symbol",
                     "sort_order": "asc",
-                }
+                },
             )
 
             search_result["endpoint"] = "stocks/search"
@@ -399,7 +397,7 @@ class DataDataSourceAdapter(IDataSource):
             return search_result
 
         except Exception as e:
-            raise RuntimeError(f"Failed to search stocks: {str(e)}")
+            raise RuntimeError(f"Failed to search stocks: {e!s}")
 
     async def _fetch_markets_overview(self, params: Dict[str, Any]) -> Dict[str, Any]:
         """获取市场概览"""
@@ -551,7 +549,7 @@ class DataDataSourceAdapter(IDataSource):
             }
 
         except Exception as e:
-            raise RuntimeError(f"Failed to fetch markets overview: {str(e)}")
+            raise RuntimeError(f"Failed to fetch markets overview: {e!s}")
 
     async def _fetch_stocks_intraday(self, params: Dict[str, Any]) -> Dict[str, Any]:
         """获取股票分时数据"""
@@ -578,7 +576,7 @@ class DataDataSourceAdapter(IDataSource):
                         "price": round(base_price + price_change, 2),
                         "volume": volume,
                         "amount": round(volume * (base_price + price_change), 2),
-                    }
+                    },
                 )
 
             return {
@@ -594,7 +592,7 @@ class DataDataSourceAdapter(IDataSource):
             }
 
         except Exception as e:
-            raise RuntimeError(f"Failed to fetch stocks intraday data: {str(e)}")
+            raise RuntimeError(f"Failed to fetch stocks intraday data: {e!s}")
 
     async def _trigger_quality_monitoring(
         self,
@@ -613,7 +611,7 @@ class DataDataSourceAdapter(IDataSource):
                 success=success,
             )
         except Exception as e:
-            logger.warning(f"Failed to trigger quality monitoring: {str(e)}")
+            logger.warning(f"Failed to trigger quality monitoring: {e!s}")
 
     async def health_check(self) -> HealthStatus:
         """健康检查"""
@@ -637,7 +635,7 @@ class DataDataSourceAdapter(IDataSource):
             return HealthStatus(
                 status=HealthStatusEnum.FAILED,
                 response_time=response_time * 1000,
-                message=f"Data source health check failed: {str(e)}",
+                message=f"Data source health check failed: {e!s}",
                 timestamp=datetime.now(),
             )
 

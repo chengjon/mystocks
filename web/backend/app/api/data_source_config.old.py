@@ -1,5 +1,4 @@
-"""
-数据源配置CRUD API (符合API契约管理规范)
+"""数据源配置CRUD API (符合API契约管理规范)
 
 提供数据源配置的完整CRUD操作、版本管理和热重载功能。
 
@@ -42,6 +41,7 @@ from app.core.responses import (
     create_unified_error_response,
     create_unified_success_response,
 )
+
 
 router = APIRouter(prefix="/api/v1/data-sources/config", tags=["数据源配置管理"])
 
@@ -202,8 +202,7 @@ def handle_config_error(error: str, request_id: Optional[str] = None) -> Unified
 
 @router.post("/", response_model=UnifiedResponse, status_code=201)
 async def create_data_source(config: DataSourceCreate, request: Request, current_user: str = Depends(get_current_user)):
-    """
-    创建新的数据源配置
+    """创建新的数据源配置
 
     功能:
     - 创建全新的数据源端点配置
@@ -235,6 +234,7 @@ async def create_data_source(config: DataSourceCreate, request: Request, current
             "priority": 5,
             "description": "新数据源"
         }
+
     """
     request_id = getattr(request.state, "request_id", None)
 
@@ -270,7 +270,7 @@ async def create_data_source(config: DataSourceCreate, request: Request, current
     except Exception as e:
         return create_unified_error_response(
             code=BusinessCode.INTERNAL_ERROR,
-            message=f"创建数据源配置失败: {str(e)}",
+            message=f"创建数据源配置失败: {e!s}",
             error_code="CREATE_ENDPOINT_ERROR",
             request_id=request_id,
         )
@@ -278,10 +278,9 @@ async def create_data_source(config: DataSourceCreate, request: Request, current
 
 @router.put("/{endpoint_name}", response_model=ConfigChangeResponse)
 async def update_data_source(
-    endpoint_name: str, updates: DataSourceUpdate, current_user: str = Depends(get_current_user)
+    endpoint_name: str, updates: DataSourceUpdate, current_user: str = Depends(get_current_user),
 ):
-    """
-    更新数据源配置
+    """更新数据源配置
 
     功能:
     - 更新现有数据源配置的字段
@@ -306,6 +305,7 @@ async def update_data_source(
             "priority": 1,
             "data_quality_score": 9.5
         }
+
     """
     try:
         manager = get_config_manager()
@@ -333,23 +333,21 @@ async def update_data_source(
         if not result.success:
             if "not found" in result.error:
                 raise HTTPException(status_code=404, detail=result.error)
-            else:
-                raise HTTPException(status_code=400, detail=result.error)
+            raise HTTPException(status_code=400, detail=result.error)
 
         return ConfigChangeResponse(
-            success=result.success, endpoint_name=result.endpoint_name, version=result.version, message=result.message
+            success=result.success, endpoint_name=result.endpoint_name, version=result.version, message=result.message,
         )
 
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"更新数据源配置失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"更新数据源配置失败: {e!s}")
 
 
 @router.delete("/{endpoint_name}", response_model=ConfigChangeResponse)
 async def delete_data_source(endpoint_name: str, current_user: str = Depends(get_current_user)):
-    """
-    删除数据源配置
+    """删除数据源配置
 
     功能:
     - 删除数据源配置（软删除）
@@ -368,6 +366,7 @@ async def delete_data_source(endpoint_name: str, current_user: str = Depends(get
 
     Example:
         DELETE /api/v1/data-sources/config/new_source
+
     """
     try:
         manager = get_config_manager()
@@ -377,23 +376,21 @@ async def delete_data_source(endpoint_name: str, current_user: str = Depends(get
         if not result.success:
             if "not found" in result.error:
                 raise HTTPException(status_code=404, detail=result.error)
-            else:
-                raise HTTPException(status_code=400, detail=result.error)
+            raise HTTPException(status_code=400, detail=result.error)
 
         return ConfigChangeResponse(
-            success=result.success, endpoint_name=result.endpoint_name, version=result.version, message=result.message
+            success=result.success, endpoint_name=result.endpoint_name, version=result.version, message=result.message,
         )
 
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"删除数据源配置失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"删除数据源配置失败: {e!s}")
 
 
 @router.get("/{endpoint_name}", response_model=DataSourceResponse)
 async def get_data_source(endpoint_name: str):
-    """
-    获取单个数据源配置
+    """获取单个数据源配置
 
     Args:
         endpoint_name: 端点名称
@@ -406,6 +403,7 @@ async def get_data_source(endpoint_name: str):
 
     Example:
         GET /api/v1/data-sources/config/akshare.stock_zh_a_hist
+
     """
     try:
         manager = get_config_manager()
@@ -420,7 +418,7 @@ async def get_data_source(endpoint_name: str):
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取数据源配置失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取数据源配置失败: {e!s}")
 
 
 @router.get("/", response_model=List[DataSourceResponse])
@@ -429,8 +427,7 @@ async def list_data_sources(
     source_type: Optional[str] = Query(None, description="数据源类型"),
     status: Optional[str] = Query("active", description="状态（active, maintenance, deprecated）"),
 ):
-    """
-    列出数据源配置
+    """列出数据源配置
 
     支持按以下条件过滤:
     - data_category: 数据分类
@@ -449,6 +446,7 @@ async def list_data_sources(
 
     Example:
         GET /api/v1/data-sources/config?data_category=DAILY_KLINE&status=active
+
     """
     try:
         manager = get_config_manager()
@@ -458,13 +456,12 @@ async def list_data_sources(
         return [DataSourceResponse(**ep) for ep in endpoints]
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"列出数据源配置失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"列出数据源配置失败: {e!s}")
 
 
 @router.post("/batch", response_model=BatchOperationResponse)
 async def batch_operations(batch_request: BatchOperationRequest, current_user: str = Depends(get_current_user)):
-    """
-    批量操作数据源配置
+    """批量操作数据源配置
 
     支持:
     - 批量创建
@@ -492,6 +489,7 @@ async def batch_operations(batch_request: BatchOperationRequest, current_user: s
                 {"action": "delete", "endpoint_name": "yyy"}
             ]
         }
+
     """
     try:
         manager = get_config_manager()
@@ -523,7 +521,7 @@ async def batch_operations(batch_request: BatchOperationRequest, current_user: s
                     endpoint_name = op.get("endpoint_name")
                     updates = op.get("updates", {})
                     result = manager.update_endpoint(
-                        endpoint_name=endpoint_name, updates=updates, changed_by=current_user
+                        endpoint_name=endpoint_name, updates=updates, changed_by=current_user,
                     )
 
                 elif action == "delete":
@@ -545,7 +543,7 @@ async def batch_operations(batch_request: BatchOperationRequest, current_user: s
                         "success": result.success,
                         "endpoint_name": getattr(result, "endpoint_name", None),
                         "error": result.error if not result.success else None,
-                    }
+                    },
                 )
 
             except Exception as e:
@@ -554,17 +552,16 @@ async def batch_operations(batch_request: BatchOperationRequest, current_user: s
                 results.append({"action": action, "success": False, "error": str(e)})
 
         return BatchOperationResponse(
-            total=len(batch_request.operations), succeeded=succeeded, failed=failed, results=results, errors=errors
+            total=len(batch_request.operations), succeeded=succeeded, failed=failed, results=results, errors=errors,
         )
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"批量操作失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"批量操作失败: {e!s}")
 
 
 @router.get("/{endpoint_name}/versions", response_model=List[VersionInfo])
 async def get_version_history(endpoint_name: str, limit: int = Query(10, description="返回数量限制", ge=1, le=100)):
-    """
-    获取数据源配置的版本历史
+    """获取数据源配置的版本历史
 
     Args:
         endpoint_name: 端点名称
@@ -578,6 +575,7 @@ async def get_version_history(endpoint_name: str, limit: int = Query(10, descrip
 
     Example:
         GET /api/v1/data-sources/config/akshare.stock_zh_a_hist/versions?limit=20
+
     """
     try:
         manager = get_config_manager()
@@ -603,15 +601,14 @@ async def get_version_history(endpoint_name: str, limit: int = Query(10, descrip
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取版本历史失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取版本历史失败: {e!s}")
 
 
 @router.post("/{endpoint_name}/rollback/{version}", response_model=ConfigChangeResponse)
 async def rollback_to_version(
-    endpoint_name: str, version: int, request: RollbackRequest, current_user: str = Depends(get_current_user)
+    endpoint_name: str, version: int, request: RollbackRequest, current_user: str = Depends(get_current_user),
 ):
-    """
-    回滚数据源配置到指定版本
+    """回滚数据源配置到指定版本
 
     功能:
     - 将配置恢复到指定版本的快照
@@ -632,34 +629,33 @@ async def rollback_to_version(
 
     Example:
         POST /api/v1/data-sources/config/akshare.stock_zh_a_hist/rollback/1
+
     """
     try:
         manager = get_config_manager()
 
         result = manager.rollback_to_version(
-            endpoint_name=endpoint_name, target_version=version, changed_by=current_user
+            endpoint_name=endpoint_name, target_version=version, changed_by=current_user,
         )
 
         if not result.success:
             if "not found" in result.error:
                 raise HTTPException(status_code=404, detail=result.error)
-            else:
-                raise HTTPException(status_code=400, detail=result.error)
+            raise HTTPException(status_code=400, detail=result.error)
 
         return ConfigChangeResponse(
-            success=result.success, endpoint_name=result.endpoint_name, version=result.version, message=result.message
+            success=result.success, endpoint_name=result.endpoint_name, version=result.version, message=result.message,
         )
 
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"回滚配置失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"回滚配置失败: {e!s}")
 
 
 @router.post("/reload")
 async def reload_config(request: ReloadRequest, current_user: str = Depends(get_current_user)):
-    """
-    触发配置热重载
+    """触发配置热重载
 
     功能:
     - 从YAML文件重新加载配置
@@ -675,6 +671,7 @@ async def reload_config(request: ReloadRequest, current_user: str = Depends(get_
 
     Example:
         POST /api/v1/data-sources/config/reload
+
     """
     return await reload_config_impl(current_user, get_config_manager)
 

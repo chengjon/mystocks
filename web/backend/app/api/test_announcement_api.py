@@ -1,5 +1,4 @@
-"""
-测试公告API端点
+"""测试公告API端点
 """
 
 import pytest
@@ -9,6 +8,7 @@ from sqlalchemy.orm import sessionmaker
 
 from app.main import app
 from app.models.announcement import Base
+
 
 # 创建测试数据库
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test_announcement.db"

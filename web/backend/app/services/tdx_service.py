@@ -1,5 +1,4 @@
-"""
-TDX数据服务
+"""TDX数据服务
 提供对TDX适配器的封装和缓存支持
 """
 
@@ -9,18 +8,19 @@ import sys
 from datetime import datetime
 from typing import Dict
 
+
 # 添加项目根目录到路径(web/backend -> mystocks_spec)
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.."))
 sys.path.insert(0, project_root)
 
 from src.adapters.tdx.tdx_adapter import TdxDataSource
 
+
 logger = logging.getLogger(__name__)
 
 
 class TdxService:
-    """
-    TDX数据服务
+    """TDX数据服务
 
     功能:
     - 封装TDX适配器
@@ -40,14 +40,14 @@ class TdxService:
             raise
 
     def get_real_time_quote(self, symbol: str) -> Dict:
-        """
-        获取实时行情
+        """获取实时行情
 
         Args:
             symbol: 股票代码(6位数字)
 
         Returns:
             Dict: 实时行情数据,包含计算后的涨跌幅等字段
+
         """
         try:
             # 调用TDX适配器
@@ -77,8 +77,7 @@ class TdxService:
             raise
 
     def get_stock_kline(self, symbol: str, start_date: str, end_date: str, period: str = "1d") -> Dict:
-        """
-        获取股票K线数据
+        """获取股票K线数据
 
         Args:
             symbol: 股票代码(6位数字)
@@ -88,11 +87,12 @@ class TdxService:
 
         Returns:
             Dict: 包含K线数据列表和元信息
+
         """
         try:
             # 调用TDX适配器获取K线
             df = self.tdx_adapter.get_stock_kline(
-                symbol=symbol, start_date=start_date, end_date=end_date, period=period
+                symbol=symbol, start_date=start_date, end_date=end_date, period=period,
             )
 
             if df.empty:
@@ -128,14 +128,14 @@ class TdxService:
             raise
 
     def get_index_quote(self, symbol: str) -> Dict:
-        """
-        获取指数实时行情
+        """获取指数实时行情
 
         Args:
             symbol: 指数代码(6位数字)
 
         Returns:
             Dict: 指数行情数据
+
         """
         try:
             index_symbol_map = {
@@ -177,8 +177,7 @@ class TdxService:
             raise
 
     def get_index_kline(self, symbol: str, start_date: str, end_date: str, period: str = "1d") -> Dict:
-        """
-        获取指数K线数据
+        """获取指数K线数据
 
         Args:
             symbol: 指数代码(6位数字)
@@ -188,10 +187,11 @@ class TdxService:
 
         Returns:
             Dict: 指数K线数据
+
         """
         try:
             df = self.tdx_adapter.get_index_kline(
-                symbol=symbol, start_date=start_date, end_date=end_date, period=period
+                symbol=symbol, start_date=start_date, end_date=end_date, period=period,
             )
 
             if df.empty:
@@ -226,11 +226,11 @@ class TdxService:
             raise
 
     def check_connection(self) -> Dict:
-        """
-        检查TDX连接状态
+        """检查TDX连接状态
 
         Returns:
             Dict: 连接状态信息
+
         """
         try:
             # 尝试获取上证指数作为连接测试
@@ -246,13 +246,12 @@ class TdxService:
                         "port": self.tdx_adapter.tdx_port,
                     },
                 }
-            else:
-                return {
-                    "status": "unhealthy",
-                    "tdx_connected": False,
-                    "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    "error": str(result),
-                }
+            return {
+                "status": "unhealthy",
+                "tdx_connected": False,
+                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "error": str(result),
+            }
 
         except Exception as e:
             logger.error("TDX连接检查失败: %(e)s")
@@ -269,8 +268,7 @@ _tdx_service_instance = None
 
 
 def get_tdx_service() -> TdxService:
-    """
-    获取TDX服务单例
+    """获取TDX服务单例
     用于依赖注入
     """
     global _tdx_service_instance

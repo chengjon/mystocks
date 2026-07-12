@@ -1,5 +1,4 @@
-"""
-输入验证和安全处理中间件
+"""输入验证和安全处理中间件
 """
 
 import html
@@ -8,6 +7,7 @@ import re
 from typing import Dict, Optional
 
 from fastapi import HTTPException, Request, status
+
 
 logger = logging.getLogger(__name__)
 
@@ -93,14 +93,14 @@ class XSSPattern:
 
 
 def sanitize_input(text: str) -> str:
-    """
-    清理用户输入，防止XSS和注入攻击
+    """清理用户输入，防止XSS和注入攻击
 
     Args:
         text: 原始输入文本
 
     Returns:
         str: 清理后的安全文本
+
     """
     if not text:
         return text
@@ -123,8 +123,7 @@ def validate_input(
     input_type: str = "general",
     allow_empty: bool = False,
 ) -> str:
-    """
-    验证和清理用户输入
+    """验证和清理用户输入
 
     Args:
         value: 输入值
@@ -137,6 +136,7 @@ def validate_input(
 
     Raises:
         HTTPException: 输入验证失败时抛出
+
     """
     if not value:
         if allow_empty:
@@ -186,10 +186,8 @@ class SecureQueryParams:
     @staticmethod
     def validate_pagination_params(page: int = 1, size: int = 100) -> Dict[str, int]:
         """验证分页参数"""
-        if page < 1:
-            page = 1
-        if size < 1:
-            size = 1
+        page = max(page, 1)
+        size = max(size, 1)
         if size > 1000:  # 限制最大单页数量
             size = 1000
 
@@ -232,8 +230,7 @@ class SecureQueryParams:
 
 
 async def request_middleware(request: Request, call_next):
-    """
-    请求安全中间件
+    """请求安全中间件
 
     对所有请求进行基本的安全检查
     """

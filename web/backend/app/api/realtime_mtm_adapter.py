@@ -1,5 +1,4 @@
-"""
-Real-time MTM API Adapter
+"""Real-time MTM API Adapter
 实时市值 API 适配器
 
 将 Phase 12.3 的 DDD 架构适配到现有的 WebSocket API 接口，
@@ -15,6 +14,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import structlog
+
 
 logger = structlog.get_logger()
 
@@ -72,8 +72,7 @@ class MTMUpdate:
 
 
 class RealtimeMTMAdapter:
-    """
-    实时市值 API 适配器
+    """实时市值 API 适配器
 
     职责：
     1. 将 Phase 12.3 的 DDD 架构适配到现有的 WebSocket API
@@ -82,13 +81,13 @@ class RealtimeMTMAdapter:
     """
 
     def __init__(self, portfolio_repo, valuation_service, event_bus=None):
-        """
-        初始化适配器
+        """初始化适配器
 
         Args:
             portfolio_repo: 投资组合仓储 (PortfolioRepositoryImpl)
             valuation_service: 投资组合估值服务 (PortfolioValuationService)
             event_bus: 事件总线 (RedisEventBus, 可选)
+
         """
         self.portfolio_repo = portfolio_repo
         self.valuation_service = valuation_service
@@ -111,10 +110,9 @@ class RealtimeMTMAdapter:
         # 这个方法由事件总线调用
 
     def register_position(
-        self, position_id: str, portfolio_id: str, symbol: str, quantity: int, avg_price: float
+        self, position_id: str, portfolio_id: str, symbol: str, quantity: int, avg_price: float,
     ) -> bool:
-        """
-        注册持仓（兼容旧接口）
+        """注册持仓（兼容旧接口）
 
         注意：在 DDD 架构中，持仓通过 Portfolio.handle_order_filled() 添加
         这个方法主要用于向后兼容
@@ -152,8 +150,7 @@ class RealtimeMTMAdapter:
         return True
 
     def update_price(self, symbol: str, price: float) -> List[MTMUpdate]:
-        """
-        更新价格并计算市值（兼容旧接口）
+        """更新价格并计算市值（兼容旧接口）
 
         Args:
             symbol: 股票代码
@@ -161,6 +158,7 @@ class RealtimeMTMAdapter:
 
         Returns:
             List[MTMUpdate]: 市值更新事件列表
+
         """
         updates = []
 
@@ -208,14 +206,14 @@ class RealtimeMTMAdapter:
             return []
 
     def get_portfolio_snapshot(self, portfolio_id: str) -> Optional[PortfolioSnapshot]:
-        """
-        获取投资组合快照（兼容旧接口）
+        """获取投资组合快照（兼容旧接口）
 
         Args:
             portfolio_id: 投资组合 ID
 
         Returns:
             PortfolioSnapshot: 投资组合快照
+
         """
         try:
             # 先检查缓存
@@ -243,14 +241,14 @@ class RealtimeMTMAdapter:
             return None
 
     def get_position_snapshot(self, position_id: str) -> Optional[PositionSnapshot]:
-        """
-        获取持仓快照（兼容旧接口）
+        """获取持仓快照（兼容旧接口）
 
         Args:
             position_id: 持仓 ID (格式: {portfolio_id}_{symbol})
 
         Returns:
             PositionSnapshot: 持仓快照
+
         """
         try:
             # 解析 position_id
@@ -360,8 +358,7 @@ _adapter: Optional[RealtimeMTMAdapter] = None
 
 
 def get_realtime_mtm_adapter() -> RealtimeMTMAdapter:
-    """
-    获取实时市值适配器实例
+    """获取实时市值适配器实例
 
     注意：需要在使用前调用 initialize_adapter() 初始化
     """
@@ -370,12 +367,12 @@ def get_realtime_mtm_adapter() -> RealtimeMTMAdapter:
 
 
 def initialize_adapter(db_session, event_bus=None):
-    """
-    初始化适配器（在应用启动时调用）
+    """初始化适配器（在应用启动时调用）
 
     Args:
         db_session: SQLAlchemy 数据库会话
         event_bus: Redis 事件总线（可选）
+
     """
     global _adapter
 
@@ -391,7 +388,7 @@ def initialize_adapter(db_session, event_bus=None):
 
     # 创建适配器
     _adapter = RealtimeMTMAdapter(
-        portfolio_repo=portfolio_repo, valuation_service=valuation_service, event_bus=event_bus
+        portfolio_repo=portfolio_repo, valuation_service=valuation_service, event_bus=event_bus,
     )
 
     logger.info("✅ RealtimeMTMAdapter initialized with DDD architecture")
@@ -400,8 +397,7 @@ def initialize_adapter(db_session, event_bus=None):
 
 
 def get_mtm_engine():
-    """
-    获取 MTM 引擎（兼容旧接口）
+    """获取 MTM 引擎（兼容旧接口）
 
     这个函数返回 RealtimeMTMAdapter 实例，
     它提供与 position_mtm_engine 相同的接口

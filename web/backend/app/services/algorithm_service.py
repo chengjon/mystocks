@@ -1,5 +1,4 @@
-"""
-Algorithm Service Layer
+"""Algorithm Service Layer
 
 This module provides the business logic layer for quantitative trading algorithms,
 implementing the factory pattern for algorithm instantiation and integrating with
@@ -30,6 +29,7 @@ from app.schemas.algorithm_schemas import (  # Add other algorithm-specific impo
     AlgorithmType,
 )
 from app.services._algorithm_service_history import AlgorithmServiceHistoryMixin
+
 
 # Define logger early for try/except block
 logger = logging.getLogger(__name__)
@@ -95,8 +95,7 @@ except ImportError:
 
 
 class AlgorithmFactory:
-    """
-    Factory class for creating algorithm instances.
+    """Factory class for creating algorithm instances.
 
     This factory handles the instantiation of different algorithm types
     and integrates with GPU acceleration when available.
@@ -114,8 +113,7 @@ class AlgorithmFactory:
                 logger.warning("Failed to initialize GPU service: %(e)s")
 
     async def create_algorithm(self, algorithm_type: AlgorithmType, config: AlgorithmConfig) -> BaseAlgorithm:
-        """
-        Create an algorithm instance based on type and configuration.
+        """Create an algorithm instance based on type and configuration.
 
         Args:
             algorithm_type: Type of algorithm to create
@@ -127,6 +125,7 @@ class AlgorithmFactory:
         Raises:
             ValueError: If algorithm type is not supported
             RuntimeError: If algorithm creation fails
+
         """
         try:
             # Convert API enum to src enum if needed
@@ -156,16 +155,14 @@ class AlgorithmFactory:
                 logger.info("Created algorithm: {algorithm_type.value}")
                 return algorithm
 
-            else:
-                raise RuntimeError("Algorithm framework not available")
+            raise RuntimeError("Algorithm framework not available")
 
         except Exception as e:
             logger.error("Failed to create algorithm {algorithm_type.value}: %(e)s")
-            raise RuntimeError(f"Algorithm creation failed: {str(e)}")
+            raise RuntimeError(f"Algorithm creation failed: {e!s}")
 
     async def _get_algorithm_class(self, algorithm_type: AlgorithmType):
         """Get the algorithm class for the given type."""
-
         # Mapping of algorithm types to their implementation classes
         algorithm_mapping = {
             # Classification algorithms
@@ -204,8 +201,7 @@ class AlgorithmFactory:
 
 
 class AlgorithmResultFormatter:
-    """
-    Utility class for formatting algorithm results for API responses.
+    """Utility class for formatting algorithm results for API responses.
     """
 
     @staticmethod
@@ -245,8 +241,7 @@ class AlgorithmResultFormatter:
 
 
 class AlgorithmService(AlgorithmServiceHistoryMixin):
-    """
-    Main service class for algorithm operations.
+    """Main service class for algorithm operations.
 
     This service provides high-level methods for training, prediction,
     and management of quantitative trading algorithms.
@@ -260,8 +255,7 @@ class AlgorithmService(AlgorithmServiceHistoryMixin):
         self.repository = AlgorithmModelRepository(db_session) if db_session else None
 
     async def train_algorithm(self, request: AlgorithmTrainRequest) -> Dict[str, Any]:
-        """
-        Train an algorithm with the given request.
+        """Train an algorithm with the given request.
 
         Args:
             request: Training request with algorithm type, data, and config
@@ -271,6 +265,7 @@ class AlgorithmService(AlgorithmServiceHistoryMixin):
 
         Raises:
             HTTPException: If training fails
+
         """
         try:
             logger.info("Starting training for algorithm: {request.algorithm_type.value}")
@@ -305,11 +300,10 @@ class AlgorithmService(AlgorithmServiceHistoryMixin):
 
         except Exception as e:
             logger.error("Training failed for {request.algorithm_type.value}: {traceback.format_exc()}")
-            raise HTTPException(status_code=500, detail=f"Algorithm training failed: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Algorithm training failed: {e!s}")
 
     async def predict_with_algorithm(self, request: AlgorithmPredictRequest) -> Dict[str, Any]:
-        """
-        Generate predictions using a trained algorithm.
+        """Generate predictions using a trained algorithm.
 
         Args:
             request: Prediction request with model ID and data
@@ -319,6 +313,7 @@ class AlgorithmService(AlgorithmServiceHistoryMixin):
 
         Raises:
             HTTPException: If prediction fails
+
         """
         try:
             logger.info("Starting prediction for model: {request.model_id}")
@@ -355,17 +350,17 @@ class AlgorithmService(AlgorithmServiceHistoryMixin):
 
         except Exception as e:
             logger.error("Prediction failed for model {request.model_id}: {traceback.format_exc()}")
-            raise HTTPException(status_code=500, detail=f"Algorithm prediction failed: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Algorithm prediction failed: {e!s}")
 
     async def get_algorithm_info(self, request: AlgorithmInfoRequest) -> Dict[str, Any]:
-        """
-        Get information about an algorithm type.
+        """Get information about an algorithm type.
 
         Args:
             request: Info request with algorithm type
 
         Returns:
             Algorithm metadata and capabilities
+
         """
         try:
             algorithm_type = request.algorithm_type
@@ -382,15 +377,15 @@ class AlgorithmService(AlgorithmServiceHistoryMixin):
 
         except Exception as e:
             logger.error("Failed to get algorithm info: {traceback.format_exc()}")
-            raise HTTPException(status_code=500, detail=f"Failed to get algorithm information: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Failed to get algorithm information: {e!s}")
 
     async def list_active_models(self) -> List[Dict[str, Any]]:
-        """
-        List all currently active (loaded) algorithm models.
+        """List all currently active (loaded) algorithm models.
         Returns models from database if available, otherwise from memory cache.
 
         Returns:
             List of active model information
+
         """
         try:
             # Try to get models from database first
@@ -409,30 +404,30 @@ class AlgorithmService(AlgorithmServiceHistoryMixin):
                         "is_trained": getattr(algorithm, "is_trained", True),
                         "created_at": getattr(algorithm.metadata, "created_at", datetime.now()).isoformat(),
                         "gpu_enabled": getattr(algorithm, "gpu_enabled", False),
-                    }
+                    },
                 )
 
             return models
 
         except Exception as e:
             logger.error("Failed to list active models: {traceback.format_exc()}")
-            raise HTTPException(status_code=500, detail=f"Failed to list active models: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Failed to list active models: {e!s}")
 
             return models
 
         except Exception as e:
             logger.error("Failed to list active models: {traceback.format_exc()}")
-            raise HTTPException(status_code=500, detail=f"Failed to list active models: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Failed to list active models: {e!s}")
 
     async def unload_model(self, model_id: str) -> Dict[str, Any]:
-        """
-        Unload a specific algorithm model from memory.
+        """Unload a specific algorithm model from memory.
 
         Args:
             model_id: ID of the model to unload
 
         Returns:
             Unload result
+
         """
         try:
             if model_id in self._active_algorithms:
@@ -450,12 +445,11 @@ class AlgorithmService(AlgorithmServiceHistoryMixin):
                     "model_id": model_id,
                     "message": "Model unloaded successfully",
                 }
-            else:
-                raise ValueError(f"Model {model_id} not found")
+            raise ValueError(f"Model {model_id} not found")
 
         except Exception as e:
             logger.error("Failed to unload model %(model_id)s: {traceback.format_exc()}")
-            raise HTTPException(status_code=500, detail=f"Failed to unload model: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Failed to unload model: {e!s}")
 
     async def _prepare_training_data(self, request: AlgorithmTrainRequest) -> Any:
         """Prepare training data for algorithm."""
@@ -492,7 +486,7 @@ class AlgorithmService(AlgorithmServiceHistoryMixin):
                     "kernels": ["linear", "rbf", "poly", "sigmoid"],
                     "max_iter": "configurable",
                     "probability_support": True,
-                }
+                },
             )
         elif algorithm_type == AlgorithmType.DECISION_TREE:
             base_capabilities.update(
@@ -500,14 +494,14 @@ class AlgorithmService(AlgorithmServiceHistoryMixin):
                     "max_depth": "configurable",
                     "criterion": ["gini", "entropy", "log_loss"],
                     "feature_importance": True,
-                }
+                },
             )
         elif algorithm_type == AlgorithmType.NAIVE_BAYES:
             base_capabilities.update(
                 {
                     "distribution_types": ["gaussian", "multinomial", "bernoulli"],
                     "prior_probabilities": "configurable",
-                }
+                },
             )
 
         return base_capabilities
@@ -522,8 +516,7 @@ class AlgorithmService(AlgorithmServiceHistoryMixin):
         start_time: datetime,
         end_time: datetime,
     ):
-        """
-        持久化训练结果到数据库
+        """持久化训练结果到数据库
 
         Args:
             model_id: 模型ID
@@ -531,6 +524,7 @@ class AlgorithmService(AlgorithmServiceHistoryMixin):
             result: 训练结果
             start_time: 训练开始时间
             end_time: 训练结束时间
+
         """
         try:
             if not self.repository:
@@ -616,8 +610,7 @@ class AlgorithmService(AlgorithmServiceHistoryMixin):
         start_time: datetime,
         end_time: datetime,
     ):
-        """
-        持久化预测结果到数据库
+        """持久化预测结果到数据库
 
         Args:
             model_id: 模型ID
@@ -625,6 +618,7 @@ class AlgorithmService(AlgorithmServiceHistoryMixin):
             result: 预测结果
             start_time: 预测开始时间
             end_time: 预测结束时间
+
         """
         try:
             if not self.repository:

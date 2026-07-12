@@ -195,6 +195,17 @@ exclude = [
     ".archive",
     "node_modules",
     "migrations",
+    # Phase 0: 历史归档代码（不参与 ruff 扫描）
+    "archive",
+    ".archive",
+    # Phase 0: 生成的报告/临时产物
+    ".shared",
+    "reports",
+    "reports/**",
+    "_meta/purpose_snapshots",
+    # Phase 0: 第三方/生成的 js/py 产物
+    "deps/openstock/**/dist/**",
+    "web/frontend/dist/**",
 ]
 
 # 每次运行时自动修复问题

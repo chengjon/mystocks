@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-问财数据服务
+"""问财数据服务
 
 业务逻辑层：
   1. 数据获取和清理
@@ -18,15 +16,15 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
 import pandas as pd
-from sqlalchemy import MetaData, Table, func, select
+from sqlalchemy import MetaData, Table, func, inspect, select, text
 from sqlalchemy import exc as sqlalchemy_exc
-from sqlalchemy import inspect, text
 from sqlalchemy.orm import Session
 
 from app.adapters.wencai_adapter import WencaiDataSource
 from app.core.config import settings
 from app.core.database import get_mysql_engine
 from app.models.wencai_data import WencaiQuery
+
 
 # 配置日志
 logger = logging.getLogger(__name__)
@@ -46,18 +44,17 @@ ALLOWED_QUERY_TABLES = {
 
 
 class WencaiService:
-    """
-    问财数据服务
+    """问财数据服务
 
     提供问财数据的完整业务逻辑
     """
 
     def __init__(self, db: Session = None):
-        """
-        初始化服务
+        """初始化服务
 
         Args:
             db: 数据库会话（可选，用于ORM操作）
+
         """
         self.db = db
         self.adapter = WencaiDataSource(
@@ -70,8 +67,7 @@ class WencaiService:
 
     @staticmethod
     def _get_safe_table_name(query_name: str) -> str:
-        """
-        从白名单获取安全的表名，防止 SQL 注入
+        """从白名单获取安全的表名，防止 SQL 注入
 
         Args:
             query_name: 查询名称（如 'qs_1'）
@@ -81,6 +77,7 @@ class WencaiService:
 
         Raises:
             ValueError: 如果 query_name 不在白名单中
+
         """
         table_name = ALLOWED_QUERY_TABLES.get(query_name)
         if not table_name:
@@ -88,11 +85,11 @@ class WencaiService:
         return table_name
 
     def get_all_queries(self) -> List[Dict[str, Any]]:
-        """
-        获取所有查询列表
+        """获取所有查询列表
 
         Returns:
             查询信息列表
+
         """
         try:
             queries = self.db.query(WencaiQuery).all()
@@ -102,14 +99,14 @@ class WencaiService:
             raise
 
     def get_query_by_name(self, query_name: str) -> Optional[Dict[str, Any]]:
-        """
-        根据名称获取查询
+        """根据名称获取查询
 
         Args:
             query_name: 查询名称
 
         Returns:
             查询信息，不存在返回None
+
         """
         try:
             query = self.db.query(WencaiQuery).filter(WencaiQuery.query_name == query_name).first()
@@ -119,8 +116,7 @@ class WencaiService:
             return None
 
     def fetch_and_save(self, query_name: str, pages: int = 1) -> Dict[str, Any]:
-        """
-        获取并保存查询结果（核心方法）
+        """获取并保存查询结果（核心方法）
 
         Args:
             query_name: 查询名称
@@ -132,6 +128,7 @@ class WencaiService:
         Raises:
             ValueError: 查询不存在或参数无效
             Exception: 数据获取或保存失败
+
         """
         logger.info("=== Starting fetch_and_save: %(query_name)s, pages=%(pages)s ===")
 
@@ -194,8 +191,7 @@ class WencaiService:
             raise
 
     def _save_to_database(self, data: pd.DataFrame, query_name: str) -> Dict[str, Any]:
-        """
-        保存数据到MySQL并去重
+        """保存数据到MySQL并去重
 
         Args:
             data: 清理后的数据
@@ -203,6 +199,7 @@ class WencaiService:
 
         Returns:
             保存结果统计
+
         """
         # 使用白名单获取安全的表名
         table_name = self._get_safe_table_name(query_name)
@@ -231,7 +228,7 @@ class WencaiService:
 
                     duplicate_count = len(data) - len(data_to_save)
                     logger.info(
-                        f"Deduplication: {len(data)} total, {len(data_to_save)} new, {duplicate_count} duplicates"
+                        f"Deduplication: {len(data)} total, {len(data_to_save)} new, {duplicate_count} duplicates",
                     )
 
                 except Exception:
@@ -270,8 +267,7 @@ class WencaiService:
             raise
 
     def get_query_results(self, query_name: str, limit: int = 100, offset: int = 0) -> Dict[str, Any]:
-        """
-        获取查询结果
+        """获取查询结果
 
         Args:
             query_name: 查询名称
@@ -280,6 +276,7 @@ class WencaiService:
 
         Returns:
             查询结果
+
         """
         # 使用白名单获取安全的表名
         table_name = self._get_safe_table_name(query_name)
@@ -338,8 +335,7 @@ class WencaiService:
             raise
 
     def get_query_history(self, query_name: str, days: int = 7) -> Dict[str, Any]:
-        """
-        获取查询历史统计
+        """获取查询历史统计
 
         Args:
             query_name: 查询名称
@@ -347,6 +343,7 @@ class WencaiService:
 
         Returns:
             历史统计数据
+
         """
         # 使用白名单获取安全的表名
         table_name = self._get_safe_table_name(query_name)
@@ -378,7 +375,7 @@ class WencaiService:
                     WHERE fetch_time >= :start_date
                     GROUP BY DATE(fetch_time)
                     ORDER BY date DESC
-                    """
+                    """,
                 )
                 result = conn.execute(history_query, {"start_date": start_date})
 
@@ -389,7 +386,7 @@ class WencaiService:
                             "date": row.date.strftime("%Y-%m-%d"),
                             "total_records": row.total_records,
                             "fetch_count": row.fetch_count,
-                        }
+                        },
                     )
 
             date_range = [
@@ -417,13 +414,13 @@ class WencaiService:
 
 # 工厂函数
 def get_wencai_service(db: Session = None) -> WencaiService:
-    """
-    获取WencaiService实例
+    """获取WencaiService实例
 
     Args:
         db: 数据库会话
 
     Returns:
         WencaiService实例
+
     """
     return WencaiService(db=db)

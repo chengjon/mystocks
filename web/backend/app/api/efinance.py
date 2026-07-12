@@ -1,5 +1,4 @@
-"""
-Efinance Data Source API
+"""Efinance Data Source API
 
 提供efinance数据源的API端点，包括：
 - 股票历史K线、实时行情、龙虎榜、业绩数据、资金流向
@@ -22,6 +21,7 @@ from pydantic import BaseModel, Field
 from app.core.responses import ErrorCodes, create_error_response, create_success_response
 from app.core.security import User, get_current_user
 from src.adapters.efinance_adapter import EfinanceDataSource
+
 
 # 创建efinance数据源实例
 efinance_adapter = EfinanceDataSource(
@@ -100,8 +100,7 @@ async def get_stock_kline(
     klt: int = Query(101, description="K线周期: 1/5/15/30/60分钟, 101日线"),
     current_user: User = Depends(get_current_user),
 ):
-    """
-    获取股票历史K线数据
+    """获取股票历史K线数据
 
     支持日K线和分钟K线数据，通过klt参数控制：
     - 1/5/15/30/60: 分钟K线
@@ -126,13 +125,12 @@ async def get_stock_kline(
         return create_success_response(result)
 
     except Exception as e:
-        return create_error_response(ErrorCodes.INTERNAL_ERROR, f"Failed to get stock kline data: {str(e)}")
+        return create_error_response(ErrorCodes.INTERNAL_ERROR, f"Failed to get stock kline data: {e!s}")
 
 
 @router.get("/stock/realtime", summary="获取沪深A股实时行情")
 async def get_realtime_quotes(current_user: User = Depends(get_current_user)):
-    """
-    获取沪深A股实时行情数据
+    """获取沪深A股实时行情数据
 
     返回所有A股的最新行情数据，包括价格、涨跌幅、成交量等
     """
@@ -153,7 +151,7 @@ async def get_realtime_quotes(current_user: User = Depends(get_current_user)):
         return create_success_response(result)
 
     except Exception as e:
-        return create_error_response(ErrorCodes.INTERNAL_ERROR, f"Failed to get realtime quotes: {str(e)}")
+        return create_error_response(ErrorCodes.INTERNAL_ERROR, f"Failed to get realtime quotes: {e!s}")
 
 
 @router.get("/stock/realtime/{symbol}", summary="获取单只股票实时行情")
@@ -161,8 +159,7 @@ async def get_single_stock_realtime(
     symbol: str,
     current_user: User = Depends(get_current_user),
 ):
-    """
-    获取指定股票的实时行情数据
+    """获取指定股票的实时行情数据
     """
     try:
         data = efinance_adapter.get_real_time_data(symbol)
@@ -175,7 +172,7 @@ async def get_single_stock_realtime(
         return create_success_response(result)
 
     except Exception as e:
-        return create_error_response(ErrorCodes.INTERNAL_ERROR, f"Failed to get realtime data for {symbol}: {str(e)}")
+        return create_error_response(ErrorCodes.INTERNAL_ERROR, f"Failed to get realtime data for {symbol}: {e!s}")
 
 
 @router.get("/stock/dragon-tiger", summary="获取龙虎榜数据")
@@ -184,8 +181,7 @@ async def get_dragon_tiger_list(
     end_date: Optional[str] = Query(None, description="结束日期", examples=["2024-01-05"]),
     current_user: User = Depends(get_current_user),
 ):
-    """
-    获取龙虎榜数据
+    """获取龙虎榜数据
 
     包含机构席位、上榜原因、买卖金额等信息
     """
@@ -206,7 +202,7 @@ async def get_dragon_tiger_list(
         return create_success_response(result)
 
     except Exception as e:
-        return create_error_response(ErrorCodes.INTERNAL_ERROR, f"Failed to get dragon tiger list: {str(e)}")
+        return create_error_response(ErrorCodes.INTERNAL_ERROR, f"Failed to get dragon tiger list: {e!s}")
 
 
 @router.get("/stock/performance", summary="获取公司业绩数据")
@@ -214,8 +210,7 @@ async def get_company_performance(
     season: str = Query("z", description="报告期: z=最新, y=去年同期, j=季度累计"),
     current_user: User = Depends(get_current_user),
 ):
-    """
-    获取沪深A股公司业绩数据
+    """获取沪深A股公司业绩数据
 
     包含营收、净利润、每股收益等财务指标
     """
@@ -236,7 +231,7 @@ async def get_company_performance(
         return create_success_response(result)
 
     except Exception as e:
-        return create_error_response(ErrorCodes.INTERNAL_ERROR, f"Failed to get company performance: {str(e)}")
+        return create_error_response(ErrorCodes.INTERNAL_ERROR, f"Failed to get company performance: {e!s}")
 
 
 @router.get("/stock/fund-flow/{symbol}", summary="获取股票历史资金流向")
@@ -244,8 +239,7 @@ async def get_stock_fund_flow(
     symbol: str,
     current_user: User = Depends(get_current_user),
 ):
-    """
-    获取股票历史资金流向数据
+    """获取股票历史资金流向数据
 
     包含主力、散户、中小单、大单、超大单的净流入情况
     """
@@ -266,7 +260,7 @@ async def get_stock_fund_flow(
         return create_success_response(result)
 
     except Exception as e:
-        return create_error_response(ErrorCodes.INTERNAL_ERROR, f"Failed to get fund flow data for {symbol}: {str(e)}")
+        return create_error_response(ErrorCodes.INTERNAL_ERROR, f"Failed to get fund flow data for {symbol}: {e!s}")
 
 
 @router.get("/stock/fund-flow-today/{symbol}", summary="获取今日资金流向")
@@ -274,8 +268,7 @@ async def get_today_fund_flow(
     symbol: str,
     current_user: User = Depends(get_current_user),
 ):
-    """
-    获取股票今日分钟级资金流向数据
+    """获取股票今日分钟级资金流向数据
 
     实时更新，包含每分钟的主力资金流向情况
     """
@@ -298,7 +291,7 @@ async def get_today_fund_flow(
 
     except Exception as e:
         return create_error_response(
-            ErrorCodes.INTERNAL_ERROR, f"Failed to get today fund flow data for {symbol}: {str(e)}"
+            ErrorCodes.INTERNAL_ERROR, f"Failed to get today fund flow data for {symbol}: {e!s}",
         )
 
 
@@ -312,8 +305,7 @@ async def get_fund_nav_history(
     fund_code: str,
     current_user: User = Depends(get_current_user),
 ):
-    """
-    获取基金历史净值数据
+    """获取基金历史净值数据
 
     包含单位净值、累计净值、日涨跌幅等信息
     """
@@ -335,7 +327,7 @@ async def get_fund_nav_history(
 
     except Exception as e:
         return create_error_response(
-            ErrorCodes.INTERNAL_ERROR, f"Failed to get fund nav history for {fund_code}: {str(e)}"
+            ErrorCodes.INTERNAL_ERROR, f"Failed to get fund nav history for {fund_code}: {e!s}",
         )
 
 
@@ -344,8 +336,7 @@ async def get_fund_positions(
     fund_code: str,
     current_user: User = Depends(get_current_user),
 ):
-    """
-    获取基金持仓信息
+    """获取基金持仓信息
 
     包含持仓股票、持仓占比、较上期变化等信息
     """
@@ -367,7 +358,7 @@ async def get_fund_positions(
 
     except Exception as e:
         return create_error_response(
-            ErrorCodes.INTERNAL_ERROR, f"Failed to get fund positions for {fund_code}: {str(e)}"
+            ErrorCodes.INTERNAL_ERROR, f"Failed to get fund positions for {fund_code}: {e!s}",
         )
 
 
@@ -376,8 +367,7 @@ async def get_fund_basic_info(
     request: FundBasicRequest,
     current_user: User = Depends(get_current_user),
 ):
-    """
-    获取多只基金的基本信息
+    """获取多只基金的基本信息
 
     支持批量查询基金的基本信息、成立日期、净值等
     """
@@ -398,7 +388,7 @@ async def get_fund_basic_info(
         return create_success_response(result)
 
     except Exception as e:
-        return create_error_response(ErrorCodes.INTERNAL_ERROR, f"Failed to get fund basic info: {str(e)}")
+        return create_error_response(ErrorCodes.INTERNAL_ERROR, f"Failed to get fund basic info: {e!s}")
 
 
 # ============================================================================
@@ -408,8 +398,7 @@ async def get_fund_basic_info(
 
 @router.get("/bond/realtime", summary="获取可转债实时行情")
 async def get_bond_realtime_quotes(current_user: User = Depends(get_current_user)):
-    """
-    获取可转债实时行情数据
+    """获取可转债实时行情数据
 
     返回所有可转债的最新行情数据
     """
@@ -430,13 +419,12 @@ async def get_bond_realtime_quotes(current_user: User = Depends(get_current_user
         return create_success_response(result)
 
     except Exception as e:
-        return create_error_response(ErrorCodes.INTERNAL_ERROR, f"Failed to get bond realtime quotes: {str(e)}")
+        return create_error_response(ErrorCodes.INTERNAL_ERROR, f"Failed to get bond realtime quotes: {e!s}")
 
 
 @router.get("/bond/basic", summary="获取可转债基本信息")
 async def get_bond_basic_info(current_user: User = Depends(get_current_user)):
-    """
-    获取可转债基本信息
+    """获取可转债基本信息
 
     包含债券代码、名称、正股信息、评级、发行规模等
     """
@@ -451,7 +439,7 @@ async def get_bond_basic_info(current_user: User = Depends(get_current_user)):
         return create_success_response(result)
 
     except Exception as e:
-        return create_error_response(ErrorCodes.INTERNAL_ERROR, f"Failed to get bond basic info: {str(e)}")
+        return create_error_response(ErrorCodes.INTERNAL_ERROR, f"Failed to get bond basic info: {e!s}")
 
 
 @router.get("/bond/kline/{bond_code}", summary="获取可转债历史K线")
@@ -459,8 +447,7 @@ async def get_bond_kline(
     bond_code: str,
     current_user: User = Depends(get_current_user),
 ):
-    """
-    获取可转债历史K线数据
+    """获取可转债历史K线数据
     """
     try:
         df = efinance_adapter.get_bond_history(bond_code)
@@ -479,7 +466,7 @@ async def get_bond_kline(
         return create_success_response(result)
 
     except Exception as e:
-        return create_error_response(ErrorCodes.INTERNAL_ERROR, f"Failed to get bond kline for {bond_code}: {str(e)}")
+        return create_error_response(ErrorCodes.INTERNAL_ERROR, f"Failed to get bond kline for {bond_code}: {e!s}")
 
 
 # ============================================================================
@@ -489,8 +476,7 @@ async def get_bond_kline(
 
 @router.get("/futures/basic", summary="获取期货基本信息")
 async def get_futures_basic_info(current_user: User = Depends(get_current_user)):
-    """
-    获取期货基本信息
+    """获取期货基本信息
 
     包含所有期货合约的基本信息和行情ID
     """
@@ -505,7 +491,7 @@ async def get_futures_basic_info(current_user: User = Depends(get_current_user))
         return create_success_response(result)
 
     except Exception as e:
-        return create_error_response(ErrorCodes.INTERNAL_ERROR, f"Failed to get futures basic info: {str(e)}")
+        return create_error_response(ErrorCodes.INTERNAL_ERROR, f"Failed to get futures basic info: {e!s}")
 
 
 @router.get("/futures/history/{quote_id}", summary="获取期货历史行情")
@@ -513,8 +499,7 @@ async def get_futures_history(
     quote_id: str,
     current_user: User = Depends(get_current_user),
 ):
-    """
-    获取期货历史行情数据
+    """获取期货历史行情数据
     """
     try:
         df = efinance_adapter.get_futures_history(quote_id)
@@ -534,14 +519,13 @@ async def get_futures_history(
 
     except Exception as e:
         return create_error_response(
-            ErrorCodes.INTERNAL_ERROR, f"Failed to get futures history for {quote_id}: {str(e)}"
+            ErrorCodes.INTERNAL_ERROR, f"Failed to get futures history for {quote_id}: {e!s}",
         )
 
 
 @router.get("/futures/realtime", summary="获取期货实时行情")
 async def get_futures_realtime_quotes(current_user: User = Depends(get_current_user)):
-    """
-    获取期货实时行情数据
+    """获取期货实时行情数据
 
     返回所有期货合约的最新行情数据
     """
@@ -562,7 +546,7 @@ async def get_futures_realtime_quotes(current_user: User = Depends(get_current_u
         return create_success_response(result)
 
     except Exception as e:
-        return create_error_response(ErrorCodes.INTERNAL_ERROR, f"Failed to get futures realtime quotes: {str(e)}")
+        return create_error_response(ErrorCodes.INTERNAL_ERROR, f"Failed to get futures realtime quotes: {e!s}")
 
 
 # ============================================================================
@@ -572,8 +556,7 @@ async def get_futures_realtime_quotes(current_user: User = Depends(get_current_u
 
 @router.get("/cache/stats", summary="获取缓存统计信息")
 async def get_cache_stats(current_user: User = Depends(get_current_user)):
-    """
-    获取efinance适配器的缓存统计信息
+    """获取efinance适配器的缓存统计信息
 
     包含命中率、缓存大小、刷新统计等
     """
@@ -585,13 +568,12 @@ async def get_cache_stats(current_user: User = Depends(get_current_user)):
         return create_success_response(result)
 
     except Exception as e:
-        return create_error_response(ErrorCodes.INTERNAL_ERROR, f"Failed to get cache stats: {str(e)}")
+        return create_error_response(ErrorCodes.INTERNAL_ERROR, f"Failed to get cache stats: {e!s}")
 
 
 @router.get("/circuit-breaker/stats", summary="获取熔断器统计信息")
 async def get_circuit_breaker_stats(current_user: User = Depends(get_current_user)):
-    """
-    获取efinance适配器的熔断器统计信息
+    """获取efinance适配器的熔断器统计信息
 
     包含状态、失败次数、成功率等
     """
@@ -603,13 +585,12 @@ async def get_circuit_breaker_stats(current_user: User = Depends(get_current_use
         return create_success_response(result)
 
     except Exception as e:
-        return create_error_response(ErrorCodes.INTERNAL_ERROR, f"Failed to get circuit breaker stats: {str(e)}")
+        return create_error_response(ErrorCodes.INTERNAL_ERROR, f"Failed to get circuit breaker stats: {e!s}")
 
 
 @router.post("/cache/clear", summary="清空缓存")
 async def clear_cache(current_user: User = Depends(get_current_user)):
-    """
-    清空efinance适配器的所有缓存
+    """清空efinance适配器的所有缓存
     """
     try:
         efinance_adapter.clear_cache()
@@ -623,13 +604,12 @@ async def clear_cache(current_user: User = Depends(get_current_user)):
         return create_success_response(result)
 
     except Exception as e:
-        return create_error_response(ErrorCodes.INTERNAL_ERROR, f"Failed to clear cache: {str(e)}")
+        return create_error_response(ErrorCodes.INTERNAL_ERROR, f"Failed to clear cache: {e!s}")
 
 
 @router.post("/circuit-breaker/reset", summary="重置熔断器")
 async def reset_circuit_breaker(current_user: User = Depends(get_current_user)):
-    """
-    重置efinance适配器的熔断器状态
+    """重置efinance适配器的熔断器状态
     """
     try:
         efinance_adapter.reset_circuit_breaker()
@@ -643,4 +623,4 @@ async def reset_circuit_breaker(current_user: User = Depends(get_current_user)):
         return create_success_response(result)
 
     except Exception as e:
-        return create_error_response(ErrorCodes.INTERNAL_ERROR, f"Failed to reset circuit breaker: {str(e)}")
+        return create_error_response(ErrorCodes.INTERNAL_ERROR, f"Failed to reset circuit breaker: {e!s}")

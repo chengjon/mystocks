@@ -1,5 +1,4 @@
-"""
-策略管理数据模型
+"""策略管理数据模型
 
 定义策略管理相关的Pydantic模型，用于策略CRUD和回测引擎的API请求和响应。
 
@@ -12,6 +11,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+
 
 # ============================================================================
 # 枚举类型
@@ -109,8 +109,8 @@ class StrategyConfig(BaseModel):
                 "take_profit_percent": 10.0,
                 "status": "active",
                 "tags": ["均线", "趋势跟踪"],
-            }
-        }
+            },
+        },
     )
 
 
@@ -194,8 +194,8 @@ class BacktestRequest(BaseModel):
                 "slippage_rate": 0.001,
                 "benchmark": "000300.SH",
                 "include_analysis": True,
-            }
-        }
+            },
+        },
     )
 
 
@@ -328,8 +328,8 @@ class BacktestResult(BaseModel):
                 "status": "completed",
                 "created_at": "2024-12-01T10:00:00",
                 "completed_at": "2024-12-01T10:05:00",
-            }
-        }
+            },
+        },
     )
 
 
@@ -377,6 +377,6 @@ class StrategyErrorResponse(BaseModel):
                 "error_message": "策略不存在",
                 "details": {"strategy_id": 123},
                 "timestamp": "2025-11-21T10:30:00",
-            }
-        }
+            },
+        },
     )

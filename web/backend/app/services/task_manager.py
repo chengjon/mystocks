@@ -1,5 +1,4 @@
-"""
-任务管理服务
+"""任务管理服务
 提供任务调度、执行和监控功能
 """
 
@@ -20,6 +19,7 @@ from app.models.task import (
     TaskStatus,
     TaskType,
 )
+
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +53,7 @@ class TaskManager:
 
             # 初始化统计信息
             self.statistics[task_config.task_id] = TaskStatistics(
-                task_id=task_config.task_id, task_name=task_config.task_name
+                task_id=task_config.task_id, task_name=task_config.task_name,
             )
 
             logger.info("Task registered: {task_config.task_id} - {task_config.task_name}")
@@ -66,7 +66,7 @@ class TaskManager:
             )
         except Exception as e:
             logger.error("Failed to register task: %(e)s")
-            return TaskResponse(success=False, message=f"Failed to register task: {str(e)}")
+            return TaskResponse(success=False, message=f"Failed to register task: {e!s}")
 
     def unregister_task(self, task_id: str) -> TaskResponse:
         """注销任务"""
@@ -87,7 +87,7 @@ class TaskManager:
             return TaskResponse(success=True, message="Task unregistered successfully", task_id=task_id)
         except Exception as e:
             logger.error("Failed to unregister task: %(e)s")
-            return TaskResponse(success=False, message=f"Failed to unregister task: {str(e)}")
+            return TaskResponse(success=False, message=f"Failed to unregister task: {e!s}")
 
     def register_function(self, function_name: str, function: Callable):
         """注册任务函数"""
@@ -184,7 +184,7 @@ class TaskManager:
             return TaskResponse(success=True, message="Task started successfully", task_id=task_id)
         except Exception as e:
             logger.error("Failed to start task: %(e)s")
-            return TaskResponse(success=False, message=f"Failed to start task: {str(e)}")
+            return TaskResponse(success=False, message=f"Failed to start task: {e!s}")
 
     def stop_task(self, task_id: str) -> TaskResponse:
         """停止任务"""
@@ -201,7 +201,7 @@ class TaskManager:
             return TaskResponse(success=True, message="Task stopped successfully", task_id=task_id)
         except Exception as e:
             logger.error("Failed to stop task: %(e)s")
-            return TaskResponse(success=False, message=f"Failed to stop task: {str(e)}")
+            return TaskResponse(success=False, message=f"Failed to stop task: {e!s}")
 
     def get_task(self, task_id: str) -> Optional[TaskConfig]:
         """获取任务配置"""
@@ -280,7 +280,7 @@ class TaskManager:
     def import_config(self, config_path: str) -> TaskResponse:
         """导入任务配置"""
         try:
-            with open(config_path, "r", encoding="utf-8") as f:
+            with open(config_path, encoding="utf-8") as f:
                 config_data = json.load(f)
 
             imported_count = 0
@@ -297,7 +297,7 @@ class TaskManager:
             )
         except Exception as e:
             logger.error("Failed to import config: %(e)s")
-            return TaskResponse(success=False, message=f"Failed to import config: {str(e)}")
+            return TaskResponse(success=False, message=f"Failed to import config: {e!s}")
 
     def cleanup_old_executions(self, days: int = 7):
         """清理旧的执行记录"""

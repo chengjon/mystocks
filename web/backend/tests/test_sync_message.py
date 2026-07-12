@@ -1,5 +1,4 @@
-"""
-双库同步消息表测试
+"""双库同步消息表测试
 Test Suite for Sync Message Table and Database Manager
 
 测试覆盖:
@@ -10,19 +9,20 @@ Test Suite for Sync Message Table and Database Manager
 - 统计查询
 """
 
-import pytest
 from datetime import datetime, timedelta, timezone
 
-from app.models.sync_message import (
-    SyncMessage,
-    MessageStatus,
-    SyncDirection,
-    OperationType,
-)
+import pytest
+
 from app.core.sync_db_manager import (
     SyncDatabaseManager,
     get_sync_db_manager,
     reset_sync_db_manager,
+)
+from app.models.sync_message import (
+    MessageStatus,
+    OperationType,
+    SyncDirection,
+    SyncMessage,
 )
 
 

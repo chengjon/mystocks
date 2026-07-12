@@ -1,5 +1,4 @@
-"""
-数据质量监控框架 (Week 1 Day 1)
+"""数据质量监控框架 (Week 1 Day 1)
 定义核心监控指标：数据源可用性、数据延迟、数据完整性、数据准确性
 """
 
@@ -13,6 +12,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional
+
 
 logger = logging.getLogger(__name__)
 
@@ -77,12 +77,11 @@ class DataQualityMetric:
         """获取告警严重程度"""
         if self.value >= self.threshold_critical:
             return AlertSeverity.CRITICAL
-        elif self.value >= self.threshold_error:
+        if self.value >= self.threshold_error:
             return AlertSeverity.ERROR
-        elif self.value >= self.threshold_warning:
+        if self.value >= self.threshold_warning:
             return AlertSeverity.WARNING
-        else:
-            return AlertSeverity.INFO
+        return AlertSeverity.INFO
 
     def get_trend_direction(self) -> str:
         """获取趋势方向"""
@@ -98,10 +97,9 @@ class DataQualityMetric:
 
         if avg_later > avg_earlier * 1.05:
             return "improving"
-        elif avg_later < avg_earlier * 0.95:
+        if avg_later < avg_earlier * 0.95:
             return "degrading"
-        else:
-            return "stable"
+        return "stable"
 
 
 @dataclass
@@ -293,7 +291,7 @@ class SchemaValidationRule(IDataQualityRule):
 
                 if not isinstance(value, expected_type):
                     issues.append(
-                        f"Field {field} type mismatch: expected {expected_type.__name__}, got {type(value).__name__}"
+                        f"Field {field} type mismatch: expected {expected_type.__name__}, got {type(value).__name__}",
                     )
                 else:
                     passed_fields += 1
@@ -371,7 +369,7 @@ class DataFreshnessRule(IDataQualityRule):
             return {
                 "passed": False,
                 "score": 0.0,
-                "issues": [f"Failed to parse timestamp: {str(e)}"],
+                "issues": [f"Failed to parse timestamp: {e!s}"],
                 "details": {},
             }
 
@@ -408,7 +406,7 @@ class DataConsistencyRule(IDataQualityRule):
                 else:
                     issues.append(f"Consistency check {i + 1} failed")
             except Exception as e:
-                issues.append(f"Consistency check {i + 1} error: {str(e)}")
+                issues.append(f"Consistency check {i + 1} error: {e!s}")
 
         total_checks = len(self.consistency_checks)
         score = (passed_checks / total_checks * 100) if total_checks > 0 else 0
@@ -447,7 +445,7 @@ class DataQualityMonitor:
             SchemaValidationRule(
                 required_fields=["timestamp", "status"],
                 field_types={"timestamp": str, "status": str},
-            )
+            ),
         )
 
         # 数据新鲜度规则
@@ -492,7 +490,7 @@ class DataQualityMonitor:
                         "rule": rule.get_name(),
                         "description": rule.get_description(),
                         **result,
-                    }
+                    },
                 )
 
                 total_score += result["score"]
@@ -506,9 +504,9 @@ class DataQualityMonitor:
                         "description": rule.get_description(),
                         "passed": False,
                         "score": 0.0,
-                        "issues": [f"Evaluation error: {str(e)}"],
+                        "issues": [f"Evaluation error: {e!s}"],
                         "details": {},
-                    }
+                    },
                 )
                 total_rules += 1
 
@@ -691,8 +689,18 @@ class DataQualityMonitor:
 
 from app.services._data_quality_monitor_singleton import get_data_quality_monitor, monitor_data_quality
 
+
 __all__ = [
-    "DataQualityLevel", "AlertSeverity", "DataQualityMetric", "DataQualityAlert", "DataSourceQualityMetrics",
-    "IDataQualityRule", "SchemaValidationRule", "DataFreshnessRule", "DataConsistencyRule", "DataQualityMonitor",
-    "get_data_quality_monitor", "monitor_data_quality",
+    "AlertSeverity",
+    "DataConsistencyRule",
+    "DataFreshnessRule",
+    "DataQualityAlert",
+    "DataQualityLevel",
+    "DataQualityMetric",
+    "DataQualityMonitor",
+    "DataSourceQualityMetrics",
+    "IDataQualityRule",
+    "SchemaValidationRule",
+    "get_data_quality_monitor",
+    "monitor_data_quality",
 ]

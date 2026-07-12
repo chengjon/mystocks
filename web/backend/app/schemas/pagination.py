@@ -1,5 +1,4 @@
-"""
-统一分页和排序模型
+"""统一分页和排序模型
 
 提供标准的分页请求/响应模型和排序参数模型，
 用于所有列表查询API。
@@ -9,12 +8,12 @@ from typing import Generic, List, TypeVar
 
 from pydantic import BaseModel, Field, field_validator
 
+
 T = TypeVar("T")
 
 
 class PaginationParams(BaseModel):
-    """
-    统一分页请求参数
+    """统一分页请求参数
 
     **示例**:
     ```python
@@ -62,8 +61,7 @@ class PaginationParams(BaseModel):
 
 
 class PaginatedResponse(BaseModel, Generic[T]):
-    """
-    统一分页响应模型
+    """统一分页响应模型
 
     **示例**:
     ```python
@@ -110,8 +108,7 @@ class PaginatedResponse(BaseModel, Generic[T]):
 
 
 class SortParams(BaseModel):
-    """
-    统一排序参数模型
+    """统一排序参数模型
 
     **示例**:
     ```python
@@ -138,8 +135,7 @@ class SortParams(BaseModel):
     @field_validator("sort_by")
     @classmethod
     def validate_sort_by(cls, v: str, values) -> str:
-        """
-        验证排序字段是否在允许的列表中
+        """验证排序字段是否在允许的列表中
 
         **使用示例**:
         ```python
@@ -160,16 +156,14 @@ class SortParams(BaseModel):
         return v
 
     def get_order_by_clause(self) -> str:
-        """
-        生成SQL ORDER BY子句
+        """生成SQL ORDER BY子句
 
         **返回**: "field_name ASC" 或 "field_name DESC"
         """
         return f"{self.sort_by} {self.order.upper()}"
 
     def get_sort_dict(self) -> dict:
-        """
-        生成MongoDB/Pydantic排序字典
+        """生成MongoDB/Pydantic排序字典
 
         **返回**: {"field_name": 1} 或 {"field_name": -1}
         """
@@ -177,8 +171,7 @@ class SortParams(BaseModel):
 
 
 class FilterParams(BaseModel):
-    """
-    通用过滤参数基类
+    """通用过滤参数基类
 
     子类可以扩展特定的过滤字段
 
@@ -193,8 +186,7 @@ class FilterParams(BaseModel):
     """
 
     def get_where_clauses(self) -> tuple:
-        """
-        生成SQL WHERE子句
+        """生成SQL WHERE子句
 
         **返回**: (where_sql, params_dict)
         """
@@ -219,8 +211,7 @@ def get_pagination_params(
     page: int = 1,
     page_size: int = 20,
 ) -> PaginationParams:
-    """
-    从查询参数获取分页参数
+    """从查询参数获取分页参数
 
     **使用示例**:
     ```python
@@ -236,8 +227,7 @@ def get_sort_params(
     sort_by: str = "id",
     order: str = "asc",
 ) -> SortParams:
-    """
-    从查询参数获取排序参数
+    """从查询参数获取排序参数
 
     **使用示例**:
     ```python
@@ -260,8 +250,7 @@ def create_paginated_response(
     total: int,
     pagination: PaginationParams,
 ) -> PaginatedResponse[T]:
-    """
-    创建分页响应
+    """创建分页响应
 
     **参数**:
         data: 当前页数据列表

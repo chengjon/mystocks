@@ -1,5 +1,4 @@
-"""
-API监控中间件
+"""API监控中间件
 自动收集所有API请求的性能和数据质量指标
 """
 
@@ -11,6 +10,7 @@ from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.core.api_monitoring import get_monitor
+
 
 logger = structlog.get_logger()
 

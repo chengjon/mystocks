@@ -1,5 +1,4 @@
-"""
-Akshare适配器扩展模块
+"""Akshare适配器扩展模块
 添加4个新方法支持股票数据扩展功能
 
 数据源: 东方财富网 (通过Akshare)
@@ -14,6 +13,7 @@ import logging
 from typing import Dict, Optional
 
 import pandas as pd
+
 
 try:
     import akshare as ak
@@ -45,14 +45,14 @@ class AkshareExtension:
 
     @staticmethod
     def get_etf_spot() -> pd.DataFrame:
-        """
-        获取ETF基金实时行情数据 - 东方财富网
+        """获取ETF基金实时行情数据 - 东方财富网
 
         Returns:
             pd.DataFrame: ETF实时数据
                 columns: symbol, name, latest_price, change_percent, change_amount,
                         volume, amount, open_price, high_price, low_price, prev_close,
                         turnover_rate, total_market_cap, circulating_market_cap
+
         """
         ak_module = _get_akshare_module("ETF spot data")
         if ak_module is None:
@@ -86,8 +86,7 @@ class AkshareExtension:
 
     @staticmethod
     def get_stock_fund_flow(symbol: str, timeframe: str = "1") -> Dict:
-        """
-        获取个股资金流向数据 - 东方财富网
+        """获取个股资金流向数据 - 东方财富网
 
         Args:
             symbol: 股票代码 (如: 600519.SH)
@@ -103,6 +102,7 @@ class AkshareExtension:
                     "medium_net_inflow": 中单净流入额,
                     "small_net_inflow": 小单净流入额
                 }
+
         """
         ak_module = _get_akshare_module("stock fund flow")
         if ak_module is None:
@@ -119,7 +119,7 @@ class AkshareExtension:
                 return {}
 
             # 处理股票代码格式 (移除.SH/.SZ后缀)
-            stock_code = symbol.split(".")[0] if "." in symbol else symbol
+            stock_code = symbol.split(".", maxsplit=1)[0] if "." in symbol else symbol
 
             # 筛选指定股票
             filtered_df = df[df["代码"] == stock_code]
@@ -145,8 +145,7 @@ class AkshareExtension:
 
     @staticmethod
     def get_stock_lhb_detail(date: str) -> pd.DataFrame:
-        """
-        获取指定日期龙虎榜详细数据 - 东方财富网
+        """获取指定日期龙虎榜详细数据 - 东方财富网
 
         Args:
             date: 日期 (格式: YYYYMMDD 或 YYYY-MM-DD)
@@ -155,6 +154,7 @@ class AkshareExtension:
             pd.DataFrame: 龙虎榜数据
                 columns: symbol, name, reason, buy_amount, sell_amount, net_amount,
                         turnover_rate, institution_buy, institution_sell
+
         """
         ak_module = _get_akshare_module("dragon tiger detail")
         if ak_module is None:
@@ -199,8 +199,7 @@ class AkshareExtension:
 
     @staticmethod
     def get_dividend_data(symbol: str) -> pd.DataFrame:
-        """
-        获取股票分红配送数据 - 东方财富网
+        """获取股票分红配送数据 - 东方财富网
 
         Args:
             symbol: 股票代码 (如: 600519.SH)
@@ -210,13 +209,14 @@ class AkshareExtension:
                 columns: symbol, announce_date, ex_dividend_date, record_date,
                         dividend_ratio, bonus_share_ratio, transfer_ratio,
                         allotment_ratio, allotment_price
+
         """
         ak_module = _get_akshare_module("dividend data")
         if ak_module is None:
             return pd.DataFrame()
         try:
             # 处理股票代码格式
-            stock_code = symbol.split(".")[0] if "." in symbol else symbol
+            stock_code = symbol.split(".", maxsplit=1)[0] if "." in symbol else symbol
 
             # 使用akshare的stock_fhps_detail_em接口
             df = ak_module.stock_fhps_detail_em(symbol=stock_code)
@@ -246,14 +246,14 @@ class AkshareExtension:
 
     @staticmethod
     def get_sector_fund_flow(date: Optional[str] = None) -> pd.DataFrame:
-        """
-        获取行业/概念板块资金流向 - 东方财富网
+        """获取行业/概念板块资金流向 - 东方财富网
 
         Args:
             date: 日期 (格式: YYYY-MM-DD), 默认为最新交易日
 
         Returns:
             pd.DataFrame: 板块资金流向数据
+
         """
         ak_module = _get_akshare_module("sector fund flow")
         if ak_module is None:

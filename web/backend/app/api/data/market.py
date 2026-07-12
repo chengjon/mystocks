@@ -1,13 +1,14 @@
-"""
-市场概览与热度路由 (Market Overview)
+"""市场概览与热度路由 (Market Overview)
 """
 from datetime import datetime
 from typing import Any, Dict
-from fastapi import APIRouter, Depends, Query, HTTPException
+
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.core.database import db_service
 from app.core.exceptions import BusinessException
 from app.core.security import User, get_current_user
+
 
 router = APIRouter()
 
@@ -55,7 +56,7 @@ async def get_price_distribution(current_user: User = Depends(get_current_user))
 @router.get("/markets/hot-industries")
 async def get_hot_industries(
     limit: int = Query(5, ge=1, le=20),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """获取热门行业表现数据"""
     try:
@@ -74,7 +75,7 @@ async def get_hot_industries(
 @router.get("/markets/hot-concepts")
 async def get_hot_concepts(
     limit: int = Query(5, ge=1, le=20),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """获取热门概念表现数据"""
     try:

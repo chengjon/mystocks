@@ -1,25 +1,14 @@
-"""
-数据源工厂模式实现 (Week 1 Day 1)
+"""数据源工厂模式实现 (Week 1 Day 1)
 支持环境变量驱动的模式切换：Mock/Real/Hybrid
 实现动态配置热更新和fallback机制
 """
 
 import asyncio
-import json
 import logging
 import os
-import time
 from contextlib import asynccontextmanager
-from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
-from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
-
-import aiofiles
-import aiohttp
-import yaml
-from config.data_sources_loader import JSON_DATA_SOURCES_CONFIG_PATH
+from typing import Any, Dict, List, Optional
 
 from app.services.data_adapter import (
     DashboardDataSourceAdapter,
@@ -36,8 +25,9 @@ from app.services.data_source_interface import (
     IDataSource,
 )
 from app.services.market_data_adapter import MarketDataSourceAdapter
+from config.data_sources_loader import JSON_DATA_SOURCES_CONFIG_PATH
+
 from .data_source_mode import (
-    BaseDataSource,
     DataSourceConfig,
     DataSourceMetrics,
     DataSourceMode,
@@ -46,6 +36,7 @@ from .data_source_mode import (
     MockDataSource,
     RealDataSource,
 )
+
 
 logger = logging.getLogger(__name__)
 
@@ -140,10 +131,10 @@ class DataSourceFactory:
         if config.mode == DataSourceMode.MOCK:
             return MockDataSource(config)
 
-        elif config.mode == DataSourceMode.REAL:
+        if config.mode == DataSourceMode.REAL:
             return RealDataSource(config)
 
-        elif config.mode == DataSourceMode.HYBRID:
+        if config.mode == DataSourceMode.HYBRID:
             # Hybrid模式需要创建Real和Mock两个数据源
             real_config = config.model_copy(deep=True)
             real_config.mode = DataSourceMode.REAL
@@ -155,8 +146,7 @@ class DataSourceFactory:
 
             return HybridDataSource(config, real_source, mock_source)
 
-        else:
-            raise ValueError(f"Unsupported data source mode: {config.mode}")
+        raise ValueError(f"Unsupported data source mode: {config.mode}")
 
     async def get_data_source(self, source_name: str) -> Optional[IDataSource]:
         """获取数据源"""
@@ -174,7 +164,7 @@ class DataSourceFactory:
         return await data_source.get_data(endpoint, params)
 
     async def get_data_with_fallback(
-        self, source_name: str, endpoint: str, params: Dict[str, Any] = None
+        self, source_name: str, endpoint: str, params: Dict[str, Any] = None,
     ) -> Dict[str, Any]:
         """获取数据，支持自动fallback"""
         try:
@@ -189,8 +179,7 @@ class DataSourceFactory:
             if mock_source:
                 logger.info("Using fallback data source '%(mock_source_name)s'")
                 return await mock_source.get_data(endpoint, params)
-            else:
-                raise e
+            raise e
 
     def get_available_sources(self) -> List[str]:
         """获取所有可用的数据源名称"""
@@ -217,7 +206,7 @@ class DataSourceFactory:
                 health_results[source_name] = HealthStatus(
                     status=HealthStatusEnum.FAILED,
                     response_time=0,
-                    message=f"Health check error: {str(e)}",
+                    message=f"Health check error: {e!s}",
                     timestamp=datetime.now(),
                 )
 
@@ -344,10 +333,9 @@ def get_data_source_mode() -> DataSourceMode:
 
     if use_mock and not real_available:
         return DataSourceMode.MOCK
-    elif not use_mock and real_available:
+    if not use_mock and real_available:
         return DataSourceMode.REAL
-    else:
-        return DataSourceMode.HYBRID
+    return DataSourceMode.HYBRID
 
 
 def is_fallback_enabled() -> bool:

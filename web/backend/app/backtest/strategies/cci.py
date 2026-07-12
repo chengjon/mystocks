@@ -1,5 +1,4 @@
-"""
-CCI Strategy
+"""CCI Strategy
 
 CCI顺势指标策略 - 捕捉趋势拐点
 Commodity Channel Index
@@ -11,8 +10,7 @@ from app.backtest.strategies.base import BaseStrategy, SignalType, StrategySigna
 
 
 class CCIStrategy(BaseStrategy):
-    """
-    CCI顺势指标策略
+    """CCI顺势指标策略
 
     核心逻辑:
     - CCI = (TP - MA(TP)) / (0.015 × MD)
@@ -103,8 +101,7 @@ class CCIStrategy(BaseStrategy):
         ]
 
     def _calculate_cci(self, history: List[Dict[str, Any]]) -> Optional[float]:
-        """
-        计算CCI指标
+        """计算CCI指标
 
         CCI = (TP - SMA(TP)) / (0.015 × MD)
         """
@@ -168,7 +165,6 @@ class CCIStrategy(BaseStrategy):
         position: Optional[Dict[str, Any]] = None,
     ) -> Optional[StrategySignal]:
         """生成交易信号"""
-
         self.update_history(symbol, current_data)
 
         history = self.price_history.get(symbol, [])

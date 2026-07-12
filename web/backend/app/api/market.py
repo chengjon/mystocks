@@ -1,2 +1,2 @@
 """market - 向后兼容入口"""
-from market import *  # noqa: F401, F403
+from market import *  # noqa: F403

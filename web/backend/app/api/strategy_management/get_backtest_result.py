@@ -1,5 +1,4 @@
-"""
-策略管理 API - Week 1 Architecture Compliant
+"""策略管理 API - Week 1 Architecture Compliant
 
 提供策略CRUD、模型训练、回测执行等接口
 使用 MyStocksUnifiedManager 统一数据访问 + MonitoringDatabase 监控集成
@@ -11,11 +10,11 @@ Date: 2025-10-24
 
 import os
 import sys
-from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 import structlog
-from fastapi import APIRouter, BackgroundTasks, HTTPException
+from fastapi import APIRouter, HTTPException
+
 
 logger = structlog.get_logger(__name__)
 
@@ -24,17 +23,17 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from app.mock.unified_mock_data import get_mock_data_manager
 from src.core import DataClassification
-from src.monitoring.monitoring_database import MonitoringDatabase
 
 # 使用 MyStocksUnifiedManager 作为统一入口点
 from unified_manager import MyStocksUnifiedManager
 
+
 # 注意: backtest, model 模块需要确保存在
 try:
-    from app.backtest.backtest_engine import BacktestEngine
     from model import LightGBMModel, RandomForestModel
+
+    from app.backtest.backtest_engine import BacktestEngine
 except ImportError:
     BacktestEngine = None
     RandomForestModel = None
@@ -77,13 +76,12 @@ async def get_backtest_result(backtest_id: int) -> Dict[str, Any]:
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取回测结果失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取回测结果失败: {e!s}")
 
 
 @router.get("/backtest/results/{backtest_id}/chart-data")
 async def get_backtest_chart_data(backtest_id: int) -> Dict[str, List]:
-    """
-    获取回测图表数据
+    """获取回测图表数据
 
     获取指定回测任务的可视化图表数据，包括资金曲线、回撤曲线和收益分布等。
     该端点专门为前端图表组件（如ECharts）提供格式化的时序数据。
@@ -194,5 +192,5 @@ async def get_backtest_chart_data(backtest_id: int) -> Dict[str, List]:
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取图表数据失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"获取图表数据失败: {e!s}")
 

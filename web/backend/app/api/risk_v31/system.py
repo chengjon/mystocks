@@ -1,13 +1,14 @@
+"""系统、WebSocket与核心监控路由 (V3.1)
 """
-系统、WebSocket与核心监控路由 (V3.1)
-"""
-import structlog
 from datetime import datetime
 from typing import Any, Dict
+
+import structlog
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 from app.core.exceptions import BusinessException
 from app.utils.risk_utils import connection_manager
+
 
 # 导入核心
 try:
@@ -52,5 +53,5 @@ async def get_websocket_connections():
     """获取WebSocket连接统计 (V3.1)"""
     return {
         "status": "success",
-        "data": {"total": len(connection_manager.active_connections)}
+        "data": {"total": len(connection_manager.active_connections)},
     }

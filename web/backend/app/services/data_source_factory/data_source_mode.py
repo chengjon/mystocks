@@ -1,16 +1,14 @@
-"""
-数据源工厂模式实现 (Week 1 Day 1)
+"""数据源工厂模式实现 (Week 1 Day 1)
 支持环境变量驱动的模式切换：Mock/Real/Hybrid
 实现动态配置热更新和fallback机制
 """
 
 import asyncio
-from copy import copy, deepcopy
 import json
 import logging
 import os
 import time
-from contextlib import asynccontextmanager
+from copy import copy, deepcopy
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
@@ -21,21 +19,13 @@ import aiofiles
 import aiohttp
 import yaml
 
-from app.services.data_adapter import (
-    DashboardDataSourceAdapter,
-    DataDataSourceAdapter,
-    StrategyDataSourceAdapter,
-    TechnicalAnalysisDataSourceAdapter,
-    WatchlistDataSourceAdapter,
-)
-
 # 导入数据源接口和适配器
 from app.services.data_source_interface import (
     HealthStatus,
     HealthStatusEnum,
     IDataSource,
 )
-from app.services.market_data_adapter import MarketDataSourceAdapter
+
 
 logger = logging.getLogger(__name__)
 
@@ -291,7 +281,7 @@ class MockDataSource(BaseDataSource):
 
         except Exception as e:
             response_time = (time.time() - start_time) * 1000
-            error_msg = f"Mock data generation failed: {str(e)}"
+            error_msg = f"Mock data generation failed: {e!s}"
             self.update_metrics(False, response_time, error_msg)
 
             logger.error(error_msg)
@@ -318,7 +308,7 @@ class MockDataSource(BaseDataSource):
             return HealthStatus(
                 status=HealthStatusEnum.FAILED,
                 response_time=response_time,
-                message=f"Mock health check failed: {str(e)}",
+                message=f"Mock health check failed: {e!s}",
                 timestamp=datetime.now(),
             )
 
@@ -352,13 +342,12 @@ class RealDataSource(BaseDataSource):
 
                         logger.debug("Successfully fetched data from %(url)s")
                         return data
-                    else:
-                        error_msg = f"HTTP {response.status}: {await response.text()}"
-                        raise aiohttp.ClientError(error_msg)
+                    error_msg = f"HTTP {response.status}: {await response.text()}"
+                    raise aiohttp.ClientError(error_msg)
 
             except Exception as e:
                 response_time = (time.time() - start_time) * 1000
-                error_msg = f"Request failed (attempt {attempt + 1}): {str(e)}"
+                error_msg = f"Request failed (attempt {attempt + 1}): {e!s}"
 
                 if attempt < self.config_obj.retry_count:
                     logger.warning("%(error_msg)s, retrying in {self.config_obj.retry_delay}s...")
@@ -390,20 +379,19 @@ class RealDataSource(BaseDataSource):
                         message="Real data source is healthy",
                         timestamp=datetime.now(),
                     )
-                else:
-                    return HealthStatus(
-                        status=HealthStatusEnum.FAILED,
-                        response_time=response_time,
-                        message=f"Health check failed: HTTP {response.status}",
-                        timestamp=datetime.now(),
-                    )
+                return HealthStatus(
+                    status=HealthStatusEnum.FAILED,
+                    response_time=response_time,
+                    message=f"Health check failed: HTTP {response.status}",
+                    timestamp=datetime.now(),
+                )
 
         except Exception as e:
             response_time = (time.time() - start_time) * 1000
             return HealthStatus(
                 status=HealthStatusEnum.FAILED,
                 response_time=response_time,
-                message=f"Health check error: {str(e)}",
+                message=f"Health check error: {e!s}",
                 timestamp=datetime.now(),
             )
 
@@ -464,7 +452,7 @@ class HybridDataSource(BaseDataSource):
                 self._last_fallback_time = datetime.now()
 
                 response_time = (time.time() - start_time) * 1000
-                self.update_metrics(True, response_time, f"Fallback used: {str(real_error)}")
+                self.update_metrics(True, response_time, f"Fallback used: {real_error!s}")
 
                 logger.info("Fallback successful for %(endpoint)s (fallback count: {self._fallback_count})")
 
@@ -517,7 +505,7 @@ class HybridDataSource(BaseDataSource):
             return HealthStatus(
                 status=HealthStatusEnum.FAILED,
                 response_time=response_time,
-                message=f"Hybrid health check failed: {str(e)}",
+                message=f"Hybrid health check failed: {e!s}",
                 timestamp=datetime.now(),
             )
 
@@ -547,7 +535,7 @@ class DynamicConfigManager:
                 logger.warning("Config file {self.config_file} not found, creating default config")
                 await self._create_default_config()
 
-            async with aiofiles.open(self.config_file, "r", encoding="utf-8") as f:
+            async with aiofiles.open(self.config_file, encoding="utf-8") as f:
                 if self.config_file.suffix.lower() in [".yaml", ".yml"]:
                     content = await f.read()
                     self._config_data = yaml.safe_load(content) or {}
@@ -633,11 +621,11 @@ class DynamicConfigManager:
                     "name": "Market Data Source",
                     "type": "market",
                     "enabled": True,
-                    "mode": os.getenv("USE_MOCK_DATA", "true").lower() == "true"
-                    and DataSourceMode.MOCK
+                    "mode": (os.getenv("USE_MOCK_DATA", "true").lower() == "true"
+                    and DataSourceMode.MOCK)
                     or DataSourceMode.REAL,
-                    "base_url": os.getenv("REAL_DATA_AVAILABLE", "false").lower() == "true"
-                    and market_data_base_url
+                    "base_url": (os.getenv("REAL_DATA_AVAILABLE", "false").lower() == "true"
+                    and market_data_base_url)
                     or None,
                     "timeout": 30.0,
                     "retry_count": 3,

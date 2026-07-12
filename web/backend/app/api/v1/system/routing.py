@@ -1,5 +1,4 @@
-"""
-数据路由API
+"""数据路由API
 
 提供智能数据路由选择功能
 """
@@ -8,6 +7,7 @@ from typing import Dict, Optional
 
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
+
 
 router = APIRouter(
     prefix="/data",
@@ -37,8 +37,7 @@ class DataRoutingResponse(BaseModel):
 
 @router.post("/route", response_model=DataRoutingResponse, summary="Data Routing Decision")
 async def get_data_route(request: DataRoutingRequest):
-    """
-    根据数据特性和查询条件智能选择数据库路由
+    """根据数据特性和查询条件智能选择数据库路由
 
     Analyzes data category and query parameters to recommend optimal database routing
     strategy between PostgreSQL and TDengine.

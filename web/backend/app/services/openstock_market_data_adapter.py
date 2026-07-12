@@ -1,5 +1,4 @@
-"""
-OpenStock 行情数据源适配器 (B4.014 S5 / M1k-2)
+"""OpenStock 行情数据源适配器 (B4.014 S5 / M1k-2)
 
 将 OpenStockClient 适配到 IDataSource 接口,以便注册到 data_source_factory。
 factory 通过新增 source_type="openstock_market" 分支调用本类(见步骤 3)。
@@ -14,8 +13,9 @@ from __future__ import annotations
 import logging
 import os
 import time
+from collections.abc import Mapping
 from datetime import datetime
-from typing import Any, Dict, Mapping, Optional
+from typing import Any, Dict, Optional
 
 import httpx
 
@@ -29,6 +29,7 @@ from app.services.openstock_client import (
     OpenStockClientConfig,
     OpenStockClientError,
 )
+
 
 logger = logging.getLogger(__name__)
 
@@ -70,7 +71,7 @@ class OpenStockMarketDataSourceAdapter(IDataSource):
         self._client_config = OpenStockClientConfig(
             base_url=base_url,
             timeout_seconds=timeout_seconds,
-            headers=merged_headers if merged_headers else None,
+            headers=merged_headers or None,
         )
         self._client: Optional[OpenStockClient] = None
         self._metrics: Dict[str, Any] = {
@@ -108,7 +109,7 @@ class OpenStockMarketDataSourceAdapter(IDataSource):
         return headers
 
     async def get_data(
-        self, endpoint: str, params: Dict[str, Any] = None
+        self, endpoint: str, params: Dict[str, Any] = None,
     ) -> Dict[str, Any]:
         params = params or {}
         self._metrics["total_requests"] += 1
@@ -137,7 +138,7 @@ class OpenStockMarketDataSourceAdapter(IDataSource):
             raise
 
     async def _fetch_klines(
-        self, client: OpenStockClient, params: Mapping[str, Any]
+        self, client: OpenStockClient, params: Mapping[str, Any],
     ) -> Dict[str, Any]:
         symbol = params.get("symbol") or params.get("code")
         if not symbol:
@@ -168,7 +169,7 @@ class OpenStockMarketDataSourceAdapter(IDataSource):
         }
 
     async def _fetch_quotes(
-        self, client: OpenStockClient, params: Mapping[str, Any]
+        self, client: OpenStockClient, params: Mapping[str, Any],
     ) -> Dict[str, Any]:
         # B4.014-M1n 修复:OpenStock REALTIME_QUOTES 用单数 symbol(字符串)。
         # 多 symbol 不支持逗号分隔(provider 会把整串当 1 个非法代码 → 503),
@@ -274,7 +275,7 @@ class OpenStockMarketDataSourceAdapter(IDataSource):
             lowered["change_percent"] = lowered["pct_chg"]
         if "symbol" in lowered:
             lowered["symbol"] = OpenStockMarketDataSourceAdapter._strip_exchange_prefix(
-                lowered["symbol"]
+                lowered["symbol"],
             )
         return lowered
 
@@ -328,7 +329,7 @@ class OpenStockMarketDataSourceAdapter(IDataSource):
         except httpx.HTTPError as exc:
             elapsed_ms = (time.monotonic() - started) * 1000.0
             logger.warning(
-                "OpenStock /health/live probe failed: %(exc)s", {"exc": exc}
+                "OpenStock /health/live probe failed: %(exc)s", {"exc": exc},
             )
             return HealthStatus(
                 status=HealthStatusEnum.FAILED,

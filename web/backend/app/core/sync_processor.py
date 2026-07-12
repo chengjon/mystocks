@@ -1,5 +1,4 @@
-"""
-双库同步处理器 - Sync Processor for Dual-Database Operations
+"""双库同步处理器 - Sync Processor for Dual-Database Operations
 Sync Processor for TDengine-PostgreSQL Data Consistency
 
 负责执行实际的跨库同步操作,确保数据最终一致性。
@@ -33,12 +32,12 @@ from app.models.sync_message import (
     SyncMessage,
 )
 
+
 logger = structlog.get_logger()
 
 
 class SyncExecutor:
-    """
-    同步执行器 - 执行具体的数据库同步操作
+    """同步执行器 - 执行具体的数据库同步操作
 
     Responsibilities:
     - Execute sync operations based on message direction
@@ -54,14 +53,14 @@ class SyncExecutor:
         logger.info("🔧 SyncExecutor initialized")
 
     def execute_sync(self, message: SyncMessage) -> Dict[str, Any]:
-        """
-        执行同步操作
+        """执行同步操作
 
         Args:
             message: 同步消息
 
         Returns:
             执行结果 {success: bool, error: str, duration_ms: float}
+
         """
         start_time = time.time()
 
@@ -100,8 +99,7 @@ class SyncExecutor:
             }
 
     def _sync_tdengine_to_postgresql(self, message: SyncMessage) -> Dict[str, Any]:
-        """
-        TDengine -> PostgreSQL 同步
+        """TDengine -> PostgreSQL 同步
 
         Strategy:
         1. Read data from TDengine cache
@@ -136,21 +134,20 @@ class SyncExecutor:
 
                 return {"success": True, "rows_affected": 1}
 
-            elif message.operation_type == OperationType.UPDATE:
+            if message.operation_type == OperationType.UPDATE:
                 # 更新逻辑
                 return {"success": True, "rows_affected": 1}
 
-            elif message.operation_type == OperationType.DELETE:
+            if message.operation_type == OperationType.DELETE:
                 # 删除逻辑
                 return {"success": True, "rows_affected": 1}
 
-            elif message.operation_type == OperationType.BULK_INSERT:
+            if message.operation_type == OperationType.BULK_INSERT:
                 # 批量插入逻辑
                 rows = len(payload) if isinstance(payload, list) else 1
                 return {"success": True, "rows_affected": rows}
 
-            else:
-                raise ValueError(f"Unsupported operation: {message.operation_type}")
+            raise ValueError(f"Unsupported operation: {message.operation_type}")
 
         except Exception as e:
             logger.error(
@@ -161,8 +158,7 @@ class SyncExecutor:
             return {"success": False, "error": str(e)}
 
     def _sync_postgresql_to_tdengine(self, message: SyncMessage) -> Dict[str, Any]:
-        """
-        PostgreSQL -> TDengine 同步
+        """PostgreSQL -> TDengine 同步
 
         Strategy:
         1. Read data from PostgreSQL
@@ -193,10 +189,9 @@ class SyncExecutor:
                         data_type=data_type,
                     )
                     return {"success": True, "rows_affected": 1}
-                else:
-                    return {"success": False, "error": "Cache write failed"}
+                return {"success": False, "error": "Cache write failed"}
 
-            elif message.operation_type == OperationType.UPDATE:
+            if message.operation_type == OperationType.UPDATE:
                 # 更新操作: 先删除再插入
                 symbol = record_id.get("symbol")
                 data_type = record_id.get("data_type")
@@ -215,7 +210,7 @@ class SyncExecutor:
                     "rows_affected": 1 if success else 0,
                 }
 
-            elif message.operation_type == OperationType.DELETE:
+            if message.operation_type == OperationType.DELETE:
                 # TDengine删除操作
                 # Note: cache_manager可能需要扩展delete方法
                 logger.warning(
@@ -224,7 +219,7 @@ class SyncExecutor:
                 )
                 return {"success": True, "rows_affected": 0}
 
-            elif message.operation_type == OperationType.BULK_INSERT:
+            if message.operation_type == OperationType.BULK_INSERT:
                 # 批量插入
                 if not isinstance(payload, list):
                     payload = [payload]
@@ -248,8 +243,7 @@ class SyncExecutor:
                     "rows_affected": success_count,
                 }
 
-            else:
-                raise ValueError(f"Unsupported operation: {message.operation_type}")
+            raise ValueError(f"Unsupported operation: {message.operation_type}")
 
         except Exception as e:
             logger.error(
@@ -260,8 +254,7 @@ class SyncExecutor:
             return {"success": False, "error": str(e)}
 
     def _sync_bidirectional(self, message: SyncMessage) -> Dict[str, Any]:
-        """
-        双向同步
+        """双向同步
 
         Strategy:
         1. Execute TDengine -> PostgreSQL
@@ -302,8 +295,7 @@ class SyncExecutor:
 
 
 class SyncProcessor:
-    """
-    同步处理器 - 主消息处理循环
+    """同步处理器 - 主消息处理循环
 
     Responsibilities:
     - Poll pending messages from sync_message table
@@ -320,14 +312,14 @@ class SyncProcessor:
         batch_size: int = 50,
         process_interval: int = 5,
     ):
-        """
-        初始化同步处理器
+        """初始化同步处理器
 
         Args:
             db_manager: 数据库管理器
             executor: 同步执行器
             batch_size: 每批处理消息数量
             process_interval: 处理间隔(秒)
+
         """
         self.db_manager = db_manager or get_sync_db_manager()
         self.executor = executor or SyncExecutor()
@@ -346,11 +338,11 @@ class SyncProcessor:
         )
 
     def process_pending_messages(self) -> Dict[str, Any]:
-        """
-        处理待处理消息 (单次批处理)
+        """处理待处理消息 (单次批处理)
 
         Returns:
             处理结果统计
+
         """
         start_time = time.time()
 
@@ -406,14 +398,14 @@ class SyncProcessor:
             }
 
     def _process_single_message(self, message: SyncMessage) -> Dict[str, Any]:
-        """
-        处理单条消息
+        """处理单条消息
 
         Args:
             message: 同步消息
 
         Returns:
             处理结果 {success: bool, ...}
+
         """
         try:
             # 更新为处理中
@@ -453,30 +445,29 @@ class SyncProcessor:
 
                 return {"success": True, "message_id": message.id}
 
-            else:
-                # 失败: 自动进入重试逻辑
-                self.db_manager.update_message_status(
-                    message_id=message.id,
-                    status=MessageStatus.FAILED,
-                    error_message=result.get("error", "Unknown error"),
-                    error_details={"result": result},
-                    processed_by=self.worker_id,
-                )
+            # 失败: 自动进入重试逻辑
+            self.db_manager.update_message_status(
+                message_id=message.id,
+                status=MessageStatus.FAILED,
+                error_message=result.get("error", "Unknown error"),
+                error_details={"result": result},
+                processed_by=self.worker_id,
+            )
 
-                self.failed_count += 1
+            self.failed_count += 1
 
-                logger.warning(
-                    "⚠️ Message processing failed",
-                    message_id=message.id,
-                    error=result.get("error"),
-                    retry_count=message.retry_count + 1,
-                )
+            logger.warning(
+                "⚠️ Message processing failed",
+                message_id=message.id,
+                error=result.get("error"),
+                retry_count=message.retry_count + 1,
+            )
 
-                return {
-                    "success": False,
-                    "message_id": message.id,
-                    "error": result.get("error"),
-                }
+            return {
+                "success": False,
+                "message_id": message.id,
+                "error": result.get("error"),
+            }
 
         except Exception as e:
             logger.error("❌ Failed to process message", message_id=message.id, error=str(e))
@@ -496,11 +487,11 @@ class SyncProcessor:
             return {"success": False, "message_id": message.id, "error": str(e)}
 
     def process_retryable_messages(self) -> Dict[str, Any]:
-        """
-        处理可重试消息
+        """处理可重试消息
 
         Returns:
             处理结果统计
+
         """
         start_time = time.time()
 
@@ -585,11 +576,11 @@ _sync_processor: Optional[SyncProcessor] = None
 
 
 def get_sync_processor() -> SyncProcessor:
-    """
-    获取同步处理器单例
+    """获取同步处理器单例
 
     Returns:
         SyncProcessor实例
+
     """
     global _sync_processor
 

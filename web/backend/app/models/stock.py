@@ -1,12 +1,10 @@
-# -*- coding: utf-8 -*-
 # 功能：股票基础信息模型
 # 作者：JohnC (ninjas@sina.com) & Claude
 # 日期：2025-11-24
 # 版本：1.0.0
 # 版权：© 2025 MyStocks Project
 
-"""
-股票基础信息模型 (SQLAlchemy ORM)
+"""股票基础信息模型 (SQLAlchemy ORM)
 
 定义 stock_info 表的ORM模型。
 """
@@ -15,6 +13,7 @@ from datetime import datetime
 
 from sqlalchemy import DECIMAL, TIMESTAMP, Column, Date, Index, String
 from sqlalchemy.ext.declarative import declarative_base
+
 
 Base = declarative_base()
 

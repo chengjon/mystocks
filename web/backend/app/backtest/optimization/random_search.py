@@ -1,5 +1,4 @@
-"""
-Random Search Optimizer
+"""Random Search Optimizer
 
 随机搜索优化器 - 随机采样参数组合
 """
@@ -15,12 +14,12 @@ from app.backtest.optimization.base import (
     ParameterSpace,
 )
 
+
 logger = logging.getLogger(__name__)
 
 
 class RandomSearchOptimizer(BaseOptimizer):
-    """
-    随机搜索优化器
+    """随机搜索优化器
 
     特点:
     - 随机采样参数空间
@@ -39,8 +38,7 @@ class RandomSearchOptimizer(BaseOptimizer):
         n_iterations: int = 100,
         random_seed: Optional[int] = None,
     ):
-        """
-        初始化随机搜索优化器
+        """初始化随机搜索优化器
 
         Args:
             strategy_type: 策略类型
@@ -49,6 +47,7 @@ class RandomSearchOptimizer(BaseOptimizer):
             maximize: 是否最大化
             n_iterations: 迭代次数
             random_seed: 随机种子 (用于复现)
+
         """
         super().__init__(strategy_type, parameter_spaces, objective, maximize)
 
@@ -61,11 +60,11 @@ class RandomSearchOptimizer(BaseOptimizer):
         logger.info("随机搜索优化器初始化: 迭代数=%(n_iterations)s, 种子=%(random_seed)s")
 
     def _generate_random_parameters(self) -> Dict[str, Any]:
-        """
-        生成随机参数组合
+        """生成随机参数组合
 
         Returns:
             参数字典
+
         """
         params = {}
 
@@ -75,10 +74,9 @@ class RandomSearchOptimizer(BaseOptimizer):
         return params
 
     def _generate_unique_parameters(
-        self, existing: List[Dict[str, Any]], max_attempts: int = 100
+        self, existing: List[Dict[str, Any]], max_attempts: int = 100,
     ) -> Optional[Dict[str, Any]]:
-        """
-        生成唯一的参数组合 (避免重复)
+        """生成唯一的参数组合 (避免重复)
 
         Args:
             existing: 已有的参数组合
@@ -86,6 +84,7 @@ class RandomSearchOptimizer(BaseOptimizer):
 
         Returns:
             新的参数组合，如果无法生成则返回None
+
         """
         for _ in range(max_attempts):
             params = self._generate_random_parameters()
@@ -111,8 +110,7 @@ class RandomSearchOptimizer(BaseOptimizer):
         min_improvement: float = 0.001,
         **kwargs,
     ) -> List[OptimizationResult]:
-        """
-        执行随机搜索优化
+        """执行随机搜索优化
 
         Args:
             market_data: 市场数据
@@ -123,6 +121,7 @@ class RandomSearchOptimizer(BaseOptimizer):
 
         Returns:
             所有优化结果
+
         """
         logger.info("开始随机搜索优化: 策略={self.strategy_type}, 迭代={self.n_iterations}")
 
@@ -170,7 +169,7 @@ class RandomSearchOptimizer(BaseOptimizer):
                 logger.info(
                     f"随机搜索进度: {iteration + 1}/{self.n_iterations} "
                     f"当前{self.objective}={current_score:.4f} "
-                    f"最佳={best_score:.4f}"
+                    f"最佳={best_score:.4f}",
                 )
 
             # 早停检查
@@ -194,7 +193,7 @@ class RandomSearchOptimizer(BaseOptimizer):
             f"随机搜索完成: "
             f"耗时={total_time:.2f}秒 "
             f"测试={len(self.results)}组合 "
-            f"最佳{self.objective}={self.best_result.get_score(self.objective):.4f}"
+            f"最佳{self.objective}={self.best_result.get_score(self.objective):.4f}",
         )
 
         return self.results
@@ -206,8 +205,7 @@ class RandomSearchOptimizer(BaseOptimizer):
         iterations_per_restart: int = None,
         **kwargs,
     ) -> List[OptimizationResult]:
-        """
-        带重启的随机搜索
+        """带重启的随机搜索
 
         多次重启，每次从不同的随机种子开始
 
@@ -218,6 +216,7 @@ class RandomSearchOptimizer(BaseOptimizer):
 
         Returns:
             所有优化结果
+
         """
         iters = iterations_per_restart or (self.n_iterations // n_restarts)
 
@@ -264,17 +263,17 @@ class RandomSearchOptimizer(BaseOptimizer):
             f"多重启随机搜索完成: "
             f"重启={n_restarts}次 "
             f"总测试={len(all_results)}组合 "
-            f"最佳{self.objective}={best_overall.get_score(self.objective):.4f}"
+            f"最佳{self.objective}={best_overall.get_score(self.objective):.4f}",
         )
 
         return all_results
 
     def get_convergence_curve(self) -> List[float]:
-        """
-        获取收敛曲线 (最佳得分随迭代的变化)
+        """获取收敛曲线 (最佳得分随迭代的变化)
 
         Returns:
             最佳得分列表
+
         """
         if not self.results:
             return []
@@ -297,11 +296,11 @@ class RandomSearchOptimizer(BaseOptimizer):
         return curve
 
     def get_exploration_stats(self) -> Dict[str, Any]:
-        """
-        获取探索统计
+        """获取探索统计
 
         Returns:
             探索统计信息
+
         """
         if not self.results:
             return {}
@@ -320,14 +319,14 @@ class RandomSearchOptimizer(BaseOptimizer):
         }
 
     def _find_convergence_point(self, threshold: float = 0.01) -> int:
-        """
-        找到收敛点 (最佳得分稳定的迭代次数)
+        """找到收敛点 (最佳得分稳定的迭代次数)
 
         Args:
             threshold: 改进阈值
 
         Returns:
             收敛迭代次数
+
         """
         curve = self.get_convergence_curve()
 

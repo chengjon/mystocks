@@ -1,5 +1,4 @@
-"""
-API Documentation Validation Tests
+"""API Documentation Validation Tests
 
 This test suite validates that API documentation is complete and accurate:
 - OpenAPI/Swagger documentation completeness
@@ -84,7 +83,7 @@ class APIDocumentationValidator:
                 issues.append("Missing components/schemas section")
 
         except Exception as e:
-            issues.append(f"Error validating OpenAPI schema: {str(e)}")
+            issues.append(f"Error validating OpenAPI schema: {e!s}")
 
         return {"compliance": len(issues) == 0, "issues": issues}
 
@@ -132,20 +131,20 @@ class APIDocumentationValidator:
                         self._validate_method_documentation(method_spec, endpoint_result, method)
 
         except Exception as e:
-            endpoint_result["issues"].append(f"Error validating endpoint: {str(e)}")
+            endpoint_result["issues"].append(f"Error validating endpoint: {e!s}")
 
         return endpoint_result
 
     def _validate_method_documentation(self, method_spec: Dict[str, Any], endpoint_result: Dict[str, Any], method: str):
         """Validate documentation for a specific HTTP method"""
         # Check summary
-        if "summary" in method_spec and method_spec["summary"]:
+        if method_spec.get("summary"):
             endpoint_result["documentation"]["has_summary"] = True
         else:
             endpoint_result["issues"].append(f"Missing summary for {method.upper()}")
 
         # Check description
-        if "description" in method_spec and method_spec["description"]:
+        if method_spec.get("description"):
             endpoint_result["documentation"]["has_description"] = True
             # Check description quality
             if len(method_spec["description"]) < 20:
@@ -154,23 +153,23 @@ class APIDocumentationValidator:
             endpoint_result["issues"].append(f"Missing description for {method.upper()}")
 
         # Check tags
-        if "tags" in method_spec and method_spec["tags"]:
+        if method_spec.get("tags"):
             endpoint_result["documentation"]["has_tags"] = True
         else:
             endpoint_result["issues"].append(f"Missing tags for {method.upper()}")
 
         # Check parameters
-        if "parameters" in method_spec and method_spec["parameters"]:
+        if method_spec.get("parameters"):
             endpoint_result["documentation"]["has_parameters"] = True
             self._validate_parameters(method_spec["parameters"], endpoint_result, method)
 
         # Check request body
-        if "requestBody" in method_spec and method_spec["requestBody"]:
+        if method_spec.get("requestBody"):
             endpoint_result["documentation"]["has_request_body"] = True
             self._validate_request_body(method_spec["requestBody"], endpoint_result, method)
 
         # Check responses
-        if "responses" in method_spec and method_spec["responses"]:
+        if method_spec.get("responses"):
             endpoint_result["documentation"]["has_responses"] = True
             self._validate_responses(method_spec["responses"], endpoint_result, method)
 
@@ -190,7 +189,7 @@ class APIDocumentationValidator:
             # Check parameter description
             if "description" not in param or not param["description"]:
                 endpoint_result["issues"].append(
-                    f"Parameter {param.get('name', 'unknown')} missing description for {method.upper()}"
+                    f"Parameter {param.get('name', 'unknown')} missing description for {method.upper()}",
                 )
 
     def _validate_request_body(self, request_body: Dict[str, Any], endpoint_result: Dict[str, Any], method: str):
@@ -226,7 +225,7 @@ class APIDocumentationValidator:
                 has_success_response = True
                 if "description" not in response_spec or not response_spec["description"]:
                     endpoint_result["issues"].append(
-                        f"Success response {status_code} missing description for {method.upper()}"
+                        f"Success response {status_code} missing description for {method.upper()}",
                     )
 
                 # Check for content examples
@@ -242,7 +241,7 @@ class APIDocumentationValidator:
                 has_error_response = True
                 if "description" not in response_spec or not response_spec["description"]:
                     endpoint_result["issues"].append(
-                        f"Error response {status_code} missing description for {method.upper()}"
+                        f"Error response {status_code} missing description for {method.upper()}",
                     )
 
         if not has_success_response:
@@ -289,7 +288,7 @@ class APIDocumentationValidator:
                     issues.append("Global security doesn't reference Bearer scheme")
 
         except Exception as e:
-            issues.append(f"Error validating authentication documentation: {str(e)}")
+            issues.append(f"Error validating authentication documentation: {e!s}")
 
         return issues
 
@@ -328,7 +327,7 @@ class APIDocumentationValidator:
                                 issues.append(f"Property {prop_name} in {schema_name} missing description")
 
         except Exception as e:
-            issues.append(f"Error validating schema definitions: {str(e)}")
+            issues.append(f"Error validating schema definitions: {e!s}")
 
         return issues
 
@@ -440,7 +439,7 @@ class TestAPIDocumentationValidation:
                     m
                     for m in ep["methods"]
                     if ep["documentation"]["has_summary"] and ep["documentation"]["has_description"]
-                ]
+                ],
             )
             for ep in results
         )

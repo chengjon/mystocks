@@ -3,6 +3,7 @@ from datetime import date
 
 import pandas as pd
 
+
 os.environ.setdefault("POSTGRESQL_HOST", "localhost")
 os.environ.setdefault("POSTGRESQL_PORT", "5432")
 os.environ.setdefault("POSTGRESQL_USER", "tester")
@@ -68,7 +69,7 @@ def _sector_frame():
                 "小单净流入": -800000000,
                 "小单净流入占比": -1.9,
             },
-        ]
+        ],
     )
 
 

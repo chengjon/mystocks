@@ -1,5 +1,4 @@
-"""
-技术分析服务
+"""技术分析服务
 Enhanced Technical Analysis
 
 基于 TA-Lib 提供全面的技术指标计算和分析
@@ -12,6 +11,7 @@ from typing import Dict, Optional
 
 import pandas as pd
 import talib
+
 
 # 配置日志
 logging.basicConfig(level=logging.INFO)
@@ -41,8 +41,7 @@ def _get_akshare_module(feature: str):
 
 
 class TechnicalAnalysisService:
-    """
-    技术分析服务 (单例模式)
+    """技术分析服务 (单例模式)
 
     提供完整的技术指标计算功能:
     - 趋势指标: MA, EMA, MACD, DMI, SAR
@@ -82,8 +81,7 @@ class TechnicalAnalysisService:
         end_date: Optional[str] = None,
         adjust: str = "qfq",
     ) -> pd.DataFrame:
-        """
-        获取股票历史数据
+        """获取股票历史数据
 
         参数:
         - symbol: 股票代码
@@ -145,7 +143,7 @@ class TechnicalAnalysisService:
                     "涨跌幅": "change_percent",
                     "涨跌额": "change_amount",
                     "换手率": "turnover_rate",
-                }
+                },
             )
 
             # 转换日期
@@ -175,8 +173,7 @@ class TechnicalAnalysisService:
     # ========================================================================
 
     def calculate_trend_indicators(self, df: pd.DataFrame) -> Dict:
-        """
-        计算趋势指标
+        """计算趋势指标
 
         包括:
         - MA (移动平均线): 5, 10, 20, 30, 60, 120, 250日
@@ -242,8 +239,7 @@ class TechnicalAnalysisService:
     # ========================================================================
 
     def calculate_momentum_indicators(self, df: pd.DataFrame) -> Dict:
-        """
-        计算动量指标
+        """计算动量指标
 
         包括:
         - RSI (相对强弱指标): 6, 12, 24日
@@ -318,8 +314,7 @@ class TechnicalAnalysisService:
     # ========================================================================
 
     def calculate_volatility_indicators(self, df: pd.DataFrame) -> Dict:
-        """
-        计算波动性指标
+        """计算波动性指标
 
         包括:
         - Bollinger Bands (布林带)
@@ -382,8 +377,7 @@ class TechnicalAnalysisService:
     # ========================================================================
 
     def calculate_volume_indicators(self, df: pd.DataFrame) -> Dict:
-        """
-        计算成交量指标
+        """计算成交量指标
 
         包括:
         - OBV (能量潮指标)
@@ -449,8 +443,7 @@ class TechnicalAnalysisService:
         start_date: Optional[str] = None,
         end_date: Optional[str] = None,
     ) -> Dict:
-        """
-        计算所有技术指标
+        """计算所有技术指标
 
         返回:
         {
@@ -500,8 +493,7 @@ class TechnicalAnalysisService:
     # ========================================================================
 
     def get_indicator_series(self, symbol: str, indicator: str, period: str = "daily", length: int = 100) -> Dict:
-        """
-        获取指标的时间序列数据（用于前端图表）
+        """获取指标的时间序列数据（用于前端图表）
 
         参数:
         - symbol: 股票代码
@@ -546,8 +538,7 @@ class TechnicalAnalysisService:
     # ========================================================================
 
     def generate_trading_signals(self, df: pd.DataFrame) -> Dict:
-        """
-        基于技术指标生成交易信号
+        """基于技术指标生成交易信号
 
         返回:
         {
@@ -585,7 +576,7 @@ class TechnicalAnalysisService:
                             "type": "rsi_oversold",
                             "signal": "buy",
                             "strength": float((30 - rsi) / 30),
-                        }
+                        },
                     )
                 elif rsi > 70:
                     signals.append(
@@ -593,7 +584,7 @@ class TechnicalAnalysisService:
                             "type": "rsi_overbought",
                             "signal": "sell",
                             "strength": float((rsi - 70) / 30),
-                        }
+                        },
                     )
 
             # 计算综合信号

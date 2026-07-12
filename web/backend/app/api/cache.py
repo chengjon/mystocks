@@ -12,6 +12,7 @@ from app.core.cache_manager import get_cache_manager
 from app.core.exceptions import BusinessException
 from app.core.security import User, get_current_user
 
+
 logger = structlog.get_logger()
 
 router = APIRouter(prefix="/cache", tags=["cache"])

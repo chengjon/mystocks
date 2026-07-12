@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pytest
 
+
 SOURCE_FILES = [
     "web/backend/app/core/password_policy.py",
     "web/backend/app/core/data_formats.py",

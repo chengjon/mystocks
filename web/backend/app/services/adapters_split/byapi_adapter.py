@@ -1,16 +1,18 @@
-"""
-BYAPI数据源适配器
+"""BYAPI数据源适配器
 
 提供BYAPI REST API数据获取功能，支持涨跌停股池、技术指标等
 """
 
-from typing import Any, Dict, List, Optional
-import httpx
 import asyncio
+from typing import Any, Dict, List, Optional
 
-from .base_adapter import BaseAdapter
+import httpx
+
 from app.core.database import db_service
 from app.services.data_quality_monitor import get_data_quality_monitor
+
+from .base_adapter import BaseAdapter
+
 
 logger = __import__("logging").getLogger(__name__)
 
@@ -60,22 +62,20 @@ class BYAPIAdapter(BaseAdapter):
                 if response.status_code == 200:
                     self._log_request_success(endpoint, response.json())
                     return response.json()
-                else:
-                    error_msg = f"API返回错误: {response.status_code}"
-                    last_error = Exception(error_msg)
+                error_msg = f"API返回错误: {response.status_code}"
+                last_error = Exception(error_msg)
 
-                    if attempt < retries - 1:
-                        logger.warning(f"{self.name}.{endpoint} 请求失败，重试 {attempt + 1}/{retries}")
-                        await asyncio.sleep(2**attempt)
-                    else:
-                        raise last_error
+                if attempt < retries - 1:
+                    logger.warning(f"{self.name}.{endpoint} 请求失败，重试 {attempt + 1}/{retries}")
+                    await asyncio.sleep(2**attempt)
+                else:
+                    raise last_error
 
             except Exception as e:
                 if attempt == retries - 1:
                     logger.error(f"{self.name}.{endpoint} 所有重试失败: {e}")
                     raise e
-                else:
-                    logger.warning(f"{self.name}.{endpoint} 第{attempt + 1}次重试: {e}")
+                logger.warning(f"{self.name}.{endpoint} 第{attempt + 1}次重试: {e}")
 
             raise Exception(f"请求失败: {last_error}")
 
@@ -100,9 +100,8 @@ class BYAPIAdapter(BaseAdapter):
                 self._log_request_success("get_stock_basic", stock_info)
                 self._log_data_quality(stock_info, "get_stock_basic")
                 return stock_info
-            else:
-                self._log_request_error("get_stock_basic", Exception("未返回数据"))
-                return None
+            self._log_request_error("get_stock_basic", Exception("未返回数据"))
+            return None
 
         except Exception as e:
             self._log_request_error("get_stock_basic", e)
@@ -113,11 +112,11 @@ class BYAPIAdapter(BaseAdapter):
         """获取日线数据"""
         try:
             self._log_request_start(
-                "get_stock_daily", {"stock_code": stock_code, "start_date": start_date, "end_date": end_date}
+                "get_stock_daily", {"stock_code": stock_code, "start_date": start_date, "end_date": end_date},
             )
 
             result = await self._fetch_with_retry(
-                "stock/daily", {"code": stock_code, "start_date": start_date, "end_date": end_date}
+                "stock/daily", {"code": stock_code, "start_date": start_date, "end_date": end_date},
             )
 
             if result and "data" in result:
@@ -133,15 +132,14 @@ class BYAPIAdapter(BaseAdapter):
                             "close": item.get("close", 0),
                             "volume": item.get("volume", 0),
                             "amount": item.get("amount", 0),
-                        }
+                        },
                     )
 
                 self._log_request_success("get_stock_daily", f"返回{len(daily_data)}条日线数据")
                 self._log_data_quality(daily_data, "get_stock_daily")
                 return daily_data
-            else:
-                self._log_request_error("get_stock_daily", Exception("未返回数据"))
-                return []
+            self._log_request_error("get_stock_daily", Exception("未返回数据"))
+            return []
 
         except Exception as e:
             self._log_request_error("get_stock_daily", e)
@@ -171,15 +169,14 @@ class BYAPIAdapter(BaseAdapter):
                             "low": item.get("low", 0),
                             "limit_up": item.get("limit_up", 0),
                             "limit_down": item.get("limit_down", 0),
-                        }
+                        },
                     )
 
                 self._log_request_success("get_limit_stocks", f"返回{len(limit_stocks)}条涨跌停股")
                 self._log_data_quality(limit_stocks, "get_limit_stocks")
                 return limit_stocks
-            else:
-                self._log_request_error("get_limit_stocks", Exception("未返回数据"))
-                return []
+            self._log_request_error("get_limit_stocks", Exception("未返回数据"))
+            return []
 
         except Exception as e:
             self._log_request_error("get_limit_stocks", e)
@@ -208,7 +205,7 @@ class BYAPIAdapter(BaseAdapter):
                                 "volume": item.get("volume", 0),
                                 "amount": item.get("amount", 0),
                                 "quote_time": item.get("quote_time", ""),
-                            }
+                            },
                         )
 
                 except Exception as stock_error:
@@ -244,15 +241,14 @@ class BYAPIAdapter(BaseAdapter):
                             "main_sell": item.get("main_sell", 0),
                             "retail_buy": item.get("retail_buy", 0),
                             "retail_sell": item.get("retail_sell", 0),
-                        }
+                        },
                     )
 
                 self._log_request_success("get_board_data", f"返回{len(board_data)}条龙虎榜数据")
                 self._log_data_quality(board_data, "get_board_data")
                 return board_data
-            else:
-                self._log_request_error("get_board_data", Exception("未返回数据"))
-                return []
+            self._log_request_error("get_board_data", Exception("未返回数据"))
+            return []
 
         except Exception as e:
             self._log_request_error("get_board_data", e)
@@ -271,9 +267,8 @@ class BYAPIAdapter(BaseAdapter):
 
                 self._log_request_success("check_health", f"BYAPI状态: {status}")
                 return status
-            else:
-                self._log_request_error("check_health", Exception("未返回数据"))
-                return "unhealthy"
+            self._log_request_error("check_health", Exception("未返回数据"))
+            return "unhealthy"
 
         except Exception as e:
             self._log_request_error("check_health", e)

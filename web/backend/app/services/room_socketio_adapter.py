@@ -1,5 +1,4 @@
-"""
-房间Socket.IO适配器 - Room Socket.IO Adapter
+"""房间Socket.IO适配器 - Room Socket.IO Adapter
 
 Task 9: 多房间订阅扩展
 
@@ -37,6 +36,7 @@ from app.services.room_permission_service import (
     get_access_control,
     get_permission_manager,
 )
+
 
 logger = structlog.get_logger()
 
@@ -83,6 +83,7 @@ class RoomSocketIOAdapter:
             permission_manager: 权限管理器
             access_control: 访问控制
             broadcaster: 广播器
+
         """
         self.room_manager = room_manager or get_room_manager()
         self.permission_manager = permission_manager or get_permission_manager()
@@ -177,6 +178,7 @@ class RoomSocketIOAdapter:
 
         Returns:
             操作结果
+
         """
         try:
             # 检查房间是否存在
@@ -256,6 +258,7 @@ class RoomSocketIOAdapter:
 
         Returns:
             操作结果
+
         """
         try:
             # 离开房间
@@ -314,6 +317,7 @@ class RoomSocketIOAdapter:
 
         Returns:
             操作结果
+
         """
         try:
             # 获取连接信息
@@ -370,6 +374,7 @@ class RoomSocketIOAdapter:
 
         Args:
             sid: Socket.IO会话ID
+
         """
         try:
             connection = self.sid_to_connection.pop(sid, None)
@@ -398,6 +403,7 @@ class RoomSocketIOAdapter:
             room_id: 房间ID
             event: 事件名称
             data: 事件数据
+
         """
         # 获取房间所有成员
         room_members = self.room_manager.get_room_members(room_id)
@@ -433,6 +439,7 @@ class RoomSocketIOAdapter:
 
         Args:
             callback: 回调函数 (sid, event, data) -> None
+
         """
         self.socketio_callbacks.append(callback)
         logger.info("✅ SocketIO callback registered")
@@ -445,6 +452,7 @@ class RoomSocketIOAdapter:
 
         Returns:
             用户信息列表
+
         """
         users = []
         for connection in self.sid_to_connection.values():
@@ -460,6 +468,7 @@ class RoomSocketIOAdapter:
 
         Returns:
             房间信息列表
+
         """
         rooms = []
         room_ids = self.user_room_subscriptions.get(user_id, set())
@@ -477,6 +486,7 @@ class RoomSocketIOAdapter:
 
         Returns:
             连接信息
+
         """
         connection = self.sid_to_connection.get(sid)
         return connection.to_dict() if connection else None
@@ -505,6 +515,7 @@ def get_room_socketio_adapter() -> RoomSocketIOAdapter:
 
     Returns:
         适配器实例
+
     """
     global _adapter
     if _adapter is None:

@@ -1,5 +1,4 @@
-"""
-Prometheus Exporter - Enhanced Version
+"""Prometheus Exporter - Enhanced Version
 增强的Prometheus指标导出端点
 
 功能：
@@ -28,6 +27,7 @@ from prometheus_client import (
     Histogram,
     generate_latest,
 )
+
 
 # 导入自定义指标收集器
 try:
@@ -353,14 +353,14 @@ def update_health_metrics():
 
 @router.get("/metrics", tags=["monitoring"])
 async def metrics():
-    """
-    Prometheus 指标端点
+    """Prometheus 指标端点
 
     提供所有监控指标的 Prometheus 格式输出，
     包括 API、WebSocket、缓存、数据库、系统资源和业务指标。
 
     Returns:
         Prometheus 格式的指标文本
+
     """
     try:
         # 更新动态指标
@@ -375,13 +375,12 @@ async def metrics():
 
     except Exception as e:
         logger.error("❌ Error generating metrics: %(e)s")
-        return Response(content=f"# ERROR: {str(e)}\n", media_type=CONTENT_TYPE_LATEST, status_code=500)
+        return Response(content=f"# ERROR: {e!s}\n", media_type=CONTENT_TYPE_LATEST, status_code=500)
 
 
 @router.get("/metrics/health", tags=["monitoring"])
 async def metrics_health():
-    """
-    Prometheus 健康检查端点
+    """Prometheus 健康检查端点
 
     快速检查指标收集器是否正常工作
 
@@ -391,6 +390,7 @@ async def metrics_health():
             "metrics_available": 40+,
             "last_update": "timestamp"
         }
+
     """
     try:
         collector_status = "healthy"
@@ -408,8 +408,7 @@ async def metrics_health():
 
 @router.get("/metrics/list", tags=["monitoring"])
 async def metrics_list():
-    """
-    列出所有可用的指标
+    """列出所有可用的指标
 
     Returns:
         JSON: {
@@ -424,6 +423,7 @@ async def metrics_list():
                 ...
             ]
         }
+
     """
     metrics_info = []
 

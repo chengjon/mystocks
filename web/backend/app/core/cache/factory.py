@@ -1,24 +1,20 @@
 """缓存管理器子模块"""
 
 import logging
-import time
-from collections import OrderedDict
-from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Optional
 
-import pandas as pd
 
 logger = logging.getLogger(__name__)
 
 from .manager import CacheManager
+
 
 _cache_manager: Optional[CacheManager] = None
 
 def get_cache_manager(
     tdengine_manager: Optional[TDengineManager] = None,
 ) -> CacheManager:
-    """
-    获取缓存管理器单例 (向后兼容)
+    """获取缓存管理器单例 (向后兼容)
 
     注意: 此方法不支持Redis注入。如需Redis支持，请使用 get_cache_manager_async()
 
@@ -27,6 +23,7 @@ def get_cache_manager(
 
     Returns:
         CacheManager 单例实例
+
     """
     global _cache_manager
 

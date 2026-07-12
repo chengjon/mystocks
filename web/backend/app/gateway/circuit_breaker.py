@@ -1,5 +1,4 @@
-"""
-Circuit Breaker - Fail-Safe Pattern Implementation
+"""Circuit Breaker - Fail-Safe Pattern Implementation
 
 Implements the circuit breaker pattern to protect against cascading failures.
 States: CLOSED (normal) -> OPEN (failing) -> HALF_OPEN (testing) -> CLOSED
@@ -15,6 +14,7 @@ from enum import Enum
 from typing import Any, Callable, Dict, Optional
 
 import structlog
+
 
 logger = structlog.get_logger()
 
@@ -49,6 +49,7 @@ class CircuitBreaker:
         Args:
             name: Name/identifier for this breaker
             config: Circuit breaker configuration
+
         """
         self.name = name
         self.config = config or CircuitBreakerConfig()
@@ -70,6 +71,7 @@ class CircuitBreaker:
 
         Returns:
             Dictionary with result and metadata
+
         """
         if self.state == CircuitBreakerState.OPEN:
             if self._should_attempt_reset():
@@ -108,6 +110,7 @@ class CircuitBreaker:
 
         Returns:
             True if ready to attempt reset
+
         """
         if self.open_time is None:
             return False
@@ -167,6 +170,7 @@ class CircuitBreaker:
 
         Returns:
             State dictionary
+
         """
         return {
             "name": self.name,
@@ -199,6 +203,7 @@ class CircuitBreakerManager:
 
         Returns:
             The created circuit breaker
+
         """
         if name in self.breakers:
             logger.warning("⚠️ Circuit breaker already exists", name=name)
@@ -216,6 +221,7 @@ class CircuitBreakerManager:
 
         Returns:
             Circuit breaker or None if not found
+
         """
         return self.breakers.get(name)
 
@@ -230,6 +236,7 @@ class CircuitBreakerManager:
 
         Returns:
             Result dictionary
+
         """
         breaker = self.get(name)
         if breaker is None:
@@ -246,6 +253,7 @@ class CircuitBreakerManager:
 
         Returns:
             Dictionary with state for each breaker
+
         """
         return {name: breaker.get_state() for name, breaker in self.breakers.items()}
 

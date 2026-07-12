@@ -1,5 +1,4 @@
-"""
-Data Format Conventions Module
+"""Data Format Conventions Module
 
 This module defines all data format standards for the MyStocks API, including:
 - Timestamp formats (REST vs WebSocket)
@@ -11,14 +10,15 @@ Used across all API endpoints and data models to ensure consistency.
 Reference: docs/api/API_SPECIFICATION.md
 """
 
-import re
 import logging
+import re
 from datetime import date, datetime, timezone
 from decimal import Decimal
 from enum import Enum
 from typing import Any, Optional, Union
 
 from pydantic import BaseModel, Field, validator
+
 
 logger = logging.getLogger(__name__)
 
@@ -121,7 +121,7 @@ def validate_percentage(value: Union[float, Decimal], high_precision: bool = Fal
     return round_to_precision(value, precision)
 
 
-def validate_volume(value: Union[int, float]) -> int:
+def validate_volume(value: float) -> int:
     """Validate volume (must be integer)"""
     volume = int(value)
     if volume < 0:
@@ -232,10 +232,9 @@ class BooleanFormat:
         if isinstance(value, str):
             if value.lower() in ("true", "1", "yes", "on"):
                 return True
-            elif value.lower() in ("false", "0", "no", "off"):
+            if value.lower() in ("false", "0", "no", "off"):
                 return False
-            else:
-                raise ValueError(f"Invalid boolean value: {value}")
+            raise ValueError(f"Invalid boolean value: {value}")
 
         if isinstance(value, int):
             return bool(value)
@@ -357,7 +356,7 @@ class TimestampField(BaseModel):
                 raise ValueError(f"ISO 8601 timestamp must be string, got {type(v)}")
             parse_iso_timestamp(v)  # Validate by parsing
             return v
-        elif format_type == TimestampFormat.MILLISECONDS:
+        if format_type == TimestampFormat.MILLISECONDS:
             if not isinstance(v, int):
                 raise ValueError(f"Millisecond timestamp must be int, got {type(v)}")
             if v < 0:

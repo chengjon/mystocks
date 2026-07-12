@@ -1,5 +1,4 @@
-"""
-Contract Validation Middleware
+"""Contract Validation Middleware
 
 Validates API responses against OpenAPI specification schema.
 Prevents "contract drift" by ensuring backend responses match the contract.
@@ -11,23 +10,23 @@ from typing import Any, Dict, List, Optional
 from jsonschema import Draft7Validator, ValidationError, validate
 from jsonschema.exceptions import best_match
 
+
 logger = logging.getLogger(__name__)
 
 
 class ContractValidator:
-    """
-    OpenAPI Contract Validator
+    """OpenAPI Contract Validator
 
     Validates API responses against OpenAPI specification schemas.
     Similar to Schemathesis but implemented in pure Python.
     """
 
     def __init__(self, openapi_spec: Dict[str, Any]):
-        """
-        Initialize validator with OpenAPI specification
+        """Initialize validator with OpenAPI specification
 
         Args:
             openapi_spec: Parsed OpenAPI specification dictionary
+
         """
         self.spec = openapi_spec
         self.schemas = self._extract_schemas()
@@ -73,8 +72,7 @@ class ContractValidator:
         return current
 
     def get_response_schema(self, path: str, method: str, status_code: str = "200") -> Optional[Dict[str, Any]]:
-        """
-        Get response schema for a specific endpoint
+        """Get response schema for a specific endpoint
 
         Args:
             path: API path (e.g., "/api/users")
@@ -83,6 +81,7 @@ class ContractValidator:
 
         Returns:
             Schema dictionary or None if not found
+
         """
         key = f"{method.upper()}_{path}_{status_code}"
         if key in self._cache:
@@ -114,11 +113,7 @@ class ContractValidator:
         # Handle allOf, anyOf, oneOf
         resolved = {}
         for key, value in schema.items():
-            if key == "allOf":
-                resolved[key] = [self._resolve_schema(v) for v in value]
-            elif key == "anyOf":
-                resolved[key] = [self._resolve_schema(v) for v in value]
-            elif key == "oneOf":
+            if key == "allOf" or key == "anyOf" or key == "oneOf":
                 resolved[key] = [self._resolve_schema(v) for v in value]
             elif key == "items":
                 resolved[key] = self._resolve_schema(value)
@@ -135,8 +130,7 @@ class ContractValidator:
         return resolved
 
     def validate_response(self, path: str, method: str, status_code: str, response_data: Any) -> "ValidationResult":
-        """
-        Validate API response against contract
+        """Validate API response against contract
 
         Args:
             path: API path
@@ -146,6 +140,7 @@ class ContractValidator:
 
         Returns:
             ValidationResult with success status and details
+
         """
         schema = self.get_response_schema(path, method, status_code)
 
@@ -196,7 +191,7 @@ class ContractValidator:
                             "summary": summary,
                             "description": description,
                             "responses": response_schemas,
-                        }
+                        },
                     )
         return endpoints
 
@@ -230,31 +225,31 @@ class ValidationResult:
 
 
 def create_contract_validator_from_file(spec_path: str) -> ContractValidator:
-    """
-    Create ContractValidator from OpenAPI YAML file
+    """Create ContractValidator from OpenAPI YAML file
 
     Args:
         spec_path: Path to OpenAPI specification file
 
     Returns:
         ContractValidator instance
+
     """
     import yaml
 
-    with open(spec_path, "r", encoding="utf-8") as f:
+    with open(spec_path, encoding="utf-8") as f:
         spec = yaml.safe_load(f)
 
     return ContractValidator(spec)
 
 
 def create_validator_from_dict(spec_dict: Dict[str, Any]) -> ContractValidator:
-    """
-    Create ContractValidator from parsed OpenAPI dictionary
+    """Create ContractValidator from parsed OpenAPI dictionary
 
     Args:
         spec_dict: Parsed OpenAPI specification
 
     Returns:
         ContractValidator instance
+
     """
     return ContractValidator(spec_dict)

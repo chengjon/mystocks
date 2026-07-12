@@ -1,5 +1,5 @@
-from fastapi.testclient import TestClient
 import pytest
+from fastapi.testclient import TestClient
 
 from app.api import trading_runtime
 from app.main import app
@@ -25,9 +25,9 @@ def reset_runtime_state():
                     "price": 12.50,
                     "change": 0.08,
                     "change_percent": 0.64,
-                }
+                },
             },
-        }
+        },
     )
     trading_runtime._RUNTIME_STATE["strategies"] = [
         {
@@ -36,7 +36,7 @@ def reset_runtime_state():
             "type": "momentum",
             "pnl": 0.0,
             "win_rate": 0.0,
-        }
+        },
     ]
 
 

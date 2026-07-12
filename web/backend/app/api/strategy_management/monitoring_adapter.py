@@ -1,10 +1,10 @@
-"""
-策略管理监控数据库适配器。
+"""策略管理监控数据库适配器。
 """
 
 from __future__ import annotations
 
 import structlog
+
 
 logger = structlog.get_logger(__name__)
 

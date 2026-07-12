@@ -1,5 +1,4 @@
-"""
-数据聚合服务单元测试
+"""数据聚合服务单元测试
 
 Test Data Aggregation Service - Real-time OHLCV bar construction
 
@@ -12,12 +11,12 @@ Date: 2025-11-07
 from decimal import Decimal
 
 from app.services.data_aggregation_service import (
-    Tick,
     OHLCV,
+    AggregationEngine,
+    BarValidator,
+    Tick,
     Timeframe,
     TimeframeBuffer,
-    BarValidator,
-    AggregationEngine,
     get_aggregation_engine,
     reset_aggregation_engine,
 )
@@ -281,7 +280,7 @@ class TestBarValidator:
             symbol="600519",
             timeframe=Timeframe.ONE_MINUTE,
             timestamp=1699000000000,
-            open=Decimal("0"),  # Invalid
+            open=Decimal(0),  # Invalid
             high=Decimal("100.50"),
             low=Decimal("99.50"),
             close=Decimal("100.20"),

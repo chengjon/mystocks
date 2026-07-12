@@ -1,11 +1,14 @@
-"""
-深圳证券交易所数据路由 (SZSE Data)
+"""深圳证券交易所数据路由 (SZSE Data)
 """
 from datetime import datetime
+
 from fastapi import APIRouter, Depends, Query
+
 from app.core.responses import ErrorCodes, create_error_response, create_success_response
 from app.core.security import User, get_current_user
+
 from .base import akshare_market_adapter
+
 
 router = APIRouter()
 
@@ -18,8 +21,8 @@ async def get_szse_market_overview(
         df = await akshare_market_adapter.get_market_overview_szse(date)
         if df.empty: return create_error_response(ErrorCodes.DATA_NOT_FOUND, f"No SZSE overview for {date}")
         result = {
-            "data": df.to_dict('records'), "count": len(df), "date": date,
-            "timestamp": datetime.now().isoformat(), "source": "akshare", "exchange": "SZSE"
+            "data": df.to_dict("records"), "count": len(df), "date": date,
+            "timestamp": datetime.now().isoformat(), "source": "akshare", "exchange": "SZSE",
         }
         return create_success_response(result)
     except Exception as e:
@@ -34,8 +37,8 @@ async def get_szse_area_trading(
         df = await akshare_market_adapter.get_szse_area_trading_summary(date)
         if df.empty: return create_error_response(ErrorCodes.DATA_NOT_FOUND, f"No SZSE area trading for {date}")
         result = {
-            "data": df.to_dict('records'), "count": len(df), "date": date,
-            "timestamp": datetime.now().isoformat(), "source": "akshare", "region": "SZSE"
+            "data": df.to_dict("records"), "count": len(df), "date": date,
+            "timestamp": datetime.now().isoformat(), "source": "akshare", "region": "SZSE",
         }
         return create_success_response(result)
     except Exception as e:
@@ -51,8 +54,8 @@ async def get_szse_sector_trading(
         df = await akshare_market_adapter.get_market_szse_sector_trading(symbol, date)
         if df.empty: return create_error_response(ErrorCodes.DATA_NOT_FOUND, f"No SZSE sector trading for {symbol} on {date}")
         result = {
-            "data": df.to_dict('records'), "count": len(df), "date": date, "symbol": symbol,
-            "timestamp": datetime.now().isoformat(), "source": "akshare", "region": "SZSE"
+            "data": df.to_dict("records"), "count": len(df), "date": date, "symbol": symbol,
+            "timestamp": datetime.now().isoformat(), "source": "akshare", "region": "SZSE",
         }
         return create_success_response(result)
     except Exception as e:

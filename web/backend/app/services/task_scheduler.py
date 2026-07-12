@@ -1,5 +1,4 @@
-"""
-任务调度器
+"""任务调度器
 基于APScheduler实现定时任务调度
 """
 
@@ -15,6 +14,7 @@ from apscheduler.triggers.interval import IntervalTrigger
 
 from app.models.task import TaskConfig, TaskSchedule
 from app.services.task_manager import task_manager
+
 
 logger = logging.getLogger(__name__)
 
@@ -136,7 +136,7 @@ class TaskScheduler:
                     "name": job.name,
                     "next_run_time": (job.next_run_time.isoformat() if job.next_run_time else None),
                     "trigger": str(job.trigger),
-                }
+                },
             )
         return jobs
 
@@ -163,7 +163,7 @@ class TaskScheduler:
                     timezone="Asia/Shanghai",
                 )
 
-            elif schedule.schedule_type == "interval":
+            if schedule.schedule_type == "interval":
                 if not schedule.interval_seconds:
                     return None
                 return IntervalTrigger(
@@ -173,14 +173,13 @@ class TaskScheduler:
                     timezone="Asia/Shanghai",
                 )
 
-            elif schedule.schedule_type == "once":
+            if schedule.schedule_type == "once":
                 if not schedule.start_time:
                     return None
                 return DateTrigger(run_date=schedule.start_time, timezone="Asia/Shanghai")
 
-            else:
-                logger.error("Unknown schedule type: {schedule.schedule_type}")
-                return None
+            logger.error("Unknown schedule type: {schedule.schedule_type}")
+            return None
 
         except Exception:
             logger.error("Failed to create trigger: %(e)s")

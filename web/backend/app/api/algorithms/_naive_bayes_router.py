@@ -8,6 +8,7 @@ from app.core.security import User, get_current_user
 from app.schemas.algorithm_schemas import AlgorithmPredictRequest, AlgorithmTrainRequest
 from app.services.algorithm_service import algorithm_service
 
+
 logger = structlog.get_logger(__name__)
 
 router = APIRouter()
@@ -36,7 +37,7 @@ async def train_naive_bayes_algorithm(
             {
                 "enable_gpu": train_request.config.get("enable_gpu", False),
                 "gpu_memory_limit_mb": 1024,
-            }
+            },
         )
 
         result = await algorithm_service.train_algorithm(train_request)

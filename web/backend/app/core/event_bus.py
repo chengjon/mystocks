@@ -1,5 +1,4 @@
-"""
-Event Bus System - 事件总线系统
+"""Event Bus System - 事件总线系统
 
 提供应用程序内部的事件驱动通信机制：
 - 发布-订阅模式
@@ -17,6 +16,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional
+
 
 logger = logging.getLogger(__name__)
 
@@ -77,13 +77,13 @@ class EventFilter:
         sources: Optional[List[str]] = None,
         priorities: Optional[List[EventPriority]] = None,
     ):
-        """
-        初始化事件过滤器
+        """初始化事件过滤器
 
         Args:
             event_types: 允许的事件类型列表
             sources: 允许的事件源列表
             priorities: 允许的优先级列表
+
         """
         self.event_types = set(event_types or [])
         self.sources = set(sources or [])
@@ -101,8 +101,7 @@ class EventFilter:
 
 
 class EventBus:
-    """
-    事件总线
+    """事件总线
 
     核心功能：
     1. 事件发布和订阅
@@ -162,8 +161,7 @@ class EventBus:
         filter: Optional[EventFilter] = None,
         subscriber_id: Optional[str] = None,
     ) -> str:
-        """
-        订阅事件
+        """订阅事件
 
         Args:
             event_type: 事件类型
@@ -173,6 +171,7 @@ class EventBus:
 
         Returns:
             订阅ID
+
         """
         if event_type not in self.subscribers:
             self.subscribers[event_type] = []
@@ -193,8 +192,7 @@ class EventBus:
         return subscription_id
 
     def unsubscribe(self, event_type: str, subscription_id: str) -> bool:
-        """
-        取消订阅
+        """取消订阅
 
         Args:
             event_type: 事件类型
@@ -202,6 +200,7 @@ class EventBus:
 
         Returns:
             是否成功取消订阅
+
         """
         if event_type not in self.subscribers:
             return False
@@ -216,11 +215,11 @@ class EventBus:
         return False
 
     async def publish(self, event: Event) -> None:
-        """
-        发布事件
+        """发布事件
 
         Args:
             event: 事件对象
+
         """
         if not self.is_running:
             logger.warning("Event Bus is not running, event discarded")
@@ -246,8 +245,7 @@ class EventBus:
         source: Optional[str] = None,
         correlation_id: Optional[str] = None,
     ) -> None:
-        """
-        发布数据事件（便捷方法）
+        """发布数据事件（便捷方法）
 
         Args:
             event_type: 事件类型
@@ -255,6 +253,7 @@ class EventBus:
             priority: 事件优先级
             source: 事件源
             correlation_id: 关联ID
+
         """
         import uuid
 
@@ -345,8 +344,7 @@ class EventBus:
         timeout: float = 10.0,
         filter: Optional[EventFilter] = None,
     ) -> Optional[Event]:
-        """
-        等待特定事件
+        """等待特定事件
 
         Args:
             event_type: 事件类型
@@ -355,6 +353,7 @@ class EventBus:
 
         Returns:
             匹配的事件，如果超时则返回None
+
         """
         future = asyncio.Future()
 

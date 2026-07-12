@@ -1,5 +1,4 @@
-"""
-Event Types for Event-Driven Backtesting
+"""Event Types for Event-Driven Backtesting
 
 定义回测系统中的所有事件类型
 """
@@ -20,8 +19,7 @@ class EventType(str, Enum):
 
 
 class Event:
-    """
-    基础事件类
+    """基础事件类
 
     所有事件的基类
     """
@@ -32,8 +30,7 @@ class Event:
 
 
 class MarketEvent(Event):
-    """
-    市场数据事件
+    """市场数据事件
 
     当新的市场数据到达时触发
     """
@@ -61,13 +58,12 @@ class MarketEvent(Event):
 
     def __repr__(self):
         return (
-            f"MarketEvent(symbol={self.symbol}, date={self.trade_date}, " f"close={self.close}, volume={self.volume})"
+            f"MarketEvent(symbol={self.symbol}, date={self.trade_date}, close={self.close}, volume={self.volume})"
         )
 
 
 class SignalEvent(Event):
-    """
-    交易信号事件
+    """交易信号事件
 
     策略生成的交易信号
     """
@@ -95,8 +91,7 @@ class SignalEvent(Event):
 
 
 class OrderEvent(Event):
-    """
-    订单事件
+    """订单事件
 
     由信号生成的订单
     """
@@ -128,8 +123,7 @@ class OrderEvent(Event):
 
 
 class FillEvent(Event):
-    """
-    成交事件
+    """成交事件
 
     订单执行后的成交记录
     """
@@ -142,7 +136,7 @@ class FillEvent(Event):
         quantity: int,
         fill_price: Decimal,  # 实际成交价格
         commission: Decimal,  # 手续费
-        slippage: Decimal = Decimal("0"),  # 滑点
+        slippage: Decimal = Decimal(0),  # 滑点
         strategy_id: Optional[int] = None,
     ):
         super().__init__(EventType.FILL)
@@ -167,8 +161,7 @@ class FillEvent(Event):
 
 
 class ProgressEvent(Event):
-    """
-    进度更新事件（用于WebSocket推送）
+    """进度更新事件（用于WebSocket推送）
     """
 
     def __init__(

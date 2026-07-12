@@ -1,5 +1,4 @@
-"""
-技术指标过滤测试
+"""技术指标过滤测试
 
 Tests for Technical Indicator Filter
 
@@ -10,10 +9,10 @@ Date: 2025-11-07
 """
 
 from app.services.indicator_filter import (
-    IndicatorType,
-    IndicatorConfig,
     IndicatorCalculator,
+    IndicatorConfig,
     IndicatorFilter,
+    IndicatorType,
     get_indicator_filter,
     reset_indicator_filter,
 )

@@ -1,5 +1,4 @@
-"""
-特征工程服务
+"""特征工程服务
 用于生成股票预测的滚动窗口特征
 """
 
@@ -11,8 +10,7 @@ import pandas as pd
 
 
 class FeatureEngineeringService:
-    """
-    特征工程服务
+    """特征工程服务
 
     主要功能：
     1. 滚动窗口特征生成
@@ -22,10 +20,9 @@ class FeatureEngineeringService:
 
     @staticmethod
     def generate_rolling_features(
-        df: pd.DataFrame, step: int = 10, feature_columns: list = None
+        df: pd.DataFrame, step: int = 10, feature_columns: list = None,
     ) -> Tuple[pd.DataFrame, pd.Series]:
-        """
-        生成滚动窗口特征
+        """生成滚动窗口特征
 
         Args:
             df: 包含 OHLCV 数据的 DataFrame
@@ -34,6 +31,7 @@ class FeatureEngineeringService:
 
         Returns:
             Tuple[pd.DataFrame, pd.Series]: (特征矩阵 X, 目标变量 y)
+
         """
         if feature_columns is None:
             feature_columns = ["open", "high", "low", "close", "amount", "volume"]
@@ -99,8 +97,7 @@ class FeatureEngineeringService:
 
     @staticmethod
     def save_features_to_csv(X: pd.DataFrame, y: pd.Series, output_file: str) -> str:
-        """
-        保存特征和目标变量到 CSV 文件
+        """保存特征和目标变量到 CSV 文件
 
         Args:
             X: 特征矩阵
@@ -109,6 +106,7 @@ class FeatureEngineeringService:
 
         Returns:
             str: 输出文件路径
+
         """
         # 合并特征和目标变量
         data = X.copy()
@@ -121,14 +119,14 @@ class FeatureEngineeringService:
 
     @staticmethod
     def load_features_from_csv(file_path: str) -> Tuple[pd.DataFrame, pd.Series]:
-        """
-        从 CSV 文件加载特征和目标变量
+        """从 CSV 文件加载特征和目标变量
 
         Args:
             file_path: CSV 文件路径
 
         Returns:
             Tuple[pd.DataFrame, pd.Series]: (特征矩阵 X, 目标变量 y)
+
         """
         data = pd.read_csv(file_path)
 
@@ -140,10 +138,9 @@ class FeatureEngineeringService:
 
     @staticmethod
     def generate_features_from_file(
-        input_file: str, output_file: str, step: int = 10, feature_columns: list = None
+        input_file: str, output_file: str, step: int = 10, feature_columns: list = None,
     ) -> Tuple[str, dict]:
-        """
-        从 CSV 文件读取数据并生成特征
+        """从 CSV 文件读取数据并生成特征
 
         Args:
             input_file: 输入的 CSV 文件路径
@@ -153,6 +150,7 @@ class FeatureEngineeringService:
 
         Returns:
             Tuple[str, dict]: (输出文件路径, 统计信息)
+
         """
         # 读取数据
         df = pd.read_csv(input_file)
@@ -179,14 +177,14 @@ class FeatureEngineeringService:
 
     @staticmethod
     def calculate_technical_indicators(df: pd.DataFrame) -> pd.DataFrame:
-        """
-        计算技术指标特征
+        """计算技术指标特征
 
         Args:
             df: 包含 OHLCV 数据的 DataFrame
 
         Returns:
             pd.DataFrame: 添加了技术指标的 DataFrame
+
         """
         df = df.copy()
 
@@ -211,10 +209,9 @@ class FeatureEngineeringService:
 
     @staticmethod
     def prepare_model_data(
-        df: pd.DataFrame, step: int = 10, include_indicators: bool = True
+        df: pd.DataFrame, step: int = 10, include_indicators: bool = True,
     ) -> Tuple[pd.DataFrame, pd.Series, dict]:
-        """
-        准备用于模型训练的数据
+        """准备用于模型训练的数据
 
         Args:
             df: 原始 OHLCV 数据
@@ -223,6 +220,7 @@ class FeatureEngineeringService:
 
         Returns:
             Tuple[pd.DataFrame, pd.Series, dict]: (特征矩阵, 目标变量, 元数据)
+
         """
         # 计算技术指标
         if include_indicators:

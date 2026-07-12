@@ -1,5 +1,4 @@
-"""
-房间Socket.IO适配器测试
+"""房间Socket.IO适配器测试
 
 Tests for Room Socket.IO Adapter
 
@@ -10,29 +9,29 @@ Date: 2025-11-07
 """
 
 import pytest
-from web.backend.tests._room_socketio_adapter_tail import RoomSocketIOAdapterIntegrationScenariosMixin
 
-from app.services.room_socketio_adapter import (
-    RoomSocketIOAdapter,
-    RoomConnection,
-    get_room_socketio_adapter,
-    reset_room_socketio_adapter,
+from app.services.room_broadcast_service import (
+    RoomBroadcaster,
+    reset_broadcaster,
 )
 from app.services.room_management import (
     RoomManager,
     reset_room_manager,
 )
 from app.services.room_permission_service import (
-    RoomRole,
-    RoomPermissionManager,
     RoomAccessControl,
-    reset_permission_manager,
+    RoomPermissionManager,
+    RoomRole,
     reset_access_control,
+    reset_permission_manager,
 )
-from app.services.room_broadcast_service import (
-    RoomBroadcaster,
-    reset_broadcaster,
+from app.services.room_socketio_adapter import (
+    RoomConnection,
+    RoomSocketIOAdapter,
+    get_room_socketio_adapter,
+    reset_room_socketio_adapter,
 )
+from web.backend.tests._room_socketio_adapter_tail import RoomSocketIOAdapterIntegrationScenariosMixin
 
 
 def reset_all_singletons():

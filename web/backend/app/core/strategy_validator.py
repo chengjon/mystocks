@@ -1,5 +1,4 @@
-"""
-策略结果正确性校验系统
+"""策略结果正确性校验系统
 提供策略回测结果与基准结果的对比验证，确保量化策略的准确性
 """
 
@@ -13,6 +12,7 @@ from typing import Any, Dict, List, Optional
 import numpy as np
 import pandas as pd
 from prometheus_client import Counter, Gauge, Histogram
+
 
 logger = logging.getLogger(__name__)
 

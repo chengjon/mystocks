@@ -1,11 +1,11 @@
-"""
-Pytest-based Contract Testing Utilities
+"""Pytest-based Contract Testing Utilities
 
 Provides pytest fixtures and helpers for API contract testing.
 """
 
 import logging
-from typing import Any, Generator
+from collections.abc import Generator
+from typing import Any
 
 import pytest
 import yaml
@@ -13,19 +13,19 @@ from fastapi.testclient import TestClient
 
 from .contract_validator import ContractValidator, ValidationResult
 
+
 logger = logging.getLogger(__name__)
 
 
 @pytest.fixture
 def contract_validator() -> Generator[ContractValidator, None, None]:
-    """
-    Pytest fixture for ContractValidator.
+    """Pytest fixture for ContractValidator.
 
     Loads OpenAPI spec from docs/api/openapi.yaml
     """
     spec_path = "docs/api/openapi.yaml"
     try:
-        with open(spec_path, "r", encoding="utf-8") as f:
+        with open(spec_path, encoding="utf-8") as f:
             spec = yaml.safe_load(f)
         validator = ContractValidator(spec)
         yield validator
@@ -35,8 +35,7 @@ def contract_validator() -> Generator[ContractValidator, None, None]:
 
 @pytest.fixture
 def api_client() -> Generator[TestClient, None, None]:
-    """
-    Pytest fixture for FastAPI TestClient.
+    """Pytest fixture for FastAPI TestClient.
 
     Requires the app fixture to be defined elsewhere.
     """
@@ -50,8 +49,7 @@ def api_client() -> Generator[TestClient, None, None]:
 
 
 class ContractTestMixin:
-    """
-    Mixin class for pytest test classes that need contract testing.
+    """Mixin class for pytest test classes that need contract testing.
 
     Usage:
         class TestUserAPI(ContractTestMixin):
@@ -78,8 +76,7 @@ class ContractTestMixin:
         status_code: str = "200",
         **request_kwargs,
     ) -> ValidationResult:
-        """
-        Make request and validate response against contract.
+        """Make request and validate response against contract.
 
         Args:
             client: TestClient instance
@@ -91,6 +88,7 @@ class ContractTestMixin:
 
         Returns:
             ValidationResult
+
         """
         # Make the request
         response = client.request(method, path, **request_kwargs)
@@ -98,7 +96,7 @@ class ContractTestMixin:
         # Validate response
         if response.status_code == int(status_code):
             result = contract_validator.validate_response(
-                path=path, method=method, status_code=status_code, response_data=response.json()
+                path=path, method=method, status_code=status_code, response_data=response.json(),
             )
         else:
             result = ValidationResult(
@@ -111,8 +109,7 @@ class ContractTestMixin:
 
 
 def generate_contract_tests(spec_path: str = "docs/api/openapi.yaml") -> list:
-    """
-    Generate pytest test cases from OpenAPI specification.
+    """Generate pytest test cases from OpenAPI specification.
 
     This function can be used to dynamically generate tests for all endpoints.
 
@@ -121,8 +118,9 @@ def generate_contract_tests(spec_path: str = "docs/api/openapi.yaml") -> list:
 
     Returns:
         List of test case dictionaries
+
     """
-    with open(spec_path, "r", encoding="utf-8") as f:
+    with open(spec_path, encoding="utf-8") as f:
         spec = yaml.safe_load(f)
 
     validator = ContractValidator(spec)
@@ -136,23 +134,21 @@ def generate_contract_tests(spec_path: str = "docs/api/openapi.yaml") -> list:
                     "parametrize": [endpoint["path"], endpoint["method"], status_code],
                     "description": endpoint.get("description", ""),
                     "summary": endpoint.get("summary", ""),
-                }
+                },
             )
 
     return test_cases
 
 
 class ContractAssertionHelper:
-    """
-    Helper class for contract-related assertions.
+    """Helper class for contract-related assertions.
     """
 
     @staticmethod
     def assert_response_conforms(
-        validator: ContractValidator, path: str, method: str, status_code: str, response_data: Any, msg: str = ""
+        validator: ContractValidator, path: str, method: str, status_code: str, response_data: Any, msg: str = "",
     ) -> None:
-        """
-        Assert that response data conforms to OpenAPI schema.
+        """Assert that response data conforms to OpenAPI schema.
 
         Args:
             validator: ContractValidator instance
@@ -161,6 +157,7 @@ class ContractAssertionHelper:
             status_code: Response status code
             response_data: Response body to validate
             msg: Custom assertion message
+
         """
         result = validator.validate_response(path, method, status_code, response_data)
 
@@ -180,8 +177,7 @@ class ContractAssertionHelper:
         response_data: Any,
         max_warnings: int = 0,
     ) -> None:
-        """
-        Assert that response has no more than max_warnings warnings.
+        """Assert that response has no more than max_warnings warnings.
 
         Args:
             validator: ContractValidator instance
@@ -190,13 +186,14 @@ class ContractAssertionHelper:
             status_code: Response status code
             response_data: Response body to validate
             max_warnings: Maximum allowed warnings
+
         """
         result = validator.validate_response(path, method, status_code, response_data)
 
         if len(result.warnings) > max_warnings:
             pytest.fail(
                 f"Too many warnings for {method} {path} {status_code}: "
-                f"{len(result.warnings)} > {max_warnings}\n" + "\n".join(f"  - {w}" for w in result.warnings)
+                f"{len(result.warnings)} > {max_warnings}\n" + "\n".join(f"  - {w}" for w in result.warnings),
             )
 
 
@@ -208,8 +205,7 @@ def pytest_configure(config):
 
 
 def contract_test(path: str, method: str, status_code: str = "200"):
-    """
-    Decorator to mark a test as a contract test.
+    """Decorator to mark a test as a contract test.
 
     Usage:
         @contract_test(path="/api/users", method="GET", status_code="200")

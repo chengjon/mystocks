@@ -1,5 +1,4 @@
-"""
-仪表盘数据模型
+"""仪表盘数据模型
 
 定义仪表盘相关的Pydantic模型，用于API请求和响应的数据验证。
 
@@ -11,6 +10,7 @@ from datetime import date, datetime
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
+
 
 # ============================================================================
 # 请求模型
@@ -36,8 +36,8 @@ class DashboardRequest(BaseModel):
                 "include_watchlist": True,
                 "include_portfolio": True,
                 "include_risk_alerts": True,
-            }
-        }
+            },
+        },
     )
 
 
@@ -187,7 +187,7 @@ class DashboardResponse(BaseModel):
                             "name": "上证指数",
                             "current_price": 3100.50,
                             "change_percent": 1.2,
-                        }
+                        },
                     ],
                     "up_count": 2500,
                     "down_count": 1500,
@@ -214,8 +214,8 @@ class DashboardResponse(BaseModel):
                 },
                 "data_source": "composite",
                 "cache_hit": False,
-            }
-        }
+            },
+        },
     )
 
 
@@ -239,6 +239,6 @@ class ErrorResponse(BaseModel):
                 "error_message": "用户ID无效",
                 "details": {"user_id": -1},
                 "timestamp": "2025-11-21T10:30:00",
-            }
-        }
+            },
+        },
     )

@@ -1,5 +1,4 @@
-"""
-Pydantic Request Schemas for Indicator API
+"""Pydantic Request Schemas for Indicator API
 定义指标计算API的请求数据模型
 """
 
@@ -11,11 +10,11 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 
 
 class IndicatorSpec(BaseModel):
-    """
-    单个指标规格
+    """单个指标规格
 
     Example:
         {"abbreviation": "SMA", "parameters": {"timeperiod": 20}}
+
     """
 
     abbreviation: str = Field(..., description="指标缩写 (如 SMA, RSI, MACD)", min_length=2, max_length=20)
@@ -40,8 +39,7 @@ class IndicatorSpec(BaseModel):
 
 
 class IndicatorCalculateRequest(BaseModel):
-    """
-    指标计算请求
+    """指标计算请求
 
     Example:
         {
@@ -54,6 +52,7 @@ class IndicatorCalculateRequest(BaseModel):
             ],
             "use_cache": true
         }
+
     """
 
     symbol: str = Field(
@@ -123,8 +122,7 @@ class IndicatorCalculateRequest(BaseModel):
 
 
 class IndicatorConfigCreateRequest(BaseModel):
-    """
-    创建指标配置请求
+    """创建指标配置请求
 
     Example:
         {
@@ -134,6 +132,7 @@ class IndicatorConfigCreateRequest(BaseModel):
                 {"abbreviation": "RSI", "parameters": {"timeperiod": 14}}
             ]
         }
+
     """
 
     name: str = Field(..., description="配置名称", min_length=1, max_length=100)
@@ -149,14 +148,14 @@ class IndicatorConfigCreateRequest(BaseModel):
 
 
 class IndicatorConfigUpdateRequest(BaseModel):
-    """
-    更新指标配置请求
+    """更新指标配置请求
 
     Example:
         {
             "name": "我的新配置名称",
             "indicators": [...]
         }
+
     """
 
     name: Optional[str] = Field(None, description="配置名称 (可选)", min_length=1, max_length=100)

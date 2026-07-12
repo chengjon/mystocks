@@ -1,5 +1,4 @@
-"""
-健康检查 API 端点
+"""健康检查 API 端点
 """
 
 import json
@@ -13,8 +12,8 @@ import psycopg2
 from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel
 
-from app.core.readiness import check_mongodb_readiness
 from app.core.exceptions import BusinessException, NotFoundException
+from app.core.readiness import check_mongodb_readiness
 from app.core.responses import (
     ErrorCodes,
     create_error_response,
@@ -22,6 +21,7 @@ from app.core.responses import (
     create_unified_success_response,
 )
 from app.core.security import User, get_current_user
+
 
 logger = logging.getLogger(__name__)
 
@@ -63,8 +63,7 @@ def _resolve_ports(*env_keys: str) -> list[int]:
 
 @router.get("/health")
 async def check_system_health(request: Request):
-    """
-    系统健康检查API端点
+    """系统健康检查API端点
 
     返回系统各个组件的健康状态
     """
@@ -96,7 +95,7 @@ async def check_system_health(request: Request):
             if service_status.status == "error":
                 overall_status = "unhealthy"
                 break
-            elif service_status.status == "warning" and overall_status == "healthy":
+            if service_status.status == "warning" and overall_status == "healthy":
                 overall_status = "degraded"
 
         # 创建健康数据
@@ -107,13 +106,13 @@ async def check_system_health(request: Request):
         }
 
         return create_health_response(
-            service="mystocks-web-api", status=overall_status, details=health_data, request_id=request_id
+            service="mystocks-web-api", status=overall_status, details=health_data, request_id=request_id,
         )
 
     except Exception as e:
         return create_error_response(
             error_code=ErrorCodes.INTERNAL_SERVER_ERROR,
-            message=f"健康检查失败: {str(e)}",
+            message=f"健康检查失败: {e!s}",
             request_id=getattr(request.state, "request_id", None),
         )
 
@@ -139,7 +138,7 @@ async def check_frontend_service() -> HealthStatus:
             for port in frontend_ports:
                 try:
                     async with session.get(
-                        f"http://localhost:{port}", timeout=aiohttp.ClientTimeout(total=5)
+                        f"http://localhost:{port}", timeout=aiohttp.ClientTimeout(total=5),
                     ) as response:
                         response_time = (time.time() - start_time) * 1000  # 转换为毫秒
                         if response.status == 200:
@@ -163,7 +162,7 @@ async def check_frontend_service() -> HealthStatus:
         return HealthStatus(
             service="frontend",
             status="error",
-            details=f"服务不可访问: {str(e)}",
+            details=f"服务不可访问: {e!s}",
             response_time=(time.time() - start_time) * 1000,
         )
 
@@ -215,7 +214,7 @@ async def check_api_service() -> HealthStatus:
         return HealthStatus(
             service="api",
             status="error",
-            details=f"服务不可访问: {str(e)}",
+            details=f"服务不可访问: {e!s}",
             response_time=(time.time() - start_time) * 1000,
         )
 
@@ -231,7 +230,7 @@ async def check_postgresql_service() -> HealthStatus:
         pg_database = os.getenv("POSTGRESQL_DATABASE", "mystocks")
 
         conn = psycopg2.connect(
-            host=pg_host, port=pg_port, user=pg_user, password=pg_password, database=pg_database, connect_timeout=5
+            host=pg_host, port=pg_port, user=pg_user, password=pg_password, database=pg_database, connect_timeout=5,
         )
 
         cursor = conn.cursor()
@@ -243,7 +242,7 @@ async def check_postgresql_service() -> HealthStatus:
 
         return HealthStatus(service="postgresql", status="normal", details="数据库连接正常")
     except Exception as e:
-        return HealthStatus(service="postgresql", status="error", details=f"数据库连接失败: {str(e)}")
+        return HealthStatus(service="postgresql", status="error", details=f"数据库连接失败: {e!s}")
 
 
 async def check_tdengine_service() -> HealthStatus:
@@ -259,10 +258,9 @@ async def check_tdengine_service() -> HealthStatus:
 
         if result == 0:
             return HealthStatus(service="tdengine", status="normal", details="端口可访问")
-        else:
-            return HealthStatus(service="tdengine", status="warning", details="端口不可访问")
+        return HealthStatus(service="tdengine", status="warning", details="端口不可访问")
     except Exception as e:
-        return HealthStatus(service="tdengine", status="error", details=f"连接检查失败: {str(e)}")
+        return HealthStatus(service="tdengine", status="error", details=f"连接检查失败: {e!s}")
 
 
 async def check_mongodb_service() -> HealthStatus:
@@ -308,7 +306,7 @@ async def check_disk_space() -> HealthStatus:
             details=f"{details}, 总计: {total // (1024**3)}GB, 可用: {free // (1024**3)}GB",
         )
     except Exception as e:
-        return HealthStatus(service="disk", status="warning", details=f"检查失败: {str(e)}")
+        return HealthStatus(service="disk", status="warning", details=f"检查失败: {e!s}")
 
 
 async def check_system_resources() -> HealthStatus:
@@ -337,7 +335,7 @@ async def check_system_resources() -> HealthStatus:
     except ImportError:
         return HealthStatus(service="system", status="warning", details="psutil模块未安装，跳过资源检查")
     except Exception as e:
-        return HealthStatus(service="system", status="warning", details=f"检查失败: {str(e)}")
+        return HealthStatus(service="system", status="warning", details=f"检查失败: {e!s}")
 
 
 async def generate_health_report(services: Dict[str, HealthStatus]) -> Optional[str]:
@@ -370,8 +368,7 @@ async def generate_health_report(services: Dict[str, HealthStatus]) -> Optional[
 
 @router.get("/health/detailed")
 async def detailed_health_check(current_user: User = Depends(get_current_user)):
-    """
-    详细健康检查
+    """详细健康检查
 
     返回系统各个组件的详细健康状态
     """
@@ -400,16 +397,14 @@ async def detailed_health_check(current_user: User = Depends(get_current_user)):
                     message="详细健康检查完成（存在非阻塞警告）",
                 )
             raise Exception(f"脚本执行失败，返回码: {result.returncode}, 错误: {result.stderr}")
-        else:
-            raise Exception(f"健康检查脚本不存在: {health_script}")
+        raise Exception(f"健康检查脚本不存在: {health_script}")
     except Exception as e:
-        raise BusinessException(detail=f"详细健康检查失败: {str(e)}", status_code=500, error_code="HEALTH_CHECK_FAILED")
+        raise BusinessException(detail=f"详细健康检查失败: {e!s}", status_code=500, error_code="HEALTH_CHECK_FAILED")
 
 
 @router.get("/reports/health/{timestamp}")
 async def get_health_report(timestamp: str, current_user: User = Depends(get_current_user)):
-    """
-    获取健康检查报告
+    """获取健康检查报告
 
     参数:
     - timestamp: 报告时间戳
@@ -420,11 +415,11 @@ async def get_health_report(timestamp: str, current_user: User = Depends(get_cur
         if not os.path.exists(report_file):
             raise NotFoundException(resource="健康检查报告", identifier=timestamp)
 
-        with open(report_file, "r", encoding="utf-8") as f:
+        with open(report_file, encoding="utf-8") as f:
             report_data = json.load(f)
 
         return report_data
     except NotFoundException:
         raise
     except Exception as e:
-        raise BusinessException(detail=f"获取报告失败: {str(e)}", status_code=500, error_code="REPORT_RETRIEVAL_FAILED")
+        raise BusinessException(detail=f"获取报告失败: {e!s}", status_code=500, error_code="REPORT_RETRIEVAL_FAILED")

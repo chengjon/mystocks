@@ -1,5 +1,4 @@
-"""
-Indicator Data Models
+"""Indicator Data Models
 =====================
 
 SQLAlchemy models for storing indicator calculation results and task history.
@@ -13,8 +12,7 @@ from app.core.database import Base
 
 
 class IndicatorData(Base):
-    """
-    指标数据表 (Time-series)
+    """指标数据表 (Time-series)
 
     Stores calculated indicator values.
     Designed to be a TimescaleDB hypertable partitioned by timestamp.
@@ -40,8 +38,7 @@ class IndicatorData(Base):
 
 
 class IndicatorTaskModel(Base):
-    """
-    指标计算任务表
+    """指标计算任务表
 
     Tracks the execution status of calculation tasks.
     """

@@ -1,5 +1,4 @@
-"""
-TDengine Cache Manager - 时序数据库缓存管理
+"""TDengine Cache Manager - 时序数据库缓存管理
 Task 2.1: TDengine 缓存集成 - 搭建 TDengine 服务
 Phase 3 Task 19: 集成连接池优化
 
@@ -19,6 +18,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import structlog
 
+
 # 支持从脚本导入：尝试相对导入
 try:
     from app.core.tdengine_pool import TDengineConnectionPool
@@ -30,8 +30,7 @@ logger = structlog.get_logger()
 
 
 class TDengineManager:
-    """
-    TDengine 时序数据库管理器
+    """TDengine 时序数据库管理器
 
     负责：
     - 数据库连接管理
@@ -73,8 +72,7 @@ class TDengineManager:
         min_pool_size: int = 5,
         max_pool_size: int = 20,
     ):
-        """
-        初始化 TDengine 管理器（Phase 3优化：连接池支持）
+        """初始化 TDengine 管理器（Phase 3优化：连接池支持）
 
         Args:
             host: TDengine 服务器地址
@@ -85,6 +83,7 @@ class TDengineManager:
             precision: 时间精度 (ms/us/ns)
             min_pool_size: 最小连接池大小（Phase 3新增）
             max_pool_size: 最大连接池大小（Phase 3新增）
+
         """
         self.host = host or os.getenv("TDENGINE_HOST", "127.0.0.1")
         self.port = port or int(os.getenv("TDENGINE_PORT", "6030"))
@@ -112,11 +111,11 @@ class TDengineManager:
         )
 
     def connect(self) -> bool:
-        """
-        初始化 TDengine 连接池（Phase 3优化）
+        """初始化 TDengine 连接池（Phase 3优化）
 
         Returns:
             True if connection pool initialization successful
+
         """
         try:
             # Phase 3: 创建连接池替代单连接
@@ -143,11 +142,11 @@ class TDengineManager:
             return False
 
     def initialize(self) -> bool:
-        """
-        初始化数据库和表结构
+        """初始化数据库和表结构
 
         Returns:
             True if initialization successful
+
         """
         if not self.connect():
             return False
@@ -177,7 +176,7 @@ class TDengineManager:
             self._execute(
                 f"CREATE DATABASE IF NOT EXISTS {self.database} "
                 f"KEEP 3650 "  # Keep data for 10 years
-                f"PRECISION 'ms'"  # Millisecond precision
+                f"PRECISION 'ms'",  # Millisecond precision
             )
             logger.info("✅ 数据库已创建", database=self.database)
         except Exception as e:
@@ -201,7 +200,7 @@ class TDengineManager:
                     data_type VARCHAR(20),
                     timeframe VARCHAR(10)
                 )
-            """
+            """,
             )
             logger.info("✅ 缓存超表已创建: market_data_cache")
 
@@ -215,7 +214,7 @@ class TDengineManager:
                     cache_misses BIGINT,
                     hit_rate FLOAT
                 )
-            """
+            """,
             )
             logger.info("✅ 统计表已创建: cache_stats")
 
@@ -227,7 +226,7 @@ class TDengineManager:
                     access_count BIGINT,
                     last_access TIMESTAMP
                 ) TAGS (symbol VARCHAR(10))
-            """
+            """,
             )
             logger.info("✅ 热点超表已创建: hot_symbols")
 
@@ -243,8 +242,7 @@ class TDengineManager:
         data: Dict[str, Any],
         timestamp: Optional[datetime] = None,
     ) -> bool:
-        """
-        写入缓存数据 (自动创建子表)
+        """写入缓存数据 (自动创建子表)
 
         Args:
             symbol: 股票代码
@@ -255,6 +253,7 @@ class TDengineManager:
 
         Returns:
             True if write successful
+
         """
         if not self._is_initialized:
             logger.warning("❌ 数据库未初始化")
@@ -294,8 +293,7 @@ class TDengineManager:
         timeframe: Optional[str] = None,
         days: int = 1,
     ) -> Optional[Dict[str, Any]]:
-        """
-        读取缓存数据
+        """读取缓存数据
 
         Args:
             symbol: 股票代码
@@ -305,6 +303,7 @@ class TDengineManager:
 
         Returns:
             缓存数据字典，如果不存在返回 None
+
         """
         if not self._is_initialized:
             logger.warning("❌ 数据库未初始化")
@@ -340,23 +339,22 @@ class TDengineManager:
 
                 logger.debug("✅ 读取缓存成功", symbol=symbol, data_type=data_type)
                 return data
-            else:
-                logger.debug("⚠️ 缓存不存在", symbol=symbol, data_type=data_type)
-                return None
+            logger.debug("⚠️ 缓存不存在", symbol=symbol, data_type=data_type)
+            return None
 
         except Exception as e:
             logger.error("❌ 读取缓存失败", symbol=symbol, data_type=data_type, error=str(e))
             return None
 
     def clear_expired_cache(self, days: int = 7) -> int:
-        """
-        清理过期缓存（超过指定天数）
+        """清理过期缓存（超过指定天数）
 
         Args:
             days: 保留天数
 
         Returns:
             删除的记录数
+
         """
         if not self._is_initialized:
             return 0
@@ -378,11 +376,11 @@ class TDengineManager:
             return 0
 
     def get_cache_stats(self) -> Optional[Dict[str, Any]]:
-        """
-        获取缓存统计信息
+        """获取缓存统计信息
 
         Returns:
             缓存统计字典
+
         """
         if not self._is_initialized:
             return None
@@ -410,11 +408,11 @@ class TDengineManager:
         return None
 
     def health_check(self) -> bool:
-        """
-        健康检查（Phase 3优化：检查连接池状态）
+        """健康检查（Phase 3优化：检查连接池状态）
 
         Returns:
             True if health check passed
+
         """
         try:
             if not self._pool:
@@ -441,8 +439,7 @@ class TDengineManager:
             return False
 
     def _execute(self, sql: str) -> bool:
-        """
-        执行 SQL 语句（Phase 3优化：使用连接池）
+        """执行 SQL 语句（Phase 3优化：使用连接池）
         """
         if not self._pool:
             raise RuntimeError("连接池未初始化")
@@ -464,8 +461,7 @@ class TDengineManager:
             raise
 
     def _execute_query(self, sql: str) -> Optional[List[Tuple]]:
-        """
-        执行查询 SQL（Phase 3优化：使用连接池）
+        """执行查询 SQL（Phase 3优化：使用连接池）
         """
         if not self._pool:
             raise RuntimeError("连接池未初始化")
@@ -501,8 +497,7 @@ class TDengineManager:
             logger.debug("更新命中次数失败: {str(e)}")
 
     def close(self):
-        """
-        关闭连接池（Phase 3优化：关闭所有连接）
+        """关闭连接池（Phase 3优化：关闭所有连接）
         """
         if self._pool:
             self._pool.close_all()
@@ -511,11 +506,11 @@ class TDengineManager:
             self._is_initialized = False
 
     def get_pool_stats(self) -> Optional[Dict[str, Any]]:
-        """
-        获取连接池统计信息（Phase 3新增）
+        """获取连接池统计信息（Phase 3新增）
 
         Returns:
             连接池统计字典，包含活跃连接数、空闲连接数、请求次数等
+
         """
         if not self._pool:
             return None

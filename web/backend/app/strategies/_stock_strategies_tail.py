@@ -1,5 +1,4 @@
-"""
-股票策略尾部辅助定义。
+"""股票策略尾部辅助定义。
 """
 
 from __future__ import annotations
@@ -14,8 +13,7 @@ def create_low_atr_growth_strategy(base_strategy_cls):
     """构建低 ATR 成长策略类。"""
 
     class LowATRGrowthStrategy(base_strategy_cls):
-        """
-        策略10: 低ATR成长
+        """策略10: 低ATR成长
 
         条件：
         1. 必须至少上市交易250日

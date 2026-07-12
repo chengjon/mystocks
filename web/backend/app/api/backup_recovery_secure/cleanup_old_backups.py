@@ -1,5 +1,4 @@
-"""
-备份恢复 API 端点 - 安全清理与健康检查
+"""备份恢复 API 端点 - 安全清理与健康检查
 """
 
 from datetime import datetime, timezone
@@ -15,6 +14,7 @@ from app.models.backup_schemas import (
 )
 from src.backup_recovery import BackupManager, BackupScheduler, IntegrityChecker, RecoveryManager
 
+
 router = APIRouter(prefix="/api/backup-recovery", tags=["Backup & Recovery (Secure)"])
 
 # 初始化管理器
@@ -25,10 +25,9 @@ integrity_checker = IntegrityChecker()
 
 @router.post("/cleanup/old-backups")
 async def cleanup_old_backups(
-    request: CleanupBackupsRequest = Body(...), current_user: User = Depends(get_current_user)
+    request: CleanupBackupsRequest = Body(...), current_user: User = Depends(get_current_user),
 ):
-    """
-    清理过期备份文件 [CRITICAL - 需要管理员权限]
+    """清理过期备份文件 [CRITICAL - 需要管理员权限]
 
     自动清理超过指定保留期的备份文件，释放存储空间。
     包含完整的安全验证、审计日志和操作确认。
@@ -157,6 +156,6 @@ async def backup_service_health():
 
     except Exception as e:
         return error_response(
-            message="健康检查失败", error_code=ErrorCode.SERVICE_UNAVAILABLE, details={"error": str(e)}
+            message="健康检查失败", error_code=ErrorCode.SERVICE_UNAVAILABLE, details={"error": str(e)},
         )
 

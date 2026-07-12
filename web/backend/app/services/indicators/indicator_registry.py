@@ -1,5 +1,4 @@
-"""
-Indicator Registry System
+"""Indicator Registry System
 =========================
 
 指标注册中心，管理所有指标的元数据注册、查询、验证功能。
@@ -32,6 +31,7 @@ from .indicator_metadata import (
     ParameterConstraint,
 )
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -53,8 +53,7 @@ class RegistryStats:
 
 
 class IndicatorRegistry:
-    """
-    指标注册中心
+    """指标注册中心
 
     单例模式，确保全局唯一的指标注册表
     """
@@ -79,14 +78,14 @@ class IndicatorRegistry:
             logger.info("IndicatorRegistry initialized")
 
     def register(self, metadata: IndicatorMetadata) -> bool:
-        """
-        注册指标
+        """注册指标
 
         Args:
             metadata: 指标元数据
 
         Returns:
             是否注册成功（ False 表示已存在）
+
         """
         abbr = metadata.abbreviation.upper()
 
@@ -99,14 +98,14 @@ class IndicatorRegistry:
         return True
 
     def unregister(self, abbreviation: str) -> bool:
-        """
-        注销指标
+        """注销指标
 
         Args:
             abbreviation: 指标缩写
 
         Returns:
             是否成功注销
+
         """
         abbr = abbreviation.upper()
 
@@ -119,57 +118,57 @@ class IndicatorRegistry:
         return True
 
     def get(self, abbreviation: str) -> Optional[IndicatorMetadata]:
-        """
-        获取指标元数据
+        """获取指标元数据
 
         Args:
             abbreviation: 指标缩写
 
         Returns:
             指标元数据，不存在返回 None
+
         """
         return self._registry.get(abbreviation.upper())
 
     def get_all(self) -> Dict[str, IndicatorMetadata]:
-        """
-        获取所有指标
+        """获取所有指标
 
         Returns:
             指标元数据字典
+
         """
         return self._registry.copy()
 
     def get_by_category(self, category: IndicatorCategory) -> Dict[str, IndicatorMetadata]:
-        """
-        按分类获取指标
+        """按分类获取指标
 
         Args:
             category: 指标分类
 
         Returns:
             该分类下的所有指标
+
         """
         return {abbr: meta for abbr, meta in self._registry.items() if meta.category == category}
 
     def get_by_categories(self, categories: List[IndicatorCategory]) -> Dict[str, IndicatorMetadata]:
-        """
-        按多个分类获取指标
+        """按多个分类获取指标
 
         Args:
             categories: 指标分类列表
 
         Returns:
             符合任一分类的所有指标
+
         """
         category_set = set(categories)
         return {abbr: meta for abbr, meta in self._registry.items() if meta.category in category_set}
 
     def get_enabled(self) -> Dict[str, IndicatorMetadata]:
-        """
-        获取所有未废弃的指标
+        """获取所有未废弃的指标
 
         Returns:
             未废弃的指标字典
+
         """
         return {abbr: meta for abbr, meta in self._registry.items() if not meta.deprecated}
 
@@ -179,8 +178,7 @@ class IndicatorRegistry:
         include_deprecated: bool = False,
         max_results: int = 50,
     ) -> List[IndicatorMetadata]:
-        """
-        搜索指标
+        """搜索指标
 
         Args:
             query: 搜索关键词
@@ -189,6 +187,7 @@ class IndicatorRegistry:
 
         Returns:
             匹配的指标列表
+
         """
         query_lower = query.lower()
         results = []
@@ -203,7 +202,7 @@ class IndicatorRegistry:
                     meta.full_name.lower(),
                     meta.chinese_name.lower(),
                     meta.description.lower(),
-                ]
+                ],
             )
 
             if query_lower in searchable_text:
@@ -212,20 +211,19 @@ class IndicatorRegistry:
         return results[:max_results]
 
     def exists(self, abbreviation: str) -> bool:
-        """
-        检查指标是否存在
+        """检查指标是否存在
 
         Args:
             abbreviation: 指标缩写
 
         Returns:
             是否存在
+
         """
         return abbreviation.upper() in self._registry
 
     def validate_indicator(self, abbreviation: str, parameters: Dict[str, Any]) -> tuple[bool, Optional[str]]:
-        """
-        验证指标及其参数
+        """验证指标及其参数
 
         Args:
             abbreviation: 指标缩写
@@ -233,6 +231,7 @@ class IndicatorRegistry:
 
         Returns:
             (是否有效, 错误消息)
+
         """
         meta = self.get(abbreviation)
         if not meta:
@@ -241,8 +240,7 @@ class IndicatorRegistry:
         return meta.validate_parameters(parameters)
 
     def get_min_data_points(self, abbreviation: str, parameters: Dict[str, Any]) -> int:
-        """
-        获取指标所需的最小数据点数
+        """获取指标所需的最小数据点数
 
         Args:
             abbreviation: 指标缩写
@@ -250,6 +248,7 @@ class IndicatorRegistry:
 
         Returns:
             最小数据点数
+
         """
         meta = self.get(abbreviation)
         if not meta:
@@ -258,14 +257,14 @@ class IndicatorRegistry:
         return meta.get_min_data_points(parameters)
 
     def load_from_config(self, config_path: str) -> int:
-        """
-        从配置文件加载指标
+        """从配置文件加载指标
 
         Args:
             config_path: 配置文件路径
 
         Returns:
             加载的指标数量
+
         """
         path = Path(config_path)
         if not path.exists():
@@ -275,7 +274,7 @@ class IndicatorRegistry:
         self._config_path = path
         self._last_reload = time.time()
 
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             config_data = yaml.safe_load(f)
 
         if not config_data or "indicators" not in config_data:
@@ -316,7 +315,7 @@ class IndicatorRegistry:
                     display_name=param_data.get("display_name", ""),
                     unit=param_data.get("unit"),
                     constraints=constraints,
-                )
+                ),
             )
 
         display = ind_data.get("display", {})
@@ -338,20 +337,20 @@ class IndicatorRegistry:
         )
 
     def load_templates(self, config_path: str) -> int:
-        """
-        加载指标模板
+        """加载指标模板
 
         Args:
             config_path: 配置文件路径
 
         Returns:
             加载的模板数量
+
         """
         path = Path(config_path)
         if not path.exists():
             return 0
 
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             config_data = yaml.safe_load(f)
 
         if not config_data or "templates" not in config_data:
@@ -384,11 +383,11 @@ class IndicatorRegistry:
         return self._templates.copy()
 
     def reload(self) -> int:
-        """
-        重新加载配置文件
+        """重新加载配置文件
 
         Returns:
             加载的指标数量
+
         """
         if not self._config_path:
             logger.warning("未设置配置文件路径")
@@ -404,11 +403,11 @@ class IndicatorRegistry:
         return count
 
     def get_stats(self) -> RegistryStats:
-        """
-        获取注册表统计信息
+        """获取注册表统计信息
 
         Returns:
             统计信息
+
         """
         stats = RegistryStats()
         stats.total_indicators = len(self._registry)
@@ -438,11 +437,11 @@ class IndicatorRegistry:
         logger.info("注册表已清空")
 
     def export(self) -> Dict[str, Any]:
-        """
-        导出注册表为字典
+        """导出注册表为字典
 
         Returns:
             注册表数据
+
         """
         return {
             "indicators": {abbr: meta.dict() for abbr, meta in self._registry.items()},

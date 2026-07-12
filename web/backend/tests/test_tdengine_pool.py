@@ -1,14 +1,14 @@
-"""
-TDengine连接池单元测试 - Phase 3 Task 19
+"""TDengine连接池单元测试 - Phase 3 Task 19
 测试连接池的核心功能：连接获取/释放、健康检查、超时处理、统计
 """
 
-import pytest
-import time
 import threading
+import time
 from unittest.mock import Mock, patch
 
-from app.core.tdengine_pool import TDengineConnectionPool, ConnectionContext
+import pytest
+
+from app.core.tdengine_pool import ConnectionContext, TDengineConnectionPool
 
 
 class TestTDengineConnectionPool:
@@ -259,9 +259,8 @@ class TestConnectionContext:
         context = ConnectionContext(mock_pool, timeout=1)
 
         # 应该抛出TimeoutError
-        with pytest.raises(TimeoutError):
-            with context as conn:
-                pass
+        with pytest.raises(TimeoutError), context as conn:
+            pass
 
     def test_context_manager_exception_handling(self, mock_pool):
         """测试上下文管理器异常处理"""

@@ -1,8 +1,8 @@
-"""
-统一异常处理框架 - MyStocks 业务异常和全局异常处理器
+"""统一异常处理框架 - MyStocks 业务异常和全局异常处理器
 """
 
 from fastapi import HTTPException, status
+
 
 # 使用新的状态码常量（避免弃用警告）
 HTTP_422_UNPROCESSABLE_ENTITY = status.HTTP_422_UNPROCESSABLE_ENTITY
@@ -11,13 +11,13 @@ from typing import Any, Dict, Optional
 
 from fastapi.responses import JSONResponse
 
+
 logger = getLogger(__name__)
 
 
 # 自定义业务异常类
 class BusinessException(HTTPException):
-    """
-    业务逻辑异常类 - 用于业务层面的错误
+    """业务逻辑异常类 - 用于业务层面的错误
 
     特点：
     - 自动记录错误日志
@@ -49,7 +49,7 @@ class ValidationException(BusinessException):
             error_detail = f"字段 '{field}' {detail}"
 
         super().__init__(
-            detail=error_detail, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, error_code="VALIDATION_ERROR"
+            detail=error_detail, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, error_code="VALIDATION_ERROR",
         )
 
 
@@ -100,7 +100,7 @@ class RateLimitException(BusinessException):
             detail=detail,
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             error_code="RATE_LIMIT_EXCEEDED",
-            headers=headers if headers else None,
+            headers=headers or None,
         )
 
 
@@ -146,11 +146,11 @@ class CacheException(BusinessException):
 
 # 全局通用异常处理（挂载到FastAPI app）
 def register_exception_handlers(app):
-    """
-    注册全局异常处理器到FastAPI应用
+    """注册全局异常处理器到FastAPI应用
 
     Args:
         app: FastAPI应用实例
+
     """
 
     @app.exception_handler(BusinessException)
@@ -210,7 +210,7 @@ def register_exception_handlers(app):
                 "path": str(request.url.path),
                 "timestamp": None,
             },
-            headers=headers if headers else None,
+            headers=headers or None,
         )
 
     @app.exception_handler(HTTPException)

@@ -1,5 +1,4 @@
-"""
-统一API响应格式模块 (增强版)
+"""统一API响应格式模块 (增强版)
 
 提供标准化的API响应模型，确保所有端点返回一致的响应格式。
 
@@ -15,6 +14,7 @@ from datetime import datetime, timezone
 from typing import Any, Dict, Generic, List, Optional, TypeVar
 
 from pydantic import BaseModel, Field
+
 
 T = TypeVar("T")
 
@@ -33,8 +33,7 @@ class ErrorDetail(BaseModel):
 
 
 class UnifiedResponse(BaseModel, Generic[T]):
-    """
-    统一API响应模型 (增强版)
+    """统一API响应模型 (增强版)
 
     这是所有API响应应该遵循的标准格式。
     """
@@ -44,15 +43,14 @@ class UnifiedResponse(BaseModel, Generic[T]):
     message: str = Field("操作成功", description="给前端展示的消息")
     data: Optional[T] = Field(None, description="实际的业务数据，成功时返回，失败时为null")
     timestamp: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc), description="响应生成的时间戳 (UTC)"
+        default_factory=lambda: datetime.now(timezone.utc), description="响应生成的时间戳 (UTC)",
     )
     request_id: Optional[str] = Field(None, description="请求ID，用于追踪请求日志")
     errors: Optional[List[ErrorDetail]] = Field(None, description="详细错误信息数组，仅在请求失败时存在")
 
 
 class APIResponse(BaseModel, Generic[T]):
-    """
-    向后兼容的成功响应模型
+    """向后兼容的成功响应模型
 
     @deprecated 推荐使用 UnifiedResponse，保留此类以维持向后兼容性
     """
@@ -65,8 +63,7 @@ class APIResponse(BaseModel, Generic[T]):
 
 
 class ErrorResponse(BaseModel):
-    """
-    向后兼容的错误响应模型
+    """向后兼容的错误响应模型
 
     @deprecated 推荐使用 UnifiedResponse，保留此类以维持向后兼容性
     """
@@ -180,8 +177,7 @@ def create_success_response(
     message: str = "操作成功",
     request_id: Optional[str] = None,
 ) -> APIResponse:
-    """
-    创建成功响应 (向后兼容)
+    """创建成功响应 (向后兼容)
 
     推荐使用 unified_response() 替代
     """
@@ -210,8 +206,7 @@ def create_error_response(
     details: Optional[Dict[str, Any]] = None,
     request_id: Optional[str] = None,
 ) -> ErrorResponse:
-    """
-    创建错误响应 (向后兼容)
+    """创建错误响应 (向后兼容)
 
     推荐使用 unified_error_response() 替代
     """
@@ -230,8 +225,7 @@ def create_unified_error_response(
     errors: Optional[List[ErrorDetail]] = None,
     request_id: Optional[str] = None,
 ) -> UnifiedResponse:
-    """
-    创建统一错误响应
+    """创建统一错误响应
 
     Args:
         code: 业务状态码 (400, 401, 404, 500 等)
@@ -239,6 +233,7 @@ def create_unified_error_response(
         error_code: 错误代码 (如 VALIDATION_ERROR)
         errors: 详细错误信息数组
         request_id: 请求ID
+
     """
     # 如果没有提供 error_code，根据 code 生成默认值
     if error_code is None:

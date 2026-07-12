@@ -1,5 +1,6 @@
 import os
 
+
 os.environ.setdefault("POSTGRESQL_HOST", "localhost")
 os.environ.setdefault("POSTGRESQL_PORT", "5432")
 os.environ.setdefault("POSTGRESQL_USER", "tester")

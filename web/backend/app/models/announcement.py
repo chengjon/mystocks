@@ -1,5 +1,4 @@
-"""
-公告系统数据模型
+"""公告系统数据模型
 Multi-data Source Support
 """
 
@@ -24,6 +23,7 @@ from sqlalchemy.orm import relationship
 
 # 使用与monitoring.py相同的Base
 from app.models.monitoring import Base
+
 
 # ============================================================================
 # SQLAlchemy ORM Models

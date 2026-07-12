@@ -1,5 +1,4 @@
-"""
-双库数据一致性 - 本地消息表模型
+"""双库数据一致性 - 本地消息表模型
 Local Message Table for Dual-Database Eventual Consistency
 
 实现本地消息表模式,确保TDengine和PostgreSQL之间的数据最终一致性。
@@ -25,23 +24,21 @@ from sqlalchemy import (
     CheckConstraint,
     Column,
     DateTime,
-)
-from sqlalchemy import Enum as SQLEnum
-from sqlalchemy import (
     Index,
     Integer,
     String,
     Text,
 )
+from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import declarative_base
+
 
 Base = declarative_base()
 
 
 class MessageStatus(enum.Enum):
-    """
-    消息状态枚举
+    """消息状态枚举
 
     状态流转:
     PENDING -> IN_PROGRESS -> SUCCESS
@@ -75,8 +72,7 @@ class OperationType(enum.Enum):
 
 
 class SyncMessage(Base):
-    """
-    本地消息表 - 跨库同步消息
+    """本地消息表 - 跨库同步消息
 
     用途:
     1. 记录所有需要跨库同步的操作
@@ -105,6 +101,7 @@ class SyncMessage(Base):
             },
             priority=1
         )
+
     """
 
     __tablename__ = "sync_message"
@@ -281,8 +278,7 @@ class SyncMessage(Base):
 
 
 class SyncStatistics(Base):
-    """
-    同步统计表 - 按时间窗口汇总统计数据
+    """同步统计表 - 按时间窗口汇总统计数据
 
     用途:
     1. 监控同步性能指标

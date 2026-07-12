@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 from app.core.exception_handlers import handle_exceptions
 from app.core.responses import UnifiedResponse
 
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
@@ -111,7 +112,7 @@ async def get_portfolio_summary(
         raise
     except Exception as error:
         logger.error("获取组合摘要失败: %(e)s")
-        raise HTTPException(status_code=500, detail=f"获取失败: {str(error)}")
+        raise HTTPException(status_code=500, detail=f"获取失败: {error!s}")
 
 
 @router.get("/portfolio/{watchlist_id}/alerts", response_model=UnifiedResponse[List[AlertResponse]])
@@ -177,7 +178,7 @@ async def get_portfolio_alerts(
         raise
     except Exception as error:
         logger.error("获取预警列表失败: %(e)s")
-        raise HTTPException(status_code=500, detail=f"获取失败: {str(error)}")
+        raise HTTPException(status_code=500, detail=f"获取失败: {error!s}")
 
 
 @router.get("/portfolio/{watchlist_id}/rebalance", response_model=UnifiedResponse[List[RebalanceSuggestionResponse]])
@@ -239,4 +240,4 @@ async def get_rebalance_suggestions(
         raise
     except Exception as error:
         logger.error("获取再平衡建议失败: %(e)s")
-        raise HTTPException(status_code=500, detail=f"获取失败: {str(error)}")
+        raise HTTPException(status_code=500, detail=f"获取失败: {error!s}")
