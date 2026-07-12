@@ -1,156 +1,138 @@
-# MyStocks CI/CD 体系
+# MyStocks CI/CD 体系架构
 
-## 架构总览
+## 文档分布
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    MyStocks CI/CD 体系                       │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  开发阶段               提交阶段               部署阶段       │
-│  ┌──────────┐    ┌──────────────┐    ┌──────────────────┐   │
-│  │ pre-commit│───→│ GitHub Actions│───→│  PM2 生产部署    │   │
-│  │ 本地检查   │    │ 远程CI管道    │    │  (WSL)           │   │
-│  └──────────┘    └──────────────┘    └──────────────────┘   │
-│       │                │                      │             │
-│       ▼                ▼                      ▼             │
-│  • ruff lint     • 类型检查(Pyright)     • 重启后端服务     │
-│  • black format  • P0质量门禁            • 重启前端服务     │
-│  • 本地冒烟      • 冒烟测试(23用例)       • 健康检查         │
-│  • 单元测试      • E2E测试               • 回滚机制         │
-│                   • 安全扫描                              │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
-```
+CI/CD 相关文档分布在三个位置：
 
-## 三层 Pipeline
+| 位置 | 说明 | 文档数 |
+|------|------|--------|
+| `docs/operations/ci-cd/` | CI/CD 专题文档（核心） | 10 |
+| `docs/api/` | API/部署相关 CI/CD | 2 |
+| `docs/testing/` | 测试 CI/CD 架构 | 1 |
 
-### Layer 1: 本地开发 (pre-commit)
-
-触发: `git commit`
-运行地: WSL 本地
-耗时: < 30s
-文件: `.pre-commit-config.yaml`
+## 三层管道架构
 
 ```
-步骤:
-  1. ruff lint (Python)
-  2. black format check
-  3. 单元测试 (pytest)
-  4. 冒烟测试 (smoke_test.py) ← 新增
+┌──────────────────────────────────────────────────────────────────┐
+│                       MyStocks CI/CD Pipeline                     │
+├──────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ┌─────────────┐    ┌──────────────────┐    ┌────────────────┐   │
+│  │  Layer 1    │    │   Layer 2        │    │   Layer 3      │   │
+│  │  本地开发    │───→│  GitHub Actions  │───→│  部署/监控     │   │
+│  │  pre-commit │    │  远程CI管道       │    │  PM2/Prometheus│   │
+│  └─────────────┘    └──────────────────┘    └────────────────┘   │
+│         │                    │                      │             │
+│         ▼                    ▼                      ▼             │
+│  • ruff lint          • P0质量门禁           • deploy.yml        │
+│  • black format       • 类型检查             • 健康检查          │
+│  • 单元测试            • smoke_test.py        • cicd_monitor     │
+│  • smoke_test.py      • E2E/Playwright        • 监控告警          │
+│  • pre-commit hooks   • 安全扫描/合规                               │
+│                                                                  │
+└──────────────────────────────────────────────────────────────────┘
 ```
 
-### Layer 2: CI 远程 (GitHub Actions)
+## 现有 CI 基础设施
 
-触发: `push` / `PR` → main/develop
-运行地: GitHub 托管 runner
-文件: `.github/workflows/`
+### 1. 本地 CI 管道 (Python)
+
+核心: `tests/ci/run_pipeline.py` + `test_continuous_integration.py`
 
 ```
-主干管道 (ci-cd.yml):
-  1. scope-detect       → 检测变更范围
-  2. lint               → ruff + black
-  3. type-check         → pyright + mypy
-  4. test               → pytest (单元/集成)
-  5. smoke-test         → smoke_test.py (23用例)  ← 新增
-  6. security-scan      → bandit
-  7. build              → 构建前端
-  8. report             → 测试报告
+get_ci_check_steps() → 基础检查:
+  1. ruff lint
+  2. ruff format
+  3. mypy type-check
+  4. pytest unit tests
 
-质量门禁 (p0-quality-gate.yml):
-  - lint 失败 → 阻止PR合并
-  - type-check 失败 → 阻止PR合并
-  - smoke-test 失败 → 阻止PR合并  ← 新增
-
-部署 (deploy.yml):
-  - develop → staging (自动)
-  - main → production (手动审批)
+get_full_pipeline_steps() → 完整管道:
+  5. pytest integration tests
+  6. E2E tests (Playwright)
+  7. 冒烟测试 (smoke_test.py)  ← 新增
 ```
 
-### Layer 3: 本地 Runner (自托管)
+运行: `python3 tests/ci/run_pipeline.py`
 
-用于 WSL 环境，替代 GitHub Actions 在本地运行完整管道。
-
-```bash
-# 运行完整管道
-python3 tests/ci/run_pipeline.py
-
-# 快速冒烟
-python3 smoke_test.py
-
-# 单步测试
-pytest tests/ -x -v
-```
-
-## 测试管道
+### 2. 冒烟测试
 
 ```
 smoke_test.py (23个用例, 6秒)
-├── 2 服务进程检查
-│   ├── Backend online (PM2)
-│   └── Frontend online (PM2)
+├── 2 服务进程检查 (PM2)
 ├── 1 登录验证
-│   └── Auth login (JWT)
 ├── 15 后端API
-│   ├── Dashboard概览
-│   ├── 实时行情
-│   ├── K线
-│   ├── 龙虎榜
-│   ├── 板块动向
-│   ├── 概念动向
-│   ├── 资金流向
-│   ├── 自选组合
-│   ├── 股票列表
-│   ├── 策略列表
-│   ├── 交易信号
-│   ├── 头寸
-│   ├── 健康检查
-│   ├── 股票详情
-│   └── 技术指标
-├── 5 前端页面
-│   ├── 首页
-│   ├── Dashboard
-│   ├── 实时行情
-│   ├── 股票列表
-│   └── 股票详情
-└── 报告输出
+└── 5 前端页面
 ```
+
+运行: `python3 smoke_test.py`
+
+### 3. GitHub Actions 工作流
+
+主干流程:
+
+| 工作流 | 触发 | 用途 |
+|--------|------|------|
+| `ci-cd.yml` | push/PR → main/develop | 主干CI管道 |
+| `p0-quality-gate.yml` | PR → main/develop | 质量门禁(阻止合并) |
+| `smoke-test.yml` | push/PR → main/develop | 冒烟测试(新增) |
+| `deploy.yml` | develop自动 / main手动 | 部署管道 |
+
+其他工作流 (31个):
+
+| 类别 | 工作流 |
+|------|--------|
+| 治理/合规 | `mainline-governance.yml`, `directory-compliance.yml`, `deletion-waiver-audit.yml`, `cicd-monthly-review.yml` |
+| 类型检查 | `python-type-check.yml`, `typescript-type-check.yml` |
+| 测试矩阵 | `comprehensive-testing.yml`, `test-coverage.yml`, `coverage-expansion.yml`, `contract-testing.yml`, `e2e-testing.yml`, `e2e-tests.yml`, `e2e-tests-enhanced.yml`, `e2e-test.yml`, `api-file-tests.yml`, `api-contract-validation.yml`, `api-compliance-testing.yml`, `api-automation-discovery.yml`, `frontend-testing.yml`, `data-sync-testing.yml`, `performance-testing.yml`, `playwright.yml`, `visual-testing.yml`, `visual-baseline-update.yml`, `ai-test-optimization.yml`, `code-quality.yml`, `monitoring-validation.yml` |
+| 安全 | `security-testing.yml`, `security-enhancement.yml` |
+| 策略验证 | `quantum-strategy-validation.yml`, `quant-strategy-validation.yml` |
+
+### 4. 监控集成
+
+`scripts/dev/ci/cicd_monitor_integration.py` — CI/CD 监控集成工具
+- Prometheus 指标采集
+- Grafana 监控面板
+- 告警通知
 
 ## 文档索引
 
-| 文档 | 用途 |
-|------|------|
-| `docs/operations/ci-cd/INDEX.md` | CI/CD 文档总索引 |
-| `docs/operations/ci-cd/LOCAL_CI_INTEGRATION.md` | 本地开发CI集成 |
-| `.github/workflows/ci-cd.yml` | 主干CI管道 |
-| `.github/workflows/p0-quality-gate.yml` | P0质量门禁 |
-| `.github/workflows/deploy.yml` | 部署管道 |
-| `smoke_test.py` | 冒烟测试脚本 (23用例) |
-| `tests/ci/run_pipeline.py` | 本地CI管道运行器 |
-| `tests/ci/test_continuous_integration.py` | CI系统测试 |
+### docs/operations/ci-cd/ (核心 CI/CD 文档)
 
-## 运行方式
+| 文件 | 用途 |
+|------|------|
+| `ARCHITECTURE.md` | 本文件 — CI/CD 体系架构总览 |
+| `LOCAL_CI_INTEGRATION.md` | 本地开发环境 CI 集成 (pre-commit) |
+| `MYSTOCKS_CI_CD_OPTIMIZATION_SYSTEM.md` | 企业级 CI/CD 优化体系 |
+| `MYSTOCKS_CI_CD_DAILY_APPLICATION.md` | CI/CD 日常应用规划 |
+| `CICD_CONTINUOUS_OPTIMIZATION.md` | 持续优化指南 |
+| `CICD_TYPE_CHECK_INTEGRATION_GUIDE.md` | 类型检查集成 |
+| `CICD_TYPE_CHECK_QUICK_REFERENCE.md` | 类型检查快速参考 |
+| `PYTHON_QUALITY_ASSURANCE_WORKFLOW.md` | Python 代码质量保证 |
+| `PYTHON_QUALITY_TOOLS_QUICK_REFERENCE.md` | Python 质量工具参考 |
+| `QUALITY_GATE_MANAGEMENT.md` | 质量门禁管理 |
+
+### docs/api/ (API/部署 CI/CD)
+
+| 文件 | 用途 |
+|------|------|
+| `CI_CD_INTEGRATION_GUIDE.md` | CI/CD 集成总指南 (pre-commit + 告警) |
+| `CI_CD_Validation_Extension_Guide.md` | CI/CD 校验扩展 (安全/质量/集成/性能) |
+
+### docs/testing/ (测试 CI/CD)
+
+| 文件 | 用途 |
+|------|------|
+| `e2e/e2e-testing-ci-cd-architecture.md` | E2E 测试的 CI/CD 架构 (三层测试) |
+
+## 快速运行
 
 ```bash
-# 本地冒烟测试 (推荐)
-cd /opt/claude/mystocks_spec
+# 冒烟测试 (推荐用于快速验证)
 python3 smoke_test.py
 
-# 本地完整CI管道
+# 本地 CI 管道 (完整)
 python3 tests/ci/run_pipeline.py
 
-# pytest 单元测试
-pytest tests/ -x -v -m "not slow"
-
-# pre-commit 本地检查
-pre-commit run --all-files
+# 监控集成
+python3 scripts/dev/ci/cicd_monitor_integration.py
 ```
-
-## 当前状态 (2026-07-12)
-
-- ✅ 冒烟测试: 23/23 通过
-- ✅ 后端API: 15/15 200
-- ✅ 前端页面: 5/5 200
-- ❌ 本地 runner: 未安装 (actions-runner)
-- ❌ smoke_test.py: 尚未纳入 GitHub Actions workflow
-- ❌ .pre-commit-config.yaml: 未包含冒烟测试
