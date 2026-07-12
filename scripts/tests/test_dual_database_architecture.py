@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-TDengine + PostgreSQL双数据库架构验证测试
+"""TDengine + PostgreSQL双数据库架构验证测试
 
 验证项:
 1. DatabaseTarget枚举只包含TDENGINE和POSTGRESQL
@@ -10,9 +9,9 @@ TDengine + PostgreSQL双数据库架构验证测试
 5. requirements.txt不包含pymysql和redis依赖
 """
 
-
-import sys
 import os
+import sys
+
 
 # 添加项目根目录到路径
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -45,7 +44,7 @@ def test_data_routing():
     """测试所有数据分类正确路由"""
     print("\n=== 测试2: 数据路由验证 ===")
 
-    from src.core.data_classification import DataClassification, DatabaseTarget
+    from src.core.data_classification import DatabaseTarget, DataClassification
 
     all_classifications = list(DataClassification)
     print(f"总数据分类数: {len(all_classifications)}")
@@ -71,7 +70,7 @@ def test_data_routing():
     assert tdengine_count > 0, "❌ TDengine应至少处理高频时序数据"
     assert postgresql_count > 0, "❌ PostgreSQL应处理其他所有数据"
     assert tdengine_count + postgresql_count == len(
-        all_classifications
+        all_classifications,
     ), "❌ 路由覆盖不完整"
 
     print(f"✅ 所有{len(all_classifications)}项数据分类正确路由到2种数据库")
@@ -83,7 +82,7 @@ def test_data_access_imports():
     print("\n=== 测试3: 数据访问类导入验证 ===")
 
     try:
-        from src.data_access import TDengineDataAccess, PostgreSQLDataAccess
+        from src.data_access import PostgreSQLDataAccess, TDengineDataAccess
 
         print("✅ TDengineDataAccess导入成功")
         print("✅ PostgreSQLDataAccess导入成功")
@@ -135,7 +134,7 @@ def test_requirements():
     """测试requirements.txt依赖"""
     print("\n=== 测试5: requirements.txt验证 ===")
 
-    with open("requirements.txt", "r") as f:
+    with open("requirements.txt") as f:
         content = f.read()
 
     # 应该包含的依赖
@@ -153,8 +152,7 @@ def test_requirements():
         if dep in content:
             print(f"❌ 不应包含已移除依赖: {dep}")
             return False
-        else:
-            print(f"✅ 已移除依赖: {dep}")
+        print(f"✅ 已移除依赖: {dep}")
 
     return True
 
@@ -217,9 +215,8 @@ def main():
     if passed == total:
         print("\n🎉 所有测试通过！TDengine + PostgreSQL 双数据库架构验证成功")
         return 0
-    else:
-        print(f"\n⚠️  {total - passed} 项测试失败")
-        return 1
+    print(f"\n⚠️  {total - passed} 项测试失败")
+    return 1
 
 
 if __name__ == "__main__":

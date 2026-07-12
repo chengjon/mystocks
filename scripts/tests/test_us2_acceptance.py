@@ -1,5 +1,4 @@
-"""
-US2验收测试 - 配置驱动表结构管理
+"""US2验收测试 - 配置驱动表结构管理
 
 验证US2的完整功能:
 - T024: 配置验证测试
@@ -14,19 +13,22 @@ US2验收测试 - 配置驱动表结构管理
 """
 
 import logging
-import sys
-from pathlib import Path
-import tempfile
 import os
+import sys
+import tempfile
+from pathlib import Path
+
 
 # 添加项目根目录到路径
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from src.core.config_driven_table_manager import ConfigDrivenTableManager
 
+
 # 配置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -59,7 +61,7 @@ def test_config_validation():
         # 验证必需字段
         if "databases" in manager.config:
             logger.info(
-                f"   ✅ databases字段存在（{len(manager.config['databases'])}个数据库）"
+                f"   ✅ databases字段存在（{len(manager.config['databases'])}个数据库）",
             )
             tests_passed.append("databases字段验证")
         else:
@@ -148,15 +150,14 @@ def test_config_validation():
     # 总结T024
     logger.info("\n" + "-" * 60)
     logger.info(
-        f"T024结果: 通过 {len(tests_passed)} 项测试, 失败 {len(tests_failed)} 项"
+        f"T024结果: 通过 {len(tests_passed)} 项测试, 失败 {len(tests_failed)} 项",
     )
 
     if len(tests_failed) == 0:
         logger.info("✅ T024验收通过: 配置验证功能完善")
         return True
-    else:
-        logger.warning(f"⚠️ T024部分测试失败: {tests_failed}")
-        return len(tests_passed) > len(tests_failed)
+    logger.warning(f"⚠️ T024部分测试失败: {tests_failed}")
+    return len(tests_passed) > len(tests_failed)
 
 
 def test_safe_mode():
@@ -264,15 +265,14 @@ def test_safe_mode():
     # 总结T025
     logger.info("\n" + "-" * 60)
     logger.info(
-        f"T025结果: 通过 {len(tests_passed)} 项测试, 失败 {len(tests_failed)} 项"
+        f"T025结果: 通过 {len(tests_passed)} 项测试, 失败 {len(tests_failed)} 项",
     )
 
     if len(tests_failed) == 0:
         logger.info("✅ T025验收通过: 安全模式功能完善")
         return True
-    else:
-        logger.warning(f"⚠️ T025部分测试失败: {tests_failed}")
-        return len(tests_passed) > len(tests_failed)
+    logger.warning(f"⚠️ T025部分测试失败: {tests_failed}")
+    return len(tests_passed) > len(tests_failed)
 
 
 def main():
@@ -319,9 +319,8 @@ def main():
         logger.info("  ✅ 配置错误有明确提示")
         logger.info("\n" + "🎉" * 30)
         return True
-    else:
-        logger.warning(f"\n⚠️ {total - passed} 个验收测试失败")
-        return False
+    logger.warning(f"\n⚠️ {total - passed} 个验收测试失败")
+    return False
 
 
 if __name__ == "__main__":

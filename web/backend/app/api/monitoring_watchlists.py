@@ -130,10 +130,7 @@ _runtime_watchlist_stocks: Optional[Dict[int, List[WatchlistStockResponse]]] = N
 
 
 def _runtime_fallback_enabled() -> bool:
-    return (
-        os.getenv("TESTING", "false").lower() == "true"
-        or os.getenv("DEVELOPMENT_MODE", "false").lower() == "true"
-    )
+    return os.getenv("TESTING", "false").lower() == "true" or os.getenv("DEVELOPMENT_MODE", "false").lower() == "true"
 
 
 def _build_runtime_watchlist_stocks() -> Dict[int, List[WatchlistStockResponse]]:
@@ -213,7 +210,9 @@ def _clone_model(response: Any) -> Any:
     return response.model_copy(deep=True) if hasattr(response, "model_copy") else deepcopy(response)
 
 
-def _ensure_runtime_watchlist_state(user_id: int) -> tuple[List[WatchlistResponse], Dict[int, List[WatchlistStockResponse]]]:
+def _ensure_runtime_watchlist_state(
+    user_id: int,
+) -> tuple[List[WatchlistResponse], Dict[int, List[WatchlistStockResponse]]]:
     global _runtime_watchlists, _runtime_watchlist_stocks
 
     if _runtime_watchlists is None or _runtime_watchlist_stocks is None:
@@ -438,8 +437,7 @@ async def create_watchlist(
 async def list_watchlists(
     user_id: int = Query(1, description="用户ID"),
 ) -> UnifiedResponse[List[WatchlistResponse]]:
-    """获取用户的所有监控清单
-    """
+    """获取用户的所有监控清单"""
     try:
         from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
 
@@ -490,8 +488,7 @@ async def get_watchlist(
     watchlist_id: int = Path(..., description="清单ID"),
     user_id: int = Query(1, description="用户ID"),
 ) -> UnifiedResponse[WatchlistResponse]:
-    """获取单个监控清单详情
-    """
+    """获取单个监控清单详情"""
     try:
         from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
 
@@ -540,8 +537,7 @@ async def update_watchlist(
     request: UpdateWatchlistRequest = Body(...),
     user_id: int = Query(1, description="用户ID"),
 ) -> UnifiedResponse[WatchlistResponse]:
-    """更新监控清单
-    """
+    """更新监控清单"""
     try:
         from src.monitoring.infrastructure.postgresql_async_v3 import WatchlistUpdate, get_postgres_async
 
@@ -613,8 +609,7 @@ async def delete_watchlist(
     watchlist_id: int = Path(..., description="清单ID"),
     user_id: int = Query(1, description="用户ID"),
 ) -> UnifiedResponse[None]:
-    """删除监控清单（级联删除成员）
-    """
+    """删除监控清单（级联删除成员）"""
     try:
         from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
 
@@ -654,8 +649,7 @@ async def add_stock_to_watchlist(
     request: AddStockRequest = None,
     user_id: int = Query(1, description="用户ID"),
 ) -> UnifiedResponse[WatchlistStockResponse]:
-    """添加股票到清单
-    """
+    """添加股票到清单"""
     try:
         from src.monitoring.infrastructure.postgresql_async_v3 import StockToAdd, get_postgres_async
 
@@ -714,7 +708,9 @@ async def add_stock_to_watchlist(
         raise
     except Exception as e:
         if _runtime_fallback_enabled():
-            fallback_stock = _add_runtime_stock_to_watchlist(watchlist_id=watchlist_id, request=request, user_id=user_id)
+            fallback_stock = _add_runtime_stock_to_watchlist(
+                watchlist_id=watchlist_id, request=request, user_id=user_id
+            )
             if fallback_stock is not None:
                 logger.warning("添加股票降级到 runtime fallback: %s", str(e))
                 return UnifiedResponse(data=fallback_stock, message="添加股票成功")
@@ -728,8 +724,7 @@ async def list_watchlist_stocks(
     watchlist_id: int = Path(..., description="清单ID"),
     user_id: int = Query(1, description="用户ID"),
 ) -> UnifiedResponse[List[WatchlistStockResponse]]:
-    """获取清单中的所有股票
-    """
+    """获取清单中的所有股票"""
     try:
         from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
 
@@ -793,8 +788,7 @@ async def remove_stock_from_watchlist(
     stock_code: str = Path(..., description="股票代码"),
     user_id: int = Query(1, description="用户ID"),
 ) -> UnifiedResponse[None]:
-    """从清单中移除股票
-    """
+    """从清单中移除股票"""
     try:
         from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
 

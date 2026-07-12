@@ -22,11 +22,16 @@ class OrderRequest(BaseModel):
     """下单请求"""
 
     symbol: str = Field(
-        ..., description="股票代码", examples=["000001.SZ", "600519.SH"], pattern=r"^[0-9]{6}\.[A-Z]{2}$",
+        ...,
+        description="股票代码",
+        examples=["000001.SZ", "600519.SH"],
+        pattern=r"^[0-9]{6}\.[A-Z]{2}$",
     )
     direction: str = Field(..., description="交易方向", pattern=r"^(buy|sell)$")
     order_type: str = Field(
-        default="limit", description="订单类型 (limit=限价, market=市价)", pattern=r"^(limit|market)$",
+        default="limit",
+        description="订单类型 (limit=限价, market=市价)",
+        pattern=r"^(limit|market)$",
     )
     price: Optional[Decimal] = Field(None, ge=0.01, description="委托价格 (限价单必填)", examples=[10.50])
     quantity: int = Field(..., gt=0, description="委托数量 (100的整数倍)", examples=[100, 200, 500])

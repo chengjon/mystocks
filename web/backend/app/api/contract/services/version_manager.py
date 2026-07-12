@@ -101,7 +101,10 @@ class VersionManager:
 
     @staticmethod
     def list_versions(
-        db: Session, name: Optional[str] = None, limit: int = 50, offset: int = 0,
+        db: Session,
+        name: Optional[str] = None,
+        limit: int = 50,
+        offset: int = 0,
     ) -> List[ContractVersionResponse]:
         """列出版本
 
@@ -126,7 +129,9 @@ class VersionManager:
 
     @staticmethod
     def update_version(
-        db: Session, version_id: int, update_data: ContractVersionUpdate,
+        db: Session,
+        version_id: int,
+        update_data: ContractVersionUpdate,
     ) -> Optional[ContractVersionResponse]:
         """更新契约版本
 
@@ -447,7 +452,10 @@ class VersionManager:
                     message=f"Successfully exported {paths_count} endpoints to {saved_path}",
                 )
             return SyncResult(
-                success=False, direction="db_to_code", changes={}, message="Failed to write output file",
+                success=False,
+                direction="db_to_code",
+                changes={},
+                message="Failed to write output file",
             )
 
         except Exception as e:

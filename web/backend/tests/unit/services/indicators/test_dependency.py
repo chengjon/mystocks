@@ -82,7 +82,9 @@ class TestIndicatorDependencyGraph:
 
         # 添加依赖EMA的指标
         node_id = self.graph.add_indicator(
-            abbreviation="MACD", params={"fastperiod": 12, "slowperiod": 26}, dependencies=["EMA"],
+            abbreviation="MACD",
+            params={"fastperiod": 12, "slowperiod": 26},
+            dependencies=["EMA"],
         )
 
         # 格式: key1-value1_key2-value2

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-简化的WebSocket压力测试
+"""简化的WebSocket压力测试
 Simple WebSocket Stress Test - Basic Connection Testing
 
 用于测试WebSocket服务器基本连接功能，不依赖复杂的库。
@@ -10,14 +9,14 @@ Date: 2025-11-13
 """
 
 import asyncio
-import time
 import json
-import statistics
 import os
-from pathlib import Path
-from typing import List, Dict, Any, Optional
+import statistics
+import time
 from dataclasses import dataclass, field
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -43,14 +42,14 @@ class TestResult:
 async def simple_connection_test(
     url: str = os.getenv("BACKEND_URL", f"http://localhost:{os.getenv('BACKEND_PORT', '8020')}"),
 ) -> List[TestResult]:
-    """
-    简单的连接测试
+    """简单的连接测试
 
     Args:
         url: 服务器URL
 
     Returns:
         测试结果列表
+
     """
     import aiohttp
 
@@ -64,12 +63,11 @@ async def simple_connection_test(
                     data = await response.json()
                     print(f"✅ 服务器状态正常: {data.get('status', 'unknown')}")
                     return [TestResult("status_check", True, 0)]
-                else:
-                    error_msg = f"服务器返回状态码: {response.status}"
-                    print(f"❌ {error_msg}")
-                    return [TestResult("status_check", False, 0, error_msg)]
+                error_msg = f"服务器返回状态码: {response.status}"
+                print(f"❌ {error_msg}")
+                return [TestResult("status_check", False, 0, error_msg)]
         except Exception as e:
-            error_msg = f"连接失败: {str(e)}"
+            error_msg = f"连接失败: {e!s}"
             print(f"❌ {error_msg}")
             return [TestResult("status_check", False, 0, error_msg)]
 
@@ -79,8 +77,7 @@ async def run_basic_stress_test(
     concurrent_requests: int = 50,
     requests_per_connection: int = 10,
 ) -> Dict[str, Any]:
-    """
-    运行基本的压力测试
+    """运行基本的压力测试
 
     Args:
         url: 服务器URL
@@ -89,8 +86,8 @@ async def run_basic_stress_test(
 
     Returns:
         测试统计结果
-    """
 
+    """
     print("🚀 开始基本压力测试")
     print(f"   并发请求数: {concurrent_requests}")
     print(f"   每连接请求数: {requests_per_connection}")
@@ -112,10 +109,12 @@ async def run_basic_stress_test(
 
                     if response.status == 200:
                         return TestResult(request_id, True, response_time)
-                    else:
-                        return TestResult(
-                            request_id, False, response_time, f"HTTP {response.status}"
-                        )
+                    return TestResult(
+                        request_id,
+                        False,
+                        response_time,
+                        f"HTTP {response.status}",
+                    )
 
         except Exception as e:
             return TestResult(request_id, False, 0, str(e))
@@ -149,9 +148,7 @@ async def run_basic_stress_test(
 
     success_rate = (len(successful_results) / len(results)) * 100 if results else 0
 
-    response_times = [
-        r.response_time_ms for r in successful_results if r.response_time_ms > 0
-    ]
+    response_times = [r.response_time_ms for r in successful_results if r.response_time_ms > 0]
     avg_response_time = statistics.mean(response_times) if response_times else 0
     max_response_time = max(response_times) if response_times else 0
     min_response_time = min(response_times) if response_times else 0
@@ -239,14 +236,14 @@ async def main():
         print(
             f"  并发: {best_scenario['concurrent_requests']}, "
             f"响应时间: {best_scenario['avg_response_time_ms']}ms, "
-            f"成功率: {best_scenario['success_rate']}%"
+            f"成功率: {best_scenario['success_rate']}%",
         )
 
         print("最差性能场景:")
         print(
             f"  并发: {worst_scenario['concurrent_requests']}, "
             f"响应时间: {worst_scenario['avg_response_time_ms']}ms, "
-            f"成功率: {worst_scenario['success_rate']}%"
+            f"成功率: {worst_scenario['success_rate']}%",
         )
 
         avg_success_rate = statistics.mean(s["success_rate"] for s in all_stats)

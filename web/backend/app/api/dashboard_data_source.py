@@ -1,5 +1,4 @@
-"""仪表盘真实数据源适配层
-"""
+"""仪表盘真实数据源适配层"""
 
 from __future__ import annotations
 
@@ -632,7 +631,9 @@ class RealBusinessDataSource:
             import requests
 
             strategy_response = requests.get(
-                f"{self.base_url}/api/strategy-mgmt/strategies", params={"user_id": user_id}, timeout=5,
+                f"{self.base_url}/api/strategy-mgmt/strategies",
+                params={"user_id": user_id},
+                timeout=5,
             )
 
             if strategy_response.status_code == 200:

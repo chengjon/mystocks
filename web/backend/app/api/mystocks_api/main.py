@@ -37,7 +37,8 @@ app.add_exception_handler(Exception, global_exception_handler)
 app.add_exception_handler(HTTPException, http_exception_handler)
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
 app.add_exception_handler(
-    ValidationError, validation_exception_handler,
+    ValidationError,
+    validation_exception_handler,
 )  # Pydantic ValidationError not caught by RequestValidationError
 app.add_exception_handler(SQLAlchemyError, database_exception_handler)
 
@@ -52,8 +53,7 @@ app.add_exception_handler(SQLAlchemyError, database_exception_handler)
 
 @app.get("/api/v1/health", summary="Health check endpoint", tags=["System"])
 async def health_check():
-    """Checks the health of the API service.
-    """
+    """Checks the health of the API service."""
     return JSONResponse(
         status_code=status.HTTP_200_OK,
         content={

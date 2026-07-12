@@ -1,6 +1,7 @@
 print("测试开始")
-import sys
 import os
+import sys
+
 
 # 添加项目根目录到Python路径
 project_root = r"d:/MyData/GITHUB/mystocks"

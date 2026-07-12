@@ -229,7 +229,10 @@ class SignalEngine:
             logger.error("Error updating indicators for %(symbol)s: %(e)s")
 
     async def _calculate_indicator(
-        self, symbol: str, indicator_name: str, market_data: Dict[str, Any],
+        self,
+        symbol: str,
+        indicator_name: str,
+        market_data: Dict[str, Any],
     ) -> Optional[Dict[str, Any]]:
         """计算单个指标
 

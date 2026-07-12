@@ -202,8 +202,7 @@ class RiskMonitoring:
             self.logger.error(f"记录事件失败: {e}")
 
     async def _send_alert_notification(self, event: MonitoringEvent):
-        """发送告警通知（邮件、Webhook、短信等）
-        """
+        """发送告警通知（邮件、Webhook、短信等）"""
         try:
             if event.risk_level in [RiskLevel.CRITICAL, RiskLevel.HIGH]:
                 await self._send_email_alert(event)
@@ -217,7 +216,6 @@ class RiskMonitoring:
     async def _send_email_alert(self, event: MonitoringEvent):
         """发送邮件告警"""
         try:
-
             subject = f"[{event.risk_level.value}] 风险告警 - {event.event_id}"
             body = f"""
             风险事件: {event.message}

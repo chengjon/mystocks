@@ -1,5 +1,4 @@
-"""多数据源API路由
-"""
+"""多数据源API路由"""
 
 from fastapi import APIRouter
 

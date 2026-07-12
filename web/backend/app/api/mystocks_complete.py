@@ -14,8 +14,7 @@ from app.api.v1.router import api_v1_router as router
 
 
 warnings.warn(
-    "app.api.mystocks_complete is deprecated. "
-    "Use app.api.v1.router.api_v1_router instead.",
+    "app.api.mystocks_complete is deprecated. Use app.api.v1.router.api_v1_router instead.",
     DeprecationWarning,
     stacklevel=2,
 )

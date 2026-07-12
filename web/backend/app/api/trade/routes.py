@@ -84,7 +84,8 @@ async def get_portfolio():
         raise HTTPException(
             status_code=500,
             detail=create_error_response(
-                error_code=ErrorCodes.INTERNAL_SERVER_ERROR, message=f"获取账户信息失败: {e!s}",
+                error_code=ErrorCodes.INTERNAL_SERVER_ERROR,
+                message=f"获取账户信息失败: {e!s}",
             ).model_dump(),
         )
 
@@ -150,13 +151,15 @@ async def get_positions():
         )
 
         return create_success_response(
-            data=positions_response.model_dump(), message=f"获取持仓列表成功，共{total_count}只股票",
+            data=positions_response.model_dump(),
+            message=f"获取持仓列表成功，共{total_count}只股票",
         )
     except Exception as e:
         raise HTTPException(
             status_code=500,
             detail=create_error_response(
-                error_code=ErrorCodes.INTERNAL_SERVER_ERROR, message=f"获取持仓列表失败: {e!s}",
+                error_code=ErrorCodes.INTERNAL_SERVER_ERROR,
+                message=f"获取持仓列表失败: {e!s}",
             ).model_dump(),
         )
 
@@ -304,7 +307,8 @@ async def get_trades(
         )
 
         return create_success_response(
-            data=trade_history_response.model_dump(), message=f"获取交易记录成功，共{total}条记录",
+            data=trade_history_response.model_dump(),
+            message=f"获取交易记录成功，共{total}条记录",
         )
     except HTTPException:
         raise
@@ -312,7 +316,8 @@ async def get_trades(
         raise HTTPException(
             status_code=500,
             detail=create_error_response(
-                error_code=ErrorCodes.INTERNAL_SERVER_ERROR, message=f"获取交易记录失败: {e!s}",
+                error_code=ErrorCodes.INTERNAL_SERVER_ERROR,
+                message=f"获取交易记录失败: {e!s}",
             ).model_dump(),
         )
 
@@ -374,7 +379,8 @@ async def get_statistics():
         raise HTTPException(
             status_code=500,
             detail=create_error_response(
-                error_code=ErrorCodes.INTERNAL_SERVER_ERROR, message=f"获取交易统计失败: {e!s}",
+                error_code=ErrorCodes.INTERNAL_SERVER_ERROR,
+                message=f"获取交易统计失败: {e!s}",
             ).model_dump(),
         )
 
@@ -405,7 +411,8 @@ async def execute_trade(order: dict):
             raise HTTPException(
                 status_code=400,
                 detail=create_error_response(
-                    error_code=ErrorCodes.VALIDATION_ERROR, message="缺少必填字段: direction, symbol, quantity",
+                    error_code=ErrorCodes.VALIDATION_ERROR,
+                    message="缺少必填字段: direction, symbol, quantity",
                 ).model_dump(),
             )
 
@@ -414,7 +421,8 @@ async def execute_trade(order: dict):
             raise HTTPException(
                 status_code=400,
                 detail=create_error_response(
-                    error_code=ErrorCodes.INVALID_VALUE, message="交易方向必须是 buy 或 sell",
+                    error_code=ErrorCodes.INVALID_VALUE,
+                    message="交易方向必须是 buy 或 sell",
                 ).model_dump(),
             )
 
@@ -423,7 +431,8 @@ async def execute_trade(order: dict):
             raise HTTPException(
                 status_code=400,
                 detail=create_error_response(
-                    error_code=ErrorCodes.OUT_OF_RANGE, message="委托数量必须大于0",
+                    error_code=ErrorCodes.OUT_OF_RANGE,
+                    message="委托数量必须大于0",
                 ).model_dump(),
             )
 
@@ -432,7 +441,8 @@ async def execute_trade(order: dict):
             raise HTTPException(
                 status_code=400,
                 detail=create_error_response(
-                    error_code=ErrorCodes.INVALID_VALUE, message="委托数量必须是100的整数倍",
+                    error_code=ErrorCodes.INVALID_VALUE,
+                    message="委托数量必须是100的整数倍",
                 ).model_dump(),
             )
 
@@ -462,6 +472,7 @@ async def execute_trade(order: dict):
         raise HTTPException(
             status_code=500,
             detail=create_error_response(
-                error_code=ErrorCodes.INTERNAL_SERVER_ERROR, message=f"交易执行失败: {e!s}",
+                error_code=ErrorCodes.INTERNAL_SERVER_ERROR,
+                message=f"交易执行失败: {e!s}",
             ).model_dump(),
         )

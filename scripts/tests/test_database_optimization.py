@@ -1,25 +1,26 @@
-"""
-Database Optimization Module Tests
+"""Database Optimization Module Tests
 
 Comprehensive test suite for index optimization, slow query analysis,
 and performance monitoring across TDengine and PostgreSQL.
 """
 
-import pytest
-import sys
 import os
+import sys
+
+import pytest
+
 
 # Calculate project root (3 levels up from script location)
 project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
 )
 sys.path.insert(0, project_root)
 
 from src.database_optimization import (
-    TDengineIndexOptimizer,
+    IndexPerformanceMonitor,
     PostgreSQLIndexOptimizer,
     SlowQueryAnalyzer,
-    IndexPerformanceMonitor,
+    TDengineIndexOptimizer,
 )
 
 
@@ -58,9 +59,7 @@ class TestTDengineIndexOptimizer:
         """Test that timestamp primary key has CRITICAL priority"""
         result = self.optimizer.analyze_time_index_strategy()
 
-        critical_recs = [
-            r for r in result["recommendations"] if r["priority"] == "CRITICAL"
-        ]
+        critical_recs = [r for r in result["recommendations"] if r["priority"] == "CRITICAL"]
         assert len(critical_recs) > 0
         assert any("primary key" in r["recommendation"].lower() for r in critical_recs)
 
@@ -85,9 +84,7 @@ class TestTDengineIndexOptimizer:
         """Test that symbol is primary tag with high cardinality"""
         result = self.optimizer.analyze_tag_index_strategy()
 
-        symbol_tags = [
-            t for t in result["tag_optimization_plan"] if t["tag_name"] == "symbol"
-        ]
+        symbol_tags = [t for t in result["tag_optimization_plan"] if t["tag_name"] == "symbol"]
         assert len(symbol_tags) == 1
         assert "High" in symbol_tags[0]["cardinality"]
         assert "Primary" in symbol_tags[0]["index_recommendation"]
@@ -130,14 +127,8 @@ class TestTDengineIndexOptimizer:
         assert "implementation_status" in result
 
         # Verify performance targets are reasonable
-        assert (
-            result["performance_targets"]["time_range_queries"]
-            == "<500ms for 1-day range"
-        )
-        assert (
-            result["performance_targets"]["k_line_aggregation"]
-            == "<1s for 1-minute aggregation"
-        )
+        assert result["performance_targets"]["time_range_queries"] == "<500ms for 1-day range"
+        assert result["performance_targets"]["k_line_aggregation"] == "<1s for 1-minute aggregation"
 
     def test_optimization_stats_initialization(self):
         """Test that optimization stats are properly initialized"""
@@ -208,12 +199,7 @@ class TestPostgreSQLIndexOptimizer:
         for index in result["composite_indexes"]:
             speedup = index["estimated_improvement"]
             # Should expect at least 15x improvement
-            assert (
-                "20-40x" in speedup
-                or "25-50x" in speedup
-                or "15-35x" in speedup
-                or "15-30x" in speedup
-            )
+            assert "20-40x" in speedup or "25-50x" in speedup or "15-35x" in speedup or "15-30x" in speedup
 
     def test_design_partial_indexes(self):
         """Test partial index design"""
@@ -260,10 +246,7 @@ class TestPostgreSQLIndexOptimizer:
         for index in result["brin_indexes"]:
             # BRIN should be significantly smaller
             assert "MB" in index["index_size"]
-            assert (
-                "90%" in index["estimated_improvement"]
-                or "80%" in index["estimated_improvement"]
-            )
+            assert "90%" in index["estimated_improvement"] or "80%" in index["estimated_improvement"]
 
     def test_get_optimization_summary(self):
         """Test comprehensive PostgreSQL optimization summary"""
@@ -289,10 +272,7 @@ class TestPostgreSQLIndexOptimizer:
 
         breakdown = result["index_breakdown"]
         total_calculated = (
-            breakdown["single_column"]
-            + breakdown["composite"]
-            + breakdown["partial"]
-            + breakdown["brin"]
+            breakdown["single_column"] + breakdown["composite"] + breakdown["partial"] + breakdown["brin"]
         )
         assert result["total_indexes_to_create"] == total_calculated
 
@@ -365,16 +345,12 @@ class TestSlowQueryAnalyzer:
         """Test that CRITICAL queries are properly identified in TDengine"""
         result = self.analyzer.analyze_tdengine_slow_queries()
 
-        critical_queries = [
-            q for q in result["slow_queries"] if q.get("severity") == "CRITICAL"
-        ]
+        critical_queries = [q for q in result["slow_queries"] if q.get("severity") == "CRITICAL"]
         assert len(critical_queries) >= 1
 
     def test_generate_explain_analysis(self):
         """Test EXPLAIN plan analysis"""
-        query = (
-            "SELECT * FROM daily_kline WHERE symbol = 'AAPL' JOIN technical_indicators"
-        )
+        query = "SELECT * FROM daily_kline WHERE symbol = 'AAPL' JOIN technical_indicators"
         result = self.analyzer.generate_explain_analysis(query)
 
         assert "query" in result
@@ -389,14 +365,13 @@ class TestSlowQueryAnalyzer:
         result = self.analyzer.generate_explain_analysis(query)
 
         # Query with "sequential" in it should have bottlenecks
-        assert (
-            len(result["bottlenecks"]) > 0
-            or len(result["optimization_suggestions"]) > 0
-        )
+        assert len(result["bottlenecks"]) > 0 or len(result["optimization_suggestions"]) > 0
 
     def test_explain_detects_unindexed_joins(self):
         """Test that EXPLAIN analysis detects unindexed JOINs"""
-        query = "SELECT * FROM daily_kline JOIN technical_indicators ON daily_kline.symbol = technical_indicators.symbol"
+        query = (
+            "SELECT * FROM daily_kline JOIN technical_indicators ON daily_kline.symbol = technical_indicators.symbol"
+        )
         result = self.analyzer.generate_explain_analysis(query)
 
         bottleneck_types = [b["type"] for b in result["bottlenecks"]]
@@ -455,7 +430,9 @@ class TestIndexPerformanceMonitor:
     def test_record_very_slow_query(self):
         """Test that very slow queries are marked correctly"""
         self.monitor.record_query_execution(
-            "very_slow_query", 2500, "transaction_records"
+            "very_slow_query",
+            2500,
+            "transaction_records",
         )
 
         metric = self.monitor.query_metrics["very_slow_query"][0]
@@ -542,10 +519,7 @@ class TestIndexPerformanceMonitor:
         self.monitor.establish_performance_baseline("baseline_v1", baseline_metrics)
 
         assert "baseline_v1" in self.monitor.performance_baselines
-        assert (
-            self.monitor.performance_baselines["baseline_v1"]["metrics"]
-            == baseline_metrics
-        )
+        assert self.monitor.performance_baselines["baseline_v1"]["metrics"] == baseline_metrics
 
     def test_benchmark_query_performance(self):
         """Test query performance benchmarking"""

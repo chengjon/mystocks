@@ -1,17 +1,13 @@
 #!/usr/bin/env python3
-"""
-Standalone CI/CD Validation Test
+"""Standalone CI/CD Validation Test
 Tests the key improvements made to the CI/CD validation system
 """
 
-import os
-import sys
-import json
-import time
 import ast
 import re
+import sys
 from pathlib import Path
-from typing import Dict, List, Any
+
 
 # Add project path
 project_root = Path(__file__).parent.parent.parent
@@ -38,9 +34,7 @@ class TestClass:
     # Test AST analysis
     try:
         tree = ast.parse(test_content)
-        functions = [
-            node for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)
-        ]
+        functions = [node for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)]
         classes = [node for node in ast.walk(tree) if isinstance(node, ast.ClassDef)]
 
         print(f"  ✅ Found {len(functions)} functions and {len(classes)} classes")
@@ -124,16 +118,14 @@ def test_validation_script_structure():
     """Test that the validation script has the expected structure"""
     print("🏗️ Testing Validation Script Structure...")
 
-    script_path = (
-        Path(__file__).parent / "scripts" / "ci" / "quant_strategy_validation.py"
-    )
+    script_path = Path(__file__).parent / "scripts" / "ci" / "quant_strategy_validation.py"
 
     if not script_path.exists():
         print("  ❌ Validation script not found")
         return False
 
     try:
-        with open(script_path, "r", encoding="utf-8") as f:
+        with open(script_path, encoding="utf-8") as f:
             content = f.read()
 
         # Check for key functions
@@ -151,7 +143,7 @@ def test_validation_script_structure():
                 found_functions += 1
 
         print(
-            f"  ✅ Found {found_functions}/{len(required_functions)} required functions"
+            f"  ✅ Found {found_functions}/{len(required_functions)} required functions",
         )
 
         # Check for security improvements
@@ -211,9 +203,8 @@ def run_validation_tests():
     if passed == total:
         print("🎉 All CI/CD validation improvements verified successfully!")
         return True
-    else:
-        print("⚠️ Some tests failed. Review the implementation.")
-        return False
+    print("⚠️ Some tests failed. Review the implementation.")
+    return False
 
 
 if __name__ == "__main__":

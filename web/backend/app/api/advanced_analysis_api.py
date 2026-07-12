@@ -231,7 +231,8 @@ async def analyze_market_panorama(
     """
     try:
         result = await service.analyze_market_panorama(
-            include_raw_data=request.include_raw_data, user_id=current_user.id,
+            include_raw_data=request.include_raw_data,
+            user_id=current_user.id,
         )
 
         return ok(

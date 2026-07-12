@@ -246,7 +246,9 @@ class BaseOptimizer(ABC):
         return market_data
 
     def _run_single_backtest(
-        self, parameters: Dict[str, Any], market_data: Dict[str, Any] = None,
+        self,
+        parameters: Dict[str, Any],
+        market_data: Dict[str, Any] = None,
     ) -> OptimizationResult:
         """运行单次回测
 

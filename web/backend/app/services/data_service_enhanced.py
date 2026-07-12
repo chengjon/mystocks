@@ -132,7 +132,10 @@ class EnhancedDataService:
 
     @handle_errors(max_attempts=3, fallback_value=pd.DataFrame())
     def get_daily_ohlcv(
-        self, symbol: str, start_date: datetime, end_date: datetime,
+        self,
+        symbol: str,
+        start_date: datetime,
+        end_date: datetime,
     ) -> Tuple[pd.DataFrame, Dict[str, np.ndarray]]:
         """获取日线OHLCV数据 (带增强错误处理)
 
@@ -221,7 +224,10 @@ class EnhancedDataService:
             raise
 
     def _load_data_with_retry(
-        self, symbol: str, start_date: datetime, end_date: datetime,
+        self,
+        symbol: str,
+        start_date: datetime,
+        end_date: datetime,
     ) -> Tuple[pd.DataFrame, Dict[str, np.ndarray]]:
         """带重试机制的数据加载"""
 

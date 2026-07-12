@@ -1,5 +1,4 @@
-"""通知管理 API 运行时辅助组件
-"""
+"""通知管理 API 运行时辅助组件"""
 
 from datetime import datetime, timezone
 from functools import wraps

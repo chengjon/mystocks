@@ -21,11 +21,10 @@ logger = logging.getLogger(__name__)
 
 _market_data_service: Optional[MarketDataService] = None
 
+
 def get_market_data_service() -> MarketDataService:
     """获取市场数据服务单例"""
     global _market_data_service
     if _market_data_service is None:
         _market_data_service = MarketDataService()
     return _market_data_service
-
-

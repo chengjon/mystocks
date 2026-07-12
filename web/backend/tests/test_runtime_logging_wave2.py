@@ -190,7 +190,9 @@ def _load_data_source_registry_module():
 
     fake_config.settings = SimpleNamespace(testing=True)
     fake_responses.ErrorCodes = SimpleNamespace(UNAUTHORIZED="UNAUTHORIZED")
-    fake_responses.create_error_response = lambda code, message: SimpleNamespace(dict=lambda: {"code": code, "message": message})
+    fake_responses.create_error_response = lambda code, message: SimpleNamespace(
+        dict=lambda: {"code": code, "message": message}
+    )
     fake_security.verify_token = lambda token: {"sub": "tester"} if token else None
 
     return _load_module(

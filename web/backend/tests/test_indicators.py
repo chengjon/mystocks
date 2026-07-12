@@ -155,7 +155,9 @@ class TestInsufficientDataHandling:
 
         # 应该成功计算
         result = calculator.calculate_indicator(
-            abbreviation="SMA", ohlcv_data=ohlcv_data, parameters={"timeperiod": 20},
+            abbreviation="SMA",
+            ohlcv_data=ohlcv_data,
+            parameters={"timeperiod": 20},
         )
 
         # 验证最后一个值不是NaN
@@ -429,7 +431,9 @@ class TestRSICalculation:
         }
 
         result = calculator.calculate_indicator(
-            abbreviation="RSI", ohlcv_data=ohlcv_data, parameters={"timeperiod": 14},
+            abbreviation="RSI",
+            ohlcv_data=ohlcv_data,
+            parameters={"timeperiod": 14},
         )
 
         # 验证返回格式

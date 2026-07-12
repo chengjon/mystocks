@@ -26,9 +26,7 @@ from app.main import app
 
 
 # PostgreSQL test database
-TEST_DATABASE_URL = (
-    "postgresql+psycopg2://postgres:your-postgresql-password@localhost:5438/mystocks_test"
-)
+TEST_DATABASE_URL = "postgresql+psycopg2://postgres:your-postgresql-password@localhost:5438/mystocks_test"
 
 
 @pytest.fixture

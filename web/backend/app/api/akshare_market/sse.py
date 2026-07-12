@@ -1,5 +1,4 @@
-"""上海证券交易所数据路由 (SSE Data)
-"""
+"""上海证券交易所数据路由 (SSE Data)"""
 
 from datetime import datetime
 

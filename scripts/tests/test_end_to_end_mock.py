@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-Mock系统端到端测试
+"""Mock系统端到端测试
 
 模拟完整的用户使用场景，验证Mock系统的全流程：
 1. 环境变量配置验证
@@ -18,6 +16,7 @@ import os
 import sys
 import time
 from pathlib import Path
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -118,7 +117,7 @@ def test_data_module_integration():
         indicators = calculate_indicators(request)
         if "ohlcv" in indicators:
             print(
-                f"✅ 技术分析模块: 600036 K线数据{len(indicators['ohlcv']['dates'])}个数据点"
+                f"✅ 技术分析模块: 600036 K线数据{len(indicators['ohlcv']['dates'])}个数据点",
             )
         else:
             print("❌ 技术分析模块数据结构异常")
@@ -130,7 +129,7 @@ def test_data_module_integration():
 
     # 测试问财模块
     try:
-        from src.mock.mock_Wencai import get_wencai_queries, execute_query
+        from src.mock.mock_Wencai import execute_query, get_wencai_queries
 
         queries = get_wencai_queries()
         if "queries" in queries:
@@ -280,7 +279,9 @@ def test_user_scenarios():
         # 场景5: 用户运行策略
         print("\n🎯 场景5: 用户运行选股策略")
         strategy_result = manager.get_data(
-            "strategy", action="run", strategy_name="突破策略"
+            "strategy",
+            action="run",
+            strategy_name="突破策略",
         )
         if "strategy_result" in strategy_result or "success" in strategy_result:
             print("   ✅ 策略运行成功")
@@ -464,9 +465,8 @@ def run_end_to_end_test():
         print("✅ 错误处理健壮")
 
         return True
-    else:
-        print(f"\n⚠️  {total - passed}项测试未通过，需要进一步优化")
-        return False
+    print(f"\n⚠️  {total - passed}项测试未通过，需要进一步优化")
+    return False
 
 
 if __name__ == "__main__":

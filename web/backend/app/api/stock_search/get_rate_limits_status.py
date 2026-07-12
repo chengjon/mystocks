@@ -32,6 +32,7 @@ search_operation_count = {}
 # Search analytics
 search_analytics = []
 
+
 @router.get("/rate-limits/status", response_model=APIResponse)
 async def get_rate_limits_status(
     user_id: Optional[int] = Query(None, description="查询特定用户的限制状态"),
@@ -77,15 +78,18 @@ async def get_rate_limits_status(
         raise
     except (DatabaseNotFoundError, DataValidationError) as e:
         logger.error(
-            f"Failed to get rate limits status for admin {current_user.username}: {e.message}", extra=e.to_dict(),
+            f"Failed to get rate limits status for admin {current_user.username}: {e.message}",
+            extra=e.to_dict(),
         )
         raise BusinessException(
-            detail="获取频率限制状态失败", status_code=500, error_code="RATE_LIMIT_STATUS_RETRIEVAL_FAILED",
+            detail="获取频率限制状态失败",
+            status_code=500,
+            error_code="RATE_LIMIT_STATUS_RETRIEVAL_FAILED",
         )
     except Exception:
         logger.error("Failed to get rate limits status for admin {current_user.username}: {str(e)}")
         raise BusinessException(
-            detail="获取频率限制状态失败", status_code=500, error_code="RATE_LIMIT_STATUS_RETRIEVAL_FAILED",
+            detail="获取频率限制状态失败",
+            status_code=500,
+            error_code="RATE_LIMIT_STATUS_RETRIEVAL_FAILED",
         )
-
-

@@ -564,5 +564,3 @@ async def get_cache_manager_async(
             logger.warning("⚠️ 缓存管理器健康检查异常", error=str(e))
 
     return _cache_manager
-
-

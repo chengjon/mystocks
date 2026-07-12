@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-简化版Mock系统端到端测试
+"""简化版Mock系统端到端测试
 
 直接测试Mock模块，避免复杂的Mock管理器问题。
 
@@ -13,6 +11,7 @@ import os
 import sys
 import time
 from pathlib import Path
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -36,9 +35,8 @@ def test_environment_setup():
     if use_mock and data_source == "mock":
         print("✅ Mock环境配置正确")
         return True
-    else:
-        print("❌ Mock环境配置错误")
-        return False
+    print("❌ Mock环境配置错误")
+    return False
 
 
 def test_direct_mock_modules():
@@ -84,7 +82,7 @@ def test_direct_mock_modules():
             return False
 
         # 测试4: Wencai Mock
-        from src.mock.mock_Wencai import get_wencai_queries, execute_query
+        from src.mock.mock_Wencai import execute_query, get_wencai_queries
 
         queries = get_wencai_queries()
         if queries and "queries" in queries:
@@ -214,7 +212,7 @@ def test_user_workflows():
                 "start_date": "2024-01-01",
                 "end_date": "2024-01-10",
                 "indicators": ["ma5", "ma10", "rsi"],
-            }
+            },
         )
 
         if indicators and "indicators" in indicators:
@@ -229,9 +227,7 @@ def test_user_workflows():
 
         strategies = get_strategy_definitions()
         if strategies and "data" in strategies:
-            active_strategies = [
-                s for s in strategies["data"] if s.get("is_active", False)
-            ]
+            active_strategies = [s for s in strategies["data"] if s.get("is_active", False)]
             print(f"   ✅ 活跃策略数量: {len(active_strategies)}")
         else:
             print("   ❌ 策略获取失败")
@@ -408,9 +404,8 @@ def run_simplified_end_to_end():
         print("✅ 错误处理机制健壮")
 
         return True
-    else:
-        print(f"\n⚠️  {total - passed}项测试未通过")
-        return False
+    print(f"\n⚠️  {total - passed}项测试未通过")
+    return False
 
 
 if __name__ == "__main__":

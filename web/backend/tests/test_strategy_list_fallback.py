@@ -34,9 +34,11 @@ class _DataFrameLike:
 
 class _Manager:
     def load_data_by_classification(self, **_kwargs):
-        return _DataFrameLike([
-            {"strategy_id": 1, "strategy_name": "fallback_strategy", "is_active": True},
-        ])
+        return _DataFrameLike(
+            [
+                {"strategy_id": 1, "strategy_name": "fallback_strategy", "is_active": True},
+            ]
+        )
 
 
 class _MonitoringNoop:

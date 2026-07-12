@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
-"""
-数据源日志记录器测试套件
+"""数据源日志记录器测试套件
 完整测试data_source_logger模块的所有功能，确保100%测试覆盖率
 遵循Phase 6成功模式：功能→边界→异常→性能→集成测试
 """
 
-import sys
-import os
-import tempfile
-import shutil
-import time
 import logging
+import os
+import shutil
+import sys
+import tempfile
+import time
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -429,9 +429,7 @@ class TestLogDataSourceMethodDecorator:
             empty_indicator_function(None)
 
             call_args = mock_info.call_args[0][0]
-            assert (
-                "Success: True" in call_args
-            )  # get_indicator_data的空结果应该被认为是成功的
+            assert "Success: True" in call_args  # get_indicator_data的空结果应该被认为是成功的
 
     def test_method_decorator_exception_handling(self):
         """测试方法装饰器异常处理"""
@@ -466,11 +464,7 @@ class TestLogDataSourceMethodDecorator:
             assert "..." in call_args
             # 验证长度限制（整个Params字符串应该在200字符以内）
             params_start = call_args.find("Params:")
-            params_section = (
-                call_args[params_start : params_start + 250]
-                if params_start != -1
-                else ""
-            )
+            params_section = call_args[params_start : params_start + 250] if params_start != -1 else ""
             assert len(params_section) <= 250  # 允许一些缓冲
 
     def test_method_decorator_timing_recording(self):
@@ -609,7 +603,8 @@ class TestPerformance:
     def test_decorator_performance_impact(self):
         """测试装饰器性能影响"""
         with patch.object(
-            data_source_logger, "log_call"
+            data_source_logger,
+            "log_call",
         ):  # Mock to avoid actual logging overhead
 
             @log_data_source_call("PerfAdapter")
@@ -627,9 +622,7 @@ class TestPerformance:
 
             # 验证性能在合理范围内（每个调用应该很快）
             avg_time_per_call = decorated_time / iterations * 1000  # 毫秒
-            assert avg_time_per_call < 10, (
-                f"装饰器调用时间过长: {avg_time_per_call:.2f}ms"
-            )
+            assert avg_time_per_call < 10, f"装饰器调用时间过长: {avg_time_per_call:.2f}ms"
 
     def test_method_decorator_performance_impact(self):
         """测试方法装饰器性能影响"""
@@ -661,9 +654,6 @@ class TestPerformance:
 
         avg_time_per_init = init_time / iterations * 1000  # 毫秒
         assert avg_time_per_init < 50, f"初始化时间过长: {avg_time_per_init:.2f}ms"
-
-
-from scripts._test_data_source_logger_tail import TestIntegration
 
 
 if __name__ == "__main__":

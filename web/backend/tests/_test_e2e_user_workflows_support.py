@@ -1,5 +1,4 @@
-"""端到端用户工作流测试 - 共享 fixture 与验证支持
-"""
+"""端到端用户工作流测试 - 共享 fixture 与验证支持"""
 
 from __future__ import annotations
 
@@ -355,7 +354,9 @@ class RealDataValidationMixin:
                                 "initial_capital": 100000.0,
                             }
                             backtest_response = client.post(
-                                "/api/strategy/backtest/run", json=backtest_data, headers=headers,
+                                "/api/strategy/backtest/run",
+                                json=backtest_data,
+                                headers=headers,
                             )
                             if backtest_response.status_code == 200:
                                 results["backtest_api_available"] = True

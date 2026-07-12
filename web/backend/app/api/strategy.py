@@ -33,7 +33,11 @@ class StrategyRunRequest(BaseModel):
 
     strategy_code: str = Field(..., description="策略代码", min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$")
     symbol: Optional[str] = Field(
-        None, description="单个股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$",
+        None,
+        description="单个股票代码",
+        min_length=1,
+        max_length=20,
+        pattern=r"^[A-Z0-9.]+$",
     )
     symbols: Optional[List[str]] = Field(None, description="多个股票代码列表")
     check_date: Optional[str] = Field(None, description="检查日期 YYYY-MM-DD", pattern=r"^\d{4}-\d{2}-\d{2}$")
@@ -144,7 +148,11 @@ class StrategyQueryParams(BaseModel):
     """策略查询参数"""
 
     strategy_code: Optional[str] = Field(
-        None, description="策略代码", min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$",
+        None,
+        description="策略代码",
+        min_length=1,
+        max_length=50,
+        pattern=r"^[a-z0-9_]+$",
     )
     symbol: Optional[str] = Field(None, description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$")
     check_date: Optional[str] = Field(None, description="检查日期 YYYY-MM-DD", pattern=r"^\d{4}-\d{2}-\d{2}$")
@@ -206,7 +214,8 @@ async def get_strategy_definitions(
         definitions_data = result.get("data", [])
 
         return create_success_response(
-            data={"definitions": definitions_data, "total": len(definitions_data)}, message=ResponseMessages.SUCCESS,
+            data={"definitions": definitions_data, "total": len(definitions_data)},
+            message=ResponseMessages.SUCCESS,
         )
 
     except HTTPException:
@@ -275,7 +284,9 @@ async def run_strategy_single(
 async def run_strategy_batch(
     strategy_code: str = Query(..., description="策略代码", min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$"),
     symbols: Optional[str] = Query(
-        None, description="股票代码列表，逗号分隔", max_length=20000,  # 1000个股票代码 * 20字符 + 999个逗号
+        None,
+        description="股票代码列表，逗号分隔",
+        max_length=20000,  # 1000个股票代码 * 20字符 + 999个逗号
     ),
     market: Optional[str] = Query("A", description="市场类型 (A/SH/SZ/CYB/KCB)", pattern=r"^(A|SH|SZ|CYB|KCB)$"),
     limit: Optional[int] = Query(None, description="限制处理数量", ge=1, le=5000),
@@ -340,7 +351,11 @@ async def run_strategy_batch(
 @router.get("/results", tags=["strategy"])
 async def query_strategy_results(
     strategy_code: Optional[str] = Query(
-        None, description="策略代码", min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$",
+        None,
+        description="策略代码",
+        min_length=1,
+        max_length=50,
+        pattern=r"^[a-z0-9_]+$",
     ),
     symbol: Optional[str] = Query(None, description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$"),
     check_date: Optional[str] = Query(None, description="检查日期 YYYY-MM-DD", pattern=r"^\d{4}-\d{2}-\d{2}$"),

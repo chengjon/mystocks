@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-备份恢复测试套件
+"""备份恢复测试套件
 
 完整覆盖:
 - TDengine 全量和增量备份
@@ -10,15 +9,17 @@
 - 备份调度
 """
 
-import sys
 import os
-import pytest
+import sys
 import tempfile
 from datetime import datetime, timedelta
 
+import pytest
+
+
 # 添加项目根目录到 Python 路径
 project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
 )
 sys.path.insert(0, project_root)
 
@@ -50,15 +51,13 @@ if not os.getenv("REDIS_HOST"):
     os.environ["REDIS_DB"] = "1"
 
 if not os.getenv("MONITOR_DB_URL"):
-    os.environ["MONITOR_DB_URL"] = (
-        "postgresql://postgres:password@localhost:5432/mystocks"
-    )
+    os.environ["MONITOR_DB_URL"] = "postgresql://postgres:password@localhost:5432/mystocks"
 
 from src.backup_recovery import (
     BackupManager,
-    RecoveryManager,
     BackupScheduler,
     IntegrityChecker,
+    RecoveryManager,
 )
 from src.backup_recovery.backup_manager import BackupMetadata
 
@@ -243,7 +242,8 @@ class TestIntegrityChecker:
 
         # 计算哈希
         hash_value = integrity_checker._calculate_file_hash(
-            test_file, algorithm="sha256"
+            test_file,
+            algorithm="sha256",
         )
 
         # 验证哈希值格式（64 个十六进制字符）

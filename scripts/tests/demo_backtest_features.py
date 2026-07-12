@@ -1,28 +1,28 @@
 #!/usr/bin/env python3
-"""
-回测引擎功能演示脚本
+"""回测引擎功能演示脚本
 
 演示以下核心功能：
 1. 性能指标计算 - 夏普比率、最大回撤、胜率等15+种指标
 2. 风险控制 - 止损/止盈、仓位限制
 """
 
-import sys
 import os
+import sys
 from datetime import datetime, timedelta
 from decimal import Decimal
 
+
 # 添加项目路径
 project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
 )
 sys.path.insert(0, project_root)
 sys.path.insert(0, os.path.join(project_root, "web", "backend"))
 
-from app.backtest.performance_metrics import PerformanceMetrics
-from app.backtest.risk_manager import RiskManager
-from app.backtest.portfolio_manager import PortfolioManager, Position
 from app.backtest.events import MarketEvent, OrderEvent
+from app.backtest.performance_metrics import PerformanceMetrics
+from app.backtest.portfolio_manager import PortfolioManager, Position
+from app.backtest.risk_manager import RiskManager
 
 
 def demo_performance_metrics():
@@ -35,7 +35,7 @@ def demo_performance_metrics():
     metrics = PerformanceMetrics(risk_free_rate=0.03)  # 3% 无风险利率
 
     # 模拟资金曲线数据 (180天)
-    initial_capital = Decimal("100000")
+    initial_capital = Decimal(100000)
     equity_curve = []
     base_date = datetime(2024, 1, 1)
 
@@ -53,8 +53,7 @@ def demo_performance_metrics():
         equity *= 1 + daily_return
 
         # 计算回撤
-        if equity > peak:
-            peak = equity
+        peak = max(peak, equity)
         drawdown = (peak - equity) / peak if peak > 0 else 0
 
         equity_curve.append(
@@ -62,7 +61,7 @@ def demo_performance_metrics():
                 "date": base_date + timedelta(days=i),
                 "equity": Decimal(str(round(equity, 2))),
                 "drawdown": Decimal(str(round(drawdown, 4))),
-            }
+            },
         )
 
     # 模拟交易记录
@@ -82,7 +81,9 @@ def demo_performance_metrics():
     # 计算所有性能指标
     print("\n🔄 计算性能指标...\n")
     results = metrics.calculate_all_metrics(
-        equity_curve=equity_curve, trades=trades, initial_capital=initial_capital
+        equity_curve=equity_curve,
+        trades=trades,
+        initial_capital=initial_capital,
     )
 
     # 显示收益指标
@@ -114,9 +115,7 @@ def demo_performance_metrics():
     print(f"  • 盈亏比(金额): {results['avg_win_loss_ratio']:.2f}")
 
     print(
-        "\n✅ 性能指标计算完成！共计算 {0} 个指标".format(
-            len([k for k in results.keys() if results[k] is not None])
-        )
+        f"\n✅ 性能指标计算完成！共计算 {len([k for k in results.keys() if results[k] is not None])} 个指标",
     )
 
     return results
@@ -139,7 +138,7 @@ def demo_risk_control():
 
     # 创建组合管理器
     portfolio = PortfolioManager(
-        initial_capital=Decimal("100000"),
+        initial_capital=Decimal(100000),
         commission_rate=Decimal("0.0003"),
         slippage_rate=Decimal("0.001"),
     )
@@ -159,10 +158,10 @@ def demo_risk_control():
     market_event = MarketEvent(
         symbol="000001",
         trade_date=datetime.now(),
-        open_price=Decimal("50"),
-        high_price=Decimal("51"),
-        low_price=Decimal("49"),
-        close_price=Decimal("50"),
+        open_price=Decimal(50),
+        high_price=Decimal(51),
+        low_price=Decimal(49),
+        close_price=Decimal(50),
         volume=1000000,
     )
     portfolio.update_market_data(market_event)
@@ -178,7 +177,9 @@ def demo_risk_control():
     )
 
     is_valid, reason = risk_manager.validate_order(
-        large_order, portfolio, Decimal("50")
+        large_order,
+        portfolio,
+        Decimal(50),
     )
 
     if not is_valid:
@@ -197,7 +198,9 @@ def demo_risk_control():
     )
 
     is_valid, reason = risk_manager.validate_order(
-        small_order, portfolio, Decimal("50")
+        small_order,
+        portfolio,
+        Decimal(50),
     )
 
     if is_valid:
@@ -212,10 +215,10 @@ def demo_risk_control():
     # 创建一个亏损的持仓
     position = Position("000002")
     position.quantity = 1000
-    position.avg_cost = Decimal("100")
+    position.avg_cost = Decimal(100)
 
     # 场景1: 亏损3% (未触发止损)
-    current_price = Decimal("97")
+    current_price = Decimal(97)
     result = risk_manager.check_stop_loss_take_profit("000002", position, current_price)
     if result:
         print(f"  价格97元 (亏损3%): ❌ {result}")
@@ -223,7 +226,7 @@ def demo_risk_control():
         print("  价格97元 (亏损3%): ✅ 未触发止损")
 
     # 场景2: 亏损6% (触发止损)
-    current_price = Decimal("94")
+    current_price = Decimal(94)
     result = risk_manager.check_stop_loss_take_profit("000002", position, current_price)
     if result:
         print(f"  价格94元 (亏损6%): 🛑 {result}")
@@ -235,7 +238,7 @@ def demo_risk_control():
     print("-" * 40)
 
     # 场景1: 盈利10% (未触发止盈)
-    current_price = Decimal("110")
+    current_price = Decimal(110)
     result = risk_manager.check_stop_loss_take_profit("000002", position, current_price)
     if result:
         print(f"  价格110元 (盈利10%): 💰 {result}")
@@ -243,7 +246,7 @@ def demo_risk_control():
         print("  价格110元 (盈利10%): ✅ 未触发止盈")
 
     # 场景2: 盈利16% (触发止盈)
-    current_price = Decimal("116")
+    current_price = Decimal(116)
     result = risk_manager.check_stop_loss_take_profit("000002", position, current_price)
     if result:
         print(f"  价格116元 (盈利16%): 💰 {result}")

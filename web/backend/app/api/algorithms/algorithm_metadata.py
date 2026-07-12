@@ -1,5 +1,4 @@
-"""算法元数据辅助函数
-"""
+"""算法元数据辅助函数"""
 
 from __future__ import annotations
 

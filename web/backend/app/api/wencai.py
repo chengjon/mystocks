@@ -64,7 +64,8 @@ async def get_all_queries(db: Session = Depends(get_db)) -> WencaiQueryListRespo
             queries_data = mock_manager.get_data("wencai", query_name="all")
 
             return WencaiQueryListResponse(
-                queries=queries_data.get("queries", []), total=len(queries_data.get("queries", [])),
+                queries=queries_data.get("queries", []),
+                total=len(queries_data.get("queries", [])),
             )
         # 使用真实数据库
         service = WencaiService(db=db)
@@ -289,7 +290,8 @@ async def get_query_history(
     description="执行用户自定义的问财查询（直接返回结果，不保存到数据库）",
 )
 async def execute_custom_query(
-    request: WencaiCustomQueryRequest, db: Session = Depends(get_db),
+    request: WencaiCustomQueryRequest,
+    db: Session = Depends(get_db),
 ) -> WencaiCustomQueryResponse:
     """执行自定义查询
 
@@ -406,7 +408,7 @@ async def _refresh_query_task(query_name: str, pages: int = 1):
 
         result = service.fetch_and_save(query_name=query_name, pages=pages)
 
-        logger.info("[Background] Refresh completed for {query_name}: " f"{result['new_records']} new records")
+        logger.info(f"[Background] Refresh completed for {{query_name}}: {result['new_records']} new records")
 
     except Exception:
         logger.error("[Background] Refresh failed for {query_name}: {str(e)}", exc_info=True)

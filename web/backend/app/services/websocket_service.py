@@ -196,7 +196,10 @@ class WebSocketClient:
             return False
 
     async def subscribe(
-        self, subscription_type: SubscriptionType, symbols: List[str], callback_url: Optional[str] = None,
+        self,
+        subscription_type: SubscriptionType,
+        symbols: List[str],
+        callback_url: Optional[str] = None,
     ) -> bool:
         """添加订阅"""
         try:

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Track A T2: BUGer 外部服务上报测试
+"""Track A T2: BUGer 外部服务上报测试
 按照 /opt/iflow/buger/docs/guides/B项目接入指南.md 执行
 """
 
@@ -11,6 +10,7 @@ from typing import Dict
 
 import requests
 from dotenv import load_dotenv
+
 
 # 加载环境变量
 load_dotenv()
@@ -66,15 +66,14 @@ class BUGerReportingTest:
             if response.status_code == 200:
                 data = response.json()
                 print(
-                    f"✅ BUGer 服务运行在端口: {data.get('server', {}).get('port', 'unknown')}"
+                    f"✅ BUGer 服务运行在端口: {data.get('server', {}).get('port', 'unknown')}",
                 )
                 print(f"   Status: {data.get('status')}")
                 print()
                 return True
-            else:
-                print(f"❌ 健康检查失败: HTTP {response.status_code}")
-                print()
-                return False
+            print(f"❌ 健康检查失败: HTTP {response.status_code}")
+            print()
+            return False
         except Exception as e:
             print(f"❌ 健康检查异常: {e}")
             print(f"   请确保 BUGer 服务已启动在 {self.api_url}")
@@ -103,7 +102,10 @@ class BUGerReportingTest:
             headers = {"Content-Type": "application/json", "X-API-Key": self.api_key}
 
             response = requests.post(
-                f"{self.api_url}/bugs", json=bug_data, headers=headers, timeout=10
+                f"{self.api_url}/bugs",
+                json=bug_data,
+                headers=headers,
+                timeout=10,
             )
 
             if response.status_code in [200, 201]:
@@ -114,11 +116,10 @@ class BUGerReportingTest:
                 print(f"   Status: {result.get('data', {}).get('status')}")
                 print()
                 return True
-            else:
-                print(f"❌ 上报失败: HTTP {response.status_code}")
-                print(f"   Response: {response.text}")
-                print()
-                return False
+            print(f"❌ 上报失败: HTTP {response.status_code}")
+            print(f"   Response: {response.text}")
+            print()
+            return False
         except Exception as e:
             print(f"❌ 上报异常: {e}")
             print()
@@ -174,11 +175,10 @@ class BUGerReportingTest:
                     print(f"   Summary: {summary}")
                 print()
                 return True
-            else:
-                print(f"❌ 批量上报失败: HTTP {response.status_code}")
-                print(f"   Response: {response.text}")
-                print()
-                return False
+            print(f"❌ 批量上报失败: HTTP {response.status_code}")
+            print(f"   Response: {response.text}")
+            print()
+            return False
         except Exception as e:
             print(f"❌ 批量上报异常: {e}")
             print()
@@ -206,10 +206,9 @@ class BUGerReportingTest:
                     print(f"   第一条: {bugs[0].get('title')}")
                 print()
                 return True
-            else:
-                print(f"❌ 搜索失败: HTTP {response.status_code}")
-                print()
-                return False
+            print(f"❌ 搜索失败: HTTP {response.status_code}")
+            print()
+            return False
         except Exception as e:
             print(f"❌ 搜索异常: {e}")
             print()
@@ -222,7 +221,9 @@ class BUGerReportingTest:
             headers = {"X-API-Key": self.api_key}
 
             response = requests.get(
-                f"{self.api_url}/bugs/stats", headers=headers, timeout=10
+                f"{self.api_url}/bugs/stats",
+                headers=headers,
+                timeout=10,
             )
 
             if response.status_code == 200:
@@ -231,14 +232,13 @@ class BUGerReportingTest:
                 print("✅ 统计信息获取成功")
                 print(f"   总数: {data.get('total')}")
                 print(
-                    f"   按严重级别: {json.dumps(data.get('bySeverity', {}), ensure_ascii=False)}"
+                    f"   按严重级别: {json.dumps(data.get('bySeverity', {}), ensure_ascii=False)}",
                 )
                 print()
                 return True
-            else:
-                print(f"❌ 获取失败: HTTP {response.status_code}")
-                print()
-                return False
+            print(f"❌ 获取失败: HTTP {response.status_code}")
+            print()
+            return False
         except Exception as e:
             print(f"❌ 获取异常: {e}")
             print()

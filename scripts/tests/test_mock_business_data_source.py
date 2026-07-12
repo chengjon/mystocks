@@ -1,5 +1,4 @@
-"""
-测试MockBusinessDataSource完整功能
+"""测试MockBusinessDataSource完整功能
 
 验证所有10个业务数据接口方法:
 - get_dashboard_summary()
@@ -17,13 +16,14 @@
 日期: 2025-11-21
 """
 
-import sys
 import os
+import sys
 from datetime import datetime, timedelta
+
 
 # 添加项目根目录到Python路径
 project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
 )
 sys.path.insert(0, project_root)
 
@@ -51,7 +51,7 @@ def test_dashboard_summary():
     print(f"✅ 资金流向: {len(dashboard['top_fund_flow'])}只股票")
     print(f"✅ 数据状态: {dashboard['data_status']['market_status']}")
     print(
-        f"✅ 用户统计: {dashboard['user_stats']['watchlist_count']}只自选股, {dashboard['user_stats']['strategy_count']}个策略"
+        f"✅ 用户统计: {dashboard['user_stats']['watchlist_count']}只自选股, {dashboard['user_stats']['strategy_count']}个策略",
     )
 
     return True
@@ -196,7 +196,7 @@ def test_risk_metrics():
     print(f"  - 波动率(年化): {risk_metrics['volatility_annual']:.2f}")
     print(f"  - Beta: {risk_metrics.get('beta', 0):.2f}")
     print(
-        f"  - 集中度风险 (Top1): {risk_metrics['concentration_risk']['top1_weight']:.2f}"
+        f"  - 集中度风险 (Top1): {risk_metrics['concentration_risk']['top1_weight']:.2f}",
     )
     print(f"  - 行业暴露: {len(risk_metrics['industry_exposure'])}个行业")
 
@@ -226,10 +226,10 @@ def test_risk_alerts():
         print("\n触发的预警:")
         for alert in alerts:
             print(
-                f"  - [{alert['severity']}] {alert['alert_name']}: {alert['message']}"
+                f"  - [{alert['severity']}] {alert['alert_name']}: {alert['message']}",
             )
             print(
-                f"    触发值: {alert['triggered_value']}, 阈值: {alert['threshold_value']}"
+                f"    触发值: {alert['triggered_value']}, 阈值: {alert['threshold_value']}",
             )
     else:
         print("✅ 没有触发的预警")
@@ -282,7 +282,7 @@ def test_trading_signals():
         print("\n  买入信号详情:")
         for sig in buy_signals[:3]:  # 显示前3个
             print(
-                f"    - {sig['symbol']}: {sig['reason']} (强度: {sig['signal_strength']:.2f})"
+                f"    - {sig['symbol']}: {sig['reason']} (强度: {sig['signal_strength']:.2f})",
             )
 
     print(f"\n✅ 交易信号分析完成: {len(signals)}个信号")
@@ -305,7 +305,9 @@ def test_portfolio_analysis():
     ]
 
     analysis = biz_source.get_portfolio_analysis(
-        user_id=1, portfolio=portfolio, benchmark="sh000001"
+        user_id=1,
+        portfolio=portfolio,
+        benchmark="sh000001",
     )
 
     assert "holdings" in analysis
@@ -325,7 +327,7 @@ def test_portfolio_analysis():
             print(
                 f"    - {holding['symbol']}: "
                 f"{holding['quantity']}股, "
-                f"盈亏 ¥{holding['profit_loss']:,.2f} ({holding['profit_loss_percent']:.2f}%)"
+                f"盈亏 ¥{holding['profit_loss']:,.2f} ({holding['profit_loss_percent']:.2f}%)",
             )
 
     comp = analysis["benchmark_comparison"]
@@ -400,7 +402,9 @@ def test_stock_screener():
     }
 
     results = biz_source.execute_stock_screener(
-        criteria=criteria, sort_by="score", limit=10
+        criteria=criteria,
+        sort_by="score",
+        limit=10,
     )
 
     assert isinstance(results, list)
@@ -411,7 +415,7 @@ def test_stock_screener():
         print(f"\n  {i}. {stock['symbol']} {stock['name']}")
         print(f"     - 综合评分: {stock['score']:.2f}")
         print(
-            f"     - PE: {stock['pe_ratio']:.2f}, PB: {stock['pb_ratio']:.2f}, ROE: {stock['roe'] * 100:.2f}%"
+            f"     - PE: {stock['pe_ratio']:.2f}, PB: {stock['pb_ratio']:.2f}, ROE: {stock['roe'] * 100:.2f}%",
         )
         print(f"     - 市值: ¥{stock['market_cap'] / 100000000:.2f}亿")
 
@@ -451,7 +455,7 @@ def run_all_tests():
                 if result:
                     passed += 1
             except Exception as e:
-                print(f"❌ {name}测试失败: {str(e)}")
+                print(f"❌ {name}测试失败: {e!s}")
                 failed += 1
                 raise
 
@@ -461,7 +465,7 @@ def run_all_tests():
             if test_backtest_results(backtest_id):
                 passed += 1
         except Exception as e:
-            print(f"❌ 回测结果检索测试失败: {str(e)}")
+            print(f"❌ 回测结果检索测试失败: {e!s}")
             failed += 1
             raise
 
@@ -471,7 +475,7 @@ def run_all_tests():
                 if test_func():
                     passed += 1
             except Exception as e:
-                print(f"❌ {name}测试失败: {str(e)}")
+                print(f"❌ {name}测试失败: {e!s}")
                 failed += 1
                 raise
 
@@ -486,13 +490,12 @@ def run_all_tests():
         if failed == 0:
             print("\n🎉 所有测试通过！MockBusinessDataSource功能完整！")
             return True
-        else:
-            print(f"\n⚠️  有{failed}个测试失败")
-            return False
+        print(f"\n⚠️  有{failed}个测试失败")
+        return False
 
     except Exception as e:
         print("\n" + "=" * 80)
-        print(f"❌ 测试异常终止: {str(e)}")
+        print(f"❌ 测试异常终止: {e!s}")
         print("=" * 80)
         import traceback
 

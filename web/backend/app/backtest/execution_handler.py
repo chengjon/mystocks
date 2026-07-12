@@ -112,7 +112,9 @@ class ExecutionHandler:
                 # 如果没有指定限价，使用当前价
                 fill_price = current_price
             # 检查是否能成交
-            elif (order.action == "BUY" and order.price >= current_price) or (order.action == "SELL" and order.price <= current_price):
+            elif (order.action == "BUY" and order.price >= current_price) or (
+                order.action == "SELL" and order.price <= current_price
+            ):
                 fill_price = order.price
             else:
                 # 限价单无法成交

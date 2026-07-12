@@ -87,8 +87,7 @@ async def get_etf_list(
 
 @router.post("/etf/refresh", summary="刷新ETF数据")
 async def refresh_etf_spot():
-    """从东方财富刷新全市场ETF数据
-    """
+    """从东方财富刷新全市场ETF数据"""
     try:
         service = get_market_data_service_v2()
         result = service.fetch_and_save_etf_spot()
@@ -122,8 +121,7 @@ async def get_lhb_detail(
 
 @router.post("/lhb/refresh", summary="刷新龙虎榜数据")
 async def refresh_lhb_detail(trade_date: str = Query(..., description="交易日期 (YYYY-MM-DD)")):
-    """从东方财富刷新指定日期的龙虎榜数据
-    """
+    """从东方财富刷新指定日期的龙虎榜数据"""
     try:
         service = get_market_data_service_v2()
         result = service.fetch_and_save_lhb_detail(trade_date)
@@ -161,8 +159,7 @@ async def refresh_sector_fund_flow(
     sector_type: str = Query(default="行业", description="板块类型: 行业/概念/地域"),
     timeframe: str = Query(default="今日", description="时间维度: 今日/3日/5日/10日"),
 ):
-    """从东方财富刷新行业/概念资金流向数据
-    """
+    """从东方财富刷新行业/概念资金流向数据"""
     try:
         service = get_market_data_service_v2()
         result = service.fetch_and_save_sector_fund_flow(sector_type, timeframe)
@@ -195,8 +192,7 @@ async def get_stock_dividend(
 
 @router.post("/dividend/refresh", summary="刷新股票分红配送数据")
 async def refresh_stock_dividend(symbol: str = Query(..., description="股票代码")):
-    """从东方财富刷新股票分红配送数据
-    """
+    """从东方财富刷新股票分红配送数据"""
     try:
         service = get_market_data_service_v2()
         result = service.fetch_and_save_stock_dividend(symbol)
@@ -234,8 +230,7 @@ async def get_stock_blocktrade(
 async def refresh_stock_blocktrade(
     trade_date: Optional[str] = Query(None, description="交易日期 (YYYY-MM-DD)，不传则获取最新"),
 ):
-    """从东方财富刷新大宗交易数据
-    """
+    """从东方财富刷新大宗交易数据"""
     try:
         service = get_market_data_service_v2()
         result = service.fetch_and_save_blocktrade(trade_date)

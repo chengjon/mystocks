@@ -597,6 +597,7 @@ class WatchlistService(WatchlistGroupQueriesMixin):
             self._log_database_error("删除分组时发生错误", e)
             return False
 
+
 # 创建全局实例
 _watchlist_service = None
 

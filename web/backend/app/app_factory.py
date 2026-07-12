@@ -188,7 +188,9 @@ def create_app() -> FastAPI:
 
     # 配置响应压缩 (性能优化)
     app.add_middleware(
-        GZipMiddleware, minimum_size=1000, compresslevel=5,
+        GZipMiddleware,
+        minimum_size=1000,
+        compresslevel=5,
     )  # 仅压缩大于1KB的响应  # 压缩等级1-9, 5为平衡
 
     # SECURITY FIX 1.3: 输入验证中间件 - 防止SQL注入和XSS攻击

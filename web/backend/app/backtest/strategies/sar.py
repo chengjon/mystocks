@@ -307,8 +307,7 @@ class SARStrategy(BaseStrategy):
                             signal_type=SignalType.LONG,
                             strength=0.5,
                             reason=(
-                                f"SAR上升趋势: 价格{current_price:.2f}, SAR{sar:.2f} "
-                                f"(距离{distance_pct * 100:.1f}%)"
+                                f"SAR上升趋势: 价格{current_price:.2f}, SAR{sar:.2f} (距离{distance_pct * 100:.1f}%)"
                             ),
                             stop_loss=Decimal(str(sar)),
                             metadata={

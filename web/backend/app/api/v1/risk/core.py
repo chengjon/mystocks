@@ -334,7 +334,8 @@ async def get_risk_dashboard() -> RiskDashboardResponse:
         manager = MyStocksUnifiedManager()  # noqa: F821
 
         metrics_df = manager.load_data_by_classification(
-            classification=DataClassification.MODEL_OUTPUT, table_name="risk_metrics",
+            classification=DataClassification.MODEL_OUTPUT,
+            table_name="risk_metrics",
         )
 
         latest_metrics = None
@@ -351,7 +352,8 @@ async def get_risk_dashboard() -> RiskDashboardResponse:
 
         thirty_days_ago = (datetime.now() - timedelta(days=30)).date()
         history_df = manager.load_data_by_classification(
-            classification=DataClassification.MODEL_OUTPUT, table_name="risk_metrics",
+            classification=DataClassification.MODEL_OUTPUT,
+            table_name="risk_metrics",
         )
 
         risk_history = []

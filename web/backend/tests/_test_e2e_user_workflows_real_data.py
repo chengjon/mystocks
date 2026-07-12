@@ -1,5 +1,4 @@
-"""端到端用户工作流测试 - 真实数据集成校验
-"""
+"""端到端用户工作流测试 - 真实数据集成校验"""
 
 import pytest
 
@@ -145,9 +144,9 @@ class TestRealDataIntegration(RealDataValidationMixin):
             else client.post(endpoint, data={"username": "admin", "password": "admin123"})
         )
 
-        assert (
-            response.status_code == expected_status
-        ), f"API端点 {endpoint} 返回状态码 {response.status_code}, 期望 {expected_status}"
+        assert response.status_code == expected_status, (
+            f"API端点 {endpoint} 返回状态码 {response.status_code}, 期望 {expected_status}"
+        )
 
         response_data = response.json()
         assert "data" in response_data or response_data.get("success") is not None, f"API端点 {endpoint} 缺少数据字段"

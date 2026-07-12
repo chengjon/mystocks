@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-简化版Mock数据验证测试
+"""简化版Mock数据验证测试
 
 专注验证核心Mock数据的质量和真实性：
 1. 数据格式验证
@@ -16,6 +14,7 @@
 import sys
 import time
 from pathlib import Path
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -129,7 +128,7 @@ def test_mock_data_quality():
         # 测试5: 问财查询验证
         print("\n=== 问财查询验证测试 ===")
         try:
-            from src.mock.mock_Wencai import get_wencai_queries, execute_query
+            from src.mock.mock_Wencai import execute_query, get_wencai_queries
 
             queries = get_wencai_queries()
             if "queries" in queries and len(queries["queries"]) > 0:

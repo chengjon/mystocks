@@ -471,7 +471,10 @@ class BatchOperationRequest(BaseModel):
     """Batch operation request"""
 
     operations: List[BatchOperation] = Field(
-        ..., min_items=1, max_items=100, description="List of operations to perform",
+        ...,
+        min_items=1,
+        max_items=100,
+        description="List of operations to perform",
     )
 
     class Config:

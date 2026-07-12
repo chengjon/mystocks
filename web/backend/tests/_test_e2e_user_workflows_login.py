@@ -1,5 +1,4 @@
-"""端到端用户工作流测试 - 登录、搜索、自选流程
-"""
+"""端到端用户工作流测试 - 登录、搜索、自选流程"""
 
 from unittest.mock import Mock, patch
 

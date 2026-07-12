@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-TDX路径验证和功能测试脚本
+"""TDX路径验证和功能测试脚本
 测试修改后的TDX路径配置和各项功能
 """
 
-
-import sys
 import os
+import sys
+
 
 # 添加项目根目录到路径
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -16,6 +14,7 @@ sys.path.insert(0, project_root)
 import os
 import sys
 from datetime import datetime
+
 
 # 添加项目路径
 sys.path.append("/opt/claude/mystocks_spec")

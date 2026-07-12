@@ -13,9 +13,9 @@ class TestPerformanceAndSecurity:
 
         results = perf_sec_validator.test_response_times(test_endpoints)
 
-        assert (
-            results["average_response_time"] <= 2.0
-        ), f"Average response time {results['average_response_time']:.3f}s is too high"
+        assert results["average_response_time"] <= 2.0, (
+            f"Average response time {results['average_response_time']:.3f}s is too high"
+        )
 
         critical_slow = [endpoint for endpoint in results["slow_endpoints"] if "CRITICAL" in endpoint["issue"]]
         assert len(critical_slow) == 0, f"Found {len(critical_slow)} critically slow endpoints"
@@ -36,9 +36,9 @@ class TestPerformanceAndSecurity:
         server_errors = [
             issue for issue in issues if issue["status_code"] == 500 or issue["status_code"] == "Exception"
         ]
-        assert (
-            len(server_errors) <= len(issues) * 0.3
-        ), f"Too many server errors from malformed input: {len(server_errors)}/{len(issues)}"
+        assert len(server_errors) <= len(issues) * 0.3, (
+            f"Too many server errors from malformed input: {len(server_errors)}/{len(issues)}"
+        )
 
     def test_rate_limiting_verification(self, perf_sec_validator):
         """Test rate limiting verification"""
@@ -73,15 +73,15 @@ class TestPerformanceAndSecurity:
         max_server_errors = 3
 
         security = results["security"]
-        assert (
-            len(security["sql_injection_vulnerabilities"]) <= max_sql_vulnerabilities
-        ), f"SQL injection vulnerabilities: {len(security['sql_injection_vulnerabilities'])}"
-        assert (
-            len(security["xss_vulnerabilities"]) <= max_xss_vulnerabilities
-        ), f"XSS vulnerabilities: {len(security['xss_vulnerabilities'])}"
-        assert (
-            len(security["authentication_issues"]) <= max_critical_auth_issues
-        ), f"Authentication issues: {len(security['authentication_issues'])}"
+        assert len(security["sql_injection_vulnerabilities"]) <= max_sql_vulnerabilities, (
+            f"SQL injection vulnerabilities: {len(security['sql_injection_vulnerabilities'])}"
+        )
+        assert len(security["xss_vulnerabilities"]) <= max_xss_vulnerabilities, (
+            f"XSS vulnerabilities: {len(security['xss_vulnerabilities'])}"
+        )
+        assert len(security["authentication_issues"]) <= max_critical_auth_issues, (
+            f"Authentication issues: {len(security['authentication_issues'])}"
+        )
 
         server_errors = [
             issue
@@ -91,11 +91,13 @@ class TestPerformanceAndSecurity:
         assert len(server_errors) <= max_server_errors, f"Server errors from input: {len(server_errors)}"
 
         performance = results["performance"]
-        assert (
-            performance["average_response_time"] <= 3.0
-        ), f"Average response time too high: {performance['average_response_time']:.3f}s"
+        assert performance["average_response_time"] <= 3.0, (
+            f"Average response time too high: {performance['average_response_time']:.3f}s"
+        )
 
-        critical_slow = [endpoint for endpoint in performance["slow_endpoints"] if "CRITICAL" in endpoint.get("issue", "")]
+        critical_slow = [
+            endpoint for endpoint in performance["slow_endpoints"] if "CRITICAL" in endpoint.get("issue", "")
+        ]
         assert len(critical_slow) == 0, f"Critical slow endpoints found: {len(critical_slow)}"
 
     def test_security_headers(self, test_client):

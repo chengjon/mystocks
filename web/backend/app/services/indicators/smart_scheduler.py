@@ -195,7 +195,10 @@ class SmartScheduler:
         self._calculation_func = func
 
     def calculate(
-        self, indicators: List[Dict[str, Any]], ohlcv_data: OHLCVData, use_cache: bool = None,
+        self,
+        indicators: List[Dict[str, Any]],
+        ohlcv_data: OHLCVData,
+        use_cache: bool = None,
     ) -> List[ScheduleResult]:
         """批量计算指标
 
@@ -350,7 +353,10 @@ class SmartScheduler:
                         if success:
                             self._incremental_calculator.set_cache(node_id, result)
                             self._dependency_graph.mark_computed(
-                                node_id, result, duration, getattr(result, "from_cache", False),
+                                node_id,
+                                result,
+                                duration,
+                                getattr(result, "from_cache", False),
                             )
                         else:
                             self._dependency_graph.mark_failed(node_id, error)
@@ -467,7 +473,9 @@ class SmartScheduler:
             if self.enable_distributed_lock and REDIS_LOCK_AVAILABLE:
                 # 尝试获取锁，非阻塞模式
                 lock_token = redis_lock.acquire(
-                    resource=lock_resource, timeout=300, blocking=False,  # 5分钟超时  # 非阻塞
+                    resource=lock_resource,
+                    timeout=300,
+                    blocking=False,  # 5分钟超时  # 非阻塞
                 )
                 lock_acquired = lock_token is not None
 

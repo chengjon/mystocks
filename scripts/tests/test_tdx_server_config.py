@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
-"""
-TDX服务器配置模块测试套件
+"""TDX服务器配置模块测试套件
 基于Phase 6成功模式：功能→边界→异常→性能→集成测试
 """
 
-import sys
 import os
+import sys
 import tempfile
 from pathlib import Path
-from unittest.mock import patch, mock_open
+from unittest.mock import mock_open, patch
+
 import pytest
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -17,10 +18,6 @@ sys.path.insert(0, str(project_root))
 
 # 导入被测试的模块
 from src.utils.tdx_server_config import TdxServerConfig, get_global_config
-from scripts._test_tdx_server_config_tail import (
-    TestEdgeCasesAndErrorHandling,
-    TestIntegrationScenarios,
-)
 
 
 class TestTdxServerConfigInit:
@@ -89,7 +86,7 @@ class TestTdxServerConfigInit:
         # 使用不存在的文件，避免加载配置
         config = TdxServerConfig("/nonexistent/file.cfg")
         assert config.servers == [
-            ("101.227.73.20", 7709, "默认服务器")
+            ("101.227.73.20", 7709, "默认服务器"),
         ]  # 加载后的默认值
         assert config.primary_index == 0
 
@@ -273,7 +270,8 @@ Port04=7711
     def test_load_config_exception_handling(self):
         """测试配置加载异常处理"""
         with patch(
-            "configparser.ConfigParser.read_file", side_effect=Exception("模拟异常")
+            "configparser.ConfigParser.read_file",
+            side_effect=Exception("模拟异常"),
         ):
             config = TdxServerConfig(self.config_file)
 

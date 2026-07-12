@@ -121,9 +121,17 @@ class PortfolioTracker:
 
         logger.info("投资组合追踪模块初始化")
 
-    async def create_portfolio(self, user_id: str, name: str, initial_capital: float = 100000.0, risk_profile_id: Optional[str] = None, description: str = "", tags: List[str] = None) -> str:
+    async def create_portfolio(
+        self,
+        user_id: str,
+        name: str,
+        initial_capital: float = 100000.0,
+        risk_profile_id: Optional[str] = None,
+        description: str = "",
+        tags: List[str] = None,
+    ) -> str:
         """创建投资组合
-        
+
         Args:
             user_id: 用户ID
             name: 投资组合名称
@@ -131,13 +139,14 @@ class PortfolioTracker:
             risk_profile_id: 风险配置文件ID
             description: 描述
             tags: 标签列表
-        
+
         Returns:
             str: 投资组合ID，失败返回空字符串
 
         """
         try:
             import uuid
+
             portfolio_id = f"portfolio_{uuid.uuid4()}"
 
             portfolio_info = PortfolioInfo(
@@ -166,16 +175,23 @@ class PortfolioTracker:
             self.logger.error(f"创建投资组合失败: {e}")
             raise
 
-    async def update_portfolio(self, portfolio_id: str, name: Optional[str] = None, status: Optional[PortfolioStatus] = None, description: Optional[str] = None, tags: Optional[List[str]] = None) -> bool:
+    async def update_portfolio(
+        self,
+        portfolio_id: str,
+        name: Optional[str] = None,
+        status: Optional[PortfolioStatus] = None,
+        description: Optional[str] = None,
+        tags: Optional[List[str]] = None,
+    ) -> bool:
         """更新投资组合
-        
+
         Args:
             portfolio_id: 投资组合ID
             name: 名称
             status: 状态
             description: 描述
             tags: 标签列表
-        
+
         Returns:
             bool: 是否更新成功
 
@@ -209,10 +225,10 @@ class PortfolioTracker:
 
     async def delete_portfolio(self, portfolio_id: str) -> bool:
         """删除投资组合
-        
+
         Args:
             portfolio_id: 投资组合ID
-        
+
         Returns:
             bool: 是否删除成功
 
@@ -237,10 +253,10 @@ class PortfolioTracker:
 
     async def get_portfolio(self, portfolio_id: str) -> Optional[Dict]:
         """获取投资组合信息
-        
+
         Args:
             portfolio_id: 投资组合ID
-        
+
         Returns:
             Dict: 投资组合信息，失败返回None
 
@@ -257,7 +273,9 @@ class PortfolioTracker:
 
             # 计算当前资产
             if metrics:
-                total_return = sum(m.value for m in metrics if m.metric_type == PerformanceMetric.TOTAL_RETURN) / len(metrics)
+                total_return = sum(m.value for m in metrics if m.metric_type == PerformanceMetric.TOTAL_RETURN) / len(
+                    metrics
+                )
                 drawdown_metrics = [m for m in metrics if m.metric_type == PerformanceMetric.MAX_DRAWDOWN]
                 max_drawdown = max(abs(m.value) for m in drawdown_metrics) if drawdown_metrics else 0
                 portfolio_info.total_assets = portfolio_info.initial_capital * (1 + total_return)
@@ -269,33 +287,29 @@ class PortfolioTracker:
             self.logger.error(f"获取投资组合失败: {e}")
             return None
 
-    async def list_portfolios(self, user_id: str, status: Optional[PortfolioStatus] = None, limit: int = 100, offset: int = 0) -> List[Dict]:
+    async def list_portfolios(
+        self, user_id: str, status: Optional[PortfolioStatus] = None, limit: int = 100, offset: int = 0
+    ) -> List[Dict]:
         """获取投资组合列表
-        
+
         Args:
             user_id: 用户ID
             status: 状态过滤
             limit: 限制数量
             offset: 偏移量
-        
+
         Returns:
             List[Dict]: 投资组合列表
 
         """
         try:
-            user_portfolios = [
-                p for p in self.portfolios.values()
-                if p.user_id == user_id
-            ]
+            user_portfolios = [p for p in self.portfolios.values() if p.user_id == user_id]
 
             if status:
-                user_portfolios = [
-                    p for p in user_portfolios
-                    if p.status == status
-                ]
+                user_portfolios = [p for p in user_portfolios if p.status == status]
 
             if limit:
-                user_portfolios = user_portfolios[offset:offset + limit]
+                user_portfolios = user_portfolios[offset : offset + limit]
             else:
                 user_portfolios = user_portfolios[offset:]
 
@@ -305,22 +319,30 @@ class PortfolioTracker:
             self.logger.error(f"获取投资组合列表失败: {e}")
             return []
 
-    async def calculate_performance_metrics(self, portfolio_id: str, metric_type: PerformanceMetric, period: str = "daily", start_date: Optional[datetime] = None, end_date: Optional[datetime] = None) -> Dict:
+    async def calculate_performance_metrics(
+        self,
+        portfolio_id: str,
+        metric_type: PerformanceMetric,
+        period: str = "daily",
+        start_date: Optional[datetime] = None,
+        end_date: Optional[datetime] = None,
+    ) -> Dict:
         """计算性能指标
-        
+
         Args:
             portfolio_id: 投资组合ID
             metric_type: 指标类型
             period: 时间周期
             start_date: 开始日期
             end_date: 结束日期
-        
+
         Returns:
             Dict: 性能指标结果
 
         """
         try:
             import uuid
+
             metric_id = f"metric_{uuid.uuid4()}"
 
             if not end_date:
@@ -399,15 +421,19 @@ class PortfolioTracker:
             elif metric_type == PerformanceMetric.VOLATILITY:
                 mean_return = sum(returns) / len(returns)
                 volatility = sum((r - mean_return) ** 2 for r in returns) / len(returns)
-                value = volatility * (252 ** 0.5)
+                value = volatility * (252**0.5)
             elif metric_type == PerformanceMetric.BETA:
                 benchmark_returns = self.benchmark_metrics.get("benchmark_returns", [])
 
                 if not benchmark_returns:
                     value = 1.0
                 else:
-                    covariance = sum(returns[i] * benchmark_returns[i] for i in range(min(len(returns), len(benchmark_returns)))) / len(returns)
-                    benchmark_variance = sum((br - sum(benchmark_returns) / len(benchmark_returns)) ** 2 for br in benchmark_returns) / len(benchmark_returns)
+                    covariance = sum(
+                        returns[i] * benchmark_returns[i] for i in range(min(len(returns), len(benchmark_returns)))
+                    ) / len(returns)
+                    benchmark_variance = sum(
+                        (br - sum(benchmark_returns) / len(benchmark_returns)) ** 2 for br in benchmark_returns
+                    ) / len(benchmark_returns)
 
                     if benchmark_variance == 0:
                         value = 0
@@ -452,10 +478,10 @@ class PortfolioTracker:
 
     async def get_performance_summary(self, portfolio_id: str) -> Dict:
         """获取性能摘要
-        
+
         Args:
             portfolio_id: 投资组合ID
-        
+
         Returns:
             Dict: 性能摘要
 
@@ -500,12 +526,18 @@ class PortfolioTracker:
             # 计算汇总指标
             drawdown_metrics = [m for m in metrics if m.metric_type == PerformanceMetric.MAX_DRAWDOWN]
             summary = {
-                "total_return": sum(m.value for m in metrics if m.metric_type == PerformanceMetric.TOTAL_RETURN) / len(metrics),
-                "sharpe_ratio": sum(m.value for m in metrics if m.metric_type == PerformanceMetric.SHARPE_RATIO) / len(metrics),
+                "total_return": sum(m.value for m in metrics if m.metric_type == PerformanceMetric.TOTAL_RETURN)
+                / len(metrics),
+                "sharpe_ratio": sum(m.value for m in metrics if m.metric_type == PerformanceMetric.SHARPE_RATIO)
+                / len(metrics),
                 "max_drawdown": max(abs(m.value) for m in drawdown_metrics) if drawdown_metrics else 0,
-                "volatility": sum(m.value for m in metrics if m.metric_type == PerformanceMetric.VOLATILITY) / len(metrics),
+                "volatility": sum(m.value for m in metrics if m.metric_type == PerformanceMetric.VOLATILITY)
+                / len(metrics),
                 "beta": sum(m.value for m in metrics if m.metric_type == PerformanceMetric.BETA) / len(metrics),
-                "information_ratio": sum(m.value for m in metrics if m.metric_type == PerformanceMetric.INFORMATION_RATIO) / len(metrics),
+                "information_ratio": sum(
+                    m.value for m in metrics if m.metric_type == PerformanceMetric.INFORMATION_RATIO
+                )
+                / len(metrics),
             }
 
             return {
@@ -522,10 +554,10 @@ class PortfolioTracker:
 
     async def get_all_portfolios_summary(self, user_id: str) -> Dict:
         """获取所有投资组合摘要
-        
+
         Args:
             user_id: 用户ID
-        
+
         Returns:
             Dict: 投资组合摘要
 
@@ -556,11 +588,11 @@ class PortfolioTracker:
 
     async def export_portfolio_data(self, portfolio_id: str, format: str = "json") -> str:
         """导出投资组合数据
-        
+
         Args:
             portfolio_id: 投资组合ID
             format: 格式（json/csv）
-        
+
         Returns:
             str: 导出内容
 
@@ -574,6 +606,7 @@ class PortfolioTracker:
 
             if format == "json":
                 import json
+
                 return json.dumps(portfolio, indent=2)
 
             if format == "csv":
@@ -581,17 +614,30 @@ class PortfolioTracker:
                 import io
 
                 output = io.StringIO()
-                writer = csv.DictWriter(output, fieldnames=["portfolio_id", "name", "status", "initial_capital", "current_capital", "created_at", "updated_at"])
+                writer = csv.DictWriter(
+                    output,
+                    fieldnames=[
+                        "portfolio_id",
+                        "name",
+                        "status",
+                        "initial_capital",
+                        "current_capital",
+                        "created_at",
+                        "updated_at",
+                    ],
+                )
 
-                writer.writerow({
-                    "portfolio_id": portfolio["portfolio_id"],
-                    "name": portfolio["name"],
-                    "status": portfolio["status"],
-                    "initial_capital": portfolio["initial_capital"],
-                    "current_capital": portfolio["current_capital"],
-                    "created_at": portfolio["created_at"],
-                    "updated_at": portfolio["updated_at"],
-                })
+                writer.writerow(
+                    {
+                        "portfolio_id": portfolio["portfolio_id"],
+                        "name": portfolio["name"],
+                        "status": portfolio["status"],
+                        "initial_capital": portfolio["initial_capital"],
+                        "current_capital": portfolio["current_capital"],
+                        "created_at": portfolio["created_at"],
+                        "updated_at": portfolio["updated_at"],
+                    }
+                )
 
                 output.seek(0)
                 return output.getvalue()
@@ -605,10 +651,10 @@ class PortfolioTracker:
 
     async def update_benchmark_metrics(self, new_benchmarks: Dict[str, float]) -> bool:
         """更新基准指标
-        
+
         Args:
             new_benchmarks: 新的基准指标
-        
+
         Returns:
             bool: 是否更新成功
 

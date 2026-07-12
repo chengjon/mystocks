@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-数据库连接重试工具测试套件
+"""数据库连接重试工具测试套件
 完整测试db_connection_retry模块的所有功能，确保100%测试覆盖率
 遵循Phase 6成功模式：功能→边界→异常→性能→集成测试
 """
@@ -8,7 +7,8 @@
 import sys
 import time
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -16,6 +16,7 @@ sys.path.insert(0, str(project_root))
 
 # Mock problematic imports to avoid circular dependency
 import unittest.mock
+
 
 sys.modules["src.storage.database.connection_manager"] = unittest.mock.MagicMock()
 sys.modules["src.core.config"] = unittest.mock.MagicMock()
@@ -25,14 +26,14 @@ import pytest
 
 # 导入被测试的模块
 from src.utils.db_connection_retry import (
-    db_retry,
     DatabaseConnectionHandler,
-    connection_handler,
-    get_tdengine_connection_with_retry,
+    db_retry,
     get_postgresql_connection_with_retry,
-    return_postgresql_connection,
+    get_tdengine_connection_with_retry,
     init_connection_handler,
+    return_postgresql_connection,
 )
+
 
 class TestDBRetryDecorator:
     """db_retry装饰器核心功能测试类"""
@@ -238,7 +239,6 @@ class TestDatabaseConnectionHandler:
 
     def teardown_method(self):
         """每个测试方法执行后的清理"""
-        pass
 
     def test_initialization_with_dependency_injection(self):
         """测试依赖注入初始化"""
@@ -257,9 +257,7 @@ class TestDatabaseConnectionHandler:
 
     def test_get_tdengine_connection_success(self):
         """测试获取TDengine连接成功"""
-        self.mock_conn_manager.get_tdengine_connection.return_value = (
-            self.mock_tdengine_conn
-        )
+        self.mock_conn_manager.get_tdengine_connection.return_value = self.mock_tdengine_conn
 
         handler = DatabaseConnectionHandler(self.mock_conn_manager)
         result = handler.get_tdengine_connection()
@@ -286,9 +284,7 @@ class TestDatabaseConnectionHandler:
 
     def test_get_postgresql_connection_success(self):
         """测试获取PostgreSQL连接成功"""
-        self.mock_conn_manager.get_postgresql_connection.return_value = (
-            self.mock_postgres_pool
-        )
+        self.mock_conn_manager.get_postgresql_connection.return_value = self.mock_postgres_pool
         self.mock_postgres_pool.getconn.return_value = self.mock_postgres_conn
 
         handler = DatabaseConnectionHandler(self.mock_conn_manager)
@@ -318,9 +314,7 @@ class TestDatabaseConnectionHandler:
 
     def test_return_postgresql_connection_success(self):
         """测试归还PostgreSQL连接成功"""
-        self.mock_conn_manager.get_postgresql_connection.return_value = (
-            self.mock_postgres_pool
-        )
+        self.mock_conn_manager.get_postgresql_connection.return_value = self.mock_postgres_pool
 
         handler = DatabaseConnectionHandler(self.mock_conn_manager)
         result = handler.return_postgresql_connection(self.mock_postgres_conn)
@@ -331,9 +325,7 @@ class TestDatabaseConnectionHandler:
 
     def test_return_postgresql_connection_failure_handling(self):
         """测试归还PostgreSQL连接失败处理"""
-        self.mock_conn_manager.get_postgresql_connection.return_value = (
-            self.mock_postgres_pool
-        )
+        self.mock_conn_manager.get_postgresql_connection.return_value = self.mock_postgres_pool
         self.mock_postgres_pool.putconn.side_effect = Exception("Pool error")
 
         with patch("src.utils.db_connection_retry.logger") as mock_logger:
@@ -439,12 +431,10 @@ class TestGlobalConvenienceFunctions:
 
         assert src.db_connection_retry.connection_handler is not None
         assert isinstance(
-            src.db_connection_retry.connection_handler, DatabaseConnectionHandler
+            src.db_connection_retry.connection_handler,
+            DatabaseConnectionHandler,
         )
-        assert (
-            src.db_connection_retry.connection_handler.connection_manager
-            is self.mock_conn_manager
-        )
+        assert src.db_connection_retry.connection_handler.connection_manager is self.mock_conn_manager
 
         assert result is src.db_connection_retry.connection_handler
 
@@ -454,12 +444,8 @@ class TestGlobalConvenienceFunctions:
         init_connection_handler(self.mock_conn_manager)
 
         # 设置mock返回值
-        self.mock_conn_manager.get_tdengine_connection.return_value = (
-            self.mock_tdengine_conn
-        )
-        self.mock_conn_manager.get_postgresql_connection.return_value = (
-            self.mock_postgres_pool
-        )
+        self.mock_conn_manager.get_tdengine_connection.return_value = self.mock_tdengine_conn
+        self.mock_conn_manager.get_postgresql_connection.return_value = self.mock_postgres_pool
         self.mock_postgres_pool.getconn.return_value = self.mock_postgres_conn
 
         # 测试全局函数
@@ -483,7 +469,6 @@ class TestEdgeCases:
 
     def teardown_method(self):
         """每个测试方法执行后的清理"""
-        pass
 
     def test_retry_decorator_with_zero_max_retries(self):
         """测试零最大重试次数"""
@@ -564,7 +549,7 @@ class TestEdgeCases:
                 results.append(f"handler_{index}")
                 time.sleep(0.01)  # 短暂延迟
             except Exception as e:
-                errors.append(f"error_{index}: {str(e)}")
+                errors.append(f"error_{index}: {e!s}")
 
         # 创建多个线程
         threads = []
@@ -628,7 +613,6 @@ class TestPerformance:
 
     def teardown_method(self):
         """每个测试执行后的清理"""
-        pass
 
     def test_retry_decorator_performance_overhead(self):
         """测试重试装饰器性能开销"""
@@ -674,7 +658,7 @@ class TestPerformance:
                     raise ConnectionError(f"Thread {thread_id} failed")
                 return f"success_{thread_id}"
             except Exception as e:
-                errors.append(f"Thread {thread_id}: {str(e)}")
+                errors.append(f"Thread {thread_id}: {e!s}")
                 raise
 
         # 创建并发线程
@@ -753,5 +737,3 @@ class TestPerformance:
             assert call_times[1] - call_times[0] >= 0.05
             assert call_times[2] - call_times[1] >= 0.1
             assert call_times[3] - call_times[2] >= 0.2
-
-

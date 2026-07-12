@@ -1,26 +1,27 @@
-"""
-压测场景定义和执行脚本
+"""压测场景定义和执行脚本
 定义4种不同的压测场景，用于全面验证系统性能
 
 任务14.1: Locust压测脚本和用户行为建模
 """
 
+import json
 import os
 import sys
-import json
-from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Any
+from pathlib import Path
+from typing import Any, Dict, List
+
 
 # 计算项目根目录
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-from load_test_user_behaviors import (
-    TrafficModelGenerator,
-    LoadTestMetrics,
-)
 import structlog
+from load_test_user_behaviors import (
+    LoadTestMetrics,
+    TrafficModelGenerator,
+)
+
 
 logger = structlog.get_logger()
 
@@ -85,7 +86,7 @@ class Scenario2_NormalLoad(LoadTestScenario):
         # 白天流量分布
         traffic_profile = TrafficModelGenerator.generate_hourly_traffic_profile()
         user_distribution = TrafficModelGenerator.generate_user_distribution(
-            self.target_users
+            self.target_users,
         )
 
         return {
@@ -269,9 +270,7 @@ class LoadTestOrchestrator:
 
     def list_scenarios(self) -> List[str]:
         """列出所有场景"""
-        return [
-            f"{i + 1}. {s.name}: {s.description}" for i, s in enumerate(self.scenarios)
-        ]
+        return [f"{i + 1}. {s.name}: {s.description}" for i, s in enumerate(self.scenarios)]
 
     def get_scenario(self, index: int) -> LoadTestScenario:
         """获取指定的场景"""
@@ -302,7 +301,7 @@ class LoadTestOrchestrator:
                     "cache_hit_rate_percent": 70,
                     "throughput_requests_per_second": 500,
                 },
-            }
+            },
         )
 
         config_file = self.output_dir / f"scenario_{scenario_index + 1}_config.json"
@@ -372,8 +371,7 @@ class LoadTestOrchestrator:
                 # 写入目标
                 if "objectives" in config:
                     f.write("### Objectives\n\n")
-                    for obj in config["objectives"]:
-                        f.write(f"- {obj}\n")
+                    f.writelines(f"- {obj}\n" for obj in config["objectives"])
                     f.write("\n")
 
         logger.info(f"Scenarios exported: {md_file}")

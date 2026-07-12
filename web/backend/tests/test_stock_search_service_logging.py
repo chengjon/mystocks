@@ -124,4 +124,6 @@ def test_get_a_stock_kline_logs_warning_for_invalid_period(caplog):
         result = service.get_a_stock_kline("600519", period="hourly")
 
     assert result is None
-    assert any(record.levelno == logging.WARNING and "无效的时间周期" in record.getMessage() for record in caplog.records)
+    assert any(
+        record.levelno == logging.WARNING and "无效的时间周期" in record.getMessage() for record in caplog.records
+    )

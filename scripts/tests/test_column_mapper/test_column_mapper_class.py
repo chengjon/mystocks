@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-"""
-列名映射工具测试套件
+"""列名映射工具测试套件
 完整测试column_mapper模块的所有功能，确保100%测试覆盖率
 遵循Phase 6成功模式：功能→边界→异常→性能→集成测试
 """
 
 import sys
-import pandas as pd
 from pathlib import Path
+
+import pandas as pd
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -15,6 +16,7 @@ sys.path.insert(0, str(project_root))
 
 # Mock problematic imports to avoid dependency issues
 import unittest.mock
+
 
 sys.modules["src.storage.database.connection_manager"] = unittest.mock.MagicMock()
 sys.modules["src.core.config"] = unittest.mock.MagicMock()
@@ -25,15 +27,17 @@ import pytest
 from src.utils.column_mapper import (
     ColumnMapper,
     standardize_dataframe,
-    to_english_columns,
     to_chinese_columns,
+    to_english_columns,
 )
+
 
 # 为便捷函数创建别名
 standardize_columns = ColumnMapper.standardize_columns
 to_english = ColumnMapper.to_english
 to_chinese = ColumnMapper.to_chinese
 validate_columns = ColumnMapper.validate_columns
+
 
 class TestColumnMapperClass:
     """ColumnMapper类测试类"""
@@ -50,7 +54,7 @@ class TestColumnMapperClass:
                 "high": [12.0, 13.0],
                 "low": [9.0, 10.0],
                 "volume": [1000, 1200],
-            }
+            },
         )
 
         self.test_df_cn = pd.DataFrame(
@@ -60,7 +64,7 @@ class TestColumnMapperClass:
                 "最高价": [12.0, 13.0],
                 "最低价": [9.0, 10.0],
                 "成交量": [1000, 1200],
-            }
+            },
         )
 
         self.test_df_mixed = pd.DataFrame(
@@ -70,7 +74,7 @@ class TestColumnMapperClass:
                 "high": [12.0, 13.0],
                 "最低价": [9.0, 10.0],
                 "volume": [1000, 1200],
-            }
+            },
         )
 
     def test_column_mapper_initialization(self):
@@ -143,7 +147,8 @@ class TestColumnMapperClass:
     def test_standardize_columns_mixed_to_english(self):
         """测试混合列名标准化为英文"""
         result_df = self.mapper.standardize_columns(
-            self.test_df_mixed, target_lang="en"
+            self.test_df_mixed,
+            target_lang="en",
         )
 
         # 验证列名转换为英文
@@ -153,7 +158,8 @@ class TestColumnMapperClass:
     def test_standardize_columns_mixed_to_chinese(self):
         """测试混合列名标准化为中文"""
         result_df = self.mapper.standardize_columns(
-            self.test_df_mixed, target_lang="cn"
+            self.test_df_mixed,
+            target_lang="cn",
         )
 
         # 验证列名转换为中文
@@ -186,7 +192,7 @@ class TestColumnMapperClass:
                 "high": [12.0, 13.0],
                 "low": [9.0, 10.0],
                 "volume": [1000, 1200],
-            }
+            },
         )
 
         # 只验证DataFrame中实际存在的列
@@ -203,7 +209,7 @@ class TestColumnMapperClass:
         """测试无效列名验证"""
         # 创建无效DataFrame
         invalid_df = pd.DataFrame(
-            {"invalid_col1": [10.0, 11.0], "invalid_col2": [12.0, 13.0]}
+            {"invalid_col1": [10.0, 11.0], "invalid_col2": [12.0, 13.0]},
         )
 
         required_cols = ["open", "close", "high", "low", "volume"]
@@ -243,7 +249,7 @@ class TestConvenienceFunctions:
                 "high": [12.0, 13.0],
                 "最低价": [9.0, 10.0],
                 "volume": [1000, 1200],
-            }
+            },
         )
 
     def test_standardize_dataframe_function(self):
@@ -258,7 +264,7 @@ class TestConvenienceFunctions:
         """测试to_english_columns便捷函数"""
         # 创建中文DataFrame
         cn_df = pd.DataFrame(
-            {"开盘价": [10.0, 11.0], "收盘价": [11.0, 12.0], "成交量": [1000, 1200]}
+            {"开盘价": [10.0, 11.0], "收盘价": [11.0, 12.0], "成交量": [1000, 1200]},
         )
 
         result_df = to_english_columns(cn_df)
@@ -271,7 +277,7 @@ class TestConvenienceFunctions:
         """测试to_chinese_columns便捷函数"""
         # 创建英文DataFrame
         en_df = pd.DataFrame(
-            {"open": [10.0, 11.0], "close": [11.0, 12.0], "volume": [1000, 1200]}
+            {"open": [10.0, 11.0], "close": [11.0, 12.0], "volume": [1000, 1200]},
         )
 
         result_df = to_chinese_columns(en_df)
@@ -319,7 +325,7 @@ class TestEdgeCasesAndErrorHandling:
             {
                 "open": [10.0, 11.0],
                 "开盘价": [12.0, 13.0],  # 这两个都会映射到'open'
-            }
+            },
         )
 
         result_df = standardize_columns(duplicate_df, target_lang="en")
@@ -336,7 +342,7 @@ class TestEdgeCasesAndErrorHandling:
                 "open-price": [10.0, 11.0],
                 "close@price": [11.0, 12.0],
                 "high#price": [12.0, 13.0],
-            }
+            },
         )
 
         result_df = standardize_columns(special_df, target_lang="en")
@@ -354,7 +360,7 @@ class TestEdgeCasesAndErrorHandling:
                 "open": [10.0, None, 12.0],
                 "close": [11.0, float("nan"), 13.0],
                 "volume": [1000, 1200, None],
-            }
+            },
         )
 
         result_df = standardize_columns(none_df, target_lang="en")
@@ -375,7 +381,7 @@ class TestEdgeCasesAndErrorHandling:
     def test_none_dataframe_input(self):
         """测试None输入"""
         with pytest.raises(
-            (TypeError, AttributeError)
+            (TypeError, AttributeError),
         ):  # 可能抛出TypeError或AttributeError
             standardize_dataframe(None, target_lang="en")
 
@@ -400,7 +406,7 @@ class TestEdgeCasesAndErrorHandling:
                 "CLOSE": [11.0, 12.0],  # 全大写
                 "High": [12.0, 13.0],  # 大写H
                 "low": [9.0, 10.0],  # 小写
-            }
+            },
         )
 
         result_df = standardize_columns(case_df, target_lang="en")
@@ -417,7 +423,7 @@ class TestEdgeCasesAndErrorHandling:
                 " close": [11.0, 12.0],  # 前面有空格
                 "high ": [12.0, 13.0],  # 后面有空格
                 "volume": [1000, 1200],  # 没有空格
-            }
+            },
         )
 
         result_df = standardize_columns(space_df, target_lang="en")
@@ -433,7 +439,7 @@ class TestEdgeCasesAndErrorHandling:
                 "收盤價": [11.0, 12.0],  # 繁体中文
                 "成交量": [1000, 1200],
                 "📈": [1, 2],  # emoji
-            }
+            },
         )
 
         result_df = standardize_columns(unicode_df, target_lang="en")
@@ -460,7 +466,7 @@ class TestIntegrationScenarios:
                 "成交量": [1000000, 800000],
                 "成交额": [10800000, 12400000],
                 "涨跌幅": [0.0286, 0.0197],
-            }
+            },
         )
 
         # 转换为英文标准格式
@@ -483,7 +489,7 @@ class TestIntegrationScenarios:
                 "high": [12.0, 13.0],
                 "low": [9.0, 10.0],
                 "volume": [1000, 1200],
-            }
+            },
         )
 
         tushare_data = pd.DataFrame(
@@ -493,7 +499,7 @@ class TestIntegrationScenarios:
                 "high": [17.0, 18.0],
                 "low": [14.0, 15.0],
                 "vol": [2000, 2200],  # 不同的成交量字段名
-            }
+            },
         )
 
         baostock_data = pd.DataFrame(
@@ -503,7 +509,7 @@ class TestIntegrationScenarios:
                 "high": [22.0, 23.0],
                 "low": [19.0, 20.0],
                 "volume": [3000, 3200],
-            }
+            },
         )
 
         # 标准化所有数据源
@@ -527,7 +533,7 @@ class TestIntegrationScenarios:
                 "最高价": [12.0, 13.0],
                 "最低价": [9.0, 10.0],
                 "成交量": [1000, 1200],
-            }
+            },
         )
 
         # 阶段1：数据清洗和标准化
@@ -559,7 +565,7 @@ class TestIntegrationScenarios:
                 "low": [9.0, 10.0],
                 "close": [11.0, 12.0],
                 "vol": [1000, 1200],
-            }
+            },
         )
 
         historical_format2 = pd.DataFrame(
@@ -571,7 +577,7 @@ class TestIntegrationScenarios:
                 "最低": [9.0, 10.0],
                 "收盘": [11.0, 12.0],
                 "成交量": [1000, 1200],
-            }
+            },
         )
 
         # 标准化历史数据
@@ -595,7 +601,7 @@ class TestIntegrationScenarios:
                 "20日均线": [9.2, 9.5],
                 "RSI": [55.0, 58.0],
                 "MACD": [0.5, 0.6],
-            }
+            },
         )
 
         # 转换为英文
@@ -622,7 +628,7 @@ class TestIntegrationScenarios:
                 "high_price": [12.0, 13.0],
                 "low_price": [9.0, 10.0],
                 "trade_volume": [1000, 1200],
-            }
+            },
         )
 
         # 测试数据库列名验证
@@ -636,7 +642,7 @@ class TestIntegrationScenarios:
     def test_custom_mapping_usage(self):
         """测试自定义映射规则的使用"""
         test_df = pd.DataFrame(
-            {"custom_col1": [1.0, 2.0], "custom_col2": [3.0, 4.0], "open": [10.0, 11.0]}
+            {"custom_col1": [1.0, 2.0], "custom_col2": [3.0, 4.0], "open": [10.0, 11.0]},
         )
 
         # 测试自定义映射覆盖默认映射
@@ -647,7 +653,9 @@ class TestIntegrationScenarios:
         }
 
         result_df = ColumnMapper.standardize_columns(
-            test_df, target_lang="en", custom_mapping=custom_mapping
+            test_df,
+            target_lang="en",
+            custom_mapping=custom_mapping,
         )
 
         # 验证自定义映射被应用
@@ -675,14 +683,9 @@ class TestIntegrationScenarios:
 
             # 验证映射被添加
             assert "custom_field" in ColumnMapper.STANDARD_EN_MAPPING
-            assert (
-                ColumnMapper.STANDARD_EN_MAPPING["custom_field"]
-                == "custom_mapped_field"
-            )
+            assert ColumnMapper.STANDARD_EN_MAPPING["custom_field"] == "custom_mapped_field"
             assert "test_column" in ColumnMapper.STANDARD_EN_MAPPING
-            assert (
-                ColumnMapper.STANDARD_EN_MAPPING["test_column"] == "test_mapped_column"
-            )
+            assert ColumnMapper.STANDARD_EN_MAPPING["test_column"] == "test_mapped_column"
 
             # 测试添加中文自定义映射
             custom_cn_mapping = {
@@ -694,9 +697,7 @@ class TestIntegrationScenarios:
 
             # 验证映射被添加
             assert "自定义字段" in ColumnMapper.STANDARD_CN_MAPPING
-            assert (
-                ColumnMapper.STANDARD_CN_MAPPING["自定义字段"] == "custom_mapped_field"
-            )
+            assert ColumnMapper.STANDARD_CN_MAPPING["自定义字段"] == "custom_mapped_field"
 
         finally:
             # 恢复原始映射（避免影响其他测试）
@@ -713,7 +714,7 @@ class TestIntegrationScenarios:
     def test_mapping_with_print_output(self):
         """测试会触发打印输出的映射操作"""
         test_df = pd.DataFrame(
-            {"开盘价": [10.0, 11.0], "收盘价": [11.0, 12.0], "成交量": [1000, 1200]}
+            {"开盘价": [10.0, 11.0], "收盘价": [11.0, 12.0], "成交量": [1000, 1200]},
         )
 
         # 这个映射操作应该触发打印输出（第192行）
@@ -742,7 +743,7 @@ class TestIntegrationScenarios:
                 "VOL": [1000, 1200],  # 大写的VOL，应该通过小写匹配映射到volume
                 "成交量": [2000, 2400],  # 中文，应该映射到volume
                 "open": [10.0, 11.0],
-            }
+            },
         )
 
         result_df = ColumnMapper.standardize_columns(test_df, target_lang="en")
@@ -755,5 +756,3 @@ class TestIntegrationScenarios:
         assert "open" in result_df.columns
         # volume列存在（可能由于重复映射行为导致多个volume列）
         assert "volume" in result_df.columns
-
-

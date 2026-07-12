@@ -1,5 +1,4 @@
-"""
-策略参数优化演示脚本
+"""策略参数优化演示脚本
 
 演示如何使用三种优化方法:
 1. 网格搜索 (Grid Search)
@@ -9,44 +8,45 @@
 重要: 本脚本使用mock数据源，遵循项目mock数据使用规则
 """
 
-import sys
-import os
 import logging
+import os
+import sys
 from datetime import datetime
-from typing import Dict, Any, List
+from typing import Any, Dict, List
+
 
 # 添加项目路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.insert(
-    0, os.path.join(os.path.dirname(__file__), "..", "..", "web", "backend")
+    0,
+    os.path.join(os.path.dirname(__file__), "..", "..", "web", "backend"),
 )
 
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
 
 class SimplifiedBacktestEngine:
-    """
-    简化的回测引擎 (用于优化演示)
+    """简化的回测引擎 (用于优化演示)
 
     使用mock数据源进行快速回测
     """
 
     def __init__(self, data_source=None):
-        """
-        初始化简化回测引擎
+        """初始化简化回测引擎
 
         Args:
             data_source: 数据源 (None则使用mock)
+
         """
         self.data_source = data_source
         self._market_data_cache = {}
 
     def _get_data_source(self):
-        """
-        获取数据源
+        """获取数据源
 
         遵循项目mock数据使用规则:
         - 通过工厂函数获取数据源
@@ -74,8 +74,7 @@ class SimplifiedBacktestEngine:
         end_date: datetime,
         interval: str = "1d",
     ) -> List[Dict[str, Any]]:
-        """
-        加载市场数据
+        """加载市场数据
 
         Args:
             symbol: 股票代码
@@ -85,6 +84,7 @@ class SimplifiedBacktestEngine:
 
         Returns:
             K线数据列表
+
         """
         cache_key = f"{symbol}_{start_date}_{end_date}_{interval}"
 
@@ -110,15 +110,13 @@ class SimplifiedBacktestEngine:
             for idx, row in df.iterrows():
                 data.append(
                     {
-                        "date": idx
-                        if isinstance(idx, datetime)
-                        else datetime.strptime(str(idx), "%Y-%m-%d"),
+                        "date": idx if isinstance(idx, datetime) else datetime.strptime(str(idx), "%Y-%m-%d"),
                         "open": float(row.get("open", 0)),
                         "high": float(row.get("high", 0)),
                         "low": float(row.get("low", 0)),
                         "close": float(row.get("close", 0)),
                         "volume": int(row.get("volume", 0)),
-                    }
+                    },
                 )
 
             self._market_data_cache[cache_key] = data
@@ -134,8 +132,7 @@ class SimplifiedBacktestEngine:
         parameters: Dict[str, Any],
         market_data: Dict[str, Any],
     ) -> Dict[str, Any]:
-        """
-        执行回测
+        """执行回测
 
         Args:
             strategy_type: 策略类型
@@ -144,6 +141,7 @@ class SimplifiedBacktestEngine:
 
         Returns:
             回测结果
+
         """
         from app.backtest.strategies.factory import StrategyFactory
 
@@ -198,7 +196,7 @@ class SimplifiedBacktestEngine:
                                 "action": "BUY",
                                 "price": current_price,
                                 "quantity": position,
-                            }
+                            },
                         )
 
                     elif signal.signal_type == SignalType.EXIT and position > 0:
@@ -211,7 +209,7 @@ class SimplifiedBacktestEngine:
                                 "price": current_price,
                                 "quantity": position,
                                 "profit": profit,
-                            }
+                            },
                         )
                         position = 0
 
@@ -267,8 +265,7 @@ class SimplifiedBacktestEngine:
 
 
 class MockDataSourceFallback:
-    """
-    Mock数据源备用方案
+    """Mock数据源备用方案
 
     当无法导入真实mock数据源时使用
     """
@@ -314,7 +311,7 @@ class MockDataSourceFallback:
                     "low": round(low, 2),
                     "close": round(close, 2),
                     "volume": volume,
-                }
+                },
             )
 
         return pd.DataFrame(data, index=dates)
@@ -326,8 +323,8 @@ def demo_grid_search():
     print("网格搜索优化演示")
     print("=" * 60)
 
-    from app.backtest.optimization.grid_search import GridSearchOptimizer
     from app.backtest.optimization.base import ParameterSpace
+    from app.backtest.optimization.grid_search import GridSearchOptimizer
 
     # 定义参数空间 (简化版，减少组合数)
     parameter_spaces = [
@@ -401,19 +398,28 @@ def demo_random_search():
     print("随机搜索优化演示")
     print("=" * 60)
 
-    from app.backtest.optimization.random_search import RandomSearchOptimizer
     from app.backtest.optimization.base import ParameterSpace
+    from app.backtest.optimization.random_search import RandomSearchOptimizer
 
     # 定义参数空间
     parameter_spaces = [
         ParameterSpace(
-            name="short_period", param_type="int", min_value=5, max_value=20
+            name="short_period",
+            param_type="int",
+            min_value=5,
+            max_value=20,
         ),
         ParameterSpace(
-            name="long_period", param_type="int", min_value=20, max_value=60
+            name="long_period",
+            param_type="int",
+            min_value=20,
+            max_value=60,
         ),
         ParameterSpace(
-            name="stop_loss_pct", param_type="float", min_value=0.03, max_value=0.10
+            name="stop_loss_pct",
+            param_type="float",
+            min_value=0.03,
+            max_value=0.10,
         ),
     ]
 
@@ -469,19 +475,28 @@ def demo_genetic_algorithm():
     print("遗传算法优化演示")
     print("=" * 60)
 
-    from app.backtest.optimization.genetic import GeneticOptimizer
     from app.backtest.optimization.base import ParameterSpace
+    from app.backtest.optimization.genetic import GeneticOptimizer
 
     # 定义参数空间
     parameter_spaces = [
         ParameterSpace(
-            name="short_period", param_type="int", min_value=5, max_value=20
+            name="short_period",
+            param_type="int",
+            min_value=5,
+            max_value=20,
         ),
         ParameterSpace(
-            name="long_period", param_type="int", min_value=20, max_value=60
+            name="long_period",
+            param_type="int",
+            min_value=20,
+            max_value=60,
         ),
         ParameterSpace(
-            name="signal_threshold", param_type="float", min_value=0.01, max_value=0.05
+            name="signal_threshold",
+            param_type="float",
+            min_value=0.01,
+            max_value=0.05,
         ),
     ]
 
@@ -527,7 +542,9 @@ def demo_genetic_algorithm():
     evolution = optimizer.get_evolution_curve()
     print("\n进化曲线:")
     for gen, best, avg in zip(
-        evolution["generations"], evolution["best"], evolution["avg"]
+        evolution["generations"],
+        evolution["best"],
+        evolution["avg"],
     ):
         print(f"  第{gen}代: 最佳={best:.4f}, 平均={avg:.4f}")
 

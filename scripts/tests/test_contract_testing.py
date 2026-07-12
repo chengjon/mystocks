@@ -1,5 +1,4 @@
-"""
-Comprehensive test suite for Contract Testing Framework
+"""Comprehensive test suite for Contract Testing Framework
 
 Tests all contract testing components including:
 - Specification validation
@@ -11,24 +10,25 @@ Tests all contract testing components including:
 Task 12: Contract Testing (契约测试) - Test Suite
 """
 
-import pytest
 import json
-import tempfile
 import os
+import sys
+import tempfile
 from unittest.mock import MagicMock
 
-import sys
+import pytest
+
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 from src.contract_testing import (
-    SpecificationValidator,
-    TestHooksManager,
-    HookContext,
-    HookType,
     APIConsistencyChecker,
     ContractTestEngine,
     ContractTestReportGenerator,
+    HookContext,
+    HookType,
+    SpecificationValidator,
+    TestHooksManager,
 )
 
 
@@ -54,7 +54,7 @@ class TestSpecificationValidator:
                                 "in": "query",
                                 "required": False,
                                 "schema": {"type": "integer"},
-                            }
+                            },
                         ],
                         "responses": {
                             "200": {"description": "User list"},
@@ -78,7 +78,7 @@ class TestSpecificationValidator:
                                 "in": "path",
                                 "required": True,
                                 "schema": {"type": "string"},
-                            }
+                            },
                         ],
                         "responses": {
                             "200": {"description": "User found"},
@@ -302,11 +302,11 @@ class TestAPIConsistencyChecker:
                                 "name": "limit",
                                 "in": "query",
                                 "schema": {"type": "integer"},
-                            }
+                            },
                         ],
                         "responses": {"200": {}, "400": {}},
-                    }
-                }
+                    },
+                },
             },
         }
         validator = SpecificationValidator()
@@ -411,8 +411,8 @@ class TestContractTestEngine:
                     "get": {
                         "summary": "Health check",
                         "responses": {"200": {}},
-                    }
-                }
+                    },
+                },
             },
         }
         with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
@@ -509,8 +509,8 @@ class TestContractTestReportGenerator:
                         "status": "passed",
                         "endpoint_method": "GET",
                         "endpoint_path": "/api/users",
-                    }
-                ]
+                    },
+                ],
             )
 
             output_path = os.path.join(tmpdir, "report.json")
@@ -531,8 +531,8 @@ class TestContractTestReportGenerator:
                         "status": "passed",
                         "endpoint_method": "GET",
                         "endpoint_path": "/api/users",
-                    }
-                ]
+                    },
+                ],
             )
 
             output_path = os.path.join(tmpdir, "report.md")
@@ -553,8 +553,8 @@ class TestContractTestReportGenerator:
                         "status": "passed",
                         "endpoint_method": "GET",
                         "endpoint_path": "/api/users",
-                    }
-                ]
+                    },
+                ],
             )
 
             output_path = os.path.join(tmpdir, "report.html")
@@ -575,8 +575,8 @@ class TestContractTestReportGenerator:
                         "status": "passed",
                         "endpoint_method": "GET",
                         "endpoint_path": "/api/users",
-                    }
-                ]
+                    },
+                ],
             )
 
             generator.generate_all_reports(tmpdir)

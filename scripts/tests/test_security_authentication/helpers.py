@@ -1,22 +1,16 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-认证和授权安全测试套件
+"""认证和授权安全测试套件
 专门测试身份认证、会话管理和访问控制的安全性
 """
 
 import sys
-import os
-import json
-import time
-import requests
-import jwt
-from datetime import datetime, timedelta
-from typing import Dict, List, Any
+from datetime import datetime
+
 
 # 设置项目路径
 project_root = "/opt/claude/mystocks_spec"
 sys.path.insert(0, project_root)
+
 
 class AuthTestResult:
     """认证测试结果类"""
@@ -37,5 +31,3 @@ class AuthTestResult:
         self.details = details
         self.recommendation = recommendation
         self.timestamp = datetime.now().isoformat()
-
-

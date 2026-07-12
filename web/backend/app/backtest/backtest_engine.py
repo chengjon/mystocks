@@ -143,7 +143,9 @@ class BacktestEngine:
             try:
                 # 从数据源获取历史数据
                 df = self.data_source.get_stock_history(
-                    symbol=symbol, start_date=self.start_date, end_date=self.end_date,
+                    symbol=symbol,
+                    start_date=self.start_date,
+                    end_date=self.end_date,
                 )
 
                 if df is None or df.empty:

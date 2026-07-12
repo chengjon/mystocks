@@ -58,8 +58,7 @@ class MockExtendedDataMixin:
         return watchlist_data
 
     def _generate_mock_backtest_data(self, **kwargs) -> Dict[str, Any]:
-        """Generate mock backtest data.
-        """
+        """Generate mock backtest data."""
         task_id = kwargs.get("task_id", "mock-task-123")
 
         # Mock Trades

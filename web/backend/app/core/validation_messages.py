@@ -185,7 +185,8 @@ class ValidationErrorBuilder:
             "too_long": CommonMessages.SYMBOL_TOO_LONG,
         }
         return ValidationErrorBuilder.build_field_error(
-            "symbol", error_map.get(error_type, CommonMessages.SYMBOL_INVALID_FORMAT),
+            "symbol",
+            error_map.get(error_type, CommonMessages.SYMBOL_INVALID_FORMAT),
         )
 
     @staticmethod
@@ -199,7 +200,8 @@ class ValidationErrorBuilder:
             "too_long": CommonMessages.DATE_RANGE_TOO_LONG,
         }
         return ValidationErrorBuilder.build_field_error(
-            field_name, error_map.get(error_type, CommonMessages.DATE_INVALID_FORMAT),
+            field_name,
+            error_map.get(error_type, CommonMessages.DATE_INVALID_FORMAT),
         )
 
     @staticmethod

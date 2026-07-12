@@ -1,5 +1,4 @@
-"""Schema package - API数据验证模型
-"""
+"""Schema package - API数据验证模型"""
 
 from .validation_models import (
     DateRangeModel,

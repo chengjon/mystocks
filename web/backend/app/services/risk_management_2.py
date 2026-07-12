@@ -219,7 +219,10 @@ class RiskManagementExtended(RiskBase):
             raise
 
     def _apply_risk_strategy(
-        self, current_risk: RiskMetrics, strategy_type: RiskStrategyType, objective: RiskObjective,
+        self,
+        current_risk: RiskMetrics,
+        strategy_type: RiskStrategyType,
+        objective: RiskObjective,
     ) -> RiskMetrics:
         """应用风险策略"""
         optimized_risk = RiskMetrics()
@@ -373,7 +376,11 @@ class RiskManagementExtended(RiskBase):
             }
 
     def _generate_risk_report(
-        self, portfolio_id: str, current_risk: RiskMetrics, risk_warnings: List[Dict], risk_level: RiskLevel,
+        self,
+        portfolio_id: str,
+        current_risk: RiskMetrics,
+        risk_warnings: List[Dict],
+        risk_level: RiskLevel,
     ) -> Dict:
         """生成风险报告"""
         try:

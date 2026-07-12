@@ -1,5 +1,4 @@
-"""股票策略尾部辅助定义。
-"""
+"""股票策略尾部辅助定义。"""
 
 from __future__ import annotations
 

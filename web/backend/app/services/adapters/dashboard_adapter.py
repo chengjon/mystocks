@@ -1,5 +1,4 @@
-"""数据源适配器模块
-"""
+"""数据源适配器模块"""
 
 import time
 from datetime import datetime
@@ -41,8 +40,7 @@ class DashboardDataSourceAdapter(IDataSource):
         self.last_response_time = 0.0
 
     async def get_data(self, endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
-        """从仪表盘数据源获取数据
-        """
+        """从仪表盘数据源获取数据"""
         start_time = time.time()
         self.total_requests += 1
 
@@ -303,5 +301,3 @@ class DashboardDataSourceAdapter(IDataSource):
 # ============================================================================
 # Technical Analysis Data Source Adapter
 # ============================================================================
-
-

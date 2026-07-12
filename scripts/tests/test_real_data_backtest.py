@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-测试使用真实数据库数据运行回测
+"""测试使用真实数据库数据运行回测
 
 验证回测引擎使用数据库中的真实市场数据
 """
@@ -8,19 +7,21 @@
 import os
 import sys
 
+
 # 计算项目根目录
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, project_root)
 
 from datetime import datetime
 
+
 # 添加 web/backend 到路径
 web_backend = os.path.join(project_root, "web", "backend")
 if web_backend not in sys.path:
     sys.path.insert(0, web_backend)
 
-from app.services.data_service import DataService
 from app.backtest.backtest_engine import BacktestEngine
+from app.services.data_service import DataService
 
 
 class DataServiceAdapter:
@@ -30,8 +31,7 @@ class DataServiceAdapter:
         self.data_service = data_service
 
     def get_stock_history(self, symbol: str, start_date: datetime, end_date: datetime):
-        """
-        获取股票历史数据（适配 BacktestEngine 接口）
+        """获取股票历史数据（适配 BacktestEngine 接口）
 
         Args:
             symbol: 股票代码
@@ -40,22 +40,24 @@ class DataServiceAdapter:
 
         Returns:
             DataFrame with columns: trade_date, open, high, low, close, volume
+
         """
         df, _ = self.data_service.get_daily_ohlcv(symbol, start_date, end_date)
 
         # 确保列名符合 BacktestEngine 期望
-        if not df.empty and 'trade_date' not in df.columns:
+        if not df.empty and "trade_date" not in df.columns:
             # 如果使用索引作为日期，创建 trade_date 列
-            if hasattr(df.index, 'to_pydatetime'):
-                df['trade_date'] = df.index.to_pydatetime()
+            if hasattr(df.index, "to_pydatetime"):
+                df["trade_date"] = df.index.to_pydatetime()
             else:
-                df['trade_date'] = df.index
+                df["trade_date"] = df.index
 
         # 添加 adj_close 列（如果没有）
-        if 'adj_close' not in df.columns:
-            df['adj_close'] = df['close']
+        if "adj_close" not in df.columns:
+            df["adj_close"] = df["close"]
 
         return df
+
 
 def test_database_data():
     """1. 测试数据库连接和数据可用性"""
@@ -65,15 +67,15 @@ def test_database_data():
 
     try:
         # 直接使用 PostgreSQL 连接
-        import psycopg2
         import pandas as pd
+        import psycopg2
 
         conn = psycopg2.connect(
             host="localhost",
             port=5438,
             user="postgres",
             password="your-postgresql-password",
-            database="mystocks"
+            database="mystocks",
         )
 
         # 查询测试数据
@@ -92,16 +94,16 @@ def test_database_data():
         if df.empty:
             print(f"❌ 数据库中没有 {symbol} 的数据")
             return False
-        else:
-            print(f"✅ 成功从数据库加载 {len(df)} 条 {symbol} K线记录")
-            print(f"   时间范围: {df['trade_date'].min()} 至 {df['trade_date'].max()}")
-            print(f"   最新价格: ¥{df['close'].iloc[-1]:.2f}")
-            print("   数据来源: 真实市场数据 (PostgreSQL)")
-            return True
+        print(f"✅ 成功从数据库加载 {len(df)} 条 {symbol} K线记录")
+        print(f"   时间范围: {df['trade_date'].min()} 至 {df['trade_date'].max()}")
+        print(f"   最新价格: ¥{df['close'].iloc[-1]:.2f}")
+        print("   数据来源: 真实市场数据 (PostgreSQL)")
+        return True
 
     except Exception as e:
         print(f"❌ 数据库连接失败: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -125,16 +127,16 @@ def test_data_service():
         if df.empty:
             print("❌ DataService 未返回数据")
             return False
-        else:
-            print(f"✅ DataService 成功加载 {len(df)} 条记录")
-            print(f"   OHLCV数组键: {list(ohlcv_dict.keys())}")
-            print(f"   开盘价范围: {df['open'].min():.2f} - {df['open'].max():.2f}")
-            print(f"   收盘价范围: {df['close'].min():.2f} - {df['close'].max():.2f}")
-            return True
+        print(f"✅ DataService 成功加载 {len(df)} 条记录")
+        print(f"   OHLCV数组键: {list(ohlcv_dict.keys())}")
+        print(f"   开盘价范围: {df['open'].min():.2f} - {df['open'].max():.2f}")
+        print(f"   收盘价范围: {df['close'].min():.2f} - {df['close'].max():.2f}")
+        return True
 
     except Exception as e:
         print(f"❌ DataService 加载失败: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -156,7 +158,7 @@ def test_backtest_engine():
         strategy_config = {
             "name": "双均线策略",
             "short_period": 5,
-            "long_period": 20
+            "long_period": 20,
         }
 
         # 回测配置
@@ -164,7 +166,7 @@ def test_backtest_engine():
             "symbols": ["000001.SZ"],  # 注意: 使用 symbols (复数)
             "start_date": datetime(2024, 1, 1),
             "end_date": datetime(2024, 12, 31),
-            "initial_capital": 100000.0
+            "initial_capital": 100000.0,
         }
 
         print(f"策略: {strategy_config['name']}")
@@ -177,7 +179,7 @@ def test_backtest_engine():
             strategy_config=strategy_config,
             backtest_config=backtest_config,
             data_source=data_adapter,  # 使用适配器
-            progress_callback=None  # 不显示进度
+            progress_callback=None,  # 不显示进度
         )
 
         # 运行回测
@@ -190,23 +192,23 @@ def test_backtest_engine():
         print("-" * 60)
 
         # 性能指标在 performance_metrics 字典中
-        perf = results.get('performance_metrics', {})
+        perf = results.get("performance_metrics", {})
 
         print(f"最终资金: ¥{results['final_capital']:,.2f}")
-        if 'total_return' in perf:
+        if "total_return" in perf:
             print(f"总收益率: {perf['total_return']:.2%}")
-        if 'annualized_return' in perf:
+        if "annualized_return" in perf:
             print(f"年化收益: {perf['annualized_return']:.2%}")
-        if 'max_drawdown' in perf:
+        if "max_drawdown" in perf:
             print(f"最大回撤: {perf['max_drawdown']:.2%}")
-        if 'sharpe_ratio' in perf:
+        if "sharpe_ratio" in perf:
             print(f"夏普比率: {perf['sharpe_ratio']:.2f}")
 
         # 交易指标
-        trade_metrics = perf.get('trade_metrics', {})
-        if 'total_trades' in trade_metrics:
+        trade_metrics = perf.get("trade_metrics", {})
+        if "total_trades" in trade_metrics:
             print(f"交易次数: {trade_metrics['total_trades']}")
-        if 'win_rate' in trade_metrics:
+        if "win_rate" in trade_metrics:
             print(f"胜率: {trade_metrics['win_rate']:.2%}")
 
         print("\n✅ 回测成功完成，使用的是真实市场数据！")
@@ -219,6 +221,7 @@ def test_backtest_engine():
     except Exception as e:
         print(f"❌ 回测失败: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 

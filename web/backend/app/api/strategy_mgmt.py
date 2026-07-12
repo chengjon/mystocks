@@ -171,7 +171,10 @@ async def list_strategies(
     try:
         # 使用仓库查询策略列表
         strategies, total_count = strategy_repo.list_strategies(
-            user_id=user_id, status=status, page=page, page_size=page_size,
+            user_id=user_id,
+            status=status,
+            page=page,
+            page_size=page_size,
         )
 
         logger.info("获取策略列表成功: user_id=%(user_id)s, count=%(total_count)s")
@@ -218,7 +221,10 @@ async def get_strategy(
 
 
 @router.put(
-    "/strategies/{strategy_id}", response_model=StrategyConfig, summary="更新策略", description="更新策略的配置信息",
+    "/strategies/{strategy_id}",
+    response_model=StrategyConfig,
+    summary="更新策略",
+    description="更新策略的配置信息",
 )
 async def update_strategy(
     strategy_id: int = Path(..., description="策略ID", ge=1),
@@ -450,7 +456,10 @@ async def list_backtests(
     try:
         # 使用仓库查询回测列表
         backtests, total_count = backtest_repo.list_backtests(
-            user_id=user_id, strategy_id=strategy_id, page=page, page_size=page_size,
+            user_id=user_id,
+            strategy_id=strategy_id,
+            page=page,
+            page_size=page_size,
         )
 
         # 转换为汇总格式
@@ -474,7 +483,10 @@ async def list_backtests(
         logger.info("获取回测列表成功: user_id=%(user_id)s, count=%(total_count)s")
 
         return BacktestListResponse(
-            total_count=total_count, backtests=backtest_summaries, page=page, page_size=page_size,
+            total_count=total_count,
+            backtests=backtest_summaries,
+            page=page,
+            page_size=page_size,
         )
 
     except Exception as e:

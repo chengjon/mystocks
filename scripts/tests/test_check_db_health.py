@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-"""
-数据库健康检查模块测试套件
+"""数据库健康检查模块测试套件
 基于Phase 6成功模式：功能→边界→异常→性能→集成测试
 """
 
 import importlib
 import sys
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
 import pytest
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -19,8 +20,8 @@ try:
     from src.utils.check_db_health import (
         check_mysql_connection,
         check_postgresql_connection,
-        check_tdengine_connection,
         check_redis_connection,
+        check_tdengine_connection,
         main,
     )
 except ImportError:
@@ -31,10 +32,6 @@ except ImportError:
     check_tdengine_connection = fallback_module.check_tdengine_connection
     check_redis_connection = fallback_module.check_redis_connection
     main = fallback_module.main
-from scripts._test_check_db_health_tail import (
-    TestEdgeCasesAndErrorHandling,
-    TestIntegrationScenarios,
-)
 
 
 class TestMySQLConnection:
@@ -79,7 +76,10 @@ class TestMySQLConnection:
     @patch("src.utils.check_db_health.settings")
     @patch("builtins.print")
     def test_mysql_connection_import_error(
-        self, mock_print, mock_settings, mock_pymysql
+        self,
+        mock_print,
+        mock_settings,
+        mock_pymysql,
     ):
         """测试pymysql导入错误"""
         mock_pymysql.side_effect = ImportError("No module named 'pymysql'")
@@ -93,7 +93,10 @@ class TestMySQLConnection:
     @patch("src.utils.check_db_health.settings")
     @patch("builtins.print")
     def test_mysql_connection_connection_error(
-        self, mock_print, mock_settings, mock_pymysql
+        self,
+        mock_print,
+        mock_settings,
+        mock_pymysql,
     ):
         """测试MySQL连接错误"""
         mock_settings.mysql_host = "invalid_host"
@@ -108,7 +111,10 @@ class TestMySQLConnection:
     @patch("src.utils.check_db_health.settings")
     @patch("builtins.print")
     def test_mysql_connection_query_error(
-        self, mock_print, mock_settings, mock_pymysql
+        self,
+        mock_print,
+        mock_settings,
+        mock_pymysql,
     ):
         """测试MySQL查询错误"""
         mock_settings.mysql_host = "localhost"
@@ -144,7 +150,10 @@ class TestMySQLConnection:
     @patch("src.utils.check_db_health.settings")
     @patch("builtins.print")
     def test_mysql_connection_single_table(
-        self, mock_print, mock_settings, mock_pymysql
+        self,
+        mock_print,
+        mock_settings,
+        mock_pymysql,
     ):
         """测试MySQL只有一个表的情况"""
         mock_settings.mysql_host = "localhost"
@@ -167,7 +176,10 @@ class TestPostgreSQLConnection:
     @patch("src.utils.check_db_health.settings")
     @patch("builtins.print")
     def test_postgresql_connection_success(
-        self, mock_print, mock_settings, mock_psycopg2
+        self,
+        mock_print,
+        mock_settings,
+        mock_psycopg2,
     ):
         """测试PostgreSQL连接成功"""
         mock_settings.postgresql_host = "localhost"
@@ -193,7 +205,10 @@ class TestPostgreSQLConnection:
     @patch("src.utils.check_db_health.settings")
     @patch("builtins.print")
     def test_postgresql_connection_import_error(
-        self, mock_print, mock_settings, mock_psycopg2
+        self,
+        mock_print,
+        mock_settings,
+        mock_psycopg2,
     ):
         """测试psycopg2导入错误"""
         mock_psycopg2.side_effect = ImportError("No module named 'psycopg2'")
@@ -207,7 +222,10 @@ class TestPostgreSQLConnection:
     @patch("src.utils.check_db_health.settings")
     @patch("builtins.print")
     def test_postgresql_connection_main_db_error(
-        self, mock_print, mock_settings, mock_psycopg2
+        self,
+        mock_print,
+        mock_settings,
+        mock_psycopg2,
     ):
         """测试PostgreSQL主数据库连接错误"""
         mock_settings.postgresql_host = "invalid_host"
@@ -222,7 +240,10 @@ class TestPostgreSQLConnection:
     @patch("src.utils.check_db_health.settings")
     @patch("builtins.print")
     def test_postgresql_connection_monitor_db_success(
-        self, mock_print, mock_settings, mock_psycopg2
+        self,
+        mock_print,
+        mock_settings,
+        mock_psycopg2,
     ):
         """测试PostgreSQL监控数据库连接成功"""
         mock_settings.postgresql_host = "localhost"
@@ -252,7 +273,10 @@ class TestPostgreSQLConnection:
     @patch("src.utils.check_db_health.settings")
     @patch("builtins.print")
     def test_postgresql_connection_monitor_db_error(
-        self, mock_print, mock_settings, mock_psycopg2
+        self,
+        mock_print,
+        mock_settings,
+        mock_psycopg2,
     ):
         """测试PostgreSQL监控数据库连接失败"""
         mock_settings.postgresql_host = "localhost"
@@ -277,7 +301,10 @@ class TestPostgreSQLConnection:
     @patch("src.utils.check_db_health.settings")
     @patch("builtins.print")
     def test_postgresql_connection_query_error(
-        self, mock_print, mock_settings, mock_psycopg2
+        self,
+        mock_print,
+        mock_settings,
+        mock_psycopg2,
     ):
         """测试PostgreSQL查询错误"""
         mock_settings.postgresql_host = "localhost"
@@ -296,7 +323,10 @@ class TestPostgreSQLConnection:
     @patch("src.utils.check_db_health.settings")
     @patch("builtins.print")
     def test_postgresql_connection_empty_database(
-        self, mock_print, mock_settings, mock_psycopg2
+        self,
+        mock_print,
+        mock_settings,
+        mock_psycopg2,
     ):
         """测试PostgreSQL空数据库"""
         mock_settings.postgresql_host = "localhost"
@@ -350,7 +380,10 @@ class TestTDengineConnection:
     @patch("src.utils.check_db_health.settings")
     @patch("builtins.print")
     def test_tdengine_connection_import_error(
-        self, mock_print, mock_settings, mock_taos
+        self,
+        mock_print,
+        mock_settings,
+        mock_taos,
     ):
         """测试taos导入错误"""
         mock_taos.side_effect = ImportError("No module named 'taos'")
@@ -364,7 +397,10 @@ class TestTDengineConnection:
     @patch("src.utils.check_db_health.settings")
     @patch("builtins.print")
     def test_tdengine_connection_connection_error(
-        self, mock_print, mock_settings, mock_taos
+        self,
+        mock_print,
+        mock_settings,
+        mock_taos,
     ):
         """测试TDengine连接错误"""
         mock_settings.tdengine_host = "invalid_host"
@@ -379,7 +415,10 @@ class TestTDengineConnection:
     @patch("src.utils.check_db_health.settings")
     @patch("builtins.print")
     def test_tdengine_connection_client_version_fallback(
-        self, mock_print, mock_settings, mock_taos
+        self,
+        mock_print,
+        mock_settings,
+        mock_taos,
     ):
         """测试TDengine CLIENT_VERSION()失败时的回退机制"""
         mock_settings.tdengine_host = "localhost"
@@ -402,7 +441,10 @@ class TestTDengineConnection:
     @patch("src.utils.check_db_health.settings")
     @patch("builtins.print")
     def test_tdengine_connection_database_not_exist(
-        self, mock_print, mock_settings, mock_taos
+        self,
+        mock_print,
+        mock_settings,
+        mock_taos,
     ):
         """测试TDengine数据库不存在"""
         mock_settings.tdengine_host = "localhost"
@@ -445,7 +487,10 @@ class TestTDengineConnection:
     @patch("src.utils.check_db_health.settings")
     @patch("builtins.print")
     def test_tdengine_connection_use_db_error(
-        self, mock_print, mock_settings, mock_taos
+        self,
+        mock_print,
+        mock_settings,
+        mock_taos,
     ):
         """测试TDengine USE数据库错误"""
         mock_settings.tdengine_host = "localhost"
@@ -545,7 +590,10 @@ class TestRedisConnection:
     @patch("src.utils.check_db_health.settings")
     @patch("builtins.print")
     def test_redis_connection_connection_error(
-        self, mock_print, mock_settings, mock_redis
+        self,
+        mock_print,
+        mock_settings,
+        mock_redis,
     ):
         """测试Redis连接错误"""
         mock_settings.redis_host = "invalid_host"
@@ -631,7 +679,12 @@ class TestMainFunction:
     @patch("src.utils.check_db_health.check_mysql_connection")
     @patch("builtins.print")
     def test_main_all_success(
-        self, mock_print, mock_mysql, mock_pg, mock_td, mock_redis
+        self,
+        mock_print,
+        mock_mysql,
+        mock_pg,
+        mock_td,
+        mock_redis,
     ):
         """测试所有数据库连接成功"""
         mock_mysql.return_value = (True, None)
@@ -653,7 +706,12 @@ class TestMainFunction:
     @patch("src.utils.check_db_health.check_mysql_connection")
     @patch("builtins.print")
     def test_main_partial_failure(
-        self, mock_print, mock_mysql, mock_pg, mock_td, mock_redis
+        self,
+        mock_print,
+        mock_mysql,
+        mock_pg,
+        mock_td,
+        mock_redis,
     ):
         """测试部分数据库连接失败"""
         mock_mysql.return_value = (True, None)
@@ -671,7 +729,12 @@ class TestMainFunction:
     @patch("src.utils.check_db_health.check_mysql_connection")
     @patch("builtins.print")
     def test_main_all_failure(
-        self, mock_print, mock_mysql, mock_pg, mock_td, mock_redis
+        self,
+        mock_print,
+        mock_mysql,
+        mock_pg,
+        mock_td,
+        mock_redis,
     ):
         """测试所有数据库连接失败"""
         mock_mysql.return_value = (False, "MySQL错误")
@@ -689,7 +752,12 @@ class TestMainFunction:
     @patch("src.utils.check_db_health.check_mysql_connection")
     @patch("builtins.print")
     def test_main_statistics_calculation(
-        self, mock_print, mock_mysql, mock_pg, mock_td, mock_redis
+        self,
+        mock_print,
+        mock_mysql,
+        mock_pg,
+        mock_td,
+        mock_redis,
     ):
         """测试统计计算"""
         # 2个成功，2个失败
@@ -712,7 +780,12 @@ class TestMainFunction:
     @patch("src.utils.check_db_health.check_mysql_connection")
     @patch("builtins.print")
     def test_main_fix_suggestions(
-        self, mock_print, mock_mysql, mock_pg, mock_td, mock_redis
+        self,
+        mock_print,
+        mock_mysql,
+        mock_pg,
+        mock_td,
+        mock_redis,
     ):
         """测试修复建议输出"""
         # 只有MySQL成功
@@ -737,7 +810,12 @@ class TestMainFunction:
     @patch("src.utils.check_db_health.check_mysql_connection")
     @patch("builtins.print")
     def test_main_no_fix_suggestions(
-        self, mock_print, mock_mysql, mock_pg, mock_td, mock_redis
+        self,
+        mock_print,
+        mock_mysql,
+        mock_pg,
+        mock_td,
+        mock_redis,
     ):
         """测试没有修复建议的情况（全部成功）"""
         mock_mysql.return_value = (True, None)

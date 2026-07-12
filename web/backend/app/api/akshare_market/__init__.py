@@ -3,6 +3,7 @@
 Modularized into:
 - sse, szse, stock_info, fund_flow, boards, analysis
 """
+
 import logging
 
 from fastapi import APIRouter

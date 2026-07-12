@@ -1,67 +1,68 @@
 #!/usr/bin/env python3
-"""
-MyStocks异常系统测试套件
+"""MyStocks异常系统测试套件
 提供完整的异常层次结构和功能测试
 """
 
 import sys
 from pathlib import Path
 
+
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-import pytest
 from datetime import datetime
+
+import pytest
 
 # 导入被测试的模块
 from src.core.exceptions import (
-    MyStocksException,
-    DataSourceException,
-    DataSourceQueryError,
-    DataSourceDataNotFound,
-    NetworkError,
-    DataFetchError,
-    DataParseError,
-    DataValidationError,
-    DatabaseException,
+    EXCEPTION_REGISTRY,
+    AuthenticationException,
+    BacktestError,
+    BusinessLogicException,
+    CacheException,
+    CacheInvalidationError,
+    CacheRetrievalError,
+    CacheStoreError,
+    ConfigInvalidError,
+    ConfigNotFoundError,
+    ConfigurationException,
+    ConfigValidationError,
     DatabaseConnectionError,
-    DatabaseOperationError,
+    DatabaseException,
     DatabaseIntegrityError,
     DatabaseNotFoundError,
-    CacheException,
-    CacheStoreError,
-    CacheRetrievalError,
-    CacheInvalidationError,
-    ConfigurationException,
-    ConfigNotFoundError,
-    ConfigInvalidError,
-    ConfigValidationError,
-    ValidationException,
-    SchemaValidationError,
+    DatabaseOperationError,
+    DatabaseTimeoutError,
+    DataFetchError,
+    DataParseError,
+    DataSourceDataNotFound,
+    DataSourceException,
+    DataSourceQueryError,
     DataTypeError,
-    RangeError,
-    RequiredFieldError,
-    BusinessLogicException,
+    DataValidationError,
+    ExternalServiceException,
     InsufficientFundsError,
-    InvalidStrategyError,
-    BacktestError,
-    TradeExecutionError,
-    AuthenticationException,
     InvalidCredentialsError,
+    InvalidStrategyError,
+    MyStocksException,
+    NetworkError,
+    NetworkTimeoutError,
+    OperationTimeoutError,
+    RangeError,
+    RateLimitError,
+    RequiredFieldError,
+    SchemaValidationError,
+    ServiceError,
+    ServiceUnavailableError,
+    TimeoutException,
     TokenExpiredError,
     TokenInvalidError,
+    TradeExecutionError,
     UnauthorizedAccessError,
-    TimeoutException,
-    NetworkTimeoutError,
-    DatabaseTimeoutError,
-    OperationTimeoutError,
-    ExternalServiceException,
-    ServiceUnavailableError,
-    ServiceError,
-    RateLimitError,
     UnexpectedResponseError,
-    EXCEPTION_REGISTRY,
+    ValidationException,
     get_exception_class,
 )
 
@@ -99,7 +100,8 @@ class TestMyStocksException:
         """测试包含原始异常的情况"""
         original_exc = ValueError("Original error")
         exc = MyStocksException(
-            message="Wrapped error", original_exception=original_exc
+            message="Wrapped error",
+            original_exception=original_exc,
         )
 
         assert exc.original_exception == original_exc
@@ -110,7 +112,8 @@ class TestMyStocksException:
         """测试包装MyStocksException的情况"""
         original_exc = MyStocksException("Original MyStocks error")
         exc = MyStocksException(
-            message="Wrapped MyStocks error", original_exception=original_exc
+            message="Wrapped MyStocks error",
+            original_exception=original_exc,
         )
 
         assert exc.original_exception == original_exc
@@ -120,7 +123,9 @@ class TestMyStocksException:
         """测试消息格式化"""
         context = {"symbol": "AAPL", "price": 100.5}
         exc = MyStocksException(
-            message="Invalid price", code="PRICE_ERROR", context=context
+            message="Invalid price",
+            code="PRICE_ERROR",
+            context=context,
         )
 
         formatted = exc.format_message()
@@ -132,7 +137,9 @@ class TestMyStocksException:
         """测试转换为字典"""
         context = {"symbol": "AAPL"}
         exc = MyStocksException(
-            message="Test error", code="TEST_ERROR", context=context
+            message="Test error",
+            code="TEST_ERROR",
+            context=context,
         )
 
         result = exc.to_dict()
@@ -145,7 +152,9 @@ class TestMyStocksException:
     def test_repr(self):
         """测试字符串表示"""
         exc = MyStocksException(
-            message="Test error", code="TEST_CODE", severity="MEDIUM"
+            message="Test error",
+            code="TEST_CODE",
+            severity="MEDIUM",
         )
 
         repr_str = repr(exc)
@@ -552,9 +561,7 @@ class TestExceptionHierarchy:
     def test_all_exceptions_inherit_from_base(self):
         """测试所有异常都继承自基类"""
         for exc_name, exc_class in EXCEPTION_REGISTRY.items():
-            assert issubclass(exc_class, MyStocksException), (
-                f"{exc_name} does not inherit from MyStocksException"
-            )
+            assert issubclass(exc_class, MyStocksException), f"{exc_name} does not inherit from MyStocksException"
 
     def test_exception_instance_creation(self):
         """测试异常实例创建"""
@@ -629,7 +636,10 @@ class TestExceptionEdgeCases:
     def test_exception_serialization(self):
         """测试异常序列化"""
         exc = MyStocksException(
-            "Test error", code="TEST_ERROR", severity="MEDIUM", context={"key": "value"}
+            "Test error",
+            code="TEST_ERROR",
+            severity="MEDIUM",
+            context={"key": "value"},
         )
 
         # 测试to_dict方法的结果可以被JSON序列化
@@ -655,20 +665,21 @@ class TestExceptionPerformance:
         start_time = time.time()
         for _ in range(1000):
             exc = MyStocksException(
-                "Test message", code="TEST_ERROR", context={"key": "value"}
+                "Test message",
+                code="TEST_ERROR",
+                context={"key": "value"},
             )
         end_time = time.time()
 
         # 性能断言 - 应该在合理时间内完成
         processing_time = end_time - start_time
-        assert processing_time < 1.0, (
-            f"Exception creation too slow: {processing_time:.3f}s"
-        )
+        assert processing_time < 1.0, f"Exception creation too slow: {processing_time:.3f}s"
 
     def test_exception_to_dict_performance(self):
         """测试异常转换为字典的性能"""
         exc = MyStocksException(
-            "Test error", context={"key1": "value1", "key2": "value2", "key3": "value3"}
+            "Test error",
+            context={"key1": "value1", "key2": "value2", "key3": "value3"},
         )
 
         import time
@@ -679,9 +690,7 @@ class TestExceptionPerformance:
         end_time = time.time()
 
         processing_time = end_time - start_time
-        assert processing_time < 0.5, (
-            f"Exception to_dict too slow: {processing_time:.3f}s"
-        )
+        assert processing_time < 0.5, f"Exception to_dict too slow: {processing_time:.3f}s"
 
 
 if __name__ == "__main__":

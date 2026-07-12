@@ -77,7 +77,8 @@ class AkshareAdapter(BaseAdapter):
         """
         try:
             self._log_request_start(
-                "get_stock_daily", {"stock_code": stock_code, "start_date": start_date, "end_date": end_date},
+                "get_stock_daily",
+                {"stock_code": stock_code, "start_date": start_date, "end_date": end_date},
             )
 
             from akshare import stock_zh_a_hist as ak

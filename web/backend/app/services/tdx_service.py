@@ -92,7 +92,10 @@ class TdxService:
         try:
             # 调用TDX适配器获取K线
             df = self.tdx_adapter.get_stock_kline(
-                symbol=symbol, start_date=start_date, end_date=end_date, period=period,
+                symbol=symbol,
+                start_date=start_date,
+                end_date=end_date,
+                period=period,
             )
 
             if df.empty:
@@ -191,7 +194,10 @@ class TdxService:
         """
         try:
             df = self.tdx_adapter.get_index_kline(
-                symbol=symbol, start_date=start_date, end_date=end_date, period=period,
+                symbol=symbol,
+                start_date=start_date,
+                end_date=end_date,
+                period=period,
             )
 
             if df.empty:

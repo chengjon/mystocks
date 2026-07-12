@@ -40,6 +40,7 @@ def _get_metrics_access_count() -> Dict[int, Dict[int, int]]:
         metrics_access_count = {}
     return metrics_access_count
 
+
 # ==================== 定义监控指标 ====================
 
 
@@ -71,21 +72,33 @@ def _get_or_create_metric(metric_class, name, documentation, labelnames=None, re
 
 # HTTP请求计数器
 http_requests_total = _get_or_create_metric(
-    Counter, "mystocks_http_requests_total", "Total HTTP requests", ["method", "endpoint", "status"],
+    Counter,
+    "mystocks_http_requests_total",
+    "Total HTTP requests",
+    ["method", "endpoint", "status"],
 )
 
 # HTTP请求延迟直方图
 http_request_duration_seconds = _get_or_create_metric(
-    Histogram, "mystocks_http_request_duration_seconds", "HTTP request latency", ["method", "endpoint"],
+    Histogram,
+    "mystocks_http_request_duration_seconds",
+    "HTTP request latency",
+    ["method", "endpoint"],
 )
 
 # 数据库连接池状态
 db_connections_active = _get_or_create_metric(
-    Gauge, "mystocks_db_connections_active", "Active database connections", ["database"],
+    Gauge,
+    "mystocks_db_connections_active",
+    "Active database connections",
+    ["database"],
 )
 
 db_connections_idle = _get_or_create_metric(
-    Gauge, "mystocks_db_connections_idle", "Idle database connections", ["database"],
+    Gauge,
+    "mystocks_db_connections_idle",
+    "Idle database connections",
+    ["database"],
 )
 
 # 缓存命中率
@@ -95,12 +108,18 @@ cache_misses_total = _get_or_create_metric(Counter, "mystocks_cache_misses_total
 
 # API响应状态
 api_health_status = _get_or_create_metric(
-    Gauge, "mystocks_api_health_status", "API health status (1=healthy, 0=unhealthy)", ["service"],
+    Gauge,
+    "mystocks_api_health_status",
+    "API health status (1=healthy, 0=unhealthy)",
+    ["service"],
 )
 
 # 数据源可用性
 datasource_availability = _get_or_create_metric(
-    Gauge, "mystocks_datasource_availability", "Data source availability (1=available, 0=unavailable)", ["datasource"],
+    Gauge,
+    "mystocks_datasource_availability",
+    "Data source availability (1=available, 0=unavailable)",
+    ["datasource"],
 )
 
 # ==================== 辅助函数 ====================
@@ -244,7 +263,9 @@ async def basic_metrics(current_user: User = Depends(get_current_user)) -> APIRe
         # 检查访问频率限制
         if not check_rate_limit(current_user.id, max_requests_per_minute=30):
             raise BusinessException(
-                detail="访问频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED",
+                detail="访问频率过高，请稍后再试",
+                status_code=429,
+                error_code="RATE_LIMIT_EXCEEDED",
             )
 
         # 更新监控指标
@@ -267,7 +288,9 @@ async def basic_metrics(current_user: User = Depends(get_current_user)) -> APIRe
     except Exception:
         logger.error("Basic metrics failed for user {current_user.username}: %(e)s")
         raise BusinessException(
-            detail="获取监控数据失败", status_code=500, error_code="MONITORING_DATA_RETRIEVAL_FAILED",
+            detail="获取监控数据失败",
+            status_code=500,
+            error_code="MONITORING_DATA_RETRIEVAL_FAILED",
         )
 
 
@@ -288,7 +311,9 @@ async def performance_metrics(current_user: User = Depends(get_current_user)) ->
         # 检查访问频率限制
         if not check_rate_limit(current_user.id, max_requests_per_minute=20):
             raise BusinessException(
-                detail="访问频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED",
+                detail="访问频率过高，请稍后再试",
+                status_code=429,
+                error_code="RATE_LIMIT_EXCEEDED",
             )
 
         # 返回性能指标
@@ -310,7 +335,9 @@ async def performance_metrics(current_user: User = Depends(get_current_user)) ->
     except Exception:
         logger.error("Performance metrics failed for user {current_user.username}: %(e)s")
         raise BusinessException(
-            detail="获取性能数据失败", status_code=500, error_code="PERFORMANCE_DATA_RETRIEVAL_FAILED",
+            detail="获取性能数据失败",
+            status_code=500,
+            error_code="PERFORMANCE_DATA_RETRIEVAL_FAILED",
         )
 
 
@@ -339,7 +366,9 @@ async def prometheus_metrics(current_user: User = Depends(get_current_user)) -> 
         # 检查访问频率限制（更严格的限制）
         if not check_rate_limit(current_user.id, max_requests_per_minute=10):
             raise BusinessException(
-                detail="访问频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED",
+                detail="访问频率过高，请稍后再试",
+                status_code=429,
+                error_code="RATE_LIMIT_EXCEEDED",
             )
 
         # 更新所有监控指标
@@ -380,7 +409,9 @@ async def detailed_metrics(current_user: User = Depends(get_current_user)) -> AP
         # 检查访问频率限制
         if not check_rate_limit(current_user.id, max_requests_per_minute=5):
             raise BusinessException(
-                detail="访问频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED",
+                detail="访问频率过高，请稍后再试",
+                status_code=429,
+                error_code="RATE_LIMIT_EXCEEDED",
             )
 
         # 更新监控指标
@@ -407,7 +438,9 @@ async def detailed_metrics(current_user: User = Depends(get_current_user)) -> AP
     except Exception:
         logger.error("Detailed metrics failed for admin {current_user.username}: %(e)s")
         raise BusinessException(
-            detail="获取详细监控数据失败", status_code=500, error_code="DETAILED_MONITORING_DATA_RETRIEVAL_FAILED",
+            detail="获取详细监控数据失败",
+            status_code=500,
+            error_code="DETAILED_MONITORING_DATA_RETRIEVAL_FAILED",
         )
 
 

@@ -1,15 +1,16 @@
-"""
-用户行为建模模块
+"""用户行为建模模块
 为Locust压测定义5种不同的用户角色和行为模式
 
 任务14.1: Locust压测脚本和用户行为建模
 """
 
 import random
-from enum import Enum
 from dataclasses import dataclass
+from enum import Enum
 from typing import List, Tuple
+
 import structlog
+
 
 logger = structlog.get_logger()
 
@@ -129,10 +130,10 @@ class RequestSequenceGenerator:
 
     @staticmethod
     def generate_sequence(
-        pattern: UserBehaviorPattern, session_duration: int
+        pattern: UserBehaviorPattern,
+        session_duration: int,
     ) -> List[Tuple[str, float]]:
-        """
-        为用户生成请求序列
+        """为用户生成请求序列
 
         返回: [(请求类型, 延迟时间), ...]
         """
@@ -189,11 +190,7 @@ class UserSessionSimulator:
             "elapsed_time": elapsed_time,
             "total_requests": self.request_count,
             "requests_by_type": self.requests_by_type,
-            "avg_response_time": (
-                sum(self.response_times) / len(self.response_times)
-                if self.response_times
-                else 0
-            ),
+            "avg_response_time": (sum(self.response_times) / len(self.response_times) if self.response_times else 0),
             "max_response_time": max(self.response_times) if self.response_times else 0,
             "min_response_time": min(self.response_times) if self.response_times else 0,
         }
@@ -204,9 +201,7 @@ class UserSessionSimulator:
     def record_request(self, request_type: str, response_time: float):
         """记录请求"""
         self.request_count += 1
-        self.requests_by_type[request_type] = (
-            self.requests_by_type.get(request_type, 0) + 1
-        )
+        self.requests_by_type[request_type] = self.requests_by_type.get(request_type, 0) + 1
         self.response_times.append(response_time)
 
 
@@ -270,12 +265,11 @@ class UserBehaviorScenarios:
         """根据时间段获取对应的场景"""
         if 9 <= hour < 10:
             return UserBehaviorScenarios.morning_open_scenario()
-        elif 10 <= hour < 12:
+        if 10 <= hour < 12:
             return UserBehaviorScenarios.midday_scenario()
-        elif 14 <= hour < 15:
+        if 14 <= hour < 15:
             return UserBehaviorScenarios.afternoon_close_scenario()
-        else:
-            return UserBehaviorScenarios.after_hours_scenario()
+        return UserBehaviorScenarios.after_hours_scenario()
 
 
 class TrafficModelGenerator:
@@ -283,8 +277,7 @@ class TrafficModelGenerator:
 
     @staticmethod
     def generate_hourly_traffic_profile() -> dict:
-        """
-        生成按小时的流量分布
+        """生成按小时的流量分布
 
         返回: {小时: 相对流量倍数}
         """
@@ -317,8 +310,7 @@ class TrafficModelGenerator:
 
     @staticmethod
     def generate_user_distribution(total_users: int = 1000) -> dict:
-        """
-        生成用户分布
+        """生成用户分布
 
         返回: {用户角色: 用户数}
         """
@@ -331,8 +323,7 @@ class TrafficModelGenerator:
 
     @staticmethod
     def generate_request_distribution(total_users: int = 1000) -> dict:
-        """
-        生成请求分布
+        """生成请求分布
 
         返回: {请求类型: 比例}
         """
@@ -368,7 +359,10 @@ class LoadTestMetrics:
         self.requests_by_type = {}
 
     def record_request(
-        self, request_type: str, response_time: float, success: bool = True
+        self,
+        request_type: str,
+        response_time: float,
+        success: bool = True,
     ):
         """记录请求"""
         self.total_requests += 1
@@ -391,11 +385,7 @@ class LoadTestMetrics:
 
     def get_summary(self) -> dict:
         """获取统计摘要"""
-        success_rate = (
-            self.successful_requests / self.total_requests
-            if self.total_requests > 0
-            else 0
-        )
+        success_rate = self.successful_requests / self.total_requests if self.total_requests > 0 else 0
 
         response_times_sorted = sorted(self.response_times)
         n = len(response_times_sorted)
@@ -405,11 +395,7 @@ class LoadTestMetrics:
             "successful_requests": self.successful_requests,
             "failed_requests": self.failed_requests,
             "success_rate": f"{success_rate * 100:.2f}%",
-            "avg_response_time": (
-                sum(self.response_times) / len(self.response_times)
-                if self.response_times
-                else 0
-            ),
+            "avg_response_time": (sum(self.response_times) / len(self.response_times) if self.response_times else 0),
             "min_response_time": min(self.response_times) if self.response_times else 0,
             "max_response_time": max(self.response_times) if self.response_times else 0,
             "p50_response_time": response_times_sorted[n // 2] if n > 0 else 0,

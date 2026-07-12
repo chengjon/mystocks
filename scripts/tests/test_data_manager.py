@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-DataManager模块全面测试套件 - 简化版本
+"""DataManager模块全面测试套件 - 简化版本
 应用Phase 6成功模式：功能→边界→异常→性能→集成测试
 
 覆盖目标：100%测试覆盖率
@@ -10,18 +9,21 @@ DataManager模块全面测试套件 - 简化版本
 import sys
 from pathlib import Path
 
+
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-import pytest
-import pandas as pd
 import time
 from unittest.mock import Mock, patch
 
+import pandas as pd
+import pytest
+
+from src.core.data_classification import DatabaseTarget, DataClassification
+
 # 导入被测试的模块
 from src.core.data_manager import DataManager, _NullMonitoring
-from src.core.data_classification import DataClassification, DatabaseTarget
 
 
 class TestNullMonitoring:
@@ -32,10 +34,7 @@ class TestNullMonitoring:
         null_monitor = _NullMonitoring()
 
         # 测试所有方法都存在且返回合适的值
-        assert (
-            null_monitor.log_operation_start("test", arg1="value")
-            == "null_operation_id"
-        )
+        assert null_monitor.log_operation_start("test", arg1="value") == "null_operation_id"
         assert null_monitor.log_operation_result("test", True) is True
         assert null_monitor.log_operation("test", data={}) is True
         assert null_monitor.record_performance_metric("test", 100) is True
@@ -66,7 +65,7 @@ class TestDataManagerCoreFeatures:
         """每个测试方法前的设置"""
         # 使用patch来避免真实的数据库连接，但创建真实的DataManager实例
         with patch(
-            "src.storage.database.database_manager.DatabaseTableManager"
+            "src.storage.database.database_manager.DatabaseTableManager",
         ) as mock_db_manager:
             mock_db_instance = Mock()
             mock_db_manager.return_value = mock_db_instance
@@ -105,12 +104,8 @@ class TestDataManagerCoreFeatures:
 
     def test_routing_map_distribution(self):
         """测试路由映射分布"""
-        tdengine_count = sum(
-            1 for db in self.dm._ROUTING_MAP.values() if db == DatabaseTarget.TDENGINE
-        )
-        postgresql_count = sum(
-            1 for db in self.dm._ROUTING_MAP.values() if db == DatabaseTarget.POSTGRESQL
-        )
+        tdengine_count = sum(1 for db in self.dm._ROUTING_MAP.values() if db == DatabaseTarget.TDENGINE)
+        postgresql_count = sum(1 for db in self.dm._ROUTING_MAP.values() if db == DatabaseTarget.POSTGRESQL)
 
         # 验证路由分布合理性
         assert tdengine_count >= 5, "TDengine路由数量过少"
@@ -136,13 +131,9 @@ class TestDataManagerCoreFeatures:
 
             # 验证TDengine分类正确路由
             if classification in expected_tds:
-                assert target == DatabaseTarget.TDENGINE, (
-                    f"{classification} 应该路由到 TDengine"
-                )
+                assert target == DatabaseTarget.TDENGINE, f"{classification} 应该路由到 TDengine"
             else:
-                assert target == DatabaseTarget.POSTGRESQL, (
-                    f"{classification} 应该路由到 PostgreSQL"
-                )
+                assert target == DatabaseTarget.POSTGRESQL, f"{classification} 应该路由到 PostgreSQL"
 
     def test_adapter_registration_lifecycle(self):
         """测试适配器注册生命周期"""
@@ -191,11 +182,12 @@ class TestDataManagerCoreFeatures:
                 "symbol": ["600000.SH"] * 3,
                 "close": [10.0, 10.5, 11.0],
                 "volume": [1000, 1200, 800],
-            }
+            },
         )
 
         is_valid, errors = self.dm.validate_data(
-            DataClassification.DAILY_KLINE, valid_data
+            DataClassification.DAILY_KLINE,
+            valid_data,
         )
         assert is_valid is True
         assert len(errors) == 0
@@ -209,7 +201,8 @@ class TestDataManagerCoreFeatures:
         # 测试空DataFrame
         empty_data = pd.DataFrame()
         is_valid, errors = self.dm.validate_data(
-            DataClassification.DAILY_KLINE, empty_data
+            DataClassification.DAILY_KLINE,
+            empty_data,
         )
         assert is_valid is False
         assert len(errors) == 1
@@ -247,7 +240,7 @@ class TestDataManagerDataOperations:
         """每个测试方法前的设置"""
         with (
             patch(
-                "src.storage.database.database_manager.DatabaseTableManager"
+                "src.storage.database.database_manager.DatabaseTableManager",
             ) as mock_db_manager,
             patch("src.data_access.TDengineDataAccess") as mock_td,
             patch("src.data_access.PostgreSQLDataAccess") as mock_pg,
@@ -268,7 +261,7 @@ class TestDataManagerDataOperations:
                 "symbol": ["600000.SH"] * 5,
                 "close": [10.0, 10.5, 11.0, 10.8, 11.2],
                 "volume": [1000, 1200, 800, 1500, 900],
-            }
+            },
         )
 
         # 设置PostgreSQL保存成功
@@ -276,7 +269,9 @@ class TestDataManagerDataOperations:
 
         # 执行保存操作
         result = self.dm.save_data(
-            DataClassification.DAILY_KLINE, test_data, table_name="daily_kline"
+            DataClassification.DAILY_KLINE,
+            test_data,
+            table_name="daily_kline",
         )
 
         # 验证结果
@@ -284,7 +279,9 @@ class TestDataManagerDataOperations:
 
         # 验证调用正确的数据库访问层
         self.dm._postgresql.save_data.assert_called_once_with(
-            test_data, DataClassification.DAILY_KLINE, "daily_kline"
+            test_data,
+            DataClassification.DAILY_KLINE,
+            "daily_kline",
         )
 
     def test_save_data_to_tdengine(self):
@@ -296,7 +293,7 @@ class TestDataManagerDataOperations:
                 "symbol": ["600000.SH"] * 10,
                 "price": range(10, 20),
                 "volume": range(100, 200, 10),
-            }
+            },
         )
 
         # 设置TDengine保存成功
@@ -304,7 +301,9 @@ class TestDataManagerDataOperations:
 
         # 执行保存操作
         result = self.dm.save_data(
-            DataClassification.TICK_DATA, test_data, table_name="tick_600000"
+            DataClassification.TICK_DATA,
+            test_data,
+            table_name="tick_600000",
         )
 
         # 验证结果
@@ -312,7 +311,9 @@ class TestDataManagerDataOperations:
 
         # 验证调用正确的数据库访问层
         self.dm._tdengine.save_data.assert_called_once_with(
-            test_data, DataClassification.TICK_DATA, "tick_600000"
+            test_data,
+            DataClassification.TICK_DATA,
+            "tick_600000",
         )
 
     def test_save_data_with_kwargs(self):
@@ -349,7 +350,9 @@ class TestDataManagerDataOperations:
         self.dm._postgresql.save_data.return_value = False
 
         result = self.dm.save_data(
-            DataClassification.DAILY_KLINE, test_data, table_name="daily_test"
+            DataClassification.DAILY_KLINE,
+            test_data,
+            table_name="daily_test",
         )
 
         # 验证失败处理
@@ -364,7 +367,9 @@ class TestDataManagerDataOperations:
 
         with patch("src.core.data_manager.logger"):  # 抑制错误日志
             result = self.dm.save_data(
-                DataClassification.DAILY_KLINE, test_data, table_name="daily_test"
+                DataClassification.DAILY_KLINE,
+                test_data,
+                table_name="daily_test",
             )
 
         # 验证异常处理
@@ -379,7 +384,7 @@ class TestDataManagerDataOperations:
                 "symbol": ["600000.SH"] * 3,
                 "close": [10.0, 10.5, 11.0],
                 "volume": [1000, 1200, 800],
-            }
+            },
         )
 
         # 设置PostgreSQL返回数据
@@ -387,7 +392,9 @@ class TestDataManagerDataOperations:
 
         # 执行加载操作
         result = self.dm.load_data(
-            DataClassification.DAILY_KLINE, table_name="daily_kline", symbol="600000.SH"
+            DataClassification.DAILY_KLINE,
+            table_name="daily_kline",
+            symbol="600000.SH",
         )
 
         # 验证结果
@@ -396,7 +403,8 @@ class TestDataManagerDataOperations:
 
         # 验证调用正确的数据库访问层
         self.dm._postgresql.load_data.assert_called_once_with(
-            "daily_kline", symbol="600000.SH"
+            "daily_kline",
+            symbol="600000.SH",
         )
 
     def test_load_data_from_tdengine(self):
@@ -408,7 +416,7 @@ class TestDataManagerDataOperations:
                 "symbol": ["600000.SH"] * 5,
                 "price": range(10, 15),
                 "volume": range(100, 150, 10),
-            }
+            },
         )
 
         # 设置TDengine返回数据
@@ -428,7 +436,9 @@ class TestDataManagerDataOperations:
 
         # 验证调用正确的数据库访问层
         self.dm._tdengine.load_data.assert_called_once_with(
-            "minute_600000", symbol="600000.SH", start_time="2024-01-01 09:30:00"
+            "minute_600000",
+            symbol="600000.SH",
+            start_time="2024-01-01 09:30:00",
         )
 
     def test_load_data_empty_result(self):
@@ -437,7 +447,8 @@ class TestDataManagerDataOperations:
         self.dm._postgresql.load_data.return_value = None
 
         result = self.dm.load_data(
-            DataClassification.TECHNICAL_INDICATORS, table_name="indicators"
+            DataClassification.TECHNICAL_INDICATORS,
+            table_name="indicators",
         )
 
         # 验证空结果处理
@@ -450,7 +461,8 @@ class TestDataManagerDataOperations:
 
         with patch("src.core.data_manager.logger"):  # 抑制错误日志
             result = self.dm.load_data(
-                DataClassification.TICK_DATA, table_name="tick_test"
+                DataClassification.TICK_DATA,
+                table_name="tick_test",
             )
 
         # 验证异常处理
@@ -467,10 +479,10 @@ class TestDataManagerMonitoringIntegration:
             patch("src.data_access.TDengineDataAccess"),
             patch("src.data_access.PostgreSQLDataAccess"),
             patch(
-                "src.monitoring.monitoring_database.get_monitoring_database"
+                "src.monitoring.monitoring_database.get_monitoring_database",
             ) as mock_get_monitoring,
             patch(
-                "src.monitoring.performance_monitor.get_performance_monitor"
+                "src.monitoring.performance_monitor.get_performance_monitor",
             ) as mock_get_perf,
         ):
             # 设置Mock监控组件
@@ -601,9 +613,7 @@ class TestDataManagerPerformanceAndIntegration:
         avg_duration_ms = duration_ms / iterations
 
         # 验证平均路由时间 <1ms (远低于5ms目标)
-        assert avg_duration_ms < 1.0, (
-            f"路由平均时间 {avg_duration_ms:.3f}ms 超过目标 1ms"
-        )
+        assert avg_duration_ms < 1.0, f"路由平均时间 {avg_duration_ms:.3f}ms 超过目标 1ms"
 
     def test_large_dataframe_operations(self):
         """测试大数据集操作"""
@@ -613,13 +623,14 @@ class TestDataManagerPerformanceAndIntegration:
                 "date": pd.date_range("2024-01-01", periods=10000, freq="1min"),
                 "symbol": ["TEST"] * 10000,
                 "value": range(10000),
-            }
+            },
         )
 
         # 测试验证性能
         start_time = time.time()
         is_valid, errors = self.dm.validate_data(
-            DataClassification.DAILY_KLINE, large_data
+            DataClassification.DAILY_KLINE,
+            large_data,
         )
         duration_ms = (time.time() - start_time) * 1000
 
@@ -656,7 +667,7 @@ class TestDataManagerPerformanceAndIntegration:
         # 验证PostgreSQL分类（应该是其他所有数据）
         postgresql_classifications = routing_summary.get(DatabaseTarget.POSTGRESQL, [])
         assert len(postgresql_classifications) == 34 - len(
-            expected_tdengine_classifications
+            expected_tdengine_classifications,
         )
 
         # 验证没有分类被遗漏
@@ -689,13 +700,15 @@ class TestDataManagerPerformanceAndIntegration:
                     "low": [9.8, 10.3, 10.8, 10.6, 11.0],
                     "close": [10.3, 10.8, 11.1, 10.9, 11.3],
                     "volume": [1000, 1200, 900, 1500, 1100],
-                }
+                },
             )
 
             # 3. 保存数据
             dm._postgresql.save_data.return_value = True
             save_result = dm.save_data(
-                DataClassification.DAILY_KLINE, test_data, table_name="daily_kline"
+                DataClassification.DAILY_KLINE,
+                test_data,
+                table_name="daily_kline",
             )
             assert save_result is True
 
@@ -711,7 +724,8 @@ class TestDataManagerPerformanceAndIntegration:
 
             # 5. 验证数据
             is_valid, errors = dm.validate_data(
-                DataClassification.DAILY_KLINE, loaded_data
+                DataClassification.DAILY_KLINE,
+                loaded_data,
             )
             assert is_valid is True
             assert len(errors) == 0

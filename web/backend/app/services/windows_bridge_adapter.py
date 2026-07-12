@@ -12,6 +12,7 @@ from app.services.data_source_interface import HealthStatus, HealthStatusEnum, I
 
 logger = __import__("logging").getLogger(__name__)
 
+
 class MultiSourceBridgeAdapter(IDataSource):
     """多源桥接适配器 - 负责调度远程 Windows 代理"""
 
@@ -20,11 +21,11 @@ class MultiSourceBridgeAdapter(IDataSource):
         self.source_type = "distributed_bridge"
         # 节点注册表: { "wind": "http://example.local:8001", "qmt": "http://example.local:8001" }
         self.providers = config.get("providers", {})
-        self.timeout = config.get("timeout", 30.0) # 采集可能较慢，增加超时
+        self.timeout = config.get("timeout", 30.0)  # 采集可能较慢，增加超时
 
     async def get_data(self, endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
         """按需触发数据采集逻辑
-        
+
         Args:
             endpoint: 格式为 "provider/method", 如 "wind/wsd" 或 "qmt/position"
 
@@ -47,7 +48,7 @@ class MultiSourceBridgeAdapter(IDataSource):
                 json={
                     "method": method,
                     "params": params,
-                    "write_to_nas": True, # 强制要求 Windows 端写入 NAS
+                    "write_to_nas": True,  # 强制要求 Windows 端写入 NAS
                 },
             )
             response.raise_for_status()

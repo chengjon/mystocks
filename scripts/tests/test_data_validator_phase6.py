@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""
-DataValidator Phase 6 测试套件
+"""DataValidator Phase 6 测试套件
 遵循Phase 6成功模式：功能→边界→异常→性能→集成测试
 目标：将data_validator.py的覆盖率从初始状态提升到95%+
 """
 
 import sys
-import time
-import pandas as pd
-import numpy as np
 from pathlib import Path
+
+import numpy as np
+import pandas as pd
 import pytest
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -40,7 +40,7 @@ class TestValidateStockSymbol:
     """测试validate_stock_symbol方法"""
 
     def setup_method(self):
-        """pytest setup方法"""
+        """Pytest setup方法"""
         self.validator = DataValidator()
 
     def test_valid_stock_symbols(self):
@@ -105,7 +105,7 @@ class TestValidateDateFormat:
     """测试validate_date_format方法"""
 
     def setup_method(self):
-        """pytest setup方法"""
+        """Pytest setup方法"""
         self.validator = DataValidator()
 
     def test_valid_date_formats(self):
@@ -170,7 +170,7 @@ class TestValidateDateRange:
     """测试validate_date_range方法"""
 
     def setup_method(self):
-        """pytest setup方法"""
+        """Pytest setup方法"""
         self.validator = DataValidator()
 
     def test_valid_date_ranges(self):
@@ -216,7 +216,7 @@ class TestValidatePriceData:
     """测试validate_price_data方法"""
 
     def setup_method(self):
-        """pytest setup方法"""
+        """Pytest setup方法"""
         self.validator = DataValidator()
 
     def test_valid_price_data(self):
@@ -228,7 +228,7 @@ class TestValidatePriceData:
                 "low": [9.5, 10.0, 10.5],
                 "close": [10.6, 11.0, 11.2],
                 "volume": [1000, 1200, 900],
-            }
+            },
         )
 
         result = self.validator.validate_price_data(valid_data)
@@ -239,10 +239,10 @@ class TestValidatePriceData:
         invalid_data_cases = [
             pd.DataFrame({"open": [10.0, 10.5], "high": [10.8, 11.2]}),  # 缺少多列
             pd.DataFrame(
-                {"open": [10.0], "high": [10.8], "low": [9.5], "close": [10.6]}
+                {"open": [10.0], "high": [10.8], "low": [9.5], "close": [10.6]},
             ),  # 缺少volume
             pd.DataFrame(
-                {"high": [10.8], "low": [9.5], "close": [10.6], "volume": [1000]}
+                {"high": [10.8], "low": [9.5], "close": [10.6], "volume": [1000]},
             ),  # 缺少open
         ]
 
@@ -266,7 +266,7 @@ class TestValidatePriceData:
                     "low": [9.5],
                     "close": [10.6],
                     "volume": [1000],
-                }
+                },
             ),
             pd.DataFrame(
                 {
@@ -275,7 +275,7 @@ class TestValidatePriceData:
                     "low": [9.5],
                     "close": [10.6],
                     "volume": [1000],
-                }
+                },
             ),
             pd.DataFrame(
                 {
@@ -284,7 +284,7 @@ class TestValidatePriceData:
                     "low": [-9.5],
                     "close": [10.6],
                     "volume": [1000],
-                }
+                },
             ),
             pd.DataFrame(
                 {
@@ -293,7 +293,7 @@ class TestValidatePriceData:
                     "low": [9.5],
                     "close": [-10.6],
                     "volume": [1000],
-                }
+                },
             ),
         ]
 
@@ -310,7 +310,7 @@ class TestValidatePriceData:
                 "low": [9.5],
                 "close": [10.6],
                 "volume": [1000],
-            }
+            },
         )
         result = self.validator.validate_price_data(zero_price_data)
         assert result is False
@@ -324,7 +324,7 @@ class TestValidatePriceData:
                 "low": [9.5],
                 "close": [10.6],
                 "volume": [-1000],
-            }
+            },
         )
         result = self.validator.validate_price_data(negative_volume_data)
         assert result is False
@@ -340,7 +340,7 @@ class TestValidatePriceData:
                     "low": [9.5],
                     "close": [10.6],
                     "volume": [1000],
-                }
+                },
             ),
             # High < Open
             pd.DataFrame(
@@ -350,7 +350,7 @@ class TestValidatePriceData:
                     "low": [9.5],
                     "close": [10.6],
                     "volume": [1000],
-                }
+                },
             ),
             # High < Close
             pd.DataFrame(
@@ -360,7 +360,7 @@ class TestValidatePriceData:
                     "low": [9.5],
                     "close": [11.0],
                     "volume": [1000],
-                }
+                },
             ),
             # Low > Open
             pd.DataFrame(
@@ -370,7 +370,7 @@ class TestValidatePriceData:
                     "low": [9.5],
                     "close": [10.6],
                     "volume": [1000],
-                }
+                },
             ),
             # Low > Close
             pd.DataFrame(
@@ -380,7 +380,7 @@ class TestValidatePriceData:
                     "low": [10.7],
                     "close": [10.6],
                     "volume": [1000],
-                }
+                },
             ),
         ]
 
@@ -397,7 +397,7 @@ class TestValidatePriceData:
                 "low": [9.5, 10.0, 11.5],
                 "close": [10.6, 10.8, 12.2],
                 "volume": [1000, 1200, 1300],
-            }
+            },
         )
         result = self.validator.validate_price_data(mixed_data)
         assert result is False
@@ -411,7 +411,7 @@ class TestValidatePriceData:
                 "low": [9.5],
                 "close": [10.6],
                 "volume": [1000],
-            }
+            },
         )
         result = self.validator.validate_price_data(non_numeric_data)
         assert result is False
@@ -421,7 +421,7 @@ class TestValidateVolumeData:
     """测试validate_volume_data方法"""
 
     def setup_method(self):
-        """pytest setup方法"""
+        """Pytest setup方法"""
         self.validator = DataValidator()
 
     def test_valid_volume_data(self):
@@ -433,7 +433,7 @@ class TestValidateVolumeData:
     def test_missing_volume_column(self):
         """测试缺少volume列"""
         data_without_volume = pd.DataFrame(
-            {"open": [10.0, 10.5], "close": [10.6, 11.0]}
+            {"open": [10.0, 10.5], "close": [10.6, 11.0]},
         )
         result = self.validator.validate_volume_data(data_without_volume)
         assert result is False
@@ -467,7 +467,7 @@ class TestValidateTradingDay:
     """测试validate_trading_day方法"""
 
     def setup_method(self):
-        """pytest setup方法"""
+        """Pytest setup方法"""
         self.validator = DataValidator()
 
     def test_valid_trading_days(self):
@@ -512,7 +512,7 @@ class TestValidatePriceRange:
     """测试validate_price_range方法"""
 
     def setup_method(self):
-        """pytest setup方法"""
+        """Pytest setup方法"""
         self.validator = DataValidator()
 
     def test_valid_price_ranges(self):
@@ -523,7 +523,7 @@ class TestValidatePriceRange:
                 "high": [10.5, 105.0, 5100.0],
                 "low": [9.5, 95.0, 4900.0],
                 "close": [10.2, 102.0, 5050.0],
-            }
+            },
         )
         result = self.validator.validate_price_range(valid_data)
         assert result is True
@@ -536,7 +536,7 @@ class TestValidatePriceRange:
                 "high": [10.5],
                 "low": [9.5],
                 "close": [10.2],
-            }
+            },
         )
         result = self.validator.validate_price_range(low_price_data)
         assert result is False
@@ -549,7 +549,7 @@ class TestValidatePriceRange:
                 "high": [15050.0],
                 "low": [14950.0],
                 "close": [15020.0],
-            }
+            },
         )
         result = self.validator.validate_price_range(high_price_data)
         assert result is False
@@ -562,18 +562,22 @@ class TestValidatePriceRange:
                 "high": [5.5, 15.5],
                 "low": [4.5, 14.5],
                 "close": [5.2, 15.2],
-            }
+            },
         )
 
         # 使用自定义范围
         result = self.validator.validate_price_range(
-            data, min_price=1.0, max_price=20.0
+            data,
+            min_price=1.0,
+            max_price=20.0,
         )
         assert result is True
 
         # 使用不匹配的自定义范围
         result = self.validator.validate_price_range(
-            data, min_price=10.0, max_price=20.0
+            data,
+            min_price=10.0,
+            max_price=20.0,
         )
         assert result is False
 
@@ -584,7 +588,7 @@ class TestValidatePriceRange:
                 "open": [10.0],
                 "close": [10.2],
                 # 缺少high和low
-            }
+            },
         )
         result = self.validator.validate_price_range(partial_data)
         assert result is True  # 应该跳过缺失的列
@@ -592,7 +596,7 @@ class TestValidatePriceRange:
     def test_non_numeric_prices(self):
         """测试非数值价格被转换为NaN"""
         non_numeric_data = pd.DataFrame(
-            {"open": ["invalid"], "high": [10.5], "low": [9.5], "close": [10.2]}
+            {"open": ["invalid"], "high": [10.5], "low": [9.5], "close": [10.2]},
         )
         result = self.validator.validate_price_range(non_numeric_data)
         # pandas.to_numeric将无效字符串转换为NaN，但validate_price_range默认跳过NaN
@@ -603,7 +607,7 @@ class TestCheckDataCompleteness:
     """测试check_data_completeness方法"""
 
     def setup_method(self):
-        """pytest setup方法"""
+        """Pytest setup方法"""
         self.validator = DataValidator()
 
     def test_complete_data(self):
@@ -615,7 +619,7 @@ class TestCheckDataCompleteness:
                 "low": [9.5, 10.0],
                 "close": [10.6, 10.8],
                 "volume": [1000, 1200],
-            }
+            },
         )
         result = self.validator.check_data_completeness(complete_data)
         assert result is True
@@ -633,7 +637,7 @@ class TestCheckDataCompleteness:
                 "open": [10.0, 10.5],
                 "close": [10.6, 10.8],
                 # 缺少high, low, volume
-            }
+            },
         )
         result = self.validator.check_data_completeness(incomplete_data)
         assert result is False
@@ -647,7 +651,7 @@ class TestCheckDataCompleteness:
                 "low": [9.5, 10.0],
                 "close": [10.6, 10.8],
                 "volume": [1000, 1200],
-            }
+            },
         )
         result = self.validator.check_data_completeness(data_with_missing)
         assert result is False
@@ -655,18 +659,20 @@ class TestCheckDataCompleteness:
     def test_custom_required_columns(self):
         """测试自定义必需列"""
         data = pd.DataFrame(
-            {"date": ["2024-01-01", "2024-01-02"], "close": [10.6, 10.8]}
+            {"date": ["2024-01-01", "2024-01-02"], "close": [10.6, 10.8]},
         )
 
         # 使用自定义列要求
         result = self.validator.check_data_completeness(
-            data, required_columns=["date", "close"]
+            data,
+            required_columns=["date", "close"],
         )
         assert result is True
 
         # 使用不匹配的自定义列要求
         result = self.validator.check_data_completeness(
-            data, required_columns=["date", "open"]
+            data,
+            required_columns=["date", "open"],
         )
         assert result is False
 
@@ -674,15 +680,10 @@ class TestCheckDataCompleteness:
         """测试单列数据"""
         single_column_data = pd.DataFrame({"close": [10.6, 10.8, 11.0]})
         result = self.validator.check_data_completeness(
-            single_column_data, required_columns=["close"]
+            single_column_data,
+            required_columns=["close"],
         )
         assert result is True
-
-
-from scripts._test_data_validator_phase6_tail import (
-    TestIntegrationWorkflow,
-    TestPerformanceAndEdgeCases,
-)
 
 
 if __name__ == "__main__":

@@ -17,18 +17,22 @@ REDIS_CACHE_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
 
+
 def get_tdengine_manager():
     return None
+
 
 class CacheCoreInit:
     """缓存管理器核心：初始化与内部工具方法"""
 
+
 class CacheManager:
-    """统一缓存管理器 - 三级缓存架构
-    """
+    """统一缓存管理器 - 三级缓存架构"""
 
     def __init__(
-        self, tdengine_manager: Optional[Any] = None, redis_cache: Optional[Any] = None,
+        self,
+        tdengine_manager: Optional[Any] = None,
+        redis_cache: Optional[Any] = None,
     ):
         """初始化缓存管理器
 
@@ -228,4 +232,3 @@ class CacheManager:
                 response_time=response_time,
             )
             return None
-

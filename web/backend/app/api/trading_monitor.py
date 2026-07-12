@@ -117,7 +117,9 @@ async def get_strategies_performance():
         for strategy_name, metrics in performance_data.items():
             result.append(
                 StrategyPerformanceResponse(
-                    strategy_name=strategy_name, status=metrics.get("status", "unknown"), performance_metrics=metrics,
+                    strategy_name=strategy_name,
+                    status=metrics.get("status", "unknown"),
+                    performance_metrics=metrics,
                 ),
             )
 

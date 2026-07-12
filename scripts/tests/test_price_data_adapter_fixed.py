@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-价格数据适配器测试套件 - 修复版本
+"""价格数据适配器测试套件 - 修复版本
 完整测试价格数据适配器的所有功能，确保100%测试覆盖率
 基于实际实现行为编写测试，确保测试稳定性
 """
@@ -8,13 +7,15 @@
 import sys
 from pathlib import Path
 
+
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-import pytest
-import pandas as pd
 import random
+
+import pandas as pd
+import pytest
 
 # 导入被测试的模块
 from src.adapters.price_data_adapter import PriceDataAdapter
@@ -183,7 +184,8 @@ class TestPriceDataAdapterFixed:
 
         for invalid_date in invalid_dates:
             with pytest.raises(
-                ValueError, match="Invalid start_date format|Invalid end_date format"
+                ValueError,
+                match="Invalid start_date format|Invalid end_date format",
             ):
                 adapter.get_stock_daily(symbol, invalid_date, "2024-01-05")
 
@@ -276,7 +278,9 @@ class TestPriceDataAdapterFixed:
 
         # 测试周末日期范围（使用有效的日期范围）
         df_weekend = adapter.get_stock_daily(
-            "000001", "2024-01-05", "2024-01-07"
+            "000001",
+            "2024-01-05",
+            "2024-01-07",
         )  # 包含周末
         assert isinstance(df_weekend, pd.DataFrame)
 
@@ -342,7 +346,7 @@ class TestPriceDataAdapterFixed:
             except Exception:
                 # 其他异常不应该发生
                 pytest.fail(
-                    f"Unexpected exception for inputs: {symbol}, {start_date}, {end_date}"
+                    f"Unexpected exception for inputs: {symbol}, {start_date}, {end_date}",
                 )
 
     def test_concurrent_access_simulation(self):

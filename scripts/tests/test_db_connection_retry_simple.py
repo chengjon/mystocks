@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""
-数据库连接重试工具测试套件 - 简化版本
+"""数据库连接重试工具测试套件 - 简化版本
 专注于测试核心功能，避免复杂的依赖问题
 """
 
+import functools
 import sys
 import time
-import functools
 from pathlib import Path
 from unittest.mock import patch
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -16,6 +16,7 @@ sys.path.insert(0, str(project_root))
 
 # Mock problematic imports to avoid circular dependency
 import unittest.mock
+
 
 sys.modules["src.storage.database.connection_manager"] = unittest.mock.MagicMock()
 sys.modules["src.core.config"] = unittest.mock.MagicMock()
@@ -120,7 +121,6 @@ class TestDBRetryDecorator:
         @db_retry(max_retries=3)
         def test_function():
             """Test function docstring"""
-            pass
 
         assert test_function.__name__ == "test_function"
         assert test_function.__doc__ == "Test function docstring"
@@ -254,8 +254,8 @@ class TestPerformanceAndReliability:
 
     def test_concurrent_retry_operations(self):
         """测试并发重试操作"""
-        import threading
         import queue
+        import threading
 
         results = queue.Queue()
 
@@ -268,7 +268,7 @@ class TestPerformanceAndReliability:
                 result = worker_function(worker_id)
                 results.put(result)
             except Exception as e:
-                results.put(f"worker_{worker_id}_failed: {str(e)}")
+                results.put(f"worker_{worker_id}_failed: {e!s}")
 
         # 启动多个线程
         threads = []
@@ -336,10 +336,9 @@ class TestIntegrationScenarios:
         def multi_exception_function(error_type="connection"):
             if error_type == "connection":
                 raise ConnectionError("Connection error")
-            elif error_type == "network":
+            if error_type == "network":
                 raise OSError("Network timeout")
-            else:
-                raise ValueError("Value error")
+            raise ValueError("Value error")
 
         # 连接错误应该重试
         with pytest.raises(ConnectionError):

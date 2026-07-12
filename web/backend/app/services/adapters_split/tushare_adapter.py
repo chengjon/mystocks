@@ -43,18 +43,25 @@ class TushareAdapter(BaseAdapter):
             self._ensure_token()
 
             import tushare as ts
-            df = ts.pro_api(ts.pro_api.StockBasic, token=self.token, fields={
-                "ts_code": True,
-                "symbol": True,
-                "name": True,
-                "industry": True,
-                "area": True,
-                "list_date": True,
-                "list_date_num": True,
-                "total_share": True,
-                "float_share": True,
-                "total_assets": True,
-            }, security_token="xxxx", code=stock_code)
+
+            df = ts.pro_api(
+                ts.pro_api.StockBasic,
+                token=self.token,
+                fields={
+                    "ts_code": True,
+                    "symbol": True,
+                    "name": True,
+                    "industry": True,
+                    "area": True,
+                    "list_date": True,
+                    "list_date_num": True,
+                    "total_share": True,
+                    "float_share": True,
+                    "total_assets": True,
+                },
+                security_token="xxxx",
+                code=stock_code,
+            )
 
             if df.empty:
                 self._log_request_error("get_stock_basic", Exception("未返回数据"))
@@ -87,15 +94,19 @@ class TushareAdapter(BaseAdapter):
     async def get_stock_daily(self, stock_code: str, start_date: str, end_date: str) -> Optional[List[Dict]]:
         """获取日线数据"""
         try:
-            self._log_request_start("get_stock_daily", {
-                "stock_code": stock_code,
-                "start_date": start_date,
-                "end_date": end_date,
-            })
+            self._log_request_start(
+                "get_stock_daily",
+                {
+                    "stock_code": stock_code,
+                    "start_date": start_date,
+                    "end_date": end_date,
+                },
+            )
 
             self._ensure_token()
 
             import tushare as ts
+
             df = ts.pro_bar(
                 token=self.token,
                 freq="D",
@@ -112,16 +123,18 @@ class TushareAdapter(BaseAdapter):
 
             daily_data = []
             for _, row in df.iterrows():
-                daily_data.append({
-                    "symbol": stock_code,
-                    "trade_date": row["trade_date"].isoformat() if row["trade_date"] else "",
-                    "open": row["open"],
-                    "high": row["high"],
-                    "low": row["low"],
-                    "close": row["close"],
-                    "volume": row["vol"],
-                    "amount": row["amount"],
-                })
+                daily_data.append(
+                    {
+                        "symbol": stock_code,
+                        "trade_date": row["trade_date"].isoformat() if row["trade_date"] else "",
+                        "open": row["open"],
+                        "high": row["high"],
+                        "low": row["low"],
+                        "close": row["close"],
+                        "volume": row["vol"],
+                        "amount": row["amount"],
+                    }
+                )
 
             self._log_request_success("get_stock_daily", f"返回{len(daily_data)}条日线数据")
             self._log_data_quality(daily_data, "get_stock_daily")
@@ -141,24 +154,30 @@ class TushareAdapter(BaseAdapter):
             self._ensure_token()
 
             import tushare as ts
+
             quotes = []
             for stock_code in stock_codes[:100]:
-                df = ts.pro_api(ts.pro_api.Realtime, token=self.token, security_token="xxxx",
+                df = ts.pro_api(
+                    ts.pro_api.Realtime,
+                    token=self.token,
+                    security_token="xxxx",
                     fields="ts_code,symbol,name,price,change,pct_chg,volume,amount,turnover,buy1,sell1,bid1,bid2,ask1,ask2,ask3,bid3,bid4,bid5",
                     code=stock_code,
                 )
 
                 if not df.empty and len(df) > 0:
                     latest = df.iloc[0]
-                    quotes.append({
-                        "symbol": stock_code,
-                        "name": latest["name"] if "name" in latest else "",
-                        "price": latest["price"] if "price" in latest else 0,
-                        "change": latest["pct_chg"] if "pct_chg" in latest else 0,
-                        "change_percent": latest["pct_chg"] if "pct_chg" in latest else 0,
-                        "volume": latest["vol"] if "vol" in latest else 0,
-                        "amount": latest["amount"] if "amount" in latest else 0,
-                    })
+                    quotes.append(
+                        {
+                            "symbol": stock_code,
+                            "name": latest["name"] if "name" in latest else "",
+                            "price": latest["price"] if "price" in latest else 0,
+                            "change": latest["pct_chg"] if "pct_chg" in latest else 0,
+                            "change_percent": latest["pct_chg"] if "pct_chg" in latest else 0,
+                            "volume": latest["vol"] if "vol" in latest else 0,
+                            "amount": latest["amount"] if "amount" in latest else 0,
+                        }
+                    )
 
             self._log_request_success("get_realtime_quotes", f"返回{len(quotes)}条实时行情")
             self._log_data_quality(quotes, "get_realtime_quotes")
@@ -178,6 +197,7 @@ class TushareAdapter(BaseAdapter):
             self._ensure_token()
 
             import tushare as ts
+
             df = ts.trade_cal(ts.trade_cal(token=self.token, security_token="xxxx"))
 
             if not df.empty and len(df) > 0:

@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-测试和验证 save_realtime_data.py 程序
+"""测试和验证 save_realtime_data.py 程序
 展示完整的数据库保存工作流程
 """
 
-import sys
 import os
+import sys
+
 import pandas as pd
+
 
 # 将项目根目录添加到模块搜索路径中
 project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
 )
 sys.path.insert(0, project_root)
 
@@ -83,7 +83,7 @@ def test_dataframe_preparation():
             "最新价": [10.50, 15.30, 20.80],
             "涨跌幅": [0.02, -0.01, 0.05],
             "成交量": [1000000, 2000000, 1500000],
-        }
+        },
     )
 
     saver = RealtimeDataSaver()
@@ -132,7 +132,7 @@ def test_different_modes():
             )
             results[mode] = success
             print(
-                f"{'✅' if success else '❌'} {mode} 模式测试{'通过' if success else '失败'}"
+                f"{'✅' if success else '❌'} {mode} 模式测试{'通过' if success else '失败'}",
             )
 
         except Exception as e:

@@ -321,7 +321,8 @@ async def test_database_connection(request: ConnectionTestRequest):
 
         else:
             return ConnectionTestResponse(
-                success=False, error=f"不支持的数据库类型: {db_type}，仅支持 postgresql 和 tdengine",
+                success=False,
+                error=f"不支持的数据库类型: {db_type}，仅支持 postgresql 和 tdengine",
             )
 
     except psycopg2.OperationalError as e:
@@ -485,8 +486,7 @@ def get_system_logs_from_db(
 
 
 def get_mock_system_logs(filter_errors: bool = False, limit: int = 100) -> List[SystemLog]:
-    """生成模拟的系统日志（用于演示和数据库不可用时的备用）
-    """
+    """生成模拟的系统日志（用于演示和数据库不可用时的备用）"""
     mock_logs = []
 
     # 正常运行日志

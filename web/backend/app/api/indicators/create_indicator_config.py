@@ -10,7 +10,6 @@ Phase 4C Enhanced - 企业级技术指标计算服务
 - 批量计算优化
 """
 
-
 import structlog
 from fastapi import APIRouter, Depends
 
@@ -29,6 +28,7 @@ from app.schemas.indicator_response import (
 
 logger = structlog.get_logger()
 router = APIRouter()
+
 
 @router.post("/configs", response_model=IndicatorConfigResponse)
 async def create_indicator_config(
@@ -71,7 +71,9 @@ async def create_indicator_config(
 
             if existing:
                 raise BusinessException(
-                    detail=f"配置名称已存在: {request.name}", status_code=409, error_code="CONFIG_NAME_EXISTS",
+                    detail=f"配置名称已存在: {request.name}",
+                    status_code=409,
+                    error_code="CONFIG_NAME_EXISTS",
                 )
 
             # 创建新配置
@@ -165,7 +167,9 @@ async def list_indicator_configs(current_user: User = Depends(get_current_active
     except Exception as e:
         logger.error("Failed to list indicator configs", exc_info=e)
         raise BusinessException(
-            detail=f"获取配置列表失败: {e!s}", status_code=500, error_code="CONFIG_LIST_RETRIEVAL_FAILED",
+            detail=f"获取配置列表失败: {e!s}",
+            status_code=500,
+            error_code="CONFIG_LIST_RETRIEVAL_FAILED",
         )
 
 
@@ -275,7 +279,9 @@ async def update_indicator_config(
 
                 if existing:
                     raise BusinessException(
-                        detail=f"配置名称已存在: {request.name}", status_code=409, error_code="CONFIG_NAME_EXISTS",
+                        detail=f"配置名称已存在: {request.name}",
+                        status_code=409,
+                        error_code="CONFIG_NAME_EXISTS",
                     )
 
                 config.name = request.name
@@ -354,5 +360,3 @@ async def delete_indicator_config(config_id: int, current_user: User = Depends(g
     except Exception as e:
         logger.error("Failed to delete indicator config", exc_info=e)
         raise BusinessException(detail=f"删除配置失败: {e!s}", status_code=500, error_code="CONFIG_DELETION_FAILED")
-
-

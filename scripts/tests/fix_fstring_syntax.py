@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-批量修复Mock文件中的f-string语法错误
+"""批量修复Mock文件中的f-string语法错误
 
 作者: MyStocks Backend Team
 创建日期: 2025-10-17
@@ -14,7 +12,7 @@ from pathlib import Path
 def fix_fstring_syntax(file_path):
     """修复单个文件中的f-string语法错误"""
     try:
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             content = f.read()
 
         # 修复 print(f"\n 格式的错误
@@ -31,7 +29,10 @@ def fix_fstring_syntax(file_path):
 
         # 修复第一种模式：print(f"\n内容
         content = re.sub(
-            r'print\(f"\\n([^"]*)$', r'print(f"\\n\1")', content, flags=re.MULTILINE
+            r'print\(f"\\n([^"]*)$',
+            r'print(f"\\n\1")',
+            content,
+            flags=re.MULTILINE,
         )
 
         # 修复第二种模式：print(f"内容\n内容
@@ -44,7 +45,9 @@ def fix_fstring_syntax(file_path):
 
         # 特殊修复：修复已知的错误模式
         content = re.sub(
-            r'print\(f"\\n([^"]*\) 调用测试:"\)', r'print(f"\\n\1 调用测试:")', content
+            r'print\(f"\\n([^"]*\) 调用测试:"\)',
+            r'print(f"\\n\1 调用测试:")',
+            content,
         )
 
         # 修复多行print语句
@@ -59,12 +62,11 @@ def fix_fstring_syntax(file_path):
                 f.write(content)
             print(f"✅ 修复了 {file_path}")
             return True
-        else:
-            print(f"⚪ 无需修复 {file_path}")
-            return False
+        print(f"⚪ 无需修复 {file_path}")
+        return False
 
     except Exception as e:
-        print(f"❌ 修复失败 {file_path}: {str(e)}")
+        print(f"❌ 修复失败 {file_path}: {e!s}")
         return False
 
 
@@ -93,11 +95,11 @@ def main():
     for file_path in mock_dir.glob("mock_*.py"):
         if file_path.suffix == ".py":
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     compile(f.read(), str(file_path), "exec")
                 print(f"✅ {file_path.name}")
             except SyntaxError as e:
-                print(f"❌ {file_path.name}: {str(e)}")
+                print(f"❌ {file_path.name}: {e!s}")
                 syntax_errors += 1
 
     if syntax_errors == 0:

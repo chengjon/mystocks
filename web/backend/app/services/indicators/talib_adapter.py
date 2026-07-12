@@ -141,7 +141,10 @@ class TalibGenericIndicator(IndicatorInterface):
         if abbr == "SAR":
             return {
                 "sar": talib.SAR(
-                    high, low, acceleration=parameters.get("acceleration", 0.02), maximum=parameters.get("maximum", 0.2),
+                    high,
+                    low,
+                    acceleration=parameters.get("acceleration", 0.02),
+                    maximum=parameters.get("maximum", 0.2),
                 ),
             }
 
@@ -228,8 +231,7 @@ class TalibGenericIndicator(IndicatorInterface):
 
 
 def register_all_talib_indicators():
-    """注册所有支持的TA-Lib指标到Factory
-    """
+    """注册所有支持的TA-Lib指标到Factory"""
     registry = get_indicator_registry()
     supported_indicators = [
         "SMA",

@@ -23,6 +23,7 @@ from sqlalchemy.ext.declarative import declarative_base
 logger = logging.getLogger(__name__)
 Base = declarative_base()
 
+
 class AlgorithmModel(Base):
     """算法模型表ORM模型"""
 
@@ -109,5 +110,3 @@ class PredictionHistoryModel(Base):
         Index("idx_prediction_history_status", "status"),
         Index("idx_prediction_history_time", "prediction_time"),
     )
-
-

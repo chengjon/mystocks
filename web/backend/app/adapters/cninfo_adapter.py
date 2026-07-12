@@ -175,7 +175,7 @@ class CninfoAdapter(BaseDataSourceAdapter):
             announcements = result.get("announcements", [])
 
             if not announcements:
-                logger.info("No announcements found for {symbol or 'all'} " f"from {start_date} to {end_date}")
+                logger.info(f"No announcements found for {{symbol or 'all'}} from {start_date} to {end_date}")
                 success = True  # 空结果也算成功
                 self.update_health_status(DataSourceStatus.AVAILABLE)
                 return data

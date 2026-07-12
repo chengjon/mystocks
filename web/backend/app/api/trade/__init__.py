@@ -1,5 +1,4 @@
-"""交易管理API模块
-"""
+"""交易管理API模块"""
 
 from .routes import router
 

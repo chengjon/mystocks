@@ -33,13 +33,17 @@ async def send_risk_alert(request: Dict[str, Any]) -> Dict[str, Any]:
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
             raise BusinessException(
-                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE",
+                detail="增强风险功能不可用",
+                status_code=503,
+                error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE",
             )
 
         notification_manager = get_risk_alert_notification_manager()
         if not notification_manager:
             raise BusinessException(
-                detail="告警通知管理器不可用", status_code=503, error_code="ALERT_NOTIFICATION_MANAGER_UNAVAILABLE",
+                detail="告警通知管理器不可用",
+                status_code=503,
+                error_code="ALERT_NOTIFICATION_MANAGER_UNAVAILABLE",
             )
 
         alert_type = request.get("alert_type", "general_risk")
@@ -77,7 +81,9 @@ async def send_risk_alert(request: Dict[str, Any]) -> Dict[str, Any]:
     except Exception as e:
         logger.error("发送风险告警失败: %(e)s")
         raise BusinessException(
-            detail=f"发送风险告警失败: {e!s}", status_code=500, error_code="RISK_ALERT_SENDING_FAILED",
+            detail=f"发送风险告警失败: {e!s}",
+            status_code=500,
+            error_code="RISK_ALERT_SENDING_FAILED",
         )
 
 
@@ -86,13 +92,17 @@ async def get_alert_statistics() -> Dict[str, Any]:
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
             raise BusinessException(
-                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE",
+                detail="增强风险功能不可用",
+                status_code=503,
+                error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE",
             )
 
         notification_manager = get_risk_alert_notification_manager()
         if not notification_manager:
             raise BusinessException(
-                detail="告警通知管理器不可用", status_code=503, error_code="ALERT_NOTIFICATION_MANAGER_UNAVAILABLE",
+                detail="告警通知管理器不可用",
+                status_code=503,
+                error_code="ALERT_NOTIFICATION_MANAGER_UNAVAILABLE",
             )
 
         return notification_manager.get_alert_statistics()
@@ -102,7 +112,9 @@ async def get_alert_statistics() -> Dict[str, Any]:
     except Exception as e:
         logger.error("获取告警统计失败: %(e)s")
         raise BusinessException(
-            detail=f"获取告警统计失败: {e!s}", status_code=500, error_code="ALERT_STATISTICS_RETRIEVAL_FAILED",
+            detail=f"获取告警统计失败: {e!s}",
+            status_code=500,
+            error_code="ALERT_STATISTICS_RETRIEVAL_FAILED",
         )
 
 
@@ -111,13 +123,17 @@ async def evaluate_alert_rules(request: Dict[str, Any]) -> List[Dict[str, Any]]:
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
             raise BusinessException(
-                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE",
+                detail="增强风险功能不可用",
+                status_code=503,
+                error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE",
             )
 
         rule_engine = get_alert_rule_engine()
         if not rule_engine:
             raise BusinessException(
-                detail="告警规则引擎不可用", status_code=503, error_code="ALERT_RULE_ENGINE_UNAVAILABLE",
+                detail="告警规则引擎不可用",
+                status_code=503,
+                error_code="ALERT_RULE_ENGINE_UNAVAILABLE",
             )
 
         context = AlertContext(
@@ -143,7 +159,9 @@ async def evaluate_alert_rules(request: Dict[str, Any]) -> List[Dict[str, Any]]:
     except Exception as e:
         logger.error("评估告警规则失败: %(e)s")
         raise BusinessException(
-            detail=f"评估告警规则失败: {e!s}", status_code=500, error_code="ALERT_RULE_EVALUATION_FAILED",
+            detail=f"评估告警规则失败: {e!s}",
+            status_code=500,
+            error_code="ALERT_RULE_EVALUATION_FAILED",
         )
 
 
@@ -152,13 +170,17 @@ async def add_alert_rule(request: Dict[str, Any]) -> Dict[str, Any]:
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
             raise BusinessException(
-                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE",
+                detail="增强风险功能不可用",
+                status_code=503,
+                error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE",
             )
 
         rule_engine = get_alert_rule_engine()
         if not rule_engine:
             raise BusinessException(
-                detail="告警规则引擎不可用", status_code=503, error_code="ALERT_RULE_ENGINE_UNAVAILABLE",
+                detail="告警规则引擎不可用",
+                status_code=503,
+                error_code="ALERT_RULE_ENGINE_UNAVAILABLE",
             )
 
         rule_data = request.copy()
@@ -180,7 +202,9 @@ async def add_alert_rule(request: Dict[str, Any]) -> Dict[str, Any]:
     except Exception as e:
         logger.error("添加告警规则失败: %(e)s")
         raise BusinessException(
-            detail=f"添加告警规则失败: {e!s}", status_code=500, error_code="ALERT_RULE_ADDITION_FAILED",
+            detail=f"添加告警规则失败: {e!s}",
+            status_code=500,
+            error_code="ALERT_RULE_ADDITION_FAILED",
         )
 
 
@@ -189,13 +213,17 @@ async def remove_alert_rule(rule_id: str) -> Dict[str, Any]:
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
             raise BusinessException(
-                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE",
+                detail="增强风险功能不可用",
+                status_code=503,
+                error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE",
             )
 
         rule_engine = get_alert_rule_engine()
         if not rule_engine:
             raise BusinessException(
-                detail="告警规则引擎不可用", status_code=503, error_code="ALERT_RULE_ENGINE_UNAVAILABLE",
+                detail="告警规则引擎不可用",
+                status_code=503,
+                error_code="ALERT_RULE_ENGINE_UNAVAILABLE",
             )
 
         if rule_engine.remove_rule(rule_id):
@@ -207,7 +235,9 @@ async def remove_alert_rule(rule_id: str) -> Dict[str, Any]:
     except Exception as e:
         logger.error("移除告警规则失败: %(e)s")
         raise BusinessException(
-            detail=f"移除告警规则失败: {e!s}", status_code=500, error_code="ALERT_RULE_REMOVAL_FAILED",
+            detail=f"移除告警规则失败: {e!s}",
+            status_code=500,
+            error_code="ALERT_RULE_REMOVAL_FAILED",
         )
 
 
@@ -216,13 +246,17 @@ async def get_rule_statistics() -> Dict[str, Any]:
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
             raise BusinessException(
-                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE",
+                detail="增强风险功能不可用",
+                status_code=503,
+                error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE",
             )
 
         rule_engine = get_alert_rule_engine()
         if not rule_engine:
             raise BusinessException(
-                detail="告警规则引擎不可用", status_code=503, error_code="ALERT_RULE_ENGINE_UNAVAILABLE",
+                detail="告警规则引擎不可用",
+                status_code=503,
+                error_code="ALERT_RULE_ENGINE_UNAVAILABLE",
             )
 
         return rule_engine.get_rule_statistics()
@@ -232,7 +266,9 @@ async def get_rule_statistics() -> Dict[str, Any]:
     except Exception as e:
         logger.error("获取规则统计失败: %(e)s")
         raise BusinessException(
-            detail=f"获取规则统计失败: {e!s}", status_code=500, error_code="RULE_STATISTICS_RETRIEVAL_FAILED",
+            detail=f"获取规则统计失败: {e!s}",
+            status_code=500,
+            error_code="RULE_STATISTICS_RETRIEVAL_FAILED",
         )
 
 
@@ -241,7 +277,9 @@ async def get_realtime_risk_metrics(symbol: str) -> Dict[str, Any]:
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
             raise BusinessException(
-                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE",
+                detail="增强风险功能不可用",
+                status_code=503,
+                error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE",
             )
 
         return {
@@ -282,7 +320,9 @@ async def list_risk_alerts(is_active: Optional[bool] = None) -> List[Dict[str, A
 
     except Exception as e:
         raise BusinessException(
-            detail=f"获取预警列表失败: {e!s}", status_code=500, error_code="ALERT_LIST_RETRIEVAL_FAILED",
+            detail=f"获取预警列表失败: {e!s}",
+            status_code=500,
+            error_code="ALERT_LIST_RETRIEVAL_FAILED",
         )
 
 
@@ -329,7 +369,9 @@ async def create_risk_alert(alert_data: RiskAlertCreate) -> RiskAlertResponse:
             error_message=str(e),
         )
         raise BusinessException(
-            detail=f"创建预警规则失败: {e!s}", status_code=500, error_code="ALERT_RULE_CREATION_FAILED",
+            detail=f"创建预警规则失败: {e!s}",
+            status_code=500,
+            error_code="ALERT_RULE_CREATION_FAILED",
         )
 
 
@@ -355,7 +397,9 @@ async def update_risk_alert(alert_id: int, alert_update: RiskAlertUpdate) -> Dic
 
     except Exception as e:
         raise BusinessException(
-            detail=f"更新预警规则失败: {e!s}", status_code=500, error_code="ALERT_RULE_UPDATE_FAILED",
+            detail=f"更新预警规则失败: {e!s}",
+            status_code=500,
+            error_code="ALERT_RULE_UPDATE_FAILED",
         )
 
 
@@ -377,7 +421,9 @@ async def delete_risk_alert(alert_id: int) -> Dict[str, str]:
 
     except Exception as e:
         raise BusinessException(
-            detail=f"删除预警规则失败: {e!s}", status_code=500, error_code="ALERT_RULE_DELETION_FAILED",
+            detail=f"删除预警规则失败: {e!s}",
+            status_code=500,
+            error_code="ALERT_RULE_DELETION_FAILED",
         )
 
 
@@ -446,7 +492,9 @@ async def generate_risk_alerts(request: Dict[str, Any]) -> Dict[str, Any]:
     except Exception as e:
         logger.error("生成风险告警失败: {e}", exc_info=True)
         raise BusinessException(
-            detail=f"生成风险告警失败: {e!s}", status_code=500, error_code="RISK_ALERT_GENERATION_FAILED",
+            detail=f"生成风险告警失败: {e!s}",
+            status_code=500,
+            error_code="RISK_ALERT_GENERATION_FAILED",
         )
 
 
@@ -455,7 +503,9 @@ async def get_active_alerts_v31() -> Dict[str, Any]:
     try:
         if not RISK_MANAGEMENT_V31_AVAILABLE:
             raise BusinessException(
-                detail="V3.1风险管理系统未初始化", status_code=503, error_code="RISK_MANAGEMENT_SYSTEM_NOT_INITIALIZED",
+                detail="V3.1风险管理系统未初始化",
+                status_code=503,
+                error_code="RISK_MANAGEMENT_SYSTEM_NOT_INITIALIZED",
             )
 
         core = get_risk_management_core()
@@ -470,7 +520,9 @@ async def get_active_alerts_v31() -> Dict[str, Any]:
     except Exception as e:
         logger.error("V3.1获取活跃告警失败: %(e)s")
         raise BusinessException(
-            detail=f"获取活跃告警失败: {e!s}", status_code=500, error_code="ACTIVE_ALERTS_RETRIEVAL_FAILED",
+            detail=f"获取活跃告警失败: {e!s}",
+            status_code=500,
+            error_code="ACTIVE_ALERTS_RETRIEVAL_FAILED",
         )
 
 
@@ -479,7 +531,9 @@ async def acknowledge_alert_v31(alert_id: int, request: Dict[str, Any]) -> Dict[
     try:
         if not RISK_MANAGEMENT_V31_AVAILABLE:
             raise BusinessException(
-                detail="V3.1风险管理系统未初始化", status_code=503, error_code="RISK_MANAGEMENT_SYSTEM_NOT_INITIALIZED",
+                detail="V3.1风险管理系统未初始化",
+                status_code=503,
+                error_code="RISK_MANAGEMENT_SYSTEM_NOT_INITIALIZED",
             )
 
         core = get_risk_management_core()
@@ -503,5 +557,7 @@ async def acknowledge_alert_v31(alert_id: int, request: Dict[str, Any]) -> Dict[
     except Exception as e:
         logger.error("V3.1确认告警失败 %(alert_id)s: %(e)s")
         raise BusinessException(
-            detail=f"确认告警失败: {e!s}", status_code=500, error_code="ALERT_CONFIRMATION_FAILED",
+            detail=f"确认告警失败: {e!s}",
+            status_code=500,
+            error_code="ALERT_CONFIRMATION_FAILED",
         )

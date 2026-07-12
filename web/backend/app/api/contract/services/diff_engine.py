@@ -47,7 +47,10 @@ class DiffEngine:
 
     @staticmethod
     def compare_versions(
-        from_spec: Dict[str, Any], to_spec: Dict[str, Any], from_version: str, to_version: str,
+        from_spec: Dict[str, Any],
+        to_spec: Dict[str, Any],
+        from_version: str,
+        to_version: str,
     ) -> ContractDiffResponse:
         """对比两个契约版本
 
@@ -236,7 +239,10 @@ class DiffEngine:
 
     @staticmethod
     def _simple_diff(
-        from_spec: Dict[str, Any], to_spec: Dict[str, Any], from_version: str, to_version: str,
+        from_spec: Dict[str, Any],
+        to_spec: Dict[str, Any],
+        from_version: str,
+        to_version: str,
     ) -> ContractDiffResponse:
         """简单差异对比（当deepdiff不可用时）
 

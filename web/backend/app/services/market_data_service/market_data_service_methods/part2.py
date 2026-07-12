@@ -131,4 +131,3 @@ class MarketDataServiceFetchAndSaveMixin:
 
         finally:
             db.close()
-

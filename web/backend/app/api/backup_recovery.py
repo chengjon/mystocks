@@ -61,7 +61,11 @@ _max_backup_operations = 3  # 每5分钟最多3次备份操作
 
 
 def log_security_event(
-    event_type: str, user: User, action: str, details: Optional[Dict[str, Any]] = None, success: bool = True,
+    event_type: str,
+    user: User,
+    action: str,
+    details: Optional[Dict[str, Any]] = None,
+    success: bool = True,
 ):
     """记录安全审计日志"""
     log_data = {
@@ -144,7 +148,8 @@ def verify_recovery_permission(user: User) -> None:
 
 @router.post("/backup/tdengine/full")
 async def backup_tdengine_full(
-    request: TDengineFullBackupRequest = Body(...), current_user: User = Depends(get_current_user),
+    request: TDengineFullBackupRequest = Body(...),
+    current_user: User = Depends(get_current_user),
 ):
     """执行 TDengine 全量备份 [CRITICAL - 需要备份权限]
 
@@ -162,7 +167,10 @@ async def backup_tdengine_full(
         # 速率限制检查
         if not check_backup_rate_limit(current_user):
             log_security_event(
-                "RATE_LIMIT_EXCEEDED", current_user, "tdengine_full_backup", {"reason": "Too many backup operations"},
+                "RATE_LIMIT_EXCEEDED",
+                current_user,
+                "tdengine_full_backup",
+                {"reason": "Too many backup operations"},
             )
             return error_response(message="备份操作过于频繁，请稍后再试", error_code=ErrorCode.RATE_LIMIT_EXCEEDED)
 
@@ -233,7 +241,8 @@ async def backup_tdengine_full(
 
 @router.post("/backup/tdengine/incremental")
 async def backup_tdengine_incremental(
-    request: TDengineIncrementalBackupRequest = Body(...), current_user: User = Depends(get_current_user),
+    request: TDengineIncrementalBackupRequest = Body(...),
+    current_user: User = Depends(get_current_user),
 ):
     """执行 TDengine 增量备份 [CRITICAL - 需要备份权限]
 

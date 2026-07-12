@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-Mock数据验证测试套件
+"""Mock数据验证测试套件
 
 专门验证Mock数据的质量、一致性和真实性：
 1. 数据真实性验证
@@ -15,12 +13,13 @@ Mock数据验证测试套件
 创建时间: 2025-11-13
 """
 
+import datetime
 import os
 import sys
 import time
 import unittest
 from pathlib import Path
-import datetime
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -28,15 +27,15 @@ sys.path.insert(0, str(project_root))
 
 # 导入相关模块
 try:
-    from web.backend.app.mock.unified_mock_data import UnifiedMockDataManager
     from src.mock.mock_Dashboard import get_market_stats
-    from src.mock.mock_Stocks import get_stock_list, get_real_time_quote
-    from src.mock.mock_TechnicalAnalysis import calculate_indicators
-    from src.mock.mock_Wencai import get_wencai_queries, execute_query
-    from src.mock.mock_StrategyManagement import get_strategy_definitions
 
     # 使用现有的监控相关Mock模块
     from src.mock.mock_RealTimeMonitor import get_realtime_alerts
+    from src.mock.mock_Stocks import get_real_time_quote, get_stock_list
+    from src.mock.mock_StrategyManagement import get_strategy_definitions
+    from src.mock.mock_TechnicalAnalysis import calculate_indicators
+    from src.mock.mock_Wencai import execute_query, get_wencai_queries
+    from web.backend.app.mock.unified_mock_data import UnifiedMockDataManager
 except ImportError as e:
     print(f"导入错误: {e}")
     sys.exit(1)
@@ -59,7 +58,10 @@ class TestMockDataValidation(unittest.TestCase):
         self.assertGreater(quote["price"], 0, "股票价格应该大于0")
         self.assertLess(quote["price"], 10000, "股票价格应该小于10000元")
         self.assertAlmostEqual(
-            quote["price"], float(quote["price"]), places=2, msg="价格应该保留2位小数"
+            quote["price"],
+            float(quote["price"]),
+            places=2,
+            msg="价格应该保留2位小数",
         )
 
         # 测试涨跌幅合理性
@@ -227,12 +229,14 @@ class TestMockDataValidation(unittest.TestCase):
         avg_time = total_time / 50
 
         print(
-            f"✅ 性能测试: 50次调用耗时{total_time:.2f}秒，平均{avg_time * 1000:.1f}ms/次"
+            f"✅ 性能测试: 50次调用耗时{total_time:.2f}秒，平均{avg_time * 1000:.1f}ms/次",
         )
 
         # 性能要求: 平均响应时间应该小于500ms
         self.assertLess(
-            avg_time, 0.5, f"平均响应时间应该小于500ms，实际: {avg_time * 1000:.1f}ms"
+            avg_time,
+            0.5,
+            f"平均响应时间应该小于500ms，实际: {avg_time * 1000:.1f}ms",
         )
 
         # 测试缓存性能

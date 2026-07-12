@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
-"""
-MyStocks前端深度测试脚本
-"""
+"""MyStocks前端深度测试脚本"""
 
-import json
 import asyncio
-import websockets
+import json
 import subprocess
 import urllib.request
+
+import websockets
 
 
 def get_page(page_type="login"):
@@ -17,10 +16,9 @@ def get_page(page_type="login"):
 
     target_page = None
     for p in pages:
-        if page_type == "dashboard" and "/dashboard" in p.get("url", "") and "localhost:3001" in p.get("url", ""):
-            target_page = p
-            break
-        elif page_type == "login" and "/login" in p.get("url", "") and "localhost:3001" in p.get("url", ""):
+        if (page_type == "dashboard" and "/dashboard" in p.get("url", "") and "localhost:3001" in p.get("url", "")) or (
+            page_type == "login" and "/login" in p.get("url", "") and "localhost:3001" in p.get("url", "")
+        ):
             target_page = p
             break
 
@@ -56,8 +54,8 @@ async def test_page(page, test_name):
         ]:
             await ws.send(
                 json.dumps(
-                    {"id": 10, "method": "Runtime.evaluate", "params": {"expression": check, "returnByValue": True}}
-                )
+                    {"id": 10, "method": "Runtime.evaluate", "params": {"expression": check, "returnByValue": True}},
+                ),
             )
             response = await ws.recv()
             data = json.loads(response)
@@ -75,8 +73,8 @@ async def test_page(page, test_name):
                         "expression": "document.documentElement ? document.documentElement.outerHTML.substring(0, 800) : 'N/A'",
                         "returnByValue": True,
                     },
-                }
-            )
+                },
+            ),
         )
         response = await ws.recv()
         data = json.loads(response)
@@ -109,14 +107,14 @@ async def test_page(page, test_name):
                         "expression": "JSON.stringify({hasToken: !!localStorage.getItem('auth_token'), hasUser: !!localStorage.getItem('auth_user')})",
                         "returnByValue": True,
                     },
-                }
-            )
+                },
+            ),
         )
         response = await ws.recv()
         data = json.loads(response)
         auth = json.loads(data.get("result", {}).get("result", {}).get("value", "{}"))
 
-        print(f"\n4. 认证状态:")
+        print("\n4. 认证状态:")
         print(f"   Token: {'✅' if auth.get('hasToken') else '❌'}")
         print(f"   User: {'✅' if auth.get('hasUser') else '❌'}")
 
@@ -130,8 +128,8 @@ async def test_page(page, test_name):
                         "expression": "JSON.stringify({errorCount: window.__vue_errors?.length || 0})",
                         "returnByValue": True,
                     },
-                }
-            )
+                },
+            ),
         )
         response = await ws.recv()
         data = json.loads(response)
@@ -199,8 +197,8 @@ async def main():
                 """,
                             "returnByValue": True,
                         },
-                    }
-                )
+                    },
+                ),
             )
             response = await ws.recv()
             data = json.loads(response)

@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-认证和授权安全测试套件
+"""认证和授权安全测试套件
 专门测试身份认证、会话管理和访问控制的安全性
 """
 
-import sys
 import os
-import json
+import sys
 import time
-import requests
-import jwt
 from datetime import datetime, timedelta
-from typing import Dict, List, Any
+from typing import List
+
+import jwt
+import requests
 
 from ..helpers import AuthTestResult
+
 
 # 设置项目路径
 project_root = "/opt/claude/mystocks_spec"
@@ -93,7 +92,7 @@ class AuthenticationTesterCoreMixin:
                                 False,
                                 f"端点 {endpoint} 缺少认证保护",
                                 "为敏感端点添加认证中间件",
-                            )
+                            ),
                         )
                     else:
                         self.results.append(
@@ -103,7 +102,7 @@ class AuthenticationTesterCoreMixin:
                                 "LOW",
                                 True,
                                 f"{endpoint} 作为公开端点是合适的",
-                            )
+                            ),
                         )
             except Exception as e:
                 self.results.append(
@@ -112,9 +111,9 @@ class AuthenticationTesterCoreMixin:
                         "认证",
                         "MEDIUM",
                         False,
-                        f"无法访问 {endpoint}: {str(e)}",
+                        f"无法访问 {endpoint}: {e!s}",
                         "确保服务正常运行",
-                    )
+                    ),
                 )
 
         # 2. 认证绕过测试
@@ -122,13 +121,14 @@ class AuthenticationTesterCoreMixin:
             {"Authorization": "Bearer invalid_token"},
             {"Authorization": "Bearer " + "a" * 1000},  # 超长令牌
             {"Authorization": "Bearer <jwt-token>"},
-            {"Authorization": "Basic " + ("admin:admin").encode().decode("utf-8")},
+            {"Authorization": "Basic " + (b"admin:admin").decode("utf-8")},
         ]
 
         for i, headers in enumerate(bypass_headers):
             try:
                 response = self.session.get(
-                    f"{self.base_url}/api/user/profile", headers=headers
+                    f"{self.base_url}/api/user/profile",
+                    headers=headers,
                 )
                 if response.status_code == 200:
                     self.results.append(
@@ -139,7 +139,7 @@ class AuthenticationTesterCoreMixin:
                             False,
                             "无效令牌成功绕过认证",
                             "加强令牌验证逻辑",
-                        )
+                        ),
                     )
                 else:
                     self.results.append(
@@ -149,7 +149,7 @@ class AuthenticationTesterCoreMixin:
                             "CRITICAL",
                             True,
                             "正确拒绝无效令牌",
-                        )
+                        ),
                     )
             except Exception as e:
                 self.results.append(
@@ -158,9 +158,9 @@ class AuthenticationTesterCoreMixin:
                         "认证",
                         "CRITICAL",
                         False,
-                        f"测试失败: {str(e)}",
+                        f"测试失败: {e!s}",
                         "确保认证系统正常工作",
-                    )
+                    ),
                 )
 
     def test_jwt_security(self):
@@ -182,9 +182,7 @@ class AuthenticationTesterCoreMixin:
 
                     # 检查标准声明
                     required_claims = ["sub", "iat", "exp", "jti"]
-                    missing_claims = [
-                        claim for claim in required_claims if claim not in decoded
-                    ]
+                    missing_claims = [claim for claim in required_claims if claim not in decoded]
 
                     if missing_claims:
                         self.results.append(
@@ -195,7 +193,7 @@ class AuthenticationTesterCoreMixin:
                                 False,
                                 f"缺少标准声明: {', '.join(missing_claims)}",
                                 "添加所有标准 JWT 声明",
-                            )
+                            ),
                         )
                     else:
                         self.results.append(
@@ -205,7 +203,7 @@ class AuthenticationTesterCoreMixin:
                                 "MEDIUM",
                                 True,
                                 "JWT 包含所有标准声明",
-                            )
+                            ),
                         )
 
                     # 检查过期时间
@@ -222,7 +220,7 @@ class AuthenticationTesterCoreMixin:
                                 False,
                                 f"令牌过期时间过短: {time_to_expiry}",
                                 "设置适当的令牌过期时间",
-                            )
+                            ),
                         )
                     elif time_to_expiry > timedelta(days=7):
                         self.results.append(
@@ -233,7 +231,7 @@ class AuthenticationTesterCoreMixin:
                                 False,
                                 f"令牌过期时间过长: {time_to_expiry}",
                                 "缩短令牌过期时间以减少风险",
-                            )
+                            ),
                         )
                     else:
                         self.results.append(
@@ -243,7 +241,7 @@ class AuthenticationTesterCoreMixin:
                                 "HIGH",
                                 True,
                                 f"令牌过期时间适当: {time_to_expiry}",
-                            )
+                            ),
                         )
 
                 except jwt.ExpiredSignatureError:
@@ -255,7 +253,7 @@ class AuthenticationTesterCoreMixin:
                             False,
                             "JWT 令牌已过期",
                             "检查令牌生成逻辑",
-                        )
+                        ),
                     )
                 except jwt.InvalidTokenError as e:
                     self.results.append(
@@ -264,15 +262,19 @@ class AuthenticationTesterCoreMixin:
                             "JWT",
                             "HIGH",
                             False,
-                            f"JWT 令牌无效: {str(e)}",
+                            f"JWT 令牌无效: {e!s}",
                             "修复 JWT 令牌生成/验证逻辑",
-                        )
+                        ),
                     )
                 else:
                     self.results.append(
                         AuthTestResult(
-                            "JWT 令牌解析", "JWT", "HIGH", True, "JWT 令牌格式正确"
-                        )
+                            "JWT 令牌解析",
+                            "JWT",
+                            "HIGH",
+                            True,
+                            "JWT 令牌格式正确",
+                        ),
                     )
 
             else:
@@ -284,7 +286,7 @@ class AuthenticationTesterCoreMixin:
                         False,
                         f"无法获取令牌: {response.status_code}",
                         "确保认证系统正常工作",
-                    )
+                    ),
                 )
 
         except Exception as e:
@@ -294,9 +296,9 @@ class AuthenticationTesterCoreMixin:
                     "JWT",
                     "HIGH",
                     False,
-                    f"测试异常: {str(e)}",
+                    f"测试异常: {e!s}",
                     "检查 JWT 配置",
-                )
+                ),
             )
 
         # 2. JWT 令牌篡改测试
@@ -313,13 +315,16 @@ class AuthenticationTesterCoreMixin:
                 # 篡改令牌 - 修改 payload
                 try:
                     decoded = jwt.decode(
-                        original_token, options={"verify_signature": False}
+                        original_token,
+                        options={"verify_signature": False},
                     )
                     decoded["admin"] = True
                     decoded["user_id"] = "999"
 
                     tampered_token = jwt.encode(
-                        decoded, self.jwt_secret, algorithm="HS256"
+                        decoded,
+                        self.jwt_secret,
+                        algorithm="HS256",
                     )
 
                     # 尝试使用篡改后的令牌
@@ -337,7 +342,7 @@ class AuthenticationTesterCoreMixin:
                                 False,
                                 "篡改的 JWT 令牌被接受",
                                 "加强 JWT 令牌验证",
-                            )
+                            ),
                         )
                     else:
                         self.results.append(
@@ -347,7 +352,7 @@ class AuthenticationTesterCoreMixin:
                                 "CRITICAL",
                                 True,
                                 "正确拒绝篡改的 JWT 令牌",
-                            )
+                            ),
                         )
 
                 except Exception as e:
@@ -357,9 +362,9 @@ class AuthenticationTesterCoreMixin:
                             "JWT",
                             "CRITICAL",
                             False,
-                            f"篡改测试失败: {str(e)}",
+                            f"篡改测试失败: {e!s}",
                             "确保 JWT 验证机制正确",
-                        )
+                        ),
                     )
         except Exception:
             pass
@@ -412,13 +417,17 @@ class AuthenticationTesterCoreMixin:
                     False,
                     f"发现弱密码: {', '.join(weak_passwords_found)}",
                     "实施强密码策略",
-                )
+                ),
             )
         else:
             self.results.append(
                 AuthTestResult(
-                    "弱密码检测", "密码策略", "HIGH", True, "未发现明显的弱密码"
-                )
+                    "弱密码检测",
+                    "密码策略",
+                    "HIGH",
+                    True,
+                    "未发现明显的弱密码",
+                ),
             )
 
         # 2. 密码复杂度测试
@@ -459,7 +468,7 @@ class AuthenticationTesterCoreMixin:
                         False,
                         f"有效密码接受率过低: {acceptance_rate * 100:.1f}%",
                         "检查密码验证逻辑",
-                    )
+                    ),
                 )
             else:
                 self.results.append(
@@ -469,7 +478,7 @@ class AuthenticationTesterCoreMixin:
                         "MEDIUM",
                         True,
                         f"有效密码接受率正常: {acceptance_rate * 100:.1f}%",
-                    )
+                    ),
                 )
 
         # 3. 密码历史检查
@@ -501,7 +510,7 @@ class AuthenticationTesterCoreMixin:
                         False,
                         "允许重复使用相同的密码",
                         "实施密码历史检查",
-                    )
+                    ),
                 )
             else:
                 self.results.append(
@@ -511,7 +520,7 @@ class AuthenticationTesterCoreMixin:
                         "MEDIUM",
                         True,
                         "密码重复使用被正确限制",
-                    )
+                    ),
                 )
 
         except Exception as e:
@@ -521,9 +530,9 @@ class AuthenticationTesterCoreMixin:
                     "密码策略",
                     "MEDIUM",
                     False,
-                    f"测试失败: {str(e)}",
+                    f"测试失败: {e!s}",
                     "确保密码历史功能正常",
-                )
+                ),
             )
 
     def test_session_management(self):
@@ -556,7 +565,7 @@ class AuthenticationTesterCoreMixin:
                                     False,
                                     "允许多个并发会话",
                                     "实施会话限制",
-                                )
+                                ),
                             )
                         else:
                             self.results.append(
@@ -567,29 +576,28 @@ class AuthenticationTesterCoreMixin:
                                     False,
                                     "未正确实施会话限制",
                                     "检查会话管理逻辑",
-                                )
+                                ),
                             )
+                    elif i == 0:
+                        self.results.append(
+                            AuthTestResult(
+                                "并发会话测试",
+                                "会话管理",
+                                "MEDIUM",
+                                True,
+                                "会话创建成功",
+                            ),
+                        )
                     else:
-                        if i == 0:
-                            self.results.append(
-                                AuthTestResult(
-                                    "并发会话测试",
-                                    "会话管理",
-                                    "MEDIUM",
-                                    True,
-                                    "会话创建成功",
-                                )
-                            )
-                        else:
-                            self.results.append(
-                                AuthTestResult(
-                                    "并发会话测试",
-                                    "会话管理",
-                                    "MEDIUM",
-                                    True,
-                                    "正确限制并发会话",
-                                )
-                            )
+                        self.results.append(
+                            AuthTestResult(
+                                "并发会话测试",
+                                "会话管理",
+                                "MEDIUM",
+                                True,
+                                "正确限制并发会话",
+                            ),
+                        )
             else:
                 self.results.append(
                     AuthTestResult(
@@ -599,7 +607,7 @@ class AuthenticationTesterCoreMixin:
                         False,
                         "无法创建多个会话进行测试",
                         "确保测试用户可以创建会话",
-                    )
+                    ),
                 )
 
         except Exception as e:
@@ -609,9 +617,9 @@ class AuthenticationTesterCoreMixin:
                     "会话管理",
                     "MEDIUM",
                     False,
-                    f"测试异常: {str(e)}",
+                    f"测试异常: {e!s}",
                     "检查会话管理功能",
-                )
+                ),
             )
 
         # 2. 会话超时测试
@@ -637,8 +645,12 @@ class AuthenticationTesterCoreMixin:
                 if response.status_code == 401:
                     self.results.append(
                         AuthTestResult(
-                            "会话超时测试", "会话管理", "MEDIUM", True, "会话正确超时"
-                        )
+                            "会话超时测试",
+                            "会话管理",
+                            "MEDIUM",
+                            True,
+                            "会话正确超时",
+                        ),
                     )
                 else:
                     self.results.append(
@@ -649,7 +661,7 @@ class AuthenticationTesterCoreMixin:
                             False,
                             "会话未超时",
                             "检查会话超时配置",
-                        )
+                        ),
                     )
 
         except Exception as e:
@@ -659,7 +671,7 @@ class AuthenticationTesterCoreMixin:
                     "会话管理",
                     "MEDIUM",
                     False,
-                    f"测试失败: {str(e)}",
+                    f"测试失败: {e!s}",
                     "确保会话管理功能正常",
-                )
+                ),
             )

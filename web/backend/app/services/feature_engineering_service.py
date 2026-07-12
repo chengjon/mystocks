@@ -20,7 +20,9 @@ class FeatureEngineeringService:
 
     @staticmethod
     def generate_rolling_features(
-        df: pd.DataFrame, step: int = 10, feature_columns: list = None,
+        df: pd.DataFrame,
+        step: int = 10,
+        feature_columns: list = None,
     ) -> Tuple[pd.DataFrame, pd.Series]:
         """生成滚动窗口特征
 
@@ -138,7 +140,10 @@ class FeatureEngineeringService:
 
     @staticmethod
     def generate_features_from_file(
-        input_file: str, output_file: str, step: int = 10, feature_columns: list = None,
+        input_file: str,
+        output_file: str,
+        step: int = 10,
+        feature_columns: list = None,
     ) -> Tuple[str, dict]:
         """从 CSV 文件读取数据并生成特征
 
@@ -209,7 +214,9 @@ class FeatureEngineeringService:
 
     @staticmethod
     def prepare_model_data(
-        df: pd.DataFrame, step: int = 10, include_indicators: bool = True,
+        df: pd.DataFrame,
+        step: int = 10,
+        include_indicators: bool = True,
     ) -> Tuple[pd.DataFrame, pd.Series, dict]:
         """准备用于模型训练的数据
 

@@ -499,7 +499,9 @@ class MarketDataServiceCoreMixin:
             db.close()
 
     def fetch_and_save_chip_race_cached(
-        self, race_type: str = "open", trade_date: Optional[str] = None,
+        self,
+        race_type: str = "open",
+        trade_date: Optional[str] = None,
     ) -> Dict[str, Any]:
         """获取并保存竞价抢筹数据 - 带缓存支持
 

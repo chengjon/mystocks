@@ -1,18 +1,19 @@
-"""
-TDX数据源适配器单元测试
+"""TDX数据源适配器单元测试
 测试TdxDataSource的所有核心功能和边界条件
 """
 
-import unittest
-from unittest.mock import Mock, patch
-import sys
 import os
+import sys
+import unittest
 from datetime import datetime, timedelta
+from unittest.mock import Mock, patch
+
 import pandas as pd
+
 
 # 将项目根目录添加到模块搜索路径中
 project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
 )
 sys.path.insert(0, project_root)
 
@@ -72,7 +73,10 @@ class TestTdxDataSource(unittest.TestCase):
             mock_config_class.return_value = mock_config
 
             adapter = TdxDataSource(
-                tdx_host="127.0.0.1", tdx_port=8899, max_retries=5, retry_delay=2
+                tdx_host="127.0.0.1",
+                tdx_port=8899,
+                max_retries=5,
+                retry_delay=2,
             )
             self.assertEqual(adapter.tdx_host, "127.0.0.1")
             self.assertEqual(adapter.tdx_port, 8899)
@@ -159,13 +163,15 @@ class TestTdxDataSource(unittest.TestCase):
                 "volume": 10000,
                 "amount": 18000000,
                 "code": self.test_symbol,
-            }
+            },
         ]
         mock_api.get_security_bars.return_value = mock_bars
 
         # 调用方法
         result = self.adapter.get_stock_daily(
-            self.test_symbol, self.start_date, self.end_date
+            self.test_symbol,
+            self.start_date,
+            self.end_date,
         )
 
         # 验证结果
@@ -207,7 +213,9 @@ class TestTdxDataSource(unittest.TestCase):
 
         # 调用方法，应该返回空DataFrame
         result = self.adapter.get_stock_daily(
-            self.test_symbol, self.start_date, self.end_date
+            self.test_symbol,
+            self.start_date,
+            self.end_date,
         )
 
         # 验证结果
@@ -224,7 +232,9 @@ class TestTdxDataSource(unittest.TestCase):
 
         # 调用方法
         result = self.adapter.get_stock_daily(
-            self.test_symbol, self.start_date, self.end_date
+            self.test_symbol,
+            self.start_date,
+            self.end_date,
         )
 
         # 验证结果
@@ -290,7 +300,9 @@ class TestTdxDataSource(unittest.TestCase):
             mock_get_daily.return_value = mock_df
 
             result = self.adapter.get_stock_daily(
-                self.test_symbol, self.start_date, self.end_date
+                self.test_symbol,
+                self.start_date,
+                self.end_date,
             )
 
             # 验证包含所有必需的列
@@ -367,13 +379,13 @@ class TestTdxDataSource(unittest.TestCase):
         for input_date, expected_output in test_cases:
             # 这里我们测试normalize_date函数是否被正确调用
             with patch("src.adapters.tdx_adapter.normalize_date") as mock_normalize:
-                mock_normalize.side_effect = (
-                    lambda x: x if x.startswith("2024-") else "2024-01-01"
-                )
+                mock_normalize.side_effect = lambda x: x if x.startswith("2024-") else "2024-01-01"
 
                 with patch.object(self.adapter, "_get_tdx_connection"):
                     self.adapter.get_stock_daily(
-                        self.test_symbol, input_date, self.end_date
+                        self.test_symbol,
+                        input_date,
+                        self.end_date,
                     )
 
                 # 验证normalize_date被调用
@@ -408,8 +420,9 @@ class TestTdxDataSource(unittest.TestCase):
 
             # 监控内存使用
             try:
-                import psutil
                 import os
+
+                import psutil
 
                 process = psutil.Process(os.getpid())
                 initial_memory = process.memory_info().rss / 1024 / 1024  # MB
@@ -419,7 +432,9 @@ class TestTdxDataSource(unittest.TestCase):
 
             # 调用方法
             result = self.adapter.get_stock_daily(
-                self.test_symbol, self.start_date, self.end_date
+                self.test_symbol,
+                self.start_date,
+                self.end_date,
             )
 
             # 计算内存使用
@@ -444,18 +459,22 @@ class TestTdxDataSource(unittest.TestCase):
                 # 如果是datetime对象，格式化检查
                 date_str = first_date.strftime("%Y-%m-%d")
                 self.assertTrue(
-                    date_str.startswith("2024"), f"日期格式异常: {date_str}"
+                    date_str.startswith("2024"),
+                    f"日期格式异常: {date_str}",
                 )
             else:
                 # 如果是字符串，直接检查
                 self.assertTrue(
-                    first_date.startswith("2024"), f"日期格式异常: {first_date}"
+                    first_date.startswith("2024"),
+                    f"日期格式异常: {first_date}",
                 )
 
             # 验证内存使用合理（增加不超过100MB）
             if memory_increase > 0:
                 self.assertLess(
-                    memory_increase, 100, f"内存使用增加过多: {memory_increase:.2f}MB"
+                    memory_increase,
+                    100,
+                    f"内存使用增加过多: {memory_increase:.2f}MB",
                 )
 
     def test_concurrent_access(self):
@@ -477,7 +496,8 @@ class TestTdxDataSource(unittest.TestCase):
         for i in range(5):
             symbol = f"600{i:03d}"  # 600000, 600001, etc.
             thread = threading.Thread(
-                target=worker, args=(symbol, self.start_date, self.end_date)
+                target=worker,
+                args=(symbol, self.start_date, self.end_date),
             )
             threads.append(thread)
             thread.start()
@@ -494,7 +514,6 @@ class TestTdxDataSource(unittest.TestCase):
     def tearDown(self):
         """测试后清理"""
         # 清理资源
-        pass
 
 
 class TestTdxDataSourceIntegration(unittest.TestCase):
@@ -511,12 +530,10 @@ class TestTdxDataSourceIntegration(unittest.TestCase):
     def test_real_connection(self):
         """测试真实网络连接（可选）"""
         # 如果需要测试真实连接，可以取消注释
-        pass
 
     def test_real_data_fetch(self):
         """测试真实数据获取（可选）"""
         # 如果需要测试真实数据获取，可以取消注释
-        pass
 
 
 def run_tests():
@@ -555,11 +572,7 @@ def run_tests():
         for test, traceback in result.errors:
             print(f"- {test}: {traceback}")
 
-    success_rate = (
-        (result.testsRun - len(result.failures) - len(result.errors))
-        / result.testsRun
-        * 100
-    )
+    success_rate = (result.testsRun - len(result.failures) - len(result.errors)) / result.testsRun * 100
     print(f"\n成功率: {success_rate:.1f}%")
 
     return result.wasSuccessful()

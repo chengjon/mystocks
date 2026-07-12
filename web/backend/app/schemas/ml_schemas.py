@@ -1,5 +1,4 @@
-"""机器学习相关的数据模型定义
-"""
+"""机器学习相关的数据模型定义"""
 
 from typing import Any, Dict, List, Optional
 

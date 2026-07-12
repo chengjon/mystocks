@@ -1,5 +1,4 @@
-"""
-TDX数据源适配器 MVP测试脚本
+"""TDX数据源适配器 MVP测试脚本
 
 测试User Story 1和2:
 - 实时行情查询
@@ -9,9 +8,9 @@ TDX数据源适配器 MVP测试脚本
 日期: 2025-10-15
 """
 
-
-import sys
 import os
+import sys
+
 
 # 添加项目根目录到路径
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -19,11 +18,14 @@ sys.path.insert(0, project_root)
 
 import logging
 from datetime import datetime, timedelta
+
 from src.adapters.tdx.tdx_adapter import TdxDataSource
+
 
 # 配置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 
 logger = logging.getLogger(__name__)
@@ -81,7 +83,7 @@ def test_real_time_quote():
                 print(f"    最新价: {result['price']:.2f}")
                 print(
                     f"    涨跌: {result['price'] - result['pre_close']:.2f} "
-                    f"({(result['price'] / result['pre_close'] - 1) * 100:.2f}%)"
+                    f"({(result['price'] / result['pre_close'] - 1) * 100:.2f}%)",
                 )
                 print(f"    成交量: {result['volume']:,}手")
                 print(f"    成交额: {result['amount'] / 1e8:.2f}亿")
@@ -129,9 +131,7 @@ def test_stock_daily():
                 print(f"    数据列: {list(df.columns)}")
                 print("\n  最近5个交易日:")
                 print(
-                    df[["date", "open", "high", "low", "close", "volume"]]
-                    .tail(5)
-                    .to_string(index=False)
+                    df[["date", "open", "high", "low", "close", "volume"]].tail(5).to_string(index=False),
                 )
                 success_count += 1
             else:
@@ -176,9 +176,7 @@ def test_index_daily():
                 print(f"    数据列: {list(df.columns)}")
                 print("\n  最近5个交易日:")
                 print(
-                    df[["date", "open", "high", "low", "close", "volume"]]
-                    .tail(5)
-                    .to_string(index=False)
+                    df[["date", "open", "high", "low", "close", "volume"]].tail(5).to_string(index=False),
                 )
                 success_count += 1
             else:
@@ -252,9 +250,8 @@ def main():
     if passed_tests == total_tests:
         print("\n🎉 所有MVP功能测试通过!")
         return 0
-    else:
-        print(f"\n⚠️  {total_tests - passed_tests}个测试失败")
-        return 1
+    print(f"\n⚠️  {total_tests - passed_tests}个测试失败")
+    return 1
 
 
 if __name__ == "__main__":

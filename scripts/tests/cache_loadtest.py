@@ -1,17 +1,18 @@
-from locust import HttpUser, task, between
 import random
+
+from locust import HttpUser, between, task
+
 
 class CacheUser(HttpUser):
     wait_time = between(1, 3)
 
     def on_start(self):
         """用户开始时的初始化"""
-        pass
 
     @task(3)
     def get_market_data(self):
         """获取市场数据（高频操作）"""
-        symbols = ['000001', '000002', '600000', '600519', '000858', '601318', '601166', '000725']
+        symbols = ["000001", "000002", "600000", "600519", "000858", "601318", "601166", "000725"]
         symbol = random.choice(symbols)
         self.client.get(f"/api/market/quotes?symbols={symbol}")
 

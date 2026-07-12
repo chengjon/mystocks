@@ -320,7 +320,9 @@ async def send_welcome_email(
                     await connection_manager.send_personal_notification(notification)
                 else:
                     logger.error(
-                        "欢迎邮件发送失败", user_id=current_user.id, error=result.get("message", "Unknown error"),
+                        "欢迎邮件发送失败",
+                        user_id=current_user.id,
+                        error=result.get("message", "Unknown error"),
                     )
 
             except Exception as e:
@@ -351,8 +353,7 @@ async def send_daily_newsletter(
     background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
 ) -> Dict:
-    """发送每日新闻简报
-    """
+    """发送每日新闻简报"""
     email_service = get_email_service()
 
     if not email_service.is_configured():
@@ -387,8 +388,7 @@ async def send_price_alert(
     background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
 ) -> Dict:
-    """发送价格提醒邮件
-    """
+    """发送价格提醒邮件"""
     email_service = get_email_service()
 
     if not email_service.is_configured():
@@ -534,8 +534,7 @@ async def send_test_email(current_user: User = Depends(get_current_user)) -> Dic
 
 @router.get("/preferences")
 async def get_notification_preferences(current_user: User = Depends(get_current_active_user)) -> Dict:
-    """获取用户通知偏好设置
-    """
+    """获取用户通知偏好设置"""
     try:
         # 这里应该从数据库获取用户偏好设置
         # 暂时返回默认设置
@@ -568,10 +567,10 @@ async def get_notification_preferences(current_user: User = Depends(get_current_
 @router.post("/preferences")
 @rate_limit(limit=5, window=60)  # 每分钟最多5次设置更新
 async def update_notification_preferences(
-    preferences: NotificationPreferences, current_user: User = Depends(get_current_active_user),
+    preferences: NotificationPreferences,
+    current_user: User = Depends(get_current_active_user),
 ) -> Dict:
-    """更新用户通知偏好设置
-    """
+    """更新用户通知偏好设置"""
     try:
         # 这里应该保存到数据库
         # 暂时只记录日志

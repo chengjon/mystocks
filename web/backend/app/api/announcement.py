@@ -58,12 +58,17 @@ async def fetch_announcements(
             start_date = end_date - timedelta(days=7)
 
         result = service.fetch_and_save_announcements(
-            symbol=symbol, start_date=start_date, end_date=end_date, category=category,
+            symbol=symbol,
+            start_date=start_date,
+            end_date=end_date,
+            category=category,
         )
 
         if not result["success"]:
             raise BusinessException(
-                detail=result.get("error", "Failed to fetch"), status_code=400, error_code="ANNOUNCEMENT_FETCH_FAILED",
+                detail=result.get("error", "Failed to fetch"),
+                status_code=400,
+                error_code="ANNOUNCEMENT_FETCH_FAILED",
             )
 
         return result
@@ -114,7 +119,9 @@ async def get_announcements(
 
         if not result["success"]:
             raise BusinessException(
-                detail=result.get("error", "Query failed"), status_code=400, error_code="ANNOUNCEMENT_QUERY_FAILED",
+                detail=result.get("error", "Query failed"),
+                status_code=400,
+                error_code="ANNOUNCEMENT_QUERY_FAILED",
             )
 
         return result
@@ -151,7 +158,9 @@ async def get_today_announcements(min_importance: Optional[int] = Query(0, ge=0,
 
         if not result["success"]:
             raise BusinessException(
-                detail=result.get("error", "Query failed"), status_code=400, error_code="ANNOUNCEMENT_QUERY_FAILED",
+                detail=result.get("error", "Query failed"),
+                status_code=400,
+                error_code="ANNOUNCEMENT_QUERY_FAILED",
             )
 
         return {
@@ -198,7 +207,9 @@ async def get_important_announcements(
 
         if not result["success"]:
             raise BusinessException(
-                detail=result.get("error", "Query failed"), status_code=400, error_code="ANNOUNCEMENT_QUERY_FAILED",
+                detail=result.get("error", "Query failed"),
+                status_code=400,
+                error_code="ANNOUNCEMENT_QUERY_FAILED",
             )
 
         return {
@@ -247,7 +258,9 @@ async def get_stock_announcements(
 
         if not result["success"]:
             raise BusinessException(
-                detail=result.get("error", "Query failed"), status_code=400, error_code="ANNOUNCEMENT_QUERY_FAILED",
+                detail=result.get("error", "Query failed"),
+                status_code=400,
+                error_code="ANNOUNCEMENT_QUERY_FAILED",
             )
 
         return {

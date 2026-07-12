@@ -33,10 +33,7 @@ _RUNTIME_ALERT_TIMESTAMP = datetime(2026, 3, 13, 10, 0, 0)
 
 
 def _runtime_fallback_enabled() -> bool:
-    return (
-        os.getenv("TESTING", "false").lower() == "true"
-        or os.getenv("DEVELOPMENT_MODE", "false").lower() == "true"
-    )
+    return os.getenv("TESTING", "false").lower() == "true" or os.getenv("DEVELOPMENT_MODE", "false").lower() == "true"
 
 
 def _build_runtime_alert_rules() -> List[AlertRuleResponse]:
@@ -138,7 +135,8 @@ async def get_alert_rules(
     """
     try:
         rules = monitoring_service.get_alert_rules(
-            rule_type=rule_type.value if rule_type else None, is_active=is_active,
+            rule_type=rule_type.value if rule_type else None,
+            is_active=is_active,
         )
         return create_unified_success_response(
             data=[AlertRuleResponse.from_orm(rule) for rule in rules],

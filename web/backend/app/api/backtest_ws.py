@@ -112,7 +112,8 @@ async def websocket_backtest_progress(websocket: WebSocket, backtest_id: str):
     try:
         # 发送连接确认
         await manager.send_personal_message(
-            json.dumps({"type": "connected", "backtest_id": backtest_id, "message": "已连接到回测进度推送"}), websocket,
+            json.dumps({"type": "connected", "backtest_id": backtest_id, "message": "已连接到回测进度推送"}),
+            websocket,
         )
 
         # 保持连接，等待消息
@@ -129,7 +130,8 @@ async def websocket_backtest_progress(websocket: WebSocket, backtest_id: str):
                     # 取消回测请求
                     # TODO: 实现取消逻辑
                     await manager.send_personal_message(
-                        json.dumps({"type": "cancelled", "message": "回测已取消"}), websocket,
+                        json.dumps({"type": "cancelled", "message": "回测已取消"}),
+                        websocket,
                     )
                     break
 

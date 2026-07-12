@@ -1,20 +1,16 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-认证和授权安全测试套件
+"""认证和授权安全测试套件
 专门测试身份认证、会话管理和访问控制的安全性
 """
 
 import sys
-import os
-import json
-import time
-import requests
-import jwt
 from datetime import datetime, timedelta
-from typing import Dict, List, Any
+from typing import Any, Dict
+
+import jwt
 
 from ..helpers import AuthTestResult
+
 
 # 设置项目路径
 project_root = "/opt/claude/mystocks_spec"
@@ -41,10 +37,7 @@ class AuthenticationTesterTestPasswordResetMixin:
                     token = data["reset_token"]
 
                     # 检查令牌是否可预测
-                    if (
-                        "test@example.com" in token
-                        or datetime.now().strftime("%Y%m%d") in token
-                    ):
+                    if "test@example.com" in token or datetime.now().strftime("%Y%m%d") in token:
                         self.results.append(
                             AuthTestResult(
                                 "密码重置令牌安全性",
@@ -53,7 +46,7 @@ class AuthenticationTesterTestPasswordResetMixin:
                                 False,
                                 "重置令牌包含可预测的信息",
                                 "使用安全的随机令牌生成",
-                            )
+                            ),
                         )
                     else:
                         self.results.append(
@@ -63,7 +56,7 @@ class AuthenticationTesterTestPasswordResetMixin:
                                 "HIGH",
                                 True,
                                 "重置令牌不可预测",
-                            )
+                            ),
                         )
 
                     # 检查令牌过期时间
@@ -83,7 +76,7 @@ class AuthenticationTesterTestPasswordResetMixin:
                                     False,
                                     f"重置令牌过期时间过长: {time_to_expiry}",
                                     "缩短令牌过期时间",
-                                )
+                                ),
                             )
                         elif time_to_expiry < timedelta(minutes=5):
                             self.results.append(
@@ -94,7 +87,7 @@ class AuthenticationTesterTestPasswordResetMixin:
                                     False,
                                     f"重置令牌过期时间过短: {time_to_expiry}",
                                     "延长令牌过期时间",
-                                )
+                                ),
                             )
                         else:
                             self.results.append(
@@ -104,7 +97,7 @@ class AuthenticationTesterTestPasswordResetMixin:
                                     "HIGH",
                                     True,
                                     f"重置令牌过期时间适当: {time_to_expiry}",
-                                )
+                                ),
                             )
 
                     except jwt.InvalidTokenError:
@@ -116,7 +109,7 @@ class AuthenticationTesterTestPasswordResetMixin:
                                 False,
                                 "重置令牌格式无效",
                                 "使用标准的令牌格式",
-                            )
+                            ),
                         )
                 else:
                     self.results.append(
@@ -127,7 +120,7 @@ class AuthenticationTesterTestPasswordResetMixin:
                             False,
                             "响应中未包含重置令牌",
                             "检查密码重置功能",
-                        )
+                        ),
                     )
 
         except Exception as e:
@@ -137,9 +130,9 @@ class AuthenticationTesterTestPasswordResetMixin:
                     "密码重置",
                     "HIGH",
                     False,
-                    f"测试失败: {str(e)}",
+                    f"测试失败: {e!s}",
                     "确保密码重置功能正常",
-                )
+                ),
             )
 
         # 2. 密码重置滥用测试
@@ -151,7 +144,8 @@ class AuthenticationTesterTestPasswordResetMixin:
 
             for i in range(5):
                 response = self.session.post(
-                    f"{self.base_url}/api/auth/forgot-password", json={"email": email}
+                    f"{self.base_url}/api/auth/forgot-password",
+                    json={"email": email},
                 )
                 requests_count += 1
                 if response.status_code == 200:
@@ -167,7 +161,7 @@ class AuthenticationTesterTestPasswordResetMixin:
                         False,
                         f"密码重置请求过多: {successful_requests}/{requests_count}",
                         "实施密码重置速率限制",
-                    )
+                    ),
                 )
             else:
                 self.results.append(
@@ -177,7 +171,7 @@ class AuthenticationTesterTestPasswordResetMixin:
                         "HIGH",
                         True,
                         f"正确限制密码重置请求: {successful_requests}/{requests_count}",
-                    )
+                    ),
                 )
 
         except Exception as e:
@@ -187,9 +181,9 @@ class AuthenticationTesterTestPasswordResetMixin:
                     "密码重置",
                     "HIGH",
                     False,
-                    f"测试失败: {str(e)}",
+                    f"测试失败: {e!s}",
                     "确保密码重置安全措施正常",
-                )
+                ),
             )
 
     def generate_report(self) -> Dict[str, Any]:
@@ -202,18 +196,10 @@ class AuthenticationTesterTestPasswordResetMixin:
                 "test_date": datetime.now().isoformat(),
             },
             "severity_breakdown": {
-                "CRITICAL": sum(
-                    1 for r in self.results if r.severity == "CRITICAL" and not r.passed
-                ),
-                "HIGH": sum(
-                    1 for r in self.results if r.severity == "HIGH" and not r.passed
-                ),
-                "MEDIUM": sum(
-                    1 for r in self.results if r.severity == "MEDIUM" and not r.passed
-                ),
-                "LOW": sum(
-                    1 for r in self.results if r.severity == "LOW" and not r.passed
-                ),
+                "CRITICAL": sum(1 for r in self.results if r.severity == "CRITICAL" and not r.passed),
+                "HIGH": sum(1 for r in self.results if r.severity == "HIGH" and not r.passed),
+                "MEDIUM": sum(1 for r in self.results if r.severity == "MEDIUM" and not r.passed),
+                "LOW": sum(1 for r in self.results if r.severity == "LOW" and not r.passed),
             },
             "category_results": {},
             "detailed_findings": [],
@@ -245,7 +231,7 @@ class AuthenticationTesterTestPasswordResetMixin:
                         "details": result.details,
                         "recommendation": result.recommendation,
                         "timestamp": result.timestamp,
-                    }
+                    },
                 )
 
         return report

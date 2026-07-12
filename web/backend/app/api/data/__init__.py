@@ -2,6 +2,7 @@
 
 Refactored to modular domain routers.
 """
+
 from fastapi import APIRouter
 
 from .financial import router as financial_router

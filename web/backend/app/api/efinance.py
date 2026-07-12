@@ -159,8 +159,7 @@ async def get_single_stock_realtime(
     symbol: str,
     current_user: User = Depends(get_current_user),
 ):
-    """获取指定股票的实时行情数据
-    """
+    """获取指定股票的实时行情数据"""
     try:
         data = efinance_adapter.get_real_time_data(symbol)
 
@@ -291,7 +290,8 @@ async def get_today_fund_flow(
 
     except Exception as e:
         return create_error_response(
-            ErrorCodes.INTERNAL_ERROR, f"Failed to get today fund flow data for {symbol}: {e!s}",
+            ErrorCodes.INTERNAL_ERROR,
+            f"Failed to get today fund flow data for {symbol}: {e!s}",
         )
 
 
@@ -327,7 +327,8 @@ async def get_fund_nav_history(
 
     except Exception as e:
         return create_error_response(
-            ErrorCodes.INTERNAL_ERROR, f"Failed to get fund nav history for {fund_code}: {e!s}",
+            ErrorCodes.INTERNAL_ERROR,
+            f"Failed to get fund nav history for {fund_code}: {e!s}",
         )
 
 
@@ -358,7 +359,8 @@ async def get_fund_positions(
 
     except Exception as e:
         return create_error_response(
-            ErrorCodes.INTERNAL_ERROR, f"Failed to get fund positions for {fund_code}: {e!s}",
+            ErrorCodes.INTERNAL_ERROR,
+            f"Failed to get fund positions for {fund_code}: {e!s}",
         )
 
 
@@ -447,8 +449,7 @@ async def get_bond_kline(
     bond_code: str,
     current_user: User = Depends(get_current_user),
 ):
-    """获取可转债历史K线数据
-    """
+    """获取可转债历史K线数据"""
     try:
         df = efinance_adapter.get_bond_history(bond_code)
 
@@ -499,8 +500,7 @@ async def get_futures_history(
     quote_id: str,
     current_user: User = Depends(get_current_user),
 ):
-    """获取期货历史行情数据
-    """
+    """获取期货历史行情数据"""
     try:
         df = efinance_adapter.get_futures_history(quote_id)
 
@@ -519,7 +519,8 @@ async def get_futures_history(
 
     except Exception as e:
         return create_error_response(
-            ErrorCodes.INTERNAL_ERROR, f"Failed to get futures history for {quote_id}: {e!s}",
+            ErrorCodes.INTERNAL_ERROR,
+            f"Failed to get futures history for {quote_id}: {e!s}",
         )
 
 
@@ -590,8 +591,7 @@ async def get_circuit_breaker_stats(current_user: User = Depends(get_current_use
 
 @router.post("/cache/clear", summary="清空缓存")
 async def clear_cache(current_user: User = Depends(get_current_user)):
-    """清空efinance适配器的所有缓存
-    """
+    """清空efinance适配器的所有缓存"""
     try:
         efinance_adapter.clear_cache()
 
@@ -609,8 +609,7 @@ async def clear_cache(current_user: User = Depends(get_current_user)):
 
 @router.post("/circuit-breaker/reset", summary="重置熔断器")
 async def reset_circuit_breaker(current_user: User = Depends(get_current_user)):
-    """重置efinance适配器的熔断器状态
-    """
+    """重置efinance适配器的熔断器状态"""
     try:
         efinance_adapter.reset_circuit_breaker()
 

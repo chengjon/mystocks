@@ -1,5 +1,4 @@
-"""任务 API 安全与审计辅助函数。
-"""
+"""任务 API 安全与审计辅助函数。"""
 
 import time
 from datetime import datetime, timezone

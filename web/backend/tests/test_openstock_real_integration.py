@@ -9,6 +9,7 @@
 
 pytest.mark.integration marker 在 pytest.ini / pyproject.toml 注册。
 """
+
 from __future__ import annotations
 
 import json
@@ -80,12 +81,14 @@ class TestOpenStockRealBehavior:
         assert len(time_str) > 10, f"expected ISO8601 full timestamp, got {time_str!r}"
         # 应能被 Python datetime.fromisoformat 解析(Python 3.11+ 支持 +08:00)
         from datetime import datetime
+
         dt = datetime.fromisoformat(time_str)
         assert dt.year >= 2026
 
     def test_probe4_invalid_symbol_returns_503(self):
         """发现 #4 更正:错 symbol 不是静默 fallback,而是 503 provider_unavailable。"""
         import urllib.error
+
         with pytest.raises(urllib.error.HTTPError) as exc_info:
             _post(
                 "/data/fetch",
@@ -108,11 +111,11 @@ class TestOpenStockRealBehavior:
     def test_probe_multi_symbol_comma_string_rejected(self):
         """决策点 #4 验证:逗号分隔多 symbol 被 provider 拒绝(503)。"""
         import urllib.error
+
         with pytest.raises(urllib.error.HTTPError) as exc_info:
             _post(
                 "/data/fetch",
-                {"data_category": "REALTIME_QUOTES",
-                 "params": {"symbol": "000001,600519"}},
+                {"data_category": "REALTIME_QUOTES", "params": {"symbol": "000001,600519"}},
             )
         assert exc_info.value.code == 503
 
@@ -140,13 +143,11 @@ class TestOpenStockRealBehavior:
         """
         body = _post(
             "/data/fetch",
-            {"data_category": "REALTIME_QUOTES",
-             "params": {"symbols": "000001"}},
+            {"data_category": "REALTIME_QUOTES", "params": {"symbols": "000001"}},
         )
         data = body.get("data")
         assert isinstance(data, list)
         # 复数被忽略 → 默认热点 50 条
         assert len(data) >= 10, "plural 'symbols' should be ignored, returning default hots"
         # 返回的应该是热点代码(sh689009 等),不是 sz000001
-        assert data[0]["symbol"] != "sz000001", \
-            "plural 'symbols' should NOT filter — if it does, adapter fix is broken"
+        assert data[0]["symbol"] != "sz000001", "plural 'symbols' should NOT filter — if it does, adapter fix is broken"

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-最终集成测试 - Sina Finance股票评级API
+"""最终集成测试 - Sina Finance股票评级API
 Final Integration Test - Sina Finance Stock Ratings API
 
 测试Sina Finance实施的完整功能，包括：
@@ -10,9 +9,10 @@ Final Integration Test - Sina Finance Stock Ratings API
 4. API路由定义
 """
 
-import sys
 import os
+import sys
 from pathlib import Path
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent
@@ -73,7 +73,7 @@ def test_sina_finance_integration():
                 "行业": "银行",
                 "评级日期": "2024-01-15",
                 "摘要": "看好银行板块",
-            }
+            },
         ]
 
         # 测试评级映射
@@ -92,7 +92,8 @@ def test_sina_finance_integration():
 
             # 加载API模块
             spec = importlib.util.spec_from_file_location(
-                "stock_ratings_api", "web/backend/app/api/stock_ratings_api.py"
+                "stock_ratings_api",
+                "web/backend/app/api/stock_ratings_api.py",
             )
 
             if spec and spec.loader:
@@ -146,9 +147,8 @@ def test_sina_finance_integration():
     if passed_tests == total_tests:
         print("\n🎉 所有集成测试通过！Sina Finance API实施成功！")
         return True
-    else:
-        print(f"\n⚠️ {total_tests - passed_tests} 个测试失败，需要进一步调试")
-        return False
+    print(f"\n⚠️ {total_tests - passed_tests} 个测试失败，需要进一步调试")
+    return False
 
 
 def main():

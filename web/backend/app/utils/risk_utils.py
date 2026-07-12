@@ -21,6 +21,7 @@ logger = structlog.get_logger(__name__)
 # 延迟初始化监控数据库（避免导入时需要完整环境变量）
 _monitoring_db = None
 
+
 def get_monitoring_db():
     """获取监控数据库实例（延迟初始化）"""
     global _monitoring_db
@@ -140,8 +141,10 @@ class ConnectionManager:
         except Exception:
             self.disconnect(websocket)
 
+
 # 全局连接管理器实例
 connection_manager = ConnectionManager()
+
 
 async def setup_risk_event_broadcasting(enhanced_risk_features_available: bool = False):
     """设置风险事件自动广播到WebSocket

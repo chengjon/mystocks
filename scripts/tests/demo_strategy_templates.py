@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""
-策略模板系统演示脚本
+"""策略模板系统演示脚本
 
 演示4个预置策略模板的功能
 """
 
-import sys
 import os
+import sys
 from datetime import datetime, timedelta
+
 
 # 添加项目路径
 project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
 )
 sys.path.insert(0, project_root)
 sys.path.insert(0, os.path.join(project_root, "web", "backend"))
@@ -50,7 +50,8 @@ def demo_momentum_strategy():
 
     # 创建策略实例
     strategy = StrategyFactory.create_strategy(
-        "momentum", {"ma_period": 20, "breakout_pct": 0.02, "rsi_period": 14}
+        "momentum",
+        {"ma_period": 20, "breakout_pct": 0.02, "rsi_period": 14},
     )
 
     print("\n策略信息:")
@@ -107,7 +108,8 @@ def demo_mean_reversion_strategy():
     print_header("🔄 均值回归策略演示 (Mean Reversion Strategy)")
 
     strategy = StrategyFactory.create_strategy(
-        "mean_reversion", {"bb_period": 20, "bb_std": 2.0, "entry_std": 2.0}
+        "mean_reversion",
+        {"bb_period": 20, "bb_std": 2.0, "entry_std": 2.0},
     )
 
     print("\n策略信息:")
@@ -220,7 +222,8 @@ def demo_grid_strategy():
     print_header("📊 网格策略演示 (Grid Strategy)")
 
     strategy = StrategyFactory.create_strategy(
-        "grid", {"grid_count": 10, "grid_spacing_pct": 0.02, "base_quantity": 100}
+        "grid",
+        {"grid_count": 10, "grid_spacing_pct": 0.02, "base_quantity": 100},
     )
 
     print("\n策略信息:")

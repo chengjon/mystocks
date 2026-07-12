@@ -1,5 +1,5 @@
-"""个股信息与新闻路由 (Stock Info & News)
-"""
+"""个股信息与新闻路由 (Stock Info & News)"""
+
 from fastapi import APIRouter, Depends, Query
 
 from app.core.responses import ErrorCodes, create_error_response, create_success_response
@@ -9,6 +9,7 @@ from .base import akshare_market_adapter
 
 
 router = APIRouter()
+
 
 @router.get("/stock/individual-info/em", summary="获取个股信息查询-东财")
 async def get_stock_individual_info_em(
@@ -295,4 +296,3 @@ async def get_stock_bid_ask_em(
 # ============================================================================
 # Phase 3: 资金流向数据API
 # ============================================================================
-

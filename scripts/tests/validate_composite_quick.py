@@ -1,15 +1,15 @@
-"""
-快速验证Composite业务数据源
+"""快速验证Composite业务数据源
 
 仅验证工厂注册和类结构，不进行实际数据库操作
 """
 
-import sys
 import os
+import sys
+
 
 # 添加项目根目录到Python路径
 project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
 )
 sys.path.insert(0, project_root)
 

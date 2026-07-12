@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-简化的Mock数据系统测试脚本
+"""简化的Mock数据系统测试脚本
 
 只测试核心功能，避免语法错误的干扰。
 
@@ -13,6 +11,7 @@ import os
 import sys
 from datetime import datetime
 from pathlib import Path
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -54,7 +53,7 @@ def test_unified_mock_manager_basic():
         return True
 
     except Exception as e:
-        print(f"❌ 测试失败: {str(e)}")
+        print(f"❌ 测试失败: {e!s}")
         import traceback
 
         traceback.print_exc()
@@ -80,7 +79,7 @@ def test_environment_variables():
         return True
 
     except Exception as e:
-        print(f"❌ 环境变量测试失败: {str(e)}")
+        print(f"❌ 环境变量测试失败: {e!s}")
         import traceback
 
         traceback.print_exc()
@@ -95,8 +94,8 @@ def test_utility_functions():
 
     try:
         from web.backend.app.mock.unified_mock_data import (
-            get_mock_data_manager,
             data_source_toggle,
+            get_mock_data_manager,
         )
 
         print("✅ 所有工具函数导入成功")
@@ -117,7 +116,7 @@ def test_utility_functions():
         return True
 
     except Exception as e:
-        print(f"❌ 工具函数测试失败: {str(e)}")
+        print(f"❌ 工具函数测试失败: {e!s}")
         import traceback
 
         traceback.print_exc()
@@ -132,6 +131,7 @@ def test_performance():
 
     try:
         import time
+
         from web.backend.app.mock.unified_mock_data import UnifiedMockDataManager
 
         manager = UnifiedMockDataManager(use_mock_data=True)
@@ -155,7 +155,7 @@ def test_performance():
         return True
 
     except Exception as e:
-        print(f"❌ 性能测试失败: {str(e)}")
+        print(f"❌ 性能测试失败: {e!s}")
         import traceback
 
         traceback.print_exc()
@@ -206,9 +206,8 @@ def main():
     if success:
         print("\n🎉 所有测试通过！Mock数据系统基础功能正常")
         return 0
-    else:
-        print("\n⚠️ 部分测试失败，请检查系统配置")
-        return 1
+    print("\n⚠️ 部分测试失败，请检查系统配置")
+    return 1
 
 
 if __name__ == "__main__":

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-GPU环境配置验证脚本
+"""GPU环境配置验证脚本
 验证MyStocks项目的GPU加速环境是否正确配置
 适用于RTX 2080 GPU + CUDA 12.x环境
 """
@@ -25,7 +24,10 @@ class GPUEnvironmentTester:
             import subprocess
 
             result = subprocess.run(
-                ["nvidia-smi"], capture_output=True, text=True, timeout=10
+                ["nvidia-smi"],
+                capture_output=True,
+                text=True,
+                timeout=10,
             )
             if result.returncode == 0:
                 # 解析GPU信息
@@ -44,10 +46,9 @@ class GPUEnvironmentTester:
                 self.test_results["nvidia_driver"] = True
                 print(f"✅ NVIDIA驱动正常: {self.gpu_info}")
                 return True
-            else:
-                self.test_results["nvidia_driver"] = False
-                print("❌ NVIDIA驱动异常")
-                return False
+            self.test_results["nvidia_driver"] = False
+            print("❌ NVIDIA驱动异常")
+            return False
         except Exception as e:
             self.test_results["nvidia_driver"] = False
             print(f"❌ NVIDIA驱动测试失败: {e}")
@@ -68,10 +69,9 @@ class GPUEnvironmentTester:
                 self.test_results["cuda_runtime"] = True
                 print(f"✅ CUDA运行时正常 (CuPy版本: {cp.__version__})")
                 return True
-            else:
-                self.test_results["cuda_runtime"] = False
-                print("❌ CUDA运行时计算错误")
-                return False
+            self.test_results["cuda_runtime"] = False
+            print("❌ CUDA运行时计算错误")
+            return False
         except Exception as e:
             self.test_results["cuda_runtime"] = False
             print(f"❌ CUDA运行时测试失败: {e}")
@@ -95,28 +95,23 @@ class GPUEnvironmentTester:
 
             # 测试GPU计算
             df_gpu["price_squared"] = df_gpu["price"] ** 2
-            df_gpu["volume_normalized"] = (
-                df_gpu["volume"] - df_gpu["volume"].mean()
-            ) / df_gpu["volume"].std()
+            df_gpu["volume_normalized"] = (df_gpu["volume"] - df_gpu["volume"].mean()) / df_gpu["volume"].std()
 
             # 转换回CPU验证
             result_cpu = df_gpu.to_pandas()
 
             # 验证计算结果
             expected_price_squared = [110.25, 231.04, 75.69, 151.29, 96.04]
-            price_squared_match = (
-                list(result_cpu["price_squared"].round(2)) == expected_price_squared
-            )
+            price_squared_match = list(result_cpu["price_squared"].round(2)) == expected_price_squared
 
             if price_squared_match and len(result_cpu) == 5:
                 self.test_results["cudf"] = True
                 print(f"✅ cuDF正常 (版本: {cudf.__version__})")
                 print(f"   GPU计算示例: {len(df_gpu)}行数据处理完成")
                 return True
-            else:
-                self.test_results["cudf"] = False
-                print("❌ cuDF计算错误")
-                return False
+            self.test_results["cudf"] = False
+            print("❌ cuDF计算错误")
+            return False
         except Exception as e:
             self.test_results["cudf"] = False
             print(f"❌ cuDF测试失败: {e}")
@@ -150,10 +145,9 @@ class GPUEnvironmentTester:
                 print(f"✅ cuML正常 (版本: {cuml.__version__})")
                 print(f"   线性回归R²分数: {score:.4f}")
                 return True
-            else:
-                self.test_results["cuml"] = False
-                print("❌ cuML模型性能异常")
-                return False
+            self.test_results["cuml"] = False
+            print("❌ cuML模型性能异常")
+            return False
         except Exception as e:
             self.test_results["cuml"] = False
             print(f"❌ cuML测试失败: {e}")
@@ -183,16 +177,14 @@ class GPUEnvironmentTester:
                     "annual_return": cp.random.normal(0.1, 0.2, num_stocks),
                     "volatility": cp.abs(cp.random.normal(0.15, 0.1, num_stocks)),
                     "market_cap": cp.random.lognormal(15, 1, num_stocks),
-                }
+                },
             )
 
             # 计算夏普比率 (GPU并行计算)
             stocks["sharpe_ratio"] = stocks["annual_return"] / stocks["volatility"]
 
             # 模拟策略筛选 (GPU过滤)
-            strategy_mask = (stocks["sharpe_ratio"] > 1.0) & (
-                stocks["market_cap"] > 1e8
-            )
+            strategy_mask = (stocks["sharpe_ratio"] > 1.0) & (stocks["market_cap"] > 1e8)
             selected_stocks = stocks[strategy_mask]
 
             processing_time = time.time() - start_time
@@ -211,15 +203,13 @@ class GPUEnvironmentTester:
                     "price": cp.random.uniform(10, 100, 10000),
                     "volume": cp.random.uniform(1000, 100000, 10000),
                     "timestamp": range(10000),
-                }
+                },
             )
 
             # 批量计算技术指标 (GPU加速)
             real_time_data["sma_20"] = real_time_data["price"].rolling(20).mean()
             real_time_data["std_20"] = real_time_data["price"].rolling(20).std()
-            real_time_data["rsi"] = 100 - (
-                100 / (1 + real_time_data["price"].pct_change().rolling(14).mean())
-            )
+            real_time_data["rsi"] = 100 - (100 / (1 + real_time_data["price"].pct_change().rolling(14).mean()))
 
             feature_time = time.time() - start_time
             print(f"      处理了 {len(real_time_data)} 条实时数据")
@@ -237,7 +227,7 @@ class GPUEnvironmentTester:
                     "roe": cp.random.uniform(0.05, 0.25, 500),
                     "momentum": cp.random.normal(0, 0.1, 500),
                     "size": cp.random.lognormal(10, 1, 500),
-                }
+                },
             )
 
             # 计算因子权重 (GPU矩阵运算)
@@ -246,11 +236,7 @@ class GPUEnvironmentTester:
 
             # 因子排名 (GPU排序)
             factors["composite_score"] = composite_score
-            factors["rank"] = (
-                factors["composite_score"]
-                .rank(method="dense", ascending=False)
-                .to_numpy()
-            )
+            factors["rank"] = factors["composite_score"].rank(method="dense", ascending=False).to_numpy()
 
             model_time = time.time() - start_time
             print(f"      处理了 {len(factors)} 只股票的因子分析")
@@ -262,10 +248,9 @@ class GPUEnvironmentTester:
                 self.test_results["quantitative_scenarios"] = True
                 print(f"✅ 量化交易场景测试通过 (总耗时: {total_time:.4f}秒)")
                 return True
-            else:
-                self.test_results["quantitative_scenarios"] = False
-                print(f"⚠️  量化交易场景性能一般 (总耗时: {total_time:.4f}秒)")
-                return True  # 仍然通过，只是性能提示
+            self.test_results["quantitative_scenarios"] = False
+            print(f"⚠️  量化交易场景性能一般 (总耗时: {total_time:.4f}秒)")
+            return True  # 仍然通过，只是性能提示
 
         except Exception as e:
             self.test_results["quantitative_scenarios"] = False
@@ -276,8 +261,9 @@ class GPUEnvironmentTester:
         """测试GPU内存管理"""
         print("🔍 测试GPU内存管理...")
         try:
-            import cupy as cp
             import gc
+
+            import cupy as cp
 
             # 获取初始内存
             initial_memory = cp.get_default_memory_pool().used_bytes()
@@ -314,10 +300,9 @@ class GPUEnvironmentTester:
                 self.test_results["memory_management"] = True
                 print("✅ GPU内存管理正常")
                 return True
-            else:
-                self.test_results["memory_management"] = False
-                print("⚠️  GPU内存释放不充分")
-                return True  # 仍然通过，只是有警告
+            self.test_results["memory_management"] = False
+            print("⚠️  GPU内存释放不充分")
+            return True  # 仍然通过，只是有警告
 
         except Exception as e:
             self.test_results["memory_management"] = False

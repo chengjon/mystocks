@@ -357,7 +357,11 @@ class MonitoringService:
             change_pct = row.get("change_percent", 0)
 
             triggered = False
-            if (direction == "up" and change_pct >= threshold) or (direction == "down" and change_pct <= -abs(threshold)) or (direction == "both" and abs(change_pct) >= threshold):
+            if (
+                (direction == "up" and change_pct >= threshold)
+                or (direction == "down" and change_pct <= -abs(threshold))
+                or (direction == "both" and abs(change_pct) >= threshold)
+            ):
                 triggered = True
 
             if triggered:

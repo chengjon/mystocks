@@ -174,7 +174,10 @@ class AdvancedAnalysisService:
             await self.initialize()
 
     async def analyze_fundamental(
-        self, symbol: str, include_raw_data: bool = False, user_id: Optional[str] = None,
+        self,
+        symbol: str,
+        include_raw_data: bool = False,
+        user_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """基本面分析"""
         await self._ensure_initialized()
@@ -195,7 +198,10 @@ class AdvancedAnalysisService:
             raise
 
     async def analyze_technical(
-        self, symbol: str, include_raw_data: bool = False, user_id: Optional[str] = None,
+        self,
+        symbol: str,
+        include_raw_data: bool = False,
+        user_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """技术面分析"""
         await self._ensure_initialized()
@@ -230,7 +236,10 @@ class AdvancedAnalysisService:
             raise
 
     async def analyze_time_series(
-        self, symbol: str, include_raw_data: bool = False, user_id: Optional[str] = None,
+        self,
+        symbol: str,
+        include_raw_data: bool = False,
+        user_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """时序分析"""
         await self._ensure_initialized()
@@ -245,7 +254,9 @@ class AdvancedAnalysisService:
             raise
 
     async def analyze_market_panorama(
-        self, include_raw_data: bool = False, user_id: Optional[str] = None,
+        self,
+        include_raw_data: bool = False,
+        user_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """市场全景分析"""
         await self._ensure_initialized()
@@ -260,7 +271,10 @@ class AdvancedAnalysisService:
             raise
 
     async def analyze_capital_flow(
-        self, symbol: str, include_raw_data: bool = False, user_id: Optional[str] = None,
+        self,
+        symbol: str,
+        include_raw_data: bool = False,
+        user_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """资金流向分析"""
         await self._ensure_initialized()
@@ -275,7 +289,10 @@ class AdvancedAnalysisService:
             raise
 
     async def analyze_chip_distribution(
-        self, symbol: str, include_raw_data: bool = False, user_id: Optional[str] = None,
+        self,
+        symbol: str,
+        include_raw_data: bool = False,
+        user_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """筹码分布分析"""
         await self._ensure_initialized()
@@ -290,7 +307,10 @@ class AdvancedAnalysisService:
             raise
 
     async def analyze_anomaly_tracking(
-        self, symbol: str, include_raw_data: bool = False, user_id: Optional[str] = None,
+        self,
+        symbol: str,
+        include_raw_data: bool = False,
+        user_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """异常追踪分析"""
         await self._ensure_initialized()
@@ -305,7 +325,10 @@ class AdvancedAnalysisService:
             raise
 
     async def analyze_financial_valuation(
-        self, symbol: str, include_raw_data: bool = False, user_id: Optional[str] = None,
+        self,
+        symbol: str,
+        include_raw_data: bool = False,
+        user_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """财务估值分析"""
         await self._ensure_initialized()
@@ -320,7 +343,10 @@ class AdvancedAnalysisService:
             raise
 
     async def analyze_sentiment(
-        self, symbol: str, include_raw_data: bool = False, user_id: Optional[str] = None,
+        self,
+        symbol: str,
+        include_raw_data: bool = False,
+        user_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """情绪分析"""
         await self._ensure_initialized()
@@ -335,7 +361,10 @@ class AdvancedAnalysisService:
             raise
 
     async def analyze_decision_models(
-        self, symbol: str, include_raw_data: bool = False, user_id: Optional[str] = None,
+        self,
+        symbol: str,
+        include_raw_data: bool = False,
+        user_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """决策模型分析"""
         await self._ensure_initialized()
@@ -350,7 +379,10 @@ class AdvancedAnalysisService:
             raise
 
     async def analyze_multidimensional_radar(
-        self, symbol: str, include_raw_data: bool = False, user_id: Optional[str] = None,
+        self,
+        symbol: str,
+        include_raw_data: bool = False,
+        user_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """多维度雷达分析"""
         await self._ensure_initialized()

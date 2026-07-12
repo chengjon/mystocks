@@ -226,7 +226,10 @@ class GeneticOptimizer(BaseOptimizer):
         return Individual(child1_genes), Individual(child2_genes)
 
     def _blend_crossover(
-        self, parent1: Individual, parent2: Individual, alpha: float = 0.5,
+        self,
+        parent1: Individual,
+        parent2: Individual,
+        alpha: float = 0.5,
     ) -> Tuple[Individual, Individual]:
         """混合交叉 (BLX-α)
 
@@ -365,10 +368,7 @@ class GeneticOptimizer(BaseOptimizer):
 
         """
         logger.info(
-            f"开始遗传算法优化: "
-            f"策略={self.strategy_type}, "
-            f"种群={self.population_size}, "
-            f"代数={self.n_generations}",
+            f"开始遗传算法优化: 策略={self.strategy_type}, 种群={self.population_size}, 代数={self.n_generations}",
         )
 
         start_time = time.time()

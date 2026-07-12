@@ -1,5 +1,4 @@
-"""
-测试PostgreSQL关系数据源
+"""测试PostgreSQL关系数据源
 
 验证PostgreSQLRelationalDataSource的基本功能：
 - 工厂注册验证
@@ -11,13 +10,14 @@
 日期: 2025-11-21
 """
 
-import sys
 import os
+import sys
 from datetime import datetime
+
 
 # 添加项目根目录到Python路径
 project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
 )
 sys.path.insert(0, project_root)
 
@@ -74,16 +74,15 @@ def test_health_check():
             print(f"  - 响应时间: {health.get('response_time_ms', 0):.2f}ms")
             print("\n✅ 健康检查通过 - PostgreSQL连接正常")
             return True
-        else:
-            print(f"  - 错误: {health.get('error', 'Unknown error')}")
-            print(
-                "\n⚠️  健康检查失败 - PostgreSQL连接异常（这是预期的，如果PostgreSQL未启动）"
-            )
-            print("   切换到Mock数据源继续测试")
-            return False
+        print(f"  - 错误: {health.get('error', 'Unknown error')}")
+        print(
+            "\n⚠️  健康检查失败 - PostgreSQL连接异常（这是预期的，如果PostgreSQL未启动）",
+        )
+        print("   切换到Mock数据源继续测试")
+        return False
 
     except Exception as e:
-        print(f"\n⚠️  健康检查失败: {str(e)}")
+        print(f"\n⚠️  健康检查失败: {e!s}")
         print("   这是预期的，如果PostgreSQL数据库未配置或未启动")
         print("   切换到Mock数据源继续测试")
         return False
@@ -137,7 +136,7 @@ def test_basic_operations():
 
     # 测试9: 事务操作
     print(
-        "  ✅ begin_transaction, commit_transaction, rollback_transaction - 方法签名正确"
+        "  ✅ begin_transaction, commit_transaction, rollback_transaction - 方法签名正确",
     )
 
     print("\n✅ 接口可用性验证通过 (所有方法签名正确)")
@@ -158,7 +157,8 @@ def test_class_structure():
 
     # 验证继承关系
     assert issubclass(
-        PostgreSQLRelationalDataSource, IRelationalDataSource
+        PostgreSQLRelationalDataSource,
+        IRelationalDataSource,
     ), "PostgreSQLRelationalDataSource应继承IRelationalDataSource"
 
     # 验证所有接口方法都已实现
@@ -254,7 +254,7 @@ def run_all_tests():
             else:
                 warnings += 1
         except Exception as e:
-            print(f"❌ {name}测试失败: {str(e)}")
+            print(f"❌ {name}测试失败: {e!s}")
             import traceback
 
             traceback.print_exc()
@@ -276,9 +276,8 @@ def run_all_tests():
         if warnings > 0:
             print("💡 提示: 配置PostgreSQL数据库后可进行完整功能测试")
         return True
-    else:
-        print(f"\n⚠️  有{failed}个测试失败")
-        return False
+    print(f"\n⚠️  有{failed}个测试失败")
+    return False
 
 
 if __name__ == "__main__":

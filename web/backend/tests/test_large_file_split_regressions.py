@@ -161,7 +161,9 @@ def _load_operation_metrics_split_module():
         sys.modules[dotted_name] = module
         spec.loader.exec_module(module)
 
-    spec = importlib.util.spec_from_file_location(module_name, Path("src/monitoring/monitoring_service/operation_metrics.py"))
+    spec = importlib.util.spec_from_file_location(
+        module_name, Path("src/monitoring/monitoring_service/operation_metrics.py")
+    )
     module = importlib.util.module_from_spec(spec)
     assert spec is not None and spec.loader is not None
     sys.modules[module_name] = module
@@ -239,7 +241,9 @@ def _load_turning_point_split_module():
         sys.modules[dotted_name] = module
         spec.loader.exec_module(module)
 
-    spec = importlib.util.spec_from_file_location(module_name, Path("src/advanced_analysis/timeseries_analyzer/turning_point.py"))
+    spec = importlib.util.spec_from_file_location(
+        module_name, Path("src/advanced_analysis/timeseries_analyzer/turning_point.py")
+    )
     module = importlib.util.module_from_spec(spec)
     assert spec is not None and spec.loader is not None
     sys.modules[module_name] = module

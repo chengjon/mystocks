@@ -119,7 +119,11 @@ class TestMarketOverview:
 
     @pytest.mark.skip(reason="Overview endpoint requires auth and uses different service (data.market)")
     def test_overview_contains_required_fields(
-        self, client, mock_etf_data, mock_chip_race_data, mock_lhb_data,
+        self,
+        client,
+        mock_etf_data,
+        mock_chip_race_data,
+        mock_lhb_data,
     ):
         """测试市场概览包含必需字段"""
         response = client.get("/api/v1/data/markets/overview")

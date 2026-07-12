@@ -93,7 +93,8 @@ class CustomerAdapter(BaseAdapter):
         """获取日线数据"""
         try:
             self._log_request_start(
-                "get_stock_daily", {"stock_code": stock_code, "start_date": start_date, "end_date": end_date},
+                "get_stock_daily",
+                {"stock_code": stock_code, "start_date": start_date, "end_date": end_date},
             )
 
             request_message = {

@@ -40,6 +40,7 @@ from .data_source_mode import (
 
 logger = logging.getLogger(__name__)
 
+
 class DataSourceFactory:
     """数据源工厂 - 核心工厂类"""
 
@@ -164,7 +165,10 @@ class DataSourceFactory:
         return await data_source.get_data(endpoint, params)
 
     async def get_data_with_fallback(
-        self, source_name: str, endpoint: str, params: Dict[str, Any] = None,
+        self,
+        source_name: str,
+        endpoint: str,
+        params: Dict[str, Any] = None,
     ) -> Dict[str, Any]:
         """获取数据，支持自动fallback"""
         try:
@@ -292,6 +296,7 @@ class DataSourceFactory:
 
 
 _global_factory: Optional[DataSourceFactory] = None
+
 
 async def get_data_source_factory() -> DataSourceFactory:
     """获取全局数据源工厂实例"""

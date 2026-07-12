@@ -1,56 +1,55 @@
-"""
-Test Data Format Conventions and Schemas
+"""Test Data Format Conventions and Schemas
 
 Tests all data format implementations to ensure consistency and correctness.
 Reference: docs/api/API_SPECIFICATION.md
 """
 
-import sys
 import os
-from decimal import Decimal
+import sys
 from datetime import date
+from decimal import Decimal
+
 
 # Calculate project root (3 levels up from script location)
 project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
 )
 sys.path.insert(0, project_root)
 
 # Import test data formats and schemas
 from web.backend.app.core.data_formats import (
-    get_current_iso_timestamp,
-    get_current_ms_timestamp,
-    validate_price,
-    validate_percentage,
-    validate_volume,
-    validate_currency,
-    StockSymbolFormat,
-    DateFormat,
-    TimestampFormat,
-    PrecisionRules,
     DataFormatConstants,
     DataFormatValidator,
+    DateFormat,
     HTTPHeaderFormats,
+    PrecisionRules,
+    StockSymbolFormat,
+    TimestampFormat,
+    get_current_iso_timestamp,
+    get_current_ms_timestamp,
+    validate_currency,
+    validate_percentage,
+    validate_price,
+    validate_volume,
 )
-
 from web.backend.app.schemas.base_schemas import (
-    SuccessResponse,
-    ErrorResponse,
-    PaginationInfo,
-    PaginatedResponse,
-    ValidationErrorResponse,
-    UnauthorizedResponse,
-    ForbiddenResponse,
-    NotFoundResponse,
-    ServerErrorResponse,
-    StockSymbolField,
-    PriceField,
-    PercentageField,
-    VolumeField,
     CurrencyField,
     DateField,
-    TimestampField,
+    ErrorResponse,
+    ForbiddenResponse,
+    NotFoundResponse,
+    PaginatedResponse,
+    PaginationInfo,
     PaginationRequest,
+    PercentageField,
+    PriceField,
+    ServerErrorResponse,
+    StockSymbolField,
+    SuccessResponse,
+    TimestampField,
+    UnauthorizedResponse,
+    ValidationErrorResponse,
+    VolumeField,
 )
 
 
@@ -144,7 +143,7 @@ def test_price_validation():
         # Valid price
         price = validate_price(123.456)
         assert price == Decimal(
-            "123.46"
+            "123.46",
         ), f"Price should round to 2 decimals, got {price}"
 
         # Another valid price
@@ -162,13 +161,13 @@ def test_percentage_validation():
         # Standard precision
         pct = validate_percentage(15.2569, high_precision=False)
         assert pct == Decimal(
-            "15.26"
+            "15.26",
         ), f"Standard percentage should be 2 decimals, got {pct}"
 
         # High precision
         pct_high = validate_percentage(15.2569, high_precision=True)
         assert pct_high == Decimal("15.2569") or pct_high == Decimal(
-            "15.25"
+            "15.25",
         ), f"High precision percentage should be 4 decimals, got {pct_high}"
 
         results.add_pass("Percentage validation (2-4 decimals)")
@@ -193,7 +192,7 @@ def test_currency_validation():
     try:
         amount = validate_currency(123456789.5678)
         assert amount == Decimal(
-            "123456789.57"
+            "123456789.57",
         ), f"Currency should round to 2 decimals, got {amount}"
 
         results.add_pass("Currency validation (2 decimals)")
@@ -240,7 +239,8 @@ def test_stock_symbol_invalid():
         try:
             StockSymbolFormat.validate("60000A")
             results.add_fail(
-                "Stock symbol invalid rejection", "Should reject non-numeric"
+                "Stock symbol invalid rejection",
+                "Should reject non-numeric",
             )
             return
         except ValueError:
@@ -250,7 +250,8 @@ def test_stock_symbol_invalid():
         try:
             StockSymbolFormat.validate("60000")
             results.add_fail(
-                "Stock symbol invalid rejection", "Should reject 5-digit code"
+                "Stock symbol invalid rejection",
+                "Should reject 5-digit code",
             )
             return
         except ValueError:
@@ -300,7 +301,10 @@ def test_success_response_schema():
     """Test SuccessResponse schema validation"""
     try:
         response = SuccessResponse(
-            status="success", code=200, message="Test successful", data={"test": "data"}
+            status="success",
+            code=200,
+            message="Test successful",
+            data={"test": "data"},
         )
 
         assert response.status == "success"
@@ -341,9 +345,7 @@ def test_pagination_info_schema():
         assert pagination.page == 1
         assert pagination.page_size == 20
         assert pagination.total == 100
-        assert (
-            pagination.pages == 5
-        ), f"Should calculate 5 pages for 100 items, got {pagination.pages}"
+        assert pagination.pages == 5, f"Should calculate 5 pages for 100 items, got {pagination.pages}"
 
         results.add_pass("PaginationInfo schema with auto-calculation")
     except Exception as e:
@@ -417,7 +419,10 @@ def test_forbidden_response():
     """Test ForbiddenResponse schema"""
     try:
         response = ForbiddenResponse(
-            status="error", code=403, message="Permission denied", error="FORBIDDEN"
+            status="error",
+            code=403,
+            message="Permission denied",
+            error="FORBIDDEN",
         )
 
         assert response.code == 403
@@ -432,7 +437,10 @@ def test_not_found_response():
     """Test NotFoundResponse schema"""
     try:
         response = NotFoundResponse(
-            status="error", code=404, message="Resource not found", error="NOT_FOUND"
+            status="error",
+            code=404,
+            message="Resource not found",
+            error="NOT_FOUND",
         )
 
         assert response.code == 404

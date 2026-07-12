@@ -184,7 +184,7 @@ class BaseDataSourceAdapter(IDataSource):
         self._error_count = 0
         self._total_response_time = 0.0
 
-        logger.info("Initialized {self.config.source_type.value} adapter " f"(priority={self.config.priority})")
+        logger.info(f"Initialized {{self.config.source_type.value}} adapter (priority={self.config.priority})")
 
     def get_source_type(self) -> DataSourceType:
         """获取数据源类型"""
@@ -391,7 +391,9 @@ class DataSourceFactory:
 
     @classmethod
     def create_adapter(
-        cls, source_type: DataSourceType, config: Optional[DataSourceConfig] = None,
+        cls,
+        source_type: DataSourceType,
+        config: Optional[DataSourceConfig] = None,
     ) -> BaseDataSourceAdapter:
         """创建数据源适配器
 

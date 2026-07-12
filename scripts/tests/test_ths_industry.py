@@ -1,28 +1,28 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-测试同花顺行业一览表数据获取功能
+"""测试同花顺行业一览表数据获取功能
 
 该脚本用于测试新添加的同花顺行业数据获取功能，包括：
 1. 获取同花顺行业一览表
 2. 获取指定行业的成分股数据
 """
 
-
-import sys
 import os
+import sys
+
 
 # 添加项目根目录到路径
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, project_root)
 
-import sys
 import os
+import sys
+
 import pandas as pd
+
 
 # 添加项目路径到模块搜索路径
 sys.path.append(
-    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
 )
 
 from src.adapters.akshare_adapter import AkshareDataSource
@@ -54,9 +54,8 @@ def test_ths_industry_summary():
             print(f"💾 数据已保存到: {output_file}")
 
             return industry_data
-        else:
-            print("❌ 未能获取到同花顺行业数据")
-            return pd.DataFrame()
+        print("❌ 未能获取到同花顺行业数据")
+        return pd.DataFrame()
 
     except Exception as e:
         print(f"❌ 测试失败: {e}")
@@ -92,9 +91,8 @@ def test_ths_industry_names():
             print(f"💾 数据已保存到: {output_file}")
 
             return industry_names
-        else:
-            print("❌ 未能获取到同花顺行业名称列表")
-            return pd.DataFrame()
+        print("❌ 未能获取到同花顺行业名称列表")
+        return pd.DataFrame()
 
     except Exception as e:
         print(f"❌ 测试失败: {e}")
@@ -130,9 +128,8 @@ def test_ths_industry_stocks(industry_name: str = "银行"):
             print(f"💾 数据已保存到: {output_file}")
 
             return stocks_data
-        else:
-            print(f"❌ 未能获取到行业'{industry_name}'的成分股数据")
-            return pd.DataFrame()
+        print(f"❌ 未能获取到行业'{industry_name}'的成分股数据")
+        return pd.DataFrame()
 
     except Exception as e:
         print(f"❌ 测试失败: {e}")

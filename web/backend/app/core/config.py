@@ -1,5 +1,4 @@
-"""应用配置管理
-"""
+"""应用配置管理"""
 
 import logging
 from typing import List
@@ -30,7 +29,8 @@ class Settings(BaseSettings):
     # Mock API配置
     use_mock_apis: bool = Field(default=False, validation_alias="USE_MOCK_DATA")  # 控制是否注册Mock API路由
     mock_auth_enabled: bool = Field(
-        default=False, validation_alias="MOCK_AUTH_ENABLED",
+        default=False,
+        validation_alias="MOCK_AUTH_ENABLED",
     )  # 生产环境安全控制：禁用Mock认证
 
     # 服务器配置
@@ -190,6 +190,7 @@ class Settings(BaseSettings):
             self.celery_broker_url = self.default_celery_broker_url
         if not self.celery_result_backend:
             self.celery_result_backend = self.default_celery_result_backend
+
     celery_task_track_started: bool = True
     celery_task_time_limit: int = 3600  # 任务超时时间（秒），默认1小时
     celery_enable_utc: bool = True
@@ -213,7 +214,10 @@ class Settings(BaseSettings):
     wencai_auto_refresh: bool = True
 
     model_config = SettingsConfigDict(
-        env_file=_ENV_FILE_PATH, env_file_encoding="utf-8", case_sensitive=False, extra="allow",
+        env_file=_ENV_FILE_PATH,
+        env_file_encoding="utf-8",
+        case_sensitive=False,
+        extra="allow",
     )  # 允许额外字段，使用动态查找的.env文件路径
 
 

@@ -72,7 +72,11 @@ class BaostockAdapter(BaseAdapter):
             return None
 
     async def get_stock_daily(
-        self, stock_code: str, start_date: str, end_date: str, adj_type: str = "qfq",
+        self,
+        stock_code: str,
+        start_date: str,
+        end_date: str,
+        adj_type: str = "qfq",
     ) -> Optional[List[Dict]]:
         """获取日线数据"""
         try:

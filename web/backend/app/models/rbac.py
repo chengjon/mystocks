@@ -360,7 +360,9 @@ class SecurityEvent(Base):
 
     # Event details
     event_type = Column(
-        String(50), nullable=False, index=True,
+        String(50),
+        nullable=False,
+        index=True,
     )  # e.g., 'failed_login', 'rate_limit', 'suspicious_activity'
     severity = Column(String(20), nullable=False, index=True)  # 'low', 'medium', 'high', 'critical'
 

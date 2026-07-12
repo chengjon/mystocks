@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""
-MyStocks前端综合测试脚本
+"""MyStocks前端综合测试脚本
 使用Chrome DevTools CDP协议进行全面测试
 """
 
-import json
 import asyncio
-import websockets
+import json
 import subprocess
 import sys
+
+import websockets
 
 
 def get_dashboard_page():
@@ -66,8 +66,8 @@ async def test_console_errors(ws):
     """,
                     "returnByValue": True,
                 },
-            }
-        )
+            },
+        ),
     )
     response = await ws.recv()
     data = json.loads(response)
@@ -143,8 +143,8 @@ async def test_pinia_init(ws):
     """,
                     "returnByValue": True,
                 },
-            }
-        )
+            },
+        ),
     )
     response = await ws.recv()
     data = json.loads(response)
@@ -229,8 +229,8 @@ async def test_service_worker(ws):
     """,
                     "returnByValue": True,
                 },
-            }
-        )
+            },
+        ),
     )
     response = await ws.recv()
     data = json.loads(response)
@@ -241,7 +241,7 @@ async def test_service_worker(ws):
     print(f"  缓存列表: {result.get('cacheNames', [])}")
 
     if result.get("cacheKeys"):
-        print(f"  缓存详情:")
+        print("  缓存详情:")
         for ck in result.get("cacheKeys", []):
             print(f"    - {ck['name']}: {ck['count']} 条")
 
@@ -307,8 +307,8 @@ async def test_api_endpoints(ws):
     """,
                     "returnByValue": True,
                 },
-            }
-        )
+            },
+        ),
     )
     response = await ws.recv()
     data = json.loads(response)
@@ -325,11 +325,11 @@ async def test_api_endpoints(ws):
                 api_503_count += 1
                 # 显示响应内容（通常是HTML错误页）
                 if "503" in r["text"] or "Service" in r["text"]:
-                    print(f"      -> Service Unavailable: 契约验证服务未运行")
+                    print("      -> Service Unavailable: 契约验证服务未运行")
             elif r["status"] == 404:
-                print(f"      -> 端点不存在 - 这是预期的，因为契约验证可能未启用")
+                print("      -> 端点不存在 - 这是预期的，因为契约验证可能未启用")
             elif r["status"] == 200:
-                print(f"      -> 正常响应")
+                print("      -> 正常响应")
 
     return results, api_503_count
 
@@ -380,8 +380,8 @@ async def test_websocket(ws):
     """,
                     "returnByValue": True,
                 },
-            }
-        )
+            },
+        ),
     )
     response = await ws.recv()
     data = json.loads(response)
@@ -460,8 +460,8 @@ async def test_resources(ws):
     """,
                     "returnByValue": True,
                 },
-            }
-        )
+            },
+        ),
     )
     response = await ws.recv()
     data = json.loads(response)
@@ -544,8 +544,8 @@ async def test_vue_warnings(ws):
     """,
                     "returnByValue": True,
                 },
-            }
-        )
+            },
+        ),
     )
     response = await ws.recv()
     data = json.loads(response)
@@ -625,8 +625,8 @@ async def test_page_functionality(ws):
     """,
                     "returnByValue": True,
                 },
-            }
-        )
+            },
+        ),
     )
     response = await ws.recv()
     data = json.loads(response)
@@ -697,7 +697,7 @@ async def main():
         print(f"  图标下载错误: {icon_errors}")
         print(f"  用户已登录: {'✅' if func_result.get('userLoggedIn') else '❌'}")
         print(
-            f"  页面功能正常: {'✅' if func_result.get('dashboardElements') and func_result.get('apiCallsWorking') else '❌'}"
+            f"  页面功能正常: {'✅' if func_result.get('dashboardElements') and func_result.get('apiCallsWorking') else '❌'}",
         )
 
         issues = []

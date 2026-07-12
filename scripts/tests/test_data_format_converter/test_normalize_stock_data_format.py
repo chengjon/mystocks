@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-"""
-数据格式转换工具测试套件 - 完整覆盖data_format_converter模块
+"""数据格式转换工具测试套件 - 完整覆盖data_format_converter模块
 遵循Phase 6成功模式：功能→边界→异常→性能→集成测试
 """
 
 import sys
 import time
-import pandas as pd
 from pathlib import Path
+
+import pandas as pd
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -17,11 +18,12 @@ import pytest
 
 # 导入被测试的模块
 from src.utils.data_format_converter import (
-    normalize_stock_data_format,
     normalize_api_response_format,
-    normalize_stock_list_format,
     normalize_indicator_data_format,
+    normalize_stock_data_format,
+    normalize_stock_list_format,
 )
+
 
 class TestNormalizeStockDataFormat:
     """normalize_stock_data_format函数测试类"""
@@ -40,7 +42,7 @@ class TestNormalizeStockDataFormat:
                 "open": [10.0],
                 "close": [11.0],
                 "volume": [1000000],
-            }
+            },
         )
 
         result = normalize_stock_data_format(df)
@@ -67,7 +69,7 @@ class TestNormalizeStockDataFormat:
     def test_date_conversion(self):
         """测试日期字段转换"""
         df = pd.DataFrame(
-            {"symbol": ["600000"], "date": ["2025-01-01"], "list_date": ["1999-11-10"]}
+            {"symbol": ["600000"], "date": ["2025-01-01"], "list_date": ["1999-11-10"]},
         )
 
         result = normalize_stock_data_format(df)
@@ -86,7 +88,7 @@ class TestNormalizeStockDataFormat:
                 "low": ["9.5"],
                 "close": ["10.8"],
                 "volume": ["1000000"],
-            }
+            },
         )
 
         result = normalize_stock_data_format(df)
@@ -108,7 +110,7 @@ class TestNormalizeStockDataFormat:
                 "open": ["10.5"],
                 "high": ["invalid_value"],  # 这会触发异常但被except捕获
                 "low": ["9.5"],
-            }
+            },
         )
 
         result = normalize_stock_data_format(df)
@@ -126,7 +128,7 @@ class TestNormalizeStockDataFormat:
                 "symbol": ["600000"],
                 "date": ["invalid_date"],
                 "list_date": ["not_a_date"],
-            }
+            },
         )
 
         result = normalize_stock_data_format(df)
@@ -137,7 +139,7 @@ class TestNormalizeStockDataFormat:
     def test_invalid_numeric_handling(self):
         """测试无效数值处理"""
         df = pd.DataFrame(
-            {"symbol": ["600000"], "open": ["not_a_number"], "close": ["12.5"]}
+            {"symbol": ["600000"], "open": ["not_a_number"], "close": ["12.5"]},
         )
 
         result = normalize_stock_data_format(df)
@@ -152,7 +154,7 @@ class TestNormalizeStockDataFormat:
             {
                 "symbol": ["600000"],
                 # 缺少关键字段
-            }
+            },
         )
 
         result = normalize_stock_data_format(df)
@@ -189,16 +191,14 @@ class TestNormalizeStockDataFormat:
                 "location": ["上海地区"],
                 "ipo_date": ["2000-01-01"],
                 "turnover": ["15.5%"],
-            }
+            },
         )
 
         result = normalize_stock_data_format(df)
 
         # 验证多重字段映射（根据源码逻辑，cname会被映射为name，但location不会映射因为area已存在）
         assert result.iloc[0]["name"] == "中文名称"  # cname -> name
-        assert (
-            result.iloc[0]["area"] == "上海"
-        )  # area保持原值，因为location不会覆盖已存在的area
+        assert result.iloc[0]["area"] == "上海"  # area保持原值，因为location不会覆盖已存在的area
         assert result.iloc[0]["list_date"] is not None
 
 
@@ -230,7 +230,7 @@ class TestNormalizeApiResponseFormat:
                     "exchange": "SH",
                 },
                 "market_data": {"current_price": "10.5", "change_pct": "2.5%"},
-            }
+            },
         }
 
         result = normalize_api_response_format(data)
@@ -244,7 +244,7 @@ class TestNormalizeApiResponseFormat:
             "data": [
                 {"symbol": "600000", "name": "浦发银行"},
                 {"symbol": "000001", "name": "平安银行"},
-            ]
+            ],
         }
 
         result = normalize_api_response_format(data)
@@ -324,7 +324,7 @@ class TestNormalizeApiResponseFormat:
         """测试缺少必需字段的处理"""
         data = {
             # 缺少code和message字段
-            "data": {"symbol": "600000"}
+            "data": {"symbol": "600000"},
         }
 
         result = normalize_api_response_format(data)
@@ -340,7 +340,7 @@ class TestNormalizeApiResponseFormat:
                 "name": "浦发银行",
                 "industry": "金融",
                 "description": "这是一个包含特殊字符的描述：测试®™",
-            }
+            },
         }
 
         result = normalize_api_response_format(data)
@@ -359,7 +359,7 @@ class TestNormalizeApiResponseFormat:
                     "name": f"股票{i}",
                     "industry": "金融",
                     "market": "SH",
-                }
+                },
             )
 
         start_time = time.time()
@@ -412,9 +412,9 @@ class TestNormalizeStockListFormat:
         """测试缺失字段的默认值"""
         stock_list = [
             {
-                "symbol": "600000"
+                "symbol": "600000",
                 # 缺少其他字段
-            }
+            },
         ]
 
         result = normalize_stock_list_format(stock_list)
@@ -456,7 +456,7 @@ class TestNormalizeStockListFormat:
                 "pb_ratio": 0.8,
                 "tags": ["金融", "银行", "大盘股"],
                 "metadata": {"source": "akshare", "update_time": "2025-01-01"},
-            }
+            },
         ]
 
         result = normalize_stock_list_format(stock_list)
@@ -478,7 +478,7 @@ class TestNormalizeStockListFormat:
                 "name": "浦发银行®",
                 "industry": "金融™",
                 "description": "包含特殊字符的描述：测试®™专利",
-            }
+            },
         ]
 
         result = normalize_stock_list_format(stock_list)
@@ -503,7 +503,7 @@ class TestNormalizeStockListFormat:
                     "symbol": f"60000{i}",
                     "stock_name": f"股票{i}",
                     "industry": "金融" if i % 2 == 0 else "科技",
-                }
+                },
             )
 
         start_time = time.time()
@@ -635,24 +635,22 @@ class TestNormalizeIndicatorDataFormat:
                     "values": [
                         {
                             # 缺少output_name字段
-                            "value": 123.456
+                            "value": 123.456,
                         },
                         {
                             "value": 456.789,
                             "values": [1, 2, 3],  # 这个字段存在，应该保持不变
                         },
                     ],
-                }
-            ]
+                },
+            ],
         }
 
         result = normalize_indicator_data_format(indicator_data)
 
         # 验证缺少output_name的字段被添加默认值
         assert result["indicators"][0]["values"][0]["output_name"] == "output_0"
-        assert (
-            result["indicators"][0]["values"][0]["values"] == []
-        )  # 缺少values字段时添加空列表
+        assert result["indicators"][0]["values"][0]["values"] == []  # 缺少values字段时添加空列表
 
         # 验证所有字段都会被添加output_name（根据源码逻辑）
         assert result["indicators"][0]["values"][1]["output_name"] == "output_1"
@@ -699,7 +697,7 @@ class TestEdgeCasesAndErrorHandling:
                 "price": [10.5],
                 "active": [True],
                 "metadata": [{"key": "value"}],
-            }
+            },
         )
 
         result = normalize_stock_data_format(df)
@@ -716,7 +714,7 @@ class TestEdgeCasesAndErrorHandling:
                 "name": [""],
                 "industry": ["   "],
                 "description": ["正常描述"],
-            }
+            },
         )
 
         result = normalize_stock_data_format(df)
@@ -734,7 +732,7 @@ class TestEdgeCasesAndErrorHandling:
                 "pe": [999.999],
                 "pb": [0.001],
                 "change": [-50.0],
-            }
+            },
         )
 
         result = normalize_stock_data_format(df)
@@ -744,5 +742,3 @@ class TestEdgeCasesAndErrorHandling:
         assert result.iloc[0]["pe"] == 999.999
         assert result.iloc[0]["pb"] == 0.001
         assert result.iloc[0]["change"] == -50.0
-
-

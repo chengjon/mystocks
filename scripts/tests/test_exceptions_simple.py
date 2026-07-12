@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
-"""
-Exceptions 简化但有效的Phase 6测试套件
+"""Exceptions 简化但有效的Phase 6测试套件
 专注于核心异常功能测试，避免导入复杂性
 目标：将exceptions.py的覆盖率从初始状态提升到90%+
 """
 
 import sys
 import time
-from pathlib import Path
-import pytest
 from datetime import datetime
+from pathlib import Path
+
+import pytest
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -91,11 +92,11 @@ class TestDataSourceExceptions:
     def test_data_source_hierarchy(self):
         """测试数据源异常层次结构"""
         from src.core.exceptions import (
-            DataSourceException,
-            NetworkError,
             DataFetchError,
             DataParseError,
+            DataSourceException,
             DataValidationError,
+            NetworkError,
         )
 
         # 测试基类
@@ -130,10 +131,10 @@ class TestDatabaseExceptions:
     def test_database_hierarchy(self):
         """测试数据库异常层次结构"""
         from src.core.exceptions import (
-            DatabaseException,
             DatabaseConnectionError,
-            DatabaseOperationError,
+            DatabaseException,
             DatabaseIntegrityError,
+            DatabaseOperationError,
         )
 
         # 测试基类
@@ -161,11 +162,11 @@ class TestValidationExceptions:
     def test_validation_hierarchy(self):
         """测试验证异常层次结构"""
         from src.core.exceptions import (
-            ValidationException,
-            SchemaValidationError,
             DataTypeError,
             RangeError,
             RequiredFieldError,
+            SchemaValidationError,
+            ValidationException,
         )
 
         # 测试基类
@@ -196,10 +197,10 @@ class TestBusinessLogicExceptions:
     def test_business_logic_hierarchy(self):
         """测试业务逻辑异常层次结构"""
         from src.core.exceptions import (
+            BacktestError,
             BusinessLogicException,
             InsufficientFundsError,
             InvalidStrategyError,
-            BacktestError,
         )
 
         # 测试基类
@@ -256,10 +257,10 @@ class TestTimeoutExceptions:
     def test_timeout_hierarchy(self):
         """测试超时异常层次结构"""
         from src.core.exceptions import (
-            TimeoutException,
-            NetworkTimeoutError,
             DatabaseTimeoutError,
+            NetworkTimeoutError,
             OperationTimeoutError,
+            TimeoutException,
         )
 
         # 测试基类
@@ -287,9 +288,9 @@ class TestExternalServiceExceptions:
         """测试外部服务异常层次结构"""
         from src.core.exceptions import (
             ExternalServiceException,
-            ServiceUnavailableError,
-            ServiceError,
             RateLimitError,
+            ServiceError,
+            ServiceUnavailableError,
         )
 
         # 测试基类

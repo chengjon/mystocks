@@ -287,12 +287,14 @@ class APIComplianceValidator:
 
             # Authentication validation
             endpoint_result["validations"]["authentication"] = self.validate_authentication(
-                endpoint["path"], endpoint["methods"],
+                endpoint["path"],
+                endpoint["methods"],
             )
 
             # HTTP method semantics validation
             endpoint_result["validations"]["http_semantics"] = self.validate_http_method_semantics(
-                endpoint["path"], endpoint["methods"],
+                endpoint["path"],
+                endpoint["methods"],
             )
 
             # Calculate endpoint compliance

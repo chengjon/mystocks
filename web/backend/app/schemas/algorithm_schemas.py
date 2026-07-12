@@ -153,7 +153,9 @@ class NaiveBayesConfig(AlgorithmConfig):
     """朴素贝叶斯算法配置"""
 
     distribution_type: str = Field(
-        default="gaussian", pattern="^(gaussian|multinomial|bernoulli)$", description="分布类型",
+        default="gaussian",
+        pattern="^(gaussian|multinomial|bernoulli)$",
+        description="分布类型",
     )
 
 
@@ -250,7 +252,9 @@ class NGramTrainRequest(BaseModel):
     symbol: str = Field(..., min_length=1, max_length=20, description="股票代码")
     n: int = Field(default=3, ge=2, le=10, description="N-gram的N值")
     sequence_type: str = Field(
-        default="price_changes", pattern="^(price_changes|volume_changes)$", description="序列类型",
+        default="price_changes",
+        pattern="^(price_changes|volume_changes)$",
+        description="序列类型",
     )
     window_size: int = Field(default=1000, ge=100, description="历史数据窗口大小")
 

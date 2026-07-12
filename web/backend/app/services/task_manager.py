@@ -53,7 +53,8 @@ class TaskManager:
 
             # 初始化统计信息
             self.statistics[task_config.task_id] = TaskStatistics(
-                task_id=task_config.task_id, task_name=task_config.task_name,
+                task_id=task_config.task_id,
+                task_name=task_config.task_name,
             )
 
             logger.info("Task registered: {task_config.task_id} - {task_config.task_name}")

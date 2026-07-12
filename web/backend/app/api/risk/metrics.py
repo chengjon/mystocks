@@ -108,7 +108,9 @@ async def calculate_var_cvar(request: VaRCVaRRequest) -> VaRCVaRResult:
             error_message=str(e),
         )
         raise BusinessException(
-            detail=f"计算VaR/CVaR失败: {e!s}", status_code=500, error_code="VAR_CALCULATION_FAILED",
+            detail=f"计算VaR/CVaR失败: {e!s}",
+            status_code=500,
+            error_code="VAR_CALCULATION_FAILED",
         )
 
 
@@ -203,7 +205,8 @@ async def get_risk_dashboard() -> RiskDashboardResponse:
         manager = MyStocksUnifiedManager()
 
         metrics_df = manager.load_data_by_classification(
-            classification=DataClassification.MODEL_OUTPUT, table_name="risk_metrics",
+            classification=DataClassification.MODEL_OUTPUT,
+            table_name="risk_metrics",
         )
         latest_metrics = None
         if metrics_df is not None and len(metrics_df) > 0:
@@ -218,7 +221,8 @@ async def get_risk_dashboard() -> RiskDashboardResponse:
 
         thirty_days_ago = (datetime.now() - timedelta(days=30)).date()
         history_df = manager.load_data_by_classification(
-            classification=DataClassification.MODEL_OUTPUT, table_name="risk_metrics",
+            classification=DataClassification.MODEL_OUTPUT,
+            table_name="risk_metrics",
         )
         risk_history = []
         if history_df is not None:
@@ -253,13 +257,18 @@ async def get_risk_dashboard() -> RiskDashboardResponse:
 
     except Exception as e:
         raise BusinessException(
-            detail=f"获取仪表盘数据失败: {e!s}", status_code=500, error_code="DASHBOARD_DATA_RETRIEVAL_FAILED",
+            detail=f"获取仪表盘数据失败: {e!s}",
+            status_code=500,
+            error_code="DASHBOARD_DATA_RETRIEVAL_FAILED",
         )
 
 
 @router.get("/metrics/history", response_model=List[Dict[str, Any]])
 async def get_risk_metrics_history(
-    entity_type: str, entity_id: int, start_date: str, end_date: str,
+    entity_type: str,
+    entity_id: int,
+    start_date: str,
+    end_date: str,
 ) -> List[Dict[str, Any]]:
     try:
         manager = MyStocksUnifiedManager()
@@ -289,7 +298,9 @@ async def get_risk_metrics_history(
 
     except Exception as e:
         raise BusinessException(
-            detail=f"获取历史数据失败: {e!s}", status_code=500, error_code="HISTORICAL_DATA_RETRIEVAL_FAILED",
+            detail=f"获取历史数据失败: {e!s}",
+            status_code=500,
+            error_code="HISTORICAL_DATA_RETRIEVAL_FAILED",
         )
 
 
@@ -336,7 +347,9 @@ async def calculate_risk_metrics(request: Dict[str, Any]) -> Dict[str, Any]:
     except Exception as e:
         logger.error("计算风险指标失败: {e}", exc_info=True)
         raise BusinessException(
-            detail=f"计算风险指标失败: {e!s}", status_code=500, error_code="RISK_METRICS_CALCULATION_FAILED",
+            detail=f"计算风险指标失败: {e!s}",
+            status_code=500,
+            error_code="RISK_METRICS_CALCULATION_FAILED",
         )
 
 
@@ -403,5 +416,7 @@ async def assess_position_risk(request: Dict[str, Any]) -> Dict[str, Any]:
     except Exception as e:
         logger.error("评估仓位风险失败: {e}", exc_info=True)
         raise BusinessException(
-            detail=f"评估仓位风险失败: {e!s}", status_code=500, error_code="POSITION_RISK_ASSESSMENT_FAILED",
+            detail=f"评估仓位风险失败: {e!s}",
+            status_code=500,
+            error_code="POSITION_RISK_ASSESSMENT_FAILED",
         )

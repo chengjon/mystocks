@@ -1,5 +1,4 @@
-"""数据源适配器模块
-"""
+"""数据源适配器模块"""
 
 import time
 from datetime import datetime, timedelta
@@ -96,8 +95,7 @@ class DataDataSourceAdapter(DataAdapterMetricsMixin, IDataSource):
             }
 
     async def _fetch_data(self, endpoint: str, params: Dict[str, Any]) -> Dict[str, Any]:
-        """实际的数据获取逻辑
-        """
+        """实际的数据获取逻辑"""
         # 根据端点类型调用相应的数据获取方法
         if endpoint == "stocks/basic":
             return await self._fetch_stocks_basic(params)

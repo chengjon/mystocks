@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-数据源监控系统快速验证脚本
+"""数据源监控系统快速验证脚本
 
 功能：
 1. 验证Prometheus metrics导出器是否正常工作
@@ -19,23 +18,24 @@
 import sys
 from pathlib import Path
 
+
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 from src.monitoring.data_source_metrics import (
     DataSourceMetricsExporter,
+    init_source_metrics,
     update_call_metrics,
     update_health_metrics,
-    init_source_metrics
 )
 
 
 def test_metrics_exporter():
     """测试metrics导出器"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("测试1: Metrics导出器初始化")
-    print("="*60)
+    print("=" * 60)
 
     try:
         exporter = DataSourceMetricsExporter.get_instance()
@@ -47,7 +47,7 @@ def test_metrics_exporter():
             source_name="test_source",
             data_category="TEST_DATA",
             source_type="mock",
-            priority=10
+            priority=10,
         )
         print("✓ Metrics初始化成功")
 
@@ -60,9 +60,9 @@ def test_metrics_exporter():
 
 def test_call_metrics_update():
     """测试调用metrics更新"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("测试2: 调用Metrics更新")
-    print("="*60)
+    print("=" * 60)
 
     try:
         # 模拟成功调用
@@ -72,7 +72,7 @@ def test_call_metrics_update():
             data_category="TEST_DATA",
             success=True,
             response_time=0.5,
-            record_count=100
+            record_count=100,
         )
         print("✓ 成功调用metrics记录成功")
 
@@ -83,7 +83,7 @@ def test_call_metrics_update():
             data_category="TEST_DATA",
             success=False,
             response_time=2.0,
-            error_msg="Connection timeout"
+            error_msg="Connection timeout",
         )
         print("✓ 失败调用metrics记录成功")
 
@@ -92,15 +92,16 @@ def test_call_metrics_update():
     except Exception as e:
         print(f"✗ Metrics更新失败: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
 
 def test_health_metrics_update():
     """测试健康状态metrics更新"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("测试3: 健康状态Metrics更新")
-    print("="*60)
+    print("=" * 60)
 
     try:
         update_health_metrics(
@@ -111,7 +112,7 @@ def test_health_metrics_update():
             quality_score=9.5,
             success_rate=98.5,
             consecutive_failures=0,
-            total_calls=1000
+            total_calls=1000,
         )
         print("✓ 健康状态metrics更新成功")
 
@@ -120,15 +121,16 @@ def test_health_metrics_update():
     except Exception as e:
         print(f"✗ 健康状态metrics更新失败: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
 
 def test_manager_v2_integration():
     """测试与DataSourceManagerV2的集成"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("测试4: DataSourceManagerV2集成")
-    print("="*60)
+    print("=" * 60)
 
     try:
         from src.core.data_source_manager_v2 import DataSourceManagerV2
@@ -144,7 +146,7 @@ def test_manager_v2_integration():
             print("\n已注册的数据源:")
             for endpoint_name in list(registry.keys())[:5]:  # 显示前5个
                 source_data = registry[endpoint_name]
-                config = source_data.get('config', {})
+                config = source_data.get("config", {})
                 print(f"  - {endpoint_name}: {config.get('source_name')} - {config.get('data_category')}")
 
             if len(registry) > 5:
@@ -155,15 +157,16 @@ def test_manager_v2_integration():
     except Exception as e:
         print(f"✗ DataSourceManagerV2集成失败: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
 
 def test_metrics_endpoint():
     """测试/metrics端点是否可访问"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("测试5: Metrics端点验证")
-    print("="*60)
+    print("=" * 60)
 
     try:
         import requests
@@ -181,7 +184,7 @@ def test_metrics_endpoint():
                 "data_source_up",
                 "data_source_response_time_seconds",
                 "data_source_calls_total",
-                "data_source_success_rate"
+                "data_source_success_rate",
             ]
 
             found_metrics = []
@@ -199,9 +202,8 @@ def test_metrics_endpoint():
 
             return len(found_metrics) >= len(required_metrics) - 1  # 允许1个指标缺失
 
-        else:
-            print(f"✗ Metrics端点返回状态码: {response.status_code}")
-            return False
+        print(f"✗ Metrics端点返回状态码: {response.status_code}")
+        return False
 
     except requests.exceptions.ConnectionError:
         print("⚠ Metrics服务器未启动（这是正常的，需要手动启动）")
@@ -215,9 +217,9 @@ def test_metrics_endpoint():
 
 def generate_test_report(results):
     """生成测试报告"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("测试报告")
-    print("="*60)
+    print("=" * 60)
 
     total_tests = len(results)
     passed_tests = sum(1 for r in results.values() if r is True)
@@ -240,7 +242,7 @@ def generate_test_report(results):
 
         print(f"  {status} - {test_name}")
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
 
     if failed_tests == 0:
         print("✓ 所有测试通过！监控系统集成正常。")
@@ -251,7 +253,7 @@ def generate_test_report(results):
     else:
         print("✗ 部分测试失败，请检查错误信息。")
 
-    print("="*60)
+    print("=" * 60)
 
 
 def main():
@@ -277,5 +279,5 @@ def main():
     sys.exit(0 if failed == 0 else 1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

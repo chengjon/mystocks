@@ -1,5 +1,4 @@
-"""资金流向路由 (Fund Flow)
-"""
+"""资金流向路由 (Fund Flow)"""
 
 from fastapi import APIRouter, Query
 
@@ -91,7 +90,8 @@ async def get_north_fund_daily(
 
         if df.empty:
             return create_error_response(
-                ErrorCodes.DATA_NOT_FOUND, f"No north fund daily data found for date range {start_date} to {end_date}",
+                ErrorCodes.DATA_NOT_FOUND,
+                f"No north fund daily data found for date range {start_date} to {end_date}",
             )
 
         result = {
@@ -124,7 +124,8 @@ async def get_south_fund_daily(
 
         if df.empty:
             return create_error_response(
-                ErrorCodes.DATA_NOT_FOUND, f"No south fund daily data found for date range {start_date} to {end_date}",
+                ErrorCodes.DATA_NOT_FOUND,
+                f"No south fund daily data found for date range {start_date} to {end_date}",
             )
 
         result = {
@@ -156,7 +157,8 @@ async def get_north_fund_stock(
 
         if df.empty:
             return create_error_response(
-                ErrorCodes.DATA_NOT_FOUND, f"No north fund stock data found for symbol {symbol}",
+                ErrorCodes.DATA_NOT_FOUND,
+                f"No north fund stock data found for symbol {symbol}",
             )
 
         result = {
@@ -173,7 +175,8 @@ async def get_north_fund_stock(
 
     except Exception as e:
         return create_error_response(
-            ErrorCodes.INTERNAL_ERROR, f"Failed to get north fund stock data for {symbol}: {e!s}",
+            ErrorCodes.INTERNAL_ERROR,
+            f"Failed to get north fund stock data for {symbol}: {e!s}",
         )
 
 
@@ -190,7 +193,8 @@ async def get_south_fund_stock(
 
         if df.empty:
             return create_error_response(
-                ErrorCodes.DATA_NOT_FOUND, f"No south fund stock data found for symbol {symbol}",
+                ErrorCodes.DATA_NOT_FOUND,
+                f"No south fund stock data found for symbol {symbol}",
             )
 
         result = {
@@ -207,7 +211,8 @@ async def get_south_fund_stock(
 
     except Exception as e:
         return create_error_response(
-            ErrorCodes.INTERNAL_ERROR, f"Failed to get south fund stock data for {symbol}: {e!s}",
+            ErrorCodes.INTERNAL_ERROR,
+            f"Failed to get south fund stock data for {symbol}: {e!s}",
         )
 
 
@@ -238,7 +243,8 @@ async def get_hsgt_holdings(
 
     except Exception as e:
         return create_error_response(
-            ErrorCodes.INTERNAL_ERROR, f"Failed to get HSGT holdings data for {symbol}: {e!s}",
+            ErrorCodes.INTERNAL_ERROR,
+            f"Failed to get HSGT holdings data for {symbol}: {e!s}",
         )
 
 

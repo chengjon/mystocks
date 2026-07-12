@@ -1,5 +1,5 @@
-"""基础数据源适配器
-"""
+"""基础数据源适配器"""
+
 import logging
 import time
 from datetime import datetime
@@ -17,6 +17,7 @@ from .base import DataSourceMetrics
 
 
 logger = logging.getLogger(__name__)
+
 
 class DataDataSourceAdapter(IDataSource):
     """数据源适配器 - 集成现有 Data API 到数据源工厂模式"""
@@ -92,8 +93,7 @@ class DataDataSourceAdapter(IDataSource):
             }
 
     async def _fetch_data(self, endpoint: str, params: Dict[str, Any]) -> Dict[str, Any]:
-        """实际的数据获取逻辑
-        """
+        """实际的数据获取逻辑"""
         # 根据端点类型调用相应的数据获取方法
         if endpoint == "stocks/basic":
             return await self._fetch_stocks_basic(params)

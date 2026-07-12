@@ -284,7 +284,9 @@ async def get_all_indicators(
             # P0改进: 标准化验证错误响应
             error_details = [{"field": str(err["loc"][0]), "message": err["msg"]} for err in ve.errors()]
             return create_error_response(
-                error_code="VALIDATION_ERROR", message="输入参数验证失败", details=error_details,
+                error_code="VALIDATION_ERROR",
+                message="输入参数验证失败",
+                details=error_details,
             )
 
         # P0改进 Task 3: 使用熔断器保护外部API调用
@@ -372,7 +374,9 @@ async def get_trend_indicators(
         except ValidationError as ve:
             error_details = [{"field": str(err["loc"][0]), "message": err["msg"]} for err in ve.errors()]
             return create_error_response(
-                error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details,
+                error_code="VALIDATION_ERROR",
+                message="股票代码验证失败",
+                details=error_details,
             )
 
         params = {"symbol": validated_symbol.symbol, "period": period}
@@ -402,7 +406,9 @@ async def get_trend_indicators(
     except Exception as e:
         logger.error("TREND_ENDPOINT_ERROR", error=str(e), exc_info=True)
         raise BusinessException(
-            detail=f"获取趋势指标失败: {e!s}", status_code=500, error_code="INTERNAL_SERVER_ERROR",
+            detail=f"获取趋势指标失败: {e!s}",
+            status_code=500,
+            error_code="INTERNAL_SERVER_ERROR",
         )
 
 
@@ -434,7 +440,9 @@ async def get_momentum_indicators(
         except ValidationError as ve:
             error_details = [{"field": str(err["loc"][0]), "message": err["msg"]} for err in ve.errors()]
             return create_error_response(
-                error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details,
+                error_code="VALIDATION_ERROR",
+                message="股票代码验证失败",
+                details=error_details,
             )
 
         params = {"symbol": validated_symbol.symbol, "period": period}
@@ -484,7 +492,9 @@ async def get_volatility_indicators(
         except ValidationError as ve:
             error_details = [{"field": str(err["loc"][0]), "message": err["msg"]} for err in ve.errors()]
             return create_error_response(
-                error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details,
+                error_code="VALIDATION_ERROR",
+                message="股票代码验证失败",
+                details=error_details,
             )
 
         params = {"symbol": validated_symbol.symbol, "period": period}
@@ -534,7 +544,9 @@ async def get_volume_indicators(
         except ValidationError as ve:
             error_details = [{"field": str(err["loc"][0]), "message": err["msg"]} for err in ve.errors()]
             return create_error_response(
-                error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details,
+                error_code="VALIDATION_ERROR",
+                message="股票代码验证失败",
+                details=error_details,
             )
 
         params = {"symbol": validated_symbol.symbol, "period": period}
@@ -586,7 +598,9 @@ async def get_trading_signals(
         except ValidationError as ve:
             error_details = [{"field": str(err["loc"][0]), "message": err["msg"]} for err in ve.errors()]
             return create_error_response(
-                error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details,
+                error_code="VALIDATION_ERROR",
+                message="股票代码验证失败",
+                details=error_details,
             )
 
         params = {"symbol": validated_symbol.symbol, "period": period}
@@ -607,7 +621,9 @@ async def get_trading_signals(
         raise
     except Exception as e:
         raise BusinessException(
-            detail=f"获取交易信号失败: {e!s}", status_code=500, error_code="INTERNAL_SERVER_ERROR",
+            detail=f"获取交易信号失败: {e!s}",
+            status_code=500,
+            error_code="INTERNAL_SERVER_ERROR",
         )
 
 

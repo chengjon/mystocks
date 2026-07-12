@@ -111,7 +111,10 @@ class DataService:
                 self.use_cache = False
 
     def get_daily_ohlcv(
-        self, symbol: str, start_date: datetime, end_date: datetime,
+        self,
+        symbol: str,
+        start_date: datetime,
+        end_date: datetime,
     ) -> Tuple[pd.DataFrame, Dict[str, np.ndarray]]:
         """获取日线OHLCV数据
 

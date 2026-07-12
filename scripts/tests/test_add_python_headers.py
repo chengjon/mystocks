@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
-"""
-add_python_headers模块测试套件
+"""add_python_headers模块测试套件
 基于Phase 6成功模式：功能→边界→异常→性能→集成测试
 目标：100%测试覆盖率
 """
 
-import sys
 import os
-import tempfile
 import shutil
+import sys
+import tempfile
 from pathlib import Path
-from unittest.mock import patch, mock_open
+from unittest.mock import mock_open, patch
+
 import pytest
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -19,9 +20,9 @@ sys.path.insert(0, str(project_root))
 
 # 导入被测试的模块
 from src.utils.add_python_headers import (
+    PYTHON_HEADER_TEMPLATE,
     PythonHeaderAdder,
     batch_add_headers,
-    PYTHON_HEADER_TEMPLATE,
 )
 
 
@@ -250,7 +251,7 @@ class TestAddHeaderToFile:
         assert self.adder.added_count == 1
 
         # 验证文件内容
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             content = f.read()
 
         assert "# 功能：测试文件" in content
@@ -273,7 +274,7 @@ class TestAddHeaderToFile:
         assert os.path.exists(backup_path)
 
         # 验证备份内容正确
-        with open(backup_path, "r", encoding="utf-8") as f:
+        with open(backup_path, encoding="utf-8") as f:
             backup_content = f.read()
 
         assert backup_content == original_content
@@ -342,7 +343,7 @@ print("Hello")
 
         assert result is True
 
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             content = f.read()
 
         assert "# 功能：自定义模块" in content
@@ -365,7 +366,7 @@ import os
 
         self.adder.add_header_to_file(file_path, "测试模块")
 
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             content = f.read()
 
         lines = content.split("\n")
@@ -387,7 +388,7 @@ import os
 
         self.adder.add_header_to_file(file_path, "测试模块")
 
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             content = f.read()
 
         lines = content.split("\n")
@@ -407,7 +408,7 @@ import os
 
         assert result is True
 
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             content = f.read()
 
         assert "# 测试中文：🚀💻📊" in content
@@ -557,7 +558,11 @@ class TestBatchAddHeaders:
     @patch("builtins.open", new_callable=mock_open)
     @patch("sys.exit")
     def test_batch_add_headers_success(
-        self, mock_exit, mock_file, mock_exists, mock_getcwd
+        self,
+        mock_exit,
+        mock_file,
+        mock_exists,
+        mock_getcwd,
     ):
         """测试批量添加头注释成功"""
         # Mock环境
@@ -590,7 +595,11 @@ class TestBatchAddHeaders:
     @patch("builtins.open", new_callable=mock_open)
     @patch("sys.exit")
     def test_batch_add_with_files_having_headers(
-        self, mock_exit, mock_file, mock_exists, mock_getcwd
+        self,
+        mock_exit,
+        mock_file,
+        mock_exists,
+        mock_getcwd,
     ):
         """测试处理已有头注释的文件"""
         mock_getcwd.return_value = "/mock/cwd"
@@ -673,7 +682,7 @@ class TestIntegrationScenarios:
         adder = PythonHeaderAdder()
 
         # 为每个文件添加头注释
-        for file_path in test_files.keys():
+        for file_path in test_files:
             full_path = os.path.join(self.temp_dir, file_path)
             result = adder.add_header_to_file(
                 full_path,
@@ -689,7 +698,7 @@ class TestIntegrationScenarios:
         assert adder.failed_count == 0
 
         # 验证备份文件存在
-        for file_path in test_files.keys():
+        for file_path in test_files:
             full_path = os.path.join(self.temp_dir, file_path)
             backup_path = full_path + ".backup"
             assert os.path.exists(backup_path)
@@ -718,9 +727,6 @@ class TestIntegrationScenarios:
         assert result2 is True  # 应该被添加
         assert adder.added_count == 1
         assert adder.skipped_count == 1
-
-
-from scripts._test_add_python_headers_tail import TestTailScenarios
 
 
 if __name__ == "__main__":

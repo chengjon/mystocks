@@ -387,7 +387,9 @@ def get_sse_broadcaster() -> SSEBroadcaster:
 
 
 async def sse_event_generator(
-    request: Request, channel: str, client_id: Optional[str] = None,
+    request: Request,
+    channel: str,
+    client_id: Optional[str] = None,
 ) -> AsyncGenerator[Dict[str, Any], None]:
     """SSE event generator for FastAPI endpoint
 

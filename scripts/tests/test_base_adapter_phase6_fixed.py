@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
-"""
-BaseDataSourceAdapter Phase 6 测试套件 - 修复版
+"""BaseDataSourceAdapter Phase 6 测试套件 - 修复版
 遵循Phase 6成功模式：功能→边界→异常→性能→集成测试
 目标：将base_adapter.py的覆盖率从55%提升到95%+
 """
 
 import sys
 import time
-import pandas as pd
-import numpy as np
+from datetime import datetime
 from pathlib import Path
 from unittest.mock import Mock, patch
+
+import numpy as np
+import pandas as pd
 import pytest
-from datetime import datetime
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -66,7 +67,7 @@ class TestDataQualityCheckMixin:
     """QualityMixin质量检查功能测试"""
 
     def setup_method(self):
-        """pytest setup方法"""
+        """Pytest setup方法"""
         self.mixin = QualityMixin()
         self.mixin.quality_validator = Mock()
         self.mixin.logger = Mock()
@@ -83,7 +84,9 @@ class TestDataQualityCheckMixin:
         assert isinstance(result, pd.DataFrame)
         assert result.empty
         self.mixin.quality_validator.validate_dataframe.assert_called_once_with(
-            empty_df, "600000", "daily"
+            empty_df,
+            "600000",
+            "daily",
         )
 
     def test_apply_quality_check_valid_dataframe(self):
@@ -96,7 +99,7 @@ class TestDataQualityCheckMixin:
                 "low": [9.8, 10.2, 10.7, 10.5, 10.9],
                 "close": [10.3, 10.8, 11.1, 10.9, 11.3],
                 "volume": [1000, 1200, 900, 1100, 1300],
-            }
+            },
         )
 
         # 配置mock验证器
@@ -114,7 +117,7 @@ class TestDataQualityCheckMixin:
 
         # 配置mock验证器抛出异常，但应用回退机制
         self.mixin.quality_validator.validate_dataframe.side_effect = Exception(
-            "Quality check failed"
+            "Quality check failed",
         )
 
         result = self.mixin._apply_quality_check(df, "600000", "daily")
@@ -189,7 +192,7 @@ class TestBaseDataSourceAdapterHelperMethods:
     """BaseDataSourceAdapter辅助方法测试"""
 
     def setup_method(self):
-        """pytest setup方法"""
+        """Pytest setup方法"""
         self.adapter = MockDataSourceAdapter("test_adapter")
 
     def test_log_data_fetch(self):
@@ -210,7 +213,10 @@ class TestBaseDataSourceAdapterHelperMethods:
 
         with patch.object(self.adapter, "_log_data_fetch") as mock_log:
             result = self.adapter._handle_empty_data(
-                empty_df, "600000", "2024-01-01", "2024-01-31"
+                empty_df,
+                "600000",
+                "2024-01-01",
+                "2024-01-31",
             )
 
             assert isinstance(result, pd.DataFrame)
@@ -221,7 +227,10 @@ class TestBaseDataSourceAdapterHelperMethods:
         empty_df = pd.DataFrame()
 
         result = self.adapter._handle_empty_data(
-            empty_df, "600000", "2024-01-01", "2024-01-31"
+            empty_df,
+            "600000",
+            "2024-01-01",
+            "2024-01-31",
         )
 
         assert isinstance(result, pd.DataFrame)
@@ -267,7 +276,7 @@ class TestBaseDataSourceAdapterPerformance:
     """BaseDataSourceAdapter性能测试"""
 
     def setup_method(self):
-        """pytest setup方法"""
+        """Pytest setup方法"""
         self.adapter = MockDataSourceAdapter("performance_test")
 
     def test_quality_check_performance_under_1ms(self):
@@ -278,14 +287,16 @@ class TestBaseDataSourceAdapterPerformance:
                 "date": pd.date_range("2020-01-01", periods=10000),
                 "close": np.random.random(10000) * 100,
                 "volume": np.random.randint(1000, 10000, 10000),
-            }
+            },
         )
 
         start_time = time.time()
 
         # 执行质量检查
         with patch.object(
-            self.adapter.quality_validator, "validate_dataframe", return_value=large_df
+            self.adapter.quality_validator,
+            "validate_dataframe",
+            return_value=large_df,
         ):
             result = self.adapter._apply_quality_check(large_df, "000001", "daily")
 
@@ -305,11 +316,13 @@ class TestBaseDataSourceAdapterPerformance:
                 "low": np.random.random(50000) * 90,
                 "close": np.random.random(50000) * 100,
                 "volume": np.random.randint(1000, 50000, 50000),
-            }
+            },
         )
 
         with patch.object(
-            self.adapter.quality_validator, "validate_dataframe", return_value=huge_df
+            self.adapter.quality_validator,
+            "validate_dataframe",
+            return_value=huge_df,
         ):
             result = self.adapter._apply_quality_check(huge_df, "000001", "daily")
 
@@ -321,7 +334,7 @@ class TestBaseDataSourceAdapterEdgeCases:
     """BaseDataSourceAdapter边界情况测试"""
 
     def setup_method(self):
-        """pytest setup方法"""
+        """Pytest setup方法"""
         self.adapter = MockDataSourceAdapter("edge_case_test")
 
     def test_apply_quality_check_with_none_dataframe(self):
@@ -356,7 +369,9 @@ class TestBaseDataSourceAdapterEdgeCases:
         invalid_data = "invalid_data_string"
 
         with patch.object(
-            self.adapter.quality_validator, "validate_realtime_data", return_value={}
+            self.adapter.quality_validator,
+            "validate_realtime_data",
+            return_value={},
         ):
             result = self.adapter._apply_quality_check_realtime(invalid_data, "600000")
 
@@ -375,7 +390,11 @@ class TestBaseDataSourceAdapterEdgeCases:
         """测试长时间执行的日志记录"""
         with patch.object(self.adapter.logger, "warning") as mock_logger:
             self.adapter._log_data_fetch(
-                "000001", "2024-01-01", "2024-01-31", 100, 30.0
+                "000001",
+                "2024-01-01",
+                "2024-01-31",
+                100,
+                30.0,
             )
 
             mock_logger.assert_called()
@@ -402,7 +421,7 @@ class TestBaseDataSourceAdapterIntegration:
     """BaseDataSourceAdapter集成测试"""
 
     def setup_method(self):
-        """pytest setup方法"""
+        """Pytest setup方法"""
         self.adapter = MockDataSourceAdapter("integration_test")
 
     def test_complete_quality_check_workflow(self):
@@ -413,7 +432,7 @@ class TestBaseDataSourceAdapterIntegration:
                 "date": pd.date_range("2024-01-01", periods=10),
                 "close": [10.0, 10.5, 11.0, 10.8, 11.2, 11.5, 11.1, 11.8, 12.0, 11.9],
                 "volume": [1000, 1200, 900, 1100, 1300, 1500, 800, 1400, 1600, 1200],
-            }
+            },
         )
 
         # 配置mock验证器返回验证后的数据
@@ -440,9 +459,7 @@ class TestBaseDataSourceAdapterIntegration:
         }
 
         # 配置mock验证器
-        self.adapter.quality_validator.validate_realtime_data.return_value = (
-            realtime_data
-        )
+        self.adapter.quality_validator.validate_realtime_data.return_value = realtime_data
 
         # 执行实时数据质量检查
         result = self.adapter._apply_quality_check_realtime(realtime_data, "000001")
@@ -461,7 +478,7 @@ class TestBaseDataSourceAdapterIntegration:
                 "date": pd.date_range("2024-01-01", periods=5),
                 "close": [10.0, 10.5, 11.0, 10.8, 11.2],
                 "volume": [1000, 1200, 900, 1100, 1300],
-            }
+            },
         )
 
         # 配置所有mock组件
@@ -492,7 +509,7 @@ class TestBaseDataSourceAdapterErrorHandling:
     """BaseDataSourceAdapter错误处理测试"""
 
     def setup_method(self):
-        """pytest setup方法"""
+        """Pytest setup方法"""
         self.adapter = MockDataSourceAdapter("error_handling_test")
 
     def test_quality_validator_initialization_failure(self):
@@ -516,7 +533,7 @@ class TestBaseDataSourceAdapterErrorHandling:
 
         # 配置验证器抛出异常
         self.adapter.quality_validator.validate_dataframe.side_effect = Exception(
-            "Quality check failed"
+            "Quality check failed",
         )
 
         with patch.object(self.adapter.logger, "error") as mock_error:
@@ -530,7 +547,7 @@ class TestBaseDataSourceAdapterErrorHandling:
         """测试获取统计信息异常处理"""
         # 配置验证器抛出异常
         self.adapter.quality_validator.get_statistics.side_effect = Exception(
-            "Statistics unavailable"
+            "Statistics unavailable",
         )
 
         with patch.object(self.adapter.logger, "error") as mock_error:

@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
-"""
-GPU HAL层故障场景测试套件
+"""GPU HAL层故障场景测试套件
 提供完整的GPU硬件抽象层失败场景模拟测试
 """
 
-import sys
-from pathlib import Path
 import asyncio
-import pytest
-from unittest.mock import patch, MagicMock, AsyncMock
+import sys
 import time
+from pathlib import Path
+from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -17,20 +18,20 @@ sys.path.insert(0, str(project_root))
 
 # 导入被测试的模块
 try:
-    from src.gpu.core.hardware_abstraction.resource_manager import GPUResourceManager
+    from src.gpu.core.hardware_abstraction.interfaces import (
+        AllocationRequest,
+        GPUDeviceInfo,
+        IStrategyContext,
+        PerformanceProfile,
+        StrategyPriority,
+    )
     from src.gpu.core.hardware_abstraction.memory_pool import (
-        MemoryPool,
         MemoryBlock,
         MemoryBlockState,
+        MemoryPool,
     )
+    from src.gpu.core.hardware_abstraction.resource_manager import GPUResourceManager
     from src.gpu.core.hardware_abstraction.strategy_context import StrategyGPUContext
-    from src.gpu.core.hardware_abstraction.interfaces import (
-        StrategyPriority,
-        GPUDeviceInfo,
-        AllocationRequest,
-        PerformanceProfile,
-        IStrategyContext,
-    )
 
     GPU_HAL_AVAILABLE = True
 
@@ -102,7 +103,7 @@ class TestGPUResourceManagerFailureScenarios:
     async def test_nvml_initialization_failure(self, resource_manager, mock_nvml_error):
         """测试NVML初始化失败场景"""
         with patch(
-            "src.gpu.core.hardware_abstraction.resource_manager.pynvml"
+            "src.gpu.core.hardware_abstraction.resource_manager.pynvml",
         ) as mock_pynvml:
             mock_pynvml.nvmlInit.side_effect = mock_nvml_error
 
@@ -117,12 +118,12 @@ class TestGPUResourceManagerFailureScenarios:
     async def test_nvml_device_detection_failure(self, resource_manager):
         """测试NVML设备检测失败场景"""
         with patch(
-            "src.gpu.core.hardware_abstraction.resource_manager.pynvml"
+            "src.gpu.core.hardware_abstraction.resource_manager.pynvml",
         ) as mock_pynvml:
             # 模拟设备获取失败
             mock_pynvml.nvmlInit.return_value = None
             mock_pynvml.nvmlDeviceGetCount.side_effect = Exception(
-                "Device detection failed"
+                "Device detection failed",
             )
 
             result = await resource_manager.initialize()
@@ -134,7 +135,7 @@ class TestGPUResourceManagerFailureScenarios:
     async def test_nvml_device_info_failure(self, resource_manager):
         """测试NVML设备信息获取失败场景"""
         with patch(
-            "src.gpu.core.hardware_abstraction.resource_manager.pynvml"
+            "src.gpu.core.hardware_abstraction.resource_manager.pynvml",
         ) as mock_pynvml:
             # 模拟初始化成功但设备信息获取失败
             mock_pynvml.nvmlInit.return_value = None
@@ -153,7 +154,9 @@ class TestGPUResourceManagerFailureScenarios:
     # === 资源分配故障测试 ===
 
     async def test_allocation_without_initialization(
-        self, resource_manager, allocation_request
+        self,
+        resource_manager,
+        allocation_request,
     ):
         """测试未初始化时的资源分配请求"""
         resource_manager._initialized = False
@@ -164,7 +167,9 @@ class TestGPUResourceManagerFailureScenarios:
         assert result is None
 
     async def test_insufficient_memory_allocation(
-        self, resource_manager, allocation_request
+        self,
+        resource_manager,
+        allocation_request,
     ):
         """测试内存不足时的资源分配"""
         await resource_manager.initialize()
@@ -183,7 +188,9 @@ class TestGPUResourceManagerFailureScenarios:
         assert result is None
 
     async def test_duplicate_strategy_allocation(
-        self, resource_manager, allocation_request
+        self,
+        resource_manager,
+        allocation_request,
     ):
         """测试重复策略ID的资源分配"""
         await resource_manager.initialize()
@@ -230,7 +237,10 @@ class TestGPUResourceManagerFailureScenarios:
     # === 内存池故障测试 ===
 
     async def test_memory_pool_creation_failure(
-        self, resource_manager, allocation_request, mock_memory_pool_error
+        self,
+        resource_manager,
+        allocation_request,
+        mock_memory_pool_error,
     ):
         """测试内存池创建失败场景"""
         await resource_manager.initialize()
@@ -245,13 +255,15 @@ class TestGPUResourceManagerFailureScenarios:
             assert result is None
 
     async def test_strategy_context_creation_failure(
-        self, resource_manager, allocation_request
+        self,
+        resource_manager,
+        allocation_request,
     ):
         """测试策略上下文创建失败场景"""
         await resource_manager.initialize()
 
         with patch(
-            "src.gpu.core.hardware_abstraction.resource_manager.StrategyGPUContext"
+            "src.gpu.core.hardware_abstraction.resource_manager.StrategyGPUContext",
         ) as mock_context:
             mock_context.side_effect = Exception("Context creation failed")
 
@@ -273,7 +285,9 @@ class TestGPUResourceManagerFailureScenarios:
         assert result is False
 
     async def test_release_with_memory_cleanup_failure(
-        self, resource_manager, allocation_request
+        self,
+        resource_manager,
+        allocation_request,
     ):
         """测试内存清理失败的场景"""
         await resource_manager.initialize()
@@ -308,7 +322,7 @@ class TestGPUResourceManagerFailureScenarios:
         await resource_manager.initialize()
 
         with patch(
-            "src.gpu.core.hardware_abstraction.resource_manager.pynvml"
+            "src.gpu.core.hardware_abstraction.resource_manager.pynvml",
         ) as mock_pynvml:
             # 模拟指标更新失败
             mock_pynvml.nvmlInit.side_effect = Exception("Metrics update failed")
@@ -343,9 +357,7 @@ class TestGPUResourceManagerFailureScenarios:
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
         # 应该只有部分请求成功
-        successful_results = [
-            r for r in results if r is not None and not isinstance(r, Exception)
-        ]
+        successful_results = [r for r in results if r is not None and not isinstance(r, Exception)]
         failed_results = [r for r in results if r is None or isinstance(r, Exception)]
 
         # 验证至少有失败的情况
@@ -362,11 +374,11 @@ class TestGPUResourceManagerFailureScenarios:
         async def slow_allocate(self, request):
             # 模拟长时间处理
             await asyncio.sleep(2)
-            return None
 
         # 替换方法为慢方法
         resource_manager.allocate_context = slow_allocate.__get__(
-            resource_manager, type(resource_manager)
+            resource_manager,
+            type(resource_manager),
         )
 
         # 创建多个并发请求
@@ -410,7 +422,8 @@ class TestMemoryPoolFailureScenarios:
     def mock_cupy_unavailable(self):
         """模拟CuPy不可用"""
         with patch(
-            "src.gpu.core.hardware_abstraction.memory_pool.CUPY_AVAILABLE", False
+            "src.gpu.core.hardware_abstraction.memory_pool.CUPY_AVAILABLE",
+            False,
         ):
             yield
 
@@ -436,7 +449,9 @@ class TestMemoryPoolFailureScenarios:
         assert result is False
 
     def test_cupy_memory_allocation_failure(
-        self, memory_pool_config, mock_cupy_allocation_error
+        self,
+        memory_pool_config,
+        mock_cupy_allocation_error,
     ):
         """测试CuPy内存分配失败"""
         from src.gpu.core.hardware_abstraction.memory_pool import MemoryPool
@@ -460,7 +475,7 @@ class TestMemoryPoolFailureScenarios:
             except Exception:
                 # 如果异常被抛出，说明错误处理不完善
                 pytest.fail(
-                    "Memory pool should handle CuPy allocation failures gracefully"
+                    "Memory pool should handle CuPy allocation failures gracefully",
                 )
 
     # === 内存块管理故障测试 ===
@@ -493,8 +508,8 @@ class TestMemoryPoolFailureScenarios:
     async def test_corrupted_memory_block_handling(self, memory_pool_config):
         """测试损坏内存块的处理"""
         from src.gpu.core.hardware_abstraction.memory_pool import (
-            MemoryPool,
             MemoryBlock,
+            MemoryPool,
         )
 
         pool = MemoryPool(memory_pool_config)
@@ -638,7 +653,7 @@ class TestStrategyContextFailureScenarios:
                 assert True
             except Exception:
                 pytest.fail(
-                    "Context cleanup should handle memory pool failures gracefully"
+                    "Context cleanup should handle memory pool failures gracefully",
                 )
         else:
             # 如果没有清理方法，测试基本功能仍然正常
@@ -650,7 +665,7 @@ class TestStrategyContextFailureScenarios:
         """测试性能指标收集失败"""
         # 模拟指标收集失败
         strategy_context._collect_metrics = MagicMock(
-            side_effect=Exception("Metrics collection failed")
+            side_effect=Exception("Metrics collection failed"),
         )
 
         # 指标收集失败不应该影响上下文基本功能

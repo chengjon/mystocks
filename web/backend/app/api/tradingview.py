@@ -96,8 +96,7 @@ async def get_mini_chart_config(
     container_id: str = Query("tradingview_mini_chart", description="容器ID"),
     current_user: User = Depends(get_current_user),
 ) -> Dict:
-    """获取 TradingView 迷你图表配置
-    """
+    """获取 TradingView 迷你图表配置"""
     try:
         # 检查是否使用Mock数据
         use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
@@ -124,7 +123,10 @@ async def get_mini_chart_config(
 
         # 生成迷你图表配置
         config = service.generate_mini_chart_config(
-            symbol=tv_symbol, container_id=container_id, theme=theme, locale=locale,
+            symbol=tv_symbol,
+            container_id=container_id,
+            theme=theme,
+            locale=locale,
         )
 
         return {"success": True, "config": config}
@@ -134,10 +136,10 @@ async def get_mini_chart_config(
 
 @router.post("/ticker-tape/config")
 async def get_ticker_tape_config(
-    request: TickerTapeConfigRequest, current_user: User = Depends(get_current_user),
+    request: TickerTapeConfigRequest,
+    current_user: User = Depends(get_current_user),
 ) -> Dict:
-    """获取 TradingView Ticker Tape 配置
-    """
+    """获取 TradingView Ticker Tape 配置"""
     try:
         # 检查是否使用Mock数据
         use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
@@ -187,8 +189,7 @@ async def get_market_overview_config(
     container_id: str = Query("tradingview_market_overview", description="容器ID"),
     current_user: User = Depends(get_current_user),
 ) -> Dict:
-    """获取 TradingView 市场概览配置
-    """
+    """获取 TradingView 市场概览配置"""
     try:
         # 检查是否使用Mock数据
         use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
@@ -199,7 +200,11 @@ async def get_market_overview_config(
 
             mock_manager = get_mock_data_manager()
             mock_data = mock_manager.get_data(
-                "tradingview_market_overview", market=market, theme=theme, locale=locale, container_id=container_id,
+                "tradingview_market_overview",
+                market=market,
+                theme=theme,
+                locale=locale,
+                container_id=container_id,
             )
             return {"success": True, "config": mock_data.get("config", {})}
         # 正常获取真实数据
@@ -207,7 +212,10 @@ async def get_market_overview_config(
 
         # 生成市场概览配置
         config = service.generate_market_overview_config(
-            container_id=container_id, theme=theme, locale=locale, market=market,
+            container_id=container_id,
+            theme=theme,
+            locale=locale,
+            market=market,
         )
 
         return {"success": True, "config": config}
@@ -223,8 +231,7 @@ async def get_screener_config(
     container_id: str = Query("tradingview_screener", description="容器ID"),
     current_user: User = Depends(get_current_user),
 ) -> Dict:
-    """获取 TradingView 股票筛选器配置
-    """
+    """获取 TradingView 股票筛选器配置"""
     try:
         # 检查是否使用Mock数据
         use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
@@ -235,7 +242,11 @@ async def get_screener_config(
 
             mock_manager = get_mock_data_manager()
             mock_data = mock_manager.get_data(
-                "tradingview_screener", market=market, theme=theme, locale=locale, container_id=container_id,
+                "tradingview_screener",
+                market=market,
+                theme=theme,
+                locale=locale,
+                container_id=container_id,
             )
             return {"success": True, "config": mock_data.get("config", {})}
         # 正常获取真实数据
@@ -243,7 +254,10 @@ async def get_screener_config(
 
         # 生成筛选器配置
         config = service.generate_screener_config(
-            container_id=container_id, theme=theme, locale=locale, market=market,
+            container_id=container_id,
+            theme=theme,
+            locale=locale,
+            market=market,
         )
 
         return {"success": True, "config": config}
@@ -257,8 +271,7 @@ async def convert_symbol(
     market: str = Query("CN", description="市场类型"),
     current_user: User = Depends(get_current_user),
 ) -> Dict:
-    """将股票代码转换为 TradingView 格式
-    """
+    """将股票代码转换为 TradingView 格式"""
     try:
         # 检查是否使用Mock数据
         use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"

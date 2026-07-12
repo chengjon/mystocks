@@ -1,24 +1,24 @@
 #!/usr/bin/env python3
-"""
-validate_gitignore模块测试套件
+"""validate_gitignore模块测试套件
 基于Phase 6成功模式：功能→边界→异常→性能→集成测试
 针对Git忽略规则验证器进行全面测试
 """
 
-import sys
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
 import pytest
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 # 导入被测试的模块
-from scripts._test_validate_gitignore_tail import TestIntegrationScenarios, TestMainFunction
-from src.utils.validate_gitignore import GitIgnoreValidator, main
+from src.utils.validate_gitignore import GitIgnoreValidator
 
 
 class TestGitIgnoreValidatorInit:
@@ -28,7 +28,7 @@ class TestGitIgnoreValidatorInit:
         """测试默认初始化"""
         validator = GitIgnoreValidator()
 
-        assert validator.root_dir == Path(".")
+        assert validator.root_dir == Path()
         assert isinstance(validator.should_be_ignored, dict)
         assert isinstance(validator.should_be_visible, list)
         assert isinstance(validator.issues, list)
@@ -161,7 +161,9 @@ class TestGetUntrackedFiles:
 """
 
         with patch.object(
-            validator, "run_git_command", return_value=mock_status_output
+            validator,
+            "run_git_command",
+            return_value=mock_status_output,
         ):
             untracked = validator.get_untracked_files()
 
@@ -239,7 +241,9 @@ class TestCheckIgnoredPatterns:
         ]
 
         with patch.object(
-            validator, "get_untracked_files", return_value=untracked_files
+            validator,
+            "get_untracked_files",
+            return_value=untracked_files,
         ):
             validator.check_ignored_patterns()
 
@@ -257,13 +261,13 @@ class TestCheckIgnoredPatterns:
         ]
 
         with patch.object(
-            validator, "get_untracked_files", return_value=untracked_files
+            validator,
+            "get_untracked_files",
+            return_value=untracked_files,
         ):
             validator.check_ignored_patterns()
 
-            pycache_issues = [
-                i for i in validator.issues if i["pattern"] == "__pycache__"
-            ]
+            pycache_issues = [i for i in validator.issues if i["pattern"] == "__pycache__"]
             assert len(pycache_issues) == 1
             assert pycache_issues[0]["total"] == 3
 
@@ -278,7 +282,9 @@ class TestCheckIgnoredPatterns:
         ]
 
         with patch.object(
-            validator, "get_untracked_files", return_value=untracked_files
+            validator,
+            "get_untracked_files",
+            return_value=untracked_files,
         ):
             validator.check_ignored_patterns()
 
@@ -296,7 +302,9 @@ class TestCheckIgnoredPatterns:
         ]
 
         with patch.object(
-            validator, "get_untracked_files", return_value=untracked_files
+            validator,
+            "get_untracked_files",
+            return_value=untracked_files,
         ):
             validator.check_ignored_patterns()
 
@@ -313,7 +321,9 @@ class TestCheckIgnoredPatterns:
         ]
 
         with patch.object(
-            validator, "get_untracked_files", return_value=untracked_files
+            validator,
+            "get_untracked_files",
+            return_value=untracked_files,
         ):
             validator.check_ignored_patterns()
 
@@ -336,7 +346,9 @@ class TestCheckIgnoredPatterns:
         ]
 
         with patch.object(
-            validator, "get_untracked_files", return_value=untracked_files
+            validator,
+            "get_untracked_files",
+            return_value=untracked_files,
         ):
             validator.check_ignored_patterns()
 
@@ -362,7 +374,9 @@ class TestCheckIgnoredPatterns:
         untracked_files = [f"file_{i}.pyc" for i in range(10)]
 
         with patch.object(
-            validator, "get_untracked_files", return_value=untracked_files
+            validator,
+            "get_untracked_files",
+            return_value=untracked_files,
         ):
             validator.check_ignored_patterns()
 
@@ -379,7 +393,9 @@ class TestCheckIgnoredPatterns:
         untracked_files = ["source.py", "README.md"]
 
         with patch.object(
-            validator, "get_untracked_files", return_value=untracked_files
+            validator,
+            "get_untracked_files",
+            return_value=untracked_files,
         ):
             validator.check_ignored_patterns()
 
@@ -436,13 +452,13 @@ class TestCheckExceptionFiles:
 
             # 模拟git check-ignore返回内容（表示文件被忽略）
             with patch.object(
-                validator, "run_git_command", return_value=".env.example"
+                validator,
+                "run_git_command",
+                return_value=".env.example",
             ):
                 validator.check_exception_files()
 
-                ignore_issues = [
-                    i for i in validator.issues if i["type"] == "WRONGLY_IGNORED"
-                ]
+                ignore_issues = [i for i in validator.issues if i["type"] == "WRONGLY_IGNORED"]
                 assert len(ignore_issues) == 1
                 assert ignore_issues[0]["file"] == ".env.example"
 
@@ -505,9 +521,7 @@ class TestCheckGitignoreExists:
 
             assert result == False
             assert len(validator.issues) == 2
-            assert all(
-                issue["type"] == "MISSING_GITIGNORE" for issue in validator.issues
-            )
+            assert all(issue["type"] == "MISSING_GITIGNORE" for issue in validator.issues)
 
     def test_partial_gitignore_files_exist(self):
         """测试部分.gitignore文件存在"""
@@ -540,7 +554,7 @@ class TestGenerateCleanupCommands:
                 "pattern": "__pycache__",
                 "files": ["__pycache__/module.pyc"],
                 "total": 1,
-            }
+            },
         ]
 
         commands = validator.generate_cleanup_commands()
@@ -558,7 +572,7 @@ class TestGenerateCleanupCommands:
                 "pattern": "*.log",
                 "files": ["app.log"],
                 "total": 1,
-            }
+            },
         ]
 
         commands = validator.generate_cleanup_commands()
@@ -575,7 +589,7 @@ class TestGenerateCleanupCommands:
                 "pattern": "node_modules",
                 "files": ["node_modules/package/"],
                 "total": 1,
-            }
+            },
         ]
 
         commands = validator.generate_cleanup_commands()
@@ -620,9 +634,6 @@ class TestGenerateCleanupCommands:
         commands = validator.generate_cleanup_commands()
 
         assert len(commands) >= 4  # 2个标题 + 2个清理命令
-
-
-from scripts._test_validate_gitignore_report_tail import TestGenerateReport
 
 
 if __name__ == "__main__":

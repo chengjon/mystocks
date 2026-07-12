@@ -1,20 +1,21 @@
 #!/usr/bin/env python3
-"""
-数据源管理器测试套件
+"""数据源管理器测试套件
 提供完整的数据源管理器功能测试，包括Mock适配器测试
 """
 
 import sys
 from pathlib import Path
 
+
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-import pytest
-from unittest.mock import patch
-import pandas as pd
 from datetime import datetime
+from unittest.mock import patch
+
+import pandas as pd
+import pytest
 
 # 导入被测试的模块
 from src.adapters.data_source_manager import DataSourceManager, get_default_manager
@@ -61,7 +62,10 @@ class MockDataSource(IDataSource):
         return pd.DataFrame(data)
 
     def get_stock_daily(
-        self, symbol: str, start_date: str, end_date: str
+        self,
+        symbol: str,
+        start_date: str,
+        end_date: str,
     ) -> pd.DataFrame:
         """获取股票日线数据"""
         self.call_count += 1
@@ -70,7 +74,10 @@ class MockDataSource(IDataSource):
         return self.daily_data.copy()
 
     def get_index_daily(
-        self, symbol: str, start_date: str, end_date: str
+        self,
+        symbol: str,
+        start_date: str,
+        end_date: str,
     ) -> pd.DataFrame:
         """获取指数日线数据"""
         self.call_count += 1
@@ -120,7 +127,7 @@ class MockDataSource(IDataSource):
                     "date": date.strftime("%Y-%m-%d"),
                     "is_trading_day": date.weekday() < 5,  # 周一到周五
                     "market": "SZSH",
-                }
+                },
             )
         return pd.DataFrame(calendar_data)
 
@@ -137,7 +144,7 @@ class MockDataSource(IDataSource):
                 "revenue": 1275000000000,
                 "net_profit": 627160000000,
                 "period": period,
-            }
+            },
         ]
         return pd.DataFrame(financial_data)
 
@@ -271,7 +278,10 @@ class TestDataSourceManager:
         assert mock_tdx_source.call_count == 1
 
     def test_get_real_time_data_priority_fallback(
-        self, manager, mock_tdx_source, mock_akshare_source
+        self,
+        manager,
+        mock_tdx_source,
+        mock_akshare_source,
     ):
         """测试按优先级回退获取实时数据"""
         # TDX注册但会失败，AkShare注册且会成功
@@ -299,7 +309,10 @@ class TestDataSourceManager:
         """测试使用指定数据源获取股票日线数据"""
         manager.register_source("tdx", mock_tdx_source)
         result = manager.get_stock_daily(
-            "600519", "2024-01-01", "2024-01-10", source="tdx"
+            "600519",
+            "2024-01-01",
+            "2024-01-10",
+            source="tdx",
         )
 
         assert isinstance(result, pd.DataFrame)
@@ -312,7 +325,10 @@ class TestDataSourceManager:
     def test_get_stock_daily_with_invalid_source(self, manager):
         """测试使用无效数据源获取股票日线数据"""
         result = manager.get_stock_daily(
-            "600519", "2024-01-01", "2024-01-10", source="invalid"
+            "600519",
+            "2024-01-01",
+            "2024-01-10",
+            source="invalid",
         )
 
         assert isinstance(result, pd.DataFrame)
@@ -328,7 +344,10 @@ class TestDataSourceManager:
         assert mock_tdx_source.call_count == 1
 
     def test_get_stock_daily_priority_fallback(
-        self, manager, mock_tdx_source, mock_akshare_source
+        self,
+        manager,
+        mock_tdx_source,
+        mock_akshare_source,
     ):
         """测试按优先级回退获取股票日线数据"""
         failing_tdx = MockDataSource("TDX", should_fail=True)
@@ -374,7 +393,10 @@ class TestDataSourceManager:
         assert mock_tdx_source.call_count == 1
 
     def test_get_stock_basic_fallback(
-        self, manager, mock_tdx_source, mock_akshare_source
+        self,
+        manager,
+        mock_tdx_source,
+        mock_akshare_source,
     ):
         """测试股票基本信息回退机制"""
         failing_tdx = MockDataSource("TDX", should_fail=True)
@@ -415,7 +437,10 @@ class TestDataSourceManager:
         assert mock_akshare_source.call_count == 1
 
     def test_get_financial_data_priority(
-        self, manager, mock_akshare_source, mock_tdx_source
+        self,
+        manager,
+        mock_akshare_source,
+        mock_tdx_source,
     ):
         """测试财务数据优先级（akshare优先）"""
         manager.register_source("akshare", mock_akshare_source)
@@ -447,7 +472,10 @@ class TestDataSourceManager:
         assert mock_tdx_source.call_count == 1
 
     def test_get_index_components_fallback(
-        self, manager, mock_tdx_source, mock_akshare_source
+        self,
+        manager,
+        mock_tdx_source,
+        mock_akshare_source,
     ):
         """测试指数成分股回退机制"""
         failing_tdx = MockDataSource("TDX", should_fail=True)
@@ -626,11 +654,7 @@ class TestDataSourceManagerIntegration:
             assert info.get("symbol") == symbol
 
         # 验证调用次数统计
-        total_calls = (
-            tdx_source.call_count
-            + akshare_source.call_count
-            + failing_source.call_count
-        )
+        total_calls = tdx_source.call_count + akshare_source.call_count + failing_source.call_count
         assert total_calls > 0
 
         # 测试指数成分股
@@ -706,7 +730,10 @@ class TestGetDefaultManager:
     @patch("src.adapters.data_source_manager.AkshareDataSource")
     @patch("logging.warning")
     def test_get_default_manager_tdx_failure(
-        self, mock_logging, mock_akshare, mock_tdx
+        self,
+        mock_logging,
+        mock_akshare,
+        mock_tdx,
     ):
         """测试TDX注册失败的情况"""
         # TDX抛出异常
@@ -729,7 +756,10 @@ class TestGetDefaultManager:
     @patch("src.adapters.data_source_manager.AkshareDataSource")
     @patch("logging.warning")
     def test_get_default_manager_both_failure(
-        self, mock_logging, mock_akshare, mock_tdx
+        self,
+        mock_logging,
+        mock_akshare,
+        mock_tdx,
     ):
         """测试两个数据源都注册失败的情况"""
         mock_tdx.side_effect = Exception("TDX失败")
@@ -744,9 +774,6 @@ class TestGetDefaultManager:
         # 验证两个警告都被记录
         mock_logging.assert_any_call("TDX数据源注册失败: TDX失败")
         mock_logging.assert_any_call("AKShare数据源注册失败: AkShare失败")
-
-
-from scripts._test_data_source_manager_tail import TestDataSourceManagerErrorHandling
 
 
 if __name__ == "__main__":

@@ -1,5 +1,4 @@
-"""公告监控API路由
-"""
+"""公告监控API路由"""
 
 from datetime import date, timedelta
 from typing import Optional
@@ -72,7 +71,10 @@ if HAS_ANNOUNCEMENT_SERVICE:
                 start_date = end_date - timedelta(days=7)
 
             result = service.fetch_and_save_announcements(
-                symbol=symbol, start_date=start_date, end_date=end_date, category=category,
+                symbol=symbol,
+                start_date=start_date,
+                end_date=end_date,
+                category=category,
             )
 
             if not result["success"]:
@@ -233,7 +235,10 @@ if HAS_ANNOUNCEMENT_SERVICE:
 
             # 获取今日公告
             today_result = service.get_announcements(
-                start_date=date.today(), end_date=date.today(), page=1, page_size=1,
+                start_date=date.today(),
+                end_date=date.today(),
+                page=1,
+                page_size=1,
             )
 
             # 获取重要公告

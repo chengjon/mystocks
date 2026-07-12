@@ -439,8 +439,7 @@ class TDengineManager:
             return False
 
     def _execute(self, sql: str) -> bool:
-        """执行 SQL 语句（Phase 3优化：使用连接池）
-        """
+        """执行 SQL 语句（Phase 3优化：使用连接池）"""
         if not self._pool:
             raise RuntimeError("连接池未初始化")
 
@@ -461,8 +460,7 @@ class TDengineManager:
             raise
 
     def _execute_query(self, sql: str) -> Optional[List[Tuple]]:
-        """执行查询 SQL（Phase 3优化：使用连接池）
-        """
+        """执行查询 SQL（Phase 3优化：使用连接池）"""
         if not self._pool:
             raise RuntimeError("连接池未初始化")
 
@@ -497,8 +495,7 @@ class TDengineManager:
             logger.debug("更新命中次数失败: {str(e)}")
 
     def close(self):
-        """关闭连接池（Phase 3优化：关闭所有连接）
-        """
+        """关闭连接池（Phase 3优化：关闭所有连接）"""
         if self._pool:
             self._pool.close_all()
             self._pool = None

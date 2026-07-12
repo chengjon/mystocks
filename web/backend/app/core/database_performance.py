@@ -191,7 +191,13 @@ class DatabasePerformanceManager:
     ):
         """记录查询性能"""
         return self.performance_monitor.record_query(
-            sql, table_name, operation, duration_ms, rows_affected, rows_scanned, error,
+            sql,
+            table_name,
+            operation,
+            duration_ms,
+            rows_affected,
+            rows_scanned,
+            error,
         )
 
     async def collect_metrics(self) -> DatabasePerformanceMetrics:

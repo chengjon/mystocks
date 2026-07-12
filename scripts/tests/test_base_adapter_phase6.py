@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
-"""
-BaseDataSourceAdapter Phase 6 测试套件
+"""BaseDataSourceAdapter Phase 6 测试套件
 遵循Phase 6成功模式：功能→边界→异常→性能→集成测试
 目标：将base_adapter.py的覆盖率从55%提升到95%+
 """
 
 import sys
 import time
-import pandas as pd
 from pathlib import Path
 from unittest.mock import Mock, patch
+
+import pandas as pd
 import pytest
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -79,7 +80,7 @@ class TestDataQualityCheckMixin:
         self.mixin = MockAdapterWithQualityCheck()
 
     def setup_method(self):
-        """pytest setup方法"""
+        """Pytest setup方法"""
         self.mixin = MockAdapterWithQualityCheck()
 
     def test_apply_quality_check_empty_dataframe(self):
@@ -96,7 +97,7 @@ class TestDataQualityCheckMixin:
         self.mixin.quality_validator.validate_dataframe = Mock(return_value=True)
 
         test_df = pd.DataFrame(
-            {"symbol": ["600000"], "price": [10.5], "volume": [1000]}
+            {"symbol": ["600000"], "price": [10.5], "volume": [1000]},
         )
 
         result = self.mixin.apply_quality_check(test_df, "600000", "daily")
@@ -159,12 +160,14 @@ class TestDataQualityCheckMixin:
         self.mixin.quality_validator.set_thresholds = Mock()
 
         result = self.mixin.set_quality_thresholds(
-            min_data_points=10, max_null_ratio=0.1
+            min_data_points=10,
+            max_null_ratio=0.1,
         )
 
         assert result is True
         self.mixin.quality_validator.set_thresholds.assert_called_once_with(
-            min_data_points=10, max_null_ratio=0.1
+            min_data_points=10,
+            max_null_ratio=0.1,
         )
 
 
@@ -286,7 +289,7 @@ class TestBaseDataSourceAdapterPerformance:
                 "symbol": ["600000"] * 1000,
                 "price": [10.5] * 1000,
                 "volume": [1000] * 1000,
-            }
+            },
         )
 
         # 测试多次质量检查
@@ -311,7 +314,7 @@ class TestBaseDataSourceAdapterPerformance:
                 "price": [10.5] * 10000,
                 "volume": [1000] * 10000,
                 "extra_column": range(10000),
-            }
+            },
         )
 
         start_time = time.time()
@@ -353,7 +356,7 @@ class TestBaseDataSourceAdapterEdgeCases:
                 "symbol": [None, "", "invalid_symbol"],
                 "price": [float("inf"), float("-inf"), None],
                 "volume": [float("nan"), None, -1],  # 负数成交量
-            }
+            },
         )
 
         # Mock验证器处理但记录问题
@@ -387,7 +390,7 @@ class TestBaseDataSourceAdapterEdgeCases:
 
         # Mock验证器处理但记录问题
         mock_validator_class.return_value.validate_realtime_data = Mock(
-            return_value=False
+            return_value=False,
         )
 
         result = adapter._apply_quality_check_realtime(invalid_data, "600000")
@@ -450,7 +453,7 @@ class TestBaseDataSourceAdapterIntegration:
         mock_validator_class.return_value = mock_validator_instance
         mock_validator_instance.validate_dataframe = Mock(return_value=True)
         mock_validator_instance.get_statistics = Mock(
-            return_value={"total_checks": 10, "passed_checks": 8, "failed_checks": 2}
+            return_value={"total_checks": 10, "passed_checks": 8, "failed_checks": 2},
         )
 
         # 测试完整工作流
@@ -459,7 +462,7 @@ class TestBaseDataSourceAdapterIntegration:
                 "symbol": ["600000", "000001"],
                 "price": [10.5, 15.2],
                 "volume": [1000, 2000],
-            }
+            },
         )
 
         # 1. 应用质量检查
@@ -496,7 +499,8 @@ class TestBaseDataSourceAdapterIntegration:
             result = adapter._apply_quality_check_realtime(data, data["symbol"])
             assert result == data
             mock_validator_instance.validate_realtime_data.assert_called_with(
-                data, data["symbol"]
+                data,
+                data["symbol"],
             )
 
     @patch("src.adapters.base_adapter.DataQualityValidator")
@@ -552,7 +556,7 @@ class TestBaseDataSourceAdapterErrorHandling:
         mock_validator_instance = Mock()
         mock_validator_class.return_value = mock_validator_instance
         mock_validator_instance.validate_dataframe = Mock(
-            side_effect=Exception("Validation error")
+            side_effect=Exception("Validation error"),
         )
 
         test_df = pd.DataFrame({"test": [1]})
@@ -570,7 +574,7 @@ class TestBaseDataSourceAdapterErrorHandling:
         mock_validator_instance = Mock()
         mock_validator_class.return_value = mock_validator_instance
         mock_validator_instance.get_statistics = Mock(
-            side_effect=Exception("Stats error")
+            side_effect=Exception("Stats error"),
         )
 
         # 验证异常处理

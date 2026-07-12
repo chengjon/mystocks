@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-简化的内存管理测试
+"""简化的内存管理测试
 测试核心内存管理功能而不涉及复杂的依赖
 """
 
-import sys
 import asyncio
+import sys
+
 
 # 设置Python路径
 project_root = "/opt/claude/mystocks_spec"
@@ -291,10 +290,9 @@ async def main():
         print("🎉 所有简化内存管理测试通过！")
         print("✅ 内存管理核心功能正常工作")
         return True
-    else:
-        print("❌ 部分测试失败")
-        print("需要检查失败的项目")
-        return False
+    print("❌ 部分测试失败")
+    print("需要检查失败的项目")
+    return False
 
 
 if __name__ == "__main__":

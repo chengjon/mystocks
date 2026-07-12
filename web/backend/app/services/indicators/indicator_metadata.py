@@ -141,7 +141,8 @@ class IndicatorMetadata(BaseModel):
     dependencies: List[str] = Field(default_factory=list, description="依赖的其他指标缩写")
 
     data_requirements: List[DataField] = Field(
-        default_factory=lambda: [DataField.CLOSE], description="需要的基础数据字段",
+        default_factory=lambda: [DataField.CLOSE],
+        description="需要的基础数据字段",
     )
 
     panel_type: PanelType = Field(PanelType.OVERLAY, description="显示面板类型")

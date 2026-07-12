@@ -35,7 +35,10 @@ class IndicatorRepository:
         return get_postgresql_session()
 
     def save_results(
-        self, stock_code: str, timestamps: Union[List[datetime], np.ndarray], results: List[IndicatorResult],
+        self,
+        stock_code: str,
+        timestamps: Union[List[datetime], np.ndarray],
+        results: List[IndicatorResult],
     ):
         """批量保存指标计算结果
 

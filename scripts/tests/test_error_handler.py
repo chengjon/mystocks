@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
-"""
-错误处理工具测试套件
+"""错误处理工具测试套件
 完整测试error_handler模块的所有功能，确保100%测试覆盖率
 遵循Phase 6成功模式：功能→边界→异常→性能→集成测试
 """
 
-import sys
 import logging
+import sys
 import time
 from pathlib import Path
 from unittest.mock import patch
+
 import pytest
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -18,13 +19,13 @@ sys.path.insert(0, str(project_root))
 
 # 导入被测试的模块
 from src.utils.error_handler import (
-    UnifiedErrorHandler,
-    safe_execute,
-    retry_on_failure,
-    DataError,
     ConnectionError,
-    ValidationError,
+    DataError,
     ProcessingError,
+    UnifiedErrorHandler,
+    ValidationError,
+    retry_on_failure,
+    safe_execute,
 )
 
 
@@ -110,7 +111,9 @@ class TestUnifiedErrorHandler:
 
         with patch("src.utils.error_handler.logger") as mock_logger:
             result = UnifiedErrorHandler.safe_execute(
-                test_func, "Test with context", default_return="default"
+                test_func,
+                "Test with context",
+                default_return="default",
             )
 
             assert result == "result"
@@ -124,7 +127,9 @@ class TestUnifiedErrorHandler:
             raise ValueError("Function failed")
 
         result = UnifiedErrorHandler.safe_execute(
-            failing_func, "Failing function", default_return="default_value"
+            failing_func,
+            "Failing function",
+            default_return="default_value",
         )
 
         assert result == "default_value"
@@ -137,7 +142,9 @@ class TestUnifiedErrorHandler:
 
         with pytest.raises(RuntimeError, match="Reraise this"):
             UnifiedErrorHandler.safe_execute(
-                failing_func, "Reraise function", reraise=True
+                failing_func,
+                "Reraise function",
+                reraise=True,
             )
 
     def test_safe_execute_exception_with_logging(self):
@@ -148,7 +155,9 @@ class TestUnifiedErrorHandler:
 
         with patch("src.utils.error_handler.logger") as mock_logger:
             UnifiedErrorHandler.safe_execute(
-                failing_func, "Logging test", log_error=True
+                failing_func,
+                "Logging test",
+                log_error=True,
             )
 
             mock_logger.log.assert_called_once()
@@ -161,7 +170,10 @@ class TestUnifiedErrorHandler:
 
         with patch("src.utils.error_handler.logger") as mock_logger:
             result = UnifiedErrorHandler.safe_execute(
-                failing_func, "No logging test", log_error=False, reraise=False
+                failing_func,
+                "No logging test",
+                log_error=False,
+                reraise=False,
             )
 
             assert result is None
@@ -174,7 +186,8 @@ class TestUnifiedErrorHandler:
             return a + b + (c or 0)
 
         result = UnifiedErrorHandler.safe_execute(
-            lambda: test_func(1, 2, 3), "Function with args"
+            lambda: test_func(1, 2, 3),
+            "Function with args",
         )
 
         assert result == 6
@@ -194,7 +207,9 @@ class TestUnifiedErrorHandler:
         call_count = 0
 
         @UnifiedErrorHandler.retry_on_failure(
-            max_retries=2, delay=0.01, context="Retry test"
+            max_retries=2,
+            delay=0.01,
+            context="Retry test",
         )
         def sometimes_failing_function():
             nonlocal call_count
@@ -211,7 +226,10 @@ class TestUnifiedErrorHandler:
         """测试所有重试都失败的情况"""
 
         @UnifiedErrorHandler.retry_on_failure(
-            max_retries=2, delay=0.01, backoff=1.0, context="All fail test"
+            max_retries=2,
+            delay=0.01,
+            backoff=1.0,
+            context="All fail test",
         )
         def always_failing_function():
             raise RuntimeError("Always fails")
@@ -255,7 +273,10 @@ class TestUnifiedErrorHandler:
         call_times = []
 
         @UnifiedErrorHandler.retry_on_failure(
-            max_retries=3, delay=0.01, backoff=2.0, context="Backoff test"
+            max_retries=3,
+            delay=0.01,
+            backoff=2.0,
+            context="Backoff test",
         )
         def backoff_function():
             call_times.append(time.time() - start_time)
@@ -272,7 +293,9 @@ class TestUnifiedErrorHandler:
         """测试重试装饰器处理函数参数"""
 
         @UnifiedErrorHandler.retry_on_failure(
-            max_retries=1, delay=0.01, context="Args test"
+            max_retries=1,
+            delay=0.01,
+            context="Args test",
         )
         def function_with_args(a, b, c=None):
             return a + b + (c or 0)
@@ -286,7 +309,6 @@ class TestUnifiedErrorHandler:
         @UnifiedErrorHandler.retry_on_failure(context="Metadata test")
         def test_function():
             """Test function docstring"""
-            pass
 
         assert test_function.__name__ == "test_function"
         assert test_function.__doc__ == "Test function docstring"
@@ -382,20 +404,23 @@ class TestErrorHandlingIntegration:
 
         # 创建一个复杂的处理函数
         @UnifiedErrorHandler.retry_on_failure(
-            max_retries=2, delay=0.01, context="Complex scenario"
+            max_retries=2,
+            delay=0.01,
+            context="Complex scenario",
         )
         def complex_operation(success_rate=0.3):
             import random
 
             if random.random() < success_rate:
                 return "success"
-            else:
-                raise RuntimeError("Random failure")
+            raise RuntimeError("Random failure")
 
         # 测试场景
         try:
             with patch.object(
-                UnifiedErrorHandler, "log_error", side_effect=capture_log
+                UnifiedErrorHandler,
+                "log_error",
+                side_effect=capture_log,
             ):
                 result = complex_operation(0.1)  # 低成功率
                 assert result == "success"
@@ -409,11 +434,15 @@ class TestErrorHandlingIntegration:
             raise ValidationError("Inner validation failed")
 
         @UnifiedErrorHandler.retry_on_failure(
-            max_retries=1, delay=0.01, context="Outer retry"
+            max_retries=1,
+            delay=0.01,
+            context="Outer retry",
         )
         def outer_function():
             result = UnifiedErrorHandler.safe_execute(
-                inner_function, "Inner function", "inner_default"
+                inner_function,
+                "Inner function",
+                "inner_default",
             )
             return result
 
@@ -434,7 +463,9 @@ class TestErrorHandlingIntegration:
                 raise ProcessingError("Processing failed")
 
             UnifiedErrorHandler.safe_execute(
-                failing_function, "Log capture test", log_error=True
+                failing_function,
+                "Log capture test",
+                log_error=True,
             )
 
             # 验证日志被正确捕获
@@ -450,7 +481,9 @@ class TestPerformanceAndEdgeCases:
         """测试重试性能与延迟"""
 
         @UnifiedErrorHandler.retry_on_failure(
-            max_retries=1, delay=0.001, context="Performance test"
+            max_retries=1,
+            delay=0.001,
+            context="Performance test",
         )
         def fast_function():
             return "fast"
@@ -474,7 +507,10 @@ class TestPerformanceAndEdgeCases:
         call_count = [0]
 
         @UnifiedErrorHandler.retry_on_failure(
-            max_retries=10, delay=0.001, backoff=1.0, context="Large retry count"
+            max_retries=10,
+            delay=0.001,
+            backoff=1.0,
+            context="Large retry count",
         )
         def eventually_successful_function():
             call_count[0] += 1
@@ -491,7 +527,9 @@ class TestPerformanceAndEdgeCases:
         attempt_count = 0
 
         @UnifiedErrorHandler.retry_on_failure(
-            max_retries=2, delay=0.0, context="Zero delay"
+            max_retries=2,
+            delay=0.0,
+            context="Zero delay",
         )
         def count_function():
             nonlocal attempt_count
@@ -509,7 +547,10 @@ class TestPerformanceAndEdgeCases:
         attempt_count = 0
 
         @UnifiedErrorHandler.retry_on_failure(
-            max_retries=2, delay=0.01, backoff=0.0, context="Zero backoff"
+            max_retries=2,
+            delay=0.01,
+            backoff=0.0,
+            context="Zero backoff",
         )
         def zero_backoff_function():
             nonlocal attempt_count

@@ -1,5 +1,4 @@
-"""股票搜索 API 的审计与限流辅助。
-"""
+"""股票搜索 API 的审计与限流辅助。"""
 
 from __future__ import annotations
 

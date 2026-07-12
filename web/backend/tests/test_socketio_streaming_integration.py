@@ -93,7 +93,8 @@ class TestSocketIOStreamingEventHandlers:
 
         with patch.object(socketio_namespace, "emit", new_callable=AsyncMock) as mock_emit:
             await socketio_namespace.on_subscribe_market_stream(
-                "sid_001", {"symbol": "600519", "fields": ["price", "volume"]},
+                "sid_001",
+                {"symbol": "600519", "fields": ["price", "volume"]},
             )
 
             streaming_service = get_streaming_service()
@@ -155,7 +156,8 @@ class TestSocketIOStreamingEventHandlers:
 
         with patch.object(socketio_namespace, "emit", new_callable=AsyncMock) as mock_emit:
             await socketio_namespace.on_stream_filter_update(
-                "sid_001", {"symbol": "600519", "fields": ["price", "bid", "ask"]},
+                "sid_001",
+                {"symbol": "600519", "fields": ["price", "bid", "ask"]},
             )
 
             # Check that success response was emitted

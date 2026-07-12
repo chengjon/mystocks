@@ -81,7 +81,11 @@ class DataAdapter:
             return None
 
     async def get_stock_daily(
-        self, source_type: str, stock_code: str, start_date: str, end_date: str,
+        self,
+        source_type: str,
+        stock_code: str,
+        start_date: str,
+        end_date: str,
     ) -> Optional[List[Dict]]:
         """获取日线数据（自动路由到对应的适配器）
 

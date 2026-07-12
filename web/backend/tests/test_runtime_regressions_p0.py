@@ -1,5 +1,4 @@
-"""P0 runtime regression tests for web/backend startup and key API paths.
-"""
+"""P0 runtime regression tests for web/backend startup and key API paths."""
 
 from __future__ import annotations
 
@@ -11,8 +10,7 @@ import requests
 
 
 def test_stock_search_singleton_initialization(monkeypatch):
-    """Regression: get_stock_search_service() must not crash with NameError.
-    """
+    """Regression: get_stock_search_service() must not crash with NameError."""
     module = importlib.import_module("app.services.stock_search_service.stock_search_service")
 
     class DummyStockSearchService:
@@ -30,8 +28,7 @@ def test_stock_search_singleton_initialization(monkeypatch):
 
 
 def test_watchlist_mock_data_keeps_success_shape():
-    """Regression: watchlist fallback path should keep success/data response shape.
-    """
+    """Regression: watchlist fallback path should keep success/data response shape."""
     manager = importlib.import_module("app.mock.mock_data.factory").get_mock_data_manager()
 
     result = manager.get_data("watchlist", action="list", user_id=1)
@@ -42,8 +39,7 @@ def test_watchlist_mock_data_keeps_success_shape():
 
 
 def test_watchlist_mock_data_added_at_matches_response_schema():
-    """Regression: watchlist mock added_at format must match API response schema.
-    """
+    """Regression: watchlist mock added_at format must match API response schema."""
     manager = importlib.import_module("app.mock.mock_data.factory").get_mock_data_manager()
 
     result = manager.get_data("watchlist", action="list", user_id=1)
@@ -54,8 +50,7 @@ def test_watchlist_mock_data_added_at_matches_response_schema():
 
 
 def test_daily_calculation_module_importable():
-    """Regression: daily_calculation module import should not fail with NameError.
-    """
+    """Regression: daily_calculation module import should not fail with NameError."""
     module_name = "app.services.indicators.jobs.daily_calculation"
     sys.modules.pop(module_name, None)
 
@@ -65,8 +60,7 @@ def test_daily_calculation_module_importable():
 
 
 def test_stock_search_service_constructor_has_akshare_flag():
-    """Regression: stock search service initialization should not crash on AKShare flag.
-    """
+    """Regression: stock search service initialization should not crash on AKShare flag."""
     module = importlib.import_module("app.services.stock_search_service.stock_search_service")
 
     service = module.StockSearchService()
@@ -75,8 +69,7 @@ def test_stock_search_service_constructor_has_akshare_flag():
 
 
 def test_stock_search_kline_fallback_on_upstream_error(monkeypatch):
-    """Regression: kline endpoint should degrade gracefully when upstream data source fails.
-    """
+    """Regression: kline endpoint should degrade gracefully when upstream data source fails."""
     module = importlib.import_module("app.services.stock_search_service.stock_search_service")
     monkeypatch.setenv("KLINE_FALLBACK_ENABLED", "true")
     service = module.StockSearchService()
@@ -97,8 +90,7 @@ def test_stock_search_kline_fallback_on_upstream_error(monkeypatch):
 
 
 def test_stock_search_kline_returns_none_when_fallback_disabled(monkeypatch):
-    """Regression: kline fallback should be disable-able via env toggle.
-    """
+    """Regression: kline fallback should be disable-able via env toggle."""
     module = importlib.import_module("app.services.stock_search_service.stock_search_service")
     monkeypatch.setenv("KLINE_FALLBACK_ENABLED", "false")
     service = module.StockSearchService()

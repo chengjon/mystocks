@@ -1,15 +1,16 @@
-"""
-财务数据适配器测试脚本
+"""财务数据适配器测试脚本
 测试FinancialDataSource的功能
 """
 
-import sys
 import os
+import sys
+
 import pandas as pd
+
 
 # 将项目根目录添加到模块搜索路径中
 project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
 )
 sys.path.insert(0, project_root)
 

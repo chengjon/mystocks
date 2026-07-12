@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-测试Customer适配器获取实时数据的脚本
+"""测试Customer适配器获取实时数据的脚本
 用于了解stock.get_realtime_quotes()返回的数据结构
 """
 
-
-import sys
 import os
+import sys
+
 
 # 添加项目根目录到路径
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, project_root)
 
-from src.adapters.customer_adapter import CustomerDataSource
 import pandas as pd
+
+from src.adapters.customer_adapter import CustomerDataSource
 
 
 def test_realtime_data_structure():
@@ -41,9 +40,8 @@ def test_realtime_data_structure():
             print(f"🔍 数据示例:\n{data.iloc[0].to_dict()}")
 
             return data
-        else:
-            print("❌ 未获取到有效数据")
-            return None
+        print("❌ 未获取到有效数据")
+        return None
 
     except Exception as e:
         print(f"❌ 测试失败: {e}")

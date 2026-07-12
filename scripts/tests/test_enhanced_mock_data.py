@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-增强的Mock数据测试脚本
+"""增强的Mock数据测试脚本
 测试改进后的Mock数据生成质量和真实性
 
 运行方法:
@@ -11,19 +9,21 @@ python scripts/tests/test_enhanced_mock_data.py
 创建时间: 2025-11-13
 """
 
-
-import sys
 import os
+import sys
+
 
 # 添加项目根目录到路径
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, project_root)
 
-import sys
-import os
-import numpy as np
 import datetime
+import os
+import sys
 from pathlib import Path
+
+import numpy as np
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -82,7 +82,7 @@ def test_market_data_realism():
 
         print("  ✅ 搜索结果市值统计:")
         print(
-            f"     - 市值范围: ${min(search_market_caps):,.0f} - ${max(search_market_caps):,.0f}"
+            f"     - 市值范围: ${min(search_market_caps):,.0f} - ${max(search_market_caps):,.0f}",
         )
         print(f"     - 平均市值: ${np.mean(search_market_caps):,.0f}")
 
@@ -106,11 +106,11 @@ def test_market_data_realism():
         price_volume_correlation = np.corrcoef(prices, volumes)[0, 1]
         if -0.3 < price_volume_correlation < 0.3:
             print(
-                f"  ✅ 价格与成交量相关性合理 (相关系数: {price_volume_correlation:.3f})"
+                f"  ✅ 价格与成交量相关性合理 (相关系数: {price_volume_correlation:.3f})",
             )
         else:
             print(
-                f"  ⚠️ 价格与成交量相关性可能异常 (相关系数: {price_volume_correlation:.3f})"
+                f"  ⚠️ 价格与成交量相关性可能异常 (相关系数: {price_volume_correlation:.3f})",
             )
 
         return True
@@ -126,7 +126,7 @@ def test_data_consistency():
     print("=" * 50)
 
     try:
-        from src.mock.mock_StockSearch import search_stocks, get_stock_detail
+        from src.mock.mock_StockSearch import get_stock_detail, search_stocks
 
         # 搜索股票
         search_results = search_stocks(keyword="平安", limit=5)
@@ -316,9 +316,8 @@ def main():
     if passed_tests == total_tests:
         print("🎉 所有测试通过！Mock数据系统运行正常！")
         return 0
-    else:
-        print("⚠️ 部分测试失败，请检查Mock数据系统配置")
-        return 1
+    print("⚠️ 部分测试失败，请检查Mock数据系统配置")
+    return 1
 
 
 if __name__ == "__main__":

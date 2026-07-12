@@ -1,5 +1,4 @@
-"""端到端用户工作流测试 - 交易、恢复与性能流程
-"""
+"""端到端用户工作流测试 - 交易、恢复与性能流程"""
 
 from unittest.mock import Mock, patch
 

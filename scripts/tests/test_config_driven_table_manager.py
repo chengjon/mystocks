@@ -1,5 +1,4 @@
-"""
-测试ConfigDrivenTableManager
+"""测试ConfigDrivenTableManager
 
 验证US2 (T020) 的核心功能:
 1. 配置文件加载正确
@@ -14,14 +13,17 @@ import logging
 import sys
 from pathlib import Path
 
+
 # 添加项目根目录到路径
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from src.core.config_driven_table_manager import ConfigDrivenTableManager
 
+
 # 配置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -66,9 +68,8 @@ def test_table_statistics(manager):
         if total == expected_total:
             logger.info(f"✅ 表数量验证通过 ({total} == {expected_total})")
             return True
-        else:
-            logger.error(f"❌ 表数量不匹配 ({total} != {expected_total})")
-            return False
+        logger.error(f"❌ 表数量不匹配 ({total} != {expected_total})")
+        return False
 
     except Exception as e:
         logger.error(f"❌ 表统计失败: {e}")
@@ -238,9 +239,8 @@ def main():
         logger.info("\n🎉 所有测试通过！ConfigDrivenTableManager 功能正常")
         logger.info("✅ T020 (实现ConfigDrivenTableManager) 验证成功")
         return True
-    else:
-        logger.info(f"\n⚠️ {total - passed} 个测试失败")
-        return False
+    logger.info(f"\n⚠️ {total - passed} 个测试失败")
+    return False
 
 
 if __name__ == "__main__":

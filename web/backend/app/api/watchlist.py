@@ -156,8 +156,7 @@ class MoveStockRequest(BaseModel):
 async def get_my_watchlist(
     current_user: User = Depends(get_current_user),
 ) -> List[Dict]:
-    """获取当前用户的自选股列表
-    """
+    """获取当前用户的自选股列表"""
     try:
         # 使用数据源工厂
         data_source_factory = DataSourceFactory()
@@ -180,7 +179,9 @@ async def get_my_watchlist(
         raise
     except Exception as e:
         raise BusinessException(
-            detail=f"获取自选股列表失败: {e!s}", status_code=500, error_code="WATCHLIST_RETRIEVAL_FAILED",
+            detail=f"获取自选股列表失败: {e!s}",
+            status_code=500,
+            error_code="WATCHLIST_RETRIEVAL_FAILED",
         )
 
 
@@ -188,8 +189,7 @@ async def get_my_watchlist(
 async def get_my_watchlist_symbols(
     current_user: User = Depends(get_current_user),
 ) -> List[str]:
-    """获取当前用户的自选股代码列表
-    """
+    """获取当前用户的自选股代码列表"""
     try:
         # 使用数据源工厂
         data_source_factory = DataSourceFactory()
@@ -212,7 +212,9 @@ async def get_my_watchlist_symbols(
         raise
     except Exception as e:
         raise BusinessException(
-            detail=f"获取自选股代码列表失败: {e!s}", status_code=500, error_code="WATCHLIST_SYMBOLS_RETRIEVAL_FAILED",
+            detail=f"获取自选股代码列表失败: {e!s}",
+            status_code=500,
+            error_code="WATCHLIST_SYMBOLS_RETRIEVAL_FAILED",
         )
 
 
@@ -243,7 +245,9 @@ async def add_to_watchlist(request: AddWatchlistRequest, current_user: User = De
 
         if not result.get("success", False):
             raise BusinessException(
-                detail=result.get("error", "添加自选股失败"), status_code=500, error_code="STOCK_ADDITION_FAILED",
+                detail=result.get("error", "添加自选股失败"),
+                status_code=500,
+                error_code="STOCK_ADDITION_FAILED",
             )
 
         return {
@@ -264,8 +268,7 @@ async def remove_from_watchlist(
     symbol: str = Path(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$"),
     current_user: User = Depends(get_current_user),
 ) -> Dict:
-    """从自选股列表中删除股票
-    """
+    """从自选股列表中删除股票"""
     try:
         # 使用数据源工厂
         data_source_factory = DataSourceFactory()
@@ -290,8 +293,7 @@ async def check_in_watchlist(
     symbol: str = Path(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$"),
     current_user: User = Depends(get_current_user),
 ) -> Dict:
-    """检查股票是否在自选股列表中
-    """
+    """检查股票是否在自选股列表中"""
     try:
         # 使用数据源工厂
         data_source_factory = DataSourceFactory()
@@ -303,7 +305,9 @@ async def check_in_watchlist(
 
         if not result.get("success", False):
             raise BusinessException(
-                detail=result.get("error", "检查自选股失败"), status_code=500, error_code="STOCK_CHECK_FAILED",
+                detail=result.get("error", "检查自选股失败"),
+                status_code=500,
+                error_code="STOCK_CHECK_FAILED",
             )
 
         return {"symbol": symbol, "is_in_watchlist": result.get("data", {}).get("is_in_watchlist", False)}
@@ -319,8 +323,7 @@ async def update_watchlist_notes(
     symbol: str = Path(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$"),
     current_user: User = Depends(get_current_user),
 ) -> Dict:
-    """更新自选股备注
-    """
+    """更新自选股备注"""
     try:
         # 使用数据源工厂
         data_source_factory = DataSourceFactory()
@@ -342,8 +345,7 @@ async def update_watchlist_notes(
 
 @router.get("/count")
 async def get_watchlist_count(current_user: User = Depends(get_current_user)) -> Dict:
-    """获取自选股数量
-    """
+    """获取自选股数量"""
     try:
         # 使用数据源工厂
         data_source_factory = DataSourceFactory()
@@ -365,14 +367,15 @@ async def get_watchlist_count(current_user: User = Depends(get_current_user)) ->
         raise
     except Exception as e:
         raise BusinessException(
-            detail=f"获取自选股数量失败: {e!s}", status_code=500, error_code="WATCHLIST_COUNT_RETRIEVAL_FAILED",
+            detail=f"获取自选股数量失败: {e!s}",
+            status_code=500,
+            error_code="WATCHLIST_COUNT_RETRIEVAL_FAILED",
         )
 
 
 @router.delete("/clear")
 async def clear_watchlist(current_user: User = Depends(get_current_user)) -> Dict:
-    """清空当前用户的自选股列表
-    """
+    """清空当前用户的自选股列表"""
     try:
         # 使用数据源工厂
         data_source_factory = DataSourceFactory()
@@ -384,7 +387,9 @@ async def clear_watchlist(current_user: User = Depends(get_current_user)) -> Dic
 
         if not result.get("success", False):
             raise BusinessException(
-                detail=result.get("error", "清空自选股失败"), status_code=500, error_code="WATCHLIST_CLEAR_FAILED",
+                detail=result.get("error", "清空自选股失败"),
+                status_code=500,
+                error_code="WATCHLIST_CLEAR_FAILED",
             )
 
         return {"success": True, "message": "自选股列表已清空"}
@@ -392,7 +397,9 @@ async def clear_watchlist(current_user: User = Depends(get_current_user)) -> Dic
         raise
     except Exception as e:
         raise BusinessException(
-            detail=f"清空自选股失败: {e!s}", status_code=500, error_code="WATCHLIST_CLEAR_FAILED",
+            detail=f"清空自选股失败: {e!s}",
+            status_code=500,
+            error_code="WATCHLIST_CLEAR_FAILED",
         )
 
 
@@ -401,22 +408,22 @@ async def clear_watchlist(current_user: User = Depends(get_current_user)) -> Dic
 
 @router.get("/groups")
 async def get_user_groups(current_user: User = Depends(get_current_user)) -> List[Dict]:
-    """获取当前用户的所有自选股分组
-    """
+    """获取当前用户的所有自选股分组"""
     try:
         service = get_watchlist_service()
         groups = service.get_user_groups(current_user.id)
         return groups
     except Exception as e:
         raise BusinessException(
-            detail=f"获取分组列表失败: {e!s}", status_code=500, error_code="GROUP_LIST_RETRIEVAL_FAILED",
+            detail=f"获取分组列表失败: {e!s}",
+            status_code=500,
+            error_code="GROUP_LIST_RETRIEVAL_FAILED",
         )
 
 
 @router.post("/groups")
 async def create_group(request: CreateGroupRequest, current_user: User = Depends(get_current_user)) -> Dict:
-    """创建新的自选股分组
-    """
+    """创建新的自选股分组"""
     try:
         service = get_watchlist_service()
         group = service.create_group(current_user.id, request.group_name)
@@ -444,8 +451,7 @@ async def update_group(
     group_id: int = Path(..., description="分组ID", ge=1),
     current_user: User = Depends(get_current_user),
 ) -> Dict:
-    """修改分组名称
-    """
+    """修改分组名称"""
     try:
         service = get_watchlist_service()
         success = service.update_group(current_user.id, group_id, request.group_name)
@@ -466,10 +472,10 @@ async def update_group(
 
 @router.delete("/groups/{group_id}")
 async def delete_group(
-    group_id: int = Path(..., description="分组ID", ge=1), current_user: User = Depends(get_current_user),
+    group_id: int = Path(..., description="分组ID", ge=1),
+    current_user: User = Depends(get_current_user),
 ) -> Dict:
-    """删除分组（会同时删除该分组下的所有自选股）
-    """
+    """删除分组（会同时删除该分组下的所有自选股）"""
     try:
         service = get_watchlist_service()
         success = service.delete_group(current_user.id, group_id)
@@ -486,24 +492,25 @@ async def delete_group(
 
 @router.get("/group/{group_id}")
 async def get_watchlist_by_group(
-    group_id: int = Path(..., description="分组ID", ge=1), current_user: User = Depends(get_current_user),
+    group_id: int = Path(..., description="分组ID", ge=1),
+    current_user: User = Depends(get_current_user),
 ) -> List[Dict]:
-    """获取指定分组的自选股列表
-    """
+    """获取指定分组的自选股列表"""
     try:
         service = get_watchlist_service()
         watchlist = service.get_watchlist_by_group(current_user.id, group_id)
         return watchlist
     except Exception as e:
         raise BusinessException(
-            detail=f"获取分组自选股失败: {e!s}", status_code=500, error_code="GROUP_STOCKS_RETRIEVAL_FAILED",
+            detail=f"获取分组自选股失败: {e!s}",
+            status_code=500,
+            error_code="GROUP_STOCKS_RETRIEVAL_FAILED",
         )
 
 
 @router.put("/move")
 async def move_stock_to_group(request: MoveStockRequest, current_user: User = Depends(get_current_user)) -> Dict:
-    """将股票从一个分组移动到另一个分组
-    """
+    """将股票从一个分组移动到另一个分组"""
     try:
         service = get_watchlist_service()
         success = service.move_stock_to_group(
@@ -532,13 +539,14 @@ async def move_stock_to_group(request: MoveStockRequest, current_user: User = De
 async def get_watchlist_with_groups(
     current_user: User = Depends(get_current_user),
 ) -> Dict:
-    """获取所有分组及其包含的自选股（分组视图）
-    """
+    """获取所有分组及其包含的自选股（分组视图）"""
     try:
         service = get_watchlist_service()
         result = service.get_watchlist_with_groups(current_user.id)
         return result
     except Exception as e:
         raise BusinessException(
-            detail=f"获取分组视图失败: {e!s}", status_code=500, error_code="GROUP_VIEW_RETRIEVAL_FAILED",
+            detail=f"获取分组视图失败: {e!s}",
+            status_code=500,
+            error_code="GROUP_VIEW_RETRIEVAL_FAILED",
         )

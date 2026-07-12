@@ -1,5 +1,5 @@
-"""分析与预测路由 (Analysis & Forecast)
-"""
+"""分析与预测路由 (Analysis & Forecast)"""
+
 from fastapi import APIRouter, Depends, Query
 
 from app.core.responses import ErrorCodes, create_error_response, create_success_response
@@ -9,6 +9,7 @@ from .base import akshare_market_adapter
 
 
 router = APIRouter()
+
 
 @router.get("/chip-distribution/{symbol}", summary="获取筹码分布数据")
 async def get_chip_distribution(
@@ -49,6 +50,7 @@ async def get_chip_distribution(
 # ============================================================================
 # Phase 4: 预测和分析数据API
 # ============================================================================
+
 
 @router.get("/forecast/profit/em/{symbol}", summary="获取盈利预测-东方财富")
 async def get_profit_forecast_em(
@@ -201,4 +203,3 @@ async def get_account_statistics_em(
 # ============================================================================
 # Phase 5: 板块和行业数据API
 # ============================================================================
-

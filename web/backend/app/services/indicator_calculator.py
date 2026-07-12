@@ -260,7 +260,9 @@ class IndicatorCalculator:
         raise NotImplementedError(f"指标 {abbreviation} 的计算尚未实现")
 
     def calculate_multiple_indicators(
-        self, indicators: List[Dict[str, Any]], ohlcv_data: Dict[str, np.ndarray],
+        self,
+        indicators: List[Dict[str, Any]],
+        ohlcv_data: Dict[str, np.ndarray],
     ) -> Dict[str, Dict[str, Any]]:
         """批量计算多个指标
 

@@ -152,7 +152,12 @@ class TradingDataService:
         logger.info("交易数据API模块初始化")
 
     async def create_order(
-        self, symbol: str, side: OrderSide, order_type: OrderType, quantity: float, price: Optional[float] = None,
+        self,
+        symbol: str,
+        side: OrderSide,
+        order_type: OrderType,
+        quantity: float,
+        price: Optional[float] = None,
     ) -> str:
         """创建订单"""
         try:

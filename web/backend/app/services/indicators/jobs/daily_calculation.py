@@ -116,7 +116,11 @@ async def _publish_task_completed(job_id: str, task_type: str, status: TaskStatu
 
     try:
         event = create_task_completed_event(
-            task_id=job_id, task_type=task_type, status=status, duration_seconds=duration_seconds, **result,
+            task_id=job_id,
+            task_type=task_type,
+            status=status,
+            duration_seconds=duration_seconds,
+            **result,
         )
 
         # Publish to both channels
@@ -309,7 +313,6 @@ async def run_daily_calculation(params: Dict[str, Any] = None):
         # Phase 3: Throttled progress updates (every 1% or 50 stocks)
         current_progress = (idx + 1) / total_stocks * 100
         if current_progress - last_progress_percent >= 1.0 or (idx + 1) % 50 == 0:  # Every 1%  # Or every 50 stocks
-
             last_progress_percent = current_progress
 
             # Update DB

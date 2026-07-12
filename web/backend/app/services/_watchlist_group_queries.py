@@ -1,5 +1,4 @@
-"""自选股分组查询与视图方法。
-"""
+"""自选股分组查询与视图方法。"""
 
 from datetime import date, datetime
 from typing import Dict, List

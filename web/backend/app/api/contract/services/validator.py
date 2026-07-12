@@ -25,7 +25,9 @@ class ContractValidator:
 
     @staticmethod
     def validate(
-        spec: Dict[str, Any], check_breaking_changes: bool = True, compare_to_spec: Dict[str, Any] = None,
+        spec: Dict[str, Any],
+        check_breaking_changes: bool = True,
+        compare_to_spec: Dict[str, Any] = None,
     ) -> ContractValidateResponse:
         """验证OpenAPI规范
 

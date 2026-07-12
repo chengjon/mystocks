@@ -117,7 +117,6 @@ class AlertManager:
     def _init_webhook_channel(self):
         """初始化Webhook告警渠道"""
         try:
-
             webhook_urls = {
                 "low": os.getenv("WEBHOOK_LOW_URL", "https://api.example.com/webhook/low"),
                 "medium": os.getenv("WEBHOOK_MEDIUM_URL", "https://api.example.com/webhook/medium"),
@@ -170,7 +169,11 @@ class AlertManager:
             return {"type": AlertChannel.IN_APP, "config": {"is_enabled": False}}
 
     async def create_alert_rule(
-        self, rule_name: str, risk_level: RiskLevel, conditions: Dict, channel: AlertChannel = AlertChannel.EMAIL,
+        self,
+        rule_name: str,
+        risk_level: RiskLevel,
+        conditions: Dict,
+        channel: AlertChannel = AlertChannel.EMAIL,
     ) -> AlertRule:
         """创建告警规则
 
@@ -209,7 +212,10 @@ class AlertManager:
             raise
 
     async def check_and_trigger_alerts(
-        self, portfolio_id: str, current_metrics: Any, rule_id_filter: Optional[str] = None,
+        self,
+        portfolio_id: str,
+        current_metrics: Any,
+        rule_id_filter: Optional[str] = None,
     ) -> List[AlertHistory]:
         """检查并触发告警
 

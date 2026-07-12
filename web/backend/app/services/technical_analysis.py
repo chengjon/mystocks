@@ -124,14 +124,16 @@ class TechnicalAnalysis:
 
         logger.info("技术分析模块初始化")
 
-    async def calculate_indicator(self, symbol: str, indicator_type: IndicatorType, period: int = 20) -> TechnicalIndicator:
+    async def calculate_indicator(
+        self, symbol: str, indicator_type: IndicatorType, period: int = 20
+    ) -> TechnicalIndicator:
         """计算技术指标
-        
+
         Args:
             symbol: 股票代码
             indicator_type: 指标类型
             period: 周期
-        
+
         Returns:
             TechnicalIndicator: 技术指标数据
 
@@ -202,7 +204,7 @@ class TechnicalAnalysis:
             ma_values = []
 
             for i in range(period, len(prices)):
-                window = prices[i-period:i] if i >= period else prices[0:i]
+                window = prices[i - period : i] if i >= period else prices[0:i]
                 ma = sum(window) / period
                 ma_values.append(ma)
 
@@ -221,7 +223,7 @@ class TechnicalAnalysis:
             ema_values = [ma_values[0]]
 
             for i in range(1, len(ma_values)):
-                ema = (ma_values[i] * multiplier) + (ema_values[i-1] * (1 - multiplier))
+                ema = (ma_values[i] * multiplier) + (ema_values[i - 1] * (1 - multiplier))
                 ema_values.append(ema)
 
             return ema_values
@@ -230,7 +232,9 @@ class TechnicalAnalysis:
             self.logger.error(f"计算EMA失败: {e}")
             return []
 
-    async def _calculate_macd(self, symbol: str, fast_period: int = 12, slow_period: int = 26, signal_period: int = 9, ema_period: int = 2) -> Dict:
+    async def _calculate_macd(
+        self, symbol: str, fast_period: int = 12, slow_period: int = 26, signal_period: int = 9, ema_period: int = 2
+    ) -> Dict:
         """计算MACD指标"""
         try:
             ema_fast = await self._calculate_ema(symbol, fast_period)
@@ -298,7 +302,7 @@ class TechnicalAnalysis:
             losses = 0
 
             for i in range(period, len(prices)):
-                change = prices[i] - prices[i-1]
+                change = prices[i] - prices[i - 1]
 
                 if change > 0:
                     gains += change
@@ -330,8 +334,8 @@ class TechnicalAnalysis:
             std_dev_values = []
 
             for i in range(len(ma_values)):
-                window = ma_values[i-period:i] if i >= period else ma_values[0:i]
-                std_dev = sum((x - window[len(window)//2]) ** 2 for x in window) / len(window) ** 0.5
+                window = ma_values[i - period : i] if i >= period else ma_values[0:i]
+                std_dev = sum((x - window[len(window) // 2]) ** 2 for x in window) / len(window) ** 0.5
                 std_dev_values.append(std_dev)
 
             upper_band = []
@@ -379,7 +383,7 @@ class TechnicalAnalysis:
             j_values = []
 
             for i in range(n, len(results)):
-                window = results[i-n:i+1:i+1] if i >= n+1 else results[:i+1]
+                window = results[i - n : i + 1 : i + 1] if i >= n + 1 else results[: i + 1]
 
                 high = max(r["high_price"] for r in window)
                 low = min(r["low_price"] for r in window)
@@ -388,7 +392,7 @@ class TechnicalAnalysis:
                 if i < n:
                     k_value = (close - low) / (high - low) if high != low else 0
                 else:
-                    k_value = k_values[i-n]
+                    k_value = k_values[i - n]
 
                 if high != low:
                     if low > k_value:
@@ -401,9 +405,9 @@ class TechnicalAnalysis:
                 k_values.append(k_value)
 
                 if i >= n:
-                    j_value = 2 * (k_values[i] - k_values[i-n])
+                    j_value = 2 * (k_values[i] - k_values[i - n])
                 else:
-                    j_value = k_values[i-1] * 3
+                    j_value = k_values[i - 1] * 3
 
                 j_values.append(j_value)
 
@@ -440,9 +444,10 @@ class TechnicalAnalysis:
 
             returns = [r["close_price"] for r in results]
 
-            log_returns = [math.log(returns[i] / returns[i-1]) for i in range(1, len(returns))]
+            log_returns = [math.log(returns[i] / returns[i - 1]) for i in range(1, len(returns))]
 
             import math
+
             variance = sum((lr - log_returns.mean()) ** 2 for lr in log_returns) / (len(log_returns) - 1)
 
             volatility = math.sqrt(variance) * 100
@@ -529,11 +534,11 @@ class TechnicalAnalysis:
 
     async def generate_trading_signal(self, symbol: str, strategy: str = "default") -> TradingSignal:
         """生成交易信号
-        
+
         Args:
             symbol: 股票代码
             strategy: 策略名称
-        
+
         Returns:
             TradingSignal: 交易信号
 
@@ -585,11 +590,11 @@ class TechnicalAnalysis:
 
     async def analyze_trend(self, symbol: str, period: int = 30) -> TrendAnalysis:
         """分析趋势
-        
+
         Args:
             symbol: 股票代码
             period: 分析周期（天）
-        
+
         Returns:
             TrendAnalysis: 趋势分析结果
 

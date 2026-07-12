@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
-"""
-BaseDataSourceAdapter Phase 6 测试套件 - 简化有效版
+"""BaseDataSourceAdapter Phase 6 测试套件 - 简化有效版
 专注于实际可测试的代码路径，避免复杂Mock问题
 目标：将base_adapter.py的覆盖率从55%提升到95%+
 """
 
 import sys
 import time
-import pandas as pd
-import numpy as np
+from datetime import datetime
 from pathlib import Path
 from unittest.mock import Mock, patch
+
+import numpy as np
+import pandas as pd
 import pytest
-from datetime import datetime
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -70,7 +71,7 @@ class TestApplyQualityCheck:
     """测试_apply_quality_check方法"""
 
     def setup_method(self):
-        """pytest setup方法"""
+        """Pytest setup方法"""
         self.adapter = MockDataSourceAdapter("quality_test")
 
     def test_apply_quality_check_empty_dataframe(self):
@@ -79,7 +80,8 @@ class TestApplyQualityCheck:
 
         # 使用patch来模拟validate_stock_data方法
         with patch.object(
-            self.adapter.quality_validator, "validate_stock_data"
+            self.adapter.quality_validator,
+            "validate_stock_data",
         ) as mock_validate:
             mock_validate.return_value = {
                 "is_valid": True,
@@ -100,11 +102,12 @@ class TestApplyQualityCheck:
                 "open": [10.0, 10.5, 11.0, 10.8, 11.2],
                 "close": [10.3, 10.8, 11.1, 10.9, 11.3],
                 "volume": [1000, 1200, 900, 1100, 1300],
-            }
+            },
         )
 
         with patch.object(
-            self.adapter.quality_validator, "validate_stock_data"
+            self.adapter.quality_validator,
+            "validate_stock_data",
         ) as mock_validate:
             mock_validate.return_value = {
                 "is_valid": True,
@@ -124,11 +127,12 @@ class TestApplyQualityCheck:
             {
                 "date": pd.date_range("2024-01-01", periods=3),
                 "close": [10.0, np.nan, 12.0],
-            }
+            },
         )
 
         with patch.object(
-            self.adapter.quality_validator, "validate_stock_data"
+            self.adapter.quality_validator,
+            "validate_stock_data",
         ) as mock_validate:
             mock_validate.return_value = {
                 "is_valid": False,
@@ -138,7 +142,7 @@ class TestApplyQualityCheck:
                         "type": "missing_values",
                         "message": "包含缺失值",
                         "severity": "warning",
-                    }
+                    },
                 ],
             }
 
@@ -153,7 +157,8 @@ class TestApplyQualityCheck:
         df = pd.DataFrame({"test": [1, 2, 3]})
 
         with patch.object(
-            self.adapter.quality_validator, "validate_stock_data"
+            self.adapter.quality_validator,
+            "validate_stock_data",
         ) as mock_validate:
             mock_validate.return_value = {
                 "is_valid": False,
@@ -163,7 +168,7 @@ class TestApplyQualityCheck:
                         "type": "missing_columns",
                         "message": "缺少必需列",
                         "severity": "critical",
-                    }
+                    },
                 ],
             }
 
@@ -177,7 +182,8 @@ class TestApplyQualityCheck:
         df = pd.DataFrame({"test": [1, 2, 3]})
 
         with patch.object(
-            self.adapter.quality_validator, "validate_stock_data"
+            self.adapter.quality_validator,
+            "validate_stock_data",
         ) as mock_validate:
             mock_validate.side_effect = Exception("Quality check failed")
 
@@ -191,7 +197,7 @@ class TestApplyQualityCheckRealtime:
     """测试_apply_quality_check_realtime方法"""
 
     def setup_method(self):
-        """pytest setup方法"""
+        """Pytest setup方法"""
         self.adapter = MockDataSourceAdapter("realtime_test")
 
     def test_apply_quality_check_realtime_empty_dict(self):
@@ -212,7 +218,8 @@ class TestApplyQualityCheckRealtime:
         }
 
         with patch.object(
-            self.adapter.quality_validator, "validate_stock_data"
+            self.adapter.quality_validator,
+            "validate_stock_data",
         ) as mock_validate:
             mock_validate.return_value = {
                 "is_valid": True,
@@ -231,7 +238,8 @@ class TestApplyQualityCheckRealtime:
         data_without_timestamp = {"price": 10.5, "volume": 1000}
 
         with patch.object(
-            self.adapter.quality_validator, "validate_stock_data"
+            self.adapter.quality_validator,
+            "validate_stock_data",
         ) as mock_validate:
 
             def check_timestamp(df, symbol, data_type):
@@ -241,7 +249,8 @@ class TestApplyQualityCheckRealtime:
             mock_validate.side_effect = check_timestamp
 
             result = self.adapter._apply_quality_check_realtime(
-                data_without_timestamp, "000001"
+                data_without_timestamp,
+                "000001",
             )
 
             assert isinstance(result, dict)
@@ -252,7 +261,8 @@ class TestApplyQualityCheckRealtime:
         valid_data = {"price": 10.5, "volume": 1000}
 
         with patch.object(
-            self.adapter.quality_validator, "validate_stock_data"
+            self.adapter.quality_validator,
+            "validate_stock_data",
         ) as mock_validate:
             mock_validate.side_effect = Exception("Realtime quality check failed")
 
@@ -266,7 +276,7 @@ class TestLogDataFetch:
     """测试_log_data_fetch方法"""
 
     def setup_method(self):
-        """pytest setup方法"""
+        """Pytest setup方法"""
         self.adapter = MockDataSourceAdapter("logging_test")
 
     def test_log_data_fetch_basic(self):
@@ -291,17 +301,14 @@ class TestLogDataFetch:
                 mock_info.assert_called_once()
                 mock_debug.assert_called_once()
                 debug_message = mock_debug.call_args[0][0]
-                assert (
-                    "['date', 'open', 'high', 'low', 'close', 'volume']"
-                    in debug_message
-                )
+                assert "['date', 'open', 'high', 'low', 'close', 'volume']" in debug_message
 
 
 class TestHandleEmptyData:
     """测试_handle_empty_data方法"""
 
     def setup_method(self):
-        """pytest setup方法"""
+        """Pytest setup方法"""
         self.adapter = MockDataSourceAdapter("empty_data_test")
 
     def test_handle_empty_data_with_fallback(self):
@@ -330,7 +337,7 @@ class TestValidateSymbol:
     """测试_validate_symbol方法"""
 
     def setup_method(self):
-        """pytest setup方法"""
+        """Pytest setup方法"""
         self.adapter = MockDataSourceAdapter("symbol_test")
 
     def test_validate_symbol_valid_formats(self):
@@ -386,7 +393,7 @@ class TestValidateDateRange:
     """测试_validate_date_range方法"""
 
     def setup_method(self):
-        """pytest setup方法"""
+        """Pytest setup方法"""
         self.adapter = MockDataSourceAdapter("date_test")
 
     def test_validate_date_range_valid_formats(self):
@@ -424,7 +431,7 @@ class TestQualityStatisticsAndThresholds:
     """测试质量统计和阈值设置方法"""
 
     def setup_method(self):
-        """pytest setup方法"""
+        """Pytest setup方法"""
         self.adapter = MockDataSourceAdapter("stats_test")
 
     def test_get_quality_statistics(self):
@@ -449,18 +456,20 @@ class TestQualityStatisticsAndThresholds:
                 raise Exception("Threshold access failed")
             return original_getattribute(obj, name)
 
-        with patch.object(
-            type(self.adapter.quality_validator),
-            "__getattribute__",
-            side_effect=failing_getattribute,
+        with (
+            patch.object(
+                type(self.adapter.quality_validator),
+                "__getattribute__",
+                side_effect=failing_getattribute,
+            ),
+            patch.object(self.adapter.logger, "error") as mock_error,
         ):
-            with patch.object(self.adapter.logger, "error") as mock_error:
-                result = self.adapter.get_quality_statistics()
+            result = self.adapter.get_quality_statistics()
 
-                assert isinstance(result, dict)
-                assert result["source_name"] == "stats_test"
-                assert "error" in result
-                mock_error.assert_called_once()
+            assert isinstance(result, dict)
+            assert result["source_name"] == "stats_test"
+            assert "error" in result
+            mock_error.assert_called_once()
 
     def test_set_quality_thresholds(self):
         """测试设置质量阈值"""
@@ -500,7 +509,7 @@ class TestPerformanceAndEdgeCases:
     """性能测试和边界情况"""
 
     def setup_method(self):
-        """pytest setup方法"""
+        """Pytest setup方法"""
         self.adapter = MockDataSourceAdapter("performance_test")
 
     def test_large_dataframe_processing(self):
@@ -511,11 +520,12 @@ class TestPerformanceAndEdgeCases:
                 "date": pd.date_range("2020-01-01", periods=5000),
                 "close": np.random.random(5000) * 100,
                 "volume": np.random.randint(1000, 10000, 5000),
-            }
+            },
         )
 
         with patch.object(
-            self.adapter.quality_validator, "validate_stock_data"
+            self.adapter.quality_validator,
+            "validate_stock_data",
         ) as mock_validate:
             mock_validate.return_value = {
                 "is_valid": True,
@@ -544,7 +554,8 @@ class TestPerformanceAndEdgeCases:
         }
 
         with patch.object(
-            self.adapter.quality_validator, "validate_stock_data"
+            self.adapter.quality_validator,
+            "validate_stock_data",
         ) as mock_validate:
             mock_validate.return_value = {
                 "is_valid": True,
@@ -563,7 +574,8 @@ class TestPerformanceAndEdgeCases:
     def test_none_dataframe_handling(self):
         """测试None DataFrame处理"""
         with patch.object(
-            self.adapter.quality_validator, "validate_stock_data"
+            self.adapter.quality_validator,
+            "validate_stock_data",
         ) as mock_validate:
             mock_validate.return_value = {
                 "is_valid": True,

@@ -1,5 +1,4 @@
-"""端到端用户工作流测试 - 策略配置与回测流程
-"""
+"""端到端用户工作流测试 - 策略配置与回测流程"""
 
 from unittest.mock import Mock, patch
 

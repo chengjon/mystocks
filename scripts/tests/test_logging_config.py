@@ -1,32 +1,33 @@
 #!/usr/bin/env python3
-"""
-logging_config.py 模块测试套件
+"""logging_config.py 模块测试套件
 提供完整的日志配置功能测试覆盖，遵循Phase 6成功模式
 """
 
-import sys
 import os
+import sys
 from pathlib import Path
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-import pytest
-import tempfile
-import logging
 import io
+import logging
+import tempfile
 from unittest.mock import patch
+
+import pytest
 
 # 导入被测试的模块
 from src.utils.logging_config import (
     ColoredFormatter,
-    setup_logging,
     get_logger,
-    log_info,
-    log_error,
-    log_warning,
     log_debug,
+    log_error,
+    log_info,
+    log_warning,
+    setup_logging,
 )
 
 
@@ -44,7 +45,7 @@ class TestColoredFormatter:
             "RESET": "\033[0m",  # 重置
         }
 
-        assert ColoredFormatter.COLORS == expected_colors
+        assert expected_colors == ColoredFormatter.COLORS
         assert len(ColoredFormatter.COLORS) == 6
 
     def test_format_with_levelname(self):
@@ -126,7 +127,7 @@ class TestColoredFormatter:
         """测试使用父类的格式化功能"""
         # 使用复杂的格式字符串
         formatter = ColoredFormatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(funcName)s:%(lineno)d - %(message)s"
+            "%(asctime)s - %(name)s - %(levelname)s - %(funcName)s:%(lineno)d - %(message)s",
         )
 
         record = logging.LogRecord(
@@ -258,9 +259,7 @@ class TestSetupLogging:
             assert len(root_logger.handlers) == 2
 
             # 验证文件handler
-            file_handlers = [
-                h for h in root_logger.handlers if isinstance(h, logging.FileHandler)
-            ]
+            file_handlers = [h for h in root_logger.handlers if isinstance(h, logging.FileHandler)]
             assert len(file_handlers) == 1
             assert file_handlers[0].baseFilename == log_file
 
@@ -364,9 +363,7 @@ class TestSetupLogging:
             setup_logging(log_file=log_file)
 
             root_logger = logging.getLogger()
-            file_handlers = [
-                h for h in root_logger.handlers if isinstance(h, logging.FileHandler)
-            ]
+            file_handlers = [h for h in root_logger.handlers if isinstance(h, logging.FileHandler)]
             file_formatter = file_handlers[0].formatter
 
             # 验证文件格式包含函数名和行号
@@ -580,6 +577,7 @@ class TestModuleLevelConfiguration:
 
         # 重新导入（这会触发默认配置）
         import importlib
+
         import src.utils.logging_config
 
         importlib.reload(src.utils.logging_config)
@@ -598,6 +596,7 @@ class TestModuleLevelConfiguration:
 
         # 多次导入
         import importlib
+
         import src.utils.logging_config
 
         importlib.reload(src.utils.logging_config)
@@ -607,9 +606,6 @@ class TestModuleLevelConfiguration:
         # 应该只有一个handler
         root_logger = logging.getLogger()
         assert len(root_logger.handlers) == 1
-
-
-from scripts._test_logging_config_tail import TestIntegration, TestPerformance
 
 
 if __name__ == "__main__":

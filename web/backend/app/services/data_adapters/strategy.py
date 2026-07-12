@@ -1,5 +1,5 @@
-"""策略管理数据源适配器
-"""
+"""策略管理数据源适配器"""
+
 import logging
 import time
 from datetime import datetime
@@ -15,6 +15,7 @@ from .base import DataSourceMetrics
 
 
 logger = logging.getLogger(__name__)
+
 
 class StrategyDataSourceAdapter(IDataSource):
     """策略管理数据源适配器 - 集成现有策略服务到数据源工厂模式"""
@@ -136,7 +137,8 @@ class StrategyDataSourceAdapter(IDataSource):
                         for symbol in symbols:
                             try:
                                 result = self._get_strategy_service().run_strategy_for_stock(
-                                    strategy_code=strategy_code, symbol=symbol,
+                                    strategy_code=strategy_code,
+                                    symbol=symbol,
                                 )
                                 results.append({"symbol": symbol, "success": True, "data": result})
                             except Exception as e:
@@ -166,7 +168,9 @@ class StrategyDataSourceAdapter(IDataSource):
                     limit = params.get("limit", 50)
 
                     results = self._get_strategy_service().get_strategy_results(
-                        strategy_code=strategy_code, symbol=symbol, limit=limit,
+                        strategy_code=strategy_code,
+                        symbol=symbol,
+                        limit=limit,
                     )
                     return {
                         "success": True,

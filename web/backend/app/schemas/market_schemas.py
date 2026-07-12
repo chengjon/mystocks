@@ -385,13 +385,18 @@ class KLineRequestV2(BaseModel):
     """增强版K线查询请求 (符合OpenAPI模板)"""
 
     symbol: str = Field(
-        ..., description="股票代码", examples=["000001.SZ", "600519.SH"], pattern=r"^[0-9]{6}\.[A-Z]{2}$",
+        ...,
+        description="股票代码",
+        examples=["000001.SZ", "600519.SH"],
+        pattern=r"^[0-9]{6}\.[A-Z]{2}$",
     )
     interval: str = Field(..., description="K线周期", examples=["1m", "5m", "15m", "1h", "1d", "1w", "1M"])
     start_date: Optional[str] = Field(None, description="开始日期", examples=["2024-01-01"])
     end_date: Optional[str] = Field(None, description="结束日期", examples=["2024-12-29"])
     adjust: str = Field(
-        default="qfq", description="复权方式 (qfq=前复权, hfq=后复权, none=不复权)", pattern="^(qfq|hfq|none)$",
+        default="qfq",
+        description="复权方式 (qfq=前复权, hfq=后复权, none=不复权)",
+        pattern="^(qfq|hfq|none)$",
     )
     limit: int = Field(default=500, ge=1, le=1000, description="返回数量限制")
 

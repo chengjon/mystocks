@@ -21,6 +21,7 @@ from fastapi import APIRouter
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
+
 @router.get("/health", summary="市场数据 API 健康检查", description="检查市场数据 API 服务的健康状态", tags=["health"])
 async def health_check():
     """检查市场数据 API 服务的整体健康状态
@@ -71,5 +72,3 @@ async def health_check():
         "timestamp": datetime.now().isoformat(),
         "service": "market-data-api",
     }
-
-

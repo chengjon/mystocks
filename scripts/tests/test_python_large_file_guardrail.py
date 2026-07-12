@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+
 SCAN_ROOTS = [Path("src"), Path("web/backend/app")]
 IGNORE_MARKERS = (".bak", ".old", ".new", ".backup")
 LINE_LIMIT = 1000
@@ -24,7 +25,7 @@ def _collect_oversized_files() -> list[str]:
     oversized: list[str] = []
 
     for path in _iter_python_files():
-        with open(path, "r", encoding="utf-8", errors="ignore") as file:
+        with open(path, encoding="utf-8", errors="ignore") as file:
             line_count = sum(1 for _ in file)
 
         if line_count > LINE_LIMIT:

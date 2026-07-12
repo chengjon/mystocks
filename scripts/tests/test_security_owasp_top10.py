@@ -1,25 +1,27 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-OWASP Top 10 安全测试套件
+"""OWASP Top 10 安全测试套件
 实现针对 OWASP Top 10 2017/2021 的自动化安全测试
 """
 
-import sys
 import json
-import requests
-import time
 import os
+import sys
+import time
 from datetime import datetime
-from typing import Dict, List, Any
 from pathlib import Path
+from typing import Any, Dict, List
+
+import requests
 
 from scripts._test_security_owasp_top10_tail import (
     owasp_generate_report,
     owasp_has_valid_session,
     owasp_test_ssrf,
+)
+from scripts._test_security_owasp_top10_tail import (
     run_owasp_security_tests as run_owasp_security_tests_helper,
 )
+
 
 # 设置项目路径
 project_root = "/opt/claude/mystocks_spec"
@@ -103,7 +105,7 @@ class OWASPSecurityTester:
 
         print("\n" + "=" * 80)
         print(
-            "A09:2021 - 安全日志和监控失效 (Security Logging and Monitoring Failures)"
+            "A09:2021 - 安全日志和监控失效 (Security Logging and Monitoring Failures)",
         )
         print("=" * 80)
         self.test_security_logging()
@@ -129,7 +131,7 @@ class OWASPSecurityTester:
                         False,
                         f"状态码: {response.status_code}",
                         "实施适当的访问控制和认证",
-                    )
+                    ),
                 )
             else:
                 self.results.append(
@@ -139,7 +141,7 @@ class OWASPSecurityTester:
                         "HIGH",
                         True,
                         "正确返回 401/403",
-                    )
+                    ),
                 )
         except Exception as e:
             self.results.append(
@@ -148,16 +150,17 @@ class OWASPSecurityTester:
                     "A01:2021",
                     "HIGH",
                     False,
-                    f"连接失败: {str(e)}",
+                    f"连接失败: {e!s}",
                     "确保服务正在运行",
-                )
+                ),
             )
 
         # 2. 权限提升测试
         if self._has_valid_session():
             # 尝试升级权限
             response = self.session.post(
-                f"{self.base_url}/api/admin/users", json={"action": "promote"}
+                f"{self.base_url}/api/admin/users",
+                json={"action": "promote"},
             )
             if response.status_code == 200:
                 self.results.append(
@@ -168,13 +171,17 @@ class OWASPSecurityTester:
                         False,
                         "成功执行提升权限操作",
                         "实施基于角色的访问控制(RBAC)",
-                    )
+                    ),
                 )
             else:
                 self.results.append(
                     SecurityTestResult(
-                        "权限提升测试", "A01:2021", "CRITICAL", True, "权限提升被阻止"
-                    )
+                        "权限提升测试",
+                        "A01:2021",
+                        "CRITICAL",
+                        True,
+                        "权限提升被阻止",
+                    ),
                 )
 
     def test_cryptographic_failures(self):
@@ -182,13 +189,18 @@ class OWASPSecurityTester:
         # 1. 检查 HTTPS 强制
         try:
             response = requests.get(
-                f"{self.base_url.replace('http', 'https')}/api/health", timeout=5
+                f"{self.base_url.replace('http', 'https')}/api/health",
+                timeout=5,
             )
             if response.status_code == 200:
                 self.results.append(
                     SecurityTestResult(
-                        "HTTPS 强制检查", "A02:2021", "HIGH", True, "正确强制 HTTPS"
-                    )
+                        "HTTPS 强制检查",
+                        "A02:2021",
+                        "HIGH",
+                        True,
+                        "正确强制 HTTPS",
+                    ),
                 )
             else:
                 self.results.append(
@@ -199,7 +211,7 @@ class OWASPSecurityTester:
                         False,
                         "HTTPS 可用但未强制",
                         "配置中间件强制 HTTPS",
-                    )
+                    ),
                 )
         except requests.exceptions.SSLError:
             self.results.append(
@@ -210,7 +222,7 @@ class OWASPSecurityTester:
                     False,
                     "不支持 HTTPS",
                     "配置 SSL 证书",
-                )
+                ),
             )
         except requests.exceptions.Timeout:
             self.results.append(
@@ -221,7 +233,7 @@ class OWASPSecurityTester:
                     False,
                     "HTTPS 超时",
                     "检查 SSL 配置",
-                )
+                ),
             )
 
         # 2. 密码强度测试
@@ -240,7 +252,7 @@ class OWASPSecurityTester:
                         False,
                         f"弱密码 '{password}' 被接受",
                         "实施密码复杂度策略",
-                    )
+                    ),
                 )
                 break
 
@@ -270,7 +282,7 @@ class OWASPSecurityTester:
                             False,
                             "可能存在 SQL 注入漏洞",
                             "使用参数化查询和 ORM",
-                        )
+                        ),
                     )
                     break
             except Exception:
@@ -287,7 +299,8 @@ class OWASPSecurityTester:
         for payload in xss_payloads:
             try:
                 response = self.session.post(
-                    f"{self.base_url}/api/feedback", json={"message": payload}
+                    f"{self.base_url}/api/feedback",
+                    json={"message": payload},
                 )
                 # 检查响应中是否包含转义后的 payload
                 if payload not in response.text and "alert" not in response.text:
@@ -298,7 +311,7 @@ class OWASPSecurityTester:
                             "MEDIUM",
                             True,
                             "XSS 载荷被正确处理",
-                        )
+                        ),
                     )
                 else:
                     self.results.append(
@@ -309,7 +322,7 @@ class OWASPSecurityTester:
                             False,
                             "XSS 载荷未被处理",
                             "实施输出编码和 CSP",
-                        )
+                        ),
                     )
             except Exception:
                 pass
@@ -338,13 +351,17 @@ class OWASPSecurityTester:
                     False,
                     "未实施 API 版本控制",
                     "添加版本控制以支持向后兼容",
-                )
+                ),
             )
         else:
             self.results.append(
                 SecurityTestResult(
-                    "API 版本控制", "A04:2021", "MEDIUM", True, "API 版本控制已实现"
-                )
+                    "API 版本控制",
+                    "A04:2021",
+                    "MEDIUM",
+                    True,
+                    "API 版本控制已实现",
+                ),
             )
 
         # 2. 检查速率限制
@@ -362,7 +379,7 @@ class OWASPSecurityTester:
                     False,
                     f"仅 {failed_requests} 个请求被限制",
                     "实施 API 速率限制",
-                )
+                ),
             )
         else:
             self.results.append(
@@ -372,7 +389,7 @@ class OWASPSecurityTester:
                     "MEDIUM",
                     True,
                     f"正确限制 {failed_requests} 个请求",
-                )
+                ),
             )
 
     def test_security_misconfiguration(self):
@@ -400,7 +417,7 @@ class OWASPSecurityTester:
                             False,
                             f"缺少 {header}",
                             "配置安全 HTTP 头",
-                        )
+                        ),
                     )
                 else:
                     self.results.append(
@@ -410,7 +427,7 @@ class OWASPSecurityTester:
                             "MEDIUM",
                             True,
                             f"{header} 已设置",
-                        )
+                        ),
                     )
         except Exception as e:
             self.results.append(
@@ -419,9 +436,9 @@ class OWASPSecurityTester:
                     "A05:2021",
                     "MEDIUM",
                     False,
-                    f"无法获取响应头: {str(e)}",
+                    f"无法获取响应头: {e!s}",
                     "确保 API 服务正常运行",
-                )
+                ),
             )
 
         # 2. 检查调试模式
@@ -436,13 +453,17 @@ class OWASPSecurityTester:
                         False,
                         "调试接口可访问",
                         "禁用生产环境的调试功能",
-                    )
+                    ),
                 )
         except Exception:
             self.results.append(
                 SecurityTestResult(
-                    "调试模式检查", "A05:2021", "HIGH", True, "调试接口不可访问"
-                )
+                    "调试模式检查",
+                    "A05:2021",
+                    "HIGH",
+                    True,
+                    "调试接口不可访问",
+                ),
             )
 
     def test_vulnerable_components(self):
@@ -452,7 +473,7 @@ class OWASPSecurityTester:
             # 检查 requirements.txt
             req_file = Path(project_root) / "web/backend/requirements.txt"
             if req_file.exists():
-                with open(req_file, "r") as f:
+                with open(req_file) as f:
                     dependencies = f.read()
 
                 # 查找可能过时的包
@@ -473,7 +494,7 @@ class OWASPSecurityTester:
                                 False,
                                 f"发现过时的依赖模式: {pattern}",
                                 "更新到最新稳定版本",
-                            )
+                            ),
                         )
 
                 self.results.append(
@@ -483,7 +504,7 @@ class OWASPSecurityTester:
                         "MEDIUM",
                         True,
                         f"扫描了 {len(dependencies.splitlines())} 个依赖项",
-                    )
+                    ),
                 )
         except Exception as e:
             self.results.append(
@@ -492,9 +513,9 @@ class OWASPSecurityTester:
                     "A06:2021",
                     "MEDIUM",
                     False,
-                    f"扫描失败: {str(e)}",
+                    f"扫描失败: {e!s}",
                     "确保 requirements.txt 存在并可读",
-                )
+                ),
             )
 
         # 2. 检查已知漏洞
@@ -504,9 +525,7 @@ class OWASPSecurityTester:
             if response.status_code == 200:
                 # 检查 Python 版本
                 python_version = sys.version_info
-                if python_version.major < 3 or (
-                    python_version.major == 3 and python_version.minor < 8
-                ):
+                if python_version.major < 3 or (python_version.major == 3 and python_version.minor < 8):
                     self.results.append(
                         SecurityTestResult(
                             "Python 版本检查",
@@ -515,7 +534,7 @@ class OWASPSecurityTester:
                             False,
                             f"过时的 Python 版本: {python_version.major}.{python_version.minor}",
                             "升级到 Python 3.8+",
-                        )
+                        ),
                     )
                 else:
                     self.results.append(
@@ -525,7 +544,7 @@ class OWASPSecurityTester:
                             "HIGH",
                             True,
                             f"Python 版本符合要求: {python_version.major}.{python_version.minor}",
-                        )
+                        ),
                     )
         except Exception as e:
             self.results.append(
@@ -534,9 +553,9 @@ class OWASPSecurityTester:
                     "A06:2021",
                     "HIGH",
                     False,
-                    f"检查失败: {str(e)}",
+                    f"检查失败: {e!s}",
                     "确保 Python 环境正确配置",
-                )
+                ),
             )
 
     def test_auth_failures(self):
@@ -565,7 +584,7 @@ class OWASPSecurityTester:
                             False,
                             f"弱凭证 {username}/{password} 成功登录",
                             "实施强密码策略和账户锁定",
-                        )
+                        ),
                     )
                     break
             except Exception:
@@ -581,8 +600,12 @@ class OWASPSecurityTester:
             if response.status_code == 200:
                 self.results.append(
                     SecurityTestResult(
-                        "会话管理测试", "A07:2021", "MEDIUM", True, "会话管理正常"
-                    )
+                        "会话管理测试",
+                        "A07:2021",
+                        "MEDIUM",
+                        True,
+                        "会话管理正常",
+                    ),
                 )
             else:
                 self.results.append(
@@ -593,7 +616,7 @@ class OWASPSecurityTester:
                         False,
                         "会话过早过期",
                         "检查会话超时配置",
-                    )
+                    ),
                 )
 
     def test_data_integrity(self):
@@ -606,7 +629,7 @@ class OWASPSecurityTester:
                     "malicious.php",
                     '<?php system($_GET["cmd"]); ?>',
                     "application/php",
-                )
+                ),
             }
             response = self.session.post(f"{self.base_url}/api/upload", files=files)
 
@@ -619,13 +642,17 @@ class OWASPSecurityTester:
                         False,
                         "恶意文件上传被允许",
                         "实施文件类型验证和病毒扫描",
-                    )
+                    ),
                 )
             else:
                 self.results.append(
                     SecurityTestResult(
-                        "文件上传安全", "A08:2021", "HIGH", True, "恶意文件上传被拒绝"
-                    )
+                        "文件上传安全",
+                        "A08:2021",
+                        "HIGH",
+                        True,
+                        "恶意文件上传被拒绝",
+                    ),
                 )
         except Exception:
             self.results.append(
@@ -636,7 +663,7 @@ class OWASPSecurityTester:
                     False,
                     "文件上传接口不可用",
                     "确保上传功能正确配置",
-                )
+                ),
             )
 
         # 2. 检查数据传输安全
@@ -649,8 +676,12 @@ class OWASPSecurityTester:
             if "https://" in str(response.request.url):
                 self.results.append(
                     SecurityTestResult(
-                        "数据传输安全", "A08:2021", "HIGH", True, "使用 HTTPS 传输数据"
-                    )
+                        "数据传输安全",
+                        "A08:2021",
+                        "HIGH",
+                        True,
+                        "使用 HTTPS 传输数据",
+                    ),
                 )
             else:
                 self.results.append(
@@ -661,7 +692,7 @@ class OWASPSecurityTester:
                         False,
                         "使用 HTTP 传输敏感数据",
                         "强制使用 HTTPS",
-                    )
+                    ),
                 )
         except Exception as e:
             self.results.append(
@@ -670,9 +701,9 @@ class OWASPSecurityTester:
                     "A08:2021",
                     "HIGH",
                     False,
-                    f"检查失败: {str(e)}",
+                    f"检查失败: {e!s}",
                     "确保 HTTPS 配置正确",
-                )
+                ),
             )
 
     def test_security_logging(self):
@@ -691,8 +722,12 @@ class OWASPSecurityTester:
             if audit_response.status_code == 200:
                 self.results.append(
                     SecurityTestResult(
-                        "安全审计日志", "A09:2021", "MEDIUM", True, "安全审计日志可访问"
-                    )
+                        "安全审计日志",
+                        "A09:2021",
+                        "MEDIUM",
+                        True,
+                        "安全审计日志可访问",
+                    ),
                 )
             else:
                 self.results.append(
@@ -703,7 +738,7 @@ class OWASPSecurityTester:
                         False,
                         "安全审计日志不可访问",
                         "实施安全事件日志记录",
-                    )
+                    ),
                 )
         except Exception as e:
             self.results.append(
@@ -712,9 +747,9 @@ class OWASPSecurityTester:
                     "A09:2021",
                     "MEDIUM",
                     False,
-                    f"检查失败: {str(e)}",
+                    f"检查失败: {e!s}",
                     "确保日志系统正常工作",
-                )
+                ),
             )
 
         # 2. 检查入侵检测
@@ -729,8 +764,12 @@ class OWASPSecurityTester:
             if response.status_code == 429:
                 self.results.append(
                     SecurityTestResult(
-                        "入侵检测", "A09:2021", "MEDIUM", True, "入侵检测系统正常工作"
-                    )
+                        "入侵检测",
+                        "A09:2021",
+                        "MEDIUM",
+                        True,
+                        "入侵检测系统正常工作",
+                    ),
                 )
             else:
                 self.results.append(
@@ -741,7 +780,7 @@ class OWASPSecurityTester:
                         False,
                         "缺少入侵检测",
                         "实施异常行为检测",
-                    )
+                    ),
                 )
         except Exception:
             self.results.append(
@@ -752,7 +791,7 @@ class OWASPSecurityTester:
                     False,
                     "入侵检测检查失败",
                     "确保监控系统正常运行",
-                )
+                ),
             )
 
     def test_ssrf(self):

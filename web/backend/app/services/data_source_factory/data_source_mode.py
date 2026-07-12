@@ -29,6 +29,7 @@ from app.services.data_source_interface import (
 
 logger = logging.getLogger(__name__)
 
+
 class DataSourceMode(str, Enum):
     """数据源模式枚举"""
 
@@ -621,11 +622,9 @@ class DynamicConfigManager:
                     "name": "Market Data Source",
                     "type": "market",
                     "enabled": True,
-                    "mode": (os.getenv("USE_MOCK_DATA", "true").lower() == "true"
-                    and DataSourceMode.MOCK)
+                    "mode": (os.getenv("USE_MOCK_DATA", "true").lower() == "true" and DataSourceMode.MOCK)
                     or DataSourceMode.REAL,
-                    "base_url": (os.getenv("REAL_DATA_AVAILABLE", "false").lower() == "true"
-                    and market_data_base_url)
+                    "base_url": (os.getenv("REAL_DATA_AVAILABLE", "false").lower() == "true" and market_data_base_url)
                     or None,
                     "timeout": 30.0,
                     "retry_count": 3,

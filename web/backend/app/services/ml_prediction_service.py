@@ -235,6 +235,7 @@ class MLPredictionService:
             # Fallback for old pickle files if joblib fails (though joblib usually handles them)
             if model_file.suffix == ".pkl":
                 import pickle
+
                 with open(model_file, "rb") as f:
                     self.model = pickle.load(f)
             else:

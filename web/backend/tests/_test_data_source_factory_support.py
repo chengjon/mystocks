@@ -1,5 +1,4 @@
-"""Support loader for data source factory split tests.
-"""
+"""Support loader for data source factory split tests."""
 
 from __future__ import annotations
 

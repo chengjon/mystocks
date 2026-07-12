@@ -1,11 +1,10 @@
-"""
-连接池测试脚本
+"""连接池测试脚本
 测试数据库连接池的功能和性能
 """
 
-
-import sys
 import os
+import sys
+
 
 # 添加项目根目录到路径
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -13,10 +12,13 @@ sys.path.insert(0, project_root)
 
 import asyncio
 import time
+
 import structlog
-from src.core.database_pool import DatabaseConnectionPool
-from src.core.connection_pool_config import get_config_for_environment
+
 from src.core.config import DatabaseConfig
+from src.core.connection_pool_config import get_config_for_environment
+from src.core.database_pool import DatabaseConnectionPool
+
 
 logger = structlog.get_logger()
 
@@ -69,7 +71,8 @@ async def test_connection_acquisition(pool: DatabaseConnectionPool):
 
 
 async def test_connection_concurrent(
-    pool: DatabaseConnectionPool, concurrent_connections: int = 10
+    pool: DatabaseConnectionPool,
+    concurrent_connections: int = 10,
 ):
     """测试并发连接"""
     logger.info("开始测试并发连接", concurrent_connections=concurrent_connections)
@@ -131,7 +134,8 @@ async def test_query_performance(pool: DatabaseConnectionPool, num_queries: int 
 
                 # 执行简单查询
                 result = await conn.fetch(
-                    "SELECT $1::text as value", f"query_{query_num}"
+                    "SELECT $1::text as value",
+                    f"query_{query_num}",
                 )
 
                 end_time = time.time()
@@ -199,7 +203,8 @@ async def test_query_performance(pool: DatabaseConnectionPool, num_queries: int 
 
 
 async def test_connection_pool_stress(
-    pool: DatabaseConnectionPool, iterations: int = 1000
+    pool: DatabaseConnectionPool,
+    iterations: int = 1000,
 ):
     """测试连接池压力"""
     logger.info("开始测试连接池压力", iterations=iterations)
@@ -210,7 +215,8 @@ async def test_connection_pool_stress(
                 # 执行多个查询
                 for i in range(5):
                     await conn.fetch(
-                        "SELECT $1::text as value", f"stress_{iteration}_{i}"
+                        "SELECT $1::text as value",
+                        f"stress_{iteration}_{i}",
                     )
                 return iteration, True
         except Exception:
@@ -219,7 +225,8 @@ async def test_connection_pool_stress(
     # 执行压力测试
     start_time = time.time()
     results = await asyncio.gather(
-        *[stress_iteration(i) for i in range(iterations)], return_exceptions=True
+        *[stress_iteration(i) for i in range(iterations)],
+        return_exceptions=True,
     )
     end_time = time.time()
 
@@ -264,9 +271,8 @@ async def test_connection_health(pool: DatabaseConnectionPool):
             stats = pool.get_stats()
             logger.info("连接池统计信息", stats=stats)
             return True
-        else:
-            logger.error("健康检查失败")
-            return False
+        logger.error("健康检查失败")
+        return False
 
     except Exception as e:
         logger.error("健康检查异常", error=str(e))

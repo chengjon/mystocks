@@ -1,22 +1,23 @@
 #!/usr/bin/env python3
-"""
-日期处理工具测试套件
+"""日期处理工具测试套件
 提供完整的date_utils模块测试覆盖，遵循Phase 6成功模式
 """
 
 import sys
 from pathlib import Path
 
+
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-import pytest
 import datetime
 import time
 
+import pytest
+
 # 导入被测试的模块
-from src.utils.date_utils import normalize_date, get_date_range, is_valid_date
+from src.utils.date_utils import get_date_range, is_valid_date, normalize_date
 
 
 class TestNormalizeDate:
@@ -47,9 +48,7 @@ class TestNormalizeDate:
 
         for i, dt in enumerate(test_dates):
             result = normalize_date(dt)
-            assert result == expected_results[i], (
-                f"datetime对象应该格式化为 {expected_results[i]}"
-            )
+            assert result == expected_results[i], f"datetime对象应该格式化为 {expected_results[i]}"
 
     def test_date_object_input(self):
         """测试date对象输入"""
@@ -63,9 +62,7 @@ class TestNormalizeDate:
 
         for i, date_obj in enumerate(test_dates):
             result = normalize_date(date_obj)
-            assert result == expected_results[i], (
-                f"date对象应该格式化为 {expected_results[i]}"
-            )
+            assert result == expected_results[i], f"date对象应该格式化为 {expected_results[i]}"
 
     def test_compact_format_input(self):
         """测试紧凑格式 YYYYMMDD"""
@@ -108,9 +105,7 @@ class TestNormalizeDate:
 
         for input_date, expected in test_cases:
             result = normalize_date(input_date)
-            assert result == expected, (
-                f"包含空白字符的输入 '{input_date}' 应该转换为 {expected}"
-            )
+            assert result == expected, f"包含空白字符的输入 '{input_date}' 应该转换为 {expected}"
 
     def test_none_input(self):
         """测试None输入"""
@@ -230,9 +225,7 @@ class TestNormalizeDate:
         ]
         for year in non_leap_years:
             result = normalize_date(f"{year}0229")
-            assert result == f"{year}-02-29", (
-                f"非闰年 {year} 的2月29日被格式化为 {result}"
-            )
+            assert result == f"{year}-02-29", f"非闰年 {year} 的2月29日被格式化为 {result}"
 
 
 class TestGetDateRange:
@@ -427,9 +420,7 @@ class TestIsValidDate:
 
         for test_input, expected in edge_cases:
             result = is_valid_date(test_input)
-            assert result is expected, (
-                f"日期 {test_input} 应该是{'有效' if expected else '无效'}的，实际结果：{result}"
-            )
+            assert result is expected, f"日期 {test_input} 应该是{'有效' if expected else '无效'}的，实际结果：{result}"
 
     def test_valid_but_logical_invalid_dates(self):
         """测试格式有效但逻辑可能无效的日期"""
@@ -443,9 +434,7 @@ class TestIsValidDate:
 
         for logical_invalid_date in logical_invalid_dates:
             result = is_valid_date(logical_invalid_date)
-            assert result is True, (
-                f"日期 {logical_invalid_date} 被认为是有效的（格式优先）"
-            )
+            assert result is True, f"日期 {logical_invalid_date} 被认为是有效的（格式优先）"
 
     def test_validation_edge_cases(self):
         """测试验证边界情况"""
@@ -594,9 +583,7 @@ class TestIntegration:
             # 标准化结果应该一致
             normalized = normalize_date(test_date)
             expected = "2024-01-01"
-            assert normalized == expected, (
-                f"标准化结果应该一致: {test_date} -> {normalized} != {expected}"
-            )
+            assert normalized == expected, f"标准化结果应该一致: {test_date} -> {normalized} != {expected}"
 
             # 基于标准化结果的操作应该一致
             start, end = get_date_range(normalized, days=365)
@@ -631,9 +618,7 @@ class TestIntegration:
             assert is_valid_date(input_date), f"市场日期 {input_date} 应该有效"
 
             result = normalize_date(input_date)
-            assert result == expected, (
-                f"市场日期标准化应该正确: {input_date} -> {result}"
-            )
+            assert result == expected, f"市场日期标准化应该正确: {input_date} -> {result}"
 
     def test_date_calculation_accuracy(self):
         """测试日期计算准确性"""
@@ -648,9 +633,7 @@ class TestIntegration:
 
         for start_date, days, expected_end in test_cases:
             _, end = get_date_range(start_date, days=days)
-            assert end == expected_end, (
-                f"日期计算应该准确: {start_date} + {days}天 = {expected_end}，实际为 {end}"
-            )
+            assert end == expected_end, f"日期计算应该准确: {start_date} + {days}天 = {expected_end}，实际为 {end}"
 
 
 if __name__ == "__main__":

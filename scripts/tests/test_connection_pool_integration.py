@@ -1,27 +1,28 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-连接池集成测试脚本
+"""连接池集成测试脚本
 测试新的连接池与现有数据库模块的集成
 """
 
 import asyncio
 import logging
-import sys
 import os
+import sys
+
 
 # 添加项目根目录到Python路径
 project_root = "/opt/claude/mystocks_spec"
 sys.path.insert(0, project_root)
 sys.path.insert(0, os.path.join(project_root, "src"))
 
-from src.storage.database.connection_manager import get_connection_manager
-from src.core.database_pool import get_connection_pool
 from src.core.connection_pool_config import get_config_for_environment
+from src.core.database_pool import get_connection_pool
+from src.storage.database.connection_manager import get_connection_manager
+
 
 # 设置日志
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 
 logger = logging.getLogger("ConnectionPoolIntegrationTest")
@@ -75,7 +76,7 @@ async def test_async_connection_pool():
         return True
 
     except Exception as e:
-        logger.error(f"异步连接池测试失败: {str(e)}")
+        logger.error(f"异步连接池测试失败: {e!s}")
         # 对于集成测试，如果只是连接失败，我们仍然认为基本功能正常
         if "ConnectionRefusedError" in str(e) or "Connect call failed" in str(e):
             logger.info("⚠️  连接失败（数据库服务未运行），但不影响集成测试结果")
@@ -105,7 +106,7 @@ def test_sync_connection_manager():
         return True
 
     except Exception as e:
-        logger.error(f"同步连接管理器测试失败: {str(e)}")
+        logger.error(f"同步连接管理器测试失败: {e!s}")
         raise
 
 

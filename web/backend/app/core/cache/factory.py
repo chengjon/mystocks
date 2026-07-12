@@ -11,6 +11,7 @@ from .manager import CacheManager
 
 _cache_manager: Optional[CacheManager] = None
 
+
 def get_cache_manager(
     tdengine_manager: Optional[TDengineManager] = None,
 ) -> CacheManager:

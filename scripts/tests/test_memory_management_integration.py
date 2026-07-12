@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-内存管理集成测试脚本
+"""内存管理集成测试脚本
 测试内存管理系统与数据库连接的集成
 """
 
-import sys
 import asyncio
+import sys
+
 import psutil
+
 
 # 设置Python路径
 project_root = "/opt/claude/mystocks_spec"
@@ -19,8 +19,8 @@ def test_memory_manager_availability():
     try:
         # 测试新的内存管理器
         from src.gpu.accelerated.memory_management_fix import (
-            optimize_dataframe_memory,
             memory_manager,
+            optimize_dataframe_memory,
         )
 
         print("✅ 新内存管理器导入成功")
@@ -28,7 +28,7 @@ def test_memory_manager_availability():
         # 测试内存管理器基本功能
         initial_stats = memory_manager.get_memory_stats()
         print(
-            f"✅ 内存统计获取成功: {initial_stats['current']['process_memory_mb']:.2f} MB"
+            f"✅ 内存统计获取成功: {initial_stats['current']['process_memory_mb']:.2f} MB",
         )
 
         # 测试DataFrame优化
@@ -39,12 +39,12 @@ def test_memory_manager_availability():
                 "col1": [1, 2, 3] * 1000,
                 "col2": [1.1, 2.2, 3.3] * 1000,
                 "col3": ["a", "b", "c"] * 1000,
-            }
+            },
         )
 
         optimized_df = optimize_dataframe_memory(test_df)
         print(
-            f"✅ DataFrame内存优化成功: {test_df.memory_usage().sum() / 1024**2:.2f}MB -> {optimized_df.memory_usage().sum() / 1024**2:.2f}MB"
+            f"✅ DataFrame内存优化成功: {test_df.memory_usage().sum() / 1024**2:.2f}MB -> {optimized_df.memory_usage().sum() / 1024**2:.2f}MB",
         )
 
         return True
@@ -81,7 +81,7 @@ def test_memory_snapshot_recording():
         print(f"   - 时间戳: {initial_stats['current']['timestamp']}")
         print(f"   - 进程内存: {initial_stats['current']['process_memory_mb']:.2f} MB")
         print(
-            f"   - 系统内存使用率: {initial_stats['current']['system_memory_percent']:.1f}%"
+            f"   - 系统内存使用率: {initial_stats['current']['system_memory_percent']:.1f}%",
         )
         print(f"   - 活跃对象数: {initial_stats['current']['active_objects']}")
         print(f"   - 总对象数: {initial_stats['current']['total_objects']}")
@@ -122,8 +122,8 @@ def test_connection_context_memory():
 def test_database_manager_memory_integration():
     """测试数据库管理器的内存集成"""
     try:
-        from src.storage.database.connection_manager import get_connection_manager
         from src.core.memory_manager import get_resource_manager
+        from src.storage.database.connection_manager import get_connection_manager
 
         # 获取连接管理器
         manager = get_connection_manager()
@@ -136,7 +136,7 @@ def test_database_manager_memory_integration():
 
         # 检查连接管理器是否已注册
         connection_manager_resource = resource_manager.get_resource(
-            "connection_manager"
+            "connection_manager",
         )
         if connection_manager_resource:
             print("✅ 连接管理器已正确注册到内存管理")
@@ -166,8 +166,9 @@ def test_database_manager_memory_integration():
 def test_memory_leak_detection():
     """测试内存泄漏检测"""
     try:
-        from src.core.memory_manager import get_memory_monitor, get_memory_stats
         import gc
+
+        from src.core.memory_manager import get_memory_monitor, get_memory_stats
 
         # 获取内存监控器
         monitor = get_memory_monitor()
@@ -202,10 +203,12 @@ def test_memory_leak_detection():
 def test_gpu_data_processor_integration():
     """测试GPU数据处理器内存集成"""
     try:
-        from src.gpu.accelerated.data_processor_gpu_fixed import GPUDataProcessorFixed
-        import pandas as pd
-        import numpy as np
         import time
+
+        import numpy as np
+        import pandas as pd
+
+        from src.gpu.accelerated.data_processor_gpu_fixed import GPUDataProcessorFixed
 
         print("开始测试GPU数据处理器内存集成...")
 
@@ -253,7 +256,7 @@ def test_gpu_data_processor_integration():
                 "price": np.random.uniform(100, 1000, 500),
                 "volume": np.random.uniform(10000, 1000000, 500),
                 "timestamp": pd.date_range("2025-01-01", periods=500, freq="1H"),
-            }
+            },
         )
 
         print(f"测试数据形状: {test_data.shape}")
@@ -291,11 +294,10 @@ def test_gpu_data_processor_integration():
             mode = "GPU" if gpu_enabled else "CPU"
             print(f"✅ {mode}数据处理器内存集成测试成功！")
             return True
-        else:
-            mode = "GPU" if gpu_enabled else "CPU"
-            print(f"❌ {mode}数据处理器内存集成测试失败！")
-            print(f"   成功条件: {success_criteria}")
-            return False
+        mode = "GPU" if gpu_enabled else "CPU"
+        print(f"❌ {mode}数据处理器内存集成测试失败！")
+        print(f"   成功条件: {success_criteria}")
+        return False
 
     except Exception as e:
         print(f"❌ GPU数据处理器内存集成测试失败: {e}")
@@ -305,8 +307,8 @@ def test_gpu_data_processor_integration():
 async def test_concurrent_connections_memory():
     """测试并发连接的内存使用"""
     try:
-        from src.storage.database.connection_context import database_connection_async
         from src.core.memory_manager import get_memory_stats
+        from src.storage.database.connection_context import database_connection_async
 
         print("开始测试并发连接内存使用...")
 
@@ -367,9 +369,8 @@ async def test_concurrent_connections_memory():
             if abs(total_memory_growth - recovery) < 1.0:  # 允许1MB的误差
                 print("✅ 内存使用正常，无泄漏迹象")
                 return True
-            else:
-                print("⚠️  可能存在内存泄漏，内存恢复不完整")
-                return False
+            print("⚠️  可能存在内存泄漏，内存恢复不完整")
+            return False
 
         except Exception as e:
             print(f"❌ 并发连接测试失败: {e}")
@@ -413,7 +414,7 @@ def main():
     print("测试 4: 数据库管理器内存集成")
     print("=" * 50)
     test_results.append(
-        ("数据库管理器内存集成", test_database_manager_memory_integration())
+        ("数据库管理器内存集成", test_database_manager_memory_integration()),
     )
     print()
 
@@ -460,10 +461,9 @@ def main():
         print("🎉 所有内存管理集成测试通过！")
         print("✅ 内存管理系统已成功集成到数据库连接模块")
         return True
-    else:
-        print("❌ 部分测试失败")
-        print("请检查失败的项目并修复相关问题")
-        return False
+    print("❌ 部分测试失败")
+    print("请检查失败的项目并修复相关问题")
+    return False
 
 
 if __name__ == "__main__":

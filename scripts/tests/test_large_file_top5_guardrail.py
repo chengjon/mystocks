@@ -1,6 +1,7 @@
+import csv
 import sys
 from pathlib import Path
-import csv
+
 
 # ArtDeco 3.1 Engineering Red Lines
 LIMITS = {
@@ -52,7 +53,7 @@ def check_governance_compliance() -> list[str]:
 
         limit = _resolve_limit(rel_path)
 
-        with open(abs_path, "r", encoding="utf-8", errors="ignore") as file:
+        with open(abs_path, encoding="utf-8", errors="ignore") as file:
             lines = sum(1 for _ in file)
 
         if lines > limit:
@@ -75,21 +76,17 @@ def test_converted_archive_large_files_are_governed() -> None:
 
     oversized_archive_files = []
     for file_path in sorted(archive_root.glob("*.vue")):
-        with open(file_path, "r", encoding="utf-8", errors="ignore") as file:
+        with open(file_path, encoding="utf-8", errors="ignore") as file:
             lines = sum(1 for _ in file)
         if lines > _resolve_limit(str(file_path)):
             oversized_archive_files.append((str(file_path), lines))
 
     assert oversized_archive_files, "Expected at least one oversized archived Vue file"
 
-    with open(backlog_path, "r", encoding="utf-8", errors="ignore") as file:
+    with open(backlog_path, encoding="utf-8", errors="ignore") as file:
         backlog_rows = list(csv.DictReader(file, delimiter="\t"))
 
-    backlog_map = {
-        row["path"].lstrip("./"): row
-        for row in backlog_rows
-        if row.get("path")
-    }
+    backlog_map = {row["path"].lstrip("./"): row for row in backlog_rows if row.get("path")}
     exceptions_content = exceptions_path.read_text(encoding="utf-8", errors="ignore")
 
     missing_in_backlog: list[str] = []
@@ -104,7 +101,9 @@ def test_converted_archive_large_files_are_governed() -> None:
             missing_in_exceptions.append(normalized)
 
     assert not missing_in_backlog, f"Archive oversized files missing EXCLUDED backlog entries: {missing_in_backlog}"
-    assert not missing_in_exceptions, f"Archive oversized files missing exception registry entries: {missing_in_exceptions}"
+    assert not missing_in_exceptions, (
+        f"Archive oversized files missing exception registry entries: {missing_in_exceptions}"
+    )
 
 
 if __name__ == "__main__":

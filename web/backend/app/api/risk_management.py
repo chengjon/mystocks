@@ -27,8 +27,7 @@ else:
     router = _risk_router
 
 warnings.warn(
-    "app.api.risk_management is deprecated. "
-    "Use app.api.risk instead.",
+    "app.api.risk_management is deprecated. Use app.api.risk instead.",
     DeprecationWarning,
     stacklevel=2,
 )

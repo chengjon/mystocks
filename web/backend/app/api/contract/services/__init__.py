@@ -1,5 +1,4 @@
-"""API契约管理服务模块
-"""
+"""API契约管理服务模块"""
 
 from .contract_validator import ContractValidator as SchemaValidator
 from .diff_engine import DiffEngine

@@ -1,5 +1,4 @@
-"""技术分析API路由
-"""
+"""技术分析API路由"""
 
 from fastapi import APIRouter
 

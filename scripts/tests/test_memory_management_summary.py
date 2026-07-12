@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-内存管理集成测试总结
+"""内存管理集成测试总结
 生成内存管理修复的详细测试报告
 """
 
 import sys
 from datetime import datetime
+
 
 # 设置Python路径
 project_root = "/opt/claude/mystocks_spec"

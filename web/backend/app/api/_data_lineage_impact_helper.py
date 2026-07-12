@@ -44,7 +44,9 @@ def _find_level(request_node_id: str, node_id: str, edges: list[Any]) -> int:
     return 0
 
 
-async def build_impacted_nodes(tracker: Any, request_node_id: str, impacted_node_ids: list[str]) -> list[dict[str, Any]]:
+async def build_impacted_nodes(
+    tracker: Any, request_node_id: str, impacted_node_ids: list[str]
+) -> list[dict[str, Any]]:
     impacted_nodes: list[dict[str, Any]] = []
 
     for node_id in impacted_node_ids:

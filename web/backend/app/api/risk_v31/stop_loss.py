@@ -1,5 +1,5 @@
-"""止损扩展路由 (V3.1)
-"""
+"""止损扩展路由 (V3.1)"""
+
 from typing import Any, Dict
 
 import structlog
@@ -30,6 +30,7 @@ except ImportError:
 logger = structlog.get_logger(__name__)
 router = APIRouter()
 
+
 @router.post("/stop-loss/add-position", response_model=Dict[str, Any])
 async def add_stop_loss_position(request: Dict[str, Any]) -> Dict[str, Any]:
     """添加止损监控持仓 (V3.1)"""
@@ -54,6 +55,7 @@ async def add_stop_loss_position(request: Dict[str, Any]) -> Dict[str, Any]:
         logger.error(f"添加止损监控失败: {e}")
         raise BusinessException(detail=str(e), status_code=500)
 
+
 @router.post("/stop-loss/update-price", response_model=Dict[str, Any])
 async def update_stop_loss_price(request: Dict[str, Any]) -> Dict[str, Any]:
     """更新持仓价格并检查止损 (V3.1)"""
@@ -67,6 +69,7 @@ async def update_stop_loss_price(request: Dict[str, Any]) -> Dict[str, Any]:
     except Exception as e:
         raise BusinessException(detail=str(e), status_code=500)
 
+
 @router.delete("/stop-loss/remove-position/{position_id}", response_model=Dict[str, Any])
 async def remove_stop_loss_position(position_id: str) -> Dict[str, Any]:
     """移除止损监控持仓 (V3.1)"""
@@ -79,6 +82,7 @@ async def remove_stop_loss_position(position_id: str) -> Dict[str, Any]:
     except Exception as e:
         raise BusinessException(detail=str(e), status_code=500)
 
+
 @router.get("/stop-loss/status/{position_id}", response_model=Dict[str, Any])
 async def get_stop_loss_status(position_id: str) -> Dict[str, Any]:
     """获取止损监控状态 (V3.1)"""
@@ -89,6 +93,7 @@ async def get_stop_loss_status(position_id: str) -> Dict[str, Any]:
     except Exception as e:
         raise BusinessException(detail=str(e), status_code=500)
 
+
 @router.get("/stop-loss/overview", response_model=Dict[str, Any])
 async def get_stop_loss_overview() -> Dict[str, Any]:
     """获取止损监控总览 (V3.1)"""
@@ -98,6 +103,7 @@ async def get_stop_loss_overview() -> Dict[str, Any]:
         return result
     except Exception as e:
         raise BusinessException(detail=str(e), status_code=500)
+
 
 @router.post("/stop-loss/calculate")
 async def calculate_stop_loss_v31(request: Dict[str, Any]) -> Dict[str, Any]:
@@ -111,11 +117,14 @@ async def calculate_stop_loss_v31(request: Dict[str, Any]) -> Dict[str, Any]:
 
         if strategy_type == "volatility_adaptive":
             result = await core.stop_loss_engine.calculate_volatility_stop_loss(
-                symbol=request.get("symbol"), entry_price=request.get("entry_price"), k=request.get("k_factor", 2.0),
+                symbol=request.get("symbol"),
+                entry_price=request.get("entry_price"),
+                k=request.get("k_factor", 2.0),
             )
         else:
             result = await core.stop_loss_engine.calculate_trailing_stop_loss(
-                symbol=request.get("symbol"), highest_price=request.get("entry_price"),
+                symbol=request.get("symbol"),
+                highest_price=request.get("entry_price"),
                 trailing_percentage=request.get("trailing_percentage", 0.08),
             )
         return {"status": "success", "data": result}

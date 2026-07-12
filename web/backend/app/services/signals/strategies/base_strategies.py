@@ -113,7 +113,10 @@ class SignalStrategy:
         self.parameters = parameters
 
     def evaluate(
-        self, symbol: str, indicator_data: Dict[str, Any], market_data: Dict[str, Any],
+        self,
+        symbol: str,
+        indicator_data: Dict[str, Any],
+        market_data: Dict[str, Any],
     ) -> Optional[TradingSignal]:
         """评估信号
 
@@ -152,7 +155,10 @@ class RSIStrategy(SignalStrategy):
         super().__init__(name="rsi_strategy", indicators=["rsi"], parameters=parameters)
 
     def evaluate(
-        self, symbol: str, indicator_data: Dict[str, Any], market_data: Dict[str, Any],
+        self,
+        symbol: str,
+        indicator_data: Dict[str, Any],
+        market_data: Dict[str, Any],
     ) -> Optional[TradingSignal]:
         """基于RSI评估信号"""
         rsi_data = indicator_data.get("rsi", [])
@@ -215,7 +221,10 @@ class MACDStrategy(SignalStrategy):
         super().__init__(name="macd_strategy", indicators=["macd"], parameters=parameters)
 
     def evaluate(
-        self, symbol: str, indicator_data: Dict[str, Any], market_data: Dict[str, Any],
+        self,
+        symbol: str,
+        indicator_data: Dict[str, Any],
+        market_data: Dict[str, Any],
     ) -> Optional[TradingSignal]:
         """基于MACD评估信号"""
         macd_data = indicator_data.get("macd", {})
@@ -284,7 +293,10 @@ class BollingerBandsStrategy(SignalStrategy):
         super().__init__(name="bbands_strategy", indicators=["bbands"], parameters=parameters)
 
     def evaluate(
-        self, symbol: str, indicator_data: Dict[str, Any], market_data: Dict[str, Any],
+        self,
+        symbol: str,
+        indicator_data: Dict[str, Any],
+        market_data: Dict[str, Any],
     ) -> Optional[TradingSignal]:
         """基于布林带评估信号"""
         bb_data = indicator_data.get("bbands", {})

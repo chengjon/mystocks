@@ -1,19 +1,20 @@
 #!/usr/bin/env python3
-"""
-BaseDataSourceAdapter 测试套件
+"""BaseDataSourceAdapter 测试套件
 提供完整的适配器基类功能测试
 """
 
 import sys
 from pathlib import Path
 
+
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-import pytest
-import pandas as pd
 from unittest.mock import Mock, patch
+
+import pandas as pd
+import pytest
 
 # 导入被测试的模块
 from src.adapters.base_adapter import BaseDataSourceAdapter, QualityMixin
@@ -46,7 +47,7 @@ class TestBaseDataSourceAdapter:
                 "low": [99.0, 100.0, 101.0, 102.0, 103.0],
                 "close": [101.0, 102.0, 103.0, 104.0, 105.0],
                 "volume": [1000000] * 5,
-            }
+            },
         )
 
     def test_adapter_initialization(self, adapter):
@@ -57,7 +58,10 @@ class TestBaseDataSourceAdapter:
 
     @patch("src.adapters.base_adapter.DataQualityValidator")
     def test_quality_check_with_valid_data(
-        self, mock_validator_class, adapter, sample_dataframe
+        self,
+        mock_validator_class,
+        adapter,
+        sample_dataframe,
     ):
         """测试有效数据的质量检查"""
         mock_validator = Mock()

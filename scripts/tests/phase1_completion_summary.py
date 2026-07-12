@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Phase 1 技术债务修复完成总结
+"""Phase 1 技术债务修复完成总结
 生成 Phase 1 所有修复工作的详细完成报告
 """
 
-import os
 import json
+import os
 from datetime import datetime
 
 
@@ -404,13 +402,11 @@ Phase 1 的成功实施为项目的长期健康发展奠定了坚实基础！
             "repair_areas": repair_areas,
             "detailed_fixes": detailed_fixes,
             "quality_improvements": quality_improvements,
-            "created_components": {
-                category: files for category, files in created_components
-            },
+            "created_components": {category: files for category, files in created_components},
             "test_results": test_results,
             "recommendations": deployment_suggestions,
             "summary": "Phase 1 技术债务修复成功完成，建立了完整的安全、性能、可维护性体系",
-        }
+        },
     }
 
     # 保存详细报告

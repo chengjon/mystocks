@@ -295,9 +295,17 @@ def create_stock_indicators_completed_event(
 
 
 def create_task_completed_event(
-    task_id: str, task_type: str, status: TaskStatus, duration_seconds: float, **result,
+    task_id: str,
+    task_type: str,
+    status: TaskStatus,
+    duration_seconds: float,
+    **result,
 ) -> TaskCompletedEvent:
     """Helper to create task completed event"""
     return TaskCompletedEvent(
-        task_id=task_id, task_type=task_type, status=status, duration_seconds=duration_seconds, result=result,
+        task_id=task_id,
+        task_type=task_type,
+        status=status,
+        duration_seconds=duration_seconds,
+        result=result,
     )

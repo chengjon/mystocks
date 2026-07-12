@@ -59,7 +59,12 @@ def initialize_realtime_mtm():
             from src.infrastructure.messaging.redis_event_bus import RedisEventBus
 
             redis_kwargs = get_redis_connection_kwargs("monitoring_events", decode_responses=True)
-            event_bus = RedisEventBus(host=redis_kwargs["host"], port=redis_kwargs["port"], db=redis_kwargs["db"], password=redis_kwargs["password"])
+            event_bus = RedisEventBus(
+                host=redis_kwargs["host"],
+                port=redis_kwargs["port"],
+                db=redis_kwargs["db"],
+                password=redis_kwargs["password"],
+            )
             logger.info("✅ Redis Event Bus connected for Real-time MTM")
         except Exception:
             logger.warning("⚠️ Redis not available for Real-time MTM: %(e)s")

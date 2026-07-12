@@ -1,21 +1,22 @@
-"""
-Locust Load Testing Suite for MyStocks API
+"""Locust Load Testing Suite for MyStocks API
 用于模拟1000并发用户的压测脚本，测试API、WebSocket和数据库性能
 
 任务14.1: Locust压测脚本和用户行为建模
 """
 
 import os
-import sys
 import random
+import sys
 from pathlib import Path
+
 
 # 计算项目根目录
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-from locust import HttpUser, TaskSet, task, between, events, constant_pacing
 import structlog
+from locust import HttpUser, TaskSet, between, constant_pacing, events, task
+
 
 logger = structlog.get_logger()
 
@@ -88,7 +89,8 @@ class StockBehaviors(TaskSet):
         try:
             # 获取CSRF Token
             response = self.client.get(
-                "/api/auth/csrf-token", name="/api/auth/csrf-token"
+                "/api/auth/csrf-token",
+                name="/api/auth/csrf-token",
             )
 
             if response.status_code == 200:
@@ -120,7 +122,9 @@ class StockBehaviors(TaskSet):
         """登出"""
         try:
             self.client.post(
-                "/api/auth/logout", headers=self._get_headers(), name="/api/auth/logout"
+                "/api/auth/logout",
+                headers=self._get_headers(),
+                name="/api/auth/logout",
             )
         except Exception as e:
             logger.error(f"Logout error: {e}")
@@ -350,10 +354,10 @@ def on_test_stop(environment, **kwargs):
     logger.info(f"Failed requests: {environment.stats.total.num_failures}")
     logger.info(f"Response time avg: {environment.stats.total.avg_response_time:.0f}ms")
     logger.info(
-        f"Response time p95: {environment.stats.total.get_response_time_percentile(0.95):.0f}ms"
+        f"Response time p95: {environment.stats.total.get_response_time_percentile(0.95):.0f}ms",
     )
     logger.info(
-        f"Response time p99: {environment.stats.total.get_response_time_percentile(0.99):.0f}ms"
+        f"Response time p99: {environment.stats.total.get_response_time_percentile(0.99):.0f}ms",
     )
 
 
@@ -366,7 +370,12 @@ def on_request_success(request_type, name, response_time, response_length, **kwa
 
 @events.request_failure.add_listener
 def on_request_failure(
-    request_type, name, response_time, response_length, exception, **kwargs
+    request_type,
+    name,
+    response_time,
+    response_length,
+    exception,
+    **kwargs,
 ):
     """请求失败回调"""
     logger.error(f"Request failed: {name} - {exception}")
@@ -375,5 +384,5 @@ def on_request_failure(
 if __name__ == "__main__":
     # 可以直接运行此脚本进行本地测试
     print(
-        "Load test script ready. Use 'locust -f load_test_locustfile.py' to start testing"
+        "Load test script ready. Use 'locust -f load_test_locustfile.py' to start testing",
     )

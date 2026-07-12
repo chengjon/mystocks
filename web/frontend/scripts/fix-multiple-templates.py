@@ -92,6 +92,7 @@ def fix_multiple_templates(file_path):
     print("  ✅ Fixed: Removed extra templates, kept only first")
     return 1
 
+
 def main():
     """主函数"""
     src_dir = Path("/opt/claude/mystocks_spec/web/frontend/src/views")
@@ -112,6 +113,7 @@ def main():
 
     print("\n📊 Summary:")
     print(f"   - Files fixed: {fixed_count}")
+
 
 if __name__ == "__main__":
     main()

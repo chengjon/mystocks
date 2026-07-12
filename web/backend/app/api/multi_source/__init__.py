@@ -1,5 +1,4 @@
-"""多数据源API模块
-"""
+"""多数据源API模块"""
 
 from .routes import router
 

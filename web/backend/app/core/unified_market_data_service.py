@@ -198,7 +198,9 @@ class UnifiedMarketDataService:
     # ==================== Fund Flow Methods ====================
 
     def fetch_and_save_fund_flow(
-        self, symbol: Optional[str] = None, timeframe: Union[str, int] = "1",
+        self,
+        symbol: Optional[str] = None,
+        timeframe: Union[str, int] = "1",
     ) -> Dict[str, Any]:
         """Fetch and save fund flow data from adapter
 

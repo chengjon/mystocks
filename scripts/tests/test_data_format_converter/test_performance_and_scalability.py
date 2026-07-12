@@ -1,27 +1,27 @@
 #!/usr/bin/env python3
-"""
-数据格式转换工具测试套件 - 完整覆盖data_format_converter模块
+"""数据格式转换工具测试套件 - 完整覆盖data_format_converter模块
 遵循Phase 6成功模式：功能→边界→异常→性能→集成测试
 """
 
 import sys
 import time
-import pandas as pd
 from pathlib import Path
+
+import pandas as pd
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-import pytest
 
 # 导入被测试的模块
 from src.utils.data_format_converter import (
-    normalize_stock_data_format,
     normalize_api_response_format,
+    normalize_stock_data_format,
     normalize_stock_list_format,
-    normalize_indicator_data_format,
 )
+
 
 class TestPerformanceAndScalability:
     """性能和可扩展性测试类"""
@@ -36,7 +36,7 @@ class TestPerformanceAndScalability:
                     "symbol": [f"60000{j}" for j in range(100)],
                     "name": [f"股票{j}" for j in range(100)],
                     "industry": ["金融"] * 100,
-                }
+                },
             )
             dataframes.append(df)
 
@@ -69,8 +69,9 @@ class TestPerformanceAndScalability:
 
     def test_memory_usage(self):
         """测试内存使用情况"""
-        import psutil
         import os
+
+        import psutil
 
         process = psutil.Process(os.getpid())
         initial_memory = process.memory_info().rss
@@ -80,7 +81,7 @@ class TestPerformanceAndScalability:
             {
                 "symbol": [f"60000{i}" for i in range(5000)],
                 "data": [f"data_{i}" for i in range(5000)],
-            }
+            },
         )
 
         result = normalize_stock_data_format(large_df)
@@ -107,7 +108,7 @@ class TestIntegrationScenarios:
                 "open_price": ["10.0"],
                 "close_price": ["11.0"],
                 "volume": ["1000000"],
-            }
+            },
         )
 
         raw_api_response = {
@@ -151,7 +152,7 @@ class TestIntegrationScenarios:
                 "close": [10.6, 15.3, 169.5],
                 "volume": [1000000, 800000, 500000],
                 "turnover": [0.15, 0.12, 0.18],
-            }
+            },
         )
 
         result = normalize_stock_data_format(realistic_data)
@@ -190,7 +191,7 @@ class TestIntegrationScenarios:
                 "exchange": ["SH", "SZ", "INVALID"],
                 "open": [10.5, "invalid", -1.0],  # 无效价格
                 "volume": [1000000, -100, 0],  # 无效成交量
-            }
+            },
         )
 
         result = normalize_stock_data_format(problematic_data)
@@ -215,18 +216,13 @@ class TestIntegrationScenarios:
                     "symbol": [f"60000{batch_id}{i}" for i in range(10)],
                     "name": [f"股票{batch_id}{i}" for i in range(10)],
                     "industry": ["金融"] * 10,
-                }
+                },
             )
 
         # 并发执行标准化
         with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
-            futures = [
-                executor.submit(normalize_stock_data_format, create_test_data(i))
-                for i in range(5)
-            ]
-            results = [
-                future.result() for future in concurrent.futures.as_completed(futures)
-            ]
+            futures = [executor.submit(normalize_stock_data_format, create_test_data(i)) for i in range(5)]
+            results = [future.result() for future in concurrent.futures.as_completed(futures)]
 
         # 验证结果
         assert len(results) == 5
@@ -240,14 +236,15 @@ class TestUncoveredCodePaths:
     def test_numeric_conversion_exception_with_actual_exception(self):
         """测试数值转换抛出异常的路径（覆盖第119-121行）"""
         # Mock pandas to_numeric to raise exception
-        import pandas as pd
         from unittest.mock import patch
+
+        import pandas as pd
 
         df = pd.DataFrame(
             {
                 "symbol": ["600000"],
                 "open": ["10.5"],  # 字符串类型，会触发转换
-            }
+            },
         )
 
         with patch("pandas.to_numeric", side_effect=Exception("模拟转换异常")):
@@ -265,7 +262,7 @@ class TestUncoveredCodePaths:
                 # 缺少symbol字段
                 "name": "测试股票",
                 "industry": "金融",
-            }
+            },
         ]
 
         result = normalize_stock_list_format(stock_list)
@@ -273,5 +270,3 @@ class TestUncoveredCodePaths:
         assert len(result) == 1
         assert result[0]["symbol"] == "N/A"  # 默认值
         assert result[0]["name"] == "测试股票"
-
-

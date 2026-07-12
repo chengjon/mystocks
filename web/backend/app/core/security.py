@@ -1,5 +1,4 @@
-"""安全认证和权限管理
-"""
+"""安全认证和权限管理"""
 
 import logging
 from datetime import datetime, timedelta, timezone

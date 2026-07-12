@@ -258,9 +258,11 @@ class TurtleStrategy(BaseStrategy):
                     strength=1.0,
                     reason=(
                         f"退出信号: 价格{current_price:.2f}跌破"
-                        f"{self.parameters.get(
-                            'exit_period_s1' if self.parameters['system'] == 1 else 'exit_period_s2'
-                        )}日低点"
+                        f"{
+                            self.parameters.get(
+                                'exit_period_s1' if self.parameters['system'] == 1 else 'exit_period_s2'
+                            )
+                        }日低点"
                     ),
                 )
 
@@ -302,9 +304,11 @@ class TurtleStrategy(BaseStrategy):
                     strength=0.25,  # 初始仓位25% (1/4单位)
                     reason=(
                         f"海龟入场: 突破"
-                        f"{self.parameters.get(
-                            'entry_period_s1' if self.parameters['system'] == 1 else 'entry_period_s2'
-                        )}日高点, "
+                        f"{
+                            self.parameters.get(
+                                'entry_period_s1' if self.parameters['system'] == 1 else 'entry_period_s2'
+                            )
+                        }日高点, "
                         f"N={n_value:.2f}"
                     ),
                     stop_loss=Decimal(str(stop_loss)),

@@ -1,5 +1,4 @@
-"""监控系统API路由
-"""
+"""监控系统API路由"""
 
 from fastapi import APIRouter
 

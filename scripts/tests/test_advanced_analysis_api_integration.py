@@ -1,5 +1,4 @@
-"""
-高级分析API集成测试
+"""高级分析API集成测试
 Advanced Analysis API Integration Tests
 
 测试我们刚刚实现的12个高级分析模块的API功能
@@ -7,13 +6,14 @@ Tests the 12 advanced analysis modules API functionality we just implemented
 """
 
 import asyncio
-import httpx
 import json
 import logging
-import sys
 import os
-from typing import Dict, Any, List
-from datetime import datetime
+import sys
+from typing import Any, Dict
+
+import httpx
+
 
 # Setup project path
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -88,9 +88,8 @@ class AdvancedAnalysisAPITester:
                 data = response.json()
                 logger.info(f"Health check successful: {data.get('status', 'unknown')}")
                 return True
-            else:
-                logger.error(f"Health check failed: HTTP {response.status_code}")
-                return False
+            logger.error(f"Health check failed: HTTP {response.status_code}")
+            return False
 
         except Exception as e:
             logger.error(f"Health check exception: {e}")
@@ -267,7 +266,7 @@ class AdvancedAnalysisAPITester:
         logger.info(f"Total Tests: {results['total_tests']}")
         logger.info(f"Passed Tests: {results['passed_tests']}")
         logger.info(
-            f"Success Rate: {results['passed_tests']}/{results['total_tests']} ({results['passed_tests'] / results['total_tests'] * 100:.1f}%)"
+            f"Success Rate: {results['passed_tests']}/{results['total_tests']} ({results['passed_tests'] / results['total_tests'] * 100:.1f}%)",
         )
 
         logger.info("\n" + "-" * 40)
@@ -303,7 +302,7 @@ class AdvancedAnalysisAPITester:
         else:
             logger.warning("Some tests failed. Please check API implementation and dependencies.")
             logger.info(
-                "Suggestions: 1) Check database connections 2) Verify analysis engine dependencies 3) Check API route configuration"
+                "Suggestions: 1) Check database connections 2) Verify analysis engine dependencies 3) Check API route configuration",
             )
 
 

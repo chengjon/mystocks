@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""
-数据源格式兼容性校验工具测试套件 - 完整覆盖data_source_validator模块
+"""数据源格式兼容性校验工具测试套件 - 完整覆盖data_source_validator模块
 遵循Phase 6成功模式：功能→边界→异常→性能→集成测试
 """
 
 import sys
-import time
-import pandas as pd
 from pathlib import Path
 from unittest.mock import Mock, patch
+
+import pandas as pd
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -25,8 +25,8 @@ import pytest
 # 导入被测试的模块
 from src.utils.data_source_validator import (
     compare_data_structure,
-    validate_data_source_compatibility,
     run_compatibility_check,
+    validate_data_source_compatibility,
 )
 
 
@@ -127,12 +127,8 @@ class TestCompareDataStructure:
         df2 = pd.DataFrame({"col1": [5, 6], "col3": [7, 8]})
         errors = compare_data_structure(df1, df2)
         assert len(errors) == 2
-        assert any(
-            "真实DataFrame缺少列" in error and "['col2']" in error for error in errors
-        )
-        assert any(
-            "Mock DataFrame缺少列" in error and "['col3']" in error for error in errors
-        )
+        assert any("真实DataFrame缺少列" in error and "['col2']" in error for error in errors)
+        assert any("Mock DataFrame缺少列" in error and "['col3']" in error for error in errors)
 
     def test_dataframe_type_mismatch(self):
         """测试DataFrame类型不匹配"""
@@ -149,10 +145,7 @@ class TestCompareDataStructure:
         errors2 = compare_data_structure(dict_data, df)
         assert len(errors2) == 1
         assert "类型不一致" in errors2[0]
-        assert (
-            "Mock: <class 'dict'>, Real: <class 'pandas.core.frame.DataFrame'>"
-            in errors2[0]
-        )
+        assert "Mock: <class 'dict'>, Real: <class 'pandas.core.frame.DataFrame'>" in errors2[0]
 
         # 专门测试第74行：DataFrame vs 非DataFrame，field_path为空
         df2 = pd.DataFrame({"col1": [1, 2]})
@@ -244,10 +237,10 @@ class TestValidateDataSourceCompatibility:
             getattr(real_source, method_name).return_value = common_return
 
         # 设置带参数的方法
-        getattr(mock_source, "get_stock_list").return_value = common_return
-        getattr(real_source, "get_stock_list").return_value = common_return
-        getattr(mock_source, "get_realtime_alerts").return_value = common_return
-        getattr(real_source, "get_realtime_alerts").return_value = common_return
+        mock_source.get_stock_list.return_value = common_return
+        real_source.get_stock_list.return_value = common_return
+        mock_source.get_realtime_alerts.return_value = common_return
+        real_source.get_realtime_alerts.return_value = common_return
 
         # 执行验证
         result = validate_data_source_compatibility(mock_source, real_source)
@@ -293,10 +286,10 @@ class TestValidateDataSourceCompatibility:
             getattr(real_source, method_name).return_value = matching_return
 
         # 设置带参数的方法
-        getattr(mock_source, "get_stock_list").return_value = matching_return
-        getattr(real_source, "get_stock_list").return_value = matching_return
-        getattr(mock_source, "get_realtime_alerts").return_value = matching_return
-        getattr(real_source, "get_realtime_alerts").return_value = matching_return
+        mock_source.get_stock_list.return_value = matching_return
+        real_source.get_stock_list.return_value = matching_return
+        mock_source.get_realtime_alerts.return_value = matching_return
+        real_source.get_realtime_alerts.return_value = matching_return
 
         # 剩余方法
         remaining_methods = [
@@ -359,10 +352,10 @@ class TestValidateDataSourceCompatibility:
             getattr(real_source, method_name).return_value = normal_return
 
         # 设置带参数的方法
-        getattr(mock_source, "get_stock_list").return_value = normal_return
-        getattr(real_source, "get_stock_list").return_value = normal_return
-        getattr(mock_source, "get_realtime_alerts").return_value = normal_return
-        getattr(real_source, "get_realtime_alerts").return_value = normal_return
+        mock_source.get_stock_list.return_value = normal_return
+        real_source.get_stock_list.return_value = normal_return
+        mock_source.get_realtime_alerts.return_value = normal_return
+        real_source.get_realtime_alerts.return_value = normal_return
 
         # 执行验证
         result = validate_data_source_compatibility(mock_source, real_source)
@@ -407,10 +400,10 @@ class TestValidateDataSourceCompatibility:
             getattr(real_source, method_name).return_value = simple_return
 
         # 带参数的方法
-        getattr(mock_source, "get_stock_list").return_value = simple_return
-        getattr(real_source, "get_stock_list").return_value = simple_return
-        getattr(mock_source, "get_realtime_alerts").return_value = simple_return
-        getattr(real_source, "get_realtime_alerts").return_value = simple_return
+        mock_source.get_stock_list.return_value = simple_return
+        real_source.get_stock_list.return_value = simple_return
+        mock_source.get_realtime_alerts.return_value = simple_return
+        real_source.get_realtime_alerts.return_value = simple_return
 
         # 使用自定义股票代码执行验证
         result = validate_data_source_compatibility(mock_source, real_source, "AAPL")
@@ -439,10 +432,10 @@ class TestValidateDataSourceCompatibility:
             getattr(real_source, method_name).return_value = empty_return
 
         # 带参数的方法
-        getattr(mock_source, "get_stock_list").return_value = empty_return
-        getattr(real_source, "get_stock_list").return_value = empty_return
-        getattr(mock_source, "get_realtime_alerts").return_value = empty_return
-        getattr(real_source, "get_realtime_alerts").return_value = empty_return
+        mock_source.get_stock_list.return_value = empty_return
+        real_source.get_stock_list.return_value = empty_return
+        mock_source.get_realtime_alerts.return_value = empty_return
+        real_source.get_realtime_alerts.return_value = empty_return
 
         # 剩余方法
         remaining_methods = [
@@ -468,7 +461,10 @@ class TestRunCompatibilityCheck:
     @patch("src.utils.data_source_validator.MockDataSource")
     @patch("src.utils.data_source_validator.RealDataSource")
     def test_successful_check_function_only(
-        self, mock_real_class, mock_mock_class, mock_validate
+        self,
+        mock_real_class,
+        mock_mock_class,
+        mock_validate,
     ):
         """测试成功的检查（不包含sys.exit验证）"""
         # 模拟成功的验证结果
@@ -489,7 +485,10 @@ class TestRunCompatibilityCheck:
     @patch("src.utils.data_source_validator.MockDataSource")
     @patch("src.utils.data_source_validator.RealDataSource")
     def test_failed_check_function_only(
-        self, mock_real_class, mock_mock_class, mock_validate
+        self,
+        mock_real_class,
+        mock_mock_class,
+        mock_validate,
     ):
         """测试失败的检查（不包含sys.exit验证）"""
         # 模拟失败的验证结果
@@ -497,7 +496,7 @@ class TestRunCompatibilityCheck:
             "overall_status": "failed",
             "errors": ["Error 1", "Error 2"],
             "details": {
-                "method1": {"status": "failed", "errors": ["Structure mismatch"]}
+                "method1": {"status": "failed", "errors": ["Structure mismatch"]},
             },
         }
 
@@ -513,7 +512,10 @@ class TestRunCompatibilityCheck:
     @patch("src.utils.data_source_validator.MockDataSource")
     @patch("src.utils.data_source_validator.RealDataSource")
     def test_data_source_creation(
-        self, mock_real_class, mock_mock_class, mock_validate
+        self,
+        mock_real_class,
+        mock_mock_class,
+        mock_validate,
     ):
         """测试数据源实例创建"""
         # 模拟数据源类
@@ -535,12 +537,6 @@ class TestRunCompatibilityCheck:
         mock_mock_class.assert_called_once()
         mock_real_class.assert_called_once()
         mock_validate.assert_called_once_with(mock_instance, mock_instance)
-
-
-from scripts._test_data_source_validator_tail import (
-    TestIntegrationScenarios,
-    TestPerformanceAndScalability,
-)
 
 
 if __name__ == "__main__":

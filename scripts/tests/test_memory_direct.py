@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-直接测试内存管理功能
+"""直接测试内存管理功能
 绕过模块导入问题，直接测试核心功能
 """
 
-import sys
 import asyncio
-import time
-import psutil
 import gc
+import sys
+import time
 from datetime import datetime
+
+import psutil
+
 
 # 设置Python路径
 project_root = "/opt/claude/mystocks_spec"
@@ -100,7 +100,9 @@ def test_resource_management():
         test_resource2 = {"type": "cache", "data": "mock_data"}
 
         rm.register_resource(
-            "db_conn", test_resource1, lambda: print("数据库连接已关闭")
+            "db_conn",
+            test_resource1,
+            lambda: print("数据库连接已关闭"),
         )
         rm.register_resource("cache", test_resource2, lambda: print("缓存已清理"))
 
@@ -212,7 +214,8 @@ async def test_connection_pool_simulation():
                 self.stats["total_requests"] += 1
                 self.stats["active_connections"] += 1
                 self.stats["peak_connections"] = max(
-                    self.stats["peak_connections"], self.stats["active_connections"]
+                    self.stats["peak_connections"],
+                    self.stats["active_connections"],
                 )
 
                 # 模拟连接对象
@@ -379,10 +382,9 @@ async def main():
         print("🎉 所有直接内存管理测试通过！")
         print("✅ 内存管理核心功能正常工作")
         return True
-    else:
-        print("❌ 部分测试失败")
-        print("需要检查失败的项目")
-        return False
+    print("❌ 部分测试失败")
+    print("需要检查失败的项目")
+    return False
 
 
 if __name__ == "__main__":

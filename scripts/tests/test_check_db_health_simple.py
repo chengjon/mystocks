@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-"""
-数据库健康检查模块测试套件（简化版）
+"""数据库健康检查模块测试套件（简化版）
 基于Phase 6成功模式：功能→边界→异常→性能→集成测试
 """
 
-import sys
 import os
+import sys
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
 import pytest
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -190,86 +191,92 @@ class TestDatabaseHealthCheck:
     def test_main_function_structure(self, mock_print):
         """测试主函数结构"""
         # Mock所有数据库检查函数
-        with patch("src.utils.check_db_health.check_mysql_connection") as mock_mysql:
-            with patch(
-                "src.utils.check_db_health.check_postgresql_connection"
-            ) as mock_pg:
-                with patch(
-                    "src.utils.check_db_health.check_tdengine_connection"
-                ) as mock_td:
-                    with patch(
-                        "src.utils.check_db_health.check_redis_connection"
-                    ) as mock_redis:
-                        # 模拟所有连接都失败
-                        mock_mysql.return_value = (False, "MySQL错误")
-                        mock_pg.return_value = (False, "PostgreSQL错误")
-                        mock_td.return_value = (False, "TDengine错误")
-                        mock_redis.return_value = (False, "Redis错误")
+        with (
+            patch("src.utils.check_db_health.check_mysql_connection") as mock_mysql,
+            patch(
+                "src.utils.check_db_health.check_postgresql_connection",
+            ) as mock_pg,
+            patch(
+                "src.utils.check_db_health.check_tdengine_connection",
+            ) as mock_td,
+            patch(
+                "src.utils.check_db_health.check_redis_connection",
+            ) as mock_redis,
+        ):
+            # 模拟所有连接都失败
+            mock_mysql.return_value = (False, "MySQL错误")
+            mock_pg.return_value = (False, "PostgreSQL错误")
+            mock_td.return_value = (False, "TDengine错误")
+            mock_redis.return_value = (False, "Redis错误")
 
-                        try:
-                            from src.utils.check_db_health import main
+            try:
+                from src.utils.check_db_health import main
 
-                            exit_code = main()
-                            assert exit_code == 1  # 全部失败应该返回1
-                        except ImportError:
-                            # 如果导入失败，跳过测试
-                            pass
+                exit_code = main()
+                assert exit_code == 1  # 全部失败应该返回1
+            except ImportError:
+                # 如果导入失败，跳过测试
+                pass
 
     @patch("builtins.print")
     def test_main_function_all_success(self, mock_print):
         """测试主函数全部成功"""
-        with patch("src.utils.check_db_health.check_mysql_connection") as mock_mysql:
-            with patch(
-                "src.utils.check_db_health.check_postgresql_connection"
-            ) as mock_pg:
-                with patch(
-                    "src.utils.check_db_health.check_tdengine_connection"
-                ) as mock_td:
-                    with patch(
-                        "src.utils.check_db_health.check_redis_connection"
-                    ) as mock_redis:
-                        # 模拟所有连接都成功
-                        mock_mysql.return_value = (True, None)
-                        mock_pg.return_value = (True, None)
-                        mock_td.return_value = (True, None)
-                        mock_redis.return_value = (True, None)
+        with (
+            patch("src.utils.check_db_health.check_mysql_connection") as mock_mysql,
+            patch(
+                "src.utils.check_db_health.check_postgresql_connection",
+            ) as mock_pg,
+            patch(
+                "src.utils.check_db_health.check_tdengine_connection",
+            ) as mock_td,
+            patch(
+                "src.utils.check_db_health.check_redis_connection",
+            ) as mock_redis,
+        ):
+            # 模拟所有连接都成功
+            mock_mysql.return_value = (True, None)
+            mock_pg.return_value = (True, None)
+            mock_td.return_value = (True, None)
+            mock_redis.return_value = (True, None)
 
-                        try:
-                            from src.utils.check_db_health import main
+            try:
+                from src.utils.check_db_health import main
 
-                            exit_code = main()
-                            assert exit_code == 0  # 全部成功应该返回0
-                        except ImportError:
-                            # 如果导入失败，跳过测试
-                            pass
+                exit_code = main()
+                assert exit_code == 0  # 全部成功应该返回0
+            except ImportError:
+                # 如果导入失败，跳过测试
+                pass
 
     @patch("builtins.print")
     def test_main_function_partial_success(self, mock_print):
         """测试主函数部分成功"""
-        with patch("src.utils.check_db_health.check_mysql_connection") as mock_mysql:
-            with patch(
-                "src.utils.check_db_health.check_postgresql_connection"
-            ) as mock_pg:
-                with patch(
-                    "src.utils.check_db_health.check_tdengine_connection"
-                ) as mock_td:
-                    with patch(
-                        "src.utils.check_db_health.check_redis_connection"
-                    ) as mock_redis:
-                        # 模拟部分成功
-                        mock_mysql.return_value = (True, None)
-                        mock_pg.return_value = (False, "PostgreSQL错误")
-                        mock_td.return_value = (True, None)
-                        mock_redis.return_value = (False, "Redis错误")
+        with (
+            patch("src.utils.check_db_health.check_mysql_connection") as mock_mysql,
+            patch(
+                "src.utils.check_db_health.check_postgresql_connection",
+            ) as mock_pg,
+            patch(
+                "src.utils.check_db_health.check_tdengine_connection",
+            ) as mock_td,
+            patch(
+                "src.utils.check_db_health.check_redis_connection",
+            ) as mock_redis,
+        ):
+            # 模拟部分成功
+            mock_mysql.return_value = (True, None)
+            mock_pg.return_value = (False, "PostgreSQL错误")
+            mock_td.return_value = (True, None)
+            mock_redis.return_value = (False, "Redis错误")
 
-                        try:
-                            from src.utils.check_db_health import main
+            try:
+                from src.utils.check_db_health import main
 
-                            exit_code = main()
-                            assert exit_code == 1  # 部分失败应该返回1
-                        except ImportError:
-                            # 如果导入失败，跳过测试
-                            pass
+                exit_code = main()
+                assert exit_code == 1  # 部分失败应该返回1
+            except ImportError:
+                # 如果导入失败，跳过测试
+                pass
 
     @patch("builtins.print")
     def test_error_message_formatting(self, mock_print):
@@ -285,7 +292,7 @@ class TestDatabaseHealthCheck:
 
         for error_msg in error_types:
             with patch(
-                "src.utils.check_db_health.check_mysql_connection"
+                "src.utils.check_db_health.check_mysql_connection",
             ) as mock_mysql:
                 mock_mysql.return_value = (False, error_msg)
 
@@ -303,7 +310,7 @@ class TestDatabaseHealthCheck:
         assert db_health_file.exists()
 
         # 验证文件内容包含关键字符串
-        with open(db_health_file, "r", encoding="utf-8") as f:
+        with open(db_health_file, encoding="utf-8") as f:
             content = f.read()
 
             # 验证包含关键函数
@@ -337,7 +344,8 @@ class TestDatabaseHealthCheck:
 
         for exc in exceptions_to_test:
             with patch(
-                "src.utils.check_db_health.check_mysql_connection", side_effect=exc
+                "src.utils.check_db_health.check_mysql_connection",
+                side_effect=exc,
             ):
                 try:
                     from src.utils.check_db_health import main
@@ -358,7 +366,7 @@ class TestDatabaseHealthCheck:
         assert os.access(db_health_file, os.R_OK)
 
         # 验证文件是Python脚本（包含shebang）
-        with open(db_health_file, "r", encoding="utf-8") as f:
+        with open(db_health_file, encoding="utf-8") as f:
             first_line = f.readline().strip()
             assert first_line == "#!/usr/bin/env python3" or first_line.startswith("#!")
 

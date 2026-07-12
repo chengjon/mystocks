@@ -149,7 +149,8 @@ async def http_exception_handler(request: Request, exc: HTTPException) -> JSONRe
 
 
 async def validation_exception_handler(
-    request: Request, exc: Union[RequestValidationError, ValidationError],
+    request: Request,
+    exc: Union[RequestValidationError, ValidationError],
 ) -> JSONResponse:
     """验证异常处理器 - 处理Pydantic验证错误
 

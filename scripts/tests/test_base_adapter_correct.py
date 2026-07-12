@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
-"""
-BaseDataSourceAdapter Phase 6 测试套件 - 正确版
+"""BaseDataSourceAdapter Phase 6 测试套件 - 正确版
 基于实际API创建的测试套件
 目标：将base_adapter.py的覆盖率从55%提升到95%+
 """
 
 import sys
 import time
-import pandas as pd
-import numpy as np
+from datetime import datetime
 from pathlib import Path
 from unittest.mock import Mock, patch
+
+import numpy as np
+import pandas as pd
 import pytest
-from datetime import datetime
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -66,7 +67,7 @@ class TestBaseDataSourceAdapterCoreMethods:
     """BaseDataSourceAdapter核心方法测试"""
 
     def setup_method(self):
-        """pytest setup方法"""
+        """Pytest setup方法"""
         self.adapter = MockDataSourceAdapter("test_adapter")
 
     def test_apply_quality_check_empty_dataframe(self):
@@ -95,7 +96,7 @@ class TestBaseDataSourceAdapterCoreMethods:
                 "low": [9.8, 10.2, 10.7, 10.5, 10.9],
                 "close": [10.3, 10.8, 11.1, 10.9, 11.3],
                 "volume": [1000, 1200, 900, 1100, 1300],
-            }
+            },
         )
 
         # 配置mock验证器返回有效结果
@@ -117,7 +118,7 @@ class TestBaseDataSourceAdapterCoreMethods:
             {
                 "date": pd.date_range("2024-01-01", periods=3),
                 "close": [10.0, np.nan, 12.0],  # 包含NaN值
-            }
+            },
         )
 
         # 配置mock验证器返回质量问题
@@ -129,7 +130,7 @@ class TestBaseDataSourceAdapterCoreMethods:
                     "type": "missing_values",
                     "message": "包含缺失值",
                     "severity": "warning",
-                }
+                },
             ],
         }
 
@@ -153,7 +154,7 @@ class TestBaseDataSourceAdapterCoreMethods:
                     "type": "missing_columns",
                     "message": "缺少必需列",
                     "severity": "critical",
-                }
+                },
             ],
         }
 
@@ -168,7 +169,7 @@ class TestBaseDataSourceAdapterCoreMethods:
 
         # 配置验证器抛出异常
         self.adapter.quality_validator.validate_stock_data.side_effect = Exception(
-            "Quality check failed"
+            "Quality check failed",
         )
 
         result = self.adapter._apply_quality_check(df, "000001", "daily")
@@ -220,16 +221,14 @@ class TestBaseDataSourceAdapterCoreMethods:
         }
 
         result = self.adapter._apply_quality_check_realtime(
-            data_without_timestamp, "000001"
+            data_without_timestamp,
+            "000001",
         )
 
         assert isinstance(result, dict)
         assert result["price"] == 10.5
         # 应该自动添加时间戳
-        assert (
-            "timestamp" in result
-            or self.adapter.quality_validator.validate_stock_data.called
-        )
+        assert "timestamp" in result or self.adapter.quality_validator.validate_stock_data.called
 
     def test_apply_quality_check_realtime_exception_handling(self):
         """测试实时质量检查异常处理"""
@@ -237,7 +236,7 @@ class TestBaseDataSourceAdapterCoreMethods:
 
         # 配置验证器抛出异常
         self.adapter.quality_validator.validate_stock_data.side_effect = Exception(
-            "Realtime quality check failed"
+            "Realtime quality check failed",
         )
 
         result = self.adapter._apply_quality_check_realtime(valid_data, "000001")
@@ -251,7 +250,7 @@ class TestBaseDataSourceAdapterHelperMethods:
     """BaseDataSourceAdapter辅助方法测试"""
 
     def setup_method(self):
-        """pytest setup方法"""
+        """Pytest setup方法"""
         self.adapter = MockDataSourceAdapter("test_adapter")
 
     def test_log_data_fetch(self):
@@ -349,7 +348,7 @@ class TestBaseDataSourceAdapterQualityMethods:
     """BaseDataSourceAdapter质量方法测试"""
 
     def setup_method(self):
-        """pytest setup方法"""
+        """Pytest setup方法"""
         self.adapter = MockDataSourceAdapter("quality_test")
 
     def test_get_quality_statistics_success(self):
@@ -368,7 +367,7 @@ class TestBaseDataSourceAdapterQualityMethods:
         """测试获取质量统计信息异常处理"""
         # 配置验证器抛出异常
         self.adapter.quality_validator.thresholds = Mock(
-            side_effect=Exception("Threshold access failed")
+            side_effect=Exception("Threshold access failed"),
         )
 
         result = self.adapter.get_quality_statistics()
@@ -397,7 +396,7 @@ class TestBaseDataSourceAdapterPerformance:
     """BaseDataSourceAdapter性能测试"""
 
     def setup_method(self):
-        """pytest setup方法"""
+        """Pytest setup方法"""
         self.adapter = MockDataSourceAdapter("performance_test")
 
     def test_quality_check_performance_large_dataframe(self):
@@ -408,7 +407,7 @@ class TestBaseDataSourceAdapterPerformance:
                 "date": pd.date_range("2020-01-01", periods=10000),
                 "close": np.random.random(10000) * 100,
                 "volume": np.random.randint(1000, 10000, 10000),
-            }
+            },
         )
 
         # 配置mock验证器
@@ -478,7 +477,7 @@ class TestBaseDataSourceAdapterIntegration:
     """BaseDataSourceAdapter集成测试"""
 
     def setup_method(self):
-        """pytest setup方法"""
+        """Pytest setup方法"""
         self.adapter = MockDataSourceAdapter("integration_test")
 
     def test_complete_quality_workflow(self):
@@ -489,7 +488,7 @@ class TestBaseDataSourceAdapterIntegration:
                 "date": pd.date_range("2024-01-01", periods=10),
                 "close": [10.0, 10.5, 11.0, 10.8, 11.2, 11.5, 11.1, 11.8, 12.0, 11.9],
                 "volume": [1000, 1200, 900, 1100, 1300, 1500, 800, 1400, 1600, 1200],
-            }
+            },
         )
 
         # 配置mock验证器
@@ -497,7 +496,7 @@ class TestBaseDataSourceAdapterIntegration:
             "is_valid": True,
             "quality_score": 0.92,
             "issues": [
-                {"type": "minor_issue", "message": "轻微问题", "severity": "warning"}
+                {"type": "minor_issue", "message": "轻微问题", "severity": "warning"},
             ],
         }
 
@@ -531,7 +530,7 @@ class TestBaseDataSourceAdapterIntegration:
                 "date": pd.date_range("2024-01-01", periods=5),
                 "close": [10.0, 10.5, 11.0, 10.8, 11.2],
                 "volume": [1000, 1200, 900, 1100, 1300],
-            }
+            },
         )
 
         # 配置所有mock组件
@@ -544,7 +543,10 @@ class TestBaseDataSourceAdapterIntegration:
         with patch.object(self.adapter, "_log_data_fetch") as mock_log:
             # 执行数据获取和质量检查
             self.adapter._log_data_fetch(
-                "000001", "daily", len(test_data), list(test_data.columns)
+                "000001",
+                "daily",
+                len(test_data),
+                list(test_data.columns),
             )
             result = self.adapter._apply_quality_check(test_data, "000001", "daily")
 

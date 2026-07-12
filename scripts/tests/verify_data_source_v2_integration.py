@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-数据源管理V2集成验证脚本
+"""数据源管理V2集成验证脚本
 
 功能：
 1. 测试Phase 3"手术式替换"的向后兼容性
@@ -19,6 +18,7 @@
 import sys
 from pathlib import Path
 
+
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
@@ -28,9 +28,9 @@ from src.adapters.data_source_manager import DataSourceManager
 
 def test_old_code_compatibility():
     """测试1: 旧代码兼容性"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("测试1: 旧代码兼容性验证")
-    print("="*60)
+    print("=" * 60)
 
     try:
         # 模拟旧代码（完全不感知V2的存在）
@@ -54,15 +54,16 @@ def test_old_code_compatibility():
     except Exception as e:
         print(f"\n✗ 旧代码兼容性测试失败: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
 
 def test_v2_smart_routing():
     """测试2: V2智能路由"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("测试2: V2智能路由验证")
-    print("="*60)
+    print("=" * 60)
 
     try:
         manager = DataSourceManager(use_v2=True)
@@ -81,22 +82,23 @@ def test_v2_smart_routing():
         if len(endpoints) > 0:
             print("\n前3个接口:")
             for i, ep in enumerate(endpoints[:3]):
-                print(f"  {i+1}. {ep.get('endpoint_name')}: {ep.get('source_name')}")
+                print(f"  {i + 1}. {ep.get('endpoint_name')}: {ep.get('source_name')}")
 
         return True
 
     except Exception as e:
         print(f"\n✗ V2智能路由测试失败: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
 
 def test_disable_v2():
     """测试3: 禁用V2功能"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("测试3: 禁用V2功能验证")
-    print("="*60)
+    print("=" * 60)
 
     try:
         # 创建禁用V2的管理器
@@ -130,15 +132,16 @@ def test_disable_v2():
     except Exception as e:
         print(f"\n✗ 禁用V2功能测试失败: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
 
 def test_new_methods():
     """测试4: 新增便捷方法"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("测试4: 新增便捷方法验证")
-    print("="*60)
+    print("=" * 60)
 
     try:
         manager = DataSourceManager(use_v2=True)
@@ -162,7 +165,7 @@ def test_new_methods():
         if not df.empty:
             print(f"✓ list_all_endpoints() 可用: 返回{len(df)}条记录")
             print("\n前3个端点:")
-            print(df[['endpoint_name', 'source_name', 'data_category']].head(3).to_string(index=False))
+            print(df[["endpoint_name", "source_name", "data_category"]].head(3).to_string(index=False))
         else:
             print("⚠ list_all_endpoints() 返回空DataFrame")
 
@@ -171,15 +174,16 @@ def test_new_methods():
     except Exception as e:
         print(f"\n✗ 新增便捷方法测试失败: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
 
 def test_backward_compatible_api():
     """测试5: 向后兼容的API调用"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("测试5: 向后兼容API调用验证")
-    print("="*60)
+    print("=" * 60)
 
     try:
         manager = DataSourceManager()
@@ -213,15 +217,16 @@ def test_backward_compatible_api():
     except Exception as e:
         print(f"\n✗ 向后兼容API调用测试失败: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
 
 def test_fallback_mechanism():
     """测试6: Fallback机制"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("测试6: Fallback机制验证")
-    print("="*60)
+    print("=" * 60)
 
     try:
         manager = DataSourceManager()
@@ -244,15 +249,16 @@ def test_fallback_mechanism():
     except Exception as e:
         print(f"\n✗ Fallback机制测试失败: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
 
 def generate_integration_report(results):
     """生成集成测试报告"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("Phase 3 集成测试报告")
-    print("="*60)
+    print("=" * 60)
 
     total_tests = len(results)
     passed_tests = sum(1 for r in results.values() if r is True)
@@ -261,7 +267,7 @@ def generate_integration_report(results):
     print(f"\n总测试数: {total_tests}")
     print(f"通过: {passed_tests}")
     print(f"失败: {failed_tests}")
-    print(f"通过率: {passed_tests/total_tests*100:.1f}%")
+    print(f"通过率: {passed_tests / total_tests * 100:.1f}%")
 
     print("\n详细结果:")
     for test_name, result in results.items():
@@ -274,7 +280,7 @@ def generate_integration_report(results):
 
         print(f"  {status} - {test_name}")
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
 
     if failed_tests == 0:
         print("✓ 所有测试通过！Phase 3集成成功。")
@@ -290,7 +296,7 @@ def generate_integration_report(results):
     else:
         print("✗ 部分测试失败，请检查错误信息。")
 
-    print("="*60)
+    print("=" * 60)
 
 
 def main():
@@ -318,5 +324,5 @@ def main():
     sys.exit(0 if failed == 0 else 1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

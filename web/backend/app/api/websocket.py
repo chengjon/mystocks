@@ -28,7 +28,9 @@ router = APIRouter(prefix="/ws", tags=["websocket"])
 
 @router.websocket("/events")
 async def websocket_events(
-    websocket: WebSocket, token: Optional[str] = Query(None), channels: Optional[str] = Query(None),
+    websocket: WebSocket,
+    token: Optional[str] = Query(None),
+    channels: Optional[str] = Query(None),
 ):
     """WebSocket endpoint for real-time events
 

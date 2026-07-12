@@ -56,6 +56,7 @@ router = APIRouter(prefix="/api/v1/strategy", tags=["策略管理-Week1"])
 # 延迟初始化监控数据库（避免导入时需要完整环境变量）
 monitoring_db = None
 
+
 @router.get("/backtest/results/{backtest_id}")
 async def get_backtest_result(backtest_id: int) -> Dict[str, Any]:
     """获取回测详细结果"""
@@ -193,4 +194,3 @@ async def get_backtest_chart_data(backtest_id: int) -> Dict[str, List]:
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取图表数据失败: {e!s}")
-

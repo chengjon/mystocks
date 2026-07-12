@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-数据质量验证器测试套件 - Phase 6 成功模式
+"""数据质量验证器测试套件 - Phase 6 成功模式
 提供完整的数据质量验证功能测试，包括Mock监控器和各种数据场景
 覆盖功能、边界、异常、性能、集成等全方位测试
 """
@@ -8,15 +7,17 @@
 import sys
 from pathlib import Path
 
+
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-import pytest
-from unittest.mock import Mock, patch
-import pandas as pd
-import numpy as np
 from datetime import datetime
+from unittest.mock import Mock, patch
+
+import numpy as np
+import pandas as pd
+import pytest
 
 # 导入被测试的模块
 from src.core.data_quality_validator import (
@@ -24,6 +25,7 @@ from src.core.data_quality_validator import (
     create_validator,
     validate_dataframe,
 )
+
 
 class TestDataQualityValidatorOutliers:
     """异常值测试类"""
@@ -40,10 +42,10 @@ class TestDataQualityValidatorOutliers:
         df = pd.DataFrame(
             {
                 "date": pd.date_range(start="2024-01-01", periods=100).strftime(
-                    "%Y-%m-%d"
+                    "%Y-%m-%d",
                 ),
                 "close": prices,
-            }
+            },
         )
 
         issues = validator._check_outliers(df)
@@ -59,10 +61,10 @@ class TestDataQualityValidatorOutliers:
         df = pd.DataFrame(
             {
                 "date": pd.date_range(start="2024-01-01", periods=55).strftime(
-                    "%Y-%m-%d"
+                    "%Y-%m-%d",
                 ),
                 "close": prices,
-            }
+            },
         )
 
         issues = validator._check_outliers(df)
@@ -80,9 +82,8 @@ class TestDataQualityValidatorOutliers:
             {
                 "date": dates,
                 "open": [100.0 + i * 0.1 for i in range(20)],  # 正常数据
-                "close": [100.0 + i * 0.1 for i in range(15)]
-                + [500.0] * 5,  # 后5个是异常值
-            }
+                "close": [100.0 + i * 0.1 for i in range(15)] + [500.0] * 5,  # 后5个是异常值
+            },
         )
 
         issues = validator._check_outliers(df)
@@ -130,10 +131,11 @@ class TestDataQualityValidatorOutliers:
         df = pd.DataFrame(
             {
                 "date": pd.date_range(
-                    start="2024-01-01", periods=len(normal_data)
+                    start="2024-01-01",
+                    periods=len(normal_data),
                 ).strftime("%Y-%m-%d"),
                 "close": normal_data,
-            }
+            },
         )
 
         issues = validator._check_outliers(df)
@@ -145,10 +147,10 @@ class TestDataQualityValidatorOutliers:
         df = pd.DataFrame(
             {
                 "date": pd.date_range(start="2024-01-01", periods=10).strftime(
-                    "%Y-%m-%d"
+                    "%Y-%m-%d",
                 ),
                 "close": [100.0] * 10,  # 所有值相同，没有变异
-            }
+            },
         )
 
         issues = validator._check_outliers(df)
@@ -160,7 +162,7 @@ class TestDataQualityValidatorOutliers:
             {
                 "date": ["2024-01-01", "2024-01-02"],
                 "close": [100.0, 1000.0],  # 只有2个数据点，第二个可能被识别为异常值
-            }
+            },
         )
 
         issues = validator._check_outliers(df)
@@ -183,7 +185,7 @@ class TestDataQualityValidatorStatistics:
                 "date": ["2024-01-01", "2024-01-02", "2024-01-03"],
                 "close": [100.0, 101.0, 102.0],
                 "volume": [1000, 1100, 1200],
-            }
+            },
         )
 
         stats = validator._calculate_statistics(df)
@@ -199,7 +201,7 @@ class TestDataQualityValidatorStatistics:
             {
                 "date": ["2024-01-01", "2024-01-15", "2024-01-31"],
                 "close": [100.0, 101.0, 102.0],
-            }
+            },
         )
 
         stats = validator._calculate_statistics(df)
@@ -219,7 +221,7 @@ class TestDataQualityValidatorStatistics:
                 "low": [95.0, 96.0, 97.0],
                 "close": [102.0, 103.0, 104.0],
                 "volume": [1000, 1100, 1200],
-            }
+            },
         )
 
         stats = validator._calculate_statistics(df)
@@ -243,7 +245,7 @@ class TestDataQualityValidatorStatistics:
             {
                 "date": ["invalid-date", "2024-01-02", "2024-01-03"],
                 "close": [100.0, 101.0, 102.0],
-            }
+            },
         )
 
         stats = validator._calculate_statistics(df)
@@ -267,7 +269,7 @@ class TestDataQualityValidatorStatistics:
                 "open": [100.0, None, 102.0],
                 "close": [101.0, 102.0, 103.0],
                 "volume": [1000, None, 1200],
-            }
+            },
         )
 
         stats = validator._calculate_statistics(df)
@@ -283,7 +285,7 @@ class TestDataQualityValidatorStatistics:
                 "date": pd.date_range("2024-01-01", periods=1000, freq="D"),
                 "close": np.random.randn(1000) * 100 + 1000,
                 "volume": np.random.randint(1000, 1000000, 1000),
-            }
+            },
         )
 
         stats = validator._calculate_statistics(df)
@@ -312,7 +314,7 @@ class TestDataQualityValidatorIntegration:
                 "date": ["2024-01-01", "2024-01-02"],
                 "close": [100.0, 101.0],
                 "volume": [1000, 1100],
-            }
+            },
         )
 
         result = validator.validate_stock_data(df, "600519", "daily")
@@ -321,16 +323,13 @@ class TestDataQualityValidatorIntegration:
         # 验证监控器被调用
         assert len(mock_monitor.completeness_checks) == 1
         assert mock_monitor.completeness_checks[0]["classification"] == "MARKET_DATA"
-        assert (
-            mock_monitor.completeness_checks[0]["database_type"] == "INTEGRATION_TEST"
-        )
-        assert (
-            mock_monitor.completeness_checks[0]["table_name"]
-            == "integration_test_daily"
-        )
+        assert mock_monitor.completeness_checks[0]["database_type"] == "INTEGRATION_TEST"
+        assert mock_monitor.completeness_checks[0]["table_name"] == "integration_test_daily"
 
     def test_validate_stock_data_critical_issues_monitor_logging(
-        self, validator, mock_monitor
+        self,
+        validator,
+        mock_monitor,
     ):
         """测试严重问题时监控器日志记录"""
         # 创建包含严重问题的数据
@@ -339,7 +338,7 @@ class TestDataQualityValidatorIntegration:
                 "date": ["2024-01-01", "2024-01-02"],
                 "close": [-100.0, 101.0],  # 负价格 - 严重问题
                 "volume": [1000, 1100],
-            }
+            },
         )
 
         result = validator.validate_stock_data(df, "600519", "daily")
@@ -350,7 +349,9 @@ class TestDataQualityValidatorIntegration:
         assert mock_monitor.accuracy_checks[0]["invalid_records"] > 0
 
     def test_validate_stock_data_monitoring_exception_handling(
-        self, validator, mock_monitor
+        self,
+        validator,
+        mock_monitor,
     ):
         """测试监控器异常处理"""
 
@@ -365,7 +366,7 @@ class TestDataQualityValidatorIntegration:
                 "date": ["2024-01-01", "2024-01-02"],
                 "close": [100.0, 101.0],
                 "volume": [1000, 1100],
-            }
+            },
         )
 
         # 即使监控器异常，验证也应该正常完成
@@ -380,7 +381,7 @@ class TestDataQualityValidatorIntegration:
                 "date": ["2024-01-01"] * 20,
                 "close": [100.0] * 15 + [-50.0] * 5,  # 25%负价格
                 "volume": [1000] * 18 + [-100] * 2,  # 10%负成交量
-            }
+            },
         )
 
         result = validator.validate_stock_data(df, "600519", "daily")
@@ -406,7 +407,7 @@ class TestDataQualityValidatorIntegration:
                     "low": 95.0 + i * 0.001,
                     "close": 102.0 + i * 0.001,
                     "volume": 1000000 + i * 100,
-                }
+                },
             )
 
         df = pd.DataFrame(large_data)
@@ -430,7 +431,7 @@ class TestConvenienceFunctions:
     def test_create_validator(self):
         """测试创建验证器便捷函数"""
         with patch(
-            "src.core.data_quality_validator.get_quality_monitor"
+            "src.core.data_quality_validator.get_quality_monitor",
         ) as mock_get_monitor:
             mock_monitor = Mock()
             mock_get_monitor.return_value = mock_monitor
@@ -444,7 +445,7 @@ class TestConvenienceFunctions:
     def test_validate_dataframe_convenience_function(self):
         """测试便捷的数据验证函数"""
         with patch(
-            "src.core.data_quality_validator.create_validator"
+            "src.core.data_quality_validator.create_validator",
         ) as mock_create_validator:
             mock_validator = Mock()
             mock_validator.validate_stock_data.return_value = {
@@ -460,7 +461,7 @@ class TestConvenienceFunctions:
                     "date": ["2024-01-01", "2024-01-02"],
                     "close": [100.0, 101.0],
                     "volume": [1000, 1100],
-                }
+                },
             )
 
             result = validate_dataframe(df, "test_source", "600519", "daily")
@@ -468,7 +469,9 @@ class TestConvenienceFunctions:
             # 验证调用了正确的参数
             mock_create_validator.assert_called_once_with("test_source")
             mock_validator.validate_stock_data.assert_called_once_with(
-                df, "600519", "daily"
+                df,
+                "600519",
+                "daily",
             )
             assert result["is_valid"] is True
 
@@ -491,7 +494,7 @@ class TestDataQualityValidatorEdgeCases:
                 "low": [95.0],
                 "close": [102.0],
                 "volume": [1000],
-            }
+            },
         )
 
         result = validator.validate_stock_data(df, "600519", "daily")
@@ -509,7 +512,7 @@ class TestDataQualityValidatorEdgeCases:
                 "price": [1680.50],
                 "volume": [1000],
                 "timestamp": [datetime.now().isoformat()],
-            }
+            },
         )
 
         result = validator.validate_stock_data(df, "600519", "realtime")
@@ -523,7 +526,7 @@ class TestDataQualityValidatorEdgeCases:
                 "date": ["2024-01-01", "2024-01-02"],
                 "close": [1e10, 1e11],  # 极大数值
                 "volume": [1e15, 1e16],  # 极大成交量
-            }
+            },
         )
 
         result = validator.validate_stock_data(df, "600519", "daily")
@@ -538,7 +541,7 @@ class TestDataQualityValidatorEdgeCases:
                 "date": ["2024-01-01", "2024-01-02"],
                 "close": [1e-10, 1e-8],  # 极小数值
                 "volume": [1e-6, 1e-5],  # 极小成交量
-            }
+            },
         )
 
         result = validator.validate_stock_data(df, "600519", "daily")
@@ -556,7 +559,7 @@ class TestDataQualityValidatorEdgeCases:
                 "low": [95.0, 0.0],  # 零最低价可能合理
                 "close": [102.0, 0.0],  # 零收盘价可能合理
                 "volume": [1000, 0],  # 零成交量可能合理（停牌）
-            }
+            },
         )
 
         result = validator.validate_stock_data(df, "600519", "daily")
@@ -571,7 +574,7 @@ class TestDataQualityValidatorEdgeCases:
                 "date": ["2024-01-01", "2024-01-02"],
                 "close": [100.0, float("inf")],  # 无穷大值
                 "volume": [1000, -float("inf")],  # 负无穷大值
-            }
+            },
         )
 
         result = validator.validate_stock_data(df, "600519", "daily")
@@ -596,7 +599,7 @@ class TestDataQualityValidatorEdgeCases:
                 "low": [95.0, 96.0, 97.0, 94.0, 95.0],  # 正常数据
                 "close": [102.0, 103.0, None, 104.0, -48.0],  # 混合正常、缺失、异常值
                 "volume": [1000, 1100, 1200, -500, 1500],  # 包含负值
-            }
+            },
         )
 
         result = validator.validate_stock_data(df, "600519", "daily")
@@ -606,10 +609,7 @@ class TestDataQualityValidatorEdgeCases:
         issue_types = [issue["type"] for issue in result["issues"]]
 
         # 检查是否有各种类型的问题
-        assert any(
-            issue in issue_types
-            for issue in ["missing_data", "invalid_price", "invalid_volume"]
-        )
+        assert any(issue in issue_types for issue in ["missing_data", "invalid_price", "invalid_volume"])
         assert result["quality_score"] < 70.0
         assert result["is_valid"] is False
 
@@ -626,7 +626,7 @@ class TestDataQualityValidatorEdgeCases:
                     periods=len(normal_prices) + len(extreme_outliers),
                 ),
                 "close": normal_prices + extreme_outliers,
-            }
+            },
         )
 
         result = validator.validate_stock_data(df, "600519", "daily")
@@ -644,7 +644,7 @@ class TestDataQualityValidatorEdgeCases:
                 "open": [None, None, None],
                 "close": [None, None, None],
                 "volume": [None, None, None],
-            }
+            },
         )
 
         result = validator.validate_stock_data(df, "600519", "daily")
@@ -664,7 +664,7 @@ class TestDataQualityValidatorEdgeCases:
                 "price": [100.0, 200.0],
                 "volume": [1000, 2000],
                 "timestamp": ["2024-01-01T09:30:00Z", "2024-01-02T10:30:00Z"],
-            }
+            },
         )
 
         # 实时数据类型测试
@@ -673,5 +673,3 @@ class TestDataQualityValidatorEdgeCases:
         assert isinstance(result, dict)
         # 特殊字符应该不导致崩溃
         assert "is_valid" in result
-
-

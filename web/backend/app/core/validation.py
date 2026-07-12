@@ -1,5 +1,4 @@
-"""输入验证和安全处理中间件
-"""
+"""输入验证和安全处理中间件"""
 
 import html
 import logging

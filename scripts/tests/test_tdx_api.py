@@ -1,16 +1,18 @@
-"""
-测试TDX API接口
-"""
+"""测试TDX API接口"""
 
-import sys
 import os
+import sys
+
 
 # 添加项目路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "web/backend"))
 
-from fastapi.testclient import TestClient
-from app.main import app
 import json
+
+from fastapi.testclient import TestClient
+
+from app.main import app
+
 
 client = TestClient(app)
 
@@ -28,16 +30,16 @@ def get_auth_token():
     """获取认证令牌"""
     print("\n=== 获取认证令牌 ===")
     response = client.post(
-        "/api/auth/login", data={"username": "admin", "password": "admin123"}
+        "/api/auth/login",
+        data={"username": "admin", "password": "admin123"},
     )
     print(f"Login Status: {response.status_code}")
     if response.status_code == 200:
         token = response.json()["access_token"]
         print(f"Token: {token[:50]}...")
         return token
-    else:
-        print(f"Login failed: {response.json()}")
-        return None
+    print(f"Login failed: {response.json()}")
+    return None
 
 
 def test_stock_quote(token):

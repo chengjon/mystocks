@@ -189,7 +189,6 @@ class PerformanceMiddleware:
                 in_progress.dec()
 
 
-
 def metrics_endpoint() -> Response:
     """Prometheus metrics endpoint"""
     return Response(

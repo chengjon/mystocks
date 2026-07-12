@@ -93,7 +93,8 @@ async def get_fund_flow(
             # 熔断器打开，使用降级策略返回缓存数据
             logger.warning("⚠️ Circuit breaker for market_data is OPEN, returning cached/empty data")
             return create_success_response(
-                data={"fund_flow": [], "total": 0}, message="市场数据服务暂不可用，请稍后重试",
+                data={"fund_flow": [], "total": 0},
+                message="市场数据服务暂不可用，请稍后重试",
             )
 
         # 使用数据源工厂获取市场数据
@@ -147,7 +148,8 @@ async def get_fund_flow(
             fund_flow_data.append(transformed)
 
         return create_success_response(
-            data={"fund_flow": fund_flow_data, "total": len(fund_flow_data)}, message=f"获取{symbol}资金流向数据成功",
+            data={"fund_flow": fund_flow_data, "total": len(fund_flow_data)},
+            message=f"获取{symbol}资金流向数据成功",
         )
 
     except ValidationError as ve:
@@ -158,7 +160,9 @@ async def get_fund_flow(
         return create_error_response(error_code="VALIDATION_ERROR", message="输入参数验证失败", details=error_details)
     except Exception as e:
         raise BusinessException(
-            detail=f"获取资金流向数据失败: {e!s}", status_code=500, error_code="EXTERNAL_SERVICE_ERROR",
+            detail=f"获取资金流向数据失败: {e!s}",
+            status_code=500,
+            error_code="EXTERNAL_SERVICE_ERROR",
         )
 
 
@@ -177,7 +181,9 @@ async def refresh_fund_flow(
 
         if not result["success"]:
             raise BusinessException(
-                detail=result.get("message", "刷新资金流向数据失败"), status_code=400, error_code="OPERATION_FAILED",
+                detail=result.get("message", "刷新资金流向数据失败"),
+                status_code=400,
+                error_code="OPERATION_FAILED",
             )
 
         return create_success_response(
@@ -189,7 +195,9 @@ async def refresh_fund_flow(
         raise
     except Exception as e:
         raise BusinessException(
-            detail=f"刷新资金流向数据时发生错误: {e!s}", status_code=500, error_code="INTERNAL_SERVER_ERROR",
+            detail=f"刷新资金流向数据时发生错误: {e!s}",
+            status_code=500,
+            error_code="INTERNAL_SERVER_ERROR",
         )
 
 
@@ -225,7 +233,9 @@ async def get_etf_list(
 
     except Exception as e:
         raise BusinessException(
-            detail=f"获取ETF列表失败: {e!s}", status_code=500, error_code="EXTERNAL_SERVICE_ERROR",
+            detail=f"获取ETF列表失败: {e!s}",
+            status_code=500,
+            error_code="EXTERNAL_SERVICE_ERROR",
         )
 
 
@@ -374,7 +384,9 @@ async def get_market_quotes(
 
     except Exception as e:
         raise BusinessException(
-            detail=f"获取实时行情失败: {e!s}", status_code=500, error_code="EXTERNAL_SERVICE_ERROR",
+            detail=f"获取实时行情失败: {e!s}",
+            status_code=500,
+            error_code="EXTERNAL_SERVICE_ERROR",
         )
 
 
@@ -406,7 +418,11 @@ async def get_stock_list(
 
             mock_manager = get_mock_data_manager()
             mock_data = mock_manager.get_data(
-                "stock_list", limit=limit, search=search, exchange=exchange, security_type=security_type,
+                "stock_list",
+                limit=limit,
+                search=search,
+                exchange=exchange,
+                security_type=security_type,
             )
             return create_success_response(
                 data={
@@ -481,7 +497,9 @@ async def get_kline_data(
     stock_code: str = Query(default="", description="股票代码（6位数字或带交易所后缀）"),
     symbol: Optional[str] = Query(None, description="股票代码别名（前端兼容）"),
     period: str = Query(
-        default="daily", description="时间周期: daily/weekly/monthly", pattern=r"^(daily|weekly|monthly)$",
+        default="daily",
+        description="时间周期: daily/weekly/monthly",
+        pattern=r"^(daily|weekly|monthly)$",
     ),
     interval: Optional[str] = Query(None, description="周期别名（前端兼容: 1d/daily, 1w/weekly, 1m/monthly）"),
     adjust: str = Query(default="qfq", description="复权类型: qfq/hfq/空字符串", pattern=r"^(qfq|hfq|)$"),
@@ -549,7 +567,9 @@ async def get_kline_data(
             # 熔断器打开，使用降级策略
             logger.warning("⚠️ Circuit breaker for market_data is OPEN, K线数据服务暂不可用")
             raise BusinessException(
-                detail="市场数据服务暂不可用，请稍后重试", status_code=503, error_code="MARKET_SERVICE_UNAVAILABLE",
+                detail="市场数据服务暂不可用，请稍后重试",
+                status_code=503,
+                error_code="MARKET_SERVICE_UNAVAILABLE",
             )
 
         service = get_stock_search_service()
@@ -657,5 +677,7 @@ async def get_kline_data(
     except Exception as e:
         # Unexpected errors (e.g., AKShare failures)
         raise BusinessException(
-            detail=f"数据源暂时不可用，请稍后重试: {e!s}", status_code=500, error_code="DATA_SOURCE_UNAVAILABLE",
+            detail=f"数据源暂时不可用，请稍后重试: {e!s}",
+            status_code=500,
+            error_code="DATA_SOURCE_UNAVAILABLE",
         )

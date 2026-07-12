@@ -1,5 +1,4 @@
-"""认证相关 API
-"""
+"""认证相关 API"""
 
 import logging
 from datetime import timedelta
@@ -134,10 +133,10 @@ async def login_for_access_token(
 
 @router.post("/logout")
 async def logout(
-    credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer()), current_user: User = Depends(get_current_user),
+    credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer()),
+    current_user: User = Depends(get_current_user),
 ) -> Dict[str, Any]:
-    """用户登出 - 撤销当前token
-    """
+    """用户登出 - 撤销当前token"""
     # 将当前token加入黑名单
     revoke_token(credentials.credentials)
     return {"message": "登出成功", "success": True}
@@ -145,8 +144,7 @@ async def logout(
 
 @router.get("/me", response_model=User)
 async def read_users_me(current_user: User = Depends(get_current_user)) -> User:
-    """获取当前用户信息
-    """
+    """获取当前用户信息"""
     return current_user
 
 
@@ -154,8 +152,7 @@ async def read_users_me(current_user: User = Depends(get_current_user)) -> User:
 async def refresh_token(
     current_user: User = Depends(get_current_user),
 ) -> Dict[str, Any]:
-    """刷新访问令牌
-    """
+    """刷新访问令牌"""
     access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
     access_token = create_access_token(
         data={
@@ -216,13 +213,14 @@ async def get_users(current_user: User = Depends(get_current_user)) -> Dict[str,
         from app.core.exceptions import BusinessException
 
         raise BusinessException(
-            detail=f"Error retrieving users: {e!s}", status_code=500, error_code="USER_RETRIEVAL_FAILED",
+            detail=f"Error retrieving users: {e!s}",
+            status_code=500,
+            error_code="USER_RETRIEVAL_FAILED",
         )
 
 
 def check_permission(user_role: str, required_role: str) -> bool:
-    """检查用户权限
-    """
+    """检查用户权限"""
     role_hierarchy = {"user": 0, "admin": 1}
 
     return role_hierarchy.get(user_role, 0) >= role_hierarchy.get(required_role, 0)
@@ -574,7 +572,9 @@ async def confirm_password_reset(reset_data: PasswordResetConfirm):
             from app.core.exceptions import BusinessException
 
             raise BusinessException(
-                detail="Invalid or expired reset token", status_code=400, error_code="INVALID_RESET_TOKEN",
+                detail="Invalid or expired reset token",
+                status_code=400,
+                error_code="INVALID_RESET_TOKEN",
             )
 
         # Check if token is for password reset
@@ -588,13 +588,17 @@ async def confirm_password_reset(reset_data: PasswordResetConfirm):
                     from app.core.exceptions import BusinessException
 
                     raise BusinessException(
-                        detail="Invalid token purpose", status_code=400, error_code="INVALID_TOKEN_PURPOSE",
+                        detail="Invalid token purpose",
+                        status_code=400,
+                        error_code="INVALID_TOKEN_PURPOSE",
                     )
             except Exception:
                 from app.core.exceptions import BusinessException
 
                 raise BusinessException(
-                    detail="Invalid or expired reset token", status_code=400, error_code="INVALID_RESET_TOKEN",
+                    detail="Invalid or expired reset token",
+                    status_code=400,
+                    error_code="INVALID_RESET_TOKEN",
                 )
 
         # Get user from token
@@ -657,4 +661,3 @@ async def confirm_password_reset(reset_data: PasswordResetConfirm):
     finally:
         if session:
             session.close()
-

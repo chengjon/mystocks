@@ -1,25 +1,27 @@
 #!/usr/bin/env python3
-"""
-DataManager Phase 6 测试套件
+"""DataManager Phase 6 测试套件
 遵循Phase 6成功模式：功能→边界→异常→性能→集成测试
 目标：将data_manager.py的覆盖率从42%提升到95%+
 """
 
 import sys
 import time
-import pandas as pd
 from pathlib import Path
 from unittest.mock import Mock, patch
+
+import pandas as pd
 import pytest
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 # 导入被测试的模块
-from src.core.data_manager import DataManager, _NullMonitoring
-from src.core.data_classification import DataClassification, DatabaseTarget
 from datetime import datetime
+
+from src.core.data_classification import DatabaseTarget, DataClassification
+from src.core.data_manager import DataManager, _NullMonitoring
 
 
 class TestNullMonitoring:
@@ -47,7 +49,9 @@ class TestNullMonitoring:
         """测试性能指标记录"""
         monitor = _NullMonitoring()
         result = monitor.record_performance_metric(
-            "metric_name", 0.5, {"tags": ["test"]}
+            "metric_name",
+            0.5,
+            {"tags": ["test"]},
         )
         assert result is True
 
@@ -285,7 +289,7 @@ class TestDataManagerSaveOperations:
                 "symbol": ["600000"],
                 "price": [10.5],
                 "volume": [1000],
-            }
+            },
         )
 
         result = manager.save_data(
@@ -308,7 +312,7 @@ class TestDataManagerSaveOperations:
         mock_db_instance.save_to_postgresql = Mock(return_value=True)
 
         test_data = pd.DataFrame(
-            {"symbol": ["600000"], "name": ["平安银行"], "industry": ["银行"]}
+            {"symbol": ["600000"], "name": ["平安银行"], "industry": ["银行"]},
         )
 
         result = manager.save_data(
@@ -466,7 +470,8 @@ class TestDataManagerLoadOperations:
         mock_db_instance.load_from_postgresql = Mock(return_value=empty_data)
 
         result = manager.load_data(
-            classification=DataClassification.REFERENCE_DATA, table_name="test_table"
+            classification=DataClassification.REFERENCE_DATA,
+            table_name="test_table",
         )
 
         assert result.empty
@@ -504,7 +509,7 @@ class TestDataManagerValidation:
         manager = DataManager(enable_monitoring=False)
 
         valid_data = pd.DataFrame(
-            {"symbol": ["600000", "000001"], "price": [10.5, 15.2]}
+            {"symbol": ["600000", "000001"], "price": [10.5, 15.2]},
         )
 
         result = manager.validate_data(valid_data)
@@ -643,7 +648,8 @@ class TestDataManagerPerformanceAndIntegration:
 
         # 加载数据
         load_result = manager.load_data(
-            classification=DataClassification.REFERENCE_DATA, table_name="test_table"
+            classification=DataClassification.REFERENCE_DATA,
+            table_name="test_table",
         )
         assert load_result.equals(test_data)
 
@@ -729,7 +735,9 @@ class TestDataManagerEdgeCasesAndErrorHandling:
 
         # Mock异常
         with patch.object(
-            manager, "get_target_database", side_effect=Exception("Database error")
+            manager,
+            "get_target_database",
+            side_effect=Exception("Database error"),
         ):
             result = manager.save_data(
                 data=test_data,
@@ -746,7 +754,9 @@ class TestDataManagerEdgeCasesAndErrorHandling:
 
         # Mock异常
         with patch.object(
-            manager, "get_target_database", side_effect=Exception("Database error")
+            manager,
+            "get_target_database",
+            side_effect=Exception("Database error"),
         ):
             result = manager.load_data(
                 classification=DataClassification.REFERENCE_DATA,

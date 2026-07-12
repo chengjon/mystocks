@@ -103,7 +103,8 @@ class WebSocketPerformanceManager:
         # 配置内存压力回调
         self.memory_optimizer.register_pressure_callback(MemoryPressureLevel.HIGH, self._on_high_memory_pressure)
         self.memory_optimizer.register_pressure_callback(
-            MemoryPressureLevel.CRITICAL, self._on_critical_memory_pressure,
+            MemoryPressureLevel.CRITICAL,
+            self._on_critical_memory_pressure,
         )
 
         # 统计

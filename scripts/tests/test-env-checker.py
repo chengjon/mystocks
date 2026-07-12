@@ -1,21 +1,22 @@
 #!/usr/bin/env python3
-"""
-测试环境状态检查工具
+"""测试环境状态检查工具
 检查测试环境的完整性和依赖状态
 
 作者: Claude Code
 生成时间: 2025-11-14
 """
 
-import os
-import sys
-import subprocess
 import json
+import os
 import platform
+import subprocess
+import sys
 import time
-import requests
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
+
+import requests
+
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", f"http://localhost:{os.getenv('FRONTEND_PORT', '3020')}")
 BACKEND_URL = os.getenv("BACKEND_URL", f"http://localhost:{os.getenv('BACKEND_PORT', '8020')}")
@@ -53,7 +54,10 @@ class TestEnvironmentChecker:
         # 检查Node.js
         try:
             result = subprocess.run(
-                ["node", "--version"], capture_output=True, text=True, timeout=10
+                ["node", "--version"],
+                capture_output=True,
+                text=True,
+                timeout=10,
             )
             if result.returncode == 0:
                 info["node_version"] = result.stdout.strip()
@@ -65,7 +69,10 @@ class TestEnvironmentChecker:
         # 检查npm
         try:
             result = subprocess.run(
-                ["npm", "--version"], capture_output=True, text=True, timeout=10
+                ["npm", "--version"],
+                capture_output=True,
+                text=True,
+                timeout=10,
             )
             if result.returncode == 0:
                 info["npm_version"] = result.stdout.strip()
@@ -182,11 +189,7 @@ class TestEnvironmentChecker:
             deps["playwright"]["exists"] = False
 
         # 计算总体状态
-        if (
-            deps["frontend"]["installed"]
-            and deps["backend"]["installed"]
-            and deps["playwright"]["browsers"]
-        ):
+        if deps["frontend"]["installed"] and deps["backend"]["installed"] and deps["playwright"]["browsers"]:
             deps["overall"] = "ready"
         elif deps["frontend"]["exists"] or deps["backend"]["exists"]:
             deps["overall"] = "partial"
@@ -221,7 +224,8 @@ class TestEnvironmentChecker:
             if response.status_code == 200:
                 services["frontend"]["status"] = "running"
                 services["frontend"]["response_time"] = round(
-                    (end_time - start_time) * 1000, 2
+                    (end_time - start_time) * 1000,
+                    2,
                 )
             else:
                 services["frontend"]["status"] = f"error_{response.status_code}"
@@ -240,7 +244,8 @@ class TestEnvironmentChecker:
             if response.status_code == 200:
                 services["backend"]["status"] = "running"
                 services["backend"]["response_time"] = round(
-                    (end_time - start_time) * 1000, 2
+                    (end_time - start_time) * 1000,
+                    2,
                 )
             else:
                 services["backend"]["status"] = f"error_{response.status_code}"
@@ -282,7 +287,7 @@ class TestEnvironmentChecker:
         for test_file in test_files:
             file_path = self.project_root / test_file
             test_config["test_files"].append(
-                {"file": test_file, "exists": file_path.exists()}
+                {"file": test_file, "exists": file_path.exists()},
             )
 
         # 检查工具文件
@@ -342,7 +347,7 @@ class TestEnvironmentChecker:
                         "file": file_name,
                         "exists": file_path.exists(),
                         "size": file_path.stat().st_size if file_path.exists() else 0,
-                    }
+                    },
                 )
 
         # 计算覆盖率
@@ -351,9 +356,7 @@ class TestEnvironmentChecker:
 
         if total_files > 0:
             coverage_percent = (existing_files / total_files) * 100
-            mock_system["coverage"] = (
-                f"{coverage_percent:.1f}% ({existing_files}/{total_files})"
-            )
+            mock_system["coverage"] = f"{coverage_percent:.1f}% ({existing_files}/{total_files})"
 
         return mock_system
 
@@ -459,7 +462,7 @@ class TestEnvironmentChecker:
         env = self.results["environment"]
         print("\n💻 系统信息:")
         print(
-            f"   平台: {env.get('platform', 'Unknown')} {env.get('platform_version', '')}"
+            f"   平台: {env.get('platform', 'Unknown')} {env.get('platform_version', '')}",
         )
         print(f"   Python: {env.get('python_version', 'Not found')}")
         print(f"   Node.js: {env.get('node_version', 'Not found')}")
@@ -530,9 +533,7 @@ class TestEnvironmentChecker:
     def save_report(self, file_path: Optional[str] = None):
         """保存报告到文件"""
         if file_path is None:
-            file_path = (
-                self.project_root / "test-results" / "environment-check-report.json"
-            )
+            file_path = self.project_root / "test-results" / "environment-check-report.json"
 
         # 确保目录存在
         file_path = Path(file_path)

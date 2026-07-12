@@ -2,6 +2,7 @@
 
 Extracted from risk_management.py to reduce file size.
 """
+
 from datetime import datetime, timedelta
 from typing import Any, Dict
 
@@ -14,6 +15,7 @@ from src.core import DataClassification
 
 
 logger = structlog.get_logger(__name__)
+
 
 class RiskCalculator:
     """风险计算核心逻辑"""
@@ -52,6 +54,7 @@ class RiskCalculator:
 
         return float(covariance / market_variance) if market_variance != 0 else 1.0
 
+
 class RiskService:
     """风险管理业务服务"""
 
@@ -67,7 +70,7 @@ class RiskService:
         try:
             # 模拟获取 K 线数据 (在真实场景中应调用 data_source)
             # 这里简化，假设从统一管理器获取
-            returns = pd.Series(np.random.normal(0, 0.02, 100)) # 模拟收益率
+            returns = pd.Series(np.random.normal(0, 0.02, 100))  # 模拟收益率
 
             calc_results = RiskCalculator.calculate_var_cvar(
                 returns,
@@ -75,12 +78,16 @@ class RiskService:
             )
 
             # 保存结果
-            result_df = pd.DataFrame([{
-                "entity_type": request_data.get("entity_type"),
-                "entity_id": entity_id,
-                "metric_date": datetime.now().date(),
-                **calc_results,
-            }])
+            result_df = pd.DataFrame(
+                [
+                    {
+                        "entity_type": request_data.get("entity_type"),
+                        "entity_id": entity_id,
+                        "metric_date": datetime.now().date(),
+                        **calc_results,
+                    }
+                ]
+            )
 
             success = self.manager.save_data_by_classification(
                 data=result_df,
@@ -115,7 +122,8 @@ class RiskService:
         try:
             # 获取最新指标
             metrics_df = self.manager.load_data_by_classification(
-                classification=DataClassification.MODEL_OUTPUT, table_name="risk_metrics",
+                classification=DataClassification.MODEL_OUTPUT,
+                table_name="risk_metrics",
             )
 
             latest_metrics = {}

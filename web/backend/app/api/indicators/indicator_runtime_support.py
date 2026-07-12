@@ -1,5 +1,4 @@
-"""指标 API 运行时支持组件。
-"""
+"""指标 API 运行时支持组件。"""
 
 import hashlib
 import json
@@ -81,7 +80,9 @@ class RateLimiter:
 
     def is_allowed(self, key: str, limit: int, window: int) -> bool:
         now = datetime.now(timezone.utc)
-        self.requests[key] = [request_time for request_time in self.requests[key] if (now - request_time).seconds < window]
+        self.requests[key] = [
+            request_time for request_time in self.requests[key] if (now - request_time).seconds < window
+        ]
 
         if len(self.requests[key]) >= limit:
             return False

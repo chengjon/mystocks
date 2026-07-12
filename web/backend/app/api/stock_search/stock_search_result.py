@@ -120,18 +120,26 @@ async def search_stocks(
         # 检查搜索频率限制
         if not check_search_rate_limit(current_user.id, max_searches_per_minute=30):
             raise BusinessException(
-                detail="搜索频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED",
+                detail="搜索频率过高，请稍后再试",
+                status_code=429,
+                error_code="RATE_LIMIT_EXCEEDED",
             )
 
         # 使用 StockListQueryModel 验证参数
         try:
             validated_params = StockListQueryModel(
-                query=q, page=page, page_size=page_size, sort_by=sort_by, sort_order=sort_order,
+                query=q,
+                page=page,
+                page_size=page_size,
+                sort_by=sort_by,
+                sort_order=sort_order,
             )
         except ValidationError as ve:
             error_details = [{"field": str(err["loc"][0]), "message": err["msg"]} for err in ve.errors()]
             return create_error_response(
-                error_code="VALIDATION_ERROR", message="输入参数验证失败", details=error_details,
+                error_code="VALIDATION_ERROR",
+                message="输入参数验证失败",
+                details=error_details,
             )
 
         # 清理搜索关键词，防止注入攻击
@@ -205,7 +213,9 @@ async def search_stocks(
                 extra=api_error.to_dict(),
             )
             raise BusinessException(
-                detail="股票搜索服务暂时不可用，请稍后重试", status_code=503, error_code="SERVICE_UNAVAILABLE",
+                detail="股票搜索服务暂时不可用，请稍后重试",
+                status_code=503,
+                error_code="SERVICE_UNAVAILABLE",
             )
         except Exception as api_error:
             circuit_breaker.record_failure()
@@ -227,7 +237,9 @@ async def search_stocks(
     except (DataFetchError, DataValidationError, ServiceError) as e:
         logger.error("Stock search failed for user {current_user.username}: {e.message}", extra=e.to_dict())
         raise BusinessException(
-            detail="搜索参数无效或数据源暂时不可用，请稍后重试", status_code=400, error_code="INVALID_SEARCH_PARAMS",
+            detail="搜索参数无效或数据源暂时不可用，请稍后重试",
+            status_code=400,
+            error_code="INVALID_SEARCH_PARAMS",
         )
     except Exception:
         logger.error("Stock search failed for user {current_user.username}: {str(e)}")
@@ -257,7 +269,9 @@ async def get_stock_quote(
         # 检查访问频率限制
         if not check_search_rate_limit(current_user.id, max_searches_per_minute=60):
             raise BusinessException(
-                detail="访问频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED",
+                detail="访问频率过高，请稍后再试",
+                status_code=429,
+                error_code="RATE_LIMIT_EXCEEDED",
             )
 
         # 验证股票代码格式
@@ -307,10 +321,13 @@ async def get_stock_quote(
         raise BusinessException(detail=str(e), status_code=400, error_code="VALIDATION_ERROR")
     except (DataFetchError, NetworkError, ServiceError) as e:
         logger.error(
-            f"Get stock quote failed for user {current_user.username}, symbol {symbol}: {e.message}", extra=e.to_dict(),
+            f"Get stock quote failed for user {current_user.username}, symbol {symbol}: {e.message}",
+            extra=e.to_dict(),
         )
         raise BusinessException(
-            detail="数据源暂时不可用，请稍后重试", status_code=503, error_code="SERVICE_UNAVAILABLE",
+            detail="数据源暂时不可用，请稍后重试",
+            status_code=503,
+            error_code="SERVICE_UNAVAILABLE",
         )
     except Exception:
         logger.error("Get stock quote failed for user {current_user.username}, symbol %(symbol)s: {str(e)}")
@@ -352,12 +369,16 @@ async def get_company_profile(
     except (DataFetchError, ServiceError) as e:
         logger.error("Get company profile failed for symbol {symbol}: {e.message}", extra=e.to_dict())
         raise BusinessException(
-            detail="公司信息服务暂时不可用，请稍后重试", status_code=503, error_code="COMPANY_INFO_SERVICE_UNAVAILABLE",
+            detail="公司信息服务暂时不可用，请稍后重试",
+            status_code=503,
+            error_code="COMPANY_INFO_SERVICE_UNAVAILABLE",
         )
     except Exception:
         logger.error("Get company profile failed for symbol %(symbol)s: {str(e)}")
         raise BusinessException(
-            detail="获取公司信息失败，请稍后重试", status_code=500, error_code="COMPANY_INFO_RETRIEVAL_FAILED",
+            detail="获取公司信息失败，请稍后重试",
+            status_code=500,
+            error_code="COMPANY_INFO_RETRIEVAL_FAILED",
         )
 
 
@@ -401,7 +422,9 @@ async def get_stock_news(
     except (DataFetchError, ServiceError, NetworkError) as e:
         logger.error("Get stock news failed for symbol {symbol}: {e.message}", extra=e.to_dict())
         raise BusinessException(
-            detail="新闻服务暂时不可用，请稍后重试", status_code=503, error_code="NEWS_SERVICE_UNAVAILABLE",
+            detail="新闻服务暂时不可用，请稍后重试",
+            status_code=503,
+            error_code="NEWS_SERVICE_UNAVAILABLE",
         )
     except Exception:
         logger.error("Get stock news failed for symbol %(symbol)s: {str(e)}")
@@ -435,12 +458,16 @@ async def get_market_news(
     except (DataFetchError, ServiceError, NetworkError) as e:
         logger.error("Get market news failed for category {category}: {e.message}", extra=e.to_dict())
         raise BusinessException(
-            detail="市场新闻服务暂时不可用，请稍后重试", status_code=503, error_code="MARKET_NEWS_SERVICE_UNAVAILABLE",
+            detail="市场新闻服务暂时不可用，请稍后重试",
+            status_code=503,
+            error_code="MARKET_NEWS_SERVICE_UNAVAILABLE",
         )
     except Exception:
         logger.error("Get market news failed for category %(category)s: {str(e)}")
         raise BusinessException(
-            detail="获取市场新闻失败，请稍后重试", status_code=500, error_code="MARKET_NEWS_RETRIEVAL_FAILED",
+            detail="获取市场新闻失败，请稍后重试",
+            status_code=500,
+            error_code="MARKET_NEWS_RETRIEVAL_FAILED",
         )
 
 
@@ -481,7 +508,9 @@ async def get_recommendation_trends(symbol: str, current_user: User = Depends(ge
     except Exception:
         logger.error("Get recommendation trends failed for symbol %(symbol)s: {str(e)}")
         raise BusinessException(
-            detail="获取分析师推荐失败，请稍后重试", status_code=500, error_code="RECOMMENDATION_RETRIEVAL_FAILED",
+            detail="获取分析师推荐失败，请稍后重试",
+            status_code=500,
+            error_code="RECOMMENDATION_RETRIEVAL_FAILED",
         )
 
 
@@ -588,21 +617,27 @@ async def get_search_analytics(
         raise
     except (DatabaseNotFoundError, DataValidationError) as e:
         logger.error(
-            f"Failed to get search analytics for admin {current_user.username}: {e.message}", extra=e.to_dict(),
+            f"Failed to get search analytics for admin {current_user.username}: {e.message}",
+            extra=e.to_dict(),
         )
         raise BusinessException(
-            detail="获取搜索分析数据失败", status_code=500, error_code="SEARCH_ANALYTICS_DATA_RETRIEVAL_FAILED",
+            detail="获取搜索分析数据失败",
+            status_code=500,
+            error_code="SEARCH_ANALYTICS_DATA_RETRIEVAL_FAILED",
         )
     except Exception:
         logger.error("Failed to get search analytics for admin {current_user.username}: {str(e)}")
         raise BusinessException(
-            detail="获取搜索分析数据失败", status_code=500, error_code="SEARCH_ANALYTICS_DATA_RETRIEVAL_FAILED",
+            detail="获取搜索分析数据失败",
+            status_code=500,
+            error_code="SEARCH_ANALYTICS_DATA_RETRIEVAL_FAILED",
         )
 
 
 @router.post("/analytics/cleanup", response_model=APIResponse)
 async def cleanup_search_analytics(
-    days: int = Query(7, description="保留最近几天的数据", ge=1, le=30), current_user: User = Depends(get_current_user),
+    days: int = Query(7, description="保留最近几天的数据", ge=1, le=30),
+    current_user: User = Depends(get_current_user),
 ):
     """清理旧的搜索分析数据
 
@@ -643,13 +678,18 @@ async def cleanup_search_analytics(
         raise
     except (DatabaseNotFoundError, DatabaseOperationError) as e:
         logger.error(
-            f"Failed to cleanup search analytics for admin {current_user.username}: {e.message}", extra=e.to_dict(),
+            f"Failed to cleanup search analytics for admin {current_user.username}: {e.message}",
+            extra=e.to_dict(),
         )
         raise BusinessException(
-            detail="清理搜索分析数据失败", status_code=500, error_code="SEARCH_ANALYTICS_DATA_CLEANUP_FAILED",
+            detail="清理搜索分析数据失败",
+            status_code=500,
+            error_code="SEARCH_ANALYTICS_DATA_CLEANUP_FAILED",
         )
     except Exception:
         logger.error("Failed to cleanup search analytics for admin {current_user.username}: {str(e)}")
         raise BusinessException(
-            detail="清理搜索分析数据失败", status_code=500, error_code="SEARCH_ANALYTICS_DATA_CLEANUP_FAILED",
+            detail="清理搜索分析数据失败",
+            status_code=500,
+            error_code="SEARCH_ANALYTICS_DATA_CLEANUP_FAILED",
         )

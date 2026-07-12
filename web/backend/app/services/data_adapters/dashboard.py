@@ -1,5 +1,5 @@
-"""仪表盘数据源适配器
-"""
+"""仪表盘数据源适配器"""
+
 import logging
 import random
 import time
@@ -17,6 +17,7 @@ from .base import DataSourceMetrics
 
 
 logger = logging.getLogger(__name__)
+
 
 class DashboardDataSourceAdapter(IDataSource):
     """仪表盘数据源适配器 - 集成现有 Dashboard API 到数据源工厂模式"""
@@ -40,8 +41,7 @@ class DashboardDataSourceAdapter(IDataSource):
         self.last_response_time = 0.0
 
     async def get_data(self, endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
-        """从仪表盘数据源获取数据
-        """
+        """从仪表盘数据源获取数据"""
         start_time = time.time()
         self.total_requests += 1
 

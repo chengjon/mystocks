@@ -165,5 +165,3 @@ def get_monitoring_db():
 
             monitoring_db = MonitoringFallback()
     return monitoring_db
-
-

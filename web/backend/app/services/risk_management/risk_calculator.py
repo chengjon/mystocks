@@ -400,7 +400,8 @@ class RiskCalculator(RiskBase):
         """计算CVaR（条件在险价值）"""
         try:
             self._log_request_start(
-                "calculate_conditional_value_at_risk", {"alpha": alpha, "data_points": len(returns)},
+                "calculate_conditional_value_at_risk",
+                {"alpha": alpha, "data_points": len(returns)},
             )
 
             cvar = self._calculate_cvar(returns, alpha)

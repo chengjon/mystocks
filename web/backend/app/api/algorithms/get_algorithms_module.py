@@ -49,6 +49,7 @@ logger = structlog.get_logger(__name__)
 router = APIRouter(prefix="/api/v1/algorithms", tags=["量化交易算法"])
 router.include_router(naive_bayes_router)
 
+
 def get_algorithms_module():
     """延迟加载算法模块"""
     global algorithms, AlgorithmType
@@ -172,7 +173,8 @@ async def get_algorithm_info(algorithm_type: str, current_user: User = Depends(g
 
 @router.post("/train", response_model=UnifiedResponse)
 async def train_algorithm(
-    request: AlgorithmTrainRequest, current_user: User = Depends(get_current_user),
+    request: AlgorithmTrainRequest,
+    current_user: User = Depends(get_current_user),
 ) -> UnifiedResponse:
     """训练量化交易算法
 
@@ -213,7 +215,8 @@ async def train_algorithm(
 
 @router.post("/predict", response_model=UnifiedResponse)
 async def predict_with_algorithm(
-    request: AlgorithmPredictRequest, current_user: User = Depends(get_current_user),
+    request: AlgorithmPredictRequest,
+    current_user: User = Depends(get_current_user),
 ) -> UnifiedResponse:
     """使用训练好的算法进行预测
 
@@ -327,7 +330,9 @@ async def get_training_history(
 
         # 获取训练历史
         history = await algorithm_service.get_training_history(
-            model_id=model_id, algorithm_type=algorithm_type, limit=limit,
+            model_id=model_id,
+            algorithm_type=algorithm_type,
+            limit=limit,
         )
 
         return ok(
@@ -374,7 +379,9 @@ async def get_prediction_history(
 
         # 获取预测历史
         history = await algorithm_service.get_prediction_history(
-            model_id=model_id, algorithm_type=algorithm_type, limit=limit,
+            model_id=model_id,
+            algorithm_type=algorithm_type,
+            limit=limit,
         )
 
         return ok(
@@ -494,7 +501,8 @@ async def get_model_details(model_id: str, current_user: User = Depends(get_curr
 
 @router.post("/classification/decision-tree/train", response_model=UnifiedResponse)
 async def train_decision_tree_algorithm(
-    request: DecisionTreeTrainRequest, current_user: User = Depends(get_current_user),
+    request: DecisionTreeTrainRequest,
+    current_user: User = Depends(get_current_user),
 ) -> UnifiedResponse:
     """训练决策树分类算法
 
@@ -555,7 +563,8 @@ async def train_decision_tree_algorithm(
 
 @router.post("/classification/decision-tree/predict", response_model=UnifiedResponse)
 async def predict_decision_tree_algorithm(
-    request: AlgorithmPredictRequest, current_user: User = Depends(get_current_user),
+    request: AlgorithmPredictRequest,
+    current_user: User = Depends(get_current_user),
 ) -> UnifiedResponse:
     """使用训练好的决策树模型进行预测
 
@@ -589,7 +598,8 @@ async def predict_decision_tree_algorithm(
 
 
 async def get_decision_tree_feature_importance(
-    model_id: str, current_user: User = Depends(get_current_user),
+    model_id: str,
+    current_user: User = Depends(get_current_user),
 ) -> UnifiedResponse:
     """获取决策树模型的特征重要性
 
@@ -613,5 +623,3 @@ async def get_decision_tree_feature_importance(
     except Exception as e:
         logger.error("获取特征重要性失败", model_id=model_id, error=str(e))
         return server_error(message="获取特征重要性失败")
-
-

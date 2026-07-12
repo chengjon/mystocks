@@ -73,7 +73,11 @@ class RedisPubSubService:
     # ========== 预定义消息发布方法 ==========
 
     def publish_indicator_calculated(
-        self, stock_code: str, indicator_code: str, params: Dict[str, Any], success: bool = True,
+        self,
+        stock_code: str,
+        indicator_code: str,
+        params: Dict[str, Any],
+        success: bool = True,
     ) -> int:
         """发布指标计算完成事件
 
@@ -157,7 +161,8 @@ class RedisPubSubService:
 
         """
         return self.publish(
-            "config:reloaded", {"config_type": config_type, "timestamp": asyncio.get_event_loop().time()},
+            "config:reloaded",
+            {"config_type": config_type, "timestamp": asyncio.get_event_loop().time()},
         )
 
     # ========== 订阅 (Subscriber) ==========

@@ -185,7 +185,10 @@ class IndicatorInterface(ABC):
         """
         if data.length < min_required:
             raise InsufficientDataError(
-                self.ABBREVIATION, min_required, data.length, f"请将日期范围扩大至至少 {min_required} 个交易日",
+                self.ABBREVIATION,
+                min_required,
+                data.length,
+                f"请将日期范围扩大至至少 {min_required} 个交易日",
             )
 
     def validate_parameters(self, parameters: Dict[str, Any], valid_params: Dict[str, Any]) -> None:
@@ -219,7 +222,10 @@ class IndicatorInterface(ABC):
                 raise ParameterValidationError(self.ABBREVIATION, name, f"值 {value} 大于最大值 {param_def['max']}")
 
     def _create_success_result(
-        self, parameters: Dict[str, Any], values: Dict[str, np.ndarray], calculation_time_ms: float = 0.0,
+        self,
+        parameters: Dict[str, Any],
+        values: Dict[str, np.ndarray],
+        calculation_time_ms: float = 0.0,
     ) -> IndicatorResult:
         """创建成功结果"""
         data_points = len(values.get("result", values.get(list(values.keys())[0])))
@@ -243,7 +249,10 @@ class IndicatorInterface(ABC):
         )
 
     def _create_insufficient_data_result(
-        self, parameters: Dict[str, Any], required: int, actual: int,
+        self,
+        parameters: Dict[str, Any],
+        required: int,
+        actual: int,
     ) -> IndicatorResult:
         """创建数据不足结果"""
         return IndicatorResult(

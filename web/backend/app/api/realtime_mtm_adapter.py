@@ -110,7 +110,12 @@ class RealtimeMTMAdapter:
         # 这个方法由事件总线调用
 
     def register_position(
-        self, position_id: str, portfolio_id: str, symbol: str, quantity: int, avg_price: float,
+        self,
+        position_id: str,
+        portfolio_id: str,
+        symbol: str,
+        quantity: int,
+        avg_price: float,
     ) -> bool:
         """注册持仓（兼容旧接口）
 
@@ -388,7 +393,9 @@ def initialize_adapter(db_session, event_bus=None):
 
     # 创建适配器
     _adapter = RealtimeMTMAdapter(
-        portfolio_repo=portfolio_repo, valuation_service=valuation_service, event_bus=event_bus,
+        portfolio_repo=portfolio_repo,
+        valuation_service=valuation_service,
+        event_bus=event_bus,
     )
 
     logger.info("✅ RealtimeMTMAdapter initialized with DDD architecture")

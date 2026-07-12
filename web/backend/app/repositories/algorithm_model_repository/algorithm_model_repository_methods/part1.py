@@ -133,7 +133,10 @@ class AlgorithmModelRepositoryCoreMixin:
             return False
 
     async def list_models(
-        self, algorithm_type: Optional[str] = None, symbol: Optional[str] = None, is_active: bool = True,
+        self,
+        algorithm_type: Optional[str] = None,
+        symbol: Optional[str] = None,
+        is_active: bool = True,
     ) -> List[Dict[str, Any]]:
         """列出算法模型
 
@@ -239,7 +242,10 @@ class AlgorithmModelRepositoryCoreMixin:
             return None
 
     async def list_training_history(
-        self, model_id: Optional[str] = None, algorithm_type: Optional[str] = None, limit: int = 50,
+        self,
+        model_id: Optional[str] = None,
+        algorithm_type: Optional[str] = None,
+        limit: int = 50,
     ) -> List[Dict[str, Any]]:
         """列出训练历史记录
 
@@ -339,7 +345,10 @@ class AlgorithmModelRepositoryCoreMixin:
             return None
 
     async def list_prediction_history(
-        self, model_id: Optional[str] = None, algorithm_type: Optional[str] = None, limit: int = 100,
+        self,
+        model_id: Optional[str] = None,
+        algorithm_type: Optional[str] = None,
+        limit: int = 100,
     ) -> List[Dict[str, Any]]:
         """列出预测历史记录
 

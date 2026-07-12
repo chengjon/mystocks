@@ -1,29 +1,30 @@
 #!/usr/bin/env python3
-"""
-连接池配置模块测试套件
+"""连接池配置模块测试套件
 提供完整的连接池配置功能测试
 """
 
-import sys
 import os
+import sys
 from pathlib import Path
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-import pytest
 from unittest.mock import patch
+
+import pytest
 
 # 导入被测试的模块
 from src.core.connection_pool_config import (
     ConnectionPoolConfig,
-    get_pool_config,
-    get_optimal_pool_size,
-    get_production_pool_config,
-    get_development_pool_config,
-    get_test_pool_config,
     get_config_for_environment,
+    get_development_pool_config,
+    get_optimal_pool_size,
+    get_pool_config,
+    get_production_pool_config,
+    get_test_pool_config,
 )
 
 
@@ -114,7 +115,8 @@ class TestConnectionPoolConfig:
         with patch.dict(os.environ, env_vars, clear=True):
             config = ConnectionPoolConfig()
             with pytest.raises(
-                ValueError, match="Minimum connections must be at least 1"
+                ValueError,
+                match="Minimum connections must be at least 1",
             ):
                 config.validate_config()
 
@@ -136,52 +138,56 @@ class TestConnectionPoolConfig:
     def test_validate_config_timeout_too_low(self):
         """测试连接超时时间过低"""
         env_vars = {
-            "POOL_TIMEOUT": "0"  # 无效值
+            "POOL_TIMEOUT": "0",  # 无效值
         }
 
         with patch.dict(os.environ, env_vars, clear=True):
             config = ConnectionPoolConfig()
             with pytest.raises(
-                ValueError, match="Connection timeout must be at least 1"
+                ValueError,
+                match="Connection timeout must be at least 1",
             ):
                 config.validate_config()
 
     def test_validate_config_recycle_negative(self):
         """测试连接回收时间为负数"""
         env_vars = {
-            "POOL_RECYCLE": "-1"  # 负数
+            "POOL_RECYCLE": "-1",  # 负数
         }
 
         with patch.dict(os.environ, env_vars, clear=True):
             config = ConnectionPoolConfig()
             with pytest.raises(
-                ValueError, match="Connection recycle time must be non-negative"
+                ValueError,
+                match="Connection recycle time must be non-negative",
             ):
                 config.validate_config()
 
     def test_validate_config_health_check_interval_too_low(self):
         """测试健康检查间隔过低"""
         env_vars = {
-            "HEALTH_CHECK_INTERVAL": "0"  # 无效值
+            "HEALTH_CHECK_INTERVAL": "0",  # 无效值
         }
 
         with patch.dict(os.environ, env_vars, clear=True):
             config = ConnectionPoolConfig()
             with pytest.raises(
-                ValueError, match="Health check interval must be at least 1"
+                ValueError,
+                match="Health check interval must be at least 1",
             ):
                 config.validate_config()
 
     def test_validate_config_health_check_timeout_too_low(self):
         """测试健康检查超时时间过低"""
         env_vars = {
-            "HEALTH_CHECK_TIMEOUT": "0"  # 无效值
+            "HEALTH_CHECK_TIMEOUT": "0",  # 无效值
         }
 
         with patch.dict(os.environ, env_vars, clear=True):
             config = ConnectionPoolConfig()
             with pytest.raises(
-                ValueError, match="Health check timeout must be at least 1"
+                ValueError,
+                match="Health check timeout must be at least 1",
             ):
                 config.validate_config()
 
@@ -242,9 +248,7 @@ class TestConnectionPoolConfig:
             env_vars = {"ENABLE_POOL_MONITORING": env_value}
             with patch.dict(os.environ, env_vars, clear=True):
                 config = ConnectionPoolConfig()
-                assert config.enable_pool_monitoring == expected, (
-                    f"Failed for env_value: {env_value}"
-                )
+                assert config.enable_pool_monitoring == expected, f"Failed for env_value: {env_value}"
 
     def test_monitoring_enabled_default(self):
         """测试监控启用的默认值"""
@@ -488,9 +492,8 @@ class TestConnectionPoolConfigEdgeCases:
         for invalid_value in invalid_values:
             env_vars = {"POOL_MAX_CONNECTIONS": invalid_value}
 
-            with patch.dict(os.environ, env_vars, clear=True):
-                with pytest.raises(ValueError):
-                    ConnectionPoolConfig()
+            with patch.dict(os.environ, env_vars, clear=True), pytest.raises(ValueError):
+                ConnectionPoolConfig()
 
     def test_config_immutability_after_validation(self):
         """测试验证后配置的不可变性（如果需要）"""

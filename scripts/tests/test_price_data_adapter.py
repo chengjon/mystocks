@@ -1,27 +1,23 @@
 #!/usr/bin/env python3
-"""
-价格数据适配器测试套件
+"""价格数据适配器测试套件
 提供完整的price_data_adapter模块测试覆盖，遵循Phase 6成功模式
 """
 
 import sys
 from pathlib import Path
 
+
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-import pytest
+from datetime import datetime
+
 import pandas as pd
-from datetime import datetime, timedelta
+import pytest
 
 # 导入被测试的模块
 from src.adapters.price_data_adapter import PriceDataAdapter
-from scripts._test_price_data_adapter_tail import (
-    TestDataQuality,
-    TestIntegration,
-    TestPerformance,
-)
 
 
 class TestPriceDataAdapter:
@@ -221,7 +217,8 @@ class TestParameterValidation:
             if invalid_date is None:
                 continue  # 跳过None，因为类型检查会先报错
             with pytest.raises(
-                ValueError, match="Invalid start_date format|Invalid end_date format"
+                ValueError,
+                match="Invalid start_date format|Invalid end_date format",
             ):
                 adapter.get_stock_daily(symbol, invalid_date, "2024-01-05")
 

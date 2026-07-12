@@ -1,5 +1,4 @@
-"""数据源配置 CRUD API 的请求模型定义。
-"""
+"""数据源配置 CRUD API 的请求模型定义。"""
 
 from typing import Any, Dict, List, Optional
 
@@ -10,7 +9,11 @@ class DataSourceCreate(BaseModel):
     """创建数据源配置请求"""
 
     endpoint_name: str = Field(
-        ..., description="端点名称（唯一标识）", min_length=1, max_length=255, example="akshare.stock_zh_a_hist",
+        ...,
+        description="端点名称（唯一标识）",
+        min_length=1,
+        max_length=255,
+        example="akshare.stock_zh_a_hist",
     )
     source_name: str = Field(..., description="数据源名称", min_length=1, max_length=100, example="akshare")
     source_type: str = Field(..., description="数据源类型", min_length=1, max_length=50, example="http")

@@ -74,7 +74,9 @@ class RandomSearchOptimizer(BaseOptimizer):
         return params
 
     def _generate_unique_parameters(
-        self, existing: List[Dict[str, Any]], max_attempts: int = 100,
+        self,
+        existing: List[Dict[str, Any]],
+        max_attempts: int = 100,
     ) -> Optional[Dict[str, Any]]:
         """生成唯一的参数组合 (避免重复)
 
@@ -182,7 +184,7 @@ class RandomSearchOptimizer(BaseOptimizer):
                         no_improvement_count = 0
 
                     if no_improvement_count >= patience:
-                        logger.info("早停触发: 连续{patience}次无显著改进 " f"(阈值={min_improvement})")
+                        logger.info(f"早停触发: 连续{{patience}}次无显著改进 (阈值={min_improvement})")
                         break
 
                 prev_best_score = best_score

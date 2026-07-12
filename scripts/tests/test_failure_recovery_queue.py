@@ -1,25 +1,26 @@
 #!/usr/bin/env python3
-"""
-故障恢复队列测试套件
+"""故障恢复队列测试套件
 完整测试failure_recovery_queue模块的所有功能，确保100%测试覆盖率
 遵循Phase 6成功模式：功能→边界→异常→性能→集成测试
 """
 
-import sys
 import os
-import tempfile
 import shutil
+import sys
+import tempfile
 import time
 from pathlib import Path
 from unittest.mock import patch
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-import pytest
-import sqlite3
 import json
+import sqlite3
+
+import pytest
 
 # 导入被测试的模块
 from src.utils.failure_recovery_queue import FailureRecoveryQueue
@@ -93,7 +94,7 @@ class TestFailureRecoveryQueue:
         cursor = conn.cursor()
 
         cursor.execute(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
+            "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'",
         )
         tables = cursor.fetchall()
         conn.close()
@@ -153,9 +154,7 @@ class TestFailureRecoveryQueue:
         for col in columns:
             cid, col_name, col_type, notnull, dflt_value, pk = col
             assert col_name in expected_columns
-            expected_type, expected_notnull, expected_default, expected_pk = (
-                expected_columns[col_name]
-            )
+            expected_type, expected_notnull, expected_default, expected_pk = expected_columns[col_name]
             assert col_type == expected_type  # 数据类型
             assert notnull == expected_notnull  # 是否非空
             assert dflt_value == expected_default  # 默认值
@@ -579,12 +578,8 @@ class TestPerformance:
             get_time = (get_end - get_start) * 1000
 
             # 验证性能在可接受范围内
-            assert enqueue_time < 1000, (
-                f"数据大小 {len(str(data))} 入队耗时 {enqueue_time:.2f} 毫秒"
-            )
-            assert get_time < 50, (
-                f"数据大小 {len(str(data))} 获取耗时 {get_time:.2f} 毫秒"
-            )
+            assert enqueue_time < 1000, f"数据大小 {len(str(data))} 入队耗时 {enqueue_time:.2f} 毫秒"
+            assert get_time < 50, f"数据大小 {len(str(data))} 获取耗时 {get_time:.2f} 毫秒"
 
 
 class TestIntegration:
@@ -712,7 +707,9 @@ class TestIntegration:
         enqueue_start = time.time()
         for trade in trade_operations:
             queue.enqueue(
-                trade["classification"], trade["target_database"], trade["data"]
+                trade["classification"],
+                trade["target_database"],
+                trade["data"],
             )
         enqueue_time = time.time() - enqueue_start
 

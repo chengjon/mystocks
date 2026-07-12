@@ -112,11 +112,13 @@ class BYAPIAdapter(BaseAdapter):
         """获取日线数据"""
         try:
             self._log_request_start(
-                "get_stock_daily", {"stock_code": stock_code, "start_date": start_date, "end_date": end_date},
+                "get_stock_daily",
+                {"stock_code": stock_code, "start_date": start_date, "end_date": end_date},
             )
 
             result = await self._fetch_with_retry(
-                "stock/daily", {"code": stock_code, "start_date": start_date, "end_date": end_date},
+                "stock/daily",
+                {"code": stock_code, "start_date": start_date, "end_date": end_date},
             )
 
             if result and "data" in result:

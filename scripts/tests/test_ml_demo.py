@@ -1,19 +1,21 @@
-"""
-机器学习模块集成演示
+"""机器学习模块集成演示
 
 完整演示数据流: 数据读取 -> 特征工程 -> 模型训练 -> 预测
 """
 
-import sys
 import os
+import sys
+
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-import pandas as pd
 import numpy as np
+import pandas as pd
+
 from src.adapters.tdx.tdx_adapter import TdxDataSource
 from src.ml_strategy.feature_engineering import RollingFeatureGenerator
 from src.ml_strategy.price_predictor import PricePredictorStrategy
+
 
 print("=" * 60)
 print("机器学习模块集成演示")
@@ -63,7 +65,7 @@ if os.path.exists(test_file):
     for i in range(len(predictions)):
         error = predictions[i] - y_test.iloc[i]
         print(
-            f"   {i:4d}  | {y_test.iloc[i]:8.2f}  | {predictions[i]:8.2f}  | {error:6.2f}"
+            f"   {i:4d}  | {y_test.iloc[i]:8.2f}  | {predictions[i]:8.2f}  | {error:6.2f}",
         )
 
     # 步骤5: 特征重要性
@@ -99,7 +101,7 @@ df_sim = pd.DataFrame(
         "close": np.random.rand(n_samples) * 100 + 3000,
         "vol": np.random.rand(n_samples) * 1e8,
         "amount": np.random.rand(n_samples) * 1e11,
-    }
+    },
 )
 print(f"   ✅ 生成 {len(df_sim)} 条记录")
 

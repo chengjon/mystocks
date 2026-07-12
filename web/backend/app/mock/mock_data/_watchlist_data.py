@@ -1,5 +1,4 @@
-"""自选股 mock 数据辅助函数。
-"""
+"""自选股 mock 数据辅助函数。"""
 
 from datetime import datetime
 from typing import Any, Dict

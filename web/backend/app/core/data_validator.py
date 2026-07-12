@@ -172,7 +172,9 @@ class StockDataValidator:
 
     @classmethod
     def validate_api_response(
-        cls, response: Dict[str, Any], expected_fields: List[str] = None,
+        cls,
+        response: Dict[str, Any],
+        expected_fields: List[str] = None,
     ) -> Tuple[bool, List[str]]:
         """验证API响应格式"""
         errors = []
@@ -212,7 +214,8 @@ class DataConsistencyValidator:
 
     @staticmethod
     def validate_stocks_search_consistency(
-        basic_stocks: pd.DataFrame, search_results: pd.DataFrame,
+        basic_stocks: pd.DataFrame,
+        search_results: pd.DataFrame,
     ) -> ValidationResult:
         """验证搜索结果与基本数据的一致性"""
         errors = []
@@ -271,7 +274,9 @@ class DataConsistencyValidator:
 
     @staticmethod
     def validate_kline_consistency(
-        stock_symbol: str, kline_data: pd.DataFrame, expected_columns: List[str] = None,
+        stock_symbol: str,
+        kline_data: pd.DataFrame,
+        expected_columns: List[str] = None,
     ) -> ValidationResult:
         """验证K线数据的一致性和完整性"""
         errors = []

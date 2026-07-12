@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-简化的内存管理集成测试
+"""简化的内存管理集成测试
 直接测试内存管理功能而不依赖复杂的模块导入
 """
 
-import sys
 import asyncio
 import gc
+import sys
+
 
 # 设置Python路径
 project_root = "/opt/claude/mystocks_spec"
@@ -38,7 +37,9 @@ def test_memory_manager_import():
         # 获取资源管理器
         resource_manager = get_resource_manager()
         resource_manager.register_resource(
-            "test_resource", {"data": "test"}, lambda: print("Test resource cleaned up")
+            "test_resource",
+            {"data": "test"},
+            lambda: print("Test resource cleaned up"),
         )
         resource_stats = resource_manager.get_stats()
         print(f"✅ 资源管理器统计: {resource_stats}")
@@ -110,8 +111,8 @@ async def test_connection_pool_memory():
 
     try:
         # 导入数据库连接池
-        from src.core.database_pool import DatabaseConnectionPool
         from src.core.config import DatabaseConfig
+        from src.core.database_pool import DatabaseConnectionPool
 
         # 创建配置和连接池
         config = DatabaseConfig()
@@ -287,10 +288,9 @@ async def main():
         print("🎉 所有内存管理集成测试通过！")
         print("✅ 内存管理系统已成功集成到数据库连接模块")
         return True
-    else:
-        print("❌ 部分测试失败")
-        print("请检查失败的项目并修复相关问题")
-        return False
+    print("❌ 部分测试失败")
+    print("请检查失败的项目并修复相关问题")
+    return False
 
 
 if __name__ == "__main__":

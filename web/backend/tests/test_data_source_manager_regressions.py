@@ -122,7 +122,10 @@ def test_default_entry_points_follow_declared_source_of_truth_paths():
     assert expected_json_path == JSON_DATA_SOURCES_CONFIG_PATH
     assert inspect.signature(DataSourceManagerV2).parameters["yaml_config_path"].default == expected_yaml_path
     assert inspect.signature(ConfigManager).parameters["yaml_config_path"].default == expected_yaml_path
-    assert inspect.signature(backend_manager_module.DataSourceManager).parameters["config_path"].default == expected_json_path
+    assert (
+        inspect.signature(backend_manager_module.DataSourceManager).parameters["config_path"].default
+        == expected_json_path
+    )
     assert inspect.signature(DataSourceFactory).parameters["config_file"].default == expected_json_path
 
     previous_cwd = Path.cwd()

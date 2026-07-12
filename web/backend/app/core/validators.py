@@ -180,7 +180,10 @@ class NumericValidator:
 
     @staticmethod
     def validate_range(
-        value: Any, min_value: Optional[float] = None, max_value: Optional[float] = None, field_name: str = "数值",
+        value: Any,
+        min_value: Optional[float] = None,
+        max_value: Optional[float] = None,
+        field_name: str = "数值",
     ) -> Any:
         """验证数值范围
 

@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""
-测试系统运行日志API端点
+"""测试系统运行日志API端点
 验证日志查询和筛选功能
 """
 
-import requests
 import os
 from datetime import datetime
+
+import requests
+
 
 # Backend API基础URL
 BASE_URL = os.getenv("BACKEND_URL", f"http://localhost:{os.getenv('BACKEND_PORT', '8020')}")
@@ -37,17 +38,16 @@ def test_get_all_logs():
             for log in data.get("data", [])[:3]:
                 print(f"  - [{log['level']}] {log['timestamp']}: {log['message']}")
             return True
-        else:
-            print(f"❌ 请求失败: HTTP {response.status_code}")
-            print(f"   响应: {response.text}")
-            return False
+        print(f"❌ 请求失败: HTTP {response.status_code}")
+        print(f"   响应: {response.text}")
+        return False
 
     except requests.exceptions.ConnectionError:
         print(f"❌ 连接失败: 无法连接到 {BASE_URL}")
         print("   请确保Backend服务正在运行")
         return False
     except Exception as e:
-        print(f"❌ 异常: {str(e)}")
+        print(f"❌ 异常: {e!s}")
         return False
 
 
@@ -70,9 +70,7 @@ def test_filter_errors_only():
 
             # 验证所有日志都是WARNING/ERROR/CRITICAL级别
             error_logs = data.get("data", [])
-            all_errors = all(
-                log["level"] in ["WARNING", "ERROR", "CRITICAL"] for log in error_logs
-            )
+            all_errors = all(log["level"] in ["WARNING", "ERROR", "CRITICAL"] for log in error_logs)
 
             if all_errors:
                 print("✅ 验证通过: 所有日志都是问题日志")
@@ -84,12 +82,11 @@ def test_filter_errors_only():
                 print(f"  - [{log['level']}] {log['category']}: {log['message']}")
 
             return all_errors
-        else:
-            print(f"❌ 请求失败: HTTP {response.status_code}")
-            return False
+        print(f"❌ 请求失败: HTTP {response.status_code}")
+        return False
 
     except Exception as e:
-        print(f"❌ 异常: {str(e)}")
+        print(f"❌ 异常: {e!s}")
         return False
 
 
@@ -120,12 +117,11 @@ def test_filter_by_level():
                 print(f"  - [{log['level']}] {log['message']}")
 
             return all_error_level
-        else:
-            print(f"❌ 请求失败: HTTP {response.status_code}")
-            return False
+        print(f"❌ 请求失败: HTTP {response.status_code}")
+        return False
 
     except Exception as e:
-        print(f"❌ 异常: {str(e)}")
+        print(f"❌ 异常: {e!s}")
         return False
 
 
@@ -156,12 +152,11 @@ def test_filter_by_category():
                 print(f"  - [{log['category']}] {log['message']}")
 
             return all_database
-        else:
-            print(f"❌ 请求失败: HTTP {response.status_code}")
-            return False
+        print(f"❌ 请求失败: HTTP {response.status_code}")
+        return False
 
     except Exception as e:
-        print(f"❌ 异常: {str(e)}")
+        print(f"❌ 异常: {e!s}")
         return False
 
 
@@ -188,12 +183,11 @@ def test_pagination():
                 print("❌ 验证失败: 返回日志数 > limit")
 
             return len(logs) <= 5
-        else:
-            print(f"❌ 请求失败: HTTP {response.status_code}")
-            return False
+        print(f"❌ 请求失败: HTTP {response.status_code}")
+        return False
 
     except Exception as e:
-        print(f"❌ 异常: {str(e)}")
+        print(f"❌ 异常: {e!s}")
         return False
 
 
@@ -226,12 +220,11 @@ def test_logs_summary():
                 print(f"  - {category}: {count}")
 
             return True
-        else:
-            print(f"❌ 请求失败: HTTP {response.status_code}")
-            return False
+        print(f"❌ 请求失败: HTTP {response.status_code}")
+        return False
 
     except Exception as e:
-        print(f"❌ 异常: {str(e)}")
+        print(f"❌ 异常: {e!s}")
         return False
 
 

@@ -1,5 +1,5 @@
-"""板块与行业路由 (Boards & Sectors)
-"""
+"""板块与行业路由 (Boards & Sectors)"""
+
 from fastapi import APIRouter, Depends, Query
 
 from app.core.responses import ErrorCodes, create_error_response, create_success_response
@@ -9,6 +9,7 @@ from .base import akshare_market_adapter
 
 
 router = APIRouter()
+
 
 @router.get("/board/concept/cons/{symbol}", summary="获取概念板块成分股")
 async def get_concept_board_constituents(
@@ -315,4 +316,3 @@ async def get_sector_fund_flow_ranking(
 # ============================================================================
 # 上海交易所每日概况
 # ============================================================================
-

@@ -1,5 +1,4 @@
-"""监控系统API模块
-"""
+"""监控系统API模块"""
 
 # NOTE: This __init__.py should NOT be used for importing router
 # The main monitoring.py file is at app/api/monitoring.py level

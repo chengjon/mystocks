@@ -278,7 +278,9 @@ async def create_data_source(config: DataSourceCreate, request: Request, current
 
 @router.put("/{endpoint_name}", response_model=ConfigChangeResponse)
 async def update_data_source(
-    endpoint_name: str, updates: DataSourceUpdate, current_user: str = Depends(get_current_user),
+    endpoint_name: str,
+    updates: DataSourceUpdate,
+    current_user: str = Depends(get_current_user),
 ):
     """更新数据源配置
 
@@ -336,7 +338,10 @@ async def update_data_source(
             raise HTTPException(status_code=400, detail=result.error)
 
         return ConfigChangeResponse(
-            success=result.success, endpoint_name=result.endpoint_name, version=result.version, message=result.message,
+            success=result.success,
+            endpoint_name=result.endpoint_name,
+            version=result.version,
+            message=result.message,
         )
 
     except HTTPException:
@@ -379,7 +384,10 @@ async def delete_data_source(endpoint_name: str, current_user: str = Depends(get
             raise HTTPException(status_code=400, detail=result.error)
 
         return ConfigChangeResponse(
-            success=result.success, endpoint_name=result.endpoint_name, version=result.version, message=result.message,
+            success=result.success,
+            endpoint_name=result.endpoint_name,
+            version=result.version,
+            message=result.message,
         )
 
     except HTTPException:
@@ -521,7 +529,9 @@ async def batch_operations(batch_request: BatchOperationRequest, current_user: s
                     endpoint_name = op.get("endpoint_name")
                     updates = op.get("updates", {})
                     result = manager.update_endpoint(
-                        endpoint_name=endpoint_name, updates=updates, changed_by=current_user,
+                        endpoint_name=endpoint_name,
+                        updates=updates,
+                        changed_by=current_user,
                     )
 
                 elif action == "delete":
@@ -552,7 +562,11 @@ async def batch_operations(batch_request: BatchOperationRequest, current_user: s
                 results.append({"action": action, "success": False, "error": str(e)})
 
         return BatchOperationResponse(
-            total=len(batch_request.operations), succeeded=succeeded, failed=failed, results=results, errors=errors,
+            total=len(batch_request.operations),
+            succeeded=succeeded,
+            failed=failed,
+            results=results,
+            errors=errors,
         )
 
     except Exception as e:
@@ -606,7 +620,10 @@ async def get_version_history(endpoint_name: str, limit: int = Query(10, descrip
 
 @router.post("/{endpoint_name}/rollback/{version}", response_model=ConfigChangeResponse)
 async def rollback_to_version(
-    endpoint_name: str, version: int, request: RollbackRequest, current_user: str = Depends(get_current_user),
+    endpoint_name: str,
+    version: int,
+    request: RollbackRequest,
+    current_user: str = Depends(get_current_user),
 ):
     """回滚数据源配置到指定版本
 
@@ -635,7 +652,9 @@ async def rollback_to_version(
         manager = get_config_manager()
 
         result = manager.rollback_to_version(
-            endpoint_name=endpoint_name, target_version=version, changed_by=current_user,
+            endpoint_name=endpoint_name,
+            target_version=version,
+            changed_by=current_user,
         )
 
         if not result.success:
@@ -644,7 +663,10 @@ async def rollback_to_version(
             raise HTTPException(status_code=400, detail=result.error)
 
         return ConfigChangeResponse(
-            success=result.success, endpoint_name=result.endpoint_name, version=result.version, message=result.message,
+            success=result.success,
+            endpoint_name=result.endpoint_name,
+            version=result.version,
+            message=result.message,
         )
 
     except HTTPException:

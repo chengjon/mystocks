@@ -208,7 +208,10 @@ async def create_data_source(config: DataSourceCreate, request: Request, current
 
 @router.put("/{endpoint_name}", response_model=UnifiedResponse)
 async def update_data_source(
-    endpoint_name: str, updates: DataSourceUpdate, request: Request, current_user: str = Depends(get_current_user),
+    endpoint_name: str,
+    updates: DataSourceUpdate,
+    request: Request,
+    current_user: str = Depends(get_current_user),
 ):
     """更新数据源配置
 
@@ -411,7 +414,9 @@ async def list_data_sources(
 
 @router.post("/batch", response_model=UnifiedResponse)
 async def batch_operations(
-    batch_request: BatchOperationRequest, request: Request, current_user: str = Depends(get_current_user),
+    batch_request: BatchOperationRequest,
+    request: Request,
+    current_user: str = Depends(get_current_user),
 ):
     """批量操作数据源配置
 
@@ -467,7 +472,9 @@ async def batch_operations(
                         if op.updates.description is not None:
                             updates_dict["description"] = op.updates.description
                     result = manager.update_endpoint(
-                        endpoint_name=op.endpoint_name, updates=updates_dict, changed_by=current_user,
+                        endpoint_name=op.endpoint_name,
+                        updates=updates_dict,
+                        changed_by=current_user,
                     )
 
                 elif action == "delete":
@@ -609,7 +616,9 @@ async def rollback_to_version(
     try:
         manager = get_config_manager()
         result = manager.rollback_to_version(
-            endpoint_name=endpoint_name, target_version=version, changed_by=current_user,
+            endpoint_name=endpoint_name,
+            target_version=version,
+            changed_by=current_user,
         )
 
         if not result.success:
@@ -627,7 +636,8 @@ async def rollback_to_version(
 
     except Exception as e:
         logger.error(
-            f"Failed to rollback {endpoint_name} to version {version}: {e!s}", extra={"request_id": request_id},
+            f"Failed to rollback {endpoint_name} to version {version}: {e!s}",
+            extra={"request_id": request_id},
         )
         return create_unified_error_response(
             code=BusinessCode.INTERNAL_ERROR,

@@ -1,11 +1,11 @@
-"""数据源适配器模块
-"""
+"""数据源适配器模块"""
 
 from datetime import datetime
 from typing import Optional
 
 
 logger = __import__("logging").getLogger(__name__)
+
 
 class DataSourceMetrics:
     """数据源监控指标"""
@@ -87,5 +87,3 @@ class DataSourceMetrics:
 
         # 更新最后检查时间
         self.last_check = datetime.now()
-
-

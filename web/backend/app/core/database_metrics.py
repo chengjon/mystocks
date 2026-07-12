@@ -153,7 +153,9 @@ class DatabaseMetricsCollector:
         DB_QUERY_DURATION.labels(database=self.database, query_type=query_type).observe(duration)
 
         DB_QUERY_COUNT.labels(
-            database=self.database, query_type=query_type, status="success" if success else "error",
+            database=self.database,
+            query_type=query_type,
+            status="success" if success else "error",
         ).inc()
 
         if rows >= 0:

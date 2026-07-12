@@ -446,9 +446,9 @@ class TestAPIDocumentationValidation:
 
         if total_methods > 0:
             documentation_coverage = documented_methods / total_methods
-            assert (
-                documentation_coverage >= 0.7
-            ), f"Documentation coverage {documentation_coverage:.2%} is below required 70%"
+            assert documentation_coverage >= 0.7, (
+                f"Documentation coverage {documentation_coverage:.2%} is below required 70%"
+            )
 
     def test_request_response_examples(self, documentation_validator):
         """Test that endpoints have request/response examples"""
@@ -470,9 +470,9 @@ class TestAPIDocumentationValidation:
         total_endpoints = len(results)
         if total_endpoints > 0:
             error_doc_coverage = endpoints_with_errors / total_endpoints
-            assert (
-                error_doc_coverage >= 0.5
-            ), f"Error response documentation coverage {error_doc_coverage:.2%} is below required 50%"
+            assert error_doc_coverage >= 0.5, (
+                f"Error response documentation coverage {error_doc_coverage:.2%} is below required 50%"
+            )
 
     def test_authentication_documentation(self, documentation_validator):
         """Test that authentication is properly documented"""
@@ -512,21 +512,21 @@ class TestAPIDocumentationValidation:
         error_doc_percentage = results["summary"]["endpoints_with_errors"] / total_endpoints
 
         # Assert quality standards
-        assert (
-            documented_percentage >= min_documented_percentage
-        ), f"Documentation coverage {documented_percentage:.2%} is below required {min_documented_percentage:.2%}"
+        assert documented_percentage >= min_documented_percentage, (
+            f"Documentation coverage {documented_percentage:.2%} is below required {min_documented_percentage:.2%}"
+        )
 
-        assert (
-            example_percentage >= min_example_percentage
-        ), f"Example coverage {example_percentage:.2%} is below required {min_example_percentage:.2%}"
+        assert example_percentage >= min_example_percentage, (
+            f"Example coverage {example_percentage:.2%} is below required {min_example_percentage:.2%}"
+        )
 
-        assert (
-            error_doc_percentage >= min_error_doc_percentage
-        ), f"Error response documentation {error_doc_percentage:.2%} is below required {min_error_doc_percentage:.2%}"
+        assert error_doc_percentage >= min_error_doc_percentage, (
+            f"Error response documentation {error_doc_percentage:.2%} is below required {min_error_doc_percentage:.2%}"
+        )
 
-        assert (
-            results["summary"]["total_issues"] <= max_total_issues
-        ), f"Too many documentation issues: {results['summary']['total_issues']} (max allowed: {max_total_issues})"
+        assert results["summary"]["total_issues"] <= max_total_issues, (
+            f"Too many documentation issues: {results['summary']['total_issues']} (max allowed: {max_total_issues})"
+        )
 
     def test_swagger_ui_accessibility(self, test_client):
         """Test that Swagger UI is accessible"""

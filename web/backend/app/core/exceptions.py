@@ -1,5 +1,4 @@
-"""统一异常处理框架 - MyStocks 业务异常和全局异常处理器
-"""
+"""统一异常处理框架 - MyStocks 业务异常和全局异常处理器"""
 
 from fastapi import HTTPException, status
 
@@ -49,7 +48,9 @@ class ValidationException(BusinessException):
             error_detail = f"字段 '{field}' {detail}"
 
         super().__init__(
-            detail=error_detail, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, error_code="VALIDATION_ERROR",
+            detail=error_detail,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            error_code="VALIDATION_ERROR",
         )
 
 

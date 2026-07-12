@@ -1,5 +1,5 @@
-"""系统、WebSocket与核心监控路由 (V3.1)
-"""
+"""系统、WebSocket与核心监控路由 (V3.1)"""
+
 from datetime import datetime
 from typing import Any, Dict
 
@@ -13,6 +13,7 @@ from app.utils.risk_utils import connection_manager
 # 导入核心
 try:
     from src.governance.risk_management import get_risk_management_core
+
     RISK_MANAGEMENT_V31_AVAILABLE = True
 except ImportError:
     RISK_MANAGEMENT_V31_AVAILABLE = False
@@ -20,6 +21,7 @@ except ImportError:
 
 logger = structlog.get_logger(__name__)
 router = APIRouter()
+
 
 @router.get("/stock/{symbol}")
 async def get_stock_risk_v31(symbol: str) -> Dict[str, Any]:
@@ -31,10 +33,12 @@ async def get_stock_risk_v31(symbol: str) -> Dict[str, Any]:
     except Exception as e:
         raise BusinessException(detail=str(e), status_code=500)
 
+
 @router.get("/health")
 async def get_risk_management_health() -> Dict[str, Any]:
     """V3.1 风险管理系统健康检查"""
     return {"status": "healthy", "version": "3.1", "checked_at": datetime.now().isoformat()}
+
 
 @router.websocket("/ws/risk-updates")
 async def websocket_risk_updates(websocket: WebSocket, topics: str = "portfolio_risk,stock_risk,alerts"):
@@ -47,6 +51,7 @@ async def websocket_risk_updates(websocket: WebSocket, topics: str = "portfolio_
             # Handle messages...
     except WebSocketDisconnect:
         connection_manager.disconnect(websocket)
+
 
 @router.get("/ws/connections")
 async def get_websocket_connections():

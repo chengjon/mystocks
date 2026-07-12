@@ -27,8 +27,7 @@ def _get_request_example():
 
 
 class BacktestRequest(BaseModel):
-    """Request model for initiating a backtest.
-    """
+    """Request model for initiating a backtest."""
 
     strategy_name: str = Field(..., description="Name of the strategy to backtest")
     symbols: List[str] = Field(..., description="List of stock symbols to backtest")
@@ -41,8 +40,7 @@ class BacktestRequest(BaseModel):
 
 
 class BacktestTrade(BaseModel):
-    """Model representing a single trade in the backtest result.
-    """
+    """Model representing a single trade in the backtest result."""
 
     symbol: str = Field(..., description="Stock symbol")
     entry_date: datetime = Field(..., description="Entry date and time")
@@ -55,8 +53,7 @@ class BacktestTrade(BaseModel):
 
 
 class BacktestResultSummary(BaseModel):
-    """Summary metrics of the backtest.
-    """
+    """Summary metrics of the backtest."""
 
     total_return: float = Field(..., description="Total return")
     annualized_return: float = Field(..., description="Annualized return")
@@ -67,8 +64,7 @@ class BacktestResultSummary(BaseModel):
 
 
 class BacktestResponse(BaseModel):
-    """Response model for backtest results.
-    """
+    """Response model for backtest results."""
 
     task_id: str = Field(..., description="Unique ID of the backtest task")
     status: str = Field(..., description="Status of the backtest (e.g., 'completed', 'failed')")

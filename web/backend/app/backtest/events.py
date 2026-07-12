@@ -57,9 +57,7 @@ class MarketEvent(Event):
         self.adj_close = adj_close or close_price
 
     def __repr__(self):
-        return (
-            f"MarketEvent(symbol={self.symbol}, date={self.trade_date}, close={self.close}, volume={self.volume})"
-        )
+        return f"MarketEvent(symbol={self.symbol}, date={self.trade_date}, close={self.close}, volume={self.volume})"
 
 
 class SignalEvent(Event):
@@ -117,8 +115,7 @@ class OrderEvent(Event):
 
     def __repr__(self):
         return (
-            f"OrderEvent(symbol={self.symbol}, date={self.trade_date}, "
-            f"{self.action} {self.quantity}@{self.order_type})"
+            f"OrderEvent(symbol={self.symbol}, date={self.trade_date}, {self.action} {self.quantity}@{self.order_type})"
         )
 
 
@@ -161,8 +158,7 @@ class FillEvent(Event):
 
 
 class ProgressEvent(Event):
-    """进度更新事件（用于WebSocket推送）
-    """
+    """进度更新事件（用于WebSocket推送）"""
 
     def __init__(
         self,

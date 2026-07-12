@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
-"""
-API健康检查模块测试套件
+"""API健康检查模块测试套件
 基于Phase 6成功模式：功能→边界→异常→性能→集成测试
 """
 
-import sys
 import os
+import sys
 from pathlib import Path
-from unittest.mock import patch, Mock
+from unittest.mock import Mock, patch
+
 import pytest
 import requests
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -18,12 +19,12 @@ sys.path.insert(0, str(project_root))
 # 导入被测试的模块
 import src.utils.check_api_health as api_health_module
 from src.utils.check_api_health import (
+    API_ENDPOINTS,
+    BASE_URL,
+    TIMEOUT,
     check_backend_running,
     get_auth_token,
     main,
-    BASE_URL,
-    TIMEOUT,
-    API_ENDPOINTS,
 )
 
 
@@ -33,7 +34,7 @@ class TestConstantsAndConfiguration:
     def test_base_url_constant(self):
         """测试BASE_URL常量"""
         expected = os.getenv("BACKEND_URL", f"http://localhost:{os.getenv('BACKEND_PORT', '8020')}")
-        assert BASE_URL == expected
+        assert expected == BASE_URL
 
     def test_timeout_constant(self):
         """测试TIMEOUT常量"""
@@ -59,14 +60,10 @@ class TestConstantsAndConfiguration:
                 assert key in endpoint, f"端点缺少必需的键: {key}"
 
             # 验证方法
-            assert endpoint["method"] in ["GET", "POST"], (
-                f"不支持的方法: {endpoint['method']}"
-            )
+            assert endpoint["method"] in ["GET", "POST"], f"不支持的方法: {endpoint['method']}"
 
             # 验证优先级
-            assert endpoint["priority"] in ["P1", "P2", "P3"], (
-                f"无效优先级: {endpoint['priority']}"
-            )
+            assert endpoint["priority"] in ["P1", "P2", "P3"], f"无效优先级: {endpoint['priority']}"
 
     def test_api_endpoints_content(self):
         """测试API端点内容"""
@@ -246,14 +243,17 @@ class TestApiEndpointTesting:
         mock_get.return_value = mock_response
 
         success, message, status_code = api_health_module.test_api_endpoint(
-            self.sample_endpoint, None
+            self.sample_endpoint,
+            None,
         )
 
         assert success is True
         assert message == "成功"
         assert status_code == 200
         mock_get.assert_called_once_with(
-            f"{BASE_URL}/api/test", headers={}, timeout=TIMEOUT
+            f"{BASE_URL}/api/test",
+            headers={},
+            timeout=TIMEOUT,
         )
 
     @patch("src.utils.check_api_health.requests.post")
@@ -274,7 +274,8 @@ class TestApiEndpointTesting:
         mock_post.return_value = mock_response
 
         success, message, status_code = api_health_module.test_api_endpoint(
-            endpoint, None
+            endpoint,
+            None,
         )
 
         assert success is True
@@ -297,13 +298,16 @@ class TestApiEndpointTesting:
         mock_get.return_value = mock_response
 
         success, message, status_code = api_health_module.test_api_endpoint(
-            endpoint, "test_token"
+            endpoint,
+            "test_token",
         )
 
         assert success is True
         expected_headers = {"Authorization": "Bearer test_token"}
         mock_get.assert_called_once_with(
-            f"{BASE_URL}/api/test", headers=expected_headers, timeout=TIMEOUT
+            f"{BASE_URL}/api/test",
+            headers=expected_headers,
+            timeout=TIMEOUT,
         )
 
     def test_endpoint_with_auth_no_token(self):
@@ -311,7 +315,8 @@ class TestApiEndpointTesting:
         endpoint = {**self.sample_endpoint, "auth_required": True}
 
         success, message, status_code = api_health_module.test_api_endpoint(
-            endpoint, None
+            endpoint,
+            None,
         )
 
         # 没有token时，会直接发送请求（不带Authorization头）
@@ -327,7 +332,8 @@ class TestApiEndpointTesting:
         mock_get.return_value = mock_response
 
         success, message, status_code = api_health_module.test_api_endpoint(
-            self.sample_endpoint, None
+            self.sample_endpoint,
+            None,
         )
 
         assert success is False
@@ -342,7 +348,8 @@ class TestApiEndpointTesting:
         mock_get.return_value = mock_response
 
         success, message, status_code = api_health_module.test_api_endpoint(
-            self.sample_endpoint, None
+            self.sample_endpoint,
+            None,
         )
 
         assert success is False
@@ -357,7 +364,8 @@ class TestApiEndpointTesting:
         mock_get.return_value = mock_response
 
         success, message, status_code = api_health_module.test_api_endpoint(
-            self.sample_endpoint, None
+            self.sample_endpoint,
+            None,
         )
 
         assert success is False
@@ -372,7 +380,8 @@ class TestApiEndpointTesting:
         mock_get.return_value = mock_response
 
         success, message, status_code = api_health_module.test_api_endpoint(
-            self.sample_endpoint, None
+            self.sample_endpoint,
+            None,
         )
 
         assert success is False
@@ -387,7 +396,8 @@ class TestApiEndpointTesting:
         mock_get.return_value = mock_response
 
         success, message, status_code = api_health_module.test_api_endpoint(
-            self.sample_endpoint, None
+            self.sample_endpoint,
+            None,
         )
 
         assert success is False
@@ -400,7 +410,8 @@ class TestApiEndpointTesting:
         mock_get.side_effect = requests.exceptions.ConnectionError("连接被拒绝")
 
         success, message, status_code = api_health_module.test_api_endpoint(
-            self.sample_endpoint, None
+            self.sample_endpoint,
+            None,
         )
 
         assert success is False
@@ -413,7 +424,8 @@ class TestApiEndpointTesting:
         mock_get.side_effect = requests.exceptions.Timeout("超时")
 
         success, message, status_code = api_health_module.test_api_endpoint(
-            self.sample_endpoint, None
+            self.sample_endpoint,
+            None,
         )
 
         assert success is False
@@ -426,7 +438,8 @@ class TestApiEndpointTesting:
         mock_get.side_effect = Exception("一般错误")
 
         success, message, status_code = api_health_module.test_api_endpoint(
-            self.sample_endpoint, None
+            self.sample_endpoint,
+            None,
         )
 
         assert success is False
@@ -438,7 +451,8 @@ class TestApiEndpointTesting:
         endpoint = {**self.sample_endpoint, "method": "DELETE"}
 
         success, message, status_code = api_health_module.test_api_endpoint(
-            endpoint, None
+            endpoint,
+            None,
         )
 
         assert success is False
@@ -454,7 +468,11 @@ class TestMainFunction:
     @patch("src.utils.check_api_health.check_backend_running")
     @patch("builtins.print")
     def test_main_backend_not_running(
-        self, mock_print, mock_check, mock_token, mock_test
+        self,
+        mock_print,
+        mock_check,
+        mock_token,
+        mock_test,
     ):
         """测试后端服务未运行的情况"""
         mock_check.return_value = False
@@ -472,7 +490,11 @@ class TestMainFunction:
     @patch("src.utils.check_api_health.check_backend_running")
     @patch("builtins.print")
     def test_main_successful_run_100_percent(
-        self, mock_print, mock_check, mock_token, mock_test
+        self,
+        mock_print,
+        mock_check,
+        mock_token,
+        mock_test,
     ):
         """测试100%通过的成功运行"""
         mock_check.return_value = True
@@ -491,7 +513,11 @@ class TestMainFunction:
     @patch("src.utils.check_api_health.check_backend_running")
     @patch("builtins.print")
     def test_main_partial_success_above_80_percent(
-        self, mock_print, mock_check, mock_token, mock_test
+        self,
+        mock_print,
+        mock_check,
+        mock_token,
+        mock_test,
     ):
         """测试80%以上的部分成功"""
         mock_check.return_value = True
@@ -514,7 +540,11 @@ class TestMainFunction:
     @patch("src.utils.check_api_health.check_backend_running")
     @patch("builtins.print")
     def test_main_partial_success_below_80_percent(
-        self, mock_print, mock_check, mock_token, mock_test
+        self,
+        mock_print,
+        mock_check,
+        mock_token,
+        mock_test,
     ):
         """测试低于80%的部分成功"""
         mock_check.return_value = True
@@ -553,7 +583,11 @@ class TestMainFunction:
     @patch("src.utils.check_api_health.check_backend_running")
     @patch("builtins.print")
     def test_main_result_statistics(
-        self, mock_print, mock_check, mock_token, mock_test
+        self,
+        mock_print,
+        mock_check,
+        mock_token,
+        mock_test,
     ):
         """测试结果统计功能"""
         mock_check.return_value = True
@@ -563,12 +597,12 @@ class TestMainFunction:
         def side_effect_func(endpoint, token):
             if endpoint["priority"] == "P1":
                 return (True, "成功", 200)  # 所有P1成功
-            elif endpoint["priority"] == "P2":
+            if endpoint["priority"] == "P2":
                 if endpoint["name"] == "技术指标":  # 让P2中1个失败
                     return (False, "模拟失败", 500)
                 return (True, "成功", 200)
-            else:  # P3失败
-                return (False, "模拟失败", 404)
+            # P3失败
+            return (False, "模拟失败", 404)
 
         mock_test.side_effect = side_effect_func
 
@@ -585,7 +619,11 @@ class TestMainFunction:
     @patch("src.utils.check_api_health.check_backend_running")
     @patch("builtins.print")
     def test_main_failed_items_details(
-        self, mock_print, mock_check, mock_token, mock_test
+        self,
+        mock_print,
+        mock_check,
+        mock_token,
+        mock_test,
     ):
         """测试失败项详情输出"""
         mock_check.return_value = True
@@ -620,16 +658,15 @@ class TestMainFunction:
         def side_effect_func(endpoint, token):
             if "连接被拒绝" in endpoint["name"]:
                 return (False, "连接被拒绝 (Backend未启动?)", None)
-            elif "端点不存在" in endpoint["name"]:
+            if "端点不存在" in endpoint["name"]:
                 return (False, "端点不存在", 404)
-            elif "认证失败" in endpoint["name"]:
+            if "认证失败" in endpoint["name"]:
                 return (False, "认证失败 (Token无效或过期)", 401)
-            elif "服务器内部错误" in endpoint["name"]:
+            if "服务器内部错误" in endpoint["name"]:
                 return (False, "服务器内部错误", 500)
-            elif "服务不可用" in endpoint["name"]:
+            if "服务不可用" in endpoint["name"]:
                 return (False, "服务不可用 (可能数据库连接失败)", 503)
-            else:
-                return (True, "成功", 200)
+            return (True, "成功", 200)
 
         # 临时修改API_ENDPOINTS以包含各种错误
         original_endpoints = API_ENDPOINTS[:]
@@ -682,7 +719,7 @@ class TestMainFunction:
                         "priority": "P1",
                         "page": "测试",
                     },
-                ]
+                ],
             )
 
             mock_test.side_effect = side_effect_func
@@ -701,12 +738,6 @@ class TestMainFunction:
             # 恢复原始配置
             API_ENDPOINTS.clear()
             API_ENDPOINTS.extend(original_endpoints)
-
-
-from scripts._test_check_api_health_tail import (
-    TestEdgeCasesAndErrorHandling,
-    TestIntegrationScenarios,
-)
 
 
 if __name__ == "__main__":

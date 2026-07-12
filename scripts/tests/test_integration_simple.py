@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-连接池集成测试脚本（简化版）
+"""连接池集成测试脚本（简化版）
 测试新的连接池与现有数据库模块的集成
 """
 
 import sys
+
 
 # 设置Python路径
 project_root = "/opt/claude/mystocks_spec"
@@ -69,9 +68,8 @@ def main():
         print("🎉 所有测试通过！")
         print("✅ 连接池系统已成功集成到现有数据库模块")
         return True
-    else:
-        print("❌ 部分测试失败")
-        return False
+    print("❌ 部分测试失败")
+    return False
 
 
 if __name__ == "__main__":

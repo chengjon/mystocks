@@ -1,5 +1,5 @@
-"""龙虎榜数据路由 (Dragon Tiger)
-"""
+"""龙虎榜数据路由 (Dragon Tiger)"""
+
 from typing import Any, Dict
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -10,6 +10,7 @@ from app.core.security import User, get_current_user
 
 router = APIRouter()
 
+
 @router.get("/dragon-tiger/detail", response_model=UnifiedResponse)
 async def get_dragon_tiger_detail(
     start_date: str = Query(...),
@@ -19,11 +20,15 @@ async def get_dragon_tiger_detail(
 ) -> UnifiedResponse:
     try:
         from app.services.data_source_factory import get_data_source_factory
+
         factory = await get_data_source_factory()
-        result = await factory.get_data("data", "dragon-tiger/detail", {"start_date": start_date, "end_date": end_date, "limit": limit})
+        result = await factory.get_data(
+            "data", "dragon-tiger/detail", {"start_date": start_date, "end_date": end_date, "limit": limit}
+        )
         return ok(data=result.get("data", []))
     except Exception as e:
         return server_error(message=str(e))
+
 
 @router.get("/dragon-tiger/institution-stats")
 async def get_dragon_tiger_institution_stats(
@@ -33,6 +38,7 @@ async def get_dragon_tiger_institution_stats(
 ) -> Dict[str, Any]:
     try:
         from app.services.data_source_factory import get_data_source_factory
+
         factory = await get_data_source_factory()
         result = await factory.get_data("data", "dragon-tiger/institution-stats", {"period": period, "limit": limit})
         return {"success": True, "data": result.get("data", []), "period": period}

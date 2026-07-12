@@ -126,7 +126,9 @@ async def generate_features(request: FeatureGenerationRequest, current_user: Use
 
         # 生成特征
         X, y, metadata = feature_service.prepare_model_data(
-            df, step=request.step, include_indicators=request.include_indicators,
+            df,
+            step=request.step,
+            include_indicators=request.include_indicators,
         )
 
         return FeatureGenerationResponse(

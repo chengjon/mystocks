@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
-"""
-Test Sina Finance stock ratings adapter
-"""
+"""Test Sina Finance stock ratings adapter"""
 
-import sys
 import os
+import sys
 from pathlib import Path
+
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
@@ -13,7 +12,7 @@ sys.path.insert(0, str(project_root))
 
 # Import directly to avoid adapters __init__.py issues
 import sys
-import os
+
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src", "adapters"))
 

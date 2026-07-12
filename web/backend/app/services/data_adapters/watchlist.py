@@ -1,5 +1,5 @@
-"""自选股管理数据源适配器
-"""
+"""自选股管理数据源适配器"""
+
 import logging
 import time
 from datetime import datetime
@@ -15,6 +15,7 @@ from .base import DataSourceMetrics
 
 
 logger = logging.getLogger(__name__)
+
 
 class WatchlistDataSourceAdapter(IDataSource):
     """自选股管理数据源适配器 - 集成现有自选股服务到数据源工厂模式"""

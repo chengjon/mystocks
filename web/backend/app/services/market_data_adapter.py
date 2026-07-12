@@ -134,8 +134,7 @@ class MarketDataSourceAdapter(IDataSource):
             }
 
     async def _fetch_data(self, endpoint: str, params: Dict[str, Any]) -> Dict[str, Any]:
-        """实际的数据获取逻辑
-        """
+        """实际的数据获取逻辑"""
         if self.mode == "mock":
             return await self._fetch_mock_data(endpoint, params)
         # 根据端点类型调用相应的 MarketDataService 方法

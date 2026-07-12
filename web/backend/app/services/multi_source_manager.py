@@ -50,7 +50,7 @@ class MultiSourceManager:
         self._category_sources: Dict[DataCategory, List[DataSourceType]] = {}
         self._build_category_mapping()
 
-        logger.info("MultiSourceManager initialized with adapters: " f"{list(self._adapters.keys())}")
+        logger.info(f"MultiSourceManager initialized with adapters: {list(self._adapters.keys())}")
 
     def _initialize_adapters(self):
         """初始化所有数据源适配器"""

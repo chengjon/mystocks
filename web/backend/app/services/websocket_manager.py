@@ -265,8 +265,7 @@ class ConnectionManager:
             self.last_heartbeat[connection_id] = datetime.now(timezone.utc)
 
     async def _heartbeat_checker(self):
-        """Background task to check for stale connections
-        """
+        """Background task to check for stale connections"""
         while self.active_connections:
             try:
                 now = datetime.now(timezone.utc)

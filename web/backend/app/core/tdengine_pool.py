@@ -95,7 +95,9 @@ class TDengineConnectionPool:
 
         """
         if not TDENGINE_RUNTIME_AVAILABLE or connect is None:
-            raise RuntimeError("TDengine runtime is unavailable for connection pool initialization") from TDENGINE_IMPORT_ERROR
+            raise RuntimeError(
+                "TDengine runtime is unavailable for connection pool initialization"
+            ) from TDENGINE_IMPORT_ERROR
 
         self.host = host
         self.port = port

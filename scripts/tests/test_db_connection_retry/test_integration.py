@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
-"""
-数据库连接重试工具测试套件
+"""数据库连接重试工具测试套件
 完整测试db_connection_retry模块的所有功能，确保100%测试覆盖率
 遵循Phase 6成功模式：功能→边界→异常→性能→集成测试
 """
 
 import sys
-import time
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -16,6 +15,7 @@ sys.path.insert(0, str(project_root))
 
 # Mock problematic imports to avoid circular dependency
 import unittest.mock
+
 
 sys.modules["src.storage.database.connection_manager"] = unittest.mock.MagicMock()
 sys.modules["src.core.config"] = unittest.mock.MagicMock()
@@ -25,14 +25,15 @@ import pytest
 
 # 导入被测试的模块
 from src.utils.db_connection_retry import (
-    db_retry,
     DatabaseConnectionHandler,
     connection_handler,
-    get_tdengine_connection_with_retry,
+    db_retry,
     get_postgresql_connection_with_retry,
-    return_postgresql_connection,
+    get_tdengine_connection_with_retry,
     init_connection_handler,
+    return_postgresql_connection,
 )
+
 
 class TestIntegration:
     """集成测试类"""
@@ -58,9 +59,7 @@ class TestIntegration:
             self.mock_tdengine_conn,
         ]
 
-        self.mock_conn_manager.get_postgresql_connection.return_value = (
-            self.mock_postgres_pool
-        )
+        self.mock_conn_manager.get_postgresql_connection.return_value = self.mock_postgres_pool
         self.mock_postgres_pool.getconn.return_value = self.mock_postgres_conn
 
         # 初始化连接处理器
@@ -159,12 +158,8 @@ class TestIntegration:
         handler = DatabaseConnectionHandler(self.mock_conn_manager)
 
         # 设置mock行为
-        self.mock_conn_manager.get_tdengine_connection.return_value = (
-            self.mock_tdengine_conn
-        )
-        self.mock_conn_manager.get_postgresql_connection.return_value = (
-            self.mock_postgres_pool
-        )
+        self.mock_conn_manager.get_tdengine_connection.return_value = self.mock_tdengine_conn
+        self.mock_conn_manager.get_postgresql_connection.return_value = self.mock_postgres_pool
         self.mock_postgres_pool.getconn.return_value = self.mock_postgres_conn
 
         # 获取连接
@@ -185,8 +180,8 @@ class TestIntegration:
 
     def test_concurrent_connection_handling(self):
         """测试并发连接处理"""
-        import threading
         import queue
+        import threading
 
         results = queue.Queue()
 
@@ -201,7 +196,7 @@ class TestIntegration:
                 results.put(f"Worker {worker_id}: got connection")
 
             except Exception as e:
-                results.put(f"Worker {worker_id}: {str(e)}")
+                results.put(f"Worker {worker_id}: {e!s}")
 
         # 创建多个工作线程
         threads = []
@@ -255,12 +250,8 @@ class TestIntegration:
     def test_mixed_database_operations(self):
         """测试混合数据库操作"""
         # 模拟不同数据库的连接行为
-        self.mock_conn_manager.get_tdengine_connection.return_value = (
-            self.mock_tdengine_conn
-        )
-        self.mock_conn_manager.get_postgresql_connection.return_value = (
-            self.mock_postgres_pool
-        )
+        self.mock_conn_manager.get_tdengine_connection.return_value = self.mock_tdengine_conn
+        self.mock_conn_manager.get_postgresql_connection.return_value = self.mock_postgres_pool
         self.mock_postgres_pool.getconn.return_value = self.mock_postgres_conn
 
         # 设置不同的错误模式
@@ -291,12 +282,6 @@ class TestIntegration:
 class CustomConnectionError(Exception):
     """自定义连接错误类"""
 
-    pass
-
 
 class CustomTimeoutError(Exception):
     """自定义超时错误类"""
-
-    pass
-
-

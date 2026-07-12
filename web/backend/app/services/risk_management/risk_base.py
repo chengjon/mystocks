@@ -165,12 +165,14 @@ class RiskBase:
         mean_return = sum(returns) / n
 
         excess_returns = [max(r - mean_return, 0) for r in returns]
-        cvar = sum(e ** 2 for e in excess_returns) / n
+        cvar = sum(e**2 for e in excess_returns) / n
 
         logger.debug(f"计算C-VaR: {cvar:.6f}")
         return cvar
 
-    def calculate_var_at_risk_level(self, returns: List[float], confidence: float = 0.95, level: RiskLevel = RiskLevel.MEDIUM) -> float:
+    def calculate_var_at_risk_level(
+        self, returns: List[float], confidence: float = 0.95, level: RiskLevel = RiskLevel.MEDIUM
+    ) -> float:
         """根据风险水平计算调整后的方差"""
         base_var = self.calculate_var(returns)
 

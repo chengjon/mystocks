@@ -49,7 +49,10 @@ class RiskManager:
         self.current_date: Optional[datetime] = None
 
     def validate_order(
-        self, order: OrderEvent, portfolio: PortfolioManager, current_price: Decimal,
+        self,
+        order: OrderEvent,
+        portfolio: PortfolioManager,
+        current_price: Decimal,
     ) -> tuple[bool, Optional[str]]:
         """验证订单是否符合风险控制要求
 
@@ -89,7 +92,10 @@ class RiskManager:
         return True, None
 
     def _check_position_limit(
-        self, order: OrderEvent, portfolio: PortfolioManager, current_price: Decimal,
+        self,
+        order: OrderEvent,
+        portfolio: PortfolioManager,
+        current_price: Decimal,
     ) -> tuple[bool, Optional[str]]:
         """检查仓位限制"""
         # 计算订单金额
@@ -113,7 +119,10 @@ class RiskManager:
         return True, None
 
     def _check_cash_available(
-        self, order: OrderEvent, portfolio: PortfolioManager, current_price: Decimal,
+        self,
+        order: OrderEvent,
+        portfolio: PortfolioManager,
+        current_price: Decimal,
     ) -> tuple[bool, Optional[str]]:
         """检查现金是否充足"""
         # 估算手续费
@@ -190,7 +199,10 @@ class RiskManager:
         return None
 
     def should_force_close_position(
-        self, symbol: str, position: Position, current_price: Decimal,
+        self,
+        symbol: str,
+        position: Position,
+        current_price: Decimal,
     ) -> tuple[bool, Optional[str]]:
         """判断是否应该强制平仓
 

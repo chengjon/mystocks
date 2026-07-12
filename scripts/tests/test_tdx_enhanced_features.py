@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-TDX增强功能测试脚本
+"""TDX增强功能测试脚本
 
 测试新增的K线周期和板块数据功能。
 
@@ -10,9 +8,10 @@ TDX增强功能测试脚本
 @created: 2026-01-02
 """
 
-import sys
 import os
+import sys
 from datetime import datetime, timedelta
+
 
 # 添加项目根目录到路径
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -39,10 +38,10 @@ def test_extended_kline_periods():
 
         # 测试新周期
         new_periods = [
-            ('1w', '周线'),
-            ('1M', '月线'),
-            ('1q', '季线'),
-            ('1y', '年线')
+            ("1w", "周线"),
+            ("1M", "月线"),
+            ("1q", "季线"),
+            ("1y", "年线"),
         ]
 
         print(f"\n测试股票: {test_symbol}")
@@ -91,7 +90,7 @@ def test_index_extended_periods():
         print(f"日期范围: {start_date} 至 {end_date}")
 
         # 测试周线和月线
-        for period_code, period_name in [('1w', '周线'), ('1M', '月线')]:
+        for period_code, period_name in [("1w", "周线"), ("1M", "月线")]:
             try:
                 print(f"\n  【指数{period_name}】获取中...")
                 df = tdx.get_index_kline(test_index, start_date, end_date, period=period_code)
@@ -122,7 +121,7 @@ def test_block_data():
         tdx = TdxDataSource()
 
         # 检查环境变量
-        tdx_path = os.getenv('TDX_DATA_PATH')
+        tdx_path = os.getenv("TDX_DATA_PATH")
         if not tdx_path:
             print("\n⚠️  环境变量 TDX_DATA_PATH 未设置")
             print("   请设置通达信数据路径:")
@@ -135,7 +134,7 @@ def test_block_data():
         # 测试获取概念板块
         print("\n  【概念板块】获取中...")
         try:
-            df_concept = tdx.get_block_data(block_type='concept')
+            df_concept = tdx.get_block_data(block_type="concept")
 
             if not df_concept.empty:
                 print(f"    ✅ 成功! 获取 {len(df_concept)} 条记录")
@@ -143,9 +142,9 @@ def test_block_data():
 
                 # 显示前5个板块
                 print("\n    前5个概念板块:")
-                top_blocks = df_concept['blockname'].unique()[:5]
+                top_blocks = df_concept["blockname"].unique()[:5]
                 for i, block in enumerate(top_blocks, 1):
-                    stock_count = len(df_concept[df_concept['blockname'] == block])
+                    stock_count = len(df_concept[df_concept["blockname"] == block])
                     print(f"      {i}. {block} ({stock_count}只股票)")
             else:
                 print("    ⚠️  无数据返回")
@@ -222,5 +221,5 @@ def main():
     print("\n" + "=" * 70)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

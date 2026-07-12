@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
-"""
-DataValidator 测试套件
+"""DataValidator 测试套件
 提供完整的数据验证器功能测试
 """
 
 import sys
 from pathlib import Path
 
+
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-import pytest
-import pandas as pd
 import numpy as np
+import pandas as pd
+import pytest
 
 # 导入被测试的模块
 from src.adapters.data_validator import DataValidator
@@ -43,7 +43,7 @@ class TestDataValidator:
                 "low": [99.0, 100.5, 100.0, 99.5, 102.0],  # 确保low <= min(open, close)
                 "close": [100.5, 102.0, 100.5, 101.0, 103.5],  # 调整第一行和第三行
                 "volume": [1000000, 1200000, 900000, 1500000, 1100000],
-            }
+            },
         )
 
     @pytest.fixture
@@ -56,7 +56,7 @@ class TestDataValidator:
                 "low": [99.0, 100.5, 101.0],
                 "close": [101.5, 102.0, 100.5],
                 "volume": [1000000, 1200000, 900000],
-            }
+            },
         )
 
     @pytest.fixture
@@ -69,7 +69,7 @@ class TestDataValidator:
                 "low": [99.0, 100.5, 101.0],
                 "close": [101.5, 102.0, 100.5],
                 "volume": [1000000, 1200000, 900000],
-            }
+            },
         )
 
     # === 初始化测试 ===
@@ -161,7 +161,7 @@ class TestDataValidator:
                 "high": [101.0, 102.0],
                 "low": [99.0, 100.0],
                 # 缺少close和volume
-            }
+            },
         )
         assert validator.validate_price_data(incomplete_df) is False
 
@@ -187,7 +187,7 @@ class TestDataValidator:
                 "low": [99.0, 100.5, 101.0],
                 "close": [101.5, 102.0, 100.5],
                 "volume": [1000000, -500000, 900000],  # 包含负成交量
-            }
+            },
         )
         assert validator.validate_price_data(df_with_negative_volume) is False
 
@@ -200,7 +200,7 @@ class TestDataValidator:
                 "low": [99.0, 100.5, 101.0],
                 "close": [101.5, 102.0, 100.5],
                 "volume": [1000000, 1200000, 900000],
-            }
+            },
         )
         assert validator.validate_price_data(wrong_relationship_df) is False
 
@@ -213,7 +213,7 @@ class TestDataValidator:
                 "low": [99.0, 100.5, 101.0],
                 "close": [101.5, 102.0, 100.5],
                 "volume": [1000000, 1200000, 900000],
-            }
+            },
         )
         assert validator.validate_price_data(df_with_strings) is False
 
@@ -230,7 +230,7 @@ class TestDataValidator:
                 "high": [101.0, 102.0],
                 "low": [99.0, 100.0],
                 "close": [100.5, 101.5],
-            }
+            },
         )
         assert validator.validate_volume_data(df_without_volume) is False
 
@@ -248,7 +248,7 @@ class TestDataValidator:
                 "low": [99.0, 100.0],
                 "close": [100.5, 101.5],
                 "volume": [1000000, np.nan],
-            }
+            },
         )
         assert validator.validate_volume_data(df_with_nan) is False
 
@@ -261,7 +261,7 @@ class TestDataValidator:
                 "low": [99.0, 100.0],
                 "close": [100.5, 101.5],
                 "volume": [1000000, -500000],
-            }
+            },
         )
         assert validator.validate_volume_data(df_with_negative) is False
 
@@ -301,7 +301,7 @@ class TestDataValidator:
                 "low": [5.0, 15.0],
                 "close": [12.0, 22.0],
                 "volume": [1000, 2000],
-            }
+            },
         )
         assert validator.validate_price_range(normal_price_df, 5.0, 30.0) is True
 
@@ -313,7 +313,7 @@ class TestDataValidator:
                 "low": [5.0, 15.0],
                 "close": [12.0, 22.0],
                 "volume": [1000, 2000],
-            }
+            },
         )
         assert validator.validate_price_range(out_of_range_df, 5.0, 30.0) is False
 
@@ -324,7 +324,7 @@ class TestDataValidator:
                 "open": [100.0, 101.0],
                 "volume": [1000, 2000],
                 # 缺少high, low, close
-            }
+            },
         )
         # 应该返回True，因为缺少的列被跳过
         assert validator.validate_price_range(df_with_partial_columns) is True
@@ -338,7 +338,7 @@ class TestDataValidator:
                 "low": [99.0, 100.0],
                 "close": [100.5, 101.5],
                 "volume": [1000, 2000],
-            }
+            },
         )
         assert validator.validate_price_range(df_with_negative, 0.01, 10000.0) is False
 
@@ -357,14 +357,11 @@ class TestDataValidator:
                 "close": [100.5, 101.5],
                 "volume": [1000, 2000],
                 "extra_column": [1, 2],
-            }
+            },
         )
 
         custom_columns = ["open", "high", "low", "close"]
-        assert (
-            validator.check_data_completeness(df_with_extra_columns, custom_columns)
-            is True
-        )
+        assert validator.check_data_completeness(df_with_extra_columns, custom_columns) is True
 
     def test_check_data_completeness_missing_columns(self, validator):
         """测试缺少列的完整性检查"""
@@ -374,7 +371,7 @@ class TestDataValidator:
                 "high": [101.0, 102.0],
                 "volume": [1000, 2000],
                 # 缺少low, close
-            }
+            },
         )
         assert validator.check_data_completeness(df_missing_columns) is False
 
@@ -392,7 +389,7 @@ class TestDataValidator:
                 "low": [99.0, 100.0],
                 "close": [100.5, 101.5],
                 "volume": [1000, 2000],
-            }
+            },
         )
         assert validator.check_data_completeness(df_with_nan) is False
 
@@ -405,7 +402,7 @@ class TestDataValidator:
                 "low": [99.0, 100.0],
                 "close": [100.5, 101.5],
                 "volume": [1000, 2000],
-            }
+            },
         )
         assert validator.check_data_completeness(df_with_none) is False
 

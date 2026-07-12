@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-数据分类枚举模块测试套件
+"""数据分类枚举模块测试套件
 提供完整的DataClassification、DatabaseTarget、DeduplicationStrategy枚举测试
 
 创建时间: 2025-01-21
@@ -11,17 +10,19 @@
 import sys
 from pathlib import Path
 
+
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-import pytest
 import time
+
+import pytest
 
 # 导入被测试的模块
 from src.core.data_classification import (
-    DataClassification,
     DatabaseTarget,
+    DataClassification,
     DeduplicationStrategy,
 )
 
@@ -64,9 +65,7 @@ class TestDataClassificationEnum:
 
     def test_reference_data_classifications(self):
         """测试参考数据分类（9项）"""
-        reference_classifications = (
-            DataClassification.get_reference_data_classifications()
-        )
+        reference_classifications = DataClassification.get_reference_data_classifications()
 
         assert len(reference_classifications) == 9
         expected_reference = [
@@ -101,9 +100,7 @@ class TestDataClassificationEnum:
 
     def test_transaction_data_classifications(self):
         """测试交易数据分类（7项）"""
-        transaction_classifications = (
-            DataClassification.get_transaction_data_classifications()
-        )
+        transaction_classifications = DataClassification.get_transaction_data_classifications()
 
         assert len(transaction_classifications) == 7
         expected_transaction = [
@@ -338,12 +335,11 @@ class TestDataClassificationIntegration:
 
             if classification in realtime_data:
                 return DatabaseTarget.TDENGINE.value
-            elif classification in market_data:
+            if classification in market_data:
                 # 市场数据中除实时数据外都路由到TDengine
                 return DatabaseTarget.TDENGINE.value
-            else:
-                # 其他数据路由到PostgreSQL
-                return DatabaseTarget.POSTGRESQL.value
+            # 其他数据路由到PostgreSQL
+            return DatabaseTarget.POSTGRESQL.value
 
         # 测试路由逻辑
         assert route_to_database("TICK_DATA") == "tdengine"
@@ -358,12 +354,11 @@ class TestDataClassificationIntegration:
             """根据数据源和数据类型选择去重策略"""
             if data_source == "official":
                 return DeduplicationStrategy.FIRST_WINS.value
-            elif data_source == "realtime":
+            if data_source == "realtime":
                 return DeduplicationStrategy.LATEST_WINS.value
-            elif data_source == "multiple":
+            if data_source == "multiple":
                 return DeduplicationStrategy.MERGE.value
-            else:
-                return DeduplicationStrategy.REJECT.value
+            return DeduplicationStrategy.REJECT.value
 
         # 测试策略选择
         assert select_strategy("official", "SYMBOLS_INFO") == "first_wins"
@@ -455,9 +450,7 @@ class TestDataClassificationEdgeCases:
         # 验证没有遗漏任何分类
         expected_total = 34  # 6+9+6+7+6
         actual_total = len(DataClassification.get_all_classifications())
-        assert actual_total == expected_total, (
-            f"期望{expected_total}个分类，实际{actual_total}个"
-        )
+        assert actual_total == expected_total, f"期望{expected_total}个分类，实际{actual_total}个"
 
     def test_enumeration_value_uniqueness(self):
         """测试枚举值唯一性"""
@@ -488,12 +481,8 @@ class TestDataClassificationPerformance:
 
         for _ in range(1000):
             all_classifications = DataClassification.get_all_classifications()
-            market_classifications = (
-                DataClassification.get_market_data_classifications()
-            )
-            reference_classifications = (
-                DataClassification.get_reference_data_classifications()
-            )
+            market_classifications = DataClassification.get_market_data_classifications()
+            reference_classifications = DataClassification.get_reference_data_classifications()
 
         end_time = time.time()
         elapsed_time = end_time - start_time
@@ -517,9 +506,7 @@ class TestDataClassificationPerformance:
             for classification in classifications:
                 # 模拟各种操作
                 value = classification.value
-                is_in_market = (
-                    value in DataClassification.get_market_data_classifications()
-                )
+                is_in_market = value in DataClassification.get_market_data_classifications()
                 string_rep = str(classification)
 
         end_time = time.time()
@@ -596,9 +583,7 @@ class TestDataClassificationDocumentation:
         assert DataClassification.get_market_data_classifications.__doc__ is not None
         assert DataClassification.get_reference_data_classifications.__doc__ is not None
         assert DataClassification.get_derived_data_classifications.__doc__ is not None
-        assert (
-            DataClassification.get_transaction_data_classifications.__doc__ is not None
-        )
+        assert DataClassification.get_transaction_data_classifications.__doc__ is not None
         assert DataClassification.get_metadata_classifications.__doc__ is not None
 
         assert DatabaseTarget.get_all_targets.__doc__ is not None
@@ -634,7 +619,7 @@ class TestBusinessLogicValidation:
         reference_count = len(DataClassification.get_reference_data_classifications())
         derived_count = len(DataClassification.get_derived_data_classifications())
         transaction_count = len(
-            DataClassification.get_transaction_data_classifications()
+            DataClassification.get_transaction_data_classifications(),
         )
         metadata_count = len(DataClassification.get_metadata_classifications())
 
@@ -651,9 +636,7 @@ class TestBusinessLogicValidation:
         # 验证所有分类都使用大写字母和下划线
         for classification in all_classifications:
             assert classification.isupper(), f"分类{classification}应该使用大写"
-            assert "_" in classification or classification.isalpha(), (
-                f"分类{classification}应该使用下划线分隔或全字母"
-            )
+            assert "_" in classification or classification.isalpha(), f"分类{classification}应该使用下划线分隔或全字母"
 
     def test_database_target_appropriateness(self):
         """测试数据库目标适当性"""
@@ -692,9 +675,7 @@ class TestBusinessLogicValidation:
         all_classifications = DataClassification.get_all_classifications()
 
         for scenario, expected_classification in critical_scenarios.items():
-            assert expected_classification in all_classifications, (
-                f"缺少关键业务场景分类: {scenario}"
-            )
+            assert expected_classification in all_classifications, f"缺少关键业务场景分类: {scenario}"
 
 
 if __name__ == "__main__":

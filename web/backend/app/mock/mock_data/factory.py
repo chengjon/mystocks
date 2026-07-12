@@ -7,7 +7,6 @@ from typing import Any, Dict, List
 logger = logging.getLogger(__name__)
 
 
-
 class _FallbackMockDataManager:
     """兜底 Mock 管理器，确保存在 get_data 接口。"""
 
@@ -80,7 +79,11 @@ def get_dashboard_data() -> Dict[str, Any]:
 def get_stocks_data(page: int = 1, page_size: int = 20, exchange: str = "all") -> Dict[str, Any]:
     """获取股票数据"""
     manager = get_mock_data_manager()
-    return manager.get_data("stocks", page=page, page_size=page_size, exchange=exchange) if hasattr(manager, "get_data") else {}
+    return (
+        manager.get_data("stocks", page=page, page_size=page_size, exchange=exchange)
+        if hasattr(manager, "get_data")
+        else {}
+    )
 
 
 def get_technical_data(symbol: str = None, symbols: List[str] = None) -> Dict[str, Any]:

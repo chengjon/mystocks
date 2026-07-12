@@ -270,7 +270,8 @@ async def record_lineage(
         await conn.close()
 
         logger.info(
-            f"Successfully recorded lineage: {request.from_node} -> {request.to_node}", extra={"request_id": request_id},
+            f"Successfully recorded lineage: {request.from_node} -> {request.to_node}",
+            extra={"request_id": request_id},
         )
 
         return create_unified_success_response(

@@ -1,5 +1,4 @@
-"""数据源工厂模式单元测试 - 数据源与模式切换部分
-"""
+"""数据源工厂模式单元测试 - 数据源与模式切换部分"""
 
 import os
 from datetime import datetime
@@ -220,7 +219,8 @@ class TestRealDataSource:
         async with source:
             with (
                 patch.object(source._session, "get", return_value=_AsyncResponseContext(mock_response)),
-                patch("asyncio.sleep"),pytest.raises(Exception),
+                patch("asyncio.sleep"),
+                pytest.raises(Exception),
             ):
                 await source.get_data("market/data")
 

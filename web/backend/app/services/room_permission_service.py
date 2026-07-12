@@ -360,7 +360,10 @@ class RoomAccessControl:
 
         """
         has_permission = self.permission_manager.check_permission(
-            user_id, room_id, RoomPermission.SEND_MESSAGE, user_role,
+            user_id,
+            room_id,
+            RoomPermission.SEND_MESSAGE,
+            user_role,
         )
         self._log_access("send_message", user_id, room_id, has_permission)
         return has_permission
@@ -403,7 +406,10 @@ class RoomAccessControl:
             return False
 
         has_permission = self.permission_manager.check_permission(
-            user_id, room_id, RoomPermission.KICK_MEMBER, user_role,
+            user_id,
+            room_id,
+            RoomPermission.KICK_MEMBER,
+            user_role,
         )
         self._log_access("kick_member", user_id, room_id, has_permission)
         return has_permission

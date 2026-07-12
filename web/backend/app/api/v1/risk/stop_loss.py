@@ -202,7 +202,9 @@ async def batch_update_stop_loss_prices(request: Dict[str, Any]) -> Dict[str, An
 
 @router.get("/history/performance", response_model=Dict[str, Any])
 async def get_stop_loss_performance(
-    strategy_type: Optional[str] = None, symbol: Optional[str] = None, days: int = 30,
+    strategy_type: Optional[str] = None,
+    symbol: Optional[str] = None,
+    days: int = 30,
 ) -> Dict[str, Any]:
     """获取止损策略历史表现"""
     try:

@@ -1,5 +1,4 @@
-"""
-Phase 3: 高级增强、治理与自动化 - 集成测试脚本
+"""Phase 3: 高级增强、治理与自动化 - 集成测试脚本
 
 测试范围:
 1. 数据源配置CRUD API (9个端点)
@@ -11,11 +10,13 @@ Date: 2026-01-09
 """
 
 import asyncio
-import httpx
-import time
 import os
-from typing import Dict, Any, List
+import time
 from datetime import datetime
+from typing import Any, Dict
+
+import httpx
+
 
 # API基础URL
 BASE_URL = os.getenv("BACKEND_URL", f"http://localhost:{os.getenv('BACKEND_PORT', '8020')}")
@@ -105,7 +106,7 @@ class Phase3IntegrationTester:
                 else:
                     print(f"⚠️  测试数据创建失败: {response.status_code}")
         except Exception as e:
-            print(f"⚠️  测试数据创建异常: {str(e)}")
+            print(f"⚠️  测试数据创建异常: {e!s}")
 
         # 测试血缘查询端点（仅测试GET端点，避免CSRF问题）
         endpoints = [
@@ -142,7 +143,11 @@ class Phase3IntegrationTester:
             await self.test_endpoint(method, endpoint, description)
 
     async def test_endpoint(
-        self, method: str, endpoint: str, description: str, json: Dict[str, Any] = None
+        self,
+        method: str,
+        endpoint: str,
+        description: str,
+        json: Dict[str, Any] = None,
     ):
         """测试单个API端点"""
         url = f"{self.base_url}{endpoint}"
@@ -182,7 +187,7 @@ class Phase3IntegrationTester:
                             "endpoint": endpoint,
                             "error": "Invalid response format",
                             "response": data,
-                        }
+                        },
                     )
             else:
                 print(f"❌ FAIL: {description}")
@@ -195,32 +200,32 @@ class Phase3IntegrationTester:
                         "endpoint": endpoint,
                         "error": f"HTTP {response.status_code}",
                         "response": response.text[:500],
-                    }
+                    },
                 )
 
         except httpx.ConnectError:
             print(f"❌ FAIL: {description} - 连接失败")
             print(f"   端点: {method} {endpoint}")
             print(f"   错误: 无法连接到 {self.base_url}")
-            print(f"   提示: 请确保后端服务正在运行 (uvicorn app.main:app --reload)")
+            print("   提示: 请确保后端服务正在运行 (uvicorn app.main:app --reload)")
             self.results["failed"] += 1
             self.results["errors"].append(
-                {"endpoint": endpoint, "error": "Connection failed", "details": "Backend service not running"}
+                {"endpoint": endpoint, "error": "Connection failed", "details": "Backend service not running"},
             )
         except httpx.TimeoutException:
             print(f"❌ FAIL: {description} - 请求超时")
             print(f"   端点: {method} {endpoint}")
             self.results["failed"] += 1
             self.results["errors"].append(
-                {"endpoint": endpoint, "error": "Timeout", "details": f">30s"}
+                {"endpoint": endpoint, "error": "Timeout", "details": ">30s"},
             )
         except Exception as e:
             print(f"❌ FAIL: {description} - 异常")
             print(f"   端点: {method} {endpoint}")
-            print(f"   错误: {str(e)}")
+            print(f"   错误: {e!s}")
             self.results["failed"] += 1
             self.results["errors"].append(
-                {"endpoint": endpoint, "error": str(e), "type": type(e).__name__}
+                {"endpoint": endpoint, "error": str(e), "type": type(e).__name__},
             )
 
     def is_valid_unified_response(self, data: Dict[str, Any]) -> bool:
@@ -250,7 +255,7 @@ class Phase3IntegrationTester:
             print("性能统计:")
             print("-" * 40)
             avg_response_time = sum(self.results["performance"].values()) / len(
-                self.results["performance"]
+                self.results["performance"],
             )
             max_response_time = max(self.results["performance"].values())
             min_response_time = min(self.results["performance"].values())
@@ -261,11 +266,7 @@ class Phase3IntegrationTester:
             print()
 
             # 性能不达标的端点 (>1s)
-            slow_endpoints = [
-                (ep, t)
-                for ep, t in self.results["performance"].items()
-                if t > 1.0
-            ]
+            slow_endpoints = [(ep, t) for ep, t in self.results["performance"].items() if t > 1.0]
             if slow_endpoints:
                 print("⚠️  性能警告 (响应时间 >1s):")
                 for endpoint, elapsed in slow_endpoints:
@@ -299,16 +300,16 @@ class Phase3IntegrationTester:
         )
 
         print(f"✅ 测试通过率 >80%: {'PASS' if pass_rate >= 80 else 'FAIL'} ({pass_rate:.1f}%)")
-        print(f"✅ API平均响应时间 <200ms: {'PASS' if avg_response_time < 0.2 else 'FAIL'} ({avg_response_time*1000:.1f}ms)")
-        print(f"✅ 所有端点使用UnifiedResponse: {'PASS' if self.results['failed'] == 0 or all('Invalid response format' not in e.get('error', '') for e in self.results['errors']) else 'FAIL'}")
+        print(
+            f"✅ API平均响应时间 <200ms: {'PASS' if avg_response_time < 0.2 else 'FAIL'} ({avg_response_time * 1000:.1f}ms)"
+        )
+        print(
+            f"✅ 所有端点使用UnifiedResponse: {'PASS' if self.results['failed'] == 0 or all('Invalid response format' not in e.get('error', '') for e in self.results['errors']) else 'FAIL'}"
+        )
         print()
 
         # 最终判定
-        all_passed = (
-            pass_rate >= 80
-            and avg_response_time < 0.2
-            and self.results["failed"] == 0
-        )
+        all_passed = pass_rate >= 80 and avg_response_time < 0.2 and self.results["failed"] == 0
 
         print("=" * 80)
         if all_passed:

@@ -421,9 +421,9 @@ class TestStaticCodeAnalysis:
         # Allow some missing docstrings for now (threshold)
         max_allowed_docstring_issues = len(results["file_results"]) * 2  # 2 per file average
 
-        assert (
-            docstring_issues <= max_allowed_docstring_issues
-        ), f"Too many docstring issues: {docstring_issues} (max allowed: {max_allowed_docstring_issues})"
+        assert docstring_issues <= max_allowed_docstring_issues, (
+            f"Too many docstring issues: {docstring_issues} (max allowed: {max_allowed_docstring_issues})"
+        )
 
     def test_type_annotation_completeness(self, static_analyzer):
         """Test that all functions have complete type annotations"""
@@ -437,9 +437,9 @@ class TestStaticCodeAnalysis:
         # Type annotations should be mostly complete
         max_allowed_type_issues = len(results["file_results"]) * 3  # 3 per file average
 
-        assert (
-            type_issues <= max_allowed_type_issues
-        ), f"Too many type annotation issues: {type_issues} (max allowed: {max_allowed_type_issues})"
+        assert type_issues <= max_allowed_type_issues, (
+            f"Too many type annotation issues: {type_issues} (max allowed: {max_allowed_type_issues})"
+        )
 
     def test_pydantic_model_definitions(self, static_analyzer):
         """Test that Pydantic models are properly defined with examples"""
@@ -471,9 +471,9 @@ class TestStaticCodeAnalysis:
         # Most API endpoints should have error handling
         max_allowed_error_issues = len(results["file_results"]) * 2  # 2 per file average
 
-        assert (
-            error_handling_issues <= max_allowed_error_issues
-        ), f"Too many error handling issues: {error_handling_issues}"
+        assert error_handling_issues <= max_allowed_error_issues, (
+            f"Too many error handling issues: {error_handling_issues}"
+        )
 
     def test_import_organization(self, static_analyzer):
         """Test that imports are properly organized"""
@@ -514,21 +514,21 @@ class TestStaticCodeAnalysis:
         min_quality_score = 0.8  # 80% quality score
 
         # Assert quality standards
-        assert (
-            results["summary"]["critical_issues"] <= max_critical_issues
-        ), f"Too many critical issues: {results['summary']['critical_issues']}"
+        assert results["summary"]["critical_issues"] <= max_critical_issues, (
+            f"Too many critical issues: {results['summary']['critical_issues']}"
+        )
 
-        assert (
-            results["summary"]["total_issues"] <= max_total_issues
-        ), f"Too many total issues: {results['summary']['total_issues']} (max allowed: {max_total_issues})"
+        assert results["summary"]["total_issues"] <= max_total_issues, (
+            f"Too many total issues: {results['summary']['total_issues']} (max allowed: {max_total_issues})"
+        )
 
         # Calculate quality score (fewer issues = higher score)
         max_possible_issues = total_files * 20  # Assume 20 issues max per file
         quality_score = 1.0 - (results["summary"]["total_issues"] / max_possible_issues)
 
-        assert (
-            quality_score >= min_quality_score
-        ), f"Code quality score {quality_score:.2%} is below required {min_quality_score:.2%}"
+        assert quality_score >= min_quality_score, (
+            f"Code quality score {quality_score:.2%} is below required {min_quality_score:.2%}"
+        )
 
     def test_code_complexity(self, static_analyzer):
         """Test that code complexity is within acceptable limits"""

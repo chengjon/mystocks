@@ -514,7 +514,11 @@ class TestOHLCVData:
         """测试OHLCV切片"""
         n = 100
         data = OHLCVData(
-            open=np.arange(n), high=np.arange(n), low=np.arange(n), close=np.arange(n), volume=np.arange(n),
+            open=np.arange(n),
+            high=np.arange(n),
+            low=np.arange(n),
+            close=np.arange(n),
+            volume=np.arange(n),
         )
 
         sliced = data.slice(10, 20)

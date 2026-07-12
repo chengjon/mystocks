@@ -330,7 +330,6 @@ class CacheService:
             if not self.is_redis_connected:
                 await self._connect_redis()
 
-
             value = await self.redis_pool.get(key)
 
             if value:
@@ -351,7 +350,6 @@ class CacheService:
         try:
             if not self.is_redis_connected:
                 await self._connect_redis()
-
 
             serialized_value = str(value).encode("utf-8")
 
@@ -380,7 +378,6 @@ class CacheService:
             if not self.is_redis_connected:
                 await self._connect_redis()
 
-
             await self.redis_pool.delete(key)
 
             self.logger.debug(f"删除Redis缓存: {key}")
@@ -395,7 +392,6 @@ class CacheService:
         try:
             if not self.is_redis_connected:
                 await self._connect_redis()
-
 
             await self.redis_pool.flushdb()
 
@@ -412,7 +408,10 @@ class CacheService:
             import redis.asyncio as redis
 
             self.redis_pool = await redis.create_pool(
-                host=self.redis_host, port=self.redis_port, db=self.redis_db, max_connections=10,
+                host=self.redis_host,
+                port=self.redis_port,
+                db=self.redis_db,
+                max_connections=10,
             )
 
             self.is_redis_connected = True
@@ -425,7 +424,6 @@ class CacheService:
     async def _evict_random_redis_key(self):
         """淘汰随机的Redis键"""
         try:
-
             keys = await self.redis_pool.keys("*")
 
             if keys:

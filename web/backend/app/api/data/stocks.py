@@ -1,5 +1,4 @@
-"""股票基础信息路由 (Stocks Basic Info)
-"""
+"""股票基础信息路由 (Stocks Basic Info)"""
 
 import os
 from datetime import datetime
@@ -112,7 +111,8 @@ async def get_stocks_basic(
     concept: Optional[str] = Query(None, description="概念筛选"),
     market: Optional[str] = Query(None, description="市场筛选: SH/SZ"),
     sort_field: Optional[str] = Query(
-        None, description="排序字段: symbol,name,industry,price,change_pct,turnover,volume",
+        None,
+        description="排序字段: symbol,name,industry,price,change_pct,turnover,volume",
     ),
     sort_order: Optional[str] = Query(None, description="排序方向: asc,desc"),
     current_user: User = Depends(get_current_user),

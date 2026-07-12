@@ -43,7 +43,8 @@ class UnifiedResponse(BaseModel, Generic[T]):
     message: str = Field("操作成功", description="给前端展示的消息")
     data: Optional[T] = Field(None, description="实际的业务数据，成功时返回，失败时为null")
     timestamp: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc), description="响应生成的时间戳 (UTC)",
+        default_factory=lambda: datetime.now(timezone.utc),
+        description="响应生成的时间戳 (UTC)",
     )
     request_id: Optional[str] = Field(None, description="请求ID，用于追踪请求日志")
     errors: Optional[List[ErrorDetail]] = Field(None, description="详细错误信息数组，仅在请求失败时存在")

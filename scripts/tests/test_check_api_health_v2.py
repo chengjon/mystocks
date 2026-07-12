@@ -1,28 +1,25 @@
 #!/usr/bin/env python3
-"""
-API健康检查工具测试套件 v2.0
+"""API健康检查工具测试套件 v2.0
 完整测试check_api_health_v2模块的所有功能，确保100%测试覆盖率
 遵循Phase 6成功模式：功能→边界→异常→性能→集成测试
 """
 
-import sys
 import os
+import sys
+from pathlib import Path
+from unittest.mock import Mock, patch
+
 import pytest
 import requests
-from unittest.mock import patch, Mock
-from pathlib import Path
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 # 导入被测试的模块
-from scripts._test_check_api_health_v2_tail import (
-    TestEdgeCasesAndErrorHandling,
-    TestIntegrationScenarios,
-    TestMainFunction,
-)
-from src.utils.check_api_health_v2 import Colors, APIHealthChecker, main
+from src.utils.check_api_health_v2 import APIHealthChecker, Colors
+
 
 EXPECTED_BASE_URL = os.getenv("BACKEND_URL", f"http://localhost:{os.getenv('BACKEND_PORT', '8020')}")
 
@@ -421,7 +418,7 @@ class TestAPIHealthChecker:
 
                 # 验证打印了错误信息
                 all_prints = "\n".join(
-                    [str(call[0]) for call in mock_print.call_args_list]
+                    [str(call[0]) for call in mock_print.call_args_list],
                 )
                 assert "Backend服务未运行" in all_prints or "❌" in all_prints
 
@@ -444,7 +441,7 @@ class TestAPIHealthChecker:
 
                 # 验证打印了认证失败信息
                 all_prints = "\n".join(
-                    [str(call[0]) for call in mock_print.call_args_list]
+                    [str(call[0]) for call in mock_print.call_args_list],
                 )
                 assert "获取失败" in all_prints or "⚠️" in all_prints
 

@@ -1,5 +1,4 @@
-"""K 线 fallback 数据辅助函数。
-"""
+"""K 线 fallback 数据辅助函数。"""
 
 from __future__ import annotations
 

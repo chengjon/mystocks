@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
-"""
-Test Sina Finance API endpoints directly
-"""
+"""Test Sina Finance API endpoints directly"""
 
-import sys
 import os
+import sys
 from pathlib import Path
+
 
 # Add project root to path
 project_root = Path(__file__).parent

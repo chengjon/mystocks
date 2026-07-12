@@ -161,8 +161,7 @@ def _fetch_stock_data_with_retry() -> int:
                 last_exception = e
                 delay = RETRY_DELAY * (2**attempt)
                 logger.warning(
-                    f"Failed to fetch from {source} (attempt {attempt + 1}/{MAX_RETRIES}), "
-                    f"retry in {delay}s: {e!s}",
+                    f"Failed to fetch from {source} (attempt {attempt + 1}/{MAX_RETRIES}), retry in {delay}s: {e!s}",
                 )
                 time.sleep(delay)
                 continue

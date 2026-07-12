@@ -189,9 +189,7 @@ class APIMonitor:
                 }
                 for m in self.metrics
                 if m.status_code >= 400
-            ][
-                -10:
-            ]  # 最多10条
+            ][-10:]  # 最多10条
 
             # 构建端点统计
             endpoint_data = {}

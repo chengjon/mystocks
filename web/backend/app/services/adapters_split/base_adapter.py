@@ -30,10 +30,10 @@ class BaseAdapter(ABC):
     @abstractmethod
     def get_stock_basic(self, stock_code: str) -> Optional[Dict]:
         """获取股票基本信息
-        
+
         Args:
             stock_code: 股票代码
-        
+
         Returns:
             Dict: 股票基本信息，失败返回None
 
@@ -42,12 +42,12 @@ class BaseAdapter(ABC):
     @abstractmethod
     def get_stock_daily(self, stock_code: str, start_date: str, end_date: str) -> Optional[List[Dict]]:
         """获取股票日线数据
-        
+
         Args:
             stock_code: 股票代码
             start_date: 开始日期 (YYYY-MM-DD)
             end_date: 结束日期 (YYYY-MM-DD)
-        
+
         Returns:
             List[Dict]: 日线数据列表，失败返回空列表
 
@@ -56,10 +56,10 @@ class BaseAdapter(ABC):
     @abstractmethod
     def get_realtime_quotes(self, stock_codes: List[str]) -> Optional[List[Dict]]:
         """获取实时行情
-        
+
         Args:
             stock_codes: 股票代码列表
-        
+
         Returns:
             List[Dict]: 实时行情数据列表，失败返回空列表
 
@@ -68,7 +68,7 @@ class BaseAdapter(ABC):
     @abstractmethod
     def check_health(self) -> HealthStatus:
         """检查数据源健康状态
-        
+
         Returns:
             HealthStatus: 健康状态
 
@@ -129,16 +129,21 @@ class BaseAdapter(ABC):
             logger.error(f"{self.name}.get_stock_basic 异常: {e}")
             return None
 
-    async def get_stock_daily_with_metrics(self, stock_code: str, start_date: str, end_date: str) -> Optional[List[Dict]]:
+    async def get_stock_daily_with_metrics(
+        self, stock_code: str, start_date: str, end_date: str
+    ) -> Optional[List[Dict]]:
         """获取日线数据并记录指标"""
         start_time = datetime.now()
 
         try:
-            self._log_request_start("get_stock_daily", {
-                "stock_code": stock_code,
-                "start_date": start_date,
-                "end_date": end_date,
-            })
+            self._log_request_start(
+                "get_stock_daily",
+                {
+                    "stock_code": stock_code,
+                    "start_date": start_date,
+                    "end_date": end_date,
+                },
+            )
 
             result = await self.get_stock_daily(stock_code, start_date, end_date)
 

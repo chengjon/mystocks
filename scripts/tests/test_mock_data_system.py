@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-Mock数据系统测试脚本
+"""Mock数据系统测试脚本
 
 验证Mock数据系统的各个组件是否正常工作：
 1. 统一Mock数据管理器
@@ -18,21 +16,22 @@ import sys
 import unittest
 from pathlib import Path
 
+
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 # 导入相关模块
 try:
+    from src.mock.mock_Dashboard import get_market_stats
+    from src.mock.mock_Stocks import get_real_time_quote, get_stock_list
+    from src.mock.mock_StrategyManagement import get_strategy_definitions
+    from src.mock.mock_TechnicalAnalysis import get_technical_indicators
+    from src.mock.mock_Wencai import get_wencai_queries
     from web.backend.app.mock.unified_mock_data import (
         UnifiedMockDataManager,
         get_mock_data_manager,
     )
-    from src.mock.mock_Dashboard import get_market_stats
-    from src.mock.mock_Stocks import get_stock_list, get_real_time_quote
-    from src.mock.mock_TechnicalAnalysis import get_technical_indicators
-    from src.mock.mock_Wencai import get_wencai_queries
-    from src.mock.mock_StrategyManagement import get_strategy_definitions
 except ImportError as e:
     print(f"导入错误: {e}")
     print("请检查项目结构和依赖安装")
@@ -113,7 +112,9 @@ class TestMockDataSystem(unittest.TestCase):
 
             # 测试实时行情
             quote_data = self.manager.get_data(
-                "stocks", action="quote", symbol="600519"
+                "stocks",
+                action="quote",
+                symbol="600519",
             )
             print(f"✅ 实时行情获取成功: {quote_data.get('symbol', 'N/A')}")
 
@@ -134,12 +135,13 @@ class TestMockDataSystem(unittest.TestCase):
 
             # 测试批量股票技术指标
             batch_data = self.manager.get_data(
-                "technical", symbols=["600519", "000001", "600036"]
+                "technical",
+                symbols=["600519", "000001", "600036"],
             )
             self.assertIn("indicators", batch_data, "批量数据应该包含indicators")
 
             print(
-                f"✅ 批量技术指标数据获取成功，股票数量: {len(batch_data.get('indicators', {}))}"
+                f"✅ 批量技术指标数据获取成功，股票数量: {len(batch_data.get('indicators', {}))}",
             )
 
         except Exception as e:
@@ -180,7 +182,9 @@ class TestMockDataSystem(unittest.TestCase):
 
             # 测试策略运行
             run_data = self.manager.get_data(
-                "strategy", action="run", strategy_name="突破策略"
+                "strategy",
+                action="run",
+                strategy_name="突破策略",
             )
             self.assertIn("strategy_result", run_data, "应该包含strategy_result")
 

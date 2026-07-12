@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""
-简单的API合规性测试运行器
-"""
+"""简单的API合规性测试运行器"""
 
 import sys
 from pathlib import Path
+
 
 # 添加项目根目录到Python路径
 project_root = Path(__file__).parent
@@ -63,7 +62,7 @@ def main():
         print("\n4. 检查测试文件语法...")
         for test_file in test_files:
             try:
-                with open(test_file, "r", encoding="utf-8") as f:
+                with open(test_file, encoding="utf-8") as f:
                     content = f.read()
                     compile(content, str(test_file), "exec")
                 print(f"✅ {test_file.name} 语法正确")

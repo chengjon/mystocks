@@ -131,20 +131,24 @@ class AnalysisDataService(AnalysisDataServiceTailMixin):
 
         logger.info("分析数据API模块初始化")
 
-    async def calculate_technical_indicator(self, symbol: str, indicator_type: IndicatorType, period: int = 20) -> IndicatorData:
+    async def calculate_technical_indicator(
+        self, symbol: str, indicator_type: IndicatorType, period: int = 20
+    ) -> IndicatorData:
         """计算技术指标
-        
+
         Args:
             symbol: 股票代码
             indicator_type: 指标类型
             period: 周期
-        
+
         Returns:
             IndicatorData: 指标数据
 
         """
         try:
-            self._log_request_start("calculate_technical_indicator", {"symbol": symbol, "indicator_type": indicator_type.value})
+            self._log_request_start(
+                "calculate_technical_indicator", {"symbol": symbol, "indicator_type": indicator_type.value}
+            )
 
             if indicator_type == IndicatorType.MA:
                 values = await self._calculate_ma(symbol, period)
@@ -202,7 +206,7 @@ class AnalysisDataService(AnalysisDataServiceTailMixin):
 
             ma_values = []
             for i in range(period, len(prices)):
-                window = prices[i-period:i] if i >= period else prices[0:i]
+                window = prices[i - period : i] if i >= period else prices[0:i]
                 ma = sum(window) / period
                 ma_values.append(ma)
 
@@ -222,7 +226,7 @@ class AnalysisDataService(AnalysisDataServiceTailMixin):
             ema_values = [ma_values[0]]
 
             for i in range(1, len(ma_values)):
-                ema = (ma_values[i] * multiplier) + (ema_values[i-1] * (1 - multiplier))
+                ema = (ma_values[i] * multiplier) + (ema_values[i - 1] * (1 - multiplier))
                 ema_values.append(ema)
 
             return ema_values
@@ -289,7 +293,7 @@ class AnalysisDataService(AnalysisDataServiceTailMixin):
                 losses = 0
 
                 for j in range(i, i + period):
-                    change = prices[j] - prices[j-1]
+                    change = prices[j] - prices[j - 1]
                     if change > 0:
                         gains += change
                     else:
@@ -315,8 +319,8 @@ class AnalysisDataService(AnalysisDataServiceTailMixin):
             std_dev_values = []
 
             for i in range(period, len(ma_values)):
-                window = ma_values[i-period:i] if i >= period else ma_values[0:i]
-                std_dev = (sum((x - window[len(window)//2]) ** 2 for x in window) / len(window)) ** 0.5
+                window = ma_values[i - period : i] if i >= period else ma_values[0:i]
+                std_dev = (sum((x - window[len(window) // 2]) ** 2 for x in window) / len(window)) ** 0.5
                 std_dev_values.append(std_dev)
 
             upper_band = []
@@ -368,14 +372,14 @@ class AnalysisDataService(AnalysisDataServiceTailMixin):
             low_values = []
 
             for i in range(period, len(lows)):
-                window = lows[i-period:i] if i >= period else lows[0:i]
+                window = lows[i - period : i] if i >= period else lows[0:i]
                 low = min(window)
                 low_values.append(low)
 
             high_values = []
 
             for i in range(period, len(highs)):
-                window = highs[i-period:i] if i >= period else highs[0:i]
+                window = highs[i - period : i] if i >= period else highs[0:i]
                 high = max(window)
                 high_values.append(high)
 
@@ -416,7 +420,7 @@ class AnalysisDataService(AnalysisDataServiceTailMixin):
 
             for i in range(period, len(k_values)):
                 if k_values[i]:
-                    d = k_values[i] - (k_values[i-2] if i >= 2 else 0)
+                    d = k_values[i] - (k_values[i - 2] if i >= 2 else 0)
                 else:
                     d = 0
                 d_values.append(d)
@@ -457,9 +461,10 @@ class AnalysisDataService(AnalysisDataServiceTailMixin):
 
             returns = [r["close_price"] for r in results]
 
-            log_returns = [math.log(r[i] / r[i-1]) for i in range(1, len(returns))]
+            log_returns = [math.log(r[i] / r[i - 1]) for i in range(1, len(returns))]
 
             import math
+
             variance = sum((lr - log_returns.mean()) ** 2 for lr in log_returns) / (len(log_returns) - 1)
 
             volatility = math.sqrt(variance) * 100
@@ -476,10 +481,10 @@ class AnalysisDataService(AnalysisDataServiceTailMixin):
 
     async def get_fundamental_data(self, symbol: str) -> FundamentalData:
         """获取基本面数据
-        
+
         Args:
             symbol: 股票代码
-        
+
         Returns:
             FundamentalData: 基本面数据
 
@@ -527,10 +532,10 @@ class AnalysisDataService(AnalysisDataServiceTailMixin):
 
     async def run_comprehensive_analysis(self, symbol: str) -> AnalysisResult:
         """运行综合分析
-        
+
         Args:
             symbol: 股票代码
-        
+
         Returns:
             AnalysisResult: 综合分析结果
 

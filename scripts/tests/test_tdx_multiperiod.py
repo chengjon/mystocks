@@ -1,5 +1,4 @@
-"""
-TDX多周期K线功能测试
+"""TDX多周期K线功能测试
 
 测试新增功能:
 - 分钟K线 (1m, 5m, 15m, 30m)
@@ -10,9 +9,9 @@ TDX多周期K线功能测试
 日期: 2025-10-15
 """
 
-
-import sys
 import os
+import sys
+
 
 # 添加项目根目录到路径
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -20,10 +19,13 @@ sys.path.insert(0, project_root)
 
 import logging
 from datetime import datetime, timedelta
+
 from src.adapters.tdx.tdx_adapter import TdxDataSource
 
+
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 
 
@@ -105,9 +107,8 @@ def test_multiperiod_klines():
     if passed == total:
         print("\n🎉 所有多周期K线测试通过!")
         return 0
-    else:
-        print(f"\n⚠️  {total - passed}个测试失败/出错")
-        return 1
+    print(f"\n⚠️  {total - passed}个测试失败/出错")
+    return 1
 
 
 def test_index_multiperiod():
@@ -137,9 +138,8 @@ def test_index_multiperiod():
             print(df[available_cols].tail(3).to_string(index=False))
 
         return True
-    else:
-        print("✗ 未获取到数据")
-        return False
+    print("✗ 未获取到数据")
+    return False
 
 
 if __name__ == "__main__":

@@ -1,5 +1,4 @@
-"""策略管理后台任务实现。
-"""
+"""策略管理后台任务实现。"""
 
 import os
 import sys
@@ -140,7 +139,9 @@ async def run_backtest_task(backtest_id: int, config: Dict[str, Any]) -> None:
                 }
 
                 results = gpu_engine.run_gpu_backtest(
-                    stock_data=stock_data, strategy_config=strategy_config, initial_capital=initial_capital,
+                    stock_data=stock_data,
+                    strategy_config=strategy_config,
+                    initial_capital=initial_capital,
                 )
 
                 results["gpu_accelerated"] = True

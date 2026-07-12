@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
-"""
-add_doc_metadata模块准确测试套件
+"""add_doc_metadata模块准确测试套件
 基于实际源代码函数签名和行为编写测试
 遵循Phase 6成功模式：功能→边界→异常→性能→集成测试
 """
 
-import sys
 import os
-import tempfile
 import shutil
+import sys
+import tempfile
 from pathlib import Path
-from unittest.mock import patch, mock_open, MagicMock
+from unittest.mock import MagicMock, mock_open, patch
+
 import pytest
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -19,9 +20,9 @@ sys.path.insert(0, str(project_root))
 
 # 导入被测试的模块
 from src.utils.add_doc_metadata import (
+    METADATA_TEMPLATE,
     add_metadata,
     batch_add_metadata,
-    METADATA_TEMPLATE,
     main,
 )
 
@@ -53,7 +54,7 @@ class TestAddMetadata:
         add_metadata(self.test_file_path, creator, version)
 
         # 验证元数据被添加
-        with open(self.test_file_path, "r", encoding="utf-8") as f:
+        with open(self.test_file_path, encoding="utf-8") as f:
             content = f.read()
 
         assert f"**创建人**: {creator}" in content
@@ -71,11 +72,15 @@ class TestAddMetadata:
         approved_date = "2024-01-01"
 
         add_metadata(
-            self.test_file_path, creator, version, approved_date, revision_notes
+            self.test_file_path,
+            creator,
+            version,
+            approved_date,
+            revision_notes,
         )
 
         # 验证自定义元数据
-        with open(self.test_file_path, "r", encoding="utf-8") as f:
+        with open(self.test_file_path, encoding="utf-8") as f:
             content = f.read()
 
         assert f"**创建人**: {creator}" in content
@@ -91,7 +96,7 @@ class TestAddMetadata:
 
         add_metadata(self.test_file_path, creator, version, approved_date)
 
-        with open(self.test_file_path, "r", encoding="utf-8") as f:
+        with open(self.test_file_path, encoding="utf-8") as f:
             content = f.read()
 
         assert f"**批准日期**: {approved_date}" in content
@@ -105,7 +110,7 @@ class TestAddMetadata:
 
         add_metadata(self.test_file_path, "创建人", "1.0.0")
 
-        with open(self.test_file_path, "r", encoding="utf-8") as f:
+        with open(self.test_file_path, encoding="utf-8") as f:
             content = f.read()
 
         # 验证原文内容被保留
@@ -122,7 +127,7 @@ class TestAddMetadata:
 
         add_metadata(self.test_file_path, "张三👨‍💻", "版本1.0")
 
-        with open(self.test_file_path, "r", encoding="utf-8") as f:
+        with open(self.test_file_path, encoding="utf-8") as f:
             content = f.read()
 
         assert unicode_content in content
@@ -136,10 +141,13 @@ class TestAddMetadata:
         revision_notes = "包含特殊字符: @#$%^&*()_+-=[]{}|;':\",./<>?"
 
         add_metadata(
-            self.test_file_path, creator, version, revision_notes=revision_notes
+            self.test_file_path,
+            creator,
+            version,
+            revision_notes=revision_notes,
         )
 
-        with open(self.test_file_path, "r", encoding="utf-8") as f:
+        with open(self.test_file_path, encoding="utf-8") as f:
             content = f.read()
 
         assert creator in content
@@ -176,7 +184,7 @@ class TestAddMetadataEdgeCases:
 
         add_metadata(empty_file, "创建人", "1.0.0")
 
-        with open(empty_file, "r", encoding="utf-8") as f:
+        with open(empty_file, encoding="utf-8") as f:
             content = f.read()
 
         assert "**创建人**: 创建人" in content
@@ -193,7 +201,7 @@ class TestAddMetadataEdgeCases:
         # 应该能处理长名称
         add_metadata(test_file, long_creator, "1.0.0")
 
-        with open(test_file, "r", encoding="utf-8") as f:
+        with open(test_file, encoding="utf-8") as f:
             content = f.read()
 
         assert long_creator in content
@@ -207,7 +215,7 @@ class TestAddMetadataEdgeCases:
 
         add_metadata(test_file, "", "1.0.0")
 
-        with open(test_file, "r", encoding="utf-8") as f:
+        with open(test_file, encoding="utf-8") as f:
             content = f.read()
 
         assert "**创建人**: " in content
@@ -221,7 +229,7 @@ class TestAddMetadataEdgeCases:
 
         add_metadata(test_file, "创建人", "")
 
-        with open(test_file, "r", encoding="utf-8") as f:
+        with open(test_file, encoding="utf-8") as f:
             content = f.read()
 
         assert "**版本**: " in content
@@ -236,7 +244,7 @@ class TestAddMetadataEdgeCases:
         # approved_date应该能接受None
         add_metadata(test_file, "创建人", "1.0.0", None)
 
-        with open(test_file, "r", encoding="utf-8") as f:
+        with open(test_file, encoding="utf-8") as f:
             content = f.read()
 
         assert "**创建人**: 创建人" in content
@@ -294,16 +302,10 @@ class TestBatchAddMetadata:
                 batch_add_metadata()
 
                 # 验证异常消息被打印（包含"❌"的消息）
-                error_calls = [
-                    call for call in mock_print.call_args_list if "❌" in str(call)
-                ]
+                error_calls = [call for call in mock_print.call_args_list if "❌" in str(call)]
                 assert len(error_calls) > 0
                 # 验证统计数据被打印
-                print_calls = [
-                    str(call)
-                    for call in mock_print.call_args_list
-                    if "完成统计" in str(call)
-                ]
+                print_calls = [str(call) for call in mock_print.call_args_list if "完成统计" in str(call)]
                 assert len(print_calls) > 0
 
 
@@ -337,7 +339,7 @@ class TestMainFunction:
         with patch("sys.argv", ["add_doc_metadata.py"] + test_args):
             main()
 
-        with open(self.test_file, "r", encoding="utf-8") as f:
+        with open(self.test_file, encoding="utf-8") as f:
             content = f.read()
 
         assert "**创建人**: 命令行创建人" in content
@@ -360,7 +362,7 @@ class TestMainFunction:
         with patch("sys.argv", ["add_doc_metadata.py"] + test_args):
             main()
 
-        with open(self.test_file, "r", encoding="utf-8") as f:
+        with open(self.test_file, encoding="utf-8") as f:
             content = f.read()
 
         assert "**创建人**: Claude" in content  # 默认值
@@ -388,9 +390,8 @@ class TestMainFunction:
         """测试帮助参数"""
         test_args = ["--help"]
 
-        with patch("sys.argv", ["add_doc_metadata.py"] + test_args):
-            with pytest.raises(SystemExit):
-                main()
+        with patch("sys.argv", ["add_doc_metadata.py"] + test_args), pytest.raises(SystemExit):
+            main()
 
     def test_main_invalid_file_path(self):
         """测试无效文件路径"""
@@ -426,7 +427,9 @@ class TestMainFunction:
 
                 # 验证调用使用了正确的参数
                 mock_add.assert_called_once_with(
-                    self.test_file, "特定创建人", "特定版本号"
+                    self.test_file,
+                    "特定创建人",
+                    "特定版本号",
                 )
 
 
@@ -480,7 +483,7 @@ class TestIntegrationScenarios:
                 main()
 
             # 3. 验证最终状态
-            with open(doc_file, "r", encoding="utf-8") as f:
+            with open(doc_file, encoding="utf-8") as f:
                 final_content = f.read()
 
             # 验证元数据存在
@@ -512,7 +515,7 @@ class TestIntegrationScenarios:
                     f.write(content)
 
             # 为每个文件添加元数据
-            for filename in documents.keys():
+            for filename in documents:
                 file_path = os.path.join(temp_dir, filename)
                 test_args = [
                     "--doc",
@@ -527,9 +530,9 @@ class TestIntegrationScenarios:
                     main()
 
             # 验证所有文档都被正确处理
-            for filename in documents.keys():
+            for filename in documents:
                 file_path = os.path.join(temp_dir, filename)
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = f.read()
 
                 assert "**创建人**: 多文档创建人" in content

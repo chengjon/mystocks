@@ -86,10 +86,7 @@ class DataSourceManager:
         """保存配置"""
         if self._config_format == "data_sources":
             data = dict(self._raw_config)
-            data_sources = {
-                name: dict(config)
-                for name, config in data.get("data_sources", {}).items()
-            }
+            data_sources = {name: dict(config) for name, config in data.get("data_sources", {}).items()}
             for module_name, module in self.modules.items():
                 source_config = data_sources.get(module_name, {})
                 source_config["enabled"] = module.enabled

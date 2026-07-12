@@ -35,6 +35,7 @@ def _assert_safe_table_identifier(table_name: str) -> str:
         raise ValueError(f"Unsafe table name detected: {table_name}")
     return table_name
 
+
 def _get_safe_table_name(query_name: str) -> str:
     """从白名单获取安全的表名，防止 SQL 注入
 
@@ -121,7 +122,7 @@ def scheduled_refresh_all_queries(pages: int = 1, active_only: bool = True) -> D
         批量执行结果统计
 
     """
-    logger.info("[Celery Task] Starting scheduled refresh all queries, " f"pages={pages}, active_only={active_only}")
+    logger.info(f"[Celery Task] Starting scheduled refresh all queries, pages={pages}, active_only={active_only}")
 
     db = SessionLocal()
     results = {
@@ -170,8 +171,7 @@ def scheduled_refresh_all_queries(pages: int = 1, active_only: bool = True) -> D
 
         results["completed_at"] = datetime.now().isoformat()
         logger.info(
-            f"[Celery Task] Scheduled refresh completed: "
-            f"{results['successful']}/{results['total_queries']} successful",
+            f"[Celery Task] Scheduled refresh completed: {results['successful']}/{results['total_queries']} successful",
         )
 
         return results

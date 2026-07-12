@@ -243,8 +243,7 @@ async def get_health_score_history(
     stock_code: str = Path(..., description="股票代码"),
     days: int = Query(30, description="查询天数", ge=1, le=365),
 ) -> UnifiedResponse[List[HealthScoreResponse]]:
-    """获取股票健康度历史评分
-    """
+    """获取股票健康度历史评分"""
     try:
         from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
 
@@ -299,8 +298,7 @@ async def analyze_portfolio(
     user_id: int = Query(1, description="用户ID"),
     include_risk_metrics: bool = Query(False, description="是否包含高级风险指标"),
 ) -> UnifiedResponse[PortfolioAnalysisResponse]:
-    """分析投资组合健康度
-    """
+    """分析投资组合健康度"""
     try:
         from src.monitoring.domain.calculator_factory import get_calculator_factory
         from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
@@ -454,8 +452,7 @@ async def identify_market_regime(
 @router.get("/engine/status", response_model=UnifiedResponse[Dict[str, Any]])
 @handle_exceptions
 async def get_engine_status() -> UnifiedResponse[Dict[str, Any]]:
-    """获取计算引擎状态
-    """
+    """获取计算引擎状态"""
     try:
         from src.monitoring.domain.calculator_factory import get_calculator_factory
 

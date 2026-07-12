@@ -1,5 +1,5 @@
-"""财务数据路由 (Financial Data)
-"""
+"""财务数据路由 (Financial Data)"""
+
 from typing import Any, Dict
 
 from fastapi import APIRouter, Depends
@@ -8,6 +8,7 @@ from app.core.security import User, get_current_user
 
 
 router = APIRouter()
+
 
 @router.get("/financial")
 async def get_financial_data(
@@ -18,6 +19,7 @@ async def get_financial_data(
     current_user: User = Depends(get_current_user),
 ) -> Dict[str, Any]:
     from app.services.data_source_factory import get_data_source_factory
+
     factory = await get_data_source_factory()
     params = {"symbol": symbol, "report_type": report_type, "period": period, "limit": limit}
     result = await factory.get_data("data", "financial", params)

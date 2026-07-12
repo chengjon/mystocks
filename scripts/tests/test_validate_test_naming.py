@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
-"""
-validate_test_naming模块测试套件
+"""validate_test_naming模块测试套件
 基于Phase 6成功模式：功能→边界→异常→性能→集成测试
 目标：100%测试覆盖率
 """
 
-import sys
 import os
-import tempfile
 import shutil
+import sys
+import tempfile
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
 import pytest
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -27,7 +28,7 @@ class TestTestNamingValidatorInit:
     def test_init_with_default_root(self):
         """测试使用默认根目录初始化"""
         validator = TestNamingValidator()
-        assert validator.root_dir == Path(".")
+        assert validator.root_dir == Path()
         assert validator.compliant_files == []
         assert validator.non_compliant_files == []
         assert isinstance(validator.ignored_dirs, set)
@@ -421,10 +422,10 @@ class TestGenerateReport:
         """测试生成混合合规情况的报告"""
         # 模拟混合结果
         self.validator.compliant_files = [
-            self.validator.root_dir / Path("test_good.py")
+            self.validator.root_dir / Path("test_good.py"),
         ]
         self.validator.non_compliant_files = [
-            self.validator.root_dir / Path("my_test.py")
+            self.validator.root_dir / Path("my_test.py"),
         ]
 
         report = self.validator.generate_report()
@@ -440,9 +441,7 @@ class TestGenerateReport:
     def test_generate_report_long_compliant_list(self):
         """测试生成长符合规范文件列表的报告"""
         # 创建超过10个符合规范的文件，确保它们在temp_dir下
-        self.validator.compliant_files = [
-            self.validator.root_dir / Path(f"test_{i}.py") for i in range(15)
-        ]
+        self.validator.compliant_files = [self.validator.root_dir / Path(f"test_{i}.py") for i in range(15)]
         self.validator.non_compliant_files = []
 
         report = self.validator.generate_report()
@@ -483,7 +482,7 @@ class TestMainFunction:
     def test_main_with_compliant_files(self, mock_print):
         """测试main函数处理符合规范的文件"""
         with patch(
-            "src.utils.validate_test_naming.TestNamingValidator"
+            "src.utils.validate_test_naming.TestNamingValidator",
         ) as mock_validator_class:
             # 模拟validator实例
             mock_validator = MagicMock()
@@ -501,7 +500,7 @@ class TestMainFunction:
     def test_main_with_non_compliant_files(self, mock_print):
         """测试main函数处理不符合规范的文件"""
         with patch(
-            "src.utils.validate_test_naming.TestNamingValidator"
+            "src.utils.validate_test_naming.TestNamingValidator",
         ) as mock_validator_class:
             # 模拟validator实例
             mock_validator = MagicMock()
@@ -519,7 +518,7 @@ class TestMainFunction:
     def test_main_uses_default_root(self, mock_print):
         """测试main函数使用默认根目录"""
         with patch(
-            "src.utils.validate_test_naming.TestNamingValidator"
+            "src.utils.validate_test_naming.TestNamingValidator",
         ) as mock_validator_class:
             mock_validator = MagicMock()
             mock_validator.compliant_files = []
@@ -536,7 +535,7 @@ class TestMainFunction:
     def test_main_prints_report(self, mock_print):
         """测试main函数打印报告"""
         with patch(
-            "src.utils.validate_test_naming.TestNamingValidator"
+            "src.utils.validate_test_naming.TestNamingValidator",
         ) as mock_validator_class:
             test_report = "Mock test report content"
             mock_validator = MagicMock()
@@ -643,9 +642,7 @@ class TestIntegrationScenarios:
         assert stats["total"] == 5  # 只包含test相关文件，忽略排除项
         assert stats["compliant"] == 3
         assert stats["non_compliant"] == 2
-        assert (
-            "50.0%" in report or "60.0%" in report or "40.0%" in report
-        )  # 取决于实际计数
+        assert "50.0%" in report or "60.0%" in report or "40.0%" in report  # 取决于实际计数
 
     def test_large_scale_validation(self):
         """测试大规模验证性能"""

@@ -104,7 +104,11 @@ class RiskManagementService:
         return self.monitoring.check_thresholds(portfolio_id, current_metrics)
 
     async def create_alert_rule(
-        self, rule_name: str, risk_level: RiskLevel, conditions: Dict, channel: AlertChannel = AlertChannel.EMAIL,
+        self,
+        rule_name: str,
+        risk_level: RiskLevel,
+        conditions: Dict,
+        channel: AlertChannel = AlertChannel.EMAIL,
     ) -> Dict:
         """创建告警规则
 
@@ -184,7 +188,9 @@ class RiskManagementService:
         return await self.settings.get_settings(user_id)
 
     async def get_dashboard_summary(
-        self, portfolio_id: str, time_range: DashboardTimeRange = DashboardTimeRange.WEEKLY,
+        self,
+        portfolio_id: str,
+        time_range: DashboardTimeRange = DashboardTimeRange.WEEKLY,
     ) -> Dict:
         """获取仪表盘摘要
 
@@ -211,7 +217,10 @@ class RiskManagementService:
             return {}
 
     async def export_risk_report(
-        self, portfolio_id: str, start_date: Optional[datetime] = None, end_date: Optional[datetime] = None,
+        self,
+        portfolio_id: str,
+        start_date: Optional[datetime] = None,
+        end_date: Optional[datetime] = None,
     ) -> str:
         """导出风险报告
 

@@ -1,5 +1,4 @@
-"""信号监控 API 响应模型定义。
-"""
+"""信号监控 API 响应模型定义。"""
 
 from datetime import date, datetime
 from typing import List, Optional

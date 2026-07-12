@@ -665,7 +665,8 @@ async def custom_redoc_html():
 
     # 渲染模板变量
     html_content = template_content.replace("{{title}}", openapi_config["title"]).replace(
-        "{{openapi_url}}", "/openapi.json",
+        "{{openapi_url}}",
+        "/openapi.json",
     )
 
     return HTMLResponse(content=html_content)

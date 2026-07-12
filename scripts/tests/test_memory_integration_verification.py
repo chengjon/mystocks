@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-简化的内存管理集成验证测试
+"""简化的内存管理集成验证测试
 验证内存管理是否已正确集成到数据库连接模块
 """
 
-import sys
 import asyncio
-import time
-import psutil
 import gc
+import sys
+import time
+
+import psutil
+
 
 # 设置Python路径
 project_root = "/opt/claude/mystocks_spec"
@@ -22,12 +22,13 @@ def test_memory_manager_functionality():
 
     try:
         # 直接执行内存管理器文件以避免导入问题
-        with open("src/core/memory_manager.py", "r", encoding="utf-8") as f:
+        with open("src/core/memory_manager.py", encoding="utf-8") as f:
             memory_manager_code = f.read()
 
         # 去除typing注释以避免导入问题
         memory_manager_code = memory_manager_code.replace(
-            "from typing import ", "# from typing import "
+            "from typing import ",
+            "# from typing import ",
         )
 
         # 执行内存管理器代码
@@ -44,7 +45,9 @@ def test_memory_manager_functionality():
         resource_manager = get_resource_manager()
         test_resource = {"type": "test", "data": "test_data"}
         resource_manager.register_resource(
-            "test_resource", test_resource, lambda: print("Test resource cleaned")
+            "test_resource",
+            test_resource,
+            lambda: print("Test resource cleaned"),
         )
 
         resource_stats = resource_manager.get_stats()
@@ -77,7 +80,8 @@ def test_database_connection_integration():
     try:
         # 执行连接管理器代码
         with open(
-            "src/storage/database/connection_manager.py", "r", encoding="utf-8"
+            "src/storage/database/connection_manager.py",
+            encoding="utf-8",
         ) as f:
             connection_manager_code = f.read()
 
@@ -114,9 +118,7 @@ def test_database_connection_integration():
 
                 # 检查该方法附近是否有内存管理代码
                 method_pos = connection_manager_code.find(method)
-                context = connection_manager_code[
-                    max(0, method_pos - 100) : method_pos + 100
-                ]
+                context = connection_manager_code[max(0, method_pos - 100) : method_pos + 100]
                 if "resource_manager" in context or "MEMORY_MANAGEMENT" in context:
                     print(f"   ✅ {method} 包含内存管理集成")
                 else:
@@ -140,7 +142,7 @@ def test_connection_pool_integration():
 
     try:
         # 执行连接池代码
-        with open("src/core/database_pool.py", "r", encoding="utf-8") as f:
+        with open("src/core/database_pool.py", encoding="utf-8") as f:
             database_pool_code = f.read()
 
         # 检查内存集成功能
@@ -194,7 +196,8 @@ def test_connection_context_integration():
     try:
         # 执行连接上下文代码
         with open(
-            "src/storage/database/connection_context.py", "r", encoding="utf-8"
+            "src/storage/database/connection_context.py",
+            encoding="utf-8",
         ) as f:
             connection_context_code = f.read()
 
@@ -225,9 +228,7 @@ def test_connection_context_integration():
 
                 # 检查该组件附近是否有内存管理代码
                 component_pos = connection_context_code.find(component)
-                context = connection_context_code[
-                    max(0, component_pos - 200) : component_pos + 200
-                ]
+                context = connection_context_code[max(0, component_pos - 200) : component_pos + 200]
                 if "memory" in context.lower():
                     print(f"   ✅ {component} 包含内存管理集成")
                 else:
@@ -257,7 +258,7 @@ def test_memory_leak_detection():
 
     try:
         # 执行内存管理器代码
-        with open("src/core/memory_manager.py", "r", encoding="utf-8") as f:
+        with open("src/core/memory_manager.py", encoding="utf-8") as f:
             memory_manager_code = f.read()
 
         # 执行代码
@@ -304,7 +305,7 @@ async def test_concurrent_memory_operations():
 
     try:
         # 执行内存管理器代码
-        with open("src/core/memory_manager.py", "r", encoding="utf-8") as f:
+        with open("src/core/memory_manager.py", encoding="utf-8") as f:
             memory_manager_code = f.read()
 
         # 执行代码
@@ -429,10 +430,9 @@ async def main():
         print("✅ 内存泄漏检测功能正常工作")
         print("✅ 并发内存操作正常工作")
         return True
-    else:
-        print("❌ 部分测试失败")
-        print("请检查失败的项目并修复相关问题")
-        return False
+    print("❌ 部分测试失败")
+    print("请检查失败的项目并修复相关问题")
+    return False
 
 
 if __name__ == "__main__":

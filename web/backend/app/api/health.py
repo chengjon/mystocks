@@ -1,5 +1,4 @@
-"""健康检查 API 端点
-"""
+"""健康检查 API 端点"""
 
 import json
 import logging
@@ -106,7 +105,10 @@ async def check_system_health(request: Request):
         }
 
         return create_health_response(
-            service="mystocks-web-api", status=overall_status, details=health_data, request_id=request_id,
+            service="mystocks-web-api",
+            status=overall_status,
+            details=health_data,
+            request_id=request_id,
         )
 
     except Exception as e:
@@ -138,7 +140,8 @@ async def check_frontend_service() -> HealthStatus:
             for port in frontend_ports:
                 try:
                     async with session.get(
-                        f"http://localhost:{port}", timeout=aiohttp.ClientTimeout(total=5),
+                        f"http://localhost:{port}",
+                        timeout=aiohttp.ClientTimeout(total=5),
                     ) as response:
                         response_time = (time.time() - start_time) * 1000  # 转换为毫秒
                         if response.status == 200:
@@ -230,7 +233,12 @@ async def check_postgresql_service() -> HealthStatus:
         pg_database = os.getenv("POSTGRESQL_DATABASE", "mystocks")
 
         conn = psycopg2.connect(
-            host=pg_host, port=pg_port, user=pg_user, password=pg_password, database=pg_database, connect_timeout=5,
+            host=pg_host,
+            port=pg_port,
+            user=pg_user,
+            password=pg_password,
+            database=pg_database,
+            connect_timeout=5,
         )
 
         cursor = conn.cursor()

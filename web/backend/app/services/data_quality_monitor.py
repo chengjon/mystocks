@@ -687,6 +687,7 @@ class DataQualityMonitor:
         """检查监控是否启用"""
         return self.monitoring_enabled
 
+
 from app.services._data_quality_monitor_singleton import get_data_quality_monitor, monitor_data_quality
 
 

@@ -55,8 +55,7 @@ class MarketDataServiceV2:
 
     def _runtime_fallback_enabled(self) -> bool:
         return (
-            os.getenv("TESTING", "false").lower() == "true"
-            or os.getenv("DEVELOPMENT_MODE", "false").lower() == "true"
+            os.getenv("TESTING", "false").lower() == "true" or os.getenv("DEVELOPMENT_MODE", "false").lower() == "true"
         )
 
     def _build_sector_fund_flow_runtime_rows(
@@ -465,7 +464,10 @@ class MarketDataServiceV2:
             return {"success": False, "message": str(e)}
 
     def query_sector_fund_flow(
-        self, sector_type: str = "行业", timeframe: str = "今日", limit: int = 100,
+        self,
+        sector_type: str = "行业",
+        timeframe: str = "今日",
+        limit: int = 100,
     ) -> List[Dict]:
         """查询行业/概念资金流向"""
         try:

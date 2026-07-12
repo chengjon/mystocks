@@ -321,8 +321,7 @@ async def get_industry_performance(industry_code: str = Query(..., description="
 
 # 为API注册器添加一个函数来获取所有行业概念相关的端点
 def get_industry_concept_endpoints():
-    """获取所有行业概念分析端点信息
-    """
+    """获取所有行业概念分析端点信息"""
     endpoints = [
         {"path": "/api/analysis/industry/list", "method": "GET", "description": "获取所有行业分类列表"},
         {"path": "/api/analysis/concept/list", "method": "GET", "description": "获取所有概念分类列表"},

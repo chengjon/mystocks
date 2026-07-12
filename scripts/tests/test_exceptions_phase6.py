@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
-"""
-Exceptions Phase 6 测试套件
+"""Exceptions Phase 6 测试套件
 遵循Phase 6成功模式：功能→边界→异常→性能→集成测试
 目标：将exceptions.py的覆盖率从初始状态提升到95%+
 覆盖38个异常类的完整层次结构
 """
 
 import sys
-import os
 import time
+from datetime import datetime
 from pathlib import Path
+
 import pytest
-from datetime import datetime, timedelta
-from unittest.mock import Mock, patch
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -20,40 +19,59 @@ sys.path.insert(0, str(project_root))
 
 # 导入所有异常类
 from src.core.exceptions import (
+    # Authentication Exceptions
+    AuthenticationException,
+    BacktestError,
+    # Business Logic Exceptions
+    BusinessLogicException,
+    # Cache Exceptions
+    CacheException,
+    CacheInvalidationError,
+    CacheRetrievalError,
+    CacheStoreError,
+    ConfigInvalidError,
+    ConfigNotFoundError,
+    # Configuration Exceptions
+    ConfigurationException,
+    ConfigValidationError,
+    DatabaseConnectionError,
+    # Database Exceptions
+    DatabaseException,
+    DatabaseIntegrityError,
+    DatabaseNotFoundError,
+    DatabaseOperationError,
+    DatabaseTimeoutError,
+    DataFetchError,
+    DataParseError,
+    # Data Source Exceptions
+    DataSourceException,
+    DataTypeError,
+    DataValidationError,
+    # External Service Exceptions
+    ExternalServiceException,
+    InsufficientFundsError,
+    InvalidCredentialsError,
+    InvalidStrategyError,
     # Base exception
     MyStocksException,
-
-    # Data Source Exceptions
-    DataSourceException, NetworkError, DataFetchError,
-    DataParseError, DataValidationError,
-
-    # Database Exceptions
-    DatabaseException, DatabaseConnectionError, DatabaseOperationError,
-    DatabaseIntegrityError, DatabaseNotFoundError,
-
-    # Cache Exceptions
-    CacheException, CacheStoreError, CacheRetrievalError, CacheInvalidationError,
-
-    # Configuration Exceptions
-    ConfigurationException, ConfigNotFoundError, ConfigInvalidError, ConfigValidationError,
-
-    # Validation Exceptions
-    ValidationException, SchemaValidationError, DataTypeError, RangeError, RequiredFieldError,
-
-    # Business Logic Exceptions
-    BusinessLogicException, InsufficientFundsError, InvalidStrategyError,
-    BacktestError, TradeExecutionError,
-
-    # Authentication Exceptions
-    AuthenticationException, InvalidCredentialsError, TokenExpiredError,
-    TokenInvalidError, UnauthorizedAccessError,
-
+    NetworkError,
+    NetworkTimeoutError,
+    OperationTimeoutError,
+    RangeError,
+    RateLimitError,
+    RequiredFieldError,
+    SchemaValidationError,
+    ServiceError,
+    ServiceUnavailableError,
     # Timeout Exceptions
-    TimeoutException, NetworkTimeoutError, DatabaseTimeoutError, OperationTimeoutError,
-
-    # External Service Exceptions
-    ExternalServiceException, ServiceUnavailableError, ServiceError,
-    RateLimitError, UnexpectedResponseError
+    TimeoutException,
+    TokenExpiredError,
+    TokenInvalidError,
+    TradeExecutionError,
+    UnauthorizedAccessError,
+    UnexpectedResponseError,
+    # Validation Exceptions
+    ValidationException,
 )
 
 
@@ -80,7 +98,7 @@ class TestMyStocksExceptionBase:
             code="CUSTOM_CODE",
             severity="MEDIUM",
             context=context,
-            original_exception=original_exc
+            original_exception=original_exc,
         )
 
         assert exc.message == "Test error"
@@ -498,12 +516,12 @@ class TestExceptionWithComplexScenarios:
             "source": "akshare",
             "retry_count": 3,
             "timeout": 30,
-            "data_size": 1024
+            "data_size": 1024,
         }
 
         exc = DataValidationError(
             "Data validation failed",
-            context=context
+            context=context,
         )
 
         result = exc.to_dict()
@@ -601,8 +619,8 @@ class TestExceptionIntegration:
             context={
                 "host": "localhost",
                 "port": 5432,
-                "database": "mystocks"
-            }
+                "database": "mystocks",
+            },
         )
 
         # 模拟日志记录
@@ -618,8 +636,8 @@ class TestExceptionIntegration:
             context={
                 "limit": 100,
                 "remaining": 0,
-                "reset_time": "2024-01-01T12:00:00Z"
-            }
+                "reset_time": "2024-01-01T12:00:00Z",
+            },
         )
 
         api_response = exc.to_dict()
@@ -637,7 +655,7 @@ class TestExceptionIntegration:
             "Custom error",
             code="CUSTOM_001",
             severity="LOW",
-            context={"custom_field": "custom_value"}
+            context={"custom_field": "custom_value"},
         )
 
         assert exc.code == "CUSTOM_001"

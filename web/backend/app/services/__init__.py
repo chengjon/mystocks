@@ -125,7 +125,11 @@ class IntegratedServices:
         return self.market_data_service.get_stock_quote(source_type, stock_code)
 
     def get_technical_indicator(
-        self, source_type: str, symbol: str, indicator_type: str, period: int = 20,
+        self,
+        source_type: str,
+        symbol: str,
+        indicator_type: str,
+        period: int = 20,
     ) -> Optional[Dict]:
         """获取技术指标（路由到分析数据服务）"""
         return self.analysis_data_service.calculate_technical_indicator(source_type, symbol, indicator_type, period)

@@ -517,7 +517,9 @@ class UnifiedDataService:
 
             # 搜索筛选
             search_mask = df["symbol"].str.contains(keyword, case=False, na=False) | df["name"].str.contains(
-                keyword, case=False, na=False,
+                keyword,
+                case=False,
+                na=False,
             )
             filtered_df = df[search_mask]
 

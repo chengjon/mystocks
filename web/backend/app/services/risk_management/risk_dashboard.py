@@ -581,7 +581,10 @@ class RiskDashboard(RiskBase):
             return "unknown"
 
     async def generate_risk_report(
-        self, portfolio_id: str, start_date: Optional[datetime] = None, end_date: Optional[datetime] = None,
+        self,
+        portfolio_id: str,
+        start_date: Optional[datetime] = None,
+        end_date: Optional[datetime] = None,
     ) -> Dict:
         """生成风险报告"""
         try:

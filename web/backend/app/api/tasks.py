@@ -48,7 +48,9 @@ async def register_task(task_config: TaskConfig, current_user: User = Depends(ge
         # 检查操作频率限制
         if not check_task_rate_limit(current_user.id, max_operations_per_minute=5):
             raise BusinessException(
-                detail="任务注册频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED",
+                detail="任务注册频率过高，请稍后再试",
+                status_code=429,
+                error_code="RATE_LIMIT_EXCEEDED",
             )
 
         # 记录操作审计
@@ -104,7 +106,9 @@ async def unregister_task(
         # 检查操作频率限制
         if not check_task_rate_limit(current_user.id, max_operations_per_minute=5):
             raise BusinessException(
-                detail="任务操作频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED",
+                detail="任务操作频率过高，请稍后再试",
+                status_code=429,
+                error_code="RATE_LIMIT_EXCEEDED",
             )
 
         # 记录操作审计
@@ -133,7 +137,9 @@ async def list_tasks(
     ),
     tags: Optional[str] = Query(None, description="逗号分隔的任务标签", max_length=200),
     status: Optional[str] = Query(
-        None, description="任务状态", pattern=r"^(PENDING|RUNNING|SUCCESS|FAILED|CANCELLED)$",
+        None,
+        description="任务状态",
+        pattern=r"^(PENDING|RUNNING|SUCCESS|FAILED|CANCELLED)$",
     ),
     enabled: Optional[bool] = Query(None, description="是否启用"),
     limit: int = Query(50, description="返回数量", ge=1, le=200),
@@ -151,7 +157,9 @@ async def list_tasks(
         # 检查操作频率限制（读取操作限制较宽松）
         if not check_task_rate_limit(current_user.id, max_operations_per_minute=30):
             raise BusinessException(
-                detail="查询频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED",
+                detail="查询频率过高，请稍后再试",
+                status_code=429,
+                error_code="RATE_LIMIT_EXCEEDED",
             )
 
         # 记录操作审计
@@ -319,16 +327,36 @@ async def get_task_statistics():
 
         stats = {
             "total_tasks": TaskStatistics(
-                count=25, success_count=20, failed_count=3, running_count=2, avg_execution_time=45.5, success_rate=80.0,
+                count=25,
+                success_count=20,
+                failed_count=3,
+                running_count=2,
+                avg_execution_time=45.5,
+                success_rate=80.0,
             ),
             "data_processing": TaskStatistics(
-                count=15, success_count=12, failed_count=2, running_count=1, avg_execution_time=30.2, success_rate=80.0,
+                count=15,
+                success_count=12,
+                failed_count=2,
+                running_count=1,
+                avg_execution_time=30.2,
+                success_rate=80.0,
             ),
             "backtest": TaskStatistics(
-                count=8, success_count=6, failed_count=1, running_count=1, avg_execution_time=120.8, success_rate=75.0,
+                count=8,
+                success_count=6,
+                failed_count=1,
+                running_count=1,
+                avg_execution_time=120.8,
+                success_rate=75.0,
             ),
             "alert": TaskStatistics(
-                count=2, success_count=2, failed_count=0, running_count=0, avg_execution_time=5.3, success_rate=100.0,
+                count=2,
+                success_count=2,
+                failed_count=0,
+                running_count=0,
+                avg_execution_time=5.3,
+                success_rate=100.0,
             ),
         }
         return stats

@@ -11,7 +11,6 @@
 版本: 1.0.0
 """
 
-
 import structlog
 from fastapi import APIRouter, Depends, HTTPException
 
@@ -32,8 +31,10 @@ logger = structlog.get_logger(__name__)
 
 router = APIRouter(prefix="/api/v1/algorithms", tags=["量化交易算法"])
 
+
 async def get_naive_bayes_class_probabilities(
-    model_id: str, current_user: User = Depends(get_current_user),
+    model_id: str,
+    current_user: User = Depends(get_current_user),
 ) -> UnifiedResponse:
     """获取朴素贝叶斯模型的类别概率分布
 
@@ -57,5 +58,3 @@ async def get_naive_bayes_class_probabilities(
     except Exception as e:
         logger.error("获取类别概率失败", model_id=model_id, error=str(e))
         return server_error(message="获取类别概率失败")
-
-

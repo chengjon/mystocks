@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
-"""
-完整策略模板系统演示
+"""完整策略模板系统演示
 
 展示所有8个预置策略模板的功能
 - 原有4个: Momentum, MeanReversion, Breakout, Grid
 - 新增4个: DualMA, Turtle, MACD, BollingerBreakout
 """
 
-import sys
 import os
+import sys
 from datetime import datetime, timedelta
+
 
 # 添加项目路径
 project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
 )
 sys.path.insert(0, project_root)
 sys.path.insert(0, os.path.join(project_root, "web", "backend"))
@@ -61,7 +61,7 @@ def generate_market_data(base_price, days, volatility=0.02):
                 "low": low,
                 "close": price,
                 "volume": volume,
-            }
+            },
         )
 
     return data
@@ -162,7 +162,7 @@ def demo_turtle():
                 "low": price * 0.98,
                 "close": price,
                 "volume": 1000000,
-            }
+            },
         )
 
     # 构建历史
@@ -367,7 +367,7 @@ def demo_strategy_comparison():
 
     for info in strategies_info:
         print(
-            f"{info['name']:<15} {info['category']:<12} {info['适用']:<15} {info['优势']:<20}"
+            f"{info['name']:<15} {info['category']:<12} {info['适用']:<15} {info['优势']:<20}",
         )
 
     print("\n\n策略组合建议:\n")

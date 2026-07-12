@@ -58,7 +58,8 @@ def db_retry(max_retries: int = 3, delay: float = 1.0, backoff: float = 2.0):
                             logger.warning(
                                 f"数据库连接失败，{current_delay}秒后重试 ({retries}/{max_retries})",
                                 logger.warning(
-                                    f"数据库连接失败，{current_delay}秒后重试 ({retries}/{max_retries})", error=str(e),
+                                    f"数据库连接失败，{current_delay}秒后重试 ({retries}/{max_retries})",
+                                    error=str(e),
                                 ),
                             )
                             time.sleep(current_delay)
@@ -285,7 +286,10 @@ class DatabaseService:
                 where_clause = "symbol = %s AND trade_date >= %s AND trade_date <= %s"
                 params = [symbol, start_date, end_date]
                 df = postgresql_access.query(
-                    "daily_kline", where=where_clause, order_by="trade_date ASC", params=params,
+                    "daily_kline",
+                    where=where_clause,
+                    order_by="trade_date ASC",
+                    params=params,
                 )
             else:
                 with get_postgresql_session() as session:

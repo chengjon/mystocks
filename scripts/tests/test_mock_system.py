@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-Mock数据系统测试脚本
+"""Mock数据系统测试脚本
 
 验证Mock数据功能是否正常工作，包括数据源切换机制。
 
@@ -10,11 +8,12 @@ Mock数据系统测试脚本
 版本: 1.0.0
 """
 
+import json
 import os
 import sys
-import json
 from datetime import datetime
 from pathlib import Path
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -74,7 +73,7 @@ def test_unified_mock_manager():
         return True
 
     except Exception as e:
-        print(f"❌ Mock数据管理器测试失败: {str(e)}")
+        print(f"❌ Mock数据管理器测试失败: {e!s}")
         import traceback
 
         traceback.print_exc()
@@ -100,7 +99,7 @@ def test_fastapi_integration():
         return True
 
     except Exception as e:
-        print(f"❌ FastAPI集成测试失败: {str(e)}")
+        print(f"❌ FastAPI集成测试失败: {e!s}")
         import traceback
 
         traceback.print_exc()
@@ -136,7 +135,7 @@ def test_environment_variable_control():
         return True
 
     except Exception as e:
-        print(f"❌ 环境变量控制测试失败: {str(e)}")
+        print(f"❌ 环境变量控制测试失败: {e!s}")
         import traceback
 
         traceback.print_exc()
@@ -176,7 +175,7 @@ def test_data_consistency():
         return True
 
     except Exception as e:
-        print(f"❌ 数据一致性测试失败: {str(e)}")
+        print(f"❌ 数据一致性测试失败: {e!s}")
         import traceback
 
         traceback.print_exc()
@@ -190,8 +189,9 @@ def test_performance():
     print("=" * 60)
 
     try:
-        from web.backend.app.mock.unified_mock_data import UnifiedMockDataManager
         import time
+
+        from web.backend.app.mock.unified_mock_data import UnifiedMockDataManager
 
         manager = UnifiedMockDataManager(use_mock_data=True)
 
@@ -218,7 +218,7 @@ def test_performance():
         return True
 
     except Exception as e:
-        print(f"❌ 性能测试失败: {str(e)}")
+        print(f"❌ 性能测试失败: {e!s}")
         import traceback
 
         traceback.print_exc()
@@ -256,11 +256,7 @@ def generate_test_report(results):
         "results": results,
     }
 
-    report_file = (
-        project_root
-        / "logs"
-        / f"mock_system_test_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-    )
+    report_file = project_root / "logs" / f"mock_system_test_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
     with open(report_file, "w", encoding="utf-8") as f:
         json.dump(report, f, indent=2, ensure_ascii=False)
 
@@ -295,9 +291,8 @@ def main():
     if success:
         print("\n🎉 所有测试通过！Mock数据系统正常工作")
         return 0
-    else:
-        print("\n⚠️ 部分测试失败，请检查系统配置")
-        return 1
+    print("\n⚠️ 部分测试失败，请检查系统配置")
+    return 1
 
 
 if __name__ == "__main__":

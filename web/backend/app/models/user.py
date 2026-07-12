@@ -7,9 +7,7 @@
 # 注意事项：模块功能实现
 # 版权：© 2025 MyStocks Project
 
-"""User models - 数据库模型
-
-"""
+"""User models - 数据库模型"""
 
 from datetime import datetime
 

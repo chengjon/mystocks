@@ -1,5 +1,4 @@
-"""数据源适配器模块
-"""
+"""数据源适配器模块"""
 
 import time
 from datetime import datetime
@@ -138,7 +137,8 @@ class StrategyDataSourceAdapter(IDataSource):
                         for symbol in symbols:
                             try:
                                 result = self._get_strategy_service().run_strategy_for_stock(
-                                    strategy_code=strategy_code, symbol=symbol,
+                                    strategy_code=strategy_code,
+                                    symbol=symbol,
                                 )
                                 results.append({"symbol": symbol, "success": True, "data": result})
                             except Exception as e:
@@ -168,7 +168,9 @@ class StrategyDataSourceAdapter(IDataSource):
                     limit = params.get("limit", 50)
 
                     results = self._get_strategy_service().get_strategy_results(
-                        strategy_code=strategy_code, symbol=symbol, limit=limit,
+                        strategy_code=strategy_code,
+                        symbol=symbol,
+                        limit=limit,
                     )
                     return {
                         "success": True,
@@ -364,5 +366,3 @@ class StrategyDataSourceAdapter(IDataSource):
     def get_metrics(self) -> DataSourceMetrics:
         """获取监控指标"""
         return self.metrics
-
-

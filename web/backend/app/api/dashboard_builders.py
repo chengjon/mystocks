@@ -1,5 +1,4 @@
-"""仪表盘聚合结果构建辅助函数
-"""
+"""仪表盘聚合结果构建辅助函数"""
 
 from __future__ import annotations
 

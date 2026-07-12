@@ -1,5 +1,4 @@
-"""备份恢复安全辅助函数
-"""
+"""备份恢复安全辅助函数"""
 
 import logging
 import time
@@ -18,7 +17,10 @@ security_logger.setLevel(logging.INFO)
 handler = logging.FileHandler("/tmp/backup_security.log")
 handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
 
-if not any(getattr(existing_handler, "baseFilename", None) == handler.baseFilename for existing_handler in security_logger.handlers):
+if not any(
+    getattr(existing_handler, "baseFilename", None) == handler.baseFilename
+    for existing_handler in security_logger.handlers
+):
     security_logger.addHandler(handler)
 
 _backup_operation_cache: dict[Any, list[float]] = {}
@@ -58,7 +60,9 @@ def check_backup_rate_limit(user: User) -> bool:
     cutoff_time = current_time - _rate_limit_window
 
     if user_id in _backup_operation_cache:
-        _backup_operation_cache[user_id] = [timestamp for timestamp in _backup_operation_cache[user_id] if timestamp > cutoff_time]
+        _backup_operation_cache[user_id] = [
+            timestamp for timestamp in _backup_operation_cache[user_id] if timestamp > cutoff_time
+        ]
 
     user_operations = _backup_operation_cache.get(user_id, [])
     if len(user_operations) >= _max_backup_operations:

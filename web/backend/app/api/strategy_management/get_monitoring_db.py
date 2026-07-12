@@ -45,10 +45,7 @@ _runtime_backtest_store: List[Dict[str, Any]] = []
 
 
 def _runtime_fallback_enabled() -> bool:
-    return (
-        os.getenv("TESTING", "false").lower() == "true"
-        or os.getenv("DEVELOPMENT_MODE", "false").lower() == "true"
-    )
+    return os.getenv("TESTING", "false").lower() == "true" or os.getenv("DEVELOPMENT_MODE", "false").lower() == "true"
 
 
 def _to_isoformat(value: Any) -> Optional[str]:
@@ -202,7 +199,9 @@ def _next_runtime_backtest_id() -> int:
     return max(numeric_ids, default=950000) + 1
 
 
-def _build_runtime_backtest_record(request: BacktestRequest, config: Dict[str, Any], backtest_id: Optional[int] = None) -> Dict[str, Any]:
+def _build_runtime_backtest_record(
+    request: BacktestRequest, config: Dict[str, Any], backtest_id: Optional[int] = None
+) -> Dict[str, Any]:
     now = datetime.now()
     resolved_id = backtest_id if backtest_id is not None else _next_runtime_backtest_id()
     total_return = 0.182
@@ -382,6 +381,7 @@ async def _handle_strategy_lifecycle_action(
             error_message=str(e),
         )
         raise HTTPException(status_code=500, detail=f"{success_message}失败: {e!s}")
+
 
 def get_monitoring_db():
     """获取监控数据库实例（延迟初始化）"""
@@ -1009,7 +1009,9 @@ async def run_backtest(request: BacktestRequest, background_tasks: BackgroundTas
 
 @router.get("/backtest/results")
 async def list_backtest_results(
-    strategy_id: Optional[int] = None, page: int = 1, page_size: int = 20,
+    strategy_id: Optional[int] = None,
+    page: int = 1,
+    page_size: int = 20,
 ) -> Dict[str, Any]:
     """获取回测结果列表"""
     try:

@@ -110,7 +110,9 @@ class ADXStrategy(BaseStrategy):
         ]
 
     def _calculate_adx(
-        self, history: List[Dict[str, Any]], symbol: str,
+        self,
+        history: List[Dict[str, Any]],
+        symbol: str,
     ) -> tuple[Optional[float], Optional[float], Optional[float]]:
         """计算ADX指标
 

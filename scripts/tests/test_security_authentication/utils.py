@@ -1,22 +1,17 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-认证和授权安全测试套件
+"""认证和授权安全测试套件
 专门测试身份认证、会话管理和访问控制的安全性
 """
 
-import sys
-import os
 import json
-import time
-import requests
-import jwt
-from datetime import datetime, timedelta
-from typing import Dict, List, Any
+import sys
+from datetime import datetime
+
 
 # 设置项目路径
 project_root = "/opt/claude/mystocks_spec"
 sys.path.insert(0, project_root)
+
 
 def run_auth_security_tests():
     """运行认证安全测试"""
@@ -40,7 +35,7 @@ def run_auth_security_tests():
     print(f"通过: {report['test_summary']['passed']}")
     print(f"失败: {report['test_summary']['failed']}")
     print(
-        f"通过率: {report['test_summary']['passed'] / report['test_summary']['total_tests'] * 100:.1f}%"
+        f"通过率: {report['test_summary']['passed'] / report['test_summary']['total_tests'] * 100:.1f}%",
     )
 
     print("\n🚨 按严重性分类的漏洞:")
@@ -55,18 +50,14 @@ def run_auth_security_tests():
         print(f"  {category}: {stats['passed']}/{stats['total']} ({pass_rate:.1f}%)")
 
     # 保存详细报告
-    report_file = (
-        f"/tmp/auth_security_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-    )
+    report_file = f"/tmp/auth_security_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
     with open(report_file, "w") as f:
         json.dump(report, f, indent=2, ensure_ascii=False)
 
     print(f"\n📄 详细报告已保存至: {report_file}")
 
     # 输出关键安全建议
-    critical_issues = [
-        r for r in results if not r.passed and r.severity in ["CRITICAL", "HIGH"]
-    ]
+    critical_issues = [r for r in results if not r.passed and r.severity in ["CRITICAL", "HIGH"]]
     if critical_issues:
         print("\n🚨 关键安全问题（需要立即修复）:")
         for issue in critical_issues:
@@ -79,8 +70,5 @@ def run_auth_security_tests():
     if report["test_summary"]["failed"] > 0:
         print(f"\n❌ {report['test_summary']['failed']} 个测试失败，请修复相关问题")
         return 1
-    else:
-        print("\n✅ 所有认证安全测试通过！")
-        return 0
-
-
+    print("\n✅ 所有认证安全测试通过！")
+    return 0

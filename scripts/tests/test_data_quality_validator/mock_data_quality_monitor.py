@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-数据质量验证器测试套件 - Phase 6 成功模式
+"""数据质量验证器测试套件 - Phase 6 成功模式
 提供完整的数据质量验证功能测试，包括Mock监控器和各种数据场景
 覆盖功能、边界、异常、性能、集成等全方位测试
 """
@@ -8,22 +7,22 @@
 import sys
 from pathlib import Path
 
+
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-import pytest
-from unittest.mock import Mock, patch
-import pandas as pd
-import numpy as np
 from datetime import datetime
+from unittest.mock import Mock, patch
+
+import pandas as pd
+import pytest
 
 # 导入被测试的模块
 from src.core.data_quality_validator import (
     DataQualityValidator,
-    create_validator,
-    validate_dataframe,
 )
+
 
 class MockDataQualityMonitor:
     """Mock数据质量监控器，完整模拟真实监控器行为"""
@@ -55,7 +54,7 @@ class MockDataQualityMonitor:
                 "invalid_records": invalid_records,
                 "validation_rules": validation_rules,
                 "threshold": threshold,
-            }
+            },
         )
         return True
 
@@ -80,7 +79,7 @@ class MockDataQualityMonitor:
                 "null_records": null_records,
                 "required_columns": required_columns,
                 "threshold": threshold,
-            }
+            },
         )
         return True
 
@@ -101,7 +100,7 @@ class MockDataQualityMonitor:
                 "table_name": table_name,
                 "latest_timestamp": latest_timestamp,
                 "threshold_seconds": threshold_seconds,
-            }
+            },
         )
         return True
 
@@ -134,7 +133,7 @@ class TestDataQualityValidatorBasic:
                 "low": [95.0 + i * 2 for i in range(len(dates))],
                 "close": [102.0 + i * 2 for i in range(len(dates))],
                 "volume": [1000000 + i * 100000 for i in range(len(dates))],
-            }
+            },
         )
 
     @pytest.fixture
@@ -148,14 +147,14 @@ class TestDataQualityValidatorBasic:
                     "price": 1680.50,
                     "volume": 1000,
                     "timestamp": datetime.now().isoformat(),
-                }
-            ]
+                },
+            ],
         )
 
     def test_initialization_with_default_monitor(self):
         """测试使用默认监控器初始化"""
         with patch(
-            "src.core.data_quality_validator.get_quality_monitor"
+            "src.core.data_quality_validator.get_quality_monitor",
         ) as mock_get_monitor:
             mock_monitor = Mock()
             mock_get_monitor.return_value = mock_monitor
@@ -215,7 +214,9 @@ class TestDataQualityValidatorBasic:
     def test_validate_realtime_data_success(self, validator, sample_realtime_data):
         """测试验证成功的实时数据"""
         result = validator.validate_stock_data(
-            sample_realtime_data, "600519", "realtime"
+            sample_realtime_data,
+            "600519",
+            "realtime",
         )
 
         assert result["is_valid"] is True
@@ -234,9 +235,7 @@ class TestDataQualityValidatorBasic:
         assert result["quality_score"] < 70.0
 
         # 检查是否有missing_columns问题
-        missing_column_issues = [
-            i for i in result["issues"] if i["type"] == "missing_columns"
-        ]
+        missing_column_issues = [i for i in result["issues"] if i["type"] == "missing_columns"]
         assert len(missing_column_issues) > 0
 
     def test_get_required_columns_daily(self, validator):
@@ -268,7 +267,8 @@ class TestDataQualityValidatorBasic:
         original_threshold = validator.thresholds["missing_rate_threshold"]
 
         validator.set_thresholds(
-            missing_rate_threshold=10.0, outlier_rate_threshold=5.0
+            missing_rate_threshold=10.0,
+            outlier_rate_threshold=5.0,
         )
 
         assert validator.thresholds["missing_rate_threshold"] == 10.0
@@ -291,7 +291,7 @@ class TestDataQualityValidatorCompleteness:
                 "date": ["2024-01-01", "2024-01-02"],
                 "close": [100.0, 101.0],
                 "volume": [1000, 1100],
-            }
+            },
         )
 
         issues = validator._check_completeness(df, ["date", "close", "volume"])
@@ -305,7 +305,7 @@ class TestDataQualityValidatorCompleteness:
                 "date": ["2024-01-01"] * 10,
                 "close": [100.0] * 9 + [None],  # 1/10 = 10%缺失，高于阈值
                 "volume": [1000] * 10,  # 没有缺失
-            }
+            },
         )
 
         # 设置高阈值以测试低于阈值的情况
@@ -321,7 +321,7 @@ class TestDataQualityValidatorCompleteness:
                 "date": ["2024-01-01"] * 10,
                 "close": [100.0] * 9 + [None],  # 1/10 = 10%缺失
                 "volume": [1000] * 10,  # 没有缺失
-            }
+            },
         )
 
         issues = validator._check_completeness(df, ["date", "close", "volume"])
@@ -338,7 +338,7 @@ class TestDataQualityValidatorCompleteness:
             {
                 "date": ["2024-01-01"] * 10,
                 "close": [100.0] * 7 + [None] * 3,  # 3/10 = 30%缺失
-            }
+            },
         )
 
         issues = validator._check_completeness(df, ["date", "close"])
@@ -353,7 +353,7 @@ class TestDataQualityValidatorCompleteness:
                 "date": ["2024-01-01", "2024-01-02"],
                 # 缺少close列
                 "volume": [1000, 1100],
-            }
+            },
         )
 
         # close列不在DataFrame中，但我们在检查完整性，所以应该跳过
@@ -367,7 +367,7 @@ class TestDataQualityValidatorCompleteness:
             {
                 "date": ["2024-01-01", "2024-01-02", "2024-01-03"],
                 "close": [None, None, None],  # 全部缺失
-            }
+            },
         )
 
         issues = validator._check_completeness(df, ["date", "close"])
@@ -393,7 +393,7 @@ class TestDataQualityValidatorAccuracy:
                 "low": [95.0, 96.0, 97.0],
                 "close": [102.0, 103.0, 104.0],
                 "volume": [1000, 1100, 1200],
-            }
+            },
         )
 
         issues = validator._check_accuracy(df, "600519")
@@ -408,7 +408,7 @@ class TestDataQualityValidatorAccuracy:
                 "low": [95.0, 96.0, 97.0],
                 "close": [102.0, 103.0, 104.0],
                 "volume": [1000, 1100, 1200],
-            }
+            },
         )
 
         issues = validator._check_accuracy(df, "600519")
@@ -427,7 +427,7 @@ class TestDataQualityValidatorAccuracy:
                 "low": [105.0, 96.0, 97.0],
                 "close": [102.0, 103.0, 104.0],
                 "volume": [1000, 1100, 1200],
-            }
+            },
         )
 
         issues = validator._check_accuracy(df, "600519")
@@ -444,7 +444,7 @@ class TestDataQualityValidatorAccuracy:
                 "low": [95.0, 96.0, 97.0],
                 "close": [102.0, 103.0, 104.0],
                 "volume": [1000, -500, 1200],  # 包含负成交量
-            }
+            },
         )
 
         issues = validator._check_accuracy(df, "600519")
@@ -462,7 +462,7 @@ class TestDataQualityValidatorAccuracy:
                 "low": [105.0, 96.0, 97.0],
                 "close": [102.0, 103.0, 104.0],
                 "volume": [1000, -500, -300],  # 两个负成交量
-            }
+            },
         )
 
         issues = validator._check_accuracy(df, "600519")
@@ -486,7 +486,7 @@ class TestDataQualityValidatorAccuracy:
     def test_check_accuracy_no_price_columns(self, validator):
         """测试没有价格列的数据"""
         df = pd.DataFrame(
-            {"date": ["2024-01-01", "2024-01-02"], "some_other_column": [1, 2]}
+            {"date": ["2024-01-01", "2024-01-02"], "some_other_column": [1, 2]},
         )
 
         issues = validator._check_accuracy(df, "600519")
@@ -507,7 +507,7 @@ class TestDataQualityValidatorConsistency:
             {
                 "date": ["2024-01-01", "2024-01-02", "2024-01-03"],
                 "close": [100.0, 101.0, 102.0],
-            }
+            },
         )
 
         issues = validator._check_consistency(df, "daily")
@@ -519,7 +519,7 @@ class TestDataQualityValidatorConsistency:
             {
                 "date": ["2024-13-01", "invalid-date", "2024-01-32"],  # 无效日期
                 "close": [100.0, 101.0, 102.0],
-            }
+            },
         )
 
         issues = validator._check_consistency(df, "daily")
@@ -536,7 +536,7 @@ class TestDataQualityValidatorConsistency:
                 "price": 1680.50,
                 "volume": 1000,
                 "timestamp": [datetime.now().isoformat()],
-            }
+            },
         )
 
         issues = validator._check_consistency(df, "realtime")
@@ -551,7 +551,7 @@ class TestDataQualityValidatorConsistency:
                 "price": 1680.50,
                 "volume": 1000,
                 "timestamp": ["invalid-timestamp"],
-            }
+            },
         )
 
         issues = validator._check_consistency(df, "realtime")
@@ -565,7 +565,7 @@ class TestDataQualityValidatorConsistency:
             {
                 "date": ["2024-01-01", "2024/01/02", "2024-01-03"],  # 混合格式
                 "close": [100.0, 101.0, 102.0],
-            }
+            },
         )
 
         issues = validator._check_consistency(df, "daily")
@@ -581,7 +581,7 @@ class TestDataQualityValidatorConsistency:
                 "price": [100.0, 200.0],
                 "volume": [1000, 2000],
                 "timestamp": ["", None],  # 空值和None
-            }
+            },
         )
 
         issues = validator._check_consistency(df, "realtime")
@@ -603,7 +603,7 @@ class TestDataQualityValidatorDuplicates:
             {
                 "date": ["2024-01-01", "2024-01-02", "2024-01-03"],
                 "close": [100.0, 101.0, 102.0],
-            }
+            },
         )
 
         issues = validator._check_duplicates(df)
@@ -638,7 +638,7 @@ class TestDataQualityValidatorDuplicates:
                     "2024-01-02",
                 ],  # 50%重复
                 "close": [100.0, 100.0, 101.0, 101.0],
-            }
+            },
         )
 
         issues = validator._check_duplicates(df)
@@ -654,7 +654,7 @@ class TestDataQualityValidatorDuplicates:
             {
                 "date": ["2024-01-01"] * 10,  # 90%重复率
                 "close": [100.0] * 10,
-            }
+            },
         )
 
         issues = validator._check_duplicates(df)
@@ -669,7 +669,7 @@ class TestDataQualityValidatorDuplicates:
                 "date": ["2024-01-01", "2024-01-01", "2024-01-02"],
                 "open": [100.0, 100.0, 101.0],
                 "close": [102.0, 102.0, 103.0],
-            }
+            },
         )
 
         issues = validator._check_duplicates(df)
@@ -683,12 +683,10 @@ class TestDataQualityValidatorDuplicates:
                 "date": ["2024-01-01", "2024-01-01", "2024-01-02"],
                 "open": [100.0, 100.0, 101.0],
                 "close": [102.0, 103.0, 103.0],  # close列不同
-            }
+            },
         )
 
         # pandas的duplicated()默认检查所有列
         # 这种情况下前两行不完全重复，所以不会被识别为重复
         issues = validator._check_duplicates(df)
         assert len(issues) == 0
-
-

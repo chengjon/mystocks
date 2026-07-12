@@ -1,5 +1,4 @@
-"""数据源适配器模块
-"""
+"""数据源适配器模块"""
 
 import time
 from datetime import datetime

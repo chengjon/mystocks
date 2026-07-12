@@ -125,4 +125,3 @@ class AlgorithmModelRepositoryValidateDataIntegrityMixin:
         except Exception as e:
             logger.error("Failed to validate data integrity: %(e)s")
             return {"timestamp": datetime.now().isoformat(), "overall_status": "error", "error": str(e)}
-

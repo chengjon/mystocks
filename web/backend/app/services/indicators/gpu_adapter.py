@@ -55,7 +55,6 @@ except ImportError:
     logger.warning("⚠️ GPU libraries not available, falling back to CPU")
 
 try:
-
     NUMBA_CUDA_AVAILABLE = True
     logger.info("✅ Numba CUDA acceleration available")
 except ImportError:

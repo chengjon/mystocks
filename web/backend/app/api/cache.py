@@ -23,7 +23,9 @@ def _timestamp() -> str:
 
 
 @router.delete("")
-async def clear_all_cache(confirm: bool = Query(False), current_user: User = Depends(get_current_user)) -> dict[str, object]:
+async def clear_all_cache(
+    confirm: bool = Query(False), current_user: User = Depends(get_current_user)
+) -> dict[str, object]:
     try:
         if not confirm:
             raise ValueError("需要确认才能清除所有缓存，请设置 confirm=true")

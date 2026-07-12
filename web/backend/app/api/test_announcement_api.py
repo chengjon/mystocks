@@ -1,5 +1,4 @@
-"""测试公告API端点
-"""
+"""测试公告API端点"""
 
 import pytest
 from fastapi.testclient import TestClient

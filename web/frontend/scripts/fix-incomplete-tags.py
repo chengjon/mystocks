@@ -30,7 +30,7 @@ def fix_incomplete_tags(file_path):
         if re.match(incomplete_pattern, stripped):
             # 检查下一行是否是注释
             if i + 1 < len(lines) and lines[i + 1].strip().startswith("<!--"):
-                print(f"  Line {i+1}: Found incomplete tag '{stripped}' followed by comment")
+                print(f"  Line {i + 1}: Found incomplete tag '{stripped}' followed by comment")
                 fixed_count += 1
                 # 跳过这一行（删除不完整标签）
                 i += 1
@@ -47,6 +47,7 @@ def fix_incomplete_tags(file_path):
         return fixed_count
 
     return 0
+
 
 def main():
     """主函数：扫描并修复所有 Vue 文件"""
@@ -71,6 +72,7 @@ def main():
     print("\n📊 Summary:")
     print(f"   - Files fixed: {fixed_files}")
     print(f"   - Total tags removed: {total_fixed}")
+
 
 if __name__ == "__main__":
     main()

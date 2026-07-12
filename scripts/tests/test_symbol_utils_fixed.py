@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""
-股票代码处理工具测试套件 - 基于实际实现的完整覆盖
+"""股票代码处理工具测试套件 - 基于实际实现的完整覆盖
 遵循Phase 6成功模式：功能→边界→异常→性能→集成测试
 """
 
+import concurrent.futures
 import sys
 import time
-import concurrent.futures
 from pathlib import Path
+
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -17,13 +17,13 @@ import pytest
 
 # 导入被测试的模块
 from src.utils.symbol_utils import (
-    normalize_stock_code,
-    get_stock_exchange,
-    format_stock_code_for_source,
-    format_stock_code,
-    is_valid_stock_code,
     format_index_code_for_source,
+    format_stock_code,
+    format_stock_code_for_source,
+    get_stock_exchange,
+    is_valid_stock_code,
     normalize_index_code,
+    normalize_stock_code,
 )
 
 
@@ -160,9 +160,7 @@ class TestNormalizeStockCode:
 
         for input_code, expected in test_cases:
             result = normalize_stock_code(input_code)
-            assert result == expected, (
-                f"输入 '{input_code}' 期望 '{expected}' 得到 '{result}'"
-            )
+            assert result == expected, f"输入 '{input_code}' 期望 '{expected}' 得到 '{result}'"
 
 
 class TestGetStockExchange:
@@ -442,9 +440,7 @@ class TestPerformanceAndScalability:
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
             futures = [executor.submit(normalize_stock_code, code) for code in codes]
-            results = [
-                future.result() for future in concurrent.futures.as_completed(futures)
-            ]
+            results = [future.result() for future in concurrent.futures.as_completed(futures)]
 
         assert len(results) == len(codes)
         assert all(result.isdigit() and len(result) == 6 for result in results)
@@ -490,12 +486,8 @@ class TestIntegrationScenarios:
         assert all(exchange in ["SH", "SZ"] for exchange in exchanges)
 
         # 数据源格式化（只测试支持的源）
-        akshare_codes = [
-            format_stock_code_for_source(code, "akshare") for code in normalized
-        ]
-        baostock_codes = [
-            format_stock_code_for_source(code, "baostock") for code in normalized
-        ]
+        akshare_codes = [format_stock_code_for_source(code, "akshare") for code in normalized]
+        baostock_codes = [format_stock_code_for_source(code, "baostock") for code in normalized]
 
         assert len(akshare_codes) == len(normalized)
         assert len(baostock_codes) == len(normalized)

@@ -197,7 +197,8 @@ class OpenAPIGenerator:
             if endpoint.method in ["POST", "PUT", "PATCH"] and endpoint.request_model:
                 request_schema = self._model_to_schema(endpoint.request_model)
                 spec["paths"][endpoint.path][endpoint.method.lower()].setdefault(
-                    "requestBody", {"required": True, "content": {"application/json": {"schema": request_schema}}},
+                    "requestBody",
+                    {"required": True, "content": {"application/json": {"schema": request_schema}}},
                 )
 
             # Add response schema

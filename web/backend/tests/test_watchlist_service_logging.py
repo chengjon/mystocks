@@ -89,4 +89,6 @@ def test_delete_group_logs_warning_for_default_group(monkeypatch, caplog):
         result = service.delete_group(user_id=1, group_id=101)
 
     assert result is False
-    assert any(record.levelno == logging.WARNING and record.getMessage() == "不能删除默认分组" for record in caplog.records)
+    assert any(
+        record.levelno == logging.WARNING and record.getMessage() == "不能删除默认分组" for record in caplog.records
+    )

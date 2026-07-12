@@ -101,6 +101,7 @@ async def test_get_quotes_success_normalizes_fields(adapter):
     """B4.014-M1n: 多 symbol 循环调用(每次单 symbol),合并结果。
     OpenStock 不支持 symbol=000001,600519 逗号分隔(provider 503)。
     """
+
     # 每次单 symbol 调用返 1 行
     def _fetch_side_effect(category, *, params=None, request_id=None):
         sym = (params or {}).get("symbol")
@@ -373,9 +374,9 @@ def test_transform_quote_row_strips_sz_sh_bj_prefix():
         ("sh600519", "600519"),
         ("bj430047", "430047"),
         ("SZ000001", "SZ000001"),  # 大写前缀不去(保守)
-        ("000001", "000001"),       # 无前缀原样
-        ("szabcdef", "szabcdef"),   # 后缀非数字不去
-        ("sz12345", "sz12345"),     # 长度 < 8 不去(sz+5 位)
+        ("000001", "000001"),  # 无前缀原样
+        ("szabcdef", "szabcdef"),  # 后缀非数字不去
+        ("sz12345", "sz12345"),  # 长度 < 8 不去(sz+5 位)
     ]:
         out = OpenStockMarketDataSourceAdapter._transform_quote_row({"symbol": raw})
         assert out["symbol"] == expected, f"raw={raw!r} got={out['symbol']!r}"

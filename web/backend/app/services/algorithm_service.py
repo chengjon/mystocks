@@ -201,8 +201,7 @@ class AlgorithmFactory:
 
 
 class AlgorithmResultFormatter:
-    """Utility class for formatting algorithm results for API responses.
-    """
+    """Utility class for formatting algorithm results for API responses."""
 
     @staticmethod
     def format_training_result(result: Dict[str, Any], algorithm_type: AlgorithmType) -> Dict[str, Any]:
@@ -647,6 +646,7 @@ class AlgorithmService(AlgorithmServiceHistoryMixin):
         except Exception:
             logger.error("Failed to persist prediction result: %(e)s")
             # Don't raise exception to avoid breaking the main flow
+
 
 # Global service instance (without database session - for backward compatibility)
 algorithm_service = AlgorithmService()

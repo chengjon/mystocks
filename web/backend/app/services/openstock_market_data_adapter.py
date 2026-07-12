@@ -109,7 +109,9 @@ class OpenStockMarketDataSourceAdapter(IDataSource):
         return headers
 
     async def get_data(
-        self, endpoint: str, params: Dict[str, Any] = None,
+        self,
+        endpoint: str,
+        params: Dict[str, Any] = None,
     ) -> Dict[str, Any]:
         params = params or {}
         self._metrics["total_requests"] += 1
@@ -138,7 +140,9 @@ class OpenStockMarketDataSourceAdapter(IDataSource):
             raise
 
     async def _fetch_klines(
-        self, client: OpenStockClient, params: Mapping[str, Any],
+        self,
+        client: OpenStockClient,
+        params: Mapping[str, Any],
     ) -> Dict[str, Any]:
         symbol = params.get("symbol") or params.get("code")
         if not symbol:
@@ -169,7 +173,9 @@ class OpenStockMarketDataSourceAdapter(IDataSource):
         }
 
     async def _fetch_quotes(
-        self, client: OpenStockClient, params: Mapping[str, Any],
+        self,
+        client: OpenStockClient,
+        params: Mapping[str, Any],
     ) -> Dict[str, Any]:
         # B4.014-M1n 修复:OpenStock REALTIME_QUOTES 用单数 symbol(字符串)。
         # 多 symbol 不支持逗号分隔(provider 会把整串当 1 个非法代码 → 503),
@@ -221,8 +227,7 @@ class OpenStockMarketDataSourceAdapter(IDataSource):
                 if isinstance(inner, list):
                     return inner
             logger.warning(
-                "OpenStock _coerce_rows: mapping shape unrecognized, "
-                "returning empty list. keys=%(keys)s",
+                "OpenStock _coerce_rows: mapping shape unrecognized, returning empty list. keys=%(keys)s",
                 {"keys": list(data.keys())},
             )
         return []
@@ -288,11 +293,7 @@ class OpenStockMarketDataSourceAdapter(IDataSource):
         """
         if not isinstance(symbol_value, str) or not symbol_value:
             return symbol_value
-        if (
-            len(symbol_value) >= 8
-            and symbol_value[:2] in ("sz", "sh", "bj")
-            and symbol_value[2:].isdigit()
-        ):
+        if len(symbol_value) >= 8 and symbol_value[:2] in ("sz", "sh", "bj") and symbol_value[2:].isdigit():
             return symbol_value[2:]
         return symbol_value
 
@@ -329,7 +330,8 @@ class OpenStockMarketDataSourceAdapter(IDataSource):
         except httpx.HTTPError as exc:
             elapsed_ms = (time.monotonic() - started) * 1000.0
             logger.warning(
-                "OpenStock /health/live probe failed: %(exc)s", {"exc": exc},
+                "OpenStock /health/live probe failed: %(exc)s",
+                {"exc": exc},
             )
             return HealthStatus(
                 status=HealthStatusEnum.FAILED,

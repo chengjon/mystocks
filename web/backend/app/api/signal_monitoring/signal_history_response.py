@@ -26,6 +26,7 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
+
 @router.get("/signals/history", response_model=List[SignalHistoryResponse])
 async def get_signal_history(
     strategy_id: Optional[str] = None,

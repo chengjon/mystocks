@@ -1,5 +1,4 @@
-"""数据源适配器模块
-"""
+"""数据源适配器模块"""
 
 import time
 from datetime import datetime
@@ -196,7 +195,11 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
 
         # 使用 run_in_executor 运行同步计算
         return await asyncio.to_thread(
-            service.calculate_all_indicators, symbol=symbol, period=period, start_date=start_date, end_date=end_date,
+            service.calculate_all_indicators,
+            symbol=symbol,
+            period=period,
+            start_date=start_date,
+            end_date=end_date,
         )
 
     async def _get_trend_indicators(self, symbol: str, period: str = "1y") -> Dict[str, Any]:
@@ -282,7 +285,11 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
 
         # 获取DataFrame
         df = await asyncio.to_thread(
-            service.get_stock_history, symbol=symbol, period=period, start_date=start_date, end_date=end_date,
+            service.get_stock_history,
+            symbol=symbol,
+            period=period,
+            start_date=start_date,
+            end_date=end_date,
         )
 
         if df.empty:
@@ -344,5 +351,3 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
     async def close(self):
         """关闭连接和清理资源"""
         # Technical Analysis适配器不需要清理特定资源
-
-

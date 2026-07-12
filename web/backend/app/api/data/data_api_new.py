@@ -49,7 +49,11 @@ class DataApiService:
             return None
 
     async def get_stock_list(
-        self, source_type: str, industry: Optional[str] = None, area: Optional[str] = None, limit: int = 100,
+        self,
+        source_type: str,
+        industry: Optional[str] = None,
+        area: Optional[str] = None,
+        limit: int = 100,
     ) -> List[Dict]:
         """获取股票列表（自动路由到对应的API）
 
@@ -122,7 +126,11 @@ class DataApiService:
             return []
 
     async def get_technical_indicator(
-        self, source_type: str, symbol: str, indicator_type: str, period: int = 20,
+        self,
+        source_type: str,
+        symbol: str,
+        indicator_type: str,
+        period: int = 20,
     ) -> Optional[Dict]:
         """获取技术指标（自动路由到对应的API）
 

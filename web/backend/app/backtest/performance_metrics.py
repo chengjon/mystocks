@@ -141,7 +141,10 @@ class PerformanceMetrics:
         return (final_equity - initial_capital) / initial_capital
 
     def _calculate_annualized_return(
-        self, equity_values: List[float], dates: List[datetime], initial_capital: float,
+        self,
+        equity_values: List[float],
+        dates: List[datetime],
+        initial_capital: float,
     ) -> float:
         """计算年化收益率"""
         if len(dates) < 2 or initial_capital == 0:
@@ -345,7 +348,9 @@ class PerformanceMetrics:
         return alpha, beta
 
     def _calculate_information_ratio(
-        self, portfolio_values: List[float], benchmark_values: List[float],
+        self,
+        portfolio_values: List[float],
+        benchmark_values: List[float],
     ) -> Optional[float]:
         """计算信息比率"""
         if len(portfolio_values) != len(benchmark_values) or len(portfolio_values) < 2:

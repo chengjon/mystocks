@@ -76,7 +76,10 @@ class MarketDataService:
             return None
 
     async def get_stock_list(
-        self, industry: Optional[str] = None, area: Optional[str] = None, limit: int = 100,
+        self,
+        industry: Optional[str] = None,
+        area: Optional[str] = None,
+        limit: int = 100,
     ) -> List[Dict]:
         """获取股票列表"""
         try:

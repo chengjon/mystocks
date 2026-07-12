@@ -96,7 +96,10 @@ class ContractTestMixin:
         # Validate response
         if response.status_code == int(status_code):
             result = contract_validator.validate_response(
-                path=path, method=method, status_code=status_code, response_data=response.json(),
+                path=path,
+                method=method,
+                status_code=status_code,
+                response_data=response.json(),
             )
         else:
             result = ValidationResult(
@@ -141,12 +144,16 @@ def generate_contract_tests(spec_path: str = "docs/api/openapi.yaml") -> list:
 
 
 class ContractAssertionHelper:
-    """Helper class for contract-related assertions.
-    """
+    """Helper class for contract-related assertions."""
 
     @staticmethod
     def assert_response_conforms(
-        validator: ContractValidator, path: str, method: str, status_code: str, response_data: Any, msg: str = "",
+        validator: ContractValidator,
+        path: str,
+        method: str,
+        status_code: str,
+        response_data: Any,
+        msg: str = "",
     ) -> None:
         """Assert that response data conforms to OpenAPI schema.
 

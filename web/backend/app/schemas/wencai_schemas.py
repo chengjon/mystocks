@@ -279,8 +279,7 @@ class WencaiRefreshResponse(BaseModel):
 
 
 class WencaiHistoryItem(BaseModel):
-    """历史数据项
-    """
+    """历史数据项"""
 
     date: str = Field(..., description="日期", json_schema_extra={"example": "2025-10-17"})
     total_records: int = Field(..., description="记录数", ge=0)
@@ -348,8 +347,7 @@ class WencaiErrorResponse(BaseModel):
 
 
 class WencaiStatsResponse(BaseModel):
-    """统计信息响应（可选，用于监控面板）
-    """
+    """统计信息响应（可选，用于监控面板）"""
 
     total_queries: int = Field(..., description="总查询数", ge=0)
     active_queries: int = Field(..., description="启用的查询数", ge=0)

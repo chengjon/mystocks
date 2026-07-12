@@ -206,7 +206,9 @@ async def websocket_market(websocket: WebSocket, client_id: str = Query(default=
 
 @router.websocket("/ws/portfolio")
 async def websocket_portfolio(
-    websocket: WebSocket, portfolio_id: str = Query(default=None), client_id: str = Query(default=None),
+    websocket: WebSocket,
+    portfolio_id: str = Query(default=None),
+    client_id: str = Query(default=None),
 ):
     """持仓市值实时推送 WebSocket 端点
 
@@ -335,8 +337,7 @@ async def get_realtime_quote(symbol: str):
 
 @router.get("/api/realtime/quotes")
 async def get_realtime_quotes(symbols: str = Query(..., description="股票代码列表，逗号分隔")):
-    """批量获取股票实时行情
-    """
+    """批量获取股票实时行情"""
     try:
         symbol_list = [s.strip() for s in symbols.split(",") if s.strip()]
         results = {}
@@ -368,8 +369,7 @@ async def get_realtime_quotes(symbols: str = Query(..., description="股票代�
 
 @router.get("/api/mtm/portfolio/{portfolio_id}")
 async def get_portfolio_mtm(portfolio_id: str):
-    """获取投资组合市值快照
-    """
+    """获取投资组合市值快照"""
     try:
         mtm_engine = get_mtm_engine()
         snapshot = mtm_engine.get_portfolio_snapshot(portfolio_id)
@@ -386,8 +386,7 @@ async def get_portfolio_mtm(portfolio_id: str):
 
 @router.get("/api/mtm/position/{position_id}")
 async def get_position_mtm(position_id: str):
-    """获取单个持仓市值快照
-    """
+    """获取单个持仓市值快照"""
     try:
         mtm_engine = get_mtm_engine()
         position = mtm_engine.get_position_snapshot(position_id)
@@ -418,8 +417,7 @@ async def get_position_mtm(position_id: str):
 
 @router.get("/api/mtm/stats")
 async def get_mtm_stats():
-    """获取 MTM 引擎统计信息
-    """
+    """获取 MTM 引擎统计信息"""
     try:
         mtm_engine = get_mtm_engine()
         return {
