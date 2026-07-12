@@ -524,7 +524,7 @@
 | 功能点 | 状态 | 说明 |
 |--------|------|------|
 | INDEX_root.md 0/269 相对链接 | ⚠️ | `docs/reports/cleanup/index-artifacts/INDEX_root.md` 统一基础路径错配，选择性修复 9 条 reports/ 会不一致，故意留债 |
-| Category C CI 路径漂移 | ⚠️ | `reports/analysis/tech-debt-baseline.json` 实际在 `docs/archive/reports/analysis-gates/root-analysis-reports/tech-debt-baseline.json`，3 个 CI 脚本读取路径失效：`.github/workflows/typescript-type-check.yml:487`、`scripts/dev/quality_gate/tech_debt_governance_gate.py:17`、`scripts/dev/quality_gate/collect_tech_debt_baseline.py:195`。⚠️ 此为运行时路径漂移，非单纯死链；修复需同步写入端与读取端，待专项协调 |
+| tech-debt 基线未接入 CI 自动生成 | ⚠️ | 写入端 `scripts/dev/quality_gate/collect_tech_debt_baseline.py:208-210` 与读取端 `.github/workflows/typescript-type-check.yml:487`、`scripts/dev/quality_gate/tech_debt_governance_gate.py:17` **路径一致**（均为 repo-root `reports/analysis/tech-debt-baseline.json`），不存在漂移；真正问题是该路径被 `.gitignore:269` 忽略，且写入端**未被任何 workflow 调用**（仅 docs/governance 规范引用）。读取端在文件缺失时 graceful-degrade（不硬失败）。⚠️ 诊断已从"路径漂移"更正为"基线生成未接入 CI + 路径被 gitignore"；属技术债规范落地缺口，非链接断链 |
 
 ---
 
