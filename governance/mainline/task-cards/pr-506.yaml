@@ -1,0 +1,97 @@
+version: "v0.2"
+
+task:
+  id: "pr-506"
+  title: "Phase-4 Category-C: wire collect_tech_debt_baseline.py into CI + unblock .gitignore + ship two latent CI import fixes (socketio re-export, ETFQueryParams source)"
+  owner: "main"
+  created_at: "2026-07-12"
+
+mainline:
+  id: "L1-phase4-tech-debt-baseline-ci-integration"
+  objective: "land charter v1 §5.2 'baseline never increases' hard gate by (1) wiring the baseline collector into a weekly CI workflow that commits the proposed baseline only when non-increasing vs committed, (2) unblocking the .gitignore so the baseline json can be tracked, (3) graceful-degrading the type-check gate when the baseline is absent, and (4) fixing two pre-existing import contract bugs surfaced by Validate API Contracts and Backend Build jobs after the recent market/socketio module splits"
+  milestone_id: "L2-tech-debt-governance-charter-v1"
+  slice_id: "L3-category-c-ci-wiring-and-gitignore"
+
+classification:
+  task_type: "fix"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+scope:
+  allowed_paths:
+    - ".gitignore"
+    - ".github/workflows/tech-debt-baseline.yml"
+    - ".github/workflows/typescript-type-check.yml"
+    - "docs/FUNCTION_TREE.md"
+    - "web/backend/app/api/market/__init__.py"
+    - "web/backend/app/core/socketio_manager.py"
+    - "governance/mainline/task-cards/pr-506.yaml"
+  forbidden_paths:
+    - "src/**"
+    - "web/frontend/**"
+    - "scripts/**"
+    - "tests/**"
+    - "openspec/**"
+
+non_goals:
+  - "No regeneration of the baseline per-PR — the baseline is a frozen historical_baseline per charter v1 §5.2; only the weekly schedule + workflow_dispatch path may commit, and only when baseline-review returns non-increasing"
+  - "No change to the zero-error type-check ceiling — TYPE_ERROR_CEILING stays 0; the only behavior change is graceful degradation (warning instead of hard fail) when the baseline json is absent on disk"
+  - "No refactor of the market module beyond the single-line __init__.py import fix needed to restore the public import contract (ETFQueryParams / FundFlowRequest / MarketDataRequest / RefreshRequest) — the deeper split into market_data_request vs market_request_models is left as-is"
+  - "No redesign of the socketio singleton pattern — the trailing re-export preserves the existing public import path; the lazy singleton module itself is untouched"
+  - "No handling of the 25-commit branch divergence accumulated prior to Category-C (OpenStock facade work etc.) — those are tracked under separate workstreams per MEMORY"
+
+acceptance:
+  checks:
+    - id: "gitignore-tracking"
+      command: "git check-ignore -q reports/analysis/tech-debt-baseline.json → exit 1 (not ignored); git check-ignore -q reports/analysis/tech-debt-proposed.json → exit 0 (still ignored)"
+      required: true
+    - id: "baseline-review-pure-fn"
+      command: "python -c 'from scripts.dev.quality_gate.tech_debt_governance_gate import evaluate_baseline_review; ...' — non-increasing → [] violations; flat → [] violations; any NO_NEW_DEBT_METRIC increase → non-empty violation list"
+      required: true
+    - id: "yaml-lint"
+      command: "python -c 'import yaml; yaml.safe_load(open(\".github/workflows/tech-debt-baseline.yml\")); yaml.safe_load(open(\".github/workflows/typescript-type-check.yml\"))'"
+      required: true
+    - id: "market-import"
+      command: "cd web/backend && python -c 'from app.api.market import ETFQueryParams, FundFlowRequest, MarketDataRequest, RefreshRequest, router; print(ETFQueryParams.__module__)' → app.api.market.market_request_models"
+      required: true
+    - id: "socketio-import"
+      command: "cd web/backend && python -c 'from app.core.socketio_manager import get_socketio_manager, reset_socketio_manager; print(\"OK\")'"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-506.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr506-mainline-gate.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "The new weekly workflow has contents:write + pull-requests:write permissions — limited blast radius because it only ever touches reports/analysis/tech-debt-baseline.json on the dedicated tech-debt-baseline-update branch, and only after baseline-review passes; revoke by deleting the workflow file"
+    - "Graceful-degrade in typescript-type-check.yml masks the absence of the baseline json — but this is intentional during the seed phase (before the first weekly run commits a baseline); once seeded, the warning disappears and the hard ceiling re-engages"
+    - "The socketio re-export depends on a trailing import after class definition — if a future refactor moves the lazy singleton again without updating the re-export, ImportError returns; mitigated by the test_socketio_manager.py suite"
+    - "The market __init__.py now imports from two sibling modules (market_data_request for routes, market_request_models for pydantic models) — a future move of any model out of market_request_models will require updating the import"
+  rollback_plan: "git revert <merge-commit-sha> — every change is reversible in isolation; .gitignore change only affects tracking of one file, workflow additions are additive, the two import fixes can each be reverted independently"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "land charter v1 §5.2 'baseline never increases' hard gate — wire the collector into CI, unblock the .gitignore, graceful-degrade the type-check gate when baseline absent, and fix two latent import-contract bugs (socketio + ETFQueryParams) that recent module splits left behind"
+    modified_scope: ".gitignore (negation chain for reports/analysis/tech-debt-baseline.json), .github/workflows/tech-debt-baseline.yml (new weekly ratchet), .github/workflows/typescript-type-check.yml (warn-not-fail + absolute path), docs/FUNCTION_TREE.md §11.3 status ⚠️→✅, web/backend/app/api/market/__init__.py (split model vs route imports), web/backend/app/core/socketio_manager.py (trailing re-export of lazy singleton helpers)"
+    dependency_changes: "none — uses only existing scripts.dev.quality_gate.tech_debt_governance_gate baseline-review entry point and existing actions/checkout@v4, actions/setup-python@v5, actions/setup-node@v4, actions/upload-artifact@v4, actions/github-script@v7"
+    legacy_logic_impact: "type-check gate no longer hard-fails when baseline json absent (warns instead) — this is the only behavior change for existing PRs; once seeded, behavior returns to hard-ceiling. All other changes are additive (new workflow) or pure bug fixes (import contracts restored)"
+    rollback_ready: "yes — each of the 4 logical units (.gitignore, type-check gate, new workflow, FUNCTION_TREE.md, socketio fix, market __init__ fix) can be reverted independently"
+    risk_and_rollback_point: "highest risk is the new weekly workflow with write permissions — revert by deleting .github/workflows/tech-debt-baseline.yml; the rest is independently reversible"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-07-12T00:00:00Z"
+    approval_note: "CI/governance fix — task_type=fix, openspec not_required per gate logic; closes Phase-4 Category-C"
+    secondary_approved: false
