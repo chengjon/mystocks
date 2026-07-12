@@ -254,6 +254,15 @@ unfixable = []
     "ARG002",  # 未使用的参数在测试 fixture 中很常见
 ]
 
+# akshare 适配器使用运行时注入模式：base.py 在模块加载时注入 pd/ak/logger/normalize_date/format_index_code_for_source
+# financial/ 目录下部分文件也使用相同模式
+"src/adapters/**/financial/**/*.py" = [
+    "F821",    # Undefined name — 运行时由 base.py 注入
+]
+"src/adapters/akshare/**/*.py" = [
+    "F821",    # Undefined name — 运行时由 base.py 注入
+]
+
 # ============================================================================
 # Ruff 格式化配置
 # ============================================================================

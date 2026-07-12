@@ -29,10 +29,7 @@ def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.Dat
                 timeout=self.api_timeout,
             )
             logger.info(
-                str(
-                    f"主要API调用成功，参数: symbol={stock_code}, "
-                    f"start_date={start_date_fmt}, end_date={end_date_fmt}"
-                )
+                str(f"主要API调用成功，参数: symbol={stock_code}, start_date={start_date_fmt}, end_date={end_date_fmt}")
             )
         except Exception as e:
             logger.error("主要API调用失败: %s", e)

@@ -122,8 +122,7 @@ class SinaFinanceAdapter(BaseDataSourceAdapter, IDataSource):
         logger.info("开始爬取新浪财经股票评级数据，共%(max_pages)s页")
 
         for i in range(1, max_pages + 1):
-            url = f"https://stock.finance.sina.com.cn/stock/go.php/vIR_RatingNewest/index.phtml?num=60&p={
-                i}"
+            url = f"https://stock.finance.sina.com.cn/stock/go.php/vIR_RatingNewest/index.phtml?num=60&p={i}"
             logger.info("正在爬取第 %(i)s 页...")
 
             df = crawl_table(url)

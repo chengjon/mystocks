@@ -1,3 +1,9 @@
+import logging
+
+import pandas as pd
+
+logger = logging.getLogger(__name__)
+
 
 def get_futures_index_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
     """获取股指期货日线数据-Akshare实现
@@ -397,5 +403,3 @@ def get_industry_classify(self) -> pd.DataFrame:
 
         traceback.print_exc()
         return pd.DataFrame()
-
-
