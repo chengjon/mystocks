@@ -1,0 +1,626 @@
+# MyStocks Frontend 页面审计报告
+
+> **历史分析说明**:
+> 本文件是阶段性分析、审计、评估或复盘材料，不是当前基线、当前实施优先级或仓库共享规则的唯一事实来源。
+> 当前共享规则与治理口径请优先遵循 `architecture/STANDARDS.md`；执行流程、命令与协作约束再结合根目录 `AGENTS.md`，并与当前代码实现、验证结果及主线文档一并核对。
+>
+> 文内问题分级、差距判断、风险结论、审阅意见和建议动作如未重新复核，应视为历史分析结果，不得直接当作当前事实。
+
+
+## 1. 执行摘要
+- 总扫描页面: **252**
+- 已接入页面: **35**（路由引用 37 条，唯一文件 35）
+- 未接入页面: **217**
+- 菜单配置 path 数量: **38**
+- 质量分布: 高 246 / 中 6 / 低 0
+- 健康分布: clean 226 / warning 3 / error 23
+
+> 注：任务中给出的 `src/config/MenuConfig.ts` 在当前仓库不存在，实际为 `src/layouts/MenuConfig.ts`。
+
+## 2. 分类清单
+### 2.1 按目录
+- `artdeco-pages`: 86
+- `.`: 44
+- `demo`: 25
+- `advanced-analysis`: 13
+- `converted.archive`: 9
+- `market`: 8
+- `freqtrade-demo`: 6
+- `stock-analysis`: 6
+- `stocks`: 6
+- `strategy`: 6
+- `tdxpy-demo`: 5
+- `trade-management`: 5
+- `monitoring`: 4
+- `risk`: 4
+- `settings`: 4
+- `trading`: 4
+- `trading-decision`: 4
+- `errors`: 3
+- `examples`: 3
+- `system`: 3
+- `components`: 2
+- `announcement`: 1
+- `technical`: 1
+
+### 2.2 按功能域
+- `other`: 61
+- `analysis`: 44
+- `market`: 42
+- `trade`: 37
+- `system`: 26
+- `strategy`: 23
+- `risk`: 17
+- `auth`: 2
+
+### 2.3 按状态/完整度
+- connected: 35
+- unconnected: 217
+- complete: 240
+- incomplete: 12
+
+## 3. 重复检测结果
+- 同名文件组: 14
+- `overview.vue` (3)
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/demo/pyprofiling/components/Overview.vue`
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/demo/stock-analysis/components/Overview.vue`
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/risk/Overview.vue`
+- `backtestanalysis.vue` (2)
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/BacktestAnalysis.vue`
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/analysis-tabs/BacktestAnalysis.vue`
+- `dashboard.vue` (2)
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/Dashboard.vue`
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/converted.archive/dashboard.vue`
+- `openstockdemo.vue` (2)
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/OpenStockDemo.vue`
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/demo/OpenStockDemo.vue`
+- `phase4dashboard.vue` (2)
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/Phase4Dashboard.vue`
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/demo/Phase4Dashboard.vue`
+- `portfolio.vue` (2)
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/risk/Portfolio.vue`
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/stocks/Portfolio.vue`
+- `positions.vue` (2)
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/risk/Positions.vue`
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/trading/Positions.vue`
+- `pyprofilingdemo.vue` (2)
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/PyprofilingDemo.vue`
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/demo/PyprofilingDemo.vue`
+- `realtime.vue` (2)
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/demo/stock-analysis/components/Realtime.vue`
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/market/Realtime.vue`
+- `riskoverviewtab.vue` (2)
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/risk-tabs/RiskOverviewTab.vue`
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/components/RiskOverviewTab.vue`
+- `stockanalysisdemo.vue` (2)
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/StockAnalysisDemo.vue`
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/demo/StockAnalysisDemo.vue`
+- `technicalanalysis.vue` (2)
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/TechnicalAnalysis.vue`
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/technical/TechnicalAnalysis.vue`
+- `watchlistmanagement.vue` (2)
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/demo/openstock/components/WatchlistManagement.vue`
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/monitoring/WatchlistManagement.vue`
+- `wencai.vue` (2)
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/Wencai.vue`
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/demo/Wencai.vue`
+- 完全重复内容组: 0
+
+## 4. 质量评估
+### 4.1 error 页面（vue-tsc）
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/openstock/components/KlineChart.vue` | diagnostics=7 | tier=medium
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/openstock/components/StockSearch.vue` | diagnostics=6 | tier=medium
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/risk-tabs/StopLossMonitorTab.vue` | diagnostics=5 | tier=high
+- `/opt/claude/mystocks_spec/web/frontend/src/views/strategy/BacktestGPU.vue` | diagnostics=5 | tier=high
+- `/opt/claude/mystocks_spec/web/frontend/src/views/freqtrade-demo/FreqConfigTab.vue` | diagnostics=4 | tier=high
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/openstock/components/StockQuote.vue` | diagnostics=3 | tier=high
+- `/opt/claude/mystocks_spec/web/frontend/src/views/freqtrade-demo/FreqBacktestTab.vue` | diagnostics=3 | tier=high
+- `/opt/claude/mystocks_spec/web/frontend/src/views/freqtrade-demo/FreqStrategyTab.vue` | diagnostics=3 | tier=high
+- `/opt/claude/mystocks_spec/web/frontend/src/views/tdxpy-demo/TdxExportTab.vue` | diagnostics=3 | tier=high
+- `/opt/claude/mystocks_spec/web/frontend/src/views/tdxpy-demo/TdxInstallTab.vue` | diagnostics=3 | tier=high
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/ArtDecoTechnicalAnalysis.vue` | diagnostics=2 | tier=high
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/ArtDecoTradingManagement.vue` | diagnostics=2 | tier=high
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-tabs/MarketConceptTab.vue` | diagnostics=2 | tier=high
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-tabs/MarketETFTab.vue` | diagnostics=2 | tier=high
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue` | diagnostics=2 | tier=high
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/technical-tabs/TechnicalScannerTab.vue` | diagnostics=2 | tier=high
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/openstock/components/StockNews.vue` | diagnostics=2 | tier=high
+- `/opt/claude/mystocks_spec/web/frontend/src/views/StockDetail.vue` | diagnostics=1 | tier=high
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/ArtDecoMarketQuotes.vue` | diagnostics=1 | tier=high
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/ArtDecoStockManagement.vue` | diagnostics=1 | tier=high
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-tabs/MarketKLineTab.vue` | diagnostics=1 | tier=high
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoSignalsView.vue` | diagnostics=1 | tier=high
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/openstock/components/HeatmapChart.vue` | diagnostics=1 | tier=high
+
+## 5. 具体建议
+### 5.1 删除建议（仅建议，不执行）
+- `/opt/claude/mystocks_spec/web/frontend/src/views/FreqtradeDemo.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/KLineDemo.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/MarketDataDemo.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/OpenStockDemo.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/PageTitleDemo.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/PyprofilingDemo.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/StockAnalysisDemo.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/TdxpyDemo.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/_templates/ArtDecoPageTemplate.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/_templates/ExampleRiskManagement.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/converted.archive/backtest-management.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/converted.archive/dashboard.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/converted.archive/data-analysis.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/converted.archive/market-data.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/converted.archive/market-quotes.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/converted.archive/risk-management.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/converted.archive/setting.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/converted.archive/stock-management.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/converted.archive/trading-management.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/OpenStockDemo.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/Phase4Dashboard.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/PyprofilingDemo.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/StockAnalysisDemo.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/Wencai.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/openstock/components/FeatureStatus.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/openstock/components/HeatmapChart.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/openstock/components/KlineChart.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/openstock/components/StockNews.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/openstock/components/StockQuote.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/openstock/components/StockSearch.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/openstock/components/WatchlistManagement.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/pyprofiling/components/API.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/pyprofiling/components/Data.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/pyprofiling/components/Features.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/pyprofiling/components/Overview.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/pyprofiling/components/Prediction.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/pyprofiling/components/Profiling.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/pyprofiling/components/Tech.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/stock-analysis/components/Backtest.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/stock-analysis/components/DataParsing.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/stock-analysis/components/Overview.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/stock-analysis/components/Realtime.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/stock-analysis/components/Status.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/stock-analysis/components/Strategy.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/examples/PageConfigExample.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/examples/TradingDashboard.migrated.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/examples/WebSocketConfigExample.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/freqtrade-demo/FreqBacktestTab.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/freqtrade-demo/FreqConfigTab.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/freqtrade-demo/FreqOverviewTab.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/freqtrade-demo/FreqStatusTab.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/freqtrade-demo/FreqStrategyTab.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/freqtrade-demo/FreqWebuiTab.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/tdxpy-demo/TdxApiTab.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/tdxpy-demo/TdxExportTab.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/tdxpy-demo/TdxInstallTab.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/tdxpy-demo/TdxOverviewTab.vue` - unconnected demo/archive/example
+- `/opt/claude/mystocks_spec/web/frontend/src/views/tdxpy-demo/TdxStatusTab.vue` - unconnected demo/archive/example
+
+### 5.2 合并建议
+- same_component_stem
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/BacktestAnalysis.vue`
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/analysis-tabs/BacktestAnalysis.vue`
+- same_component_stem
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/Dashboard.vue`
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/converted.archive/dashboard.vue`
+- same_component_stem
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/OpenStockDemo.vue`
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/demo/OpenStockDemo.vue`
+- same_component_stem
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/Phase4Dashboard.vue`
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/demo/Phase4Dashboard.vue`
+- same_component_stem
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/PyprofilingDemo.vue`
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/demo/PyprofilingDemo.vue`
+- same_component_stem
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/StockAnalysisDemo.vue`
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/demo/StockAnalysisDemo.vue`
+- same_component_stem
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/TechnicalAnalysis.vue`
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/technical/TechnicalAnalysis.vue`
+- same_component_stem
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/Wencai.vue`
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/demo/Wencai.vue`
+- same_component_stem
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/risk-tabs/RiskOverviewTab.vue`
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/components/RiskOverviewTab.vue`
+- same_component_stem
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/demo/openstock/components/WatchlistManagement.vue`
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/monitoring/WatchlistManagement.vue`
+- same_component_stem
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/demo/pyprofiling/components/Overview.vue`
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/demo/stock-analysis/components/Overview.vue`
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/risk/Overview.vue`
+- same_component_stem
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/demo/stock-analysis/components/Realtime.vue`
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/market/Realtime.vue`
+- same_component_stem
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/risk/Portfolio.vue`
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/stocks/Portfolio.vue`
+- same_component_stem
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/risk/Positions.vue`
+  - `/opt/claude/mystocks_spec/web/frontend/src/views/trading/Positions.vue`
+
+### 5.3 修复建议（有价值但需修复）
+- `/opt/claude/mystocks_spec/web/frontend/src/views/StockDetail.vue` - health=error diagnostics=1 quality=high
+- `/opt/claude/mystocks_spec/web/frontend/src/views/Stocks.vue` - health=warning diagnostics=0 quality=high
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/ArtDecoMarketQuotes.vue` - health=error diagnostics=1 quality=high
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/ArtDecoStockManagement.vue` - health=error diagnostics=1 quality=high
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/ArtDecoTechnicalAnalysis.vue` - health=error diagnostics=2 quality=high
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/ArtDecoTradingManagement.vue` - health=error diagnostics=2 quality=high
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-tabs/MarketETFTab.vue` - health=error diagnostics=2 quality=high
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/technical-tabs/TechnicalScannerTab.vue` - health=error diagnostics=2 quality=high
+- `/opt/claude/mystocks_spec/web/frontend/src/views/stock-analysis/StockStrategyTab.vue` - health=warning diagnostics=0 quality=high
+
+### 5.4 集成建议（优先接入菜单）
+- `/opt/claude/mystocks_spec/web/frontend/src/views/AdvancedAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/Analysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/ArtDecoTest.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/BacktestAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/BacktestWizard.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/Dashboard.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/DataVisualizationShowcase.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/EnhancedDashboard.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/EnhancedRiskMonitor.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/IndicatorLibrary.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/IndustryConceptAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/Market.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/MarketData.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/MinimalTest.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/Phase4Dashboard.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/PortfolioManagement.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/RealTimeMonitor.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/RiskMonitor.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/Settings.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/SkeletonUsage.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/SmartDataSourceTest.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/StrategyManagement.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/TaskManagement.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/TdxMarket.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/TechnicalAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/Test.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/TestPage.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/TradeManagement.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/TradingDecisionCenter.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/Wencai.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/advanced-analysis/AnomalyTrackingView.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/advanced-analysis/BatchAnalysisView.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/advanced-analysis/CapitalFlowView.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/advanced-analysis/ChipDistributionView.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/advanced-analysis/DecisionModelsView.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/advanced-analysis/FinancialValuationView.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/advanced-analysis/FundamentalAnalysisView.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/advanced-analysis/MarketPanoramaView.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/advanced-analysis/RadarAnalysisView.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/advanced-analysis/SentimentAnalysisView.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/advanced-analysis/TechnicalAnalysisView.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/advanced-analysis/TimeSeriesView.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/advanced-analysis/TradingSignalsView.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/ArtDecoMarketData.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/ArtDecoSettings.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/ArtDecoTradingCenter.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/analysis-tabs/BacktestAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoMarketAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoMarketOverview.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoRealtimeMonitor.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-data-tabs/AuctionAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-data-tabs/ConceptAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-data-tabs/DataQualityPanel.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-data-tabs/ETFAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-data-tabs/FundFlow.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskMonitor.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/settings/AppearanceSettings.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/settings/DataSourceSettings.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/settings/NotificationSettings.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/settings/SecuritySettings.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/settings/SystemInfoSettings.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoHistoryView.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoPerformanceAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoPositionMonitor.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoTradingSignals.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoTradingStats.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/errors/Forbidden.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/errors/NetworkError.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/errors/ServiceUnavailable.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/market/Auction.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/market/CapitalFlow.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/market/Concepts.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/market/Etf.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/market/MarketDataView.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/market/Realtime.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/market/Tdx.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/market/Technical.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/monitor.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/monitoring/AlertRulesManagement.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/monitoring/MonitoringDashboard.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/monitoring/RiskDashboard.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/monitoring/WatchlistManagement.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/risk/Alerts.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/risk/Overview.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/risk/Portfolio.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/risk/Positions.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/settings/General.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/settings/Notifications.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/settings/Security.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/settings/Theme.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/stock-analysis/StockBacktestTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/stock-analysis/StockDataTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/stock-analysis/StockOverviewTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/stock-analysis/StockRealtimeTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/stock-analysis/StockStatusTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/stocks/Activity.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/stocks/Concept.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/stocks/Industry.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/stocks/Portfolio.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/stocks/Watchlist.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/strategy/BatchScan.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/strategy/ResultsQuery.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/strategy/SingleRun.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/strategy/StatsAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/strategy/StrategyList.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/system/Architecture.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/system/DatabaseMonitor.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/system/PerformanceMonitor.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/technical/TechnicalAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/trading/Execution.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/trading/History.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/trading/Orders.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/trading/Positions.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/trading-decision/DecisionHeader.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/trading-decision/DecisionOrders.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/trading-decision/DecisionPortfolio.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/trading-decision/DecisionPositions.vue`
+
+## 6. 已接入 vs 未接入完整清单
+### 6.1 已接入
+- `/opt/claude/mystocks_spec/web/frontend/src/views/Login.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/NotFound.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/TradingDashboard.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/announcement/AnnouncementMonitor.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/ArtDecoDashboard.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/ArtDecoDataAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/ArtDecoRiskManagement.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/analysis-tabs/KLineAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-data-tabs/DragonTigerAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-data-tabs/FundFlowAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-tabs/MarketConceptTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-tabs/MarketKLineTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-tabs/MarketRealtimeTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoAnnouncementMonitor.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskAlerts.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/risk-tabs/RiskOverviewTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/risk-tabs/StopLossMonitorTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/stock-management-tabs/PortfolioMonitor.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/stock-management-tabs/WatchlistManager.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyManagement.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/StrategyParametersTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/system-tabs/ArtDecoDataManagement.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/system-tabs/ArtDecoMonitoringDashboard.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/system-tabs/ArtDecoSystemSettings.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/system-tabs/SystemHealthTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoSignalsView.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoTradingHistory.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoTradingPositions.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/stocks/Screener.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/strategy/BacktestGPU.vue`
+
+### 6.2 未接入
+- `/opt/claude/mystocks_spec/web/frontend/src/views/AdvancedAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/Analysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/ArtDecoTest.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/BacktestAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/BacktestWizard.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/Dashboard.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/DataVisualizationShowcase.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/EnhancedDashboard.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/EnhancedRiskMonitor.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/FreqtradeDemo.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/IndicatorLibrary.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/IndustryConceptAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/KLineDemo.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/Market.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/MarketData.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/MarketDataDemo.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/MinimalTest.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/OpenStockDemo.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/PageTitleDemo.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/Phase4Dashboard.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/PortfolioManagement.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/PyprofilingDemo.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/RealTimeMonitor.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/RiskMonitor.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/Settings.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/SkeletonUsage.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/SmartDataSourceTest.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/StockAnalysisDemo.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/StockDetail.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/Stocks.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/StrategyManagement.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/TaskManagement.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/TdxMarket.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/TdxpyDemo.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/TechnicalAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/Test.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/TestPage.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/TradeManagement.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/TradingDecisionCenter.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/Wencai.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/advanced-analysis/AnomalyTrackingView.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/advanced-analysis/BatchAnalysisView.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/advanced-analysis/CapitalFlowView.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/advanced-analysis/ChipDistributionView.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/advanced-analysis/DecisionModelsView.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/advanced-analysis/FinancialValuationView.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/advanced-analysis/FundamentalAnalysisView.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/advanced-analysis/MarketPanoramaView.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/advanced-analysis/RadarAnalysisView.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/advanced-analysis/SentimentAnalysisView.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/advanced-analysis/TechnicalAnalysisView.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/advanced-analysis/TimeSeriesView.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/advanced-analysis/TradingSignalsView.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/ArtDecoMarketData.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/ArtDecoMarketQuotes.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/ArtDecoSettings.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/ArtDecoStockManagement.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/ArtDecoTechnicalAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/ArtDecoTradingCenter.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/ArtDecoTradingManagement.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/_templates/ArtDecoPageTemplate.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/_templates/ExampleRiskManagement.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/analysis-tabs/BacktestAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/components/AnalysisIndicators.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/components/AnalysisResults.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/components/AnalysisScreener.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/components/AnomalyAlerts.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/components/AnomalyPatterns.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/components/ArtDecoAttributionAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/components/ArtDecoAttributionControls.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/components/ArtDecoPerformanceOverview.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/components/ArtDecoSignalHistory.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/components/ArtDecoSignalMonitoringMetrics.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/components/ArtDecoSignalMonitoringOverview.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/components/ArtDecoTradingHistoryControls.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/components/ArtDecoTradingSignalsControls.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/components/BuffettModel.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/components/DupontAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/components/FinancialMetrics.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/components/LynchModel.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/components/MarketConcepts.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/components/MarketFundFlow.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/components/MarketPlaceholder.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/components/OneilModel.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/components/PanoramaCapitalFlow.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/components/PanoramaIndices.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoMarketAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoMarketOverview.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-data-tabs/ArtDecoRealtimeMonitor.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-data-tabs/AuctionAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-data-tabs/ConceptAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-data-tabs/DataQualityPanel.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-data-tabs/ETFAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-data-tabs/FundFlow.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/market-tabs/MarketETFTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoRiskMonitor.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/settings/AppearanceSettings.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/settings/DataSourceSettings.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/settings/NotificationSettings.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/settings/SecuritySettings.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/settings/SystemInfoSettings.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/components/BacktestHeader.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/components/BacktestKpiGrid.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/strategy-tabs/components/BacktestWorkbenchTabs.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/technical-tabs/TechnicalScannerTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoHistoryView.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoPerformanceAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoPositionMonitor.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoTradingSignals.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoTradingStats.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/components/RiskOverviewTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/components/StopLossMonitoringTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/converted.archive/backtest-management.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/converted.archive/dashboard.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/converted.archive/data-analysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/converted.archive/market-data.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/converted.archive/market-quotes.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/converted.archive/risk-management.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/converted.archive/setting.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/converted.archive/stock-management.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/converted.archive/trading-management.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/OpenStockDemo.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/Phase4Dashboard.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/PyprofilingDemo.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/StockAnalysisDemo.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/Wencai.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/openstock/components/FeatureStatus.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/openstock/components/HeatmapChart.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/openstock/components/KlineChart.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/openstock/components/StockNews.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/openstock/components/StockQuote.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/openstock/components/StockSearch.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/openstock/components/WatchlistManagement.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/pyprofiling/components/API.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/pyprofiling/components/Data.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/pyprofiling/components/Features.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/pyprofiling/components/Overview.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/pyprofiling/components/Prediction.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/pyprofiling/components/Profiling.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/pyprofiling/components/Tech.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/stock-analysis/components/Backtest.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/stock-analysis/components/DataParsing.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/stock-analysis/components/Overview.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/stock-analysis/components/Realtime.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/stock-analysis/components/Status.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/demo/stock-analysis/components/Strategy.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/errors/Forbidden.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/errors/NetworkError.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/errors/ServiceUnavailable.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/examples/PageConfigExample.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/examples/TradingDashboard.migrated.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/examples/WebSocketConfigExample.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/freqtrade-demo/FreqBacktestTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/freqtrade-demo/FreqConfigTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/freqtrade-demo/FreqOverviewTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/freqtrade-demo/FreqStatusTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/freqtrade-demo/FreqStrategyTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/freqtrade-demo/FreqWebuiTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/market/Auction.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/market/CapitalFlow.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/market/Concepts.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/market/Etf.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/market/MarketDataView.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/market/Realtime.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/market/Tdx.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/market/Technical.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/monitor.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/monitoring/AlertRulesManagement.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/monitoring/MonitoringDashboard.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/monitoring/RiskDashboard.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/monitoring/WatchlistManagement.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/risk/Alerts.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/risk/Overview.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/risk/Portfolio.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/risk/Positions.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/settings/General.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/settings/Notifications.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/settings/Security.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/settings/Theme.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/stock-analysis/StockBacktestTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/stock-analysis/StockDataTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/stock-analysis/StockOverviewTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/stock-analysis/StockRealtimeTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/stock-analysis/StockStatusTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/stock-analysis/StockStrategyTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/stocks/Activity.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/stocks/Concept.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/stocks/Industry.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/stocks/Portfolio.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/stocks/Watchlist.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/strategy/BatchScan.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/strategy/ResultsQuery.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/strategy/SingleRun.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/strategy/StatsAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/strategy/StrategyList.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/system/Architecture.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/system/DatabaseMonitor.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/system/PerformanceMonitor.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/tdxpy-demo/TdxApiTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/tdxpy-demo/TdxExportTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/tdxpy-demo/TdxInstallTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/tdxpy-demo/TdxOverviewTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/tdxpy-demo/TdxStatusTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/technical/TechnicalAnalysis.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/trade-management/components/PortfolioOverview.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/trade-management/components/PositionsTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/trade-management/components/StatisticsTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/trade-management/components/TradeDialog.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/trade-management/components/TradeHistoryTab.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/trading-decision/DecisionHeader.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/trading-decision/DecisionOrders.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/trading-decision/DecisionPortfolio.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/trading-decision/DecisionPositions.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/trading/Execution.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/trading/History.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/trading/Orders.vue`
+- `/opt/claude/mystocks_spec/web/frontend/src/views/trading/Positions.vue`

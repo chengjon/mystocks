@@ -264,23 +264,10 @@ monitoring-stack/.env.*
 # Note: docs/ is no longer ignored.
 docs/归档文档/
 
-# Compliance reports (CI artifacts)
-reports/
-!reports/
+# Reports: archived to docs/archive/reports/ (2026-07-12)
+# Only the redirect README remains in reports/
 reports/*
-!reports/completion/
-!reports/completion/**
-!reports/governance/
-!reports/governance/**
-!reports/monitoring/
-!reports/monitoring/**
-!reports/phase/
-!reports/phase/**
-!reports/reviews/
-!reports/reviews/**
-!reports/tests/
-!reports/tests/**
-reports/compliance/*.json
+!reports/README.md
 
 # Coverage Reports
 coverage/
