@@ -19,6 +19,7 @@
 | [08-系统管理与配置](#domain-08) | ✅ 完成 | 85% |
 | [09-数据存储与管理](#domain-09) | ✅ 完成 | 90% |
 | [10-公告与信息](#domain-10) | ✅ 完成 | 80% |
+| [11-文档治理与基础设施](#domain-11) | ✅ 完成 | 85% |
 
 > 使用方式：先读 [AI Quick Start](./guides/ai-tools/AI_QUICK_START.md) 或 [Docs 首页](./INDEX.md) 按任务类型定位入口，再进入本页对应功能域，最后下钻该领域的“领域入口”表。
 
@@ -481,12 +482,58 @@
 
 ---
 
+## 11-文档治理与基础设施 {#domain-11}
+
+**模块路径**: `docs/`, `tests/unit/scripts/test_repository_hygiene_paths.py`, `scripts/tools/`
+**API前缀**: N/A（文档与基础设施治理，非业务 API）
+**完成度**: 85%
+
+> 本域记录**文档架构重组与仓库卫生治理**类维护工作。此类工作跨所有业务领域，不产出业务功能，故独立成域。当前覆盖 docs/ 目录重组（Phase 1–3）和链接/卫生治理（Phase 4）。
+
+### 领域入口
+
+| 入口类型 | 链接/路径 | 用途 |
+|---------|----------|------|
+| 规范入口 | [Docs 首页](./INDEX.md)<br>[功能树本文件](./FUNCTION_TREE.md) | docs 导航与治理入口 |
+| 架构入口 | [architecture/](./architecture/)<br>[架构红线 STANDARDS.md](./architecture/STANDARDS.md) | 文档架构与规范基线 |
+| 归档入口 | [docs/archive/](./archive/)<br>[docs/archive/reports/](./archive/reports/) | Phase-3 归档目的地（reports/ 等历史产物） |
+| 治理工具入口 | [repository_hygiene_paths 测试](../tests/unit/scripts/test_repository_hygiene_paths.py)<br>[docs_indexer](../scripts/tools/docs_indexer.py) | 仓库卫生与文档索引校验 |
+| 运行与排障入口 | [MEMORY.md](https://github.com/johnx-snippet/mystocks_spec/blob/main/.claude/MEMORY.md)（仅限 agent 内部） | Phase 决策记录与防倒退记忆 |
+
+### 11.1 docs 目录重组（Phase 1–3） {#domain-11-node-01}
+
+| 功能点 | 状态 | 代码位置 | 说明 |
+|--------|------|----------|------|
+| docs/{guides,api,architecture,operations,archive} 目录规范化 | ✅ | `docs/` | 统一 docs 顶层结构 |
+| reports/ root-level + legacy 归档 | ✅ | `docs/archive/reports/root-level/`, `docs/archive/reports/legacy-reports/` | 175 份 root-level/legacy 报告迁档 |
+| analysis-gates 归档 | ✅ | `docs/archive/reports/analysis-gates/` | analysis/<gate> 结构映射为 analysis-gates/<gate> |
+| 未引用/失效文件清理 | ✅ | `docs/archive/` | 失效文档批量归档 |
+
+### 11.2 链接与卫生治理（Phase 4） {#domain-11-node-02}
+
+| 功能点 | 状态 | 代码位置 | 说明 |
+|--------|------|----------|------|
+| `reports/` root 污染清理 | ✅ | `reports/` | 176 个偶发 gitignored 文件清空，仅保留 README.md |
+| reports/ 链接解析盘点 | ✅ | agentmemory / MEMORY.md | 重验"151 死链→archive"前提为伪；38 条 ALIVE，788 条为归档索引自引用 |
+| docs/api/README.md 大小写修复 | ✅ | `docs/api/README.md` | phase4_completion_report.md → PHASE4_COMPLETION_REPORT.md（唯一 Category-A 修复） |
+| Category B / C 排查（只报告） | ✅ | MEMORY.md | 运行时输出路径(B)与 CI 消费路径(C)识别，零编辑 |
+| repository_hygiene_paths 测试回归 | ✅ | `tests/unit/scripts/test_repository_hygiene_paths.py` | 3 项卫生断言通过；15 项预存"doc converged"失败非本域引入 |
+
+### 11.3 已知卫生债（待处理） {#domain-11-node-03}
+
+| 功能点 | 状态 | 说明 |
+|--------|------|------|
+| INDEX_root.md 0/269 相对链接 | ⚠️ | `docs/reports/cleanup/index-artifacts/INDEX_root.md` 统一基础路径错配，选择性修复 9 条 reports/ 会不一致，故意留债 |
+| Category C CI 路径漂移 | ⚠️ | `reports/analysis/tech-debt-baseline.json` 实际在 `docs/archive/reports/analysis-gates/...`，3 个 CI 脚本读取路径失效（typescript-type-check.yml, tech_debt_governance_gate.py, collect_tech_debt_baseline.py） |
+
+---
+
 ## 功能统计
 
 | 统计项 | 数量 |
 |--------|------|
-| 功能领域 | 10 |
-| 子功能模块 | 30+ |
+| 功能领域 | 11 |
+| 子功能模块 | 33+ |
 | 已完成功能 | 85+ |
 | 开发中功能 | 15+ |
 | 计划中功能 | 10+ |
@@ -515,7 +562,9 @@
 - 架构设计: [architecture/](./architecture/)
 - API文档: [api/](./api/)
 - 开发指南: [guides/](./guides/)
+- 归档目的地: [archive/](./archive/)
+- 仓库卫生测试: [test_repository_hygiene_paths.py](../tests/unit/scripts/test_repository_hygiene_paths.py)
 
 ---
 
-*最后更新: 2026-03-12*
+*最后更新: 2026-07-12*
