@@ -40,6 +40,7 @@ non_goals:
   - "No fix for the TDX adapter NoneType error that also surfaces in e2e-tests — that is a separate issue unrelated to this PR"
   - "No change to the api-file-tests framework logic itself — only the missing infrastructure (schema file + env vars) that prevents it from booting"
   - "No new runtime dependency — networkx>=3.0 restores a hard dependency that was always imported (dependency_graph.py) but never declared; the DDL is auto-generated from existing SQLAlchemy ORM models"
+  - "No fix for the 2 pre-existing environmental flakes (test_data_api.py ~2/10, test_risk_management_api.py ~4/10) that fail nondeterministically on the shared CI runner — they fail with identical counts on origin/main push (run 28761004694, 2026-07-06), feat/b4-014-openstock-routes (4 runs, 2026-07-05), and tech-debt-baseline-update (PR #507, run 29201032803) — i.e. branches that share zero commits with this PR; pass 14/14 locally (10x loop, 0 flake, identical pytest invocation + CI env vars). Signature is empty errors arrays + partial passes = import-time divergence under concurrent-worker + live-uvicorn contention, not assertion logic. Root-caused separately; out of scope for an infra-unblock PR."
 
 acceptance:
   checks:
@@ -65,8 +66,8 @@ risk_and_rollback:
 delivery:
   six_line_summary_required: true
   six_line_summary:
-    change_purpose: "unblock the api-file-tests workflow which has been broken since introduction due to a missing schema file and missing boot env vars"
-    modified_scope: ".github/workflows/api-file-tests.yml (add 6 env vars to Start FastAPI server step), scripts/sql/create_test_schema.sql (new — 39 tables + 137 indexes auto-generated from 40 SQLAlchemy ORM models across 11 declarative bases), requirements.txt (add networkx>=3.0 — hard dependency of dependency_graph.py that was never declared)"
+    change_purpose: "unblock the api-file-tests workflow which has been unable to boot uvicorn since introduction (missing schema file + missing boot env vars); also fix 2 latent DDL bugs that would abort the schema transaction on a fresh DB. Net: workflow now boots + runs 12/14 P0 files; the remaining 2 failures are pre-existing environmental flakes present on every branch (documented in non_goals), not introduced by this PR"
+    modified_scope: ".github/workflows/api-file-tests.yml (add 6 env vars to Start FastAPI server step + add workflow's own path to both triggers so it actually runs), scripts/sql/create_test_schema.sql (new — 39 tables + 137 indexes auto-generated from 40 SQLAlchemy ORM models across 11 declarative bases; FK forward-references moved to ALTER TABLE, MySQL ON UPDATE clause removed), requirements.txt (add networkx>=3.0 — hard dependency of dependency_graph.py that was never declared)"
     dependency_changes: "networkx>=3.0 restored to requirements.txt — it was always imported by web/backend/app/services/indicators/dependency_graph.py but never declared, so a clean CI install failed to boot the backend"
     legacy_logic_impact: "none — the workflow was fully broken before (uvicorn exited at validate_required_settings, psql silently no-op'd behind || true); this restores it to intended behavior"
     rollback_ready: "yes — git revert removes the schema file and env var lines independently"
