@@ -102,6 +102,13 @@ jobs:
         PGPASSWORD=test psql -h localhost -U postgres -d mystocks_test -f scripts/sql/create_test_schema.sql || true
 
     - name: Start FastAPI server
+      env:
+        POSTGRESQL_HOST: localhost
+        POSTGRESQL_USER: postgres
+        POSTGRESQL_PASSWORD: test
+        JWT_SECRET_KEY: test-secret-key-for-ci-only-not-for-production-use-0123456789
+        BACKEND_PORT: "8000"
+        BACKEND_BACKUP_PORT: "8001"
       run: |
         python -m uvicorn web.backend.app.main:app --host 0.0.0.0 --port 8000 &
         sleep 10
