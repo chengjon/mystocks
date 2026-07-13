@@ -9,11 +9,13 @@ on:
       - 'web/backend/app/api/**'
       - 'tests/api/file_tests/**'
       - 'openspec/changes/implement-api-file-level-testing/**'
+      - '.github/workflows/api-file-tests.yml'
   pull_request:
     branches: [ main, develop ]
     paths:
       - 'web/backend/app/api/**'
       - 'tests/api/file_tests/**'
+      - '.github/workflows/api-file-tests.yml'
 
 jobs:
   api-file-tests-readiness:
