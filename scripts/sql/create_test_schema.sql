@@ -52,9 +52,7 @@ CREATE TABLE IF NOT EXISTS announcement_monitor_record (
 	notified BOOLEAN,
 	notified_at TIMESTAMP WITHOUT TIME ZONE,
 	notification_result TEXT,
-	PRIMARY KEY (id),
-	FOREIGN KEY(rule_id) REFERENCES announcement_monitor_rule (id) ON DELETE CASCADE,
-	FOREIGN KEY(announcement_id) REFERENCES announcement (id) ON DELETE CASCADE
+	PRIMARY KEY (id)
 )
 ;
 
@@ -90,7 +88,7 @@ CREATE TABLE IF NOT EXISTS indicator_configurations (
 	name VARCHAR(100) NOT NULL,
 	indicators JSON NOT NULL,
 	created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
+	updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	last_used_at TIMESTAMP WITHOUT TIME ZONE,
 	PRIMARY KEY (id)
 )
@@ -334,8 +332,7 @@ CREATE TABLE IF NOT EXISTS alert_record (
 	handled_at TIMESTAMP WITHOUT TIME ZONE,
 	handle_note TEXT,
 	created_at TIMESTAMP WITHOUT TIME ZONE,
-	PRIMARY KEY (id),
-	FOREIGN KEY(rule_id) REFERENCES alert_rule (id) ON DELETE SET NULL
+	PRIMARY KEY (id)
 )
 ;
 
@@ -454,8 +451,7 @@ CREATE TABLE IF NOT EXISTS audit_logs (
 	error_message TEXT,
 	additional_data TEXT,
 	created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
-	PRIMARY KEY (id),
-	FOREIGN KEY(user_id) REFERENCES users (id)
+	PRIMARY KEY (id)
 )
 ;
 
@@ -488,10 +484,7 @@ CREATE TABLE IF NOT EXISTS role_permissions (
 	created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
 	updated_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
 	PRIMARY KEY (id),
-	CONSTRAINT uq_role_permission UNIQUE (role_id, permission_id),
-	FOREIGN KEY(role_id) REFERENCES roles (id),
-	FOREIGN KEY(permission_id) REFERENCES permissions (id),
-	FOREIGN KEY(assigned_by) REFERENCES users (id)
+	CONSTRAINT uq_role_permission UNIQUE (role_id, permission_id)
 )
 ;
 
@@ -507,8 +500,7 @@ CREATE TABLE IF NOT EXISTS roles (
 	is_system BOOLEAN NOT NULL,
 	created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
 	updated_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
-	PRIMARY KEY (id),
-	FOREIGN KEY(parent_role_id) REFERENCES roles (id)
+	PRIMARY KEY (id)
 )
 ;
 
@@ -531,9 +523,7 @@ CREATE TABLE IF NOT EXISTS security_events (
 	resolved_at TIMESTAMP WITH TIME ZONE,
 	resolution_notes TEXT,
 	created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
-	PRIMARY KEY (id),
-	FOREIGN KEY(user_id) REFERENCES users (id),
-	FOREIGN KEY(resolved_by) REFERENCES users (id)
+	PRIMARY KEY (id)
 )
 ;
 
@@ -550,10 +540,7 @@ CREATE TABLE IF NOT EXISTS user_roles (
 	created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
 	updated_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
 	PRIMARY KEY (id),
-	CONSTRAINT uq_user_role UNIQUE (user_id, role_id),
-	FOREIGN KEY(user_id) REFERENCES users (id),
-	FOREIGN KEY(role_id) REFERENCES roles (id),
-	FOREIGN KEY(assigned_by) REFERENCES users (id)
+	CONSTRAINT uq_user_role UNIQUE (user_id, role_id)
 )
 ;
 
@@ -571,8 +558,7 @@ CREATE TABLE IF NOT EXISTS user_sessions (
 	expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
 	created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
 	updated_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
-	PRIMARY KEY (id),
-	FOREIGN KEY(user_id) REFERENCES users (id)
+	PRIMARY KEY (id)
 )
 ;
 
@@ -798,8 +784,7 @@ CREATE TABLE IF NOT EXISTS backtest_equity_curves (
 	drawdown NUMERIC(5, 2) NOT NULL,
 	benchmark_equity NUMERIC(15, 2),
 	PRIMARY KEY (id),
-	CONSTRAINT uq_backtest_trade_date UNIQUE (backtest_id, trade_date),
-	FOREIGN KEY(backtest_id) REFERENCES backtest_results (backtest_id) ON DELETE CASCADE
+	CONSTRAINT uq_backtest_trade_date UNIQUE (backtest_id, trade_date)
 )
 ;
 
@@ -843,8 +828,7 @@ CREATE TABLE IF NOT EXISTS backtest_trades (
 	commission NUMERIC(10, 2) NOT NULL,
 	profit_loss NUMERIC(15, 2),
 	PRIMARY KEY (trade_id),
-	CONSTRAINT chk_action CHECK (action IN ('buy', 'sell')),
-	FOREIGN KEY(backtest_id) REFERENCES backtest_results (backtest_id) ON DELETE CASCADE
+	CONSTRAINT chk_action CHECK (action IN ('buy', 'sell'))
 )
 ;
 
@@ -1022,3 +1006,25 @@ COMMIT;
 -- ============================================================================
 -- Schema initialization complete
 -- ============================================================================
+
+
+-- ============================================================================
+-- Foreign key constraints (order-independent; added after all tables exist)
+-- ============================================================================
+
+ALTER TABLE IF NOT EXISTS announcement_monitor_record ADD CONSTRAINT fk_announcement_monitor_record_announcement_monitor_rule_rule_id FOREIGN KEY (rule_id) REFERENCES announcement_monitor_rule (id) ON DELETE CASCADE;
+ALTER TABLE IF NOT EXISTS announcement_monitor_record ADD CONSTRAINT fk_announcement_monitor_record_announcement_announcement_id FOREIGN KEY (announcement_id) REFERENCES announcement (id) ON DELETE CASCADE;
+ALTER TABLE IF NOT EXISTS alert_record ADD CONSTRAINT fk_alert_record_alert_rule_rule_id FOREIGN KEY (rule_id) REFERENCES alert_rule (id) ON DELETE SET NULL;
+ALTER TABLE IF NOT EXISTS audit_logs ADD CONSTRAINT fk_audit_logs_users_user_id FOREIGN KEY (user_id) REFERENCES users (id);
+ALTER TABLE IF NOT EXISTS role_permissions ADD CONSTRAINT fk_role_permissions_roles_role_id FOREIGN KEY (role_id) REFERENCES roles (id);
+ALTER TABLE IF NOT EXISTS role_permissions ADD CONSTRAINT fk_role_permissions_permissions_permission_id FOREIGN KEY (permission_id) REFERENCES permissions (id);
+ALTER TABLE IF NOT EXISTS role_permissions ADD CONSTRAINT fk_role_permissions_users_assigned_by FOREIGN KEY (assigned_by) REFERENCES users (id);
+ALTER TABLE IF NOT EXISTS roles ADD CONSTRAINT fk_roles_roles_parent_role_id FOREIGN KEY (parent_role_id) REFERENCES roles (id);
+ALTER TABLE IF NOT EXISTS security_events ADD CONSTRAINT fk_security_events_users_user_id FOREIGN KEY (user_id) REFERENCES users (id);
+ALTER TABLE IF NOT EXISTS security_events ADD CONSTRAINT fk_security_events_users_resolved_by FOREIGN KEY (resolved_by) REFERENCES users (id);
+ALTER TABLE IF NOT EXISTS user_roles ADD CONSTRAINT fk_user_roles_users_user_id FOREIGN KEY (user_id) REFERENCES users (id);
+ALTER TABLE IF NOT EXISTS user_roles ADD CONSTRAINT fk_user_roles_roles_role_id FOREIGN KEY (role_id) REFERENCES roles (id);
+ALTER TABLE IF NOT EXISTS user_roles ADD CONSTRAINT fk_user_roles_users_assigned_by FOREIGN KEY (assigned_by) REFERENCES users (id);
+ALTER TABLE IF NOT EXISTS user_sessions ADD CONSTRAINT fk_user_sessions_users_user_id FOREIGN KEY (user_id) REFERENCES users (id);
+ALTER TABLE IF NOT EXISTS backtest_equity_curves ADD CONSTRAINT fk_backtest_equity_curves_backtest_results_backtest_id FOREIGN KEY (backtest_id) REFERENCES backtest_results (backtest_id) ON DELETE CASCADE;
+ALTER TABLE IF NOT EXISTS backtest_trades ADD CONSTRAINT fk_backtest_trades_backtest_results_backtest_id FOREIGN KEY (backtest_id) REFERENCES backtest_results (backtest_id) ON DELETE CASCADE;
