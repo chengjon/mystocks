@@ -12,6 +12,12 @@ scipy>=1.10,<1.13
 # scikit-learn pin: <1.7 hard-blocks the 1.9.0 release that crashes
 # on numpy 2.x at import time inside metrics/_ranking.py.
 scikit-learn>=1.4,<1.7
+# networkx: hard dependency of
+# web/backend/app/services/indicators/dependency_graph.py (DiGraph,
+# simple_cycles, is_directed_acyclic_graph). Was never declared, so
+# `import networkx` fails under a clean CI install and breaks every
+# workflow that boots the backend (e2e-tests, api-file-tests).
+networkx>=3.0
 pyyaml>=6.0
 pydantic>=2.0.0
 pandera>=0.17.0
