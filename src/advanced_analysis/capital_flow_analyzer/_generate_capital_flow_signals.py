@@ -29,7 +29,7 @@ class CapitalFlowSignalMixin:
     ) -> List[Dict[str, Any]]:
         """生成资金流向信号"""
         signals = []
-    
+
         # 主力控盘信号
         if control and control.control_degree > 0.6:
             severity = "high" if control.control_degree > 0.8 else "medium"
@@ -46,7 +46,7 @@ class CapitalFlowSignalMixin:
                     },
                 }
             )
-    
+
         # 聪明钱信号
         if smart_money and smart_money.smart_money_score > 0.7:
             signals.append(
@@ -61,7 +61,7 @@ class CapitalFlowSignalMixin:
                     },
                 }
             )
-    
+
         # 聚类信号
         if clusters:
             dominant_cluster = max(clusters, key=lambda c: c.cluster_size)
@@ -78,12 +78,12 @@ class CapitalFlowSignalMixin:
                         },
                     }
                 )
-    
+
         # 资金流向强度信号
         if not data.empty:
             recent_flow = data["net_flow"].iloc[-1] if len(data) > 0 else 0
             avg_flow = data["net_flow"].mean() if len(data) > 0 else 0
-    
+
             if abs(recent_flow) > abs(avg_flow) * 2:
                 direction = "流入" if recent_flow > 0 else "流出"
                 severity = "high" if abs(recent_flow) > abs(avg_flow) * 3 else "medium"
@@ -99,16 +99,16 @@ class CapitalFlowSignalMixin:
                         },
                     }
                 )
-    
+
         return signals
-    
-    
+
+
     def _generate_capital_flow_recommendations(
         self, control: MainForceControl, smart_money: SmartMoneyIndicator, market_context: Dict[str, Any]
     ) -> Dict[str, Any]:
         """生成资金流向投资建议"""
         recommendations = {}
-    
+
         try:
             # 基于控盘情况的建议
             if control:
@@ -128,7 +128,7 @@ class CapitalFlowSignalMixin:
                 primary_signal = "unknown"
                 action = "控盘情况不明，谨慎操作"
                 confidence = "low"
-    
+
             # 考虑聪明钱因素
             if smart_money and smart_money.smart_money_score > 0.8:
                 action += " (聪明钱高度认可，可适当乐观)"
@@ -136,14 +136,14 @@ class CapitalFlowSignalMixin:
             elif smart_money and smart_money.smart_money_score < 0.3:
                 action += " (聪明钱认可度低，需谨慎)"
                 confidence = "low"
-    
+
             # 考虑市场背景
             market_sentiment = market_context.get("market_sentiment", "neutral")
             if market_sentiment == "bullish":
                 action += " (市场情绪乐观)"
             elif market_sentiment == "bearish":
                 action += " (市场情绪谨慎)"
-    
+
             recommendations.update(
                 {
                     "primary_signal": primary_signal,
@@ -160,7 +160,7 @@ class CapitalFlowSignalMixin:
                     "market_context": market_context,
                 }
             )
-    
+
         except Exception as e:
             logger.error("Error generating capital flow recommendations: %s", e)
             recommendations = {
@@ -168,16 +168,16 @@ class CapitalFlowSignalMixin:
                 "recommended_action": "分析过程中出现错误，建议观望",
                 "confidence_level": "low",
             }
-    
+
         return recommendations
-    
-    
+
+
     def _assess_capital_flow_risk(
         self, data: pd.DataFrame, control: MainForceControl, smart_money: SmartMoneyIndicator
     ) -> Dict[str, Any]:
         """评估资金流向风险"""
         risk_assessment = {}
-    
+
         try:
             # 流向波动风险
             if not data.empty:
@@ -190,7 +190,7 @@ class CapitalFlowSignalMixin:
                     flow_volatility_risk = "low"
             else:
                 flow_volatility_risk = "unknown"
-    
+
             # 控盘风险
             if control:
                 if control.control_degree > 0.8:
@@ -201,7 +201,7 @@ class CapitalFlowSignalMixin:
                     control_risk = "low"
             else:
                 control_risk = "medium"
-    
+
             # 聪明钱风险
             if smart_money:
                 if smart_money.smart_money_score < 0.3:
@@ -212,7 +212,7 @@ class CapitalFlowSignalMixin:
                     smart_money_risk = "low"
             else:
                 smart_money_risk = "medium"
-    
+
             # 综合风险等级
             risk_scores = {"high": 3, "medium": 2, "low": 1, "unknown": 2}
             avg_risk_score = np.mean(
@@ -222,14 +222,14 @@ class CapitalFlowSignalMixin:
                     risk_scores.get(smart_money_risk, 2),
                 ]
             )
-    
+
             if avg_risk_score > 2.5:
                 overall_risk = "high"
             elif avg_risk_score > 1.5:
                 overall_risk = "medium"
             else:
                 overall_risk = "low"
-    
+
             risk_assessment.update(
                 {
                     "overall_risk_level": overall_risk,
@@ -252,14 +252,14 @@ class CapitalFlowSignalMixin:
                     ],
                 }
             )
-    
+
         except Exception as e:
             logger.error("Error assessing capital flow risk: %s", e)
             risk_assessment = {"overall_risk_level": "unknown", "error": str(e)}
-    
+
         return risk_assessment
-    
-    
+
+
     def _create_error_result(self, stock_code: str, error_msg: str) -> AnalysisResult:
         """创建错误结果"""
         return AnalysisResult(
@@ -272,7 +272,7 @@ class CapitalFlowSignalMixin:
             risk_assessment={"error": True},
             metadata={"error": True, "error_message": error_msg},
         )
-    
+
 
 _generate_capital_flow_signals = CapitalFlowSignalMixin._generate_capital_flow_signals
 _generate_capital_flow_recommendations = CapitalFlowSignalMixin._generate_capital_flow_recommendations

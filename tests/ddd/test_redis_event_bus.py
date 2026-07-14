@@ -7,8 +7,7 @@ import os
 import sys
 import time
 
-import pytest
-from sqlalchemy import create_engine, event
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 # 确保项目根目录在 path 中

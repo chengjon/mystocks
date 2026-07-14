@@ -2,15 +2,12 @@
 Unit tests for Data Source Registry
 """
 
-import asyncio
 from datetime import datetime
-from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
 from src.core.datasource import (
     DataSourceConfig,
-    DataSourceInfo,
     DataSourceRegistry,
     DataSourceType,
     HealthReport,

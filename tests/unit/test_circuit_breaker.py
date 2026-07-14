@@ -2,7 +2,6 @@
 单元测试: CircuitBreaker
 """
 
-import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 
@@ -197,7 +196,7 @@ class TestCircuitBreaker:
 
         try:
             cb.call(failing_func)
-        except CircuitBreakerOpenError as e:
+        except CircuitBreakerOpenError:
             remaining = cb.get_stats()["remaining_time"]
             assert remaining > 0
             assert remaining < 5

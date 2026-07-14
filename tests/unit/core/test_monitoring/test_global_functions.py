@@ -8,11 +8,9 @@ Monitoring and Alerting System Test Suite
 """
 
 import threading
-from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime
 from unittest.mock import Mock, patch
 
-import pytest
 
 # Test target imports
 from src.core.monitoring import (
@@ -22,7 +20,6 @@ from src.core.monitoring import (
     AlertSeverity,
     APIMonitor,
     MetricsCollector,
-    MetricType,
     MetricValue,
     SystemMonitor,
     get_alert_manager,

@@ -15,7 +15,6 @@ import asyncio
 
 import pytest
 
-from tests.api.file_tests.conftest import api_test_fixtures, assert_file_test_result, mock_responses
 
 
 class TestTradeRoutesAPIFile:

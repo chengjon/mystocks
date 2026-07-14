@@ -10,8 +10,7 @@ Unit tests for Signal Monitoring Module
 
 import os
 import sys
-import time
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 

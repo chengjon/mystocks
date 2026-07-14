@@ -6,27 +6,13 @@
 提供多格式、多层次的测试报告生成功能，支持PDF、HTML、JSON、CSV等格式。
 """
 
-import asyncio
-import base64
-import io
 import json
 import os
 import statistics
 import zipfile
-from dataclasses import dataclass, field
-from datetime import datetime, timedelta
-from enum import Enum
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
-import seaborn as sns
-from jinja2 import Template
-from plotly.subplots import make_subplots
 
 class TestReportGenerator:
     """测试报告生成器主类"""
@@ -372,12 +358,12 @@ async def demo_report_generator():
 
     # 计算并显示指标
     metrics = generator.calculate_metrics(test_results)
-    print(f"\n📈 测试指标:")
+    print("\n📈 测试指标:")
     print(f"  总测试数: {metrics.total_tests}")
     print(f"  通过率: {metrics.success_rate:.1f}%")
     print(f"  平均耗时: {metrics.average_duration:.2f}秒")
     print(f"  可靠性评分: {metrics.reliability_score:.1f}")
 
-    print(f"\n✅ 测试报告生成器演示完成")
+    print("\n✅ 测试报告生成器演示完成")
 
 

@@ -15,7 +15,7 @@ import hashlib
 import json
 import logging
 import statistics
-from collections import Counter, defaultdict
+from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import Any, Dict, List
@@ -246,7 +246,7 @@ class TestDataOptimizer(TestDataOptimizerTailMixin):
 
             return metrics
 
-        except Exception as e:
+        except Exception:
             logger.error("分析数据质量失败: %(e)s")
             return DataQualityMetrics()
 

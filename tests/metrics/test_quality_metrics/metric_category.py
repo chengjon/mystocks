@@ -6,7 +6,6 @@ MyStocks 测试质量指标系统
 提供全面的测试质量评估、度量和分析功能，支持多维度质量指标计算和优化建议。
 """
 
-import json
 import statistics
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta

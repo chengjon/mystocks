@@ -39,7 +39,6 @@ from src.core.error_handling import (
     safe_execute,
     validate_dataframe,
 )
-from tests.unit.core._error_handling_test_tail import TestEdgeCases, TestPerformance
 
 
 class TestErrorSeverity:

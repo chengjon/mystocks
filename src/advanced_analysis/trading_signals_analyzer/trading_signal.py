@@ -16,7 +16,6 @@ from src.advanced_analysis.trading_signals_analyzer._assess_signal_risk import (
     _create_error_result,
 )
 from src.advanced_analysis.trading_signals_analyzer._trading_signal_mixin import TradingSignalAnalyzerMixin
-from src.advanced_analysis.trading_signals_analyzer.trading_signal_models import SignalConfluence, TradingSignal
 
 
 class TradingSignalAnalyzer(TradingSignalAnalyzerMixin, BaseAnalyzer):

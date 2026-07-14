@@ -79,6 +79,7 @@ export default defineConfig(({ mode }) => {
       port: devPort,
       strictPort: true,
       hmr: false,
+      allowedHosts: true,
       headers: {
         'Cache-Control': 'no-store, no-cache, must-revalidate',
         'Pragma': 'no-cache',

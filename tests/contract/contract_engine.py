@@ -69,7 +69,7 @@ class ContractTestEngine:
                 logger.info("成功加载 OpenAPI 规范: %(spec_path)s")
             else:
                 logger.warning("OpenAPI 规范文件不存在: %(spec_path)s")
-        except Exception as e:
+        except Exception:
             logger.error("加载 OpenAPI 规范失败: %(e)s")
 
     def discover_tests_from_openapi(self) -> List[ContractTestCase]:
@@ -90,7 +90,7 @@ class ContractTestEngine:
                             test_cases.append(test_case)
 
             logger.info("从 OpenAPI 规范自动发现 {len(test_cases)} 个测试用例")
-        except Exception as e:
+        except Exception:
             logger.error("从 OpenAPI 规范发现测试用例失败: %(e)s")
 
         return test_cases
@@ -138,7 +138,7 @@ class ContractTestEngine:
 
             return test_case
 
-        except Exception as e:
+        except Exception:
             logger.error("创建测试用例失败: %(e)s")
             return None
 
@@ -263,7 +263,7 @@ class ContractTestEngine:
             logger.info("成功加载测试套件: {suite.name} ({len(suite.test_cases)} 个测试用例)")
             return suite
 
-        except Exception as e:
+        except Exception:
             logger.error("加载测试套件失败: %(e)s")
             return None
 
@@ -287,7 +287,7 @@ class ContractTestEngine:
 
             logger.info("保存测试套件成功: %(file_path)s")
 
-        except Exception as e:
+        except Exception:
             logger.error("保存测试套件失败: %(e)s")
 
     def create_default_suite(self) -> ContractTestSuite:

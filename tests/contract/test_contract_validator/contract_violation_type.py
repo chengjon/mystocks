@@ -4,21 +4,17 @@
 提供基于OpenAPI规范的API契约验证、一致性检查和冲突检测功能。
 """
 
-import json
 import logging
-import os
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from functools import lru_cache
-from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 from urllib.parse import urljoin, urlparse
 
 import httpx
 import requests
-import yaml
 from jsonschema import SchemaError, ValidationError, validate
 
 # 设置日志

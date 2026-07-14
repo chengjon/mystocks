@@ -14,13 +14,9 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-import pytest
 import requests
 import yaml
 
-from src.api.types.common import APIResponse
-from src.api.types.market import MarketOverview, MarketOverviewData
-from src.api.types.strategy import BacktestRequest, BacktestResponse, StrategyInfo
 
 
 @dataclass

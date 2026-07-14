@@ -2,11 +2,10 @@
 增强版E2E测试框架 - 修复数据加载和选择器问题
 """
 
-import asyncio
 import json
 from datetime import datetime
 
-from playwright.async_api import Page, async_playwright
+from playwright.async_api import async_playwright
 
 
 class EnhancedBaseTest:
@@ -319,7 +318,7 @@ class EnhancedBaseTest:
         print("\n" + "=" * 60)
         print(f"✅ {self.page_name} 页面测试完成（修复版）")
         print("=" * 60)
-        print(f"📊 测试结果:")
+        print("📊 测试结果:")
         print(f"   - 总检查项: {report['summary']['total_checks']}")
         print(f"   - 通过: {report['summary']['passed_checks']}")
         print(f"   - 失败: {report['summary']['failed_checks']}")

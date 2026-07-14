@@ -6,7 +6,6 @@ AI测试集成系统
 """
 
 import asyncio
-import json
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -369,7 +368,7 @@ class SmartTestExecutor:
             # 这里应该调用实际的AI数据生成器
             await asyncio.sleep(1)  # 模拟生成过程
             print(f"✓ 数据档案生成完成: {profile_name}")
-        except Exception as e:
+        except Exception:
             logger.error("数据档案 %(profile_name)s 生成失败: %(e)s")
 
     async def _execute_execution_phase(self, plan: TestExecutionPlan, test_executors: Dict[str, Callable]):

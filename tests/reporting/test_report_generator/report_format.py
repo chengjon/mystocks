@@ -6,23 +6,17 @@
 提供多格式、多层次的测试报告生成功能，支持PDF、HTML、JSON、CSV等格式。
 """
 
-import asyncio
 import base64
 import io
-import json
-import os
 import statistics
-import zipfile
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import plotly.express as px
 import plotly.graph_objects as go
 import seaborn as sns
 from jinja2 import Template
@@ -573,7 +567,7 @@ class PDFReportGenerator:
                     img = Image(img_buffer, width=6*inch, height=4*inch)
                     story.append(img)
                     story.append(Spacer(1, 20))
-                except Exception as e:
+                except Exception:
                     story.append(Paragraph(f"图表 {chart_name} 解析失败", styles['Normal']))
                     story.append(Spacer(1, 10))
 

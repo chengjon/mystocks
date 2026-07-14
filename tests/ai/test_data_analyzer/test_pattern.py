@@ -5,8 +5,6 @@ MyStocks AI测试数据分析器
 提供智能测试数据分析、模式识别和预测
 """
 
-import asyncio
-import json
 import logging
 from collections import Counter, defaultdict
 from dataclasses import dataclass
@@ -16,7 +14,6 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
-from sklearn.cluster import DBSCAN
 from sklearn.ensemble import IsolationForest
 from sklearn.preprocessing import StandardScaler
 

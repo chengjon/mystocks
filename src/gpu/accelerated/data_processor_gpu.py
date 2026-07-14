@@ -13,10 +13,8 @@ from typing import Callable, Dict, List, Tuple
 
 import cudf
 import cupy as cp
-import dask.dataframe as dd
 import numpy as np
 import pandas as pd
-from dask.distributed import Client
 
 from ._data_processor_gpu_batch import create_batch_processing_bindings
 

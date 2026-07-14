@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from datetime import UTC, datetime
 
 from src.services.symphony.config import TrackerConfig
 from src.services.symphony.mongo_tracker import MongoWorkItemTrackerClient

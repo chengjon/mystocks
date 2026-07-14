@@ -8,18 +8,14 @@ import json
 import logging
 import os
 import time
-from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
-from functools import lru_cache
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
-from urllib.parse import urljoin, urlparse
+from typing import Any, Dict, List
+from urllib.parse import urljoin
 
-import httpx
 import requests
 import yaml
-from jsonschema import SchemaError, ValidationError, validate
+from jsonschema import ValidationError, validate
 
 # 设置日志
 logging.basicConfig(level=logging.INFO)
@@ -68,7 +64,7 @@ class ContractValidator:
 
             logger.info("成功加载OpenAPI规范: {self.contract_spec.name} v{self.contract_spec.version}")
 
-        except Exception as e:
+        except Exception:
             logger.error("加载OpenAPI规范失败: %(e)s")
             raise
 

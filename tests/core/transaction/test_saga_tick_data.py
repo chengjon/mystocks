@@ -57,7 +57,7 @@ class TestSagaTickData:
         business_id = f"{self.symbol}_TICK_SUCCESS_{int(datetime.now().timestamp())}"
 
         def metadata_mock(session):
-            print(f"  📝 [PG] 模拟记录 Tick 同步元数据...")
+            print("  📝 [PG] 模拟记录 Tick 同步元数据...")
             # 模拟执行成功
             pass
 
@@ -92,7 +92,7 @@ class TestSagaTickData:
         business_id = f"{self.symbol}_TICK_FAIL_{int(datetime.now().timestamp())}"
 
         def metadata_fail_mock(session):
-            print(f"  ⚠️ [PG] 模拟更新失败，触发补偿...")
+            print("  ⚠️ [PG] 模拟更新失败，触发补偿...")
             raise Exception("Database unique constraint violation (Simulated)")
 
         result = self.coordinator.execute_kline_sync(

@@ -10,7 +10,7 @@ import logging
 from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Dict, List
 
 from ._report_generator_rendering import ContractTestReportGeneratorRenderingMixin
 from .models import (

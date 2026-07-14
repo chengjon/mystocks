@@ -247,7 +247,7 @@ def test_position_validation():
             position.set_stop_loss(10.60)  # 高于成本价
             print("❌ 多头止损价验证失败（应该抛出异常）")
             failed += 1
-        except ValueError as e:
+        except ValueError:
             print("✅ 多头止损价验证正确")
             passed += 1
 
@@ -256,7 +256,7 @@ def test_position_validation():
             position.set_take_profit(10.40)  # 低于成本价
             print("❌ 多头止盈价验证失败（应该抛出异常）")
             failed += 1
-        except ValueError as e:
+        except ValueError:
             print("✅ 多头止盈价验证正确")
             passed += 1
 
@@ -279,7 +279,7 @@ def test_position_validation():
             short_position.set_stop_loss(10.40)  # 低于成本价
             print("❌ 空头止损价验证失败（应该抛出异常）")
             failed += 1
-        except ValueError as e:
+        except ValueError:
             print("✅ 空头止损价验证正确")
             passed += 1
 

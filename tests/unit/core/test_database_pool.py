@@ -16,7 +16,6 @@ import asyncio
 
 # Mock the dependencies to avoid import issues
 import sys
-import time
 from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
 import pytest
@@ -34,7 +33,6 @@ from src.core.database_pool import (
     get_connection_pool,
     get_db_manager,
 )
-from tests.unit.core._database_pool_test_tail import TestEdgeCasesAndErrorHandling, TestMemoryMonitoring
 
 
 class TestDatabaseConnectionPool:

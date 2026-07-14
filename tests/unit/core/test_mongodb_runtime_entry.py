@@ -5,7 +5,6 @@ import sys
 from pathlib import Path
 from unittest.mock import patch
 
-import pytest
 
 
 READINESS_MODULE_PATH = Path('/opt/claude/mystocks_spec/web/backend/app/core/readiness.py')

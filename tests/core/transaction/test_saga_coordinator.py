@@ -10,13 +10,11 @@ Saga协调器标准化测试（使用真实数据库）
 """
 
 from datetime import datetime
-from unittest.mock import MagicMock, Mock
 
 import pandas as pd
 import pytest
 
 from src.core import DataClassification
-from src.core.transaction.saga_coordinator import SagaCoordinator
 
 
 class TestSagaCoordinatorBasic:

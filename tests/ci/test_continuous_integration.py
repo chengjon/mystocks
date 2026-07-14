@@ -171,7 +171,7 @@ class ContinuousIntegrationManager(ContinuousIntegrationManagerTailMixin):
         # 初始化Docker客户端
         try:
             self.docker_client = docker.from_env()
-        except Exception as e:
+        except Exception:
             logger.warning("Docker初始化失败: %(e)s")
 
         # 初始化HTTP会话
@@ -227,7 +227,7 @@ class ContinuousIntegrationManager(ContinuousIntegrationManagerTailMixin):
             logger.warning("配置文件 {self.config_file} 不存在，使用默认配置")
             self.config = self._create_default_config()
             return self.config
-        except Exception as e:
+        except Exception:
             logger.error("加载配置失败: %(e)s")
             raise
 
@@ -571,7 +571,7 @@ class ContinuousIntegrationManager(ContinuousIntegrationManagerTailMixin):
             result = await self._run_command("python -m safety check")
             checks["dependency_check"] = result.get("success", False)
 
-        except Exception as e:
+        except Exception:
             logger.error("代码质量检查失败: %(e)s")
 
         return checks

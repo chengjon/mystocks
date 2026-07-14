@@ -9,7 +9,6 @@ Vertical Slice End-to-End Test
 import os
 import sys
 import time
-from datetime import datetime
 
 # 添加项目根目录到路径
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -17,7 +16,7 @@ sys.path.insert(0, project_root)
 
 from src.domain.strategy.model.rule import Rule
 from src.domain.strategy.model.strategy import Strategy
-from src.domain.trading.model.order import Order, OrderStatus
+from src.domain.trading.model.order import OrderStatus
 from src.infrastructure.market_data.mock_repository import MockMarketDataRepository
 
 
@@ -71,11 +70,11 @@ def test_phase_0_vertical_slice():
     mock_repo = MockMarketDataRepository()
     market_snapshot = mock_repo.get_market_snapshot("000001.SZ")
 
-    print(f"✓ 获取市场快照:")
+    print("✓ 获取市场快照:")
     print(f"  - 标的: {market_snapshot['symbol']}")
     print(f"  - 价格: {market_snapshot['price']}")
     print(f"  - 时间: {market_snapshot['timestamp']}")
-    print(f"  - 指标:")
+    print("  - 指标:")
     for indicator, value in market_snapshot["indicators"].items():
         print(f"    * {indicator}: {value}")
 
@@ -88,12 +87,12 @@ def test_phase_0_vertical_slice():
     signals = strategy.execute(market_snapshot)
     execution_time = (time.time() - start_time) * 1000  # 转换为毫秒
 
-    print(f"✓ 策略执行完成:")
+    print("✓ 策略执行完成:")
     print(f"  - 执行时间: {execution_time:.2f} ms")
     print(f"  - 生成信号数量: {len(signals)}")
 
     for signal in signals:
-        print(f"\n  Signal:")
+        print("\n  Signal:")
         print(f"    - ID: {signal.signal_id}")
         print(f"    - 策略ID: {signal.strategy_id}")
         print(f"    - 标的: {signal.symbol}")
@@ -112,7 +111,7 @@ def test_phase_0_vertical_slice():
     print(f"✓ 创建订单数量: {len(orders)}")
 
     for order in orders:
-        print(f"\n  Order:")
+        print("\n  Order:")
         print(f"    - ID: {order.id}")
         print(f"    - 标的: {order.symbol}")
         print(f"    - 方向: {order.side}")

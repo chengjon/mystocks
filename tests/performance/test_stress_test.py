@@ -7,7 +7,6 @@ MyStocks 压力测试套件
 """
 
 import asyncio
-import json
 import threading
 import time
 from dataclasses import dataclass
@@ -16,17 +15,12 @@ from enum import Enum
 from typing import Any, Dict, List
 
 import aiohttp
-import numpy as np
 import psutil
-import pytest
 
 from tests.config.test_config import test_env
 from tests.performance._stress_test_runtime_tail import (
     SystemMonitor,
     run_stress_test_example,
-    test_burst_stress,
-    test_extreme_stress,
-    test_gradual_stress,
 )
 from tests.performance._stress_test_tail import StressTestSuiteTailMixin
 

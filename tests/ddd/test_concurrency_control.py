@@ -9,7 +9,6 @@ import sys
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.orm.exc import StaleDataError
 
 # 确保项目根目录在 path 中
 sys.path.append(os.getcwd())

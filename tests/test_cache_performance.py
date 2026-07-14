@@ -14,11 +14,9 @@ Test Coverage:
 import os
 import sys
 import time
-from datetime import datetime
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock
 
 import pytest
-from fastapi.testclient import TestClient
 
 # 添加项目路径
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -103,7 +101,6 @@ class TestCachePerformanceTests:
 
     def test_cache_ttl_functionality(self):
         """测试缓存TTL功能"""
-        import time
 
         class TTLCache:
             def __init__(self, ttl_seconds=300):
@@ -162,7 +159,6 @@ class TestAPIPerformanceTests:
     def test_concurrent_request_handling(self):
         """测试并发请求处理"""
         import threading
-        import time
 
         results = []
         lock = threading.Lock()

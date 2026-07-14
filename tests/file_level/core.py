@@ -24,13 +24,10 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 import httpx
-import pytest
 import yaml
-from fastapi.testclient import TestClient
-from pydantic import BaseModel, Field
 
 
 @dataclass

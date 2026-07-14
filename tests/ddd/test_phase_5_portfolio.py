@@ -4,7 +4,6 @@ Phase 5: Portfolio Context 验证测试
 
 from datetime import datetime
 
-import pytest
 
 from src.domain.portfolio import Portfolio, PositionInfo, RebalancerService
 from src.domain.trading.events import OrderFilledEvent

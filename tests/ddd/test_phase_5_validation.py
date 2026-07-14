@@ -162,7 +162,6 @@ def test_portfolio_lifecycle():
 
     try:
         from src.domain.portfolio.model.portfolio import Portfolio
-        from src.domain.trading.value_objects import OrderSide
 
         # 测试创建投资组合
         print("\n📍 测试创建投资组合...")
@@ -321,7 +320,6 @@ def test_rebalancer_service():
 
     try:
         from src.domain.portfolio.service.rebalancer_service import (
-            RebalanceAction,
             RebalancerService,
         )
 

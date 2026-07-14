@@ -3,13 +3,11 @@
 import logging
 from typing import Any, Dict, Optional
 
-import numpy as np
 import pandas as pd
 
 from src.advanced_analysis.sentiment_analyzer.sentiment_models import (
     MarketSentimentImpact,
     SentimentAlert,
-    SentimentKeywords,
     SentimentScore,
 )
 

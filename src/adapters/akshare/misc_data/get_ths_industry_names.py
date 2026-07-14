@@ -632,5 +632,4 @@ def get_dragon_tiger_institution_stats(self, period: str = "近一月") -> pd.Da
         return pd.DataFrame()
 
 
-from ._dragon_tiger_stock_stats import get_dragon_tiger_stock_stats
 

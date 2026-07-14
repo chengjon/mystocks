@@ -8,7 +8,7 @@ Phase 6验证测试：市场数据上下文
 
 import os
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime
 
 # 添加项目根目录到路径
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -151,7 +151,7 @@ def test_bar_validation():
             )
             print("❌ 负数开盘价验证失败（应该抛出异常）")
             failed += 1
-        except ValueError as e:
+        except ValueError:
             print("✅ 负数开盘价验证正确")
             passed += 1
 
@@ -168,7 +168,7 @@ def test_bar_validation():
             )
             print("❌ 价格关系验证失败（应该抛出异常）")
             failed += 1
-        except ValueError as e:
+        except ValueError:
             print("✅ 价格关系验证正确")
             passed += 1
 
@@ -286,7 +286,7 @@ def test_tick_validation():
             )
             print("❌ 负数价格验证失败（应该抛出异常）")
             failed += 1
-        except ValueError as e:
+        except ValueError:
             print("✅ 负数价格验证正确")
             passed += 1
 
@@ -302,7 +302,7 @@ def test_tick_validation():
             )
             print("❌ 无效方向验证失败（应该抛出异常）")
             failed += 1
-        except ValueError as e:
+        except ValueError:
             print("✅ 无效方向验证正确")
             passed += 1
 
@@ -317,7 +317,7 @@ def test_tick_validation():
             )
             print("❌ 负数成交量验证失败（应该抛出异常）")
             failed += 1
-        except ValueError as e:
+        except ValueError:
             print("✅ 负数成交量验证正确")
             passed += 1
 
@@ -428,7 +428,7 @@ def test_quote_validation():
             )
             print("❌ 买卖价差关系验证失败（应该抛出异常）")
             failed += 1
-        except ValueError as e:
+        except ValueError:
             print("✅ 买卖价差关系验证正确")
             passed += 1
 
@@ -441,7 +441,7 @@ def test_quote_validation():
             )
             print("❌ 负数最新价验证失败（应该抛出异常）")
             failed += 1
-        except ValueError as e:
+        except ValueError:
             print("✅ 负数最新价验证正确")
             passed += 1
 

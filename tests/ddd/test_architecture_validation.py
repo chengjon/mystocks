@@ -148,8 +148,6 @@ def test_domain_events():
         from src.domain.shared.domain_events import (
             OrderCreatedEvent,
             OrderFilledEvent,
-            PortfolioRebalancedEvent,
-            PositionClosedEvent,
             SignalGeneratedEvent,
         )
 
