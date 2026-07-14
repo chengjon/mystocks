@@ -100,8 +100,11 @@ jobs:
         pip install fastapi uvicorn httpx pydantic
 
     - name: Set up test database
+      # Fail loudly on DDL errors. The script is auto-generated from the ORM
+      # models; previously `|| true` masked missing ENUM types and FK
+      # forward-references, leaving the schema silently incomplete.
       run: |
-        PGPASSWORD=test psql -h localhost -U postgres -d mystocks_test -f scripts/sql/create_test_schema.sql || true
+        PGPASSWORD=test psql -v ON_ERROR_STOP=1 -h localhost -U postgres -d mystocks_test -f scripts/sql/create_test_schema.sql
 
     - name: Start FastAPI server
       env:
