@@ -675,6 +675,13 @@ CREATE TABLE IF NOT EXISTS strategy_result (
 
 -- Table: sync_message
 
+-- Custom ENUM types referenced by sync_message columns. Generated from the
+-- live ORM enum classes in web/backend/app/models/sync_message.py to avoid
+-- drift. Must precede the table so the column types resolve.
+CREATE TYPE IF NOT EXISTS messagestatus AS ENUM ('pending', 'in_progress', 'success', 'failed', 'retry', 'dead_letter');
+CREATE TYPE IF NOT EXISTS operationtype AS ENUM ('insert', 'update', 'delete', 'bulk_insert');
+CREATE TYPE IF NOT EXISTS syncdirection AS ENUM ('tdengine_to_postgresql', 'postgresql_to_tdengine', 'bidirectional');
+
 CREATE TABLE IF NOT EXISTS sync_message (
 	id SERIAL NOT NULL,
 	operation_type operationtype NOT NULL,
