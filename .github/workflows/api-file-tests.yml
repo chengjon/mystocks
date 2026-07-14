@@ -9,11 +9,13 @@ on:
       - 'web/backend/app/api/**'
       - 'tests/api/file_tests/**'
       - 'openspec/changes/implement-api-file-level-testing/**'
+      - '.github/workflows/api-file-tests.yml'
   pull_request:
     branches: [ main, develop ]
     paths:
       - 'web/backend/app/api/**'
       - 'tests/api/file_tests/**'
+      - '.github/workflows/api-file-tests.yml'
 
 jobs:
   api-file-tests-readiness:
@@ -98,10 +100,20 @@ jobs:
         pip install fastapi uvicorn httpx pydantic
 
     - name: Set up test database
+      # Fail loudly on DDL errors. The script is auto-generated from the ORM
+      # models; previously `|| true` masked missing ENUM types and FK
+      # forward-references, leaving the schema silently incomplete.
       run: |
-        PGPASSWORD=test psql -h localhost -U postgres -d mystocks_test -f scripts/sql/create_test_schema.sql || true
+        PGPASSWORD=test psql -v ON_ERROR_STOP=1 -h localhost -U postgres -d mystocks_test -f scripts/sql/create_test_schema.sql
 
     - name: Start FastAPI server
+      env:
+        POSTGRESQL_HOST: localhost
+        POSTGRESQL_USER: postgres
+        POSTGRESQL_PASSWORD: test
+        JWT_SECRET_KEY: test-secret-key-for-ci-only-not-for-production-use-0123456789
+        BACKEND_PORT: "8000"
+        BACKEND_BACKUP_PORT: "8001"
       run: |
         python -m uvicorn web.backend.app.main:app --host 0.0.0.0 --port 8000 &
         sleep 10
