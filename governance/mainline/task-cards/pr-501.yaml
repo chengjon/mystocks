@@ -41,6 +41,7 @@ scope:
     - "src/services/openstock/category_mapping.py"
     - "tests/unit/services/openstock/test_client.py"
     - "web/backend/app/core/config.py"
+    - "web/backend/app/core/socketio_manager.py"
     - ".env.example"
     - "requirements.txt"
     - "governance/mainline/task-cards/pr-501.yaml"
