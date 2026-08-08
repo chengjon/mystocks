@@ -1,0 +1,90 @@
+version: "v0.2"
+
+task:
+  id: "pr-513"
+  title: "Migrate 3 untracked archive/* subdirs into docs/archive/legacy-cn-2026-04-08/ (Zero-Root-Config archival hygiene)"
+  owner: "main"
+  created_at: "2026-08-08"
+
+mainline:
+  id: "L1-archive-relocation-to-docs-archive-legacy-cn-2026-04-08"
+  objective: "migrate 19 legacy Chinese-language files (originally untracked under archive/docs/architecture/, archive/docs/testing/, archive/web/) into docs/archive/legacy-cn-2026-04-08/{architecture,testing,web}/ — preserving the original 2026-04-08 snapshot grouping. Add README explaining provenance, scope, and do-not-reference expectation. The other 1115 tracked files under archive/ are out of scope (established convention)."
+  milestone_id: "L2-worktree-hygiene-and-noise-reduction"
+  slice_id: "L3-archive-migration"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+scope:
+  allowed_paths:
+    - "docs/archive/legacy-cn-2026-04-08/README.md"
+    - "docs/archive/legacy-cn-2026-04-08/architecture/02-架构与设计文档/**"
+    - "docs/archive/legacy-cn-2026-04-08/testing/04-测试/**"
+    - "docs/archive/legacy-cn-2026-04-08/testing/INDEX.md"
+    - "docs/archive/legacy-cn-2026-04-08/web/frontend/**"
+    - "governance/mainline/task-cards/pr-513.yaml"
+  forbidden_paths:
+    - "src/**"
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "tests/**"
+    - "scripts/**"
+    - "config/**"
+    - "openspec/**"
+    - ".github/workflows/**"
+    - "docs/standards/**"
+    - "docs/guides/**"
+    - "docs/api/**"
+    - "docs/architecture/**"
+
+non_goals:
+  - "No change to the 1115 already-tracked files under archive/ (established convention; out of scope)"
+  - "No re-evaluation of docs/archive/api-standalone-docs/ — handled by separate PR per pr-511.yaml non_goals"
+  - "No content rewrite, translation, or reorganization — files preserved verbatim under new parent"
+
+acceptance:
+  checks:
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-513.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr513-mainline-gate.json"
+      required: true
+    - id: "no-stale-archive-refs"
+      command: "! grep -rln 'archive/docs/architecture\\|archive/docs/testing\\|archive/web/' --include='*.md' --include='*.py' --include='*.ts' --include='*.vue' --include='*.json' --include='*.yaml' . 2>/dev/null | grep -v 'node_modules\\|deps/\\|\\.gitnexus\\|pr-511.yaml\\|pr-513.yaml\\|docs/archive/legacy-cn-2026-04-08/README.md' | head -3 | grep -q ."
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "The 19 files were never tracked before; this PR is the first time they enter git history. If any of them are not actually wanted in the repo, this PR adds cleanup burden. Mitigation: README.md explicitly marks them as historical, do-not-reference, and revocable."
+    - "One file (web/frontend/src/views/root-sandbox/skeleton-usage/SkeletonUsage.vue) is a .vue file under docs/archive/ — Vue tooling may attempt to lint or compile it if glob patterns are overly broad. Mitigation: docs/archive/ is not in any frontend build path; verify via glob check."
+  rollback_plan: "git revert <merge-commit-sha>; the files were untracked before this PR so revert will not affect any active code path"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "track 19 legacy Chinese-language archive files (previously untracked under archive/docs/architecture/, archive/docs/testing/, archive/web/) into docs/archive/legacy-cn-2026-04-08/{architecture,testing,web}/ with provenance README"
+    modified_scope: "+19 historical files migrated verbatim +1 README.md +1 task card (pr-513.yaml). Original archive/* subdirs removed from disk"
+    dependency_changes: "none"
+    legacy_logic_impact: "no runtime, contract, or CI workflow change; docs/archive/ is not consumed by any build/test path. Files marked as historical, do-not-reference"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "git revert if any reader objects to the historical content entering git history"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-08-08T00:00:00Z"
+    approval_note: "chore-style archival migration of previously-untracked legacy content; no runtime, contract, or CI workflow change; content preserved verbatim"
+    secondary_approved: false
