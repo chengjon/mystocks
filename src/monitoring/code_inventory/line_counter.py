@@ -2,7 +2,7 @@
 
 import os
 from pathlib import Path
-from typing import List, Optional
+from typing import List
 
 
 def count_lines(file_path: str) -> int:
@@ -17,7 +17,7 @@ def count_lines(file_path: str) -> int:
     try:
         with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
             lines = f.readlines()
-        
+
         # 统计非空行和非纯注释行
         count = 0
         for line in lines:
@@ -25,7 +25,7 @@ def count_lines(file_path: str) -> int:
             # 跳过空行和纯注释行（# 或 // 开头）
             if stripped and not stripped.startswith("#") and not stripped.startswith("//"):
                 count += 1
-        
+
         return count
     except Exception:
         return 0
@@ -101,13 +101,13 @@ def scan_files(
         文件路径列表
     """
     files = []
-    
+
     for root, dirs, filenames in os.walk(base_dir):
         # 过滤排除目录（原地修改 dirs）
         dirs[:] = [d for d in dirs if not is_excluded_dir(d, exclude_dirs)]
-        
+
         for filename in filenames:
             if any(filename.endswith(ext) for ext in extensions):
                 files.append(os.path.join(root, filename))
-    
+
     return files

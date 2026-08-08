@@ -13,7 +13,6 @@ from src.advanced_analysis.financial_valuation_analyzer._dcf_valuation_models im
     DuPontAnalysis,
     ModernValuation,
     RelativeValuation,
-    ValuationConsensus,
 )
 from src.advanced_analysis.financial_valuation_analyzer._dcf_valuation_tail import FinancialValuationAnalyzerTailMixin
 

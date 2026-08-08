@@ -13,7 +13,6 @@ from src.services.maestro.collab.integrations import (
     GraphitiPreflightResult,
     GraphitiQueryBundle,
     GraphitiSearchResult,
-    GraphitiServerStatus,
     GraphitiWriteResult,
 )
 from src.services.maestro.collab.services.coordination import CoordinationService

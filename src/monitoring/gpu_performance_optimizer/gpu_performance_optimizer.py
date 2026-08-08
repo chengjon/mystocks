@@ -12,14 +12,10 @@ GPU性能优化管理器
 版权: MyStocks Project © 2025
 """
 
-import asyncio
-import json
 import logging
 import time
-from dataclasses import asdict
 from datetime import datetime
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 import numpy as np
 import pandas as pd

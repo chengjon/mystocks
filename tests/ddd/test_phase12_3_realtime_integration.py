@@ -14,8 +14,6 @@ import asyncio
 import os
 import sys
 import time
-from datetime import datetime
-from typing import Dict
 
 import pytest
 
@@ -33,7 +31,6 @@ from src.domain.portfolio.service import PortfolioValuationService
 from src.domain.trading.value_objects import OrderSide
 from src.infrastructure.market_data.streaming import MockPriceStreamAdapter
 from src.infrastructure.messaging.redis_event_bus import RedisEventBus
-from src.infrastructure.persistence.models import PortfolioModel
 from src.infrastructure.persistence.repository_impl import PortfolioRepositoryImpl
 from src.storage.database.database_manager import Base
 

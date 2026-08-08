@@ -137,7 +137,6 @@ def subscribe_example():
     redis_pubsub.start_listening()
 
 # 2.3 异步发布
-import asyncio
 
 async def async_publish_example():
     await redis_pubsub.async_publish(

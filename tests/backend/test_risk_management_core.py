@@ -1,7 +1,6 @@
 import pytest
-from unittest.mock import MagicMock, patch, AsyncMock
+from unittest.mock import MagicMock
 import pandas as pd
-import numpy as np
 import sys
 import os
 
@@ -9,7 +8,6 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../web/backend")))
 
 from app.api.risk_management_core import RiskCalculator, RiskService
-from app.core.exceptions import BusinessException
 
 def test_risk_calculator_var():
     returns = pd.Series([-0.01, -0.02, 0.01, 0.02, -0.05])

@@ -2,7 +2,6 @@
 单元测试: SmartRouter
 """
 
-import pytest
 
 from src.core.data_source.smart_router import SmartRouter
 

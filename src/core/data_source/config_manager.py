@@ -21,7 +21,6 @@ from typing import Any, Dict, List, Optional
 
 from config.data_sources_loader import YAML_DATA_SOURCES_REGISTRY_PATH
 from src.core.data_source._config_manager_persistence_mixin import (
-    BatchOperationResult,
     ConfigChangeResult,
     ConfigManagerPersistenceMixin,
     ConfigVersion,

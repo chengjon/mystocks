@@ -8,9 +8,8 @@ from sqlalchemy.orm import sessionmaker
 
 from src.domain.shared.event import DomainEvent
 from src.domain.trading.model.order import Order
-from src.domain.trading.value_objects import OrderId, OrderSide, OrderStatus, OrderType
+from src.domain.trading.value_objects import OrderSide, OrderStatus, OrderType
 from src.infrastructure.messaging.local_event_bus import LocalEventBus
-from src.infrastructure.persistence.models import OrderModel, PortfolioModel, StrategyModel
 from src.infrastructure.persistence.repository_impl import OrderRepositoryImpl
 from src.storage.database.database_manager import Base
 

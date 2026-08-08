@@ -90,7 +90,7 @@ class IntelligentDataGenerator:
 
             return constrained_data
 
-        except Exception as e:
+        except Exception:
             logger.error("数据生成失败: %(e)s")
             return self._generate_fallback_data(request)
 
@@ -520,7 +520,7 @@ class AITestDataManager:
 
             logger.info("测试数据已保存: %(filepath)s")
 
-        except Exception as e:
+        except Exception:
             logger.error("保存测试数据失败: %(e)s")
 
     def load_test_data(self, profile_name: str, timestamp: str = None) -> Dict[str, Any]:
@@ -542,7 +542,7 @@ class AITestDataManager:
             logger.info("加载测试数据: %(filepath)s")
             return data
 
-        except Exception as e:
+        except Exception:
             logger.error("加载测试数据失败: %(e)s")
             raise
 
@@ -616,7 +616,7 @@ class AITestDataManager:
                     filepath.unlink()
                     logger.info("删除过期数据: {filepath.name}")
 
-            except Exception as e:
+            except Exception:
                 logger.error("清理过期数据失败: %(e)s")
 
     def _generate_optimization_report(self):
@@ -646,7 +646,7 @@ class AITestDataManager:
 
             logger.info("优化报告已生成: %(report_path)s")
 
-        except Exception as e:
+        except Exception:
             logger.error("生成优化报告失败: %(e)s")
 
     def _calculate_storage_usage(self) -> float:

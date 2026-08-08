@@ -11,11 +11,6 @@ This module provides advanced technical analysis capabilities including:
 
 from src.advanced_analysis import BaseAnalyzer
 from src.advanced_analysis.technical_analyzer._technical_signal_mixin import TechnicalAnalyzerMixin
-from src.advanced_analysis.technical_analyzer.technical_signal_models import (
-    MarketRegime,
-    PatternResult,
-    TechnicalSignal,
-)
 
 
 class TechnicalAnalyzer(TechnicalAnalyzerMixin, BaseAnalyzer):

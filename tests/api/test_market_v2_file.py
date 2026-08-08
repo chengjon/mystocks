@@ -9,14 +9,10 @@ Tests all 13 endpoints in market_v2.py as a cohesive unit to ensure:
 - Error handling for market data requests
 """
 
-import asyncio
-from datetime import datetime, timedelta
-from typing import Any, Dict, List
+from typing import Any, List
 
-import httpx
 import pytest
 
-from tests.conftest import auth_headers, client, test_user
 
 
 class TestMarketV2APIFile:

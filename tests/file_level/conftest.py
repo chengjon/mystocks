@@ -12,9 +12,6 @@ Author: MyStocks Testing Team
 Date: 2026-01-10
 """
 
-import json
-from datetime import datetime, timedelta
-from typing import Any, Dict, List
 
 import pytest
 from fastapi.testclient import TestClient

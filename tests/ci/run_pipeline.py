@@ -13,10 +13,8 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 from test_continuous_integration import (
     ContinuousIntegrationManager,
-    PipelineConfig,
     PipelineStep,
     TestType,
-    TestSuite,
     EnvironmentType
 )
 
@@ -38,9 +36,9 @@ def get_full_pipeline_steps() -> List[PipelineStep]:
     steps = get_ci_check_steps()
     steps.extend([
         PipelineStep(
-            id="integration_test", 
-            name="集成测试", 
-            type=TestType.INTEGRATION, 
+            id="integration_test",
+            name="集成测试",
+            type=TestType.INTEGRATION,
             command="pytest tests/integration -v --tb=short",
             dependencies=["unit_test"]
         ),
@@ -49,9 +47,9 @@ def get_full_pipeline_steps() -> List[PipelineStep]:
         # Or we can rely on the python manager to setup environment.
         # Here we assume environment is setup by manager.
         PipelineStep(
-            id="e2e_test", 
-            name="E2E测试", 
-            type=TestType.E2E, 
+            id="e2e_test",
+            name="E2E测试",
+            type=TestType.E2E,
             command="cd web/frontend && npx playwright test --project=chromium",
             dependencies=["integration_test"],
             environment={"BASE_URL": "http://localhost:3020"} # Assuming preview runs on 3020
@@ -89,9 +87,9 @@ async def main():
         elif args.pipeline == 'e2e-only':
              config.steps = [
                 PipelineStep(
-                    id="e2e_test", 
-                    name="E2E测试", 
-                    type=TestType.E2E, 
+                    id="e2e_test",
+                    name="E2E测试",
+                    type=TestType.E2E,
                     command="cd web/frontend && npx playwright test --project=chromium",
                     environment={"BASE_URL": "http://localhost:3020"}
                 )
@@ -99,9 +97,9 @@ async def main():
         elif args.pipeline == 'perf-only':
              config.steps = [
                 PipelineStep(
-                    id="perf_test", 
-                    name="性能测试", 
-                    type=TestType.PERFORMANCE, 
+                    id="perf_test",
+                    name="性能测试",
+                    type=TestType.PERFORMANCE,
                     command="locust -f tests/performance/locustfile.py --headless -u 10 -r 2 -t 30s"
                 )
             ]

@@ -11,7 +11,7 @@ ConfigDrivenTableManager 完整测试套件
 import os
 import tempfile
 from pathlib import Path
-from unittest.mock import MagicMock, Mock, mock_open, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 import yaml
@@ -621,7 +621,6 @@ class TestTableExists:
 # 测试类5: 表创建测试 (10个用例)
 # ============================================================================
 
-from tests.unit.core._config_driven_table_manager_complete_tail import TestTableCreation
 
 
 # ============================================================================

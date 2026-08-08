@@ -16,7 +16,6 @@ from typing import Any, Dict
 import numpy as np
 
 from tests.unit.gpu._performance_comparison_reporting import (
-    build_benchmark_report_lines,
     generate_summary_snapshot,
     log_benchmark_report,
 )

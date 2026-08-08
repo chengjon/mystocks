@@ -6,19 +6,9 @@
 提供实时测试监控、可视化界面和交互式控制面板
 """
 
-import threading
-import time
-import webbrowser
-from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
 
-import plotly.graph_objects as go
-import psutil
-from flask import Flask, jsonify, render_template, request
-from flask_socketio import SocketIO, emit
 
 def create_dashboard_templates():
     """创建HTML模板"""

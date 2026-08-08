@@ -7,8 +7,6 @@ from unittest.mock import Mock, patch
 from src.core.memory_manager import (
     MemoryLimit,
     ResourceManager,
-    get_memory_monitor,
-    get_resource_manager,
     initialize_memory_management,
     shutdown_memory_management,
 )

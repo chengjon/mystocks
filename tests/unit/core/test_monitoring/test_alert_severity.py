@@ -9,38 +9,21 @@ Monitoring and Alerting System Test Suite
 
 import threading
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime
 from unittest.mock import Mock, patch
 
-import pytest
 
 # Test target imports
 from src.core.monitoring import (
-    Alert,
     AlertManager,
     AlertRule,
     AlertSeverity,
     APIMonitor,
     MetricsCollector,
-    MetricType,
     MetricValue,
     SystemMonitor,
-    get_alert_manager,
-    get_api_monitor,
-    get_metrics_collector,
-    get_monitoring_dashboard,
-    get_system_monitor,
-    initialize_monitoring,
-    setup_default_alert_rules,
 )
 
-from tests.unit.core.test_monitoring._alert_severity_models_tail import (
-    TestAlert,
-    TestAlertRule,
-    TestAlertSeverity,
-    TestMetricType,
-    TestMetricValue,
-)
 
 
 class TestMetricsCollector:

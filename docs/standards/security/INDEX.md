@@ -1,11 +1,14 @@
 # Security
 
-**最后更新**: 2026-03-24 09:31:49
+**最后更新**: 2026-08-08
 
-**文档数量**: 6
+**文档数量**: 7
 
 
 ---
+
+- [HARDCODING_INDEX](HARDCODING_INDEX.md)
+  - *硬编码规范索引(规则/脚本/CI/豁免清单全路径)*
 
 - [HARDCODING_GOVERNANCE_TIERING_GUIDE](HARDCODING_GOVERNANCE_TIERING_GUIDE.md)
   - *硬编码治理分级指南（通用版）*

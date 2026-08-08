@@ -11,12 +11,8 @@ MyStocks量化平台API压力测试
 locust -f /opt/claude/mystocks_spec/performance-tests/locustfile.py --host=http://localhost:8020
 """
 
-import os
 import random
-import time
-from datetime import datetime
 from locust import HttpUser, task, between, events
-from locust.runners import MasterRunner
 
 # 测试配置
 API_HOST = "http://localhost:8020"

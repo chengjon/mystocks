@@ -1,8 +1,8 @@
 # Standards
 
-**最后更新**: 2026-03-25 02:04:55
+**最后更新**: 2026-08-08
 
-**文档数量**: 39
+**文档数量**: 40
 
 
 ---
@@ -27,6 +27,9 @@
 
 - [HARDCODING_GOVERNANCE_TIERING_GUIDE](security/HARDCODING_GOVERNANCE_TIERING_GUIDE.md)
   - *硬编码治理分级指南（通用版）*
+
+- [HARDCODING_INDEX](security/HARDCODING_INDEX.md)
+  - *硬编码规范索引(规则/脚本/CI/豁免清单全路径)*
 
 - [IMPORT_STYLE_GUIDELINES](IMPORT_STYLE_GUIDELINES.md)
   - *导入规范指南 (Import Style Guidelines)*

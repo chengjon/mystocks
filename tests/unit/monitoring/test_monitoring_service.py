@@ -21,16 +21,11 @@ from src.core import ConfigDrivenTableManager, DataClassification
 from src.monitoring.monitoring_service import (
     Alert,
     AlertLevel,
-    AlertManager,
     DataQualityMonitor,
-    EmailAlertChannel,
-    LogAlertChannel,
     MonitoringDatabase,
     OperationMetrics,
     PerformanceMonitor,
-    WebhookAlertChannel,
 )
-from tests.unit.monitoring._monitoring_service_test_tail import TestAlertChannels, TestAlertManager
 
 
 class TestOperationMetrics:

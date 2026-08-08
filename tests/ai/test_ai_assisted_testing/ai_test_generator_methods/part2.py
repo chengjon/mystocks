@@ -7,16 +7,10 @@ MyStocks AI辅助测试工具
 """
 
 import ast
-import asyncio
 import hashlib
-import os
-from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional
 
-import pytest
 
 
 class AITestGeneratorCreatePatternSpecificMixin:

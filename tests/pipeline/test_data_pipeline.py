@@ -11,16 +11,13 @@ import json
 import logging
 import time
 from concurrent.futures import ThreadPoolExecutor
-from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 import pandas as pd
 from tests.pipeline._data_pipeline_models import (
     DataBatch,
-    DataQuality,
     PipelineConfig,
     PipelineMetrics,
     PipelineStage,
@@ -228,7 +225,7 @@ class DataTransformer:
                 try:
                     transformed_data = transformer(transformed_data, batch.metadata)
                     logger.info("应用转换: %(transform_name)s")
-                except Exception as e:
+                except Exception:
                     logger.error("转换失败 %(transform_name)s: {str(e)}")
                     continue
 
@@ -452,7 +449,7 @@ class TestDataPipeline:
 
                 logger.info("批次处理完成: {batch.id}")
 
-            except Exception as e:
+            except Exception:
                 logger.error("批次处理失败 {batch.id}: {str(e)}")
                 self.metrics.failed_records += len(batch.data)
                 if self.config.fail_fast:
@@ -510,7 +507,7 @@ class TestDataPipeline:
 
             return batch
 
-        except Exception as e:
+        except Exception:
             processing_time = time.time() - start_time
             logger.error("批次处理异常 {batch.id}: {str(e)}")
 
@@ -593,7 +590,7 @@ class TestDataPipeline:
 
             logger.info("批次已存储: %(filepath)s")
 
-        except Exception as e:
+        except Exception:
             logger.error("批次存储失败 {batch.id}: {str(e)}")
 
     async def export_data(self, batch_ids: List[str], output_path: str, format: str = "json") -> bool:
@@ -632,7 +629,7 @@ class TestDataPipeline:
             logger.info("数据导出完成: %(output_file)s ({len(export_data)} 条记录)")
             return True
 
-        except Exception as e:
+        except Exception:
             logger.error("数据导出失败: {str(e)}")
             return False
 

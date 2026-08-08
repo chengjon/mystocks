@@ -8,7 +8,7 @@ import os
 
 # Add the src directory to the path for imports
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime
 from unittest.mock import Mock, patch
 
 import numpy as np

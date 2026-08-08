@@ -1,7 +1,6 @@
 """数据模型"""
 
 from dataclasses import dataclass, field, asdict
-from datetime import datetime
 from typing import List, Dict, Any, Optional
 
 
@@ -58,26 +57,26 @@ class ScanSummary:
     def from_records(cls, records: List[FileInventoryRecord]) -> "ScanSummary":
         summary = cls()
         summary.total_files = len(records)
-        
+
         for record in records:
             # 统计总行数
             summary.total_lines += record.line_count
-            
+
             # 按文件类型统计
             ft = record.file_type
             summary.files_by_type[ft] = summary.files_by_type.get(ft, 0) + 1
             summary.lines_by_type[ft] = summary.lines_by_type.get(ft, 0) + record.line_count
-            
+
             # 超过阈值统计
             if record.is_over_threshold:
                 summary.over_threshold_count += 1
                 summary.over_threshold_by_type[ft] = summary.over_threshold_by_type.get(ft, 0) + 1
-            
+
             # Mock使用统计
             if record.uses_mock_data:
                 summary.mock_usage_count += 1
                 summary.mock_usage_by_type[ft] = summary.mock_usage_by_type.get(ft, 0) + 1
-        
+
         return summary
 
 

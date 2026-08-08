@@ -686,3 +686,8 @@ class MySocketIOManager:
         """Get real-time streaming service statistics"""
         streaming_service = get_streaming_service()
         return streaming_service.get_stats()
+
+
+# Re-export singleton helpers (defined lazily in _socketio_manager_singleton to
+# avoid circular import). Public callers do `from app.core.socketio_manager
+# import get_socketio_manager` — preserve that contract after the split.

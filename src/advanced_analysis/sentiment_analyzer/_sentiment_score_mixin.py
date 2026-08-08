@@ -10,11 +10,8 @@ import pandas as pd
 from src.advanced_analysis import AnalysisResult, AnalysisType
 from src.advanced_analysis.sentiment_analyzer._sentiment_score_tail import SentimentAnalyzerTailMixin
 from src.advanced_analysis.sentiment_analyzer.sentiment_models import (
-    MarketSentimentImpact,
-    SentimentAlert,
     SentimentKeywords,
     SentimentScore,
-    SentimentSource,
 )
 
 logger = logging.getLogger(__name__)

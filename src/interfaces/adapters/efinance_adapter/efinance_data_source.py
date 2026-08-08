@@ -27,12 +27,6 @@ import pandas as pd
 from src.core.data_source.circuit_breaker import CircuitBreaker
 from src.core.data_source.data_quality_validator import DataQualityValidator
 from src.core.data_source.smart_cache import SmartCache
-from src.interfaces.adapters.efinance_adapter.efinance_bond_helpers import get_bond_basic_info, get_bond_realtime_quotes
-from src.interfaces.adapters.efinance_adapter.efinance_fund_helpers import (
-    get_fund_basic_info,
-    get_fund_history,
-    get_fund_holdings,
-)
 from src.interfaces.data_source import IDataSource
 from src.utils.column_mapper import ColumnMapper
 

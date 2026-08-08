@@ -11,7 +11,7 @@ import time
 from typing import Any, Dict
 
 from dotenv import load_dotenv
-from src.storage.database._test_database_menu_cli import run_database_test_menu, show_menu
+from src.storage.database._test_database_menu_cli import run_database_test_menu
 from src.utils.redis_runtime_config import get_redis_db_for_role
 
 

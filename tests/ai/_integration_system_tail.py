@@ -124,7 +124,7 @@ class AITestIntegrationSystemTailMixin:
 
             logger.info("测试结果已保存: %(filepath)s")
 
-        except Exception as error:
+        except Exception:
             logger.error("保存测试结果失败: %(e)s")
 
     async def auto_optimize_testing(self, execution_results: Dict[str, Any]):
@@ -146,7 +146,7 @@ class AITestIntegrationSystemTailMixin:
             self.data_manager.optimize_data_management(test_data_for_optimization)
             logger.info("测试自动优化完成")
 
-        except Exception as error:
+        except Exception:
             logger.error("自动优化失败: %(e)s")
 
     def get_system_status(self) -> Dict[str, Any]:

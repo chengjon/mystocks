@@ -188,7 +188,6 @@ def check_redis_connection():
     try:
         import redis
 
-        from web.backend.app.core.config import settings
 
         redis_kwargs = get_redis_connection_kwargs('app_cache', decode_responses=True)
         r = redis.Redis(

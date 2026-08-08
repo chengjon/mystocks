@@ -10,9 +10,7 @@ TDX连接管理器测试套件
 import os
 import sys
 import time
-from functools import wraps
-from typing import Any, Callable, Dict, Optional
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import patch
 
 import pytest
 

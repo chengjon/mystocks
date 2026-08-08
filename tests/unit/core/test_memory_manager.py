@@ -7,7 +7,6 @@
 
 import os
 import sys
-import threading
 from datetime import datetime
 from unittest.mock import Mock, patch
 
@@ -27,9 +26,7 @@ from src.core.memory_manager import (
     get_memory_monitor,
     get_memory_stats,
     get_resource_manager,
-    initialize_memory_management,
     register_resource,
-    shutdown_memory_management,
     unregister_resource,
 )
 
@@ -725,10 +722,6 @@ class TestGlobalFunctions:
         assert stats["history_length"] == 1
 
 
-from tests.unit.core._memory_manager_test_tail import (
-    TestMemoryManagementLifecycle,
-    TestThreadSafety,
-)
 
 
 if __name__ == "__main__":

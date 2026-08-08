@@ -12,7 +12,6 @@ import webbrowser
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
 import plotly.graph_objects as go

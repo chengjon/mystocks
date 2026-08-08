@@ -28,13 +28,11 @@ Phase: 2 - Task 2.2.1
 Phase: 1 - Task 1.8 (添加市场总貌数据测试)
 """
 
-import asyncio
 import unittest
-from unittest.mock import patch, AsyncMock
+from unittest.mock import patch
 
 import pandas as pd
 
-from src.adapters.akshare.market_adapter import AkshareMarketDataAdapter
 from src.adapters.akshare_adapter import AkshareDataSource
 
 class TestAkshareDataSourceInit(unittest.TestCase):

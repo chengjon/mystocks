@@ -5,7 +5,6 @@ T023: PostgreSQL table configuration tests
 
 import sys
 
-import pytest
 
 sys.path.insert(0, "/opt/claude/mystocks_spec")
 

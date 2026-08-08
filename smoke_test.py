@@ -6,7 +6,9 @@ mystocks_spec 冒烟测试
 运行: python3 smoke_test.py
 """
 
-import subprocess, json, sys, time
+import subprocess
+import json
+import sys
 from datetime import datetime
 
 PASS = 0

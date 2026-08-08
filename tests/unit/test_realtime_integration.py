@@ -14,8 +14,6 @@ Date: 2026-01-09
 import asyncio
 import os
 import sys
-from datetime import datetime
-from decimal import Decimal
 
 import pytest
 
@@ -280,8 +278,6 @@ class TestPerformanceOptimizer:
         """测试初始化"""
         from src.application.services.performance_optimizer import (
             BatchProcessor,
-            CacheKeyGenerator,
-            IncrementalCalculator,
             LRUCache,
         )
 

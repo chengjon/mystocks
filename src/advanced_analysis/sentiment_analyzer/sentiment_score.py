@@ -21,13 +21,6 @@ from src.advanced_analysis.sentiment_analyzer._generate_sentiment_signals import
     _load_stop_words,
 )
 from src.advanced_analysis.sentiment_analyzer._sentiment_score_mixin import SentimentAnalyzerMixin
-from src.advanced_analysis.sentiment_analyzer.sentiment_models import (
-    MarketSentimentImpact,
-    SentimentAlert,
-    SentimentKeywords,
-    SentimentScore,
-    SentimentSource,
-)
 
 
 class SentimentAnalyzer(SentimentAnalyzerMixin, BaseAnalyzer):

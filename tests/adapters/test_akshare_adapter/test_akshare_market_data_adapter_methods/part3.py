@@ -2,14 +2,10 @@
 Akshare 市场数据适配器测试 - 分析类方法集
 """
 
-import asyncio
-import unittest
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch
 
 import pandas as pd
 
-from src.adapters.akshare.market_adapter import AkshareMarketDataAdapter
-from src.adapters.akshare_adapter import AkshareDataSource
 
 
 class TestAkshareMarketDataAdapterAnalyticsMixin:

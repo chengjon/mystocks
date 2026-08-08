@@ -53,7 +53,6 @@ class TestESMCompatibility:
         """测试不同模块导入模式的兼容性"""
 
         # 测试标准导入
-        import os
 
         assert hasattr(os, "path"), "os module should have path attribute"
 

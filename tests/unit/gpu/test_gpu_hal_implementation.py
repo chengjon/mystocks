@@ -299,7 +299,7 @@ class HALImplementationTest:
                 logger.info("Successfully cleaned up all strategies")
                 return True
 
-        except Exception as e:
+        except Exception:
             logger.error("Integration test error: %(e)s")
             return False
 

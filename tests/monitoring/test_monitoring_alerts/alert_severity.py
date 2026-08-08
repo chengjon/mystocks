@@ -17,16 +17,11 @@ from datetime import datetime, timedelta
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from enum import Enum
-from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional
 
-import psutil
 import requests
 from jinja2 import Template
-from pydantic import BaseModel, Field
-from prometheus_client import Counter, Gauge, Histogram, start_http_server
 
-from ..ai.test_data_manager import DataManager as AIDataManager
 
 class AlertSeverity(Enum):
     """告警严重级别"""

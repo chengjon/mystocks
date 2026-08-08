@@ -9,14 +9,10 @@ Tests all 20 endpoints in efinance.py as a cohesive unit to ensure:
 - Error handling for financial data requests
 """
 
-import asyncio
-from datetime import datetime, timedelta
-from typing import Any, Dict, List
+from typing import Any, List
 
-import httpx
 import pytest
 
-from tests.conftest import auth_headers, client, test_user
 
 
 class TestEFinanceAPIFile:

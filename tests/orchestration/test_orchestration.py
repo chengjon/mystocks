@@ -653,7 +653,7 @@ class TestOrchestrator:
             else:
                 logger.warning("未找到检查点")
                 return {"executions": [], "timestamp": None}
-        except Exception as e:
+        except Exception:
             logger.error("检查点恢复失败: {str(e)}")
             return {"executions": [], "timestamp": None}
 
@@ -680,7 +680,7 @@ class CheckpointManager:
             with open(filepath, "w", encoding="utf-8") as f:
                 json.dump(checkpoint, f, indent=2, ensure_ascii=False)
             logger.info("检查点已保存: %(filepath)s")
-        except Exception as e:
+        except Exception:
             logger.error("检查点保存失败: {str(e)}")
 
     async def load_latest_checkpoint(self) -> Optional[Dict[str, Any]]:
@@ -697,7 +697,7 @@ class CheckpointManager:
                 checkpoint = json.load(f)
             logger.info("加载检查点: %(latest_file)s")
             return checkpoint
-        except Exception as e:
+        except Exception:
             logger.error("检查点加载失败: {str(e)}")
             return None
 
@@ -715,7 +715,7 @@ class CheckpointManager:
                         "execution_count": len(checkpoint.get("executions", [])),
                     }
                 )
-            except Exception as e:
+            except Exception:
                 logger.error("读取检查点失败 %(checkpoint_file)s: {str(e)}")
 
         return sorted(checkpoints, key=lambda x: x["timestamp"], reverse=True)
