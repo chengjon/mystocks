@@ -8,12 +8,12 @@
 本模块仅做轻量 HTTP 客户端:超时 + 单次重试,不复刻 OpenStock 内部能力。
 """
 
+from src.services.openstock.category_mapping import DataCategory
 from src.services.openstock.client import (
     OpenStockClient,
     OpenStockError,
     OpenStockProviderUnavailable,
 )
-from src.services.openstock.category_mapping import DataCategory
 
 __all__ = [
     "OpenStockClient",
