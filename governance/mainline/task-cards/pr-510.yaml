@@ -1,0 +1,90 @@
+version: "v0.2"
+
+task:
+  id: "pr-510"
+  title: "Expand .gitignore to cover CLI tool dirs / local working state / .planning scratch / page-element analyzer output, and untrack 6 local-state files"
+  owner: "main"
+  created_at: "2026-08-08"
+
+mainline:
+  id: "L1-worktree-hygiene-gitignore-baseline-cleanup"
+  objective: "shrink the dirty-worktree noise from 137 untracked entries to ~27 by (1) extending .gitignore to cover CLI/agent tool directories, local working-state files, the .planning/ scratch tree, page-element-analyzer HTML output, and the deps/ directory; (2) git rm --cached 6 files that were tracked but belong to local working state; (3) deleting 5 __gitignore_test__ residual markers"
+  milestone_id: "L2-worktree-hygiene-and-noise-reduction"
+  slice_id: "L3-gitignore-baseline-expansion"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+scope:
+  allowed_paths:
+    - ".gitignore"
+    - "TASK.md"
+    - ".agent/workflows/ui-ux-pro-max.md"
+    - ".codex/skills/ui-ux-pro-max/SKILL.md"
+    - ".migration/deny-list.py"
+    - ".planning/codebase/generated/service-lifecycle-di-branch-anchor-reconciliation-2026-06-03.json"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - "governance/mainline/task-cards/pr-510.yaml"
+  forbidden_paths:
+    - "src/**"
+    - "web/backend/**"
+    - "web/frontend/src/**"
+    - "web/frontend/public/**"
+    - "tests/**"
+    - "scripts/**"
+    - "config/**"
+    - "docs/standards/**"
+    - "openspec/**"
+    - ".github/workflows/**"
+
+non_goals:
+  - "No code change in src/, web/backend/, web/frontend/src/"
+  - "No CI workflow yaml change"
+  - "The 27 remaining untracked entries (docs/, scripts/, governance/, archive/) are NOT in this PR scope; they will be evaluated in a separate PR"
+
+acceptance:
+  checks:
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-510.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr510-mainline-gate.json"
+      required: true
+    - id: "gitignore-effective"
+      command: "test ! -e .agent/__gitignore_test__ && test ! -e .codex/__gitignore_test__ && test ! -e .config/__gitignore_test__ && test ! -e .migration/__gitignore_test__ && test ! -e .planning/__gitignore_test__"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Removing the 6 tracked files from index means they will not appear in fresh clones; if any CI or runtime depends on them, that pipeline breaks. Mitigation: none of them are referenced by runtime/CI; they are skill/workflow assets local to specific CLI agents."
+    - "Future contributors using TASK.md as a session-tracker will need to use --force to re-add it; this is intentional (local state should not be in repo)."
+  rollback_plan: "git revert <merge-commit-sha>; the 6 files remain on disk and can be re-tracked with git add -f if needed"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "reduce worktree noise (137 → 27 untracked) by extending .gitignore to cover CLI tool dirs, local working state, .planning scratch, page-element-analyzer output, deps/, and residual __gitignore_test__ markers"
+    modified_scope: ".gitignore (append ~50 patterns) + 6 files untracked via git rm --cached (TASK.md, .agent/workflows/ui-ux-pro-max.md, .codex/skills/ui-ux-pro-max/SKILL.md, .migration/deny-list.py, .planning/codebase/generated/*.json, .planning/codebase/steward-tree/branch-register.md) + 5 __gitignore_test__ files deleted from disk"
+    dependency_changes: "none"
+    legacy_logic_impact: "no runtime, API, or CI workflow change; the 6 untracked files are local working-state assets not consumed by any code path"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "git revert if any pipeline discovers a dependency on one of the 6 untracked files (none known)"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-08-08T00:00:00Z"
+    approval_note: "chore-style .gitignore expansion plus untracking of local-state files; no runtime, contract, or CI workflow change"
+    secondary_approved: false
