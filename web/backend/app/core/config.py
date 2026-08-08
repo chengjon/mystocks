@@ -6,7 +6,6 @@ from typing import List
 from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-
 logger = logging.getLogger(__name__)
 
 # 环境变量文件配置
@@ -247,8 +246,6 @@ def validate_required_settings(settings_obj: Settings):
         ("jwt_secret_key", "JWT_SECRET_KEY"),
         ("port", "BACKEND_PORT"),
         ("port_range_end", "BACKEND_BACKUP_PORT"),
-        ("openstock_base_url", "OPENSTOCK_BASE_URL"),
-        ("openstock_api_key", "OPENSTOCK_API_KEY"),
     ]
 
     missing_settings = []

@@ -114,7 +114,7 @@ class DataCategory(StrEnum):
 
 # 阶段 2 Adapter 方法签名 → data_category 映射表
 # 在 Phase 2 各 Adapter 迁移 PR 中按域扩充,Phase 1 只提供 ADAPTER_METHOD_CATEGORIES 字典骨架。
-ADAPTER_METHOD_CATEGORIES: dict[str, dict[str, DataCategory]] = {
+ADAPTER_METHOD_CATEGORIES: dict[str, DataCategory] = {
     # domain-01 市场数据
     "AkshareMarketAdapter.get_realtime_quote": DataCategory.REALTIME_QUOTES,
     "AkshareMarketAdapter.get_market_depth": DataCategory.MARKET_DEPTH,
@@ -126,7 +126,6 @@ ADAPTER_METHOD_CATEGORIES: dict[str, dict[str, DataCategory]] = {
     "ByapiAdapter.get_realtime_quote": DataCategory.REALTIME_QUOTES,
     "TushareAdapter.get_stock_basic": DataCategory.STOCK_BASIC,
     "TushareAdapter.get_financial_statements": DataCategory.FINANCIAL_STATEMENTS,
-
     # domain-02 行情与图表 (将在阶段 2.2 扩充)
     # domain-03/04 基本面与财务 (将在阶段 2.3 扩充)
     # domain-06 板块/资金流/龙虎榜 (将在阶段 2.4 扩充)

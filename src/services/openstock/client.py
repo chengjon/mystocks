@@ -104,7 +104,12 @@ class OpenStockClient:
     def __enter__(self) -> "OpenStockClient":
         return self
 
-    def __exit__(self, exc_type, exc, tb) -> None:
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        tb: Any | None,
+    ) -> None:
         self.close()
 
     # ---- 六个端点封装 -------------------------------------------------
@@ -182,21 +187,27 @@ class OpenStockClient:
                 last_exc = exc
                 logger.warning(
                     "OpenStock %s transport error (attempt %d/%d): %s",
-                    path, attempt, _MAX_ATTEMPTS, exc,
+                    path,
+                    attempt,
+                    _MAX_ATTEMPTS,
+                    exc,
                 )
                 if attempt < _MAX_ATTEMPTS:
                     continue
                 raise OpenStockError(0, None, f"transport error: {exc}") from exc
 
             if response.status_code == 200:
-                return response.json()
+                result: dict[str, Any] = response.json()
+                return result
 
             err = self._decode_error(response)
             # 只对 provider_unavailable 单次重试
             if err.code == _CODE_PROVIDER_UNAVAILABLE and attempt < _MAX_ATTEMPTS:
                 logger.info(
                     "OpenStock %s provider_unavailable, retrying (attempt %d/%d)",
-                    path, attempt, _MAX_ATTEMPTS,
+                    path,
+                    attempt,
+                    _MAX_ATTEMPTS,
                 )
                 last_exc = err
                 continue
@@ -211,7 +222,8 @@ class OpenStockClient:
         except httpx.HTTPError as exc:
             raise OpenStockError(0, None, f"transport error: {exc}") from exc
         if response.status_code == 200:
-            return response.json()
+            result: dict[str, Any] = response.json()
+            return result
         raise self._decode_error(response)
 
     @staticmethod
@@ -247,7 +259,7 @@ class OpenStockClient:
 def _category_value(category: DataCategory | str) -> str:
     """接受 DataCategory 枚举或裸字符串."""
     if isinstance(category, DataCategory):
-        return category.value
+        return str(category.value)
     if isinstance(category, str):
         return category
     raise TypeError(f"data_category must be DataCategory or str, got {type(category).__name__}")
