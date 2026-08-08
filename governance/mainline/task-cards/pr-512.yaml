@@ -1,0 +1,85 @@
+version: "v0.2"
+
+task:
+  id: "pr-512"
+  title: "P0 hardcoding fix: scrub leaked OpenStock API key from scripts/dev/_import_announcements.py and replace with env-var lookup"
+  owner: "main"
+  created_at: "2026-08-08"
+
+mainline:
+  id: "L1-security-hardcoding-leak-remediation-import-announcements"
+  objective: "remediate the P0 hardcoded credential finding in scripts/dev/_import_announcements.py:10 (OpenStock API key sk-Z8h5YC-... — different key from the previously-rotated sk-ICdVlZ72... in commit 462dcf5c2/5020675af, this newer key has now been rotated at OpenStock server side). Rewrite to consume OPENSTOCK_SECURITY_API_KEY env var (canonical name per commit 7b0493377, aligned with OpenStock upstream config.py derivation). Also align OPENSTOCK_BASE_URL to env var with prior-default fallback."
+  milestone_id: "L2-security-hardcoding-tier1-remediation"
+  slice_id: "L3-import-announcements-openstock-key"
+
+classification:
+  task_type: "fix"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+scope:
+  allowed_paths:
+    - "scripts/dev/_import_announcements.py"
+    - "governance/mainline/task-cards/pr-512.yaml"
+  forbidden_paths:
+    - "src/**"
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "tests/**"
+    - "config/**"
+    - "openspec/**"
+    - ".github/workflows/**"
+    - "docs/**"
+
+non_goals:
+  - "No rotation of the leaked key value in any git-tracked file — the key only ever existed in .env (gitignored, untracked) and in scripts/dev/_import_announcements.py (this PR removes the latter)."
+  - "No .gitleaksignore entry — per established practice (commit db2a46e41), once the key has been rotated upstream the .gitleaksignore fingerprint entry is the standard mechanism. The .gitleaksignore entry for this exact key was already added in commit db2a46e41. This PR only handles the source-side rewrite."
+  - "No migration of the .env value — .env is local-only and gitignored; the user retains the rotated value on their own disk."
+
+acceptance:
+  checks:
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-512.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr512-mainline-gate.json"
+      required: true
+    - id: "hardcoding-scan"
+      command: "python scripts/security/hardcoding_scan.py"
+      required: true
+    - id: "no-leaked-key-in-source"
+      command: "! grep -rE 'sk-Z8h5YC-HyMdjb9qtFWqYU8WIYziKf7n8' scripts/ src/ web/ docs/ 2>/dev/null"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "scripts/dev/_import_announcements.py previously embedded the OpenStock API key inline; if any cron or manual workflow relied on the script without setting OPENSTOCK_SECURITY_API_KEY, the script will now exit early with an explicit error message."
+    - "OPENSTOCK_BASE_URL is also pulled from env (was previously hardcoded) — same graceful behavior via prior-default fallback in os.environ.get()."
+  rollback_plan: "git revert <merge-commit-sha>; the script is a dev-only importer and the new behavior is fail-fast with explicit message when env is absent"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "remediate P0 hardcoded OpenStock API key in scripts/dev/_import_announcements.py:10 — replace inline key with OPENSTOCK_SECURITY_API_KEY env lookup (canonical name) and OPENSTOCK_BASE_URL env with fallback"
+    modified_scope: "scripts/dev/_import_announcements.py (header rewrite, +12/-8) + governance/mainline/task-cards/pr-512.yaml"
+    dependency_changes: "none — requests already imported; only os module added"
+    legacy_logic_impact: "script now fails fast when OPENSTOCK_SECURITY_API_KEY env var is unset (graceful exit 1 with explicit message); OPENSTOCK_BASE_URL falls back to http://192.168.123.104:8040 when env unset (preserves prior default)"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "git revert if any cron job depends on the hardcoded key"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "main"
+    approved_at: "2026-08-08T00:00:00Z"
+    approval_note: "P0 hardcoding fix — replace leaked OpenStock API key with env-var lookup. Key value sk-Z8h5YC-... has been rotated upstream at OpenStock server (192.168.123.104:8040) by user before this PR is merged. Old key already covered by .gitleaksignore entry (commit db2a46e41). Single source-file rewrite + task card; no runtime, contract, or CI workflow change."
+    secondary_approved: false
