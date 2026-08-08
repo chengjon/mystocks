@@ -1,0 +1,89 @@
+version: "v0.2"
+
+task:
+  id: "pr-514"
+  title: "Track docs/archive/api-standalone-docs/ (4 legacy API docs) with provenance README"
+  owner: "main"
+  created_at: "2026-08-08"
+
+mainline:
+  id: "L1-api-standalone-docs-archive-tracking"
+  objective: "evaluate and track the 4 untracked files under docs/archive/api-standalone-docs/. Evaluation outcome: all 4 files retained as historical reference. README added to clarify archived status, do-not-reference expectation, and to disambiguate which references in docs/api/contracts/README.md are intentional 'archive version' links vs. which references would be stale if they were to active docs."
+  milestone_id: "L2-worktree-hygiene-and-noise-reduction"
+  slice_id: "L3-api-standalone-docs-tracking"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+scope:
+  allowed_paths:
+    - "docs/archive/api-standalone-docs/README.md"
+    - "docs/archive/api-standalone-docs/apifox-import-success-2025-11-10.md"
+    - "docs/archive/api-standalone-docs/apifox-mcp-playwright-legacy.md"
+    - "docs/archive/api-standalone-docs/contract-management-api-full.md"
+    - "docs/archive/api-standalone-docs/contract-testing-api-full.md"
+    - "governance/mainline/task-cards/pr-514.yaml"
+  forbidden_paths:
+    - "src/**"
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "tests/**"
+    - "scripts/**"
+    - "config/**"
+    - "openspec/**"
+    - ".github/workflows/**"
+    - "docs/api/**"
+    - "docs/standards/**"
+    - "docs/guides/**"
+
+non_goals:
+  - "No revival of contract-management-api / contract-testing-api — both reference deleted src/contract_testing/ module; reviving either requires OpenSpec proposal"
+  - "No rewrite of apifox-mcp-playwright-legacy.md — already marked legacy by author (2026-03-17)"
+  - "No modification of docs/api/contracts/README.md — its '../../archive/api-standalone-docs/...' links are correct (resolve to docs/archive/api-standalone-docs/) and explicitly labeled as 'archive version'"
+
+acceptance:
+  checks:
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-514.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr514-mainline-gate.json"
+      required: true
+    - id: "contracts-readme-link-resolves"
+      command: "test -f docs/archive/api-standalone-docs/contract-management-api-full.md && test -f docs/archive/api-standalone-docs/contract-testing-api-full.md"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Two of the four files (contract-*-api-full.md) reference deleted code (src/contract_testing/). If readers assume the documents reflect current code, they will be confused. Mitigation: README.md explicitly notes this and points to the deletion."
+    - "The historical content adds 2095 lines to git history; future readers pay a small cost. Mitigation: cost is one-time and the files are clearly labeled."
+  rollback_plan: "git revert <merge-commit-sha>; the files were untracked before this PR so revert is safe"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "track 4 previously-untracked files under docs/archive/api-standalone-docs/ (apifox-import event record, apifox-mcp legacy evaluation, contract-management-api reference, contract-testing-api reference) plus provenance README"
+    modified_scope: "+4 historical files (verbatim) +1 README.md +1 task card (pr-514.yaml). No content modifications"
+    dependency_changes: "none"
+    legacy_logic_impact: "no runtime, contract, or CI workflow change. README.md flags 2 files as documenting deleted src/contract_testing/ module"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "git revert if any reader objects to the historical content entering git history"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-08-08T00:00:00Z"
+    approval_note: "chore-style archival tracking of previously-untracked legacy API reference docs; no runtime, contract, or CI workflow change; content preserved verbatim with provenance README"
+    secondary_approved: false
