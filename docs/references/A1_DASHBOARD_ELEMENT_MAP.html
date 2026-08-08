@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A1 交易室 Dashboard — 元素编号标注图</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #0a0e17;
+    color: #e0e6f0;
+    padding: 16px;
+    min-width: 1100px;
+  }
+  .page {
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+  /* ── 标注 badge ── */
+  .badge {
+    position: absolute; top: 4px; left: 4px;
+    background: #ff4757; color: #fff;
+    font-size: 11px; font-weight: 700; font-family: 'Consolas', monospace;
+    padding: 2px 6px; border-radius: 3px;
+    z-index: 10; white-space: nowrap; line-height: 1.3;
+    box-shadow: 0 2px 6px rgba(255,71,87,0.5);
+    pointer-events: none;
+  }
+  .badge.header-badge { background: #3742fa; }
+  .badge.stat-badge   { background: #2ed573; }
+  .badge.chart-badge  { background: #ffa502; }
+  .badge.card-badge   { background: #1e90ff; }
+  .badge.btn-badge    { background: #a55eea; }
+  .badge.collapse-badge{background: #747d8c; }
+  .badge.gauge-badge  { background: #ff6348; }
+  .badge.label-badge  { background: #7bed9f; color: #222; }
+  .badge.link-badge   { background: #70a1ff; }
+  .badge.tab-badge    { background: #eccc68; color: #222; }
+  .badge.list-badge   { background: #5352ed; }
+  .badge.status-badge { background: #ff6b81; }
+
+  /* ── 区域容器 ── */
+  .zone { position: relative; border: 1px dashed rgba(255,255,255,0.10); border-radius: 8px; padding: 12px; margin-bottom: 12px; }
+  .zone-label { font-size: 10px; color: rgba(255,255,255,0.25); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+
+  /* ── Header ── */
+  .mock-header {
+    position: relative; background: linear-gradient(135deg, #141b2d 0%, #1a2540 100%);
+    border-radius: 8px; padding: 20px 24px; margin-bottom: 10px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    border: 1px solid rgba(55,66,250,0.2);
+  }
+  .header-left h1 { font-size: 28px; letter-spacing: 6px; color: #dfe6e9; }
+  .header-left p  { font-size: 12px; color: #636e72; margin-top: 4px; letter-spacing: 4px; }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .mock-badge { position: relative; display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+  .mock-badge.primary { background: rgba(55,66,250,0.2); color: #7c8cff; border: 1px solid rgba(55,66,250,0.3); }
+  .mock-badge.success { background: rgba(46,213,115,0.2); color: #5cdb8b; border: 1px solid rgba(46,213,115,0.3); }
+  .mock-btn { position: relative; display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 14px; border-radius: 6px; font-size: 12px; background: rgba(255,255,255,0.05);
+    color: #a4b0be; border: 1px solid rgba(255,255,255,0.1); cursor: default; }
+
+  /* ── Meta bar ── */
+  .mock-meta {
+    position: relative; display: flex; gap: 20px; padding: 6px 12px;
+    font-family: 'Consolas', monospace; font-size: 11px; color: #636e72;
+    margin-bottom: 10px;
+  }
+  .mock-meta span { position: relative; }
+
+  /* ── Cards ── */
+  .card-grid { display: grid; gap: 10px; }
+  .card-grid.cols2 { grid-template-columns: 1fr 1fr; }
+  .card-grid.cols3 { grid-template-columns: 1fr 1fr 1fr; }
+  .card-grid.cols4 { grid-template-columns: repeat(4, 1fr); }
+  .card-grid.cols5 { grid-template-columns: repeat(5, 1fr); }
+  .card-grid.cols6 { grid-template-columns: repeat(6, 1fr); }
+
+  .mock-card {
+    position: relative; background: rgba(255,255,255,0.03); border-radius: 8px;
+    padding: 14px; border: 1px solid rgba(255,255,255,0.06);
+  }
+  .mock-card h3, .mock-card h4 {
+    font-size: 13px; color: #a4b0be; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .mock-stat {
+    position: relative; text-align: center; padding: 8px;
+    background: rgba(255,255,255,0.02); border-radius: 6px;
+  }
+  .mock-stat .value { font-size: 18px; font-weight: 700; color: #f1c40f; }
+  .mock-stat .label { font-size: 10px; color: #636e72; margin-top: 4px; }
+  .mock-stat .sub   { font-size: 10px; color: #2ed573; margin-top: 2px; }
+
+  .mock-chart {
+    position: relative; height: 60px; background: rgba(255,255,255,0.02);
+    border-radius: 6px; display: flex; align-items: center; justify-content: center;
+    color: #636e72; font-size: 11px; margin-top: 8px;
+  }
+  .mock-chart.tall { height: 120px; }
+
+  .mock-collapse {
+    position: relative; background: rgba(255,255,255,0.02); border-radius: 8px;
+    padding: 10px 14px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.04);
+  }
+  .mock-collapse summary { font-size: 13px; color: #a4b0be; cursor: default; padding: 4px 0; }
+
+  .mock-tabs { display: flex; gap: 4px; }
+  .mock-tab {
+    position: relative; padding: 4px 12px; border-radius: 4px; font-size: 11px;
+    background: rgba(255,255,255,0.04); color: #747d8c;
+  }
+
+  .mock-nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .mock-nav-item {
+    position: relative; padding: 12px; background: rgba(255,255,255,0.02);
+    border-radius: 6px; text-align: center; border: 1px solid rgba(255,255,255,0.04);
+  }
+  .mock-nav-item .icon { font-size: 20px; }
+  .mock-nav-item .label { font-size: 12px; color: #dfe6e9; margin-top: 4px; }
+  .mock-nav-item .desc { font-size: 10px; color: #636e72; }
+
+  .mock-list-item {
+    position: relative; display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 8px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 11px;
+  }
+  .mock-gauge {
+    position: relative; height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px;
+    margin: 8px 0;
+  }
+  .mock-gauge .fill {
+    height: 100%; width: 65%; background: linear-gradient(90deg, #2ed573, #f1c40f, #ff4757);
+    border-radius: 4px;
+  }
+
+  /* ── Legend ── */
+  .legend {
+    position: fixed; bottom: 12px; right: 12px; background: rgba(0,0,0,0.85);
+    border-radius: 8px; padding: 10px 14px; font-size: 10px; z-index: 100;
+    border: 1px solid rgba(255,255,255,0.08);
+    display: grid; grid-template-columns: auto auto; gap: 3px 10px;
+  }
+  .legend .dot { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 4px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ====== ZONE: Header ====== -->
+  <div class="mock-header">
+    <div class="header-left">
+      <span class="badge header-badge">A1-01</span>
+      <h1>QUANTIX</h1>
+      <span class="badge header-badge" style="top:28px;">A1-02</span>
+      <p>实时 洞察 策略 执行</p>
+    </div>
+    <div class="header-right">
+      <span class="badge status-badge" style="position:relative;top:auto;left:auto;display:inline-block;">A1-03</span>
+      <span style="font-size:10px;color:#636e72;">● 交易中</span>
+      <span class="mock-badge primary"><span class="badge header-badge" style="position:relative;top:auto;left:auto;">A1-04</span> 3 策略运行中</span>
+      <span class="mock-badge success"><span class="badge header-badge" style="position:relative;top:auto;left:auto;">A1-05</span> +1,234.56</span>
+      <span class="mock-btn"><span class="badge btn-badge" style="position:relative;top:auto;left:auto;">A1-06</span> 🕐 14:35:22 刷新</span>
+    </div>
+  </div>
+
+  <!-- ====== ZONE: Meta Bar ====== -->
+  <div class="mock-meta">
+    <span><span class="badge label-badge">A1-07</span> DATA: REAL</span>
+    <span><span class="badge label-badge">A1-08</span> REQ: a1b2c3d4-...</span>
+    <span><span class="badge label-badge">A1-09</span> TIME: 234ms</span>
+  </div>
+
+  <!-- ====== ZONE: Market Panorama ====== -->
+  <div class="zone">
+    <div class="zone-label">📊 市场全景 market-panorama</div>
+
+    <!-- Card: 市场资金流向概览 -->
+    <div class="mock-card" style="margin-bottom:10px;">
+      <span class="badge card-badge">A1-10</span>
+      <h3>📈 市场资金流向概览</h3>
+      <div class="card-grid cols4" style="margin-bottom:8px;">
+        <div class="mock-stat"><span class="badge stat-badge">A1-11</span><div class="value">+12.35亿</div><div class="label">沪股通净流入</div><div class="sub">较昨日 +3.21</div></div>
+        <div class="mock-stat"><span class="badge stat-badge">A1-12</span><div class="value">+8.72亿</div><div class="label">深股通净流入</div><div class="sub">较昨日 -1.15</div></div>
+        <div class="mock-stat"><span class="badge stat-badge">A1-13</span><div class="value">+21.07亿</div><div class="label">北向资金总额</div><div class="sub">本月累计 +156亿</div></div>
+        <div class="mock-stat"><span class="badge stat-badge">A1-14</span><div class="value">+45.8亿</div><div class="label">主力净流入</div><div class="sub">占比 62.3%</div></div>
+      </div>
+      <div class="mock-chart"><span class="badge chart-badge">A1-15</span> 📈 ECharts 资金流趋势折线图 (200px)</div>
+    </div>
+
+    <!-- Card: 主要市场指标 -->
+    <div class="mock-card" style="margin-bottom:10px;">
+      <span class="badge card-badge">A1-16</span>
+      <h3>📊 主要市场指标</h3>
+      <div class="card-grid cols3" style="margin-bottom:8px;">
+        <div class="mock-stat"><span class="badge stat-badge">A1-17</span><div class="value">3,245.67</div><div class="label">上证指数</div><div class="sub">+1.23%</div></div>
+        <div class="mock-stat"><span class="badge stat-badge">A1-18</span><div class="value">10,876.54</div><div class="label">深证成指</div><div class="sub">+0.87%</div></div>
+        <div class="mock-stat"><span class="badge stat-badge">A1-19</span><div class="value">2,156.32</div><div class="label">创业板指</div><div class="sub">-0.45%</div></div>
+      </div>
+      <div class="mock-chart tall"><span class="badge chart-badge">A1-20</span> 📈 ECharts 上证指数分时趋势 (200px)</div>
+    </div>
+
+    <!-- flow-section -->
+    <div class="card-grid cols2">
+      <!-- 资金流向 -->
+      <div class="mock-card">
+        <span class="badge card-badge">A1-21</span>
+        <h4>💵 资金流向</h4>
+        <div class="mock-stat" style="margin-bottom:6px;"><span class="badge stat-badge">A1-22</span><div class="value">+15.6亿</div><div class="label">北向资金</div></div>
+        <div style="font-size:10px;color:#636e72;margin:4px 0;">市场情绪</div>
+        <div class="mock-gauge"><span class="badge gauge-badge">A1-23</span><div class="fill"></div></div>
+        <div style="font-size:11px;color:#f1c40f;text-align:right;">65%</div>
+      </div>
+      <!-- 市场状态 -->
+      <div class="mock-card">
+        <span class="badge card-badge">A1-24</span>
+        <h4>📋 市场状态</h4>
+        <div class="mock-stat" style="margin-bottom:6px;"><span class="badge stat-badge">A1-25</span><div class="value">2,847↑ / 1,032↓</div><div class="label">涨跌家数</div></div>
+        <div class="mock-stat"><span class="badge stat-badge">A1-26</span><div class="value">8,562亿</div><div class="label">成交金额</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== ZONE: Collapse Panels ====== -->
+  <div class="mock-collapse">
+    <span class="badge collapse-badge">A1-27</span>
+    <details><summary>📐 技术指标概览</summary>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;">
+        <span class="badge list-badge">A1-28</span>
+        <span style="font-size:11px;">MA5: 3,210</span>
+        <span style="font-size:11px;">MA20: 3,180</span>
+        <span style="font-size:11px;color:#2ed573;">MACD: 金叉</span>
+        <span style="font-size:11px;">RSI14: 58.3</span>
+        <span style="font-size:11px;">KDJ-K: 72.1</span>
+        <span style="font-size:11px;">BOLL-MID: 3,200</span>
+      </div>
+    </details>
+  </div>
+
+  <div class="mock-collapse">
+    <span class="badge collapse-badge">A1-29</span>
+    <details><summary>🖥 系统监控状态</summary>
+      <div style="display:flex;gap:16px;margin-top:8px;">
+        <span class="badge list-badge">A1-30</span>
+        <span style="font-size:11px;">🟢 API: 正常</span>
+        <span style="font-size:11px;">🟢 DB: 正常</span>
+        <span style="font-size:11px;">🟡 Cache: 87%</span>
+        <span style="font-size:11px;">🟢 WS: 在线</span>
+      </div>
+    </details>
+  </div>
+
+  <!-- ====== ZONE: Content Grid ====== -->
+  <div class="zone">
+    <div class="zone-label">📦 内容网格 content-grid</div>
+
+    <!-- Row 1: 三张图表 -->
+    <div class="card-grid cols3" style="margin-bottom:10px;">
+      <div class="mock-card"><span class="badge card-badge">A1-31</span><h4>🗺 市场热度板块</h4><div class="mock-chart tall" style="min-height:80px;">ECharts 热力图</div></div>
+      <div class="mock-card"><span class="badge card-badge">A1-32</span><h4>🔥 资金流向热力图</h4><div class="mock-chart tall" style="min-height:80px;">ECharts 热力图</div></div>
+      <div class="mock-card"><span class="badge card-badge">A1-33</span><h4>🎯 行业轮动雷达</h4><div class="mock-chart tall" style="min-height:80px;">ECharts 雷达图</div></div>
+    </div>
+
+    <!-- Row 2: 压力测试 + 龙虎榜 + 大宗交易 -->
+    <div class="card-grid cols3" style="margin-bottom:10px;">
+      <div class="mock-card">
+        <span class="badge card-badge">A1-34</span>
+        <h4>⚡ 一键压力测试</h4>
+        <div class="mock-btn" style="margin:6px 0;"><span class="badge btn-badge">A1-35</span> 立即执行压力测试</div>
+        <div class="card-grid cols3">
+          <div class="mock-stat"><span class="badge stat-badge">A1-36</span><div class="value">-12.5%</div><div class="label">最大回撤</div></div>
+          <div class="mock-stat"><span class="badge stat-badge">A1-37</span><div class="value">-8.2%</div><div class="label">VaR(95%)</div></div>
+          <div class="mock-stat"><span class="badge stat-badge">A1-38</span><div class="value">34%</div><div class="label">集中度风险</div></div>
+        </div>
+      </div>
+      <div class="mock-card">
+        <span class="badge card-badge">A1-39</span><h4>🐉 龙虎榜</h4>
+        <div style="font-size:10px;color:#636e72;">ArtDecoLongHuBang 组件</div>
+        <div class="mock-list-item">000001 平安银行  买入 +5,320万</div>
+        <div class="mock-list-item">600519 贵州茅台  卖出 -2,100万</div>
+      </div>
+      <div class="mock-card">
+        <span class="badge card-badge">A1-40</span><h4>📦 大宗交易</h4>
+        <div style="font-size:10px;color:#636e72;">ArtDecoBlockTrading 组件</div>
+        <div class="mock-list-item">000858 五粮液  折价-3.2%  1.2亿</div>
+        <div class="mock-list-item">601318 中国平安  溢价+1.1%  8,500万</div>
+      </div>
+    </div>
+
+    <!-- Row 3: 资金流向排名 + 股票池 + 快速导航 -->
+    <div class="card-grid cols3" style="margin-bottom:10px;">
+      <div class="mock-card">
+        <span class="badge card-badge">A1-41</span>
+        <h4>📋 资金流向持续排名</h4>
+        <div class="mock-tabs" style="margin-bottom:6px;">
+          <span class="mock-tab"><span class="badge tab-badge">A1-42</span> 板块</span>
+          <span class="mock-tab">个股</span>
+          <span class="mock-tab">ETF</span>
+        </div>
+        <span class="badge list-badge">A1-43</span>
+        <div class="mock-list-item">证券      +2.92亿  +3.2%</div>
+        <div class="mock-list-item">小金属    +1.85亿  +2.1%</div>
+        <div class="mock-list-item">能源金属  +1.56亿  +3.5%</div>
+        <div class="mock-list-item">银行      -0.89亿  -0.7%</div>
+      </div>
+      <div class="mock-card">
+        <span class="badge card-badge">A1-44</span>
+        <h4>⭐ 我的股票池表现</h4>
+        <div class="mock-tabs" style="margin-bottom:6px;">
+          <span class="mock-tab"><span class="badge tab-badge">A1-45</span> 今日</span>
+          <span class="mock-tab">本周</span>
+          <span class="mock-tab">本月</span>
+        </div>
+        <span class="badge list-badge">A1-46</span>
+        <div class="mock-list-item">贵州茅台  1188.8  -1.5%</div>
+        <div class="mock-list-item">平安银行  10.69   +1.4%</div>
+        <div class="mock-list-item">五粮液    71.72   -2.8%</div>
+        <div class="mock-list-item">招商银行  37.55   -0.5%</div>
+      </div>
+      <div class="mock-card">
+        <span class="badge card-badge">A1-47</span>
+        <h4>🔗 快速导航</h4>
+        <div class="mock-nav">
+          <span class="badge link-badge">A1-48</span>
+          <div class="mock-nav-item"><div class="icon">📈</div><div class="label">市场行情</div><div class="desc">实时报价与技术分析</div></div>
+          <div class="mock-nav-item"><div class="icon">📋</div><div class="label">自选管理</div><div class="desc">自选股与投资组合</div></div>
+          <div class="mock-nav-item"><div class="icon">🔍</div><div class="label">数据分析</div><div class="desc">深度数据分析工具</div></div>
+          <div class="mock-nav-item"><div class="icon">💼</div><div class="label">交易管理</div><div class="desc">信号到订单的闭环</div></div>
+          <div class="mock-nav-item"><div class="icon">🎯</div><div class="label">策略中心</div><div class="desc">量化策略开发平台</div></div>
+          <div class="mock-nav-item"><div class="icon">⚠️</div><div class="label">风险监控</div><div class="desc">实时风险评估系统</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<!-- ====== Legend ====== -->
+<div class="legend">
+  <div><span class="dot" style="background:#3742fa;"></span> Header/Status</div>
+  <div><span class="dot" style="background:#2ed573;"></span> Stat</div>
+  <div><span class="dot" style="background:#ffa502;"></span> Chart</div>
+  <div><span class="dot" style="background:#1e90ff;"></span> Card</div>
+  <div><span class="dot" style="background:#a55eea;"></span> Button</div>
+  <div><span class="dot" style="background:#747d8c;"></span> Collapse</div>
+  <div><span class="dot" style="background:#ff6348;"></span> Gauge</div>
+  <div><span class="dot" style="background:#7bed9f;"></span> Label</div>
+  <div><span class="dot" style="background:#eccc68;"></span> Tab</div>
+  <div><span class="dot" style="background:#5352ed;"></span> List</div>
+  <div><span class="dot" style="background:#70a1ff;"></span> Link</div>
+</div>
+
+</body>
+</html>
