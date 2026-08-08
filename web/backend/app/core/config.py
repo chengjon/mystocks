@@ -6,7 +6,6 @@ from typing import List
 from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-
 logger = logging.getLogger(__name__)
 
 # 环境变量文件配置
@@ -212,6 +211,12 @@ class Settings(BaseSettings):
     wencai_retry_count: int = 3
     wencai_default_pages: int = 1
     wencai_auto_refresh: bool = True
+
+    # OpenStock 数据网关配置 (单一外部数据源)
+    # 所有 A 股市场/基本面/财务/公告/资金流/板块/龙虎榜/跨市场数据通过此网关获取
+    # 详见 openspec/changes/migrate-data-sources-to-openstock/proposal.md
+    openstock_base_url: str = Field(default="", validation_alias="OPENSTOCK_BASE_URL")
+    openstock_api_key: str = Field(default="", validation_alias="OPENSTOCK_API_KEY")
 
     model_config = SettingsConfigDict(
         env_file=_ENV_FILE_PATH,

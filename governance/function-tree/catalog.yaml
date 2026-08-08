@@ -724,8 +724,12 @@ domains:
           - "openspec/AGENTS.md"
           - ".github/pull_request_template.md"
           - "docs/reports/quality/security-testing-predeployment-checkout-fix-2026-06-13.md"
+          - "docs/reports/openstock-coverage-gaps.md"
           - "docs/guides/governance/FEATURE_MANAGEMENT_WORKFLOW.md"
           - "docs/guides/ai-tools/AI_QUICK_START.md"
+          - "src/services/openstock/**"
+          - "web/backend/app/core/config.py"
+          - ".env.example"
         entrypoints:
           governance:
             - "governance/mainline/**"
@@ -736,15 +740,21 @@ domains:
             - "openspec/specs/**"
             - "openspec/AGENTS.md"
             - ".github/pull_request_template.md"
+            - "docs/reports/openstock-coverage-gaps.md"
             - "docs/guides/governance/FEATURE_MANAGEMENT_WORKFLOW.md"
             - "docs/guides/ai-tools/AI_QUICK_START.md"
+          core:
+            - "src/services/openstock/**"
+            - "web/backend/app/core/config.py"
           tests:
             - "tests/unit/governance/**"
             - "tests/unit/scripts/test_unified_response_contract_guard.py"
+            - "tests/unit/services/openstock/**"
             - "tests/fixtures/governance/**"
           operations:
             - ".github/workflows/security-testing.yml"
             - "scripts/compliance/**"
+            - ".env.example"
             - "docs/guides/multi-cli-tasks/MONGO_MULTICLI_COORDINATION_GUIDE.md"
       - id: "meta-governance-frontend-type-generation"
         label: "Frontend Type Generation Determinism"
