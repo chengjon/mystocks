@@ -334,3 +334,51 @@ docs/archive/reports/analysis-gates/
 !reports/analysis/
 reports/analysis/*
 !reports/analysis/tech-debt-baseline.json
+
+# Loop Engineering
+STATE.md
+
+# ========================================
+# CLI/Agent Tool Directories (per-tool working state, not project assets)
+# ========================================
+.agent/
+.codewhale/
+.codex/
+.design/
+.impeccable/
+.migration/
+.omo/
+
+# ========================================
+# Local Working State (loop / task tracking / handoff scratch)
+# ========================================
+TASK.md
+LOOP.md
+LOOP_SNAPSHOT.md
+STATE.full.md
+STATE.md
+loop-constraints.md
+
+# ========================================
+# .planning/ scratch (long-running planning artifacts, not source of truth)
+# Authoritative planning docs live under docs/ and openspec/
+# ========================================
+.planning/
+
+# ========================================
+# Page Element Analyzer outputs (tool output, not shipped assets)
+# Move to docs/references/ if needed for documentation
+# ========================================
+web/frontend/public/*_ELEMENT_MAP.html
+web/frontend/public/ELEMENT_MAPS.html
+
+# ========================================
+# External dependencies pulled locally
+# ========================================
+deps/
+
+# ========================================
+# Residual gitignore test markers (never track)
+# ========================================
+**/__gitignore_test__
+
