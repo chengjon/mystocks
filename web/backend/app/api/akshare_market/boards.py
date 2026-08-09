@@ -1,14 +1,31 @@
 """板块与行业路由 (Boards & Sectors)"""
 
+import asyncio
+
 from fastapi import APIRouter, Depends, Query
 
+from app.core.config import settings
 from app.core.responses import ErrorCodes, create_error_response, create_success_response
 from app.core.security import User, get_current_user
+from src.services.openstock import OpenStockClient, DataCategory
 
-from .base import akshare_market_adapter
+from .base import akshare_market_adapter  # OPENSTOCK_GAP: minute 板块数据
 
 
 router = APIRouter()
+
+# 模块级 client 单例(懒初始化)
+_client: OpenStockClient | None = None
+
+
+def _get_client() -> OpenStockClient:
+    global _client
+    if _client is None:
+        _client = OpenStockClient(
+            base_url=settings.openstock_base_url,
+            api_key=settings.openstock_api_key,
+        )
+    return _client
 
 
 @router.get("/board/concept/cons/{symbol}", summary="获取概念板块成分股")
@@ -16,14 +33,19 @@ async def get_concept_board_constituents(
     symbol: str,
     current_user: User = Depends(get_current_user),
 ):
-    """获取概念板块成分股 (akshare.stock_board_concept_cons_em)
+    """获取概念板块成分股 (OpenStock SECTOR_CONSTITUENTS)
 
     返回指定概念板块的成分股列表
     """
     try:
-        df = await akshare_market_adapter.get_stock_board_concept_cons_em(symbol)
+        result = await asyncio.to_thread(
+            _get_client().fetch,
+            DataCategory.SECTOR_CONSTITUENTS,
+            {"sector_type": "concept", "sector": symbol},
+        )
 
-        if df.empty:
+        data = result.get("data", [])
+        if not data:
             return create_error_response(
                 ErrorCodes.DATA_NOT_FOUND,
                 f"No concept board constituents found for symbol {symbol}",
@@ -31,11 +53,11 @@ async def get_concept_board_constituents(
 
         result = {
             "symbol": symbol,
-            "data": df.to_dict("records"),
-            "count": len(df),
-            "columns": list(df.columns),
-            "source": "akshare",
-            "provider": "em",
+            "data": data,
+            "count": len(data),
+            "columns": list(data[0].keys()) if data else [],
+            "source": "openstock",
+            "provider": "openstock_gateway",
             "board_type": "concept",
         }
 
@@ -55,14 +77,25 @@ async def get_concept_board_history(
     end_date: str = Query(None, description="结束日期", example="2024-01-05"),
     current_user: User = Depends(get_current_user),
 ):
-    """获取概念板块行情 (akshare.stock_board_concept_hist_em)
+    """获取概念板块行情 (OpenStock SECTOR_KLINES)
 
     返回指定概念板块的历史行情数据
     """
     try:
-        df = await akshare_market_adapter.get_stock_board_concept_hist_em(symbol, start_date, end_date)
+        params = {"sector_type": "concept", "sector": symbol, "period": "daily"}
+        if start_date:
+            params["start_date"] = start_date
+        if end_date:
+            params["end_date"] = end_date
 
-        if df.empty:
+        result = await asyncio.to_thread(
+            _get_client().fetch,
+            DataCategory.SECTOR_KLINES,
+            params,
+        )
+
+        data = result.get("data", [])
+        if not data:
             return create_error_response(
                 ErrorCodes.DATA_NOT_FOUND,
                 f"No concept board history data found for symbol {symbol}",
@@ -70,12 +103,12 @@ async def get_concept_board_history(
 
         result = {
             "symbol": symbol,
-            "data": df.to_dict("records"),
-            "count": len(df),
-            "columns": list(df.columns),
+            "data": data,
+            "count": len(data),
+            "columns": list(data[0].keys()) if data else [],
             "date_range": {"start": start_date, "end": end_date} if start_date and end_date else None,
-            "source": "akshare",
-            "provider": "em",
+            "source": "openstock",
+            "provider": "openstock_gateway",
             "board_type": "concept",
             "data_type": "daily",
         }
@@ -96,7 +129,8 @@ async def get_concept_board_minute(
 ):
     """获取概念板块历史行情-分钟 (akshare.stock_board_concept_hist_min_em)
 
-    返回指定概念板块的分钟行情数据
+    OPENSTOCK_GAP: 分钟级板块 SECTOR_KLINES 仅支持 daily/weekly/monthly, 分钟暂为盲区.
+    保留原 adapter 调用, 待 OpenStock 实现后迁移.
     """
     try:
         df = await akshare_market_adapter.get_stock_board_concept_hist_min_em(symbol)
@@ -132,14 +166,19 @@ async def get_industry_board_constituents(
     symbol: str,
     current_user: User = Depends(get_current_user),
 ):
-    """获取行业板块成分股 (akshare.stock_board_industry_cons_em)
+    """获取行业板块成分股 (OpenStock SECTOR_CONSTITUENTS)
 
     返回指定行业板块的成分股列表
     """
     try:
-        df = await akshare_market_adapter.get_stock_board_industry_cons_em(symbol)
+        result = await asyncio.to_thread(
+            _get_client().fetch,
+            DataCategory.SECTOR_CONSTITUENTS,
+            {"sector_type": "industry", "sector": symbol},
+        )
 
-        if df.empty:
+        data = result.get("data", [])
+        if not data:
             return create_error_response(
                 ErrorCodes.DATA_NOT_FOUND,
                 f"No industry board constituents found for symbol {symbol}",
@@ -147,11 +186,11 @@ async def get_industry_board_constituents(
 
         result = {
             "symbol": symbol,
-            "data": df.to_dict("records"),
-            "count": len(df),
-            "columns": list(df.columns),
-            "source": "akshare",
-            "provider": "em",
+            "data": data,
+            "count": len(data),
+            "columns": list(data[0].keys()) if data else [],
+            "source": "openstock",
+            "provider": "openstock_gateway",
             "board_type": "industry",
         }
 
@@ -171,14 +210,25 @@ async def get_industry_board_history(
     end_date: str = Query(None, description="结束日期", example="2024-01-05"),
     current_user: User = Depends(get_current_user),
 ):
-    """获取行业板块行情 (akshare.stock_board_industry_hist_em)
+    """获取行业板块行情 (OpenStock SECTOR_KLINES)
 
     返回指定行业板块的历史行情数据
     """
     try:
-        df = await akshare_market_adapter.get_stock_board_industry_hist_em(symbol, start_date, end_date)
+        params = {"sector_type": "industry", "sector": symbol, "period": "daily"}
+        if start_date:
+            params["start_date"] = start_date
+        if end_date:
+            params["end_date"] = end_date
 
-        if df.empty:
+        result = await asyncio.to_thread(
+            _get_client().fetch,
+            DataCategory.SECTOR_KLINES,
+            params,
+        )
+
+        data = result.get("data", [])
+        if not data:
             return create_error_response(
                 ErrorCodes.DATA_NOT_FOUND,
                 f"No industry board history data found for symbol {symbol}",
@@ -186,12 +236,12 @@ async def get_industry_board_history(
 
         result = {
             "symbol": symbol,
-            "data": df.to_dict("records"),
-            "count": len(df),
-            "columns": list(df.columns),
+            "data": data,
+            "count": len(data),
+            "columns": list(data[0].keys()) if data else [],
             "date_range": {"start": start_date, "end": end_date} if start_date and end_date else None,
-            "source": "akshare",
-            "provider": "em",
+            "source": "openstock",
+            "provider": "openstock_gateway",
             "board_type": "industry",
             "data_type": "daily",
         }
@@ -212,7 +262,8 @@ async def get_industry_board_minute(
 ):
     """获取行业板块历史行情-分钟 (akshare.stock_board_industry_hist_min_em)
 
-    返回指定行业板块的分钟行情数据
+    OPENSTOCK_GAP: 分钟级板块 SECTOR_KLINES 仅支持 daily/weekly/monthly, 分钟暂为盲区.
+    保留原 adapter 调用, 待 OpenStock 实现后迁移.
     """
     try:
         df = await akshare_market_adapter.get_stock_board_industry_hist_min_em(symbol)
@@ -247,25 +298,30 @@ async def get_industry_board_minute(
 async def get_sector_hot_ranking(
     current_user: User = Depends(get_current_user),
 ):
-    """获取热门行业排行 (akshare.stock_sector_spot_em)
+    """获取热门行业排行 (OpenStock SECTOR_QUOTES)
 
     返回全市场热门行业的排行数据
     """
     try:
-        df = await akshare_market_adapter.get_stock_sector_spot_em()
+        result = await asyncio.to_thread(
+            _get_client().fetch,
+            DataCategory.SECTOR_QUOTES,
+            {"sector_type": "industry"},
+        )
 
-        if df.empty:
+        data = result.get("data", [])
+        if not data:
             return create_error_response(
                 ErrorCodes.DATA_NOT_FOUND,
                 "No sector hot ranking data found",
             )
 
         result = {
-            "data": df.to_dict("records"),
-            "count": len(df),
-            "columns": list(df.columns),
-            "source": "akshare",
-            "provider": "em",
+            "data": data,
+            "count": len(data),
+            "columns": list(data[0].keys()) if data else [],
+            "source": "openstock",
+            "provider": "openstock_gateway",
             "ranking_type": "hot_sector",
         }
 
@@ -282,25 +338,30 @@ async def get_sector_hot_ranking(
 async def get_sector_fund_flow_ranking(
     current_user: User = Depends(get_current_user),
 ):
-    """获取行业资金流向 (akshare.stock_sector_fund_flow_rank_em)
+    """获取行业资金流向 (OpenStock SECTOR_FUND_FLOW)
 
     返回全市场行业资金流向排行数据
     """
     try:
-        df = await akshare_market_adapter.get_stock_sector_fund_flow_rank_em()
+        result = await asyncio.to_thread(
+            _get_client().fetch,
+            DataCategory.SECTOR_FUND_FLOW,
+            {"sector_type": "industry"},
+        )
 
-        if df.empty:
+        data = result.get("data", [])
+        if not data:
             return create_error_response(
                 ErrorCodes.DATA_NOT_FOUND,
                 "No sector fund flow ranking data found",
             )
 
         result = {
-            "data": df.to_dict("records"),
-            "count": len(df),
-            "columns": list(df.columns),
-            "source": "akshare",
-            "provider": "em",
+            "data": data,
+            "count": len(data),
+            "columns": list(data[0].keys()) if data else [],
+            "source": "openstock",
+            "provider": "openstock_gateway",
             "ranking_type": "fund_flow",
         }
 
