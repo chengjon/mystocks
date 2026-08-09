@@ -9,8 +9,6 @@ from app.core.responses import ErrorCodes, create_error_response, create_success
 from app.core.security import User, get_current_user
 from src.services.openstock import OpenStockClient, DataCategory
 
-from .base import akshare_market_adapter  # OPENSTOCK_GAP: minute 板块数据
-
 
 router = APIRouter()
 
@@ -127,15 +125,19 @@ async def get_concept_board_minute(
     symbol: str,
     current_user: User = Depends(get_current_user),
 ):
-    """获取概念板块历史行情-分钟 (akshare.stock_board_concept_hist_min_em)
+    """获取概念板块分钟行情 (OpenStock SECTOR_KLINES period=minute)
 
-    OPENSTOCK_GAP: 分钟级板块 SECTOR_KLINES 仅支持 daily/weekly/monthly, 分钟暂为盲区.
-    保留原 adapter 调用, 待 OpenStock 实现后迁移.
+    返回指定概念板块的分钟级行情数据。
     """
     try:
-        df = await akshare_market_adapter.get_stock_board_concept_hist_min_em(symbol)
+        result = await asyncio.to_thread(
+            _get_client().fetch,
+            DataCategory.SECTOR_KLINES,
+            {"sector_type": "concept", "sector": symbol, "period": "minute"},
+        )
 
-        if df.empty:
+        data = result.get("data", [])
+        if not data:
             return create_error_response(
                 ErrorCodes.DATA_NOT_FOUND,
                 f"No concept board minute data found for symbol {symbol}",
@@ -143,11 +145,11 @@ async def get_concept_board_minute(
 
         result = {
             "symbol": symbol,
-            "data": df.to_dict("records"),
-            "count": len(df),
-            "columns": list(df.columns),
-            "source": "akshare",
-            "provider": "em",
+            "data": data,
+            "count": len(data),
+            "columns": list(data[0].keys()) if data else [],
+            "source": "openstock",
+            "provider": "openstock_gateway",
             "board_type": "concept",
             "data_type": "minute",
         }
@@ -260,15 +262,19 @@ async def get_industry_board_minute(
     symbol: str,
     current_user: User = Depends(get_current_user),
 ):
-    """获取行业板块历史行情-分钟 (akshare.stock_board_industry_hist_min_em)
+    """获取行业板块分钟行情 (OpenStock SECTOR_KLINES period=minute)
 
-    OPENSTOCK_GAP: 分钟级板块 SECTOR_KLINES 仅支持 daily/weekly/monthly, 分钟暂为盲区.
-    保留原 adapter 调用, 待 OpenStock 实现后迁移.
+    返回指定行业板块的分钟级行情数据。
     """
     try:
-        df = await akshare_market_adapter.get_stock_board_industry_hist_min_em(symbol)
+        result = await asyncio.to_thread(
+            _get_client().fetch,
+            DataCategory.SECTOR_KLINES,
+            {"sector_type": "industry", "sector": symbol, "period": "minute"},
+        )
 
-        if df.empty:
+        data = result.get("data", [])
+        if not data:
             return create_error_response(
                 ErrorCodes.DATA_NOT_FOUND,
                 f"No industry board minute data found for symbol {symbol}",
@@ -276,11 +282,11 @@ async def get_industry_board_minute(
 
         result = {
             "symbol": symbol,
-            "data": df.to_dict("records"),
-            "count": len(df),
-            "columns": list(df.columns),
-            "source": "akshare",
-            "provider": "em",
+            "data": data,
+            "count": len(data),
+            "columns": list(data[0].keys()) if data else [],
+            "source": "openstock",
+            "provider": "openstock_gateway",
             "board_type": "industry",
             "data_type": "minute",
         }

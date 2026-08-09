@@ -9,7 +9,7 @@ from app.core.responses import ErrorCodes, create_error_response, create_success
 from app.core.security import User, get_current_user
 from src.services.openstock import OpenStockClient, DataCategory
 
-from .base import akshare_market_adapter  # OPENSTOCK_GAP: chip/ths/technical/account-stats
+from .base import akshare_market_adapter  # OPENSTOCK_GAP: technical/indicators (永久 GAP)
 
 
 router = APIRouter()
@@ -33,15 +33,19 @@ async def get_chip_distribution(
     symbol: str,
     current_user: User = Depends(get_current_user),
 ):
-    """获取筹码分布数据 (akshare.stock_cyq_em)
+    """获取筹码分布数据 (OpenStock CHIP_DISTRIBUTION)
 
-    OPENSTOCK_GAP: 筹码分布为 akshare 特有数据, OpenStock 无对应 category.
-    保留原 adapter 调用, 待 OpenStock 实现后迁移.
+    返回指定股票的筹码分布（成本分布）数据。
     """
     try:
-        df = await akshare_market_adapter.get_stock_cyq_em(symbol)
+        result = await asyncio.to_thread(
+            _get_client().fetch,
+            DataCategory.CHIP_DISTRIBUTION,
+            {"symbol": symbol},
+        )
 
-        if df.empty:
+        data = result.get("data", [])
+        if not data:
             return create_error_response(
                 ErrorCodes.DATA_NOT_FOUND,
                 f"No chip distribution data found for symbol {symbol}",
@@ -49,11 +53,11 @@ async def get_chip_distribution(
 
         result = {
             "symbol": symbol,
-            "data": df.to_dict("records"),
-            "count": len(df),
-            "columns": list(df.columns),
-            "source": "akshare",
-            "provider": "em",
+            "data": data,
+            "count": len(data),
+            "columns": list(data[0].keys()) if data else [],
+            "source": "openstock",
+            "provider": "openstock_gateway",
         }
 
         return create_success_response(result)
@@ -117,15 +121,19 @@ async def get_profit_forecast_ths(
     symbol: str,
     current_user: User = Depends(get_current_user),
 ):
-    """获取盈利预测-同花顺 (akshare.stock_profit_forecast_ths)
+    """获取盈利预测-同花顺 (OpenStock PROFIT_FORECAST_THS)
 
-    OPENSTOCK_GAP: 同花顺平台专属盈利预测, OpenStock 无对应 category.
-    保留原 adapter 调用, 待 OpenStock 实现后迁移.
+    返回同花顺平台的个股盈利预测数据。
     """
     try:
-        df = await akshare_market_adapter.get_stock_profit_forecast_ths(symbol)
+        result = await asyncio.to_thread(
+            _get_client().fetch,
+            DataCategory.PROFIT_FORECAST_THS,
+            {"symbol": symbol},
+        )
 
-        if df.empty:
+        data = result.get("data", [])
+        if not data:
             return create_error_response(
                 ErrorCodes.DATA_NOT_FOUND,
                 f"No profit forecast data found for stock {symbol} from THS",
@@ -133,11 +141,11 @@ async def get_profit_forecast_ths(
 
         result = {
             "symbol": symbol,
-            "data": df.to_dict("records"),
-            "count": len(df),
-            "columns": list(df.columns),
-            "source": "akshare",
-            "provider": "ths",
+            "data": data,
+            "count": len(data),
+            "columns": list(data[0].keys()) if data else [],
+            "source": "openstock",
+            "provider": "openstock_gateway",
             "forecast_type": "profit",
         }
 
@@ -193,27 +201,31 @@ async def get_account_statistics_em(
     date: str = Query(..., description="查询月份", example="2024-01"),
     current_user: User = Depends(get_current_user),
 ):
-    """获取股票账户统计月度 (akshare.stock_account_statistics_em)
+    """获取股票账户统计月度 (OpenStock ACCOUNT_STATISTICS)
 
-    OPENSTOCK_GAP: 账户统计为 akshare 特有数据, OpenStock 无对应 category.
-    保留原 adapter 调用, 待 OpenStock 实现后迁移.
+    返回按月份过滤的股票账户统计数据。
     """
     try:
-        df = await akshare_market_adapter.get_stock_account_statistics_em(date)
+        result = await asyncio.to_thread(
+            _get_client().fetch,
+            DataCategory.ACCOUNT_STATISTICS,
+            {"month": date},
+        )
 
-        if df.empty:
+        data = result.get("data", [])
+        if not data:
             return create_error_response(
                 ErrorCodes.DATA_NOT_FOUND,
                 f"No account statistics data found for month {date}",
             )
 
         result = {
-            "data": df.to_dict("records"),
-            "count": len(df),
-            "columns": list(df.columns),
+            "data": data,
+            "count": len(data),
+            "columns": list(data[0].keys()) if data else [],
             "query_month": date,
-            "source": "akshare",
-            "provider": "em",
+            "source": "openstock",
+            "provider": "openstock_gateway",
             "statistics_type": "account",
         }
 

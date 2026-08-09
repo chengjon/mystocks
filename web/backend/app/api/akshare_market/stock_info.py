@@ -9,8 +9,6 @@ from app.core.responses import ErrorCodes, create_error_response, create_success
 from app.core.security import User, get_current_user
 from src.services.openstock import OpenStockClient, DataCategory
 
-from .base import akshare_market_adapter  # OPENSTOCK_GAP: xq/ths/rating
-
 
 router = APIRouter()
 
@@ -74,25 +72,31 @@ async def get_stock_individual_info_xq(
     symbol: str = Query(..., description="股票代码", example="SZ000001"),
     current_user: User = Depends(get_current_user),
 ):
-    """获取个股信息查询-雪球 (akshare.stock_individual_basic_info_xq)
+    """获取个股信息查询-雪球 (OpenStock STOCK_INFO_XQ)
 
-    OPENSTOCK_GAP: 雪球平台专属数据源, OpenStock 无对应 category.
-    保留原 adapter 调用, 待 OpenStock 实现后迁移.
+    返回雪球平台的个股基本信息。
     """
     try:
-        info_dict = await akshare_market_adapter.get_stock_individual_basic_info_xq(symbol)
+        result = await asyncio.to_thread(
+            _get_client().fetch,
+            DataCategory.STOCK_INFO_XQ,
+            {"symbol": symbol},
+        )
 
-        if "error" in info_dict:
+        data = result.get("data", [])
+        if not data:
             return create_error_response(
                 ErrorCodes.DATA_NOT_FOUND,
-                f"No individual info found for stock {symbol}: {info_dict.get('error')}",
+                f"No individual info found for stock {symbol}",
             )
 
         result = {
             "symbol": symbol,
-            "data": info_dict,
-            "source": "akshare",
-            "provider": "xq",
+            "data": data,
+            "count": len(data),
+            "columns": list(data[0].keys()) if data else [],
+            "source": "openstock",
+            "provider": "openstock_gateway",
         }
 
         return create_success_response(result)
@@ -109,25 +113,31 @@ async def get_stock_business_intro_ths(
     symbol: str = Query(..., description="股票代码", example="000001"),
     current_user: User = Depends(get_current_user),
 ):
-    """获取主营介绍-同花顺 (akshare.stock_zyjs_ths)
+    """获取主营介绍-同花顺 (OpenStock BUSINESS_INTRO_THS)
 
-    OPENSTOCK_GAP: 同花顺平台专属数据源, OpenStock 无对应 category.
-    保留原 adapter 调用, 待 OpenStock 实现后迁移.
+    返回同花顺平台的主营业务介绍数据。
     """
     try:
-        info_dict = await akshare_market_adapter.get_stock_zyjs_ths(symbol)
+        result = await asyncio.to_thread(
+            _get_client().fetch,
+            DataCategory.BUSINESS_INTRO_THS,
+            {"symbol": symbol},
+        )
 
-        if "error" in info_dict:
+        data = result.get("data", [])
+        if not data:
             return create_error_response(
                 ErrorCodes.DATA_NOT_FOUND,
-                f"No business intro found for stock {symbol}: {info_dict.get('error')}",
+                f"No business intro found for stock {symbol}",
             )
 
         result = {
             "symbol": symbol,
-            "data": info_dict,
-            "source": "akshare",
-            "provider": "ths",
+            "data": data,
+            "count": len(data),
+            "columns": list(data[0].keys()) if data else [],
+            "source": "openstock",
+            "provider": "openstock_gateway",
         }
 
         return create_success_response(result)
@@ -185,15 +195,19 @@ async def get_stock_comment_em(
     symbol: str = Query(..., description="股票代码", example="000001"),
     current_user: User = Depends(get_current_user),
 ):
-    """获取千股千评 (akshare.stock_comment_em)
+    """获取千股千评 (OpenStock STOCK_COMMENT)
 
-    OPENSTOCK_GAP: OpenStock STOCK_RATING(eltdx) 返回空; 东财千股千评为独立数据源.
-    保留原 adapter 调用, 待 OpenStock 实现后迁移.
+    返回东财平台的个股千股千评数据，按 symbol 服务端过滤。
     """
     try:
-        df = await akshare_market_adapter.get_stock_comment_em(symbol)
+        result = await asyncio.to_thread(
+            _get_client().fetch,
+            DataCategory.STOCK_COMMENT,
+            {"symbol": symbol},
+        )
 
-        if df.empty:
+        data = result.get("data", [])
+        if not data:
             return create_error_response(
                 ErrorCodes.DATA_NOT_FOUND,
                 f"No comment data found for stock {symbol}",
@@ -201,11 +215,11 @@ async def get_stock_comment_em(
 
         result = {
             "symbol": symbol,
-            "data": df.to_dict("records"),
-            "count": len(df),
-            "columns": list(df.columns),
-            "source": "akshare",
-            "provider": "em",
+            "data": data,
+            "count": len(data),
+            "columns": list(data[0].keys()) if data else [],
+            "source": "openstock",
+            "provider": "openstock_gateway",
         }
 
         return create_success_response(result)
@@ -222,15 +236,19 @@ async def get_stock_comment_detail_em(
     symbol: str = Query(..., description="股票代码", example="000001"),
     current_user: User = Depends(get_current_user),
 ):
-    """获取千股千评详情-机构评级 (akshare.stock_comment_detail_zlkp_jgcyd_em)
+    """获取千股千评详情-机构评级 (OpenStock STOCK_COMMENT_DETAIL)
 
-    OPENSTOCK_GAP: OpenStock STOCK_RATING(eltdx) 返回空; 东财机构评级为独立数据源.
-    保留原 adapter 调用, 待 OpenStock 实现后迁移.
+    返回东财平台的个股机构评级详情数据。
     """
     try:
-        df = await akshare_market_adapter.get_stock_comment_detail_zlkp_jgcyd_em(symbol)
+        result = await asyncio.to_thread(
+            _get_client().fetch,
+            DataCategory.STOCK_COMMENT_DETAIL,
+            {"symbol": symbol},
+        )
 
-        if df.empty:
+        data = result.get("data", [])
+        if not data:
             return create_error_response(
                 ErrorCodes.DATA_NOT_FOUND,
                 f"No comment detail data found for stock {symbol}",
@@ -238,11 +256,11 @@ async def get_stock_comment_detail_em(
 
         result = {
             "symbol": symbol,
-            "data": df.to_dict("records"),
-            "count": len(df),
-            "columns": list(df.columns),
-            "source": "akshare",
-            "provider": "em",
+            "data": data,
+            "count": len(data),
+            "columns": list(data[0].keys()) if data else [],
+            "source": "openstock",
+            "provider": "openstock_gateway",
         }
 
         return create_success_response(result)

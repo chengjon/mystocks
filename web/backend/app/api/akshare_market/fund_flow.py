@@ -8,8 +8,6 @@ from app.core.config import settings
 from app.core.responses import ErrorCodes, create_error_response, create_success_response
 from src.services.openstock import OpenStockClient, DataCategory
 
-from .base import akshare_market_adapter  # OPENSTOCK_GAP: hsgt-detail / 南向 / big-deal
-
 
 router = APIRouter()
 
@@ -71,26 +69,33 @@ async def get_hsgt_fund_flow_detail(
     start_date: str = Query(..., description="开始日期", example="2024-01-01"),
     end_date: str = Query(..., description="结束日期", example="2024-01-05"),
 ):
-    """获取沪深港通资金流向明细 (akshare.stock_hsgt_fund_flow_detail_em)
+    """获取沪深港通资金流向明细 (OpenStock HSGT_DETAIL)
 
-    OPENSTOCK_GAP: OpenStock NORTHBOUND_FLOW 仅提供当日汇总, 无明细分类. 保留原 adapter 调用.
+    返回沪深港通每日个股资金流向明细数据。
+    OPENSTOCK_NOTE: OpenStock HSGT_DETAIL 基于 stock_hsgt_stock_statistics_em,
+    与原 stock_hsgt_fund_flow_detail_em 数据源不同, 提供个股级明细而非汇总分类.
     """
     try:
-        df = await akshare_market_adapter.get_stock_hsgt_fund_flow_detail_em(start_date, end_date)
+        result = await asyncio.to_thread(
+            _get_client().fetch,
+            DataCategory.HSGT_DETAIL,
+            {"symbol": "北向持股", "start_date": start_date, "end_date": end_date},
+        )
 
-        if df.empty:
+        data = result.get("data", [])
+        if not data:
             return create_error_response(
                 ErrorCodes.DATA_NOT_FOUND,
                 f"No HSGT fund flow detail data found for date range {start_date} to {end_date}",
             )
 
         result = {
-            "data": df.to_dict("records"),
-            "count": len(df),
-            "columns": list(df.columns),
+            "data": data,
+            "count": len(data),
+            "columns": list(data[0].keys()) if data else [],
             "date_range": {"start": start_date, "end": end_date},
-            "source": "akshare",
-            "provider": "em",
+            "source": "openstock",
+            "provider": "openstock_gateway",
         }
 
         return create_success_response(result)
@@ -144,27 +149,33 @@ async def get_south_fund_daily(
     start_date: str = Query(..., description="开始日期", example="2024-01-01"),
     end_date: str = Query(..., description="结束日期", example="2024-01-05"),
 ):
-    """获取南向资金每日统计 (akshare.stock_hsgt_south_net_flow_in_em)
+    """获取南向资金每日统计 (OpenStock SOUTHBOUND_FLOW)
 
-    OPENSTOCK_GAP: OpenStock NORTHBOUND_FLOW 仅覆盖沪股通/深股通, 无南向(港股通)数据. 保留原 adapter 调用.
+    返回南向（港股通）资金的每日流向统计数据。
+    OPENSTOCK_NOTE: OpenStock SOUTHBOUND_FLOW 返回当日汇总, 不按日期过滤; start_date/end_date 透传但暂不生效.
     """
     try:
-        df = await akshare_market_adapter.get_stock_hsgt_south_net_flow_in_em(start_date, end_date)
+        result = await asyncio.to_thread(
+            _get_client().fetch,
+            DataCategory.SOUTHBOUND_FLOW,
+            {"start_date": start_date, "end_date": end_date},
+        )
 
-        if df.empty:
+        data = result.get("data", [])
+        if not data:
             return create_error_response(
                 ErrorCodes.DATA_NOT_FOUND,
                 f"No south fund daily data found for date range {start_date} to {end_date}",
             )
 
         result = {
-            "data": df.to_dict("records"),
-            "count": len(df),
-            "columns": list(df.columns),
+            "data": data,
+            "count": len(data),
+            "columns": list(data[0].keys()) if data else [],
             "date_range": {"start": start_date, "end": end_date},
             "fund_direction": "south",
-            "source": "akshare",
-            "provider": "em",
+            "source": "openstock",
+            "provider": "openstock_gateway",
         }
 
         return create_success_response(result)
@@ -218,14 +229,21 @@ async def get_north_fund_stock(
 async def get_south_fund_stock(
     symbol: str,
 ):
-    """获取南向资金个股统计 (akshare.stock_hsgt_south_acc_flow_in_em)
+    """获取南向资金个股统计 (OpenStock SOUTHBOUND_HOLDING)
 
-    OPENSTOCK_GAP: OpenStock NORTHBOUND_HOLDING 仅覆盖北向持股, 无南向个股数据. 保留原 adapter 调用.
+    返回指定港股（南向）的持股统计信息。
+    OPENSTOCK_NOTE: OpenStock SOUTHBOUND_HOLDING 基于 stock_hsgt_individual_em,
+    传港股代码(如 '00700')返回南向持股.
     """
     try:
-        df = await akshare_market_adapter.get_stock_hsgt_south_acc_flow_in_em(symbol)
+        result = await asyncio.to_thread(
+            _get_client().fetch,
+            DataCategory.SOUTHBOUND_HOLDING,
+            {"symbol": symbol},
+        )
 
-        if df.empty:
+        data = result.get("data", [])
+        if not data:
             return create_error_response(
                 ErrorCodes.DATA_NOT_FOUND,
                 f"No south fund stock data found for symbol {symbol}",
@@ -233,12 +251,12 @@ async def get_south_fund_stock(
 
         result = {
             "symbol": symbol,
-            "data": df.to_dict("records"),
-            "count": len(df),
-            "columns": list(df.columns),
+            "data": data,
+            "count": len(data),
+            "columns": list(data[0].keys()) if data else [],
             "fund_direction": "south",
-            "source": "akshare",
-            "provider": "em",
+            "source": "openstock",
+            "provider": "openstock_gateway",
         }
 
         return create_success_response(result)
@@ -289,22 +307,27 @@ async def get_hsgt_holdings(
 
 @router.get("/fund-flow/big-deal", summary="获取资金流向大单统计")
 async def get_fund_flow_big_deal():
-    """获取资金流向大单统计 (akshare.stock_fund_flow_big_deal)
+    """获取资金流向大单统计 (OpenStock BIG_DEAL_FUND_FLOW)
 
-    OPENSTOCK_GAP: OpenStock FUND_FLOW 需按单只 symbol 拉取, 无全市场大单统计. 保留原 adapter 调用.
+    返回全市场的大单资金流向统计数据。
     """
     try:
-        df = await akshare_market_adapter.get_stock_fund_flow_big_deal()
+        result = await asyncio.to_thread(
+            _get_client().fetch,
+            DataCategory.BIG_DEAL_FUND_FLOW,
+            {},
+        )
 
-        if df.empty:
+        data = result.get("data", [])
+        if not data:
             return create_error_response(ErrorCodes.DATA_NOT_FOUND, "No fund flow big deal data found")
 
         result = {
-            "data": df.to_dict("records"),
-            "count": len(df),
-            "columns": list(df.columns),
-            "source": "akshare",
-            "provider": "em",
+            "data": data,
+            "count": len(data),
+            "columns": list(data[0].keys()) if data else [],
+            "source": "openstock",
+            "provider": "openstock_gateway",
         }
 
         return create_success_response(result)
