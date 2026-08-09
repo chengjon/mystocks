@@ -18,6 +18,7 @@ async def get_szse_market_overview(
     date: str = Query(..., description="查询日期", example="2024-01-15"),
     current_user: User = Depends(get_current_user),
 ):
+    """OPENSTOCK_GAP: 交易所级市场总貌, OpenStock 无 SZSE 专属对应 category."""
     try:
         df = await akshare_market_adapter.get_market_overview_szse(date)
         if df.empty:
@@ -40,6 +41,7 @@ async def get_szse_area_trading(
     date: str = Query(..., description="查询日期", example="2024-01-15"),
     current_user: User = Depends(get_current_user),
 ):
+    """OPENSTOCK_GAP: 深交所地区交易排序, OpenStock 无对应 category."""
     try:
         df = await akshare_market_adapter.get_szse_area_trading_summary(date)
         if df.empty:
@@ -63,6 +65,7 @@ async def get_szse_sector_trading(
     date: str = Query(..., description="查询日期", example="2024-01-15"),
     current_user: User = Depends(get_current_user),
 ):
+    """OPENSTOCK_GAP: 深交所行业成交统计, OpenStock 无对应 category."""
     try:
         df = await akshare_market_adapter.get_market_szse_sector_trading(symbol, date)
         if df.empty:

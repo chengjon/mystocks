@@ -15,6 +15,7 @@ router = APIRouter()
 
 @router.get("/sse/overview", summary="获取上海证券交易所市场总貌")
 async def get_sse_market_overview(current_user: User = Depends(get_current_user)):
+    """OPENSTOCK_GAP: 交易所级市场总貌, OpenStock MARKET_STAT 为全市场涨跌统计, 无 SSE 专属对应."""
     try:
         df = await akshare_market_adapter.get_market_overview_sse()
         if df.empty:
@@ -37,6 +38,7 @@ async def get_sse_daily_deal(
     date: str = Query(..., description="查询日期", example="2024-01-15"),
     current_user: User = Depends(get_current_user),
 ):
+    """OPENSTOCK_GAP: 交易所每日成交概况, OpenStock 无 SSE 专属对应 category."""
     try:
         df = await akshare_market_adapter.get_market_sse_daily_deal(date)
         if df.empty:

@@ -1,14 +1,31 @@
 """分析与预测路由 (Analysis & Forecast)"""
 
+import asyncio
+
 from fastapi import APIRouter, Depends, Query
 
+from app.core.config import settings
 from app.core.responses import ErrorCodes, create_error_response, create_success_response
 from app.core.security import User, get_current_user
+from src.services.openstock import OpenStockClient, DataCategory
 
-from .base import akshare_market_adapter
+from .base import akshare_market_adapter  # OPENSTOCK_GAP: chip/ths/technical/account-stats
 
 
 router = APIRouter()
+
+# 模块级 client 单例(懒初始化)
+_client: OpenStockClient | None = None
+
+
+def _get_client() -> OpenStockClient:
+    global _client
+    if _client is None:
+        _client = OpenStockClient(
+            base_url=settings.openstock_base_url,
+            api_key=settings.openstock_api_key,
+        )
+    return _client
 
 
 @router.get("/chip-distribution/{symbol}", summary="获取筹码分布数据")
@@ -18,7 +35,8 @@ async def get_chip_distribution(
 ):
     """获取筹码分布数据 (akshare.stock_cyq_em)
 
-    返回指定股票的筹码分布分析数据
+    OPENSTOCK_GAP: 筹码分布为 akshare 特有数据, OpenStock 无对应 category.
+    保留原 adapter 调用, 待 OpenStock 实现后迁移.
     """
     try:
         df = await akshare_market_adapter.get_stock_cyq_em(symbol)
@@ -57,26 +75,31 @@ async def get_profit_forecast_em(
     symbol: str,
     current_user: User = Depends(get_current_user),
 ):
-    """获取盈利预测-东方财富 (akshare.stock_profit_forecast_em)
+    """获取盈利预测 (OpenStock F10_DATA profit_forecast)
 
     返回指定股票的东方财富盈利预测数据
     """
     try:
-        df = await akshare_market_adapter.get_stock_profit_forecast_em(symbol)
+        result = await asyncio.to_thread(
+            _get_client().fetch,
+            DataCategory.F10_DATA,
+            {"symbol": symbol, "f10_type": "profit_forecast"},
+        )
 
-        if df.empty:
+        data = result.get("data", [])
+        if not data:
             return create_error_response(
                 ErrorCodes.DATA_NOT_FOUND,
-                f"No profit forecast data found for stock {symbol} from EM",
+                f"No profit forecast data found for stock {symbol}",
             )
 
         result = {
             "symbol": symbol,
-            "data": df.to_dict("records"),
-            "count": len(df),
-            "columns": list(df.columns),
-            "source": "akshare",
-            "provider": "em",
+            "data": data,
+            "count": len(data),
+            "columns": list(data[0].keys()) if data else [],
+            "source": "openstock",
+            "provider": "openstock_gateway",
             "forecast_type": "profit",
         }
 
@@ -85,7 +108,7 @@ async def get_profit_forecast_em(
     except Exception as e:
         return create_error_response(
             ErrorCodes.INTERNAL_ERROR,
-            f"Failed to get profit forecast from EM for {symbol}: {e!s}",
+            f"Failed to get profit forecast for {symbol}: {e!s}",
         )
 
 
@@ -96,7 +119,8 @@ async def get_profit_forecast_ths(
 ):
     """获取盈利预测-同花顺 (akshare.stock_profit_forecast_ths)
 
-    返回指定股票的同花顺盈利预测数据
+    OPENSTOCK_GAP: 同花顺平台专属盈利预测, OpenStock 无对应 category.
+    保留原 adapter 调用, 待 OpenStock 实现后迁移.
     """
     try:
         df = await akshare_market_adapter.get_stock_profit_forecast_ths(symbol)
@@ -133,7 +157,8 @@ async def get_technical_indicators_em(
 ):
     """获取技术指标数据 (akshare.stock_technical_indicator_em)
 
-    返回指定股票的技术指标数据（均线、MACD、RSI、KDJ、布林带等）
+    OPENSTOCK_GAP: 技术指标(MA/MACD/RSI/KDJ/BOLL)为 akshare 特有计算, OpenStock 无对应 category.
+    保留原 adapter 调用, 待 OpenStock 实现后迁移.
     """
     try:
         df = await akshare_market_adapter.get_stock_technical_indicator_em(symbol)
@@ -170,7 +195,8 @@ async def get_account_statistics_em(
 ):
     """获取股票账户统计月度 (akshare.stock_account_statistics_em)
 
-    返回指定月份的股票账户统计数据
+    OPENSTOCK_GAP: 账户统计为 akshare 特有数据, OpenStock 无对应 category.
+    保留原 adapter 调用, 待 OpenStock 实现后迁移.
     """
     try:
         df = await akshare_market_adapter.get_stock_account_statistics_em(date)
