@@ -382,3 +382,7 @@ deps/
 # ========================================
 **/__gitignore_test__
 
+# Auto-generated session artifacts
+TASK-REPORT.md
+docs/worklogs/claude-auto/
+
