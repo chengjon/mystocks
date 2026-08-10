@@ -1,0 +1,94 @@
+version: "v0.2"
+
+task:
+  id: "pr-75"
+  title: "Exempt openspec archive lifecycle moves from deletion-evidence gate"
+  owner: "main"
+  created_at: "2026-07-07"
+
+mainline:
+  id: "L1-deletion-evidence-archive-move-exemption"
+  objective: "Allow `openspec archive` lifecycle moves to pass the deletion-evidence gate without per-move waiver entries, by detecting the standard moves and treating them as lifecycle moves rather than deletions."
+  milestone_id: "L2-governance-tooling"
+  slice_id: "L3-archive-move-exemption"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: ""
+  approval_status: "not_required"
+
+scope:
+  allowed_paths:
+    - "governance/mainline/task-cards/pr-75.yaml"
+    - "scripts/compliance/deletion_evidence_gate.py"
+  forbidden_paths:
+    - "src/**"
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "tests/**"
+    - "config/**"
+    - "openspec/changes/**"
+
+non_goals:
+  - "Do not weaken deletion-evidence enforcement for genuinely deleted directories."
+  - "Do not introduce per-path waiver entries; the exemption is structural, based on archive pattern matching."
+  - "Do not change the gate's CLI exit code contract or JSON report schema in a backward-incompatible way."
+  - "Do not modify OpenSpec tooling, deletion-evidence registry schema, or stop-hook configuration."
+
+acceptance:
+  checks:
+    - id: "openspec-archive-move-detection"
+      command: "python3 scripts/compliance/deletion_evidence_gate.py --root-dir . --format json --scope worktree reports errors=0 and openspec_archive_moves>=1 for the expand-akshare-data-sources archive"
+      required: true
+    - id: "gate-test-suite"
+      command: "pytest tests/unit/scripts/test_deletion_evidence_gate.py tests/unit/scripts/test_deletion_evidence_gate_integration.py tests/unit/scripts/test_deletion_waiver_audit_workflow.py -x -q --no-cov"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-75.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/main --head-sha HEAD --report /tmp/pr75-mainline-gate.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If `detect_openspec_archive_moves` matches too broadly, real deletions under openspec/changes/ could be misclassified as archive moves and silently pass the gate. Mitigation: matching requires the destination archive/<date>-<id>/ directory to actually exist on disk."
+    - "Adding new summary fields could break consumers that strictly parse the JSON report. Mitigation: only new keys are added; existing keys and the top-level structure are unchanged."
+    - "Future OpenSpec tooling changes to archive path layout would require updating the prefix constants. Mitigation: prefix constants are module-level and isolated."
+  rollback_plan: "git revert <merge-commit-sha> to restore the stricter pre-exemption behavior; the expand-akshare-data-sources archive can then be handled via individual deletion-evidence waivers if needed."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Allow standard `openspec archive` lifecycle moves to pass the deletion-evidence gate without per-move waiver entries."
+    modified_scope: "scripts/compliance/deletion_evidence_gate.py (additive: new detect_openspec_archive_moves helper, exemption filter in build_report, two new summary fields) and this pr-75 task card."
+    dependency_changes: "none"
+    legacy_logic_impact: "Genuinely deleted directories still error; only directories that match the standard archive move pattern AND have a corresponding archive/<date>-<id>/ destination are exempted."
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the merge if the exemption is found to over-match or if the JSON report additions break a downstream consumer."
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Pure governance-tooling change inside scripts/compliance; no business entrypoint, API, frontend, or data-source contract affected."
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "user"
+    approved_at: "2026-07-07T00:00:00+08:00"
+    approval_note: "User selected Option 1 (tool-level archive move exemption) after stop-hook blocked the expand-akshare-data-sources archive operation during the migrate-data-sources-to-openstock proposal execution."
+    secondary_approved: false
