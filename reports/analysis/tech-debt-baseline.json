@@ -1,0 +1,19 @@
+{
+  "generated_at": "2026-09-04T06:58:24.998926+00:00",
+  "project_root": "/home/runner/work/mystocks/mystocks",
+  "metric_version": "v1",
+  "frontend_type_errors": 4,
+  "type_check_exit_code": 2,
+  "type_check_command": "npm --prefix web/frontend run type-check",
+  "frontend_suppressions_count": 21,
+  "frontend_suppressions_files": 18,
+  "generated_suppressions_count": 3,
+  "skip_xfail_count": 237,
+  "skip_xfail_files": 68,
+  "backend_todo_count": 53,
+  "backend_todo_files": 40,
+  "backend_placeholder_count": 564,
+  "backend_placeholder_files": 114,
+  "test_placeholder_assert_count": 95,
+  "test_placeholder_assert_files": 16
+}
