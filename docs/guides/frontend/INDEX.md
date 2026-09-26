@@ -70,5 +70,8 @@
 - [page-title-management-dynamic-options-task](page-title-management-dynamic-options-task.md)
   - *前端路由优化 - Page Title Management 动态选项任务方案*
 
+- [adding-new-page-guide](adding-new-page-guide.md)
+  - *新增页面开发指引（路由/菜单/组件/CSS/ArtDeco 风格/API 契约）*
+
 - [router_analysis_report_corrected](router_analysis_report_corrected.md)
   - *MyStocks Router 设置分析报告 - 修正版*
