@@ -1,0 +1,102 @@
+version: "v0.2"
+task:
+  id: "g2-338"
+  title: "Refresh service lifecycle DI residual pool"
+  owner: "G/#79 service lifecycle DI + Route/OpenAPI governance"
+  created_at: "2026-06-13"
+
+mainline:
+  id: "L1-service-lifecycle-di-residual-refresh"
+  objective: "Refresh the current-main service lifecycle DI residual pool after G2.337 and select the next authorization boundary without modifying source code."
+  milestone_id: "g2"
+  slice_id: "g2-338"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: ""
+  approval_status: "not_required"
+
+scope:
+  allowed_paths:
+    - "docs/reports/quality/backend-service-lifecycle-di-residual-refresh-2026-06-13.md"
+    - "governance/mainline/task-cards/g2-338.yaml"
+  forbidden_paths:
+    - "src/**"
+    - "web/backend/app/**"
+    - "web/frontend/**"
+    - "tests/**"
+    - "scripts/**"
+    - "config/**"
+    - "requirements.txt"
+    - "web/backend/requirements.txt"
+    - "openspec/changes/**"
+    - "openstock/**"
+    - "OpenStock/**"
+
+non_goals:
+  - "Do not implement service lifecycle DI source changes in this task."
+  - "Do not modify backend source, route tests, frontend code, runtime state, scripts, configuration, dependency manifests, or OpenSpec implementation files."
+  - "Do not modify OpenStock internals, provider/runtime code, tests, configuration, packaging, or repository files."
+  - "Do not modify watchlist, dashboard, strategy, technical_analysis, or any other API source file."
+  - "Do not authorize deletion, retirement, compatibility-layer removal, response-contract migration, or full-file removal."
+
+acceptance:
+  checks:
+    - id: "residual-refresh-report"
+      command: "docs/reports/quality/backend-service-lifecycle-di-residual-refresh-2026-06-13.md records current-main residual pool, weak dashboard residual, branch-anchor comparison, and next source gate"
+      required: true
+    - id: "no-source-path-check"
+      command: "git diff --name-only HEAD~1..HEAD excludes source, tests, frontend, scripts, config, OpenSpec implementation, dependency manifests, and OpenStock internals"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/g2-338.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha HEAD~1 --head-sha HEAD --report /tmp/g2-338-mainline-gate.json"
+      required: true
+    - id: "gitnexus-detect-changes"
+      command: "gitnexus_detect_changes(scope=compare, base_ref=origin/main)"
+      required: true
+    - id: "diff-check"
+      command: "git diff HEAD~1..HEAD --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Watchlist is resolved in the wip/PR #474 branch-anchor but remains unresolved on current main; future source work must not conflate the branch-anchor with current-main implementation truth."
+    - "Dashboard has a weaker direct-source residual that should not be mixed into the strict constructor residual watchlist implementation task."
+    - "This task records recommendations only and does not authorize source edits."
+  rollback_plan: "Revert this governance-only commit to remove the G2.338 residual-refresh report and task card."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Refresh the service lifecycle DI residual pool after G2.337."
+    modified_scope: "Governance report and G2.338 task card only."
+    dependency_changes: "No dependency changes."
+    legacy_logic_impact: "No source, test, API behavior, frontend, runtime, script, configuration, OpenSpec implementation, or OpenStock internal changes."
+    rollback_ready: "Revert this governance-only commit."
+    risk_and_rollback_point: "Future watchlist source work requires a separate source-authorized task card and fresh impact/API-impact attempt."
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "No business entrypoint changed; this is a no-source residual-refresh package for mainline governance."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "G/#79 service lifecycle DI + Route/OpenAPI governance"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-06-13T11:19:23+08:00"
+    approval_note: "Human maintainer agreed to continue after G2.337; G2.338 is constrained to no-source residual refresh and OpenStock boundary-only handling."
+    secondary_approved: false
