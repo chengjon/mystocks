@@ -113,7 +113,7 @@
       "type": "openstock_market",
       "enabled": true,
       "mode": "real",
-      "base_url": "http://192.168.123.104:8040",
+      "base_url": "http://192.168.123.71:8040",
       "timeout": 5.0,
       "retry_count": 2,
       "retry_delay": 0.5,

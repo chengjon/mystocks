@@ -3,10 +3,6 @@
 from ._market_heatmap_router import get_market_heatmap
 from .health_check import health_check
 from .market_data_request import (
-    ETFQueryParams,
-    FundFlowRequest,
-    MarketDataRequest,
-    RefreshRequest,
     get_chip_race,
     get_etf_list,
     get_fund_flow,
@@ -19,6 +15,12 @@ from .market_data_request import (
     refresh_fund_flow,
     refresh_lhb_detail,
     router,
+)
+from .market_request_models import (
+    ETFQueryParams,
+    FundFlowRequest,
+    MarketDataRequest,
+    RefreshRequest,
 )
 
 

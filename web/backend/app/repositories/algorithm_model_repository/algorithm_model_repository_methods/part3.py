@@ -7,7 +7,8 @@ from typing import Any, Dict
 
 from sqlalchemy.exc import SQLAlchemyError
 
-from .part1 import AlgorithmModel, PredictionHistoryModel, TrainingHistoryModel, logger
+from ..helpers import AlgorithmModel, PredictionHistoryModel, TrainingHistoryModel
+from .part1 import logger
 
 
 class AlgorithmModelRepositoryMaintenanceMixin:

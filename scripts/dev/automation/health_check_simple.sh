@@ -17,13 +17,16 @@ NC='\033[0m' # No Color
 PROJECT_ROOT="/opt/claude/mystocks_spec"
 LOG_DIR="/var/log/mystocks"
 HEALTH_LOG="${LOG_DIR}/health_check.log"
-API_BASE_URL="http://localhost:8888"
-FRONTEND_URL="http://localhost:"
-PG_HOST="localhost"
-PG_PORT="5438"
+API_BASE_URL="http://localhost:8020"
+FRONTEND_URL="http://localhost:3020"
 
-# 确保日志目录存在
-mkdir -p "$LOG_DIR"
+# 从项目 .env 读取数据库配置（不存在时用默认值）
+if [ -f "$PROJECT_ROOT/.env" ]; then
+    PG_HOST=$(grep -E "^POSTGRESQL_HOST=" "$PROJECT_ROOT/.env" | cut -d= -f2 | tr -d '[:space:]')
+    PG_PORT=$(grep -E "^POSTGRESQL_PORT=" "$PROJECT_ROOT/.env" | cut -d= -f2 | tr -d '[:space:]')
+fi
+PG_HOST="${PG_HOST:-localhost}"
+PG_PORT="${PG_PORT:-5438}"
 
 # 函数定义
 log() {
@@ -60,8 +63,12 @@ check_basic_services() {
         error "PostgreSQL连接失败"
     fi
 
-    # 检查TDengine端口
-    if nc -z localhost 6030 >/dev/null 2>&1; then
+    # 检查TDengine端口（REST 端口 6041，来自 .env 的 TDENGINE_PORT）
+    TD_PORT=$(grep -E "^TDENGINE_PORT=" "$PROJECT_ROOT/.env" 2>/dev/null | cut -d= -f2 | tr -d '[:space:]')
+    TD_HOST_CHECK=$(grep -E "^TDENGINE_HOST=" "$PROJECT_ROOT/.env" 2>/dev/null | cut -d= -f2 | tr -d '[:space:]')
+    TD_PORT="${TD_PORT:-6041}"
+    TD_HOST_CHECK="${TD_HOST_CHECK:-localhost}"
+    if timeout 3 bash -c "echo > /dev/tcp/$TD_HOST_CHECK/$TD_PORT" >/dev/null 2>&1; then
         success "TDengine端口可访问"
     else
         warning "TDengine端口不可访问"
@@ -69,7 +76,7 @@ check_basic_services() {
 
     # 检查API服务
     for api_endpoint in "/api/health" "/api/docs"; do
-        if curl -s -o /dev/null -w "%{http_code}" "$API_BASE_URL$api_endpoint" 2>/dev/null | grep -q "200"; then
+        if curl -s --max-time 5 -o /dev/null -w "%{http_code}" "$API_BASE_URL$api_endpoint" 2>/dev/null | grep -q "200"; then
             success "API端点正常: $api_endpoint"
         else
             warning "API端点异常: $api_endpoint"
@@ -90,7 +97,7 @@ generate_report() {
         echo ""
 
         echo "前端服务: $(curl -s -o /dev/null -w "%{http_code}" "$FRONTEND_URL" 2>/dev/null || echo '不可用')"
-        echo "PostgreSQL: $(pg_isready -h localhost -p $PG_PORT 2>/dev/null && echo '正常' || echo '异常')"
+        echo "PostgreSQL: $(pg_isready -h "$PG_HOST" -p "$PG_PORT" 2>/dev/null && echo '正常' || echo '异常')"
         echo "TDengine: $(nc -z localhost 6030 2>/dev/null && echo '可访问' || echo '不可访问')"
         echo "API文档: $(curl -s -o /dev/null -w "%{http_code}" "$API_BASE_URL/api/docs" 2>/dev/null || echo '不可用')"
         echo "API健康: $(curl -s -o /dev/null -w "%{http_code}" "$API_BASE_URL/api/health" 2>/dev/null || echo '不可用')"

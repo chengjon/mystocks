@@ -82,7 +82,9 @@ def register_api_routes(app: FastAPI, *, use_mock_apis: bool, logger: logging.Lo
             app.include_router(router_modules[key], prefix=config["prefix"], tags=config["tags"])
             logger.info("✅ Registered %s router at %s", key, config["prefix"])
 
-    app.include_router(auth.compat_router, prefix="/api/auth", tags=["auth-compat"])
+    from .api.auth_compat import compat_router as auth_compat_router
+
+    app.include_router(auth_compat_router, prefix="/api/auth", tags=["auth-compat"])
     app.include_router(akshare_market.router)
 
     app.include_router(data_quality.router, prefix="/api", tags=["data-quality"])

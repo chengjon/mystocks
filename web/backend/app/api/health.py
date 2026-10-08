@@ -385,26 +385,41 @@ async def detailed_health_check(current_user: User = Depends(get_current_user)):
         health_script = "/opt/claude/mystocks_spec/scripts/dev/automation/health_check_simple.sh"
 
         if os.path.exists(health_script):
-            # 直接通过 bash 执行，避免只读文件系统上的 chmod 失败
-            result = subprocess.run(["bash", health_script], capture_output=True, text=True, timeout=30)
+            # 异步执行子进程，避免同步 subprocess 阻塞事件循环（单 worker 下会卡住整个服务）
+            import asyncio
+
+            proc = await asyncio.create_subprocess_exec(
+                "bash",
+                health_script,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            try:
+                stdout_b, stderr_b = await asyncio.wait_for(proc.communicate(), timeout=30)
+            except asyncio.TimeoutError:
+                proc.kill()
+                raise Exception("健康检查脚本执行超时（30秒）")
+            result_stdout = stdout_b.decode("utf-8", errors="replace")
+            result_stderr = stderr_b.decode("utf-8", errors="replace")
+            returncode = proc.returncode
 
             # 检查执行结果
-            if result.returncode == 0:
+            if returncode == 0:
                 return create_unified_success_response(
-                    data={"status": "success", "output": result.stdout, "error": result.stderr},
+                    data={"status": "success", "output": result_stdout, "error": result_stderr},
                     message="详细健康检查完成",
                 )
-            if result.stdout.strip():
+            if result_stdout.strip():
                 return create_unified_success_response(
                     data={
                         "status": "warning",
-                        "output": result.stdout,
-                        "error": result.stderr,
-                        "returncode": result.returncode,
+                        "output": result_stdout,
+                        "error": result_stderr,
+                        "returncode": returncode,
                     },
                     message="详细健康检查完成（存在非阻塞警告）",
                 )
-            raise Exception(f"脚本执行失败，返回码: {result.returncode}, 错误: {result.stderr}")
+            raise Exception(f"脚本执行失败，返回码: {returncode}, 错误: {result_stderr}")
         raise Exception(f"健康检查脚本不存在: {health_script}")
     except Exception as e:
         raise BusinessException(detail=f"详细健康检查失败: {e!s}", status_code=500, error_code="HEALTH_CHECK_FAILED")

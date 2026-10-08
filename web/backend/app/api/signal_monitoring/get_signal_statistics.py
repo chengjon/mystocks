@@ -16,12 +16,12 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.core.security import User, get_current_user
 
-from .signal_history_response import (
+from .signal_history_response_schemas import (
+    ActiveSignalItem,
     ActiveSignalsResponse,
     SignalStatisticsResponse,
     StrategyDetailedHealthResponse,
 )
-from .signal_history_response_schemas import ActiveSignalItem
 
 
 logger = logging.getLogger(__name__)

@@ -2,10 +2,6 @@
 
 from .get_rate_limits_status import get_rate_limits_status
 from .stock_search_result import (
-    NewsItem,
-    SearchRequest,
-    StockQuote,
-    StockSearchResult,
     check_admin_privileges,
     check_search_rate_limit,
     cleanup_search_analytics,
@@ -21,6 +17,12 @@ from .stock_search_result import (
     sanitize_query_params,
     search_stocks,
     validate_stock_symbol,
+)
+from .stock_search_schemas import (
+    NewsItem,
+    SearchRequest,
+    StockQuote,
+    StockSearchResult,
 )
 
 

@@ -530,7 +530,7 @@ class VersionManager:
             差异比较结果
 
         """
-        from .diff_engine import ContractDiffEngine
+        from .diff_engine import DiffEngine as ContractDiffEngine
 
         version_1 = VersionManager.get_version(db, version_id_1)
         version_2 = VersionManager.get_version(db, version_id_2)

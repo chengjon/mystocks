@@ -266,12 +266,19 @@ def authenticate_user_by_id(user_id: int) -> Optional[UserInDB]:
     except Exception as e:
         # 数据库查询失败时记录错误
         logger.warning(
-            "Database user lookup failed for ID %s (will return None): %s: %s",
+            "Database user lookup failed for ID %s (will try mock fallback): %s: %s",
             user_id,
             type(e).__name__,
             str(e),
             exc_info=True,
         )
+        # 与 authenticate_user 的回退策略保持一致：
+        # 数据库不可用时回退 mock 用户（受 MOCK_AUTH_ENABLED 显式开关控制）
+        if getattr(settings, "mock_auth_enabled", False):
+            if user_id == 1:
+                return _authenticate_with_mock("admin", "admin123")
+            if user_id == 2:
+                return _authenticate_with_mock("user", "user123")
         return None
 
 
